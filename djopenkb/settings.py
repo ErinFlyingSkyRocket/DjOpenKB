@@ -19,13 +19,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
+# Original VectifyAI/OpenKB source folder
 OPENKB_BASE_DIR = BASE_DIR / os.getenv("OPENKB_BASE_DIR", "OpenKB-main")
-OPENKB_RAW_DIR = OPENKB_BASE_DIR / "openkb"
-OPENKB_EXAMPLES_DIR = OPENKB_BASE_DIR / "examples"
+
+# Actual initialized OpenKB data folder
+OPENKB_DATA_DIR = BASE_DIR / os.getenv("OPENKB_DATA_DIR", "openkb-data")
+OPENKB_RAW_DIR = OPENKB_DATA_DIR / "raw"
+OPENKB_WIKI_DIR = OPENKB_DATA_DIR / "wiki"
+
+# Old Django article folder, only for old links if needed
 OPENKB_CONTENT_DIR = BASE_DIR / "kb-content"
 OPENKB_ARTICLES_DIR = OPENKB_CONTENT_DIR / "articles"
+
+# Original OpenKB CLI / LiteLLM config
+OPENKB_AI_PROVIDER = os.getenv("OPENKB_AI_PROVIDER", "openkb-cli")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+OPENKB_GEMINI_MODEL = os.getenv("OPENKB_GEMINI_MODEL", "gemini/gemini-2.5-flash")
+LITELLM_DROP_PARAMS = os.getenv("LITELLM_DROP_PARAMS", "true")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/

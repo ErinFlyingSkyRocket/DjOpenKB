@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.pyo
 *.pyd
+.Python
 
 # Virtual environment
 .venv/
@@ -23,6 +24,7 @@ staticfiles/
 .env
 .env.*
 *.env
+!.env.example
 secrets.json
 secret_key.txt
 
@@ -35,14 +37,26 @@ secret_key.txt
 credentials.json
 token.json
 
-# Uploaded KB content / private documents
-kb-content/
-uploads/
-uploaded_files/
+# OpenKB local/generated knowledge content
+# These are local user solutions/articles and should not go to GitHub.
+openkb-data/
+openkb-data/raw/
+openkb-data/wiki/
+openkb-data/**/*.md
 
-# If OpenKB-main contains copied private PDFs/docs, ignore it
+# Any Markdown solution/article files inside Django apps
+kb/**/*.md
+website/**/*.md
+
+# If OpenKB-main contains copied private PDFs/docs, ignore it.
 # Remove this line only if you intentionally want to commit OpenKB-main source.
 OpenKB-main/
+
+# Local uploads / generated files
+uploads/
+tmp/
+temp/
+*.sqlite3
 
 # OS files
 .DS_Store
@@ -70,6 +84,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
 
 # Docker local overrides
 docker-compose.override.yml

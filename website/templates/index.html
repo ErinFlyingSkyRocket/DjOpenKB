@@ -3,20 +3,16 @@
 <html lang="en">
 <head>
     <title>openKB</title>
-
     <meta property="og:title" content="openKB">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <meta name="description" content="openKB is an Open Source Markdown based knowledge base/FAQ/Wiki app">
-    <meta property="og:description" content="openKB is an Open Source Markdown based knowledge base/FAQ/Wiki app">
+    <meta name="description" content="openKB powered knowledge repository">
+    <meta property="og:description" content="openKB powered knowledge repository">
     <meta name="keywords" content="openKB">
     <meta property="og:type" content="article">
-    <meta property="og:image" content="{% static 'logo.png' %}">
-    <meta property="og:url" content="/">
 
-    <!-- Local CSS -->
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
     <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
@@ -26,7 +22,6 @@
     <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}">
 
-    <!-- Local JS -->
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
 
     <script>
@@ -38,6 +33,7 @@
                 "typeahead_search": true,
                 "enable_spellchecker": true,
                 "mermaid": false,
+                "mermaid_options": undefined,
                 "mermaid_auto_update": true
             };
         }(this));
@@ -55,142 +51,292 @@
     <script src="{% static 'lunr/lunr.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
+
+    <style>
+        .openkb-path {
+            color: #899aa6;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .openkb-meta {
+            color: #899aa6;
+            font-size: 12px;
+        }
+
+        .openkb-empty {
+            padding: 20px;
+            color: #899aa6;
+        }
+
+        #openkbAiAnswer {
+            white-space: pre-wrap;
+            margin-top: 10px;
+            min-height: 120px;
+            max-height: 420px;
+            overflow: auto;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+            background: #f9fbfc;
+            color: #333;
+        }
+    </style>
 </head>
 
 <body class="show_footer">
-    <div class="container-fluid">
-        <div class="row searchBar">
+<div class="container-fluid">
+    <div class="row searchBar">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button"
+                            class="navbar-toggle collapsed"
+                            data-toggle="collapse"
+                            data-target="#navbar"
+                            aria-expanded="false"
+                            aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
 
-            <nav class="navbar navbar-default navbar-static-top">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <button type="button"
-                                class="navbar-toggle collapsed"
-                                data-toggle="collapse"
-                                data-target="#navbar"
-                                aria-expanded="false"
-                                aria-controls="navbar">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-
-                        <a class="navbar-brand" href="/">Knowledge Repository</a>
-                    </div>
-
-                    <div id="navbar" class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a href="/suggest/">Suggest</a></li>
-
-                            {% if user.is_authenticated %}
-                                <li><a href="/upload/">Upload</a></li>
-                                <li><a href="/admin/">Admin</a></li>
-                                <li><a href="/accounts/logout/">Logout</a></li>
-                            {% else %}
-                                <li><a href="/accounts/login/">Login</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
+                    <a class="navbar-brand" href="/">Knowledge Repository</a>
                 </div>
-            </nav>
 
-            <div class="">
-                <h1>IT Help Center</h1>
-            </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/suggest/">Suggest</a></li>
 
-            <form action="/search/" id="search_form" method="get">
-                <div class="col-md-4 col-md-offset-4 search_bar">
-                    <div class="input-group">
-                        <input type="text"
-                               name="q"
-                               id="frm_search"
-                               class="form-control input-lg"
-                               placeholder="search">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default btn-lg" id="btn_search" type="submit">
-                                <i class="fa fa-search" aria-hidden="true"></i>
-                            </button>
-                        </span>
-                    </div>
-
-                    <div id="searchResult" class="hidden col-lg-12">
-                        <ul class="list-group searchResultList"></ul>
-                    </div>
+                        {% if user.is_authenticated %}
+                            <li><a href="/admin/">Admin</a></li>
+                            <li><a href="/accounts/logout/">Logout</a></li>
+                        {% else %}
+                            <li><a href="/accounts/login/">Login</a></li>
+                        {% endif %}
+                    </ul>
                 </div>
-            </form>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
-                <h2 class="text-center"></h2>
-                <p class="subheading">
-                    Get instant answers for the most common questions and learn how to use 3 characters like a pro.
-                </p>
             </div>
-        </div>
+        </nav>
 
         <div>
-            <div class="row featuredArticles">
-                <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+            <h1>IT Help Center</h1>
+        </div>
+
+        <form action="/search/" id="search_form" method="get">
+            <div class="col-md-4 col-md-offset-4 search_bar">
+                <div class="input-group">
+                    <input type="text"
+                           name="q"
+                           id="frm_search"
+                           class="form-control input-lg"
+                           placeholder="search"
+                           value="{{ search_query|default:'' }}">
+
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-lg" id="btn_search" type="submit">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </div>
+
+                <div id="searchResult" class="hidden col-lg-12">
+                    <ul class="list-group searchResultList"></ul>
                 </div>
             </div>
+        </form>
+    </div>
 
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+            <h2 class="text-center"></h2>
+            <p class="subheading">
+                Get instant answers for the most common questions and learn how to use 3 characters like a pro.
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <div class="row featuredArticles">
             <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-                <div class="panel panel-default" style="margin-top: 30px;">
-                    <div class="panel-heading">::: TRENDING TOPICS :::</div>
-                    <div class="panel-body">
-                        <ul class="list-group">
-                            {% if articles %}
-                                {% for article in articles %}
-                                    <li class="list-group-item">
-                                        <h4>
-                                            <a href="{{ article.url }}">{{ article.title }}</a>
+            </div>
+        </div>
 
-                                            {% if article.date %}
-                                                <span class="pull-right view_count">
-                                                    &nbsp; / <strong>Date:</strong> {{ article.date }}
-                                                </span>
-                                            {% endif %}
+        <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+            <div class="panel panel-default" style="margin-top: 30px;">
+                <div class="panel-heading">
+                    {% if is_search %}
+                        ::: SEARCH RESULTS FOR "{{ search_query }}" :::
+                    {% else %}
+                        ::: TRENDING TOPICS :::
+                    {% endif %}
+                </div>
 
-                                            {% if article.views %}
-                                                <span class="pull-right view_count">
-                                                    <strong>View count:</strong> {{ article.views }}
-                                                </span>
-                                            {% endif %}
+                <div class="panel-body">
+                    {% if is_search %}
+                        <p class="openkb-meta">
+                            {{ result_count }} result(s) found from OpenKB files.
+                        </p>
+                    {% endif %}
 
-                                            {% if article.type %}
-                                                <span class="pull-right view_count">
-                                                    <strong>Type:</strong> {{ article.type }}
-                                                </span>
-                                            {% endif %}
-                                        </h4>
-                                    </li>
-                                {% endfor %}
-                            {% else %}
+                    <ul class="list-group">
+                        {% if articles %}
+                            {% for article in articles %}
                                 <li class="list-group-item">
-                                    <h4>No trending topics available yet.</h4>
+                                    <h4>
+                                        <a href="{{ article.url }}">{{ article.title }}</a>
+
+                                        {% if article.date %}
+                                            <span class="pull-right view_count">
+                                                &nbsp; / <strong>Date:</strong> {{ article.date }}
+                                            </span>
+                                        {% endif %}
+
+                                        {% if article.type %}
+                                            <span class="pull-right view_count">
+                                                <strong>{{ article.type }}</strong>
+                                            </span>
+                                        {% endif %}
+                                    </h4>
+
+                                    <div class="openkb-path">
+                                        {{ article.path }}
+                                    </div>
                                 </li>
-                            {% endif %}
-                        </ul>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item openkb-empty">
+                                {% if is_search %}
+                                    No matching OpenKB articles found.
+                                {% else %}
+                                    No OpenKB articles yet. Add a solution from Suggest.
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+            <div class="panel panel-default" style="margin-top: 30px;">
+                <div class="panel-heading">::: ASK OPENKB AI :::</div>
+
+                <div class="panel-body">
+                    <form id="openkbAiForm">
+                        <div class="input-group">
+                            <input type="text"
+                                   id="openkbAiQuestion"
+                                   name="question"
+                                   class="form-control input-lg"
+                                   placeholder="Ask OpenKB AI">
+
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-lg" type="submit">
+                                    Ask
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+
+                    <div style="margin-top: 20px;">
+                        <strong>Answer:</strong>
+                        <pre id="openkbAiAnswer">No answer yet.</pre>
+
+                        <div id="openkbRelatedArticlesWrapper" style="display: none; margin-top: 20px;">
+                            <strong>Related articles:</strong>
+                            <ul id="openkbRelatedArticles" class="list-group" style="margin-top: 10px;"></ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <input type="hidden" value="" id="app_context">
-    <input type="hidden" value="true" id="blank_links">
-    <input type="hidden" id="input_notify_message" value="">
-    <input type="hidden" id="input_notify_message_type" value="">
-    <div id="notify_message"></div>
+<input type="hidden" value="" id="app_context">
+<input type="hidden" value="true" id="blank_links">
+<input type="hidden" id="input_notify_message" value="">
+<input type="hidden" id="input_notify_message_type" value="">
+<div id="notify_message"></div>
 
-    <footer class="footer">
-        <div class="container">
-            <p class="text-muted text-center">
-                Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a>
-            </p>
-        </div>
-    </footer>
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted text-center">
+            Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+    const openkbAiForm = document.getElementById("openkbAiForm");
+    const openkbAiQuestion = document.getElementById("openkbAiQuestion");
+    const openkbAiAnswer = document.getElementById("openkbAiAnswer");
+    const openkbRelatedArticlesWrapper = document.getElementById("openkbRelatedArticlesWrapper");
+    const openkbRelatedArticles = document.getElementById("openkbRelatedArticles");
+
+    function renderRelatedArticles(articles) {
+        openkbRelatedArticles.innerHTML = "";
+
+        if (!articles || articles.length === 0) {
+            openkbRelatedArticlesWrapper.style.display = "none";
+            return;
+        }
+
+        articles.forEach(function(article) {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+
+            const title = document.createElement("a");
+            title.href = article.url;
+            title.textContent = article.title;
+
+            const meta = document.createElement("div");
+            meta.className = "openkb-path";
+            meta.textContent = article.type + " / " + article.path;
+
+            li.appendChild(title);
+            li.appendChild(meta);
+
+            openkbRelatedArticles.appendChild(li);
+        });
+
+        openkbRelatedArticlesWrapper.style.display = "block";
+    }
+
+    openkbAiForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const question = openkbAiQuestion.value.trim();
+
+        if (!question) {
+            openkbAiAnswer.textContent = "Please type a question first.";
+            renderRelatedArticles([]);
+            return;
+        }
+
+        openkbAiAnswer.textContent = "Asking OpenKB AI...";
+        renderRelatedArticles([]);
+
+        const formData = new FormData();
+        formData.append("question", question);
+
+        try {
+            const response = await fetch("/ask-openkb-ai/", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            openkbAiAnswer.textContent = data.answer || data.error || "Something went wrong.";
+            renderRelatedArticles(data.related_articles || []);
+
+        } catch (error) {
+            openkbAiAnswer.textContent = "Request failed. Check Django terminal logs.";
+            renderRelatedArticles([]);
+        }
+    });
+</script>
 </body>
 </html>
