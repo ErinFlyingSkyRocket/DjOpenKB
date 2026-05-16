@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ title }} - openKB</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <style>
+        .article-wrapper {
+            max-width: 900px;
+            margin: 40px auto 100px auto;
+            background: #fff;
+        }
+
+        .article-meta {
+            color: #899aa6;
+            margin-bottom: 20px;
+        }
+
+        .article-content {
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        .article-content pre {
+            background: #f5f8fa;
+            padding: 15px;
+            border: 1px solid #e3eaee;
+            border-radius: 4px;
+        }
+
+        .article-content code {
+            background: #f5f8fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body class="show_footer">
+    <div class="container-fluid">
+        <div class="row searchBar">
+            <nav class="navbar navbar-default navbar-static-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="/">Knowledge Repository</a>
+                    </div>
+
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/suggest/">Suggest</a></li>
+                            <li><a href="/accounts/login/">Login</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div>
+                <h1>{{ title }}</h1>
+            </div>
+        </div>
+
+        <div class="article-wrapper">
+            <p class="article-meta">
+                Type: {{ metadata.type|upper }}
+                {% if metadata.created_at %}
+                    | Date: {{ metadata.created_at }}
+                {% endif %}
+                | View count: {{ metadata.view_count }}
+            </p>
+
+            <div class="article-content">
+                {{ content|safe }}
+            </div>
+
+            <hr>
+
+            <a href="/" class="btn btn-default">
+                <i class="fa fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted text-center">
+                Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

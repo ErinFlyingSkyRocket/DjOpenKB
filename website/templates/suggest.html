@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Suggest article</title>
+    <meta property="og:title" content="Suggest article" />
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <meta name="description" content="Powered by openKB">
+    <meta property="og:description" content="openKB is an Open Source Markdown based knowledge base/FAQ/Wiki app">
+    <meta name="keywords" content="openKB">
+
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="{% static 'logo.png' %}">
+    <meta property="og:url" content="/suggest/">
+
+    <link rel="canonical" href="/suggest/">
+
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jasny-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+
+    <script>
+        (function (root) {
+            root.config = {
+                "route_name": "kb",
+                "add_header_anchors": false,
+                "links_blank_page": true,
+                "typeahead_search": true,
+                "enable_spellchecker": true,
+                "mermaid": false,
+                "mermaid_options": undefined,
+                "mermaid_auto_update": true
+            };
+        }(this));
+    </script>
+
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
+    <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-tokenfield.min.js' %}"></script>
+    <script src="{% static 'javascripts/inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/codemirror.inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/highlight.min.js' %}"></script>
+    <script src="{% static 'javascripts/loadingoverlay.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'javascripts/jasny-bootstrap.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'lunr/lunr.js' %}"></script>
+    <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
+    <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+</head>
+
+<body class="">
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+
+            <div class="navbar-header">
+                <button type="button"
+                        class="navbar-toggle collapsed"
+                        data-toggle="collapse"
+                        data-target="#navbar"
+                        aria-expanded="false"
+                        aria-controls="navbar">
+
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <a class="navbar-brand" href="/">Knowledge Repository</a>
+            </div>
+
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/suggest/">Suggest</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li><a href="/upload/">Upload</a></li>
+                        <li><a href="/admin/">Admin</a></li>
+                        <li><a href="/accounts/logout/">Logout</a></li>
+                    {% else %}
+                        <li><a href="/accounts/login/">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="col-md-10 col-md-offset-1">
+
+            {% if message %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <div class="row">
+                <form method="post"
+                      id="edit_form"
+                      action="/suggest/"
+                      data-toggle="validator">
+
+                    {% csrf_token %}
+
+                    <input type="hidden" name="frm_kb_id" value="">
+
+                    <div id="header row">
+                        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                            <div class="form-group">
+                                <label for="preview">Article title *</label><br>
+                                <input type="text"
+                                       name="frm_kb_title"
+                                       class="form-control input-normal"
+                                       minlength="5"
+                                       maxlength="200"
+                                       value=""
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
+                            <label for="preview">&nbsp;</label><br>
+                            <button id="frm_edit_kb_save"
+                                    class="btn btn-success editor_btn_action"
+                                    type="submit">
+                                Suggest
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="editor-pagewrapper row">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group suggest-editor" id="editor-wrapper-suggest">
+                                <label for="editor">Article body (Markdown) *</label>
+
+                                <textarea id="editor"
+                                          class="test form-control"
+                                          minlength="5"
+                                          name="frm_kb_body"
+                                          data-provide="markdown"
+                                          data-hidden-buttons="cmdPreview"
+                                          data-iconlibrary="fa"
+                                          required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group" id="preview-wrapper">
+                                <label for="preview">Preview</label>
+                                <div id="preview"
+                                     name="preview"
+                                     class="form-control suggest-preview"
+                                     rows="10"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label>Keywords</label><br>
+                                <input type="text"
+                                       class="form-control"
+                                       name="frm_kb_keywords"
+                                       id="frm_kb_keywords"
+                                       value="">
+                            </div>
+                        </div>
+                    </footer>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="input_notify_message" value="">
+    <input type="hidden" id="input_notify_message_type" value="">
+    <input type="hidden" value="" id="app_context">
+    <input type="hidden" value="true" id="blank_links">
+
+    <div id="notify_message"></div>
+</body>
+</html>

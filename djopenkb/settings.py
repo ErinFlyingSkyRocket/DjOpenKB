@@ -24,7 +24,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENKB_BASE_DIR = BASE_DIR / os.getenv("OPENKB_BASE_DIR", "OpenKB-main")
 OPENKB_RAW_DIR = OPENKB_BASE_DIR / "openkb"
 OPENKB_EXAMPLES_DIR = OPENKB_BASE_DIR / "examples"
-OPENKB_CONTENT_DIR = BASE_DIR / "OpenKB-main"
+OPENKB_CONTENT_DIR = BASE_DIR / "kb-content"
+OPENKB_ARTICLES_DIR = OPENKB_CONTENT_DIR / "articles"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
