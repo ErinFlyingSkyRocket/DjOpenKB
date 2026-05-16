@@ -20,12 +20,11 @@ COPY . /app/
 RUN python -m pip install --upgrade pip setuptools wheel
 
 RUN python -m pip install \
-    "Django>=6.0,<6.1" \
+    django \
     gunicorn \
+    openkb \
     markdown \
     python-dotenv
-
-RUN python -m pip install -e /app/OpenKB-main
 
 EXPOSE 8000
 
