@@ -1,0 +1,77 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 70px;
+    background: #ffffff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.searchBar {
+    background: #f5f5f5;
+    padding-bottom: 55px;
+    border-bottom: 1px solid #e7e7e7;
+    text-align: center;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.searchBar h1 {
+    font-size: 42px;
+    font-weight: 500;
+    margin-top: 45px;
+    margin-bottom: 30px;
+}
+
+.search_bar {
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.subheading {
+    text-align: center;
+    color: #777;
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.featuredArticles {
+    margin-top: 20px;
+}
+
+.panel-heading {
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.view_count {
+    font-size: 12px;
+    color: #777;
+    margin-left: 10px;
+}
+
+.list-group-item h4 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    min-height: 55px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e7e7e7;
+    padding-top: 18px;
+}
+
+.footer .text-muted {
+    margin: 0;
+}

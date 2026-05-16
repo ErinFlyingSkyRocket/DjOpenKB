@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment / secrets
+.env
+.env.*
+*.env
+secrets.json
+secret_key.txt
+
+# API keys / credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+token.json
+
+# Uploaded KB content / private documents
+kb-content/
+uploads/
+uploaded_files/
+
+# If OpenKB-main contains copied private PDFs/docs, ignore it
+# Remove this line only if you intentionally want to commit OpenKB-main source.
+OpenKB-main/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Test/cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build/package
+build/
+dist/
+*.egg-info/
+
+# Node/npm if any old OpenKB files use it
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Local certificates for nginx HTTPS
+nginx/certs/
+*.localhost.crt
+*.localhost.key

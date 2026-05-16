@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>openKB</title>
+
+    <meta property="og:title" content="openKB">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <meta name="description" content="openKB is an Open Source Markdown based knowledge base/FAQ/Wiki app">
+    <meta property="og:description" content="openKB is an Open Source Markdown based knowledge base/FAQ/Wiki app">
+    <meta name="keywords" content="openKB">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="{% static 'logo.png' %}">
+    <meta property="og:url" content="/">
+
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+
+    <!-- Local JS -->
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+
+    <script>
+        (function (root) {
+            root.config = {
+                "route_name": "kb",
+                "add_header_anchors": false,
+                "links_blank_page": true,
+                "typeahead_search": true,
+                "enable_spellchecker": true,
+                "mermaid": false,
+                "mermaid_auto_update": true
+            };
+        }(this));
+    </script>
+
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
+    <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-tokenfield.min.js' %}"></script>
+    <script src="{% static 'javascripts/inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/codemirror.inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/highlight.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'lunr/lunr.min.js' %}"></script>
+    <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+</head>
+
+<body class="show_footer">
+    <div class="container-fluid">
+        <div class="row searchBar">
+
+            <nav class="navbar navbar-default navbar-static-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button"
+                                class="navbar-toggle collapsed"
+                                data-toggle="collapse"
+                                data-target="#navbar"
+                                aria-expanded="false"
+                                aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+
+                        <a class="navbar-brand" href="/">Knowledge Repository</a>
+                    </div>
+
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="/suggest/">Suggest</a></li>
+
+                            {% if user.is_authenticated %}
+                                <li><a href="/upload/">Upload</a></li>
+                                <li><a href="/admin/">Admin</a></li>
+                                <li><a href="/accounts/logout/">Logout</a></li>
+                            {% else %}
+                                <li><a href="/accounts/login/">Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="">
+                <h1>IT Help Center</h1>
+            </div>
+
+            <form action="/search/" id="search_form" method="get">
+                <div class="col-md-4 col-md-offset-4 search_bar">
+                    <div class="input-group">
+                        <input type="text"
+                               name="q"
+                               id="frm_search"
+                               class="form-control input-lg"
+                               placeholder="search">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-lg" id="btn_search" type="submit">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </div>
+
+                    <div id="searchResult" class="hidden col-lg-12">
+                        <ul class="list-group searchResultList"></ul>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+                <h2 class="text-center"></h2>
+                <p class="subheading">
+                    Get instant answers for the most common questions and learn how to use 3 characters like a pro.
+                </p>
+            </div>
+        </div>
+
+        <div>
+            <div class="row featuredArticles">
+                <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                </div>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                <div class="panel panel-default" style="margin-top: 30px;">
+                    <div class="panel-heading">::: TRENDING TOPICS :::</div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            {% if articles %}
+                                {% for article in articles %}
+                                    <li class="list-group-item">
+                                        <h4>
+                                            <a href="{{ article.url }}">{{ article.title }}</a>
+
+                                            {% if article.date %}
+                                                <span class="pull-right view_count">
+                                                    &nbsp; / <strong>Date:</strong> {{ article.date }}
+                                                </span>
+                                            {% endif %}
+
+                                            {% if article.views %}
+                                                <span class="pull-right view_count">
+                                                    <strong>View count:</strong> {{ article.views }}
+                                                </span>
+                                            {% endif %}
+
+                                            {% if article.type %}
+                                                <span class="pull-right view_count">
+                                                    <strong>Type:</strong> {{ article.type }}
+                                                </span>
+                                            {% endif %}
+                                        </h4>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="list-group-item">
+                                    <h4>No trending topics available yet.</h4>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" value="" id="app_context">
+    <input type="hidden" value="true" id="blank_links">
+    <input type="hidden" id="input_notify_message" value="">
+    <input type="hidden" id="input_notify_message_type" value="">
+    <div id="notify_message"></div>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted text-center">
+                Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
