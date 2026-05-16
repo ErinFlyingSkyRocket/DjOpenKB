@@ -47,7 +47,14 @@ SECRET_KEY = 'django-insecure-ja^jbb-_fb0tvu71u+&4-=e_-i52*wes=$hzm8xdj_0kx22nbj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost:8080",
+    "https://127.0.0.1:8080",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -143,3 +150,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "website" / "static",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"

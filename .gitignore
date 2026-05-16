@@ -90,6 +90,6 @@ package-lock.json
 docker-compose.override.yml
 
 # Local certificates for nginx HTTPS
-nginx/certs/
+#nginx/certs/
 *.localhost.crt
 *.localhost.key
