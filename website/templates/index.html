@@ -49,6 +49,8 @@
         .openkb-pagination-top { margin: 5px 0 20px; }
         .openkb-pagination .pagination { margin: 0; }
         .openkb-pagination-meta { color: #899aa6; font-size: 12px; margin-bottom: 10px; text-align: center; }
+        .openkb-clear-search { margin-top: 10px; text-align: center; }
+        .openkb-clear-search a { color: #fff; }
         .navbar-logout-form { display: inline; }
         .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
         .navbar-logout-button:hover { color: #333; background-color: transparent; }
@@ -134,8 +136,19 @@
             <div class="col-md-4 col-md-offset-4 search_bar">
                 <div class="input-group">
                     <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="search" value="{{ search_query|default:'' }}">
-                    <span class="input-group-btn"><button class="btn btn-default btn-lg" id="btn_search" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button></span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-lg" id="btn_search" type="submit">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </span>
                 </div>
+                {% if is_search or search_query %}
+                    <div class="openkb-clear-search">
+                        <a class="btn btn-primary btn-sm" href="{% url 'home' %}">
+                            <i class="fa fa-times" aria-hidden="true"></i> Clear search
+                        </a>
+                    </div>
+                {% endif %}
                 <div id="searchResult" class="hidden col-lg-12"><ul class="list-group searchResultList"></ul></div>
             </div>
         </form>
