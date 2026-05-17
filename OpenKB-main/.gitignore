@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.db
+.DS_Store
+.env
+
+# Knowledge base test artifacts
+raw/
+wiki/
+.openkb/
+
+# Local only
+docs/
+.claude/
