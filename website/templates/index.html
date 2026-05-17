@@ -157,34 +157,6 @@
                 <div class="panel-body">
                     {% if is_search %}<p class="openkb-meta">{{ result_count }} result(s) found from OpenKB files.</p>{% endif %}
 
-                    {% if page_obj and page_obj.paginator.num_pages > 1 %}
-                        <div class="openkb-pagination-meta">
-                            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} article(s)
-                        </div>
-
-                        <nav class="openkb-pagination openkb-pagination-top" aria-label="Article pagination top">
-                            <ul class="pagination">
-                                {% if page_obj.has_previous %}
-                                    <li><a href="?page=1{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">&laquo; First</a></li>
-                                    <li><a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
-                                {% else %}
-                                    <li class="disabled"><span>&laquo; First</span></li>
-                                    <li class="disabled"><span>&lsaquo; Previous</span></li>
-                                {% endif %}
-
-                                <li class="active"><span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
-
-                                {% if page_obj.has_next %}
-                                    <li><a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
-                                    <li><a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
-                                {% else %}
-                                    <li class="disabled"><span>Next &rsaquo;</span></li>
-                                    <li class="disabled"><span>Last &raquo;</span></li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    {% endif %}
-
                     <ul class="list-group">
                         {% if articles %}
                             {% for article in articles %}
