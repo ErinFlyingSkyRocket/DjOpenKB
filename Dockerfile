@@ -8,9 +8,13 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    gcc \
     git \
     curl \
     libmagic1 \
+    libldap2-dev \
+    libsasl2-dev \
+    ldap-utils \
     poppler-utils \
     tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
@@ -24,7 +28,8 @@ RUN python -m pip install \
     gunicorn \
     openkb \
     markdown \
-    python-dotenv
+    python-dotenv \
+    django-auth-ldap
 
 EXPOSE 8000
 
