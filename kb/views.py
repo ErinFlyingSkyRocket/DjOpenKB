@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -180,9 +181,31 @@ class OpenKBLoginView(LoginView):
         return response
 
 
+def paginate_articles(request, articles, per_page=20):
+    """Paginate article lists safely for the index/search page."""
+    paginator = Paginator(articles, per_page)
+    page_number = request.GET.get("page", 1)
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    return page_obj
+
+
 def home(request):
-    articles = get_openkb_wiki_articles()
-    return render(request, "index.html", {"articles": articles})
+    all_articles = get_openkb_wiki_articles()
+    page_obj = paginate_articles(request, all_articles, per_page=20)
+
+    return render(request, "index.html", {
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "paginator": page_obj.paginator,
+        "total_article_count": len(all_articles),
+    })
 
 
 @login_required
@@ -359,11 +382,17 @@ def search_articles(request):
             if query in searchable_text:
                 results.append(article)
 
+    all_articles = results if query_original else get_openkb_wiki_articles()
+    page_obj = paginate_articles(request, all_articles, per_page=20)
+
     return render(request, "index.html", {
-        "articles": results if query_original else get_openkb_wiki_articles(),
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "paginator": page_obj.paginator,
         "search_query": query_original,
         "is_search": bool(query_original),
         "result_count": len(results),
+        "total_article_count": len(all_articles),
     })
 
 
