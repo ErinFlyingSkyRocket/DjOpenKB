@@ -31,6 +31,7 @@ class SuggestedArticle(models.Model):
     filename = models.CharField(max_length=255, unique=True, blank=True)
     raw_path = models.CharField(max_length=500, blank=True)
     wiki_path = models.CharField(max_length=500, blank=True)
+    image_assets = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 

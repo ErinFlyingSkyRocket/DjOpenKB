@@ -1,7 +1,9 @@
 import os
+import json
 import re
 import subprocess
 import sys
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -15,11 +17,12 @@ from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
-from django.http import Http404, JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from .models import SuggestedArticle
 
@@ -39,6 +42,106 @@ def init_openkb_storage():
     settings.OPENKB_RAW_DIR.mkdir(parents=True, exist_ok=True)
     settings.OPENKB_WIKI_DIR.mkdir(parents=True, exist_ok=True)
     (settings.OPENKB_WIKI_DIR / "sources").mkdir(parents=True, exist_ok=True)
+
+
+def get_openkb_uploads_dir():
+    """Folder used for small images pasted into suggested Markdown articles."""
+    upload_dir = settings.OPENKB_WIKI_DIR / "uploads"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    return upload_dir
+
+
+def is_allowed_article_image(uploaded_file):
+    allowed_types = {
+        "image/png": ".png",
+        "image/jpeg": ".jpg",
+        "image/gif": ".gif",
+        "image/webp": ".webp",
+    }
+    return allowed_types.get(uploaded_file.content_type)
+
+
+ARTICLE_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(/wiki/uploads/([A-Za-z0-9._-]+)\)")
+
+
+def extract_article_image_filenames(markdown_text):
+    """Return unique uploaded image filenames referenced in Markdown body."""
+    seen = []
+    for filename in ARTICLE_IMAGE_RE.findall(markdown_text or ""):
+        if filename not in seen and "/" not in filename and "\\" not in filename:
+            seen.append(filename)
+    return seen
+
+
+def article_image_markdown(filename):
+    return f"![image](/wiki/uploads/{filename})"
+
+
+def article_image_url(filename):
+    return f"/wiki/uploads/{filename}"
+
+
+def delete_uploaded_image_file(filename):
+    if not filename or "/" in filename or "\\" in filename or filename in {".", ".."}:
+        return
+
+    upload_dir = get_openkb_uploads_dir().resolve()
+    file_path = (upload_dir / filename).resolve()
+
+    if str(file_path).startswith(str(upload_dir)) and file_path.exists() and file_path.is_file():
+        file_path.unlink()
+
+
+def image_is_used_by_other_article(filename, current_article=None):
+    queryset = SuggestedArticle.objects.all()
+    if current_article and current_article.pk:
+        queryset = queryset.exclude(pk=current_article.pk)
+
+    for article in queryset.only("body", "image_assets"):
+        if filename in (article.image_assets or []):
+            return True
+        if filename in extract_article_image_filenames(article.body):
+            return True
+    return False
+
+
+def sync_article_image_assets(article, old_assets=None):
+    """Tie currently referenced uploaded images to this article and clean stale ones."""
+    old_assets = set(old_assets if old_assets is not None else (article.image_assets or []))
+    new_assets = set(extract_article_image_filenames(article.body))
+
+    stale_assets = old_assets - new_assets
+    for filename in stale_assets:
+        if not image_is_used_by_other_article(filename, current_article=article):
+            delete_uploaded_image_file(filename)
+
+    article.image_assets = sorted(new_assets)
+    SuggestedArticle.objects.filter(pk=article.pk).update(image_assets=article.image_assets)
+    return article.image_assets
+
+
+def clear_committed_pending_uploads(request, image_assets):
+    pending_uploads = request.session.get("pending_article_uploads", [])
+    if not pending_uploads:
+        return
+
+    image_assets = set(image_assets or [])
+    request.session["pending_article_uploads"] = [
+        item for item in pending_uploads if item not in image_assets
+    ]
+    request.session.modified = True
+
+
+def get_article_image_cards(article):
+    return [
+        {
+            "filename": filename,
+            "url": article_image_url(filename),
+            "markdown": article_image_markdown(filename),
+            "existing": True,
+        }
+        for filename in (article.image_assets or extract_article_image_filenames(article.body))
+    ]
 
 
 def clean_wiki_title(file_path):
@@ -133,7 +236,7 @@ def write_article_files(article):
 
 
 def delete_article_files(article):
-    """Delete Markdown files for a user-owned article."""
+    """Delete Markdown files and image assets for a user-owned article."""
     candidates = []
 
     if article.raw_path:
@@ -148,6 +251,10 @@ def delete_article_files(article):
 
         if str(file_path).startswith(str(root_dir)) and file_path.exists() and file_path.is_file():
             file_path.unlink()
+
+    for filename in (article.image_assets or extract_article_image_filenames(article.body)):
+        if not image_is_used_by_other_article(filename, current_article=article):
+            delete_uploaded_image_file(filename)
 
 
 def get_article_metadata_by_wiki_path(wiki_path):
@@ -300,8 +407,11 @@ def suggest(request):
         wiki_path=f"sources/{filename}",
         raw_path=f"raw/{filename}",
         status=SuggestedArticle.Status.PUBLISHED,
+        image_assets=extract_article_image_filenames(body),
     )
     write_article_files(article)
+    sync_article_image_assets(article, old_assets=[])
+    clear_committed_pending_uploads(request, article.image_assets)
 
     messages.success(request, f"Article suggested successfully: {article.title}")
     return redirect("profile")
@@ -474,7 +584,11 @@ def edit_suggestion(request, article_id):
         return HttpResponseForbidden("You do not have permission to edit this article.")
 
     if request.method == "GET":
-        return render(request, "suggest_edit.html", {"article": article, "current_status": article.status})
+        return render(request, "suggest_edit.html", {
+            "article": article,
+            "current_status": article.status,
+            "existing_images_json": json.dumps(get_article_image_cards(article)),
+        })
 
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
@@ -493,14 +607,19 @@ def edit_suggestion(request, article_id):
             "keywords_value": keywords_raw,
             "status_value": status,
             "current_status": status,
+            "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
+    old_image_assets = list(article.image_assets or extract_article_image_filenames(article.body))
     article.title = title
     article.body = body
     article.keywords = keywords_raw
     article.status = status
+    article.image_assets = extract_article_image_filenames(body)
     article.save()
     write_article_files(article)
+    sync_article_image_assets(article, old_assets=old_image_assets)
+    clear_committed_pending_uploads(request, article.image_assets)
 
     messages.success(request, f"Article updated: {article.title}")
     return redirect("profile")
@@ -522,6 +641,108 @@ def delete_suggestion(request, article_id):
         return redirect("profile")
 
     return render(request, "suggest_delete.html", {"article": article})
+
+
+@login_required
+@require_POST
+def upload_article_image(request):
+    """Upload a small pasted image for use inside Markdown articles.
+
+    The endpoint is intentionally login-protected because only logged-in users
+    can create/edit suggestions. The returned Markdown can be inserted directly
+    into the editor, for example: ![image](/wiki/uploads/abc.png)
+    """
+    uploaded_file = request.FILES.get("image")
+
+    if not uploaded_file:
+        return JsonResponse({"error": "No image file received."}, status=400)
+
+    extension = is_allowed_article_image(uploaded_file)
+    if not extension:
+        return JsonResponse({"error": "Only PNG, JPG, GIF, or WEBP images are allowed."}, status=400)
+
+    max_size = 2 * 1024 * 1024
+    if uploaded_file.size > max_size:
+        return JsonResponse({"error": "Image is too large. Maximum allowed size is 2 MB."}, status=400)
+
+    upload_dir = get_openkb_uploads_dir()
+    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+    filename = f"{timestamp}-{uuid.uuid4().hex[:12]}{extension}"
+    file_path = upload_dir / filename
+
+    with file_path.open("wb") as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+
+    pending_uploads = request.session.get("pending_article_uploads", [])
+    if filename not in pending_uploads:
+        pending_uploads.append(filename)
+    request.session["pending_article_uploads"] = pending_uploads[-100:]
+    request.session.modified = True
+
+    image_url = f"/wiki/uploads/{filename}"
+    return JsonResponse({
+        "url": image_url,
+        "filename": filename,
+        "markdown": f"![image]({image_url})",
+    })
+
+
+@login_required
+@require_POST
+def delete_article_image(request):
+    """Delete a pasted image that was uploaded during the current editing session.
+
+    This endpoint is used by the editor's image preview tray. It only deletes
+    filenames stored in the current session's pending upload list, so a user
+    cannot delete arbitrary article images by guessing a filename.
+    """
+    filename = (request.POST.get("filename") or "").strip()
+    if not filename:
+        return JsonResponse({"error": "No image filename received."}, status=400)
+
+    # Basic filename-only guard. Uploaded names are generated by the server and
+    # should not contain path separators.
+    if "/" in filename or "\\" in filename or filename in {".", ".."}:
+        return JsonResponse({"error": "Invalid image filename."}, status=400)
+
+    pending_uploads = request.session.get("pending_article_uploads", [])
+    if filename not in pending_uploads and not request.user.is_staff:
+        return JsonResponse({"error": "This image is not removable from this editing session."}, status=403)
+
+    upload_dir = get_openkb_uploads_dir().resolve()
+    file_path = (upload_dir / filename).resolve()
+    if not str(file_path).startswith(str(upload_dir)):
+        return JsonResponse({"error": "Invalid image path."}, status=400)
+
+    if file_path.exists() and file_path.is_file():
+        file_path.unlink()
+
+    request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
+    request.session.modified = True
+    return JsonResponse({"deleted": True})
+
+
+def serve_article_image(request, filename):
+    """Serve images pasted into Markdown articles from openkb-data/wiki/uploads."""
+    upload_dir = get_openkb_uploads_dir().resolve()
+    file_path = (upload_dir / filename).resolve()
+
+    if not str(file_path).startswith(str(upload_dir)):
+        raise Http404("Invalid image path")
+
+    if not file_path.exists() or not file_path.is_file():
+        raise Http404("Image not found")
+
+    content_types = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".gif": "image/gif",
+        ".webp": "image/webp",
+    }
+    content_type = content_types.get(file_path.suffix.lower(), "application/octet-stream")
+    return FileResponse(file_path.open("rb"), content_type=content_type)
 
 
 def wiki_detail(request, wiki_path):

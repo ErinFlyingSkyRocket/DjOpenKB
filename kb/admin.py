@@ -18,13 +18,13 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "created_at", "updated_at")
     search_fields = ("title", "body", "keywords", "owner__username", "owner__email")
-    readonly_fields = ("filename", "raw_path", "wiki_path", "created_at", "updated_at")
+    readonly_fields = ("filename", "raw_path", "wiki_path", "image_assets", "created_at", "updated_at")
     fieldsets = (
         ("Article", {
             "fields": ("owner", "title", "body", "keywords", "status"),
         }),
         ("OpenKB files", {
-            "fields": ("filename", "raw_path", "wiki_path"),
+            "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
         }),
         ("Timestamps", {
             "fields": ("created_at", "updated_at"),

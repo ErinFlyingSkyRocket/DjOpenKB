@@ -11,5 +11,8 @@ urlpatterns = [
     path("profile/articles/<int:article_id>/delete/", views.delete_suggestion, name="delete_suggestion"),
     path("search/", views.search_articles, name="search"),
     path("ask-openkb-ai/", views.ask_openkb_ai, name="ask_openkb_ai"),
+    path("article-image-upload/", views.upload_article_image, name="upload_article_image"),
+    path("article-image-delete/", views.delete_article_image, name="delete_article_image"),
+    path("wiki/uploads/<path:filename>", views.serve_article_image, name="serve_article_image"),
     re_path(r"^wiki/(?P<wiki_path>.+)$", views.wiki_detail, name="wiki_detail"),
 ]

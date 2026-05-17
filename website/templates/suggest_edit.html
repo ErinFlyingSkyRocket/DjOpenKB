@@ -112,10 +112,24 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">Save</button>
                         </div>
                     </div>
+
+                    <div class="col-xs-12">
+                        <div id="pastedImagePanel" class="pasted-image-panel">
+                            <div class="pasted-image-panel-title">Pasted images</div>
+                            <p class="text-muted" style="margin-bottom: 8px;">Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file.</p>
+                            <div id="pastedImageList" class="pasted-image-list"></div>
+                        </div>
+                    </div>
+
                     <div id="editor-pagewrapper row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group suggest-editor" id="editor-wrapper-suggest">
                                 <label for="editor">Article body (Markdown) *</label>
+                                <p class="text-muted" style="margin-bottom: 6px;">You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each.</p>
+                                <p>
+                                    <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> Upload image</button>
+                                    <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
+                                </p>
                                 <textarea id="editor" minlength="5" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" class="form-control" required>{{ body_value|default:article.body }}</textarea>
                             </div>
                         </div>
@@ -146,5 +160,299 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <input type="hidden" value="" id="app_context">
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
+
+<script id="existingArticleImages" type="application/json">{{ existing_images_json|default:"[]"|safe }}</script>
+<script>
+(function () {
+    const uploadUrl = "{% url 'upload_article_image' %}";
+    const deleteUrl = "{% url 'delete_article_image' %}";
+    const csrfToken = "{{ csrf_token }}";
+    const uploadedImages = new Map();
+    const uploadedHashes = new Map();
+    const existingImagesElement = document.getElementById("existingArticleImages");
+
+    let existingImages = [];
+    try {
+        existingImages = JSON.parse(existingImagesElement ? existingImagesElement.textContent : "[]") || [];
+    } catch (error) {
+        existingImages = [];
+    }
+
+    function getEditorCodeMirror() {
+        const wrapper = document.querySelector(".CodeMirror");
+        if (wrapper && wrapper.CodeMirror) {
+            return wrapper.CodeMirror;
+        }
+        return null;
+    }
+
+    function getEditorValue() {
+        const cm = getEditorCodeMirror();
+        if (cm) {
+            return cm.getValue();
+        }
+        const textarea = document.getElementById("editor");
+        return textarea ? textarea.value : "";
+    }
+
+    function setEditorValue(value) {
+        const cm = getEditorCodeMirror();
+        if (cm) {
+            cm.setValue(value);
+            cm.save();
+            return;
+        }
+        const textarea = document.getElementById("editor");
+        if (textarea) {
+            textarea.value = value;
+            textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+    }
+
+    function syncEditorBeforeSubmit() {
+        const cm = getEditorCodeMirror();
+        if (cm) {
+            cm.save();
+        }
+    }
+
+    function insertMarkdown(markdownText) {
+        const cm = getEditorCodeMirror();
+        const inserted = "\n" + markdownText + "\n";
+        if (cm) {
+            cm.replaceSelection(inserted);
+            cm.focus();
+            cm.save();
+            return;
+        }
+
+        const textarea = document.getElementById("editor");
+        if (!textarea) {
+            return;
+        }
+        const start = textarea.selectionStart || 0;
+        const end = textarea.selectionEnd || 0;
+        const before = textarea.value.substring(0, start);
+        const after = textarea.value.substring(end);
+        textarea.value = before + inserted + after;
+        textarea.selectionStart = textarea.selectionEnd = start + inserted.length;
+        textarea.focus();
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function replaceMarkdown(oldText, newText) {
+        setEditorValue(getEditorValue().replace(oldText, newText));
+    }
+
+    function escapeRegExp(value) {
+        return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function removeMarkdown(markdownText) {
+        const escaped = escapeRegExp(markdownText);
+        const pattern = new RegExp("\\n?" + escaped + "\\n?", "g");
+        setEditorValue(getEditorValue().replace(pattern, "\n"));
+    }
+
+    function removeMarkdownForFilename(filename, fallbackMarkdown) {
+        const escapedFilename = escapeRegExp(filename);
+        const pattern = new RegExp("\\n?!\\[[^\\]]*\\]\\(/wiki/uploads/" + escapedFilename + "\\)\\n?", "g");
+        const currentValue = getEditorValue();
+        const updatedValue = currentValue.replace(pattern, "\n");
+        if (updatedValue !== currentValue) {
+            setEditorValue(updatedValue);
+            return;
+        }
+        if (fallbackMarkdown) {
+            removeMarkdown(fallbackMarkdown);
+        }
+    }
+
+    function showPasteMessage(message, type) {
+        if (window.show_notification) {
+            window.show_notification(message, type || "info");
+            return;
+        }
+        alert(message);
+    }
+
+    async function fileHash(file) {
+        if (!window.crypto || !window.crypto.subtle) {
+            return [file.name, file.size, file.type, file.lastModified].join(":");
+        }
+        const buffer = await file.arrayBuffer();
+        const digest = await window.crypto.subtle.digest("SHA-256", buffer);
+        return Array.from(new Uint8Array(digest)).map(function (byte) {
+            return byte.toString(16).padStart(2, "0");
+        }).join("");
+    }
+
+    function ensureImagePanelVisible() {
+        const panel = document.getElementById("pastedImagePanel");
+        if (panel) {
+            panel.style.display = uploadedImages.size ? "block" : "none";
+        }
+    }
+
+    function addImageCard(info) {
+        const list = document.getElementById("pastedImageList");
+        if (!list || !info || !info.filename) {
+            return;
+        }
+
+        const key = info.filename;
+        if (uploadedImages.has(key)) {
+            return;
+        }
+        uploadedImages.set(key, info);
+
+        const card = document.createElement("div");
+        card.className = "pasted-image-card";
+        card.dataset.filename = info.filename;
+
+        const image = document.createElement("img");
+        image.src = info.url;
+        image.alt = "Article image";
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "pasted-image-remove";
+        removeButton.title = "Remove image from article";
+        removeButton.setAttribute("aria-label", "Remove image from article");
+        removeButton.innerHTML = "&times;";
+
+        removeButton.addEventListener("click", async function () {
+            removeMarkdownForFilename(info.filename, info.markdown);
+
+            if (!info.existing) {
+                const formData = new FormData();
+                formData.append("filename", info.filename);
+
+                try {
+                    await fetch(deleteUrl, {
+                        method: "POST",
+                        headers: { "X-CSRFToken": csrfToken },
+                        body: formData
+                    });
+                } catch (error) {
+                    // Markdown is removed locally even if server cleanup fails.
+                }
+            }
+
+            uploadedImages.delete(key);
+            if (info.hash) {
+                uploadedHashes.delete(info.hash);
+            }
+            card.remove();
+            ensureImagePanelVisible();
+            showPasteMessage(info.existing ? "Image removed from this draft. Save the article to delete it from storage." : "Image removed from this article draft.", "success");
+        });
+
+        card.appendChild(image);
+        card.appendChild(removeButton);
+        list.appendChild(card);
+        ensureImagePanelVisible();
+    }
+
+    async function uploadImage(file) {
+        const hash = await fileHash(file);
+        if (uploadedHashes.has(hash)) {
+            showPasteMessage("This image is already uploaded in this draft. Use the X preview button to remove it first.", "warning");
+            return;
+        }
+
+        const placeholder = "![uploading image " + Date.now() + "]()";
+        insertMarkdown(placeholder);
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const response = await fetch(uploadUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
+                body: formData
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                removeMarkdown(placeholder);
+                showPasteMessage(data.error || "Image upload failed.", "danger");
+                return;
+            }
+
+            replaceMarkdown(placeholder, data.markdown);
+            const info = {
+                hash: hash,
+                filename: data.filename,
+                url: data.url,
+                markdown: data.markdown,
+                existing: false
+            };
+            uploadedHashes.set(hash, data.filename);
+            addImageCard(info);
+            showPasteMessage("Image uploaded and inserted into the article.", "success");
+        } catch (error) {
+            removeMarkdown(placeholder);
+            showPasteMessage("Image upload failed. Check Django terminal logs.", "danger");
+        }
+    }
+
+    function handleImageFiles(files) {
+        Array.from(files || []).forEach(function (file) {
+            if (file && file.type && file.type.indexOf("image/") === 0) {
+                uploadImage(file);
+            }
+        });
+    }
+
+    document.addEventListener("paste", function (event) {
+        const editorWrapper = document.querySelector("#editor-wrapper-suggest");
+        if (!editorWrapper || !editorWrapper.contains(document.activeElement)) {
+            return;
+        }
+
+        const items = event.clipboardData && event.clipboardData.items;
+        if (!items) {
+            return;
+        }
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.kind === "file" && item.type.indexOf("image/") === 0) {
+                const file = item.getAsFile();
+                if (file) {
+                    event.preventDefault();
+                    uploadImage(file);
+                }
+                break;
+            }
+        }
+    });
+
+    const imageUploadButton = document.getElementById("articleImageUploadButton");
+    const imageUploadInput = document.getElementById("articleImageUploadInput");
+    if (imageUploadButton && imageUploadInput) {
+        imageUploadButton.addEventListener("click", function () {
+            imageUploadInput.click();
+        });
+        imageUploadInput.addEventListener("change", function () {
+            handleImageFiles(imageUploadInput.files);
+            imageUploadInput.value = "";
+        });
+    }
+
+    const form = document.getElementById("edit_form");
+    if (form) {
+        form.addEventListener("submit", syncEditorBeforeSubmit);
+    }
+
+    existingImages.forEach(function (info) {
+        info.existing = true;
+        addImageCard(info);
+    });
+})();
+</script>
+
 </body>
 </html>
