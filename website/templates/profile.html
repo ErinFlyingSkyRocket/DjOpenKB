@@ -51,6 +51,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .navbar-logout-button:hover { color: #333; background-color: transparent; }
         .profile-muted { color: #899aa6; font-size: 12px; }
         .article-actions a { margin-right: 4px; }
+        .profile-search-panel { margin-bottom: 15px; }
+        .profile-pagination { margin: 12px 0 8px; text-align: center; }
+        .profile-pagination .pagination { margin: 0; }
+        .profile-pagination-meta { color: #899aa6; font-size: 12px; margin-bottom: 10px; text-align: center; }
+        .profile-top-pagination { margin: 0 0 12px; text-align: center; }
+        .profile-top-pagination .pager { margin: 0; }
+        .profile-top-pagination .pager li > a,
+        .profile-top-pagination .pager li > span { border-radius: 4px; margin: 0 3px; }
+        .profile-table-wrap { overflow-x: auto; }
     </style>
 </head>
 <body class="">
@@ -98,45 +107,136 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
             <div class="row">
                 <div class="col-xs-12">
+                    <div class="panel panel-default profile-search-panel">
+                        <div class="panel-heading">Search my suggestions</div>
+                        <div class="panel-body">
+                            <form method="get" action="{% url 'profile' %}">
+                                <div class="input-group">
+                                    <input type="text" name="q" class="form-control" placeholder="Search by title, body, keywords, status, or file path" value="{{ profile_search_query|default:'' }}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Search</button>
+                                    </span>
+                                </div>
+                            </form>
+                            {% if is_profile_search %}
+                                <p class="profile-muted" style="margin-top: 10px;">
+                                    Showing results for "{{ profile_search_query }}".
+                                    <a href="{% url 'profile' %}">Clear search</a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">My suggested articles</div>
                         <div class="panel-body">
+                            {% if page_obj and page_obj.paginator.num_pages > 1 %}
+                                <nav class="profile-top-pagination" aria-label="Top profile pagination">
+                                    <ul class="pager">
+                                        {% if page_obj.has_previous %}
+                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; First</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>&laquo; First</span></li>
+                                            <li class="disabled"><span>&lsaquo; Previous</span></li>
+                                        {% endif %}
+
+                                        {% if page_obj.has_next %}
+                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>Next &rsaquo;</span></li>
+                                            <li class="disabled"><span>Last &raquo;</span></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            {% endif %}
+
                             {% if articles %}
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Article title</th>
-                                            <th>Status</th>
-                                            <th>Created</th>
-                                            <th>Last updated</th>
-                                            <th class="text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for article in articles %}
+                                <div class="profile-table-wrap">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    {% if article.status == 'published' %}
-                                                        <a href="{{ article.public_url }}">{{ article.title }}</a>
-                                                    {% else %}
-                                                        {{ article.title }}
-                                                    {% endif %}
-                                                    <div class="profile-muted">{{ article.wiki_path }}</div>
-                                                </td>
-                                                <td>{{ article.get_status_display }}</td>
-                                                <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
-                                                <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
-                                                <td class="text-right article-actions">
-                                                    <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a>
-                                                    <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a>
-                                                </td>
+                                                <th>Article title</th>
+                                                <th>Status</th>
+                                                <th>Created</th>
+                                                <th>Last updated</th>
+                                                <th class="text-right">Actions</th>
                                             </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {% for article in articles %}
+                                                <tr>
+                                                    <td>
+                                                        {% if article.status == 'published' %}
+                                                            <a href="{{ article.public_url }}">{{ article.title }}</a>
+                                                        {% else %}
+                                                            {{ article.title }}
+                                                        {% endif %}
+                                                        <div class="profile-muted">{{ article.wiki_path }}</div>
+                                                        {% if article.keywords %}<div class="profile-muted">Keywords: {{ article.keywords }}</div>{% endif %}
+                                                    </td>
+                                                    <td>{{ article.get_status_display }}</td>
+                                                    <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
+                                                    <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
+                                                    <td class="text-right article-actions">
+                                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a>
+                                                        <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             {% else %}
-                                <p>You have not suggested any articles yet.</p>
-                                <a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
+                                {% if is_profile_search %}
+                                    <p>No matching suggested articles found.</p>
+                                    <a class="btn btn-default" href="{% url 'profile' %}">Clear search</a>
+                                {% else %}
+                                    <p>You have not suggested any articles yet.</p>
+                                    <a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if page_obj and page_obj.paginator.num_pages > 1 %}
+                                <div class="profile-pagination-meta">
+                                    Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} article(s)
+                                    {% if is_profile_search %}matching "{{ profile_search_query }}"{% endif %}
+                                </div>
+
+                                <nav class="profile-pagination" aria-label="Bottom profile pagination">
+                                    <ul class="pagination">
+                                        {% if page_obj.has_previous %}
+                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; First</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>&laquo; First</span></li>
+                                            <li class="disabled"><span>&lsaquo; Previous</span></li>
+                                        {% endif %}
+
+                                        <li class="active"><span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+
+                                        {% if page_obj.has_next %}
+                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>Next &rsaquo;</span></li>
+                                            <li class="disabled"><span>Last &raquo;</span></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            {% elif page_obj %}
+                                <div class="profile-pagination-meta">
+                                    {% if is_profile_search %}
+                                        {{ profile_result_count }} matching article(s) found.
+                                    {% else %}
+                                        {{ total_user_article_count }} article(s) total.
+                                    {% endif %}
+                                </div>
                             {% endif %}
                         </div>
                     </div>

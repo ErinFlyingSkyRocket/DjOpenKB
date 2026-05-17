@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -283,8 +284,32 @@ def suggest(request):
 
 @login_required
 def profile(request):
-    articles = SuggestedArticle.objects.filter(owner=request.user)
-    return render(request, "profile.html", {"articles": articles})
+    search_query = request.GET.get("q", "").strip()
+
+    article_queryset = SuggestedArticle.objects.filter(owner=request.user)
+    total_user_article_count = article_queryset.count()
+
+    if search_query:
+        article_queryset = article_queryset.filter(
+            Q(title__icontains=search_query)
+            | Q(body__icontains=search_query)
+            | Q(keywords__icontains=search_query)
+            | Q(status__icontains=search_query)
+            | Q(filename__icontains=search_query)
+            | Q(wiki_path__icontains=search_query)
+        )
+
+    article_queryset = article_queryset.order_by("-updated_at", "-created_at")
+    page_obj = paginate_articles(request, article_queryset, per_page=20)
+
+    return render(request, "profile.html", {
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "profile_search_query": search_query,
+        "profile_result_count": article_queryset.count(),
+        "total_user_article_count": total_user_article_count,
+        "is_profile_search": bool(search_query),
+    })
 
 
 @login_required
