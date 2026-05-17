@@ -62,6 +62,41 @@ def build_article_markdown(article):
     )
 
 
+def prepare_article_display_markdown(raw_markdown, title, suggested=None):
+    """Remove Django-generated wrapper Markdown from public article display.
+
+    SuggestedArticle files are saved with a leading H1 title and a trailing
+    **Keywords:** metadata line so the Markdown file is self-contained.
+    The public article page already displays the title and keywords in the
+    OpenKB layout, so remove those generated lines to avoid duplicate UI text.
+    """
+    cleaned = raw_markdown.lstrip("\ufeff")
+
+    # Remove the first Markdown H1 only when it matches the article title.
+    lines = cleaned.splitlines()
+    if lines:
+        first_line = lines[0].strip()
+        if first_line.startswith("#"):
+            heading_text = first_line.lstrip("#").strip()
+            if heading_text.lower() == title.strip().lower():
+                lines = lines[1:]
+                while lines and not lines[0].strip():
+                    lines = lines[1:]
+                cleaned = "\n".join(lines)
+
+    # Remove the generated keywords line from the body. Keywords are displayed
+    # below the article details panel instead.
+    if suggested and suggested.keywords:
+        cleaned = re.sub(
+            r"\n*\*\*Keywords:\*\*\s*.*\s*$",
+            "",
+            cleaned,
+            flags=re.IGNORECASE,
+        ).rstrip()
+
+    return cleaned
+
+
 def write_article_files(article):
     """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files."""
     init_openkb_storage()
@@ -325,10 +360,11 @@ def wiki_detail(request, wiki_path):
         raise Http404("Wiki page not found")
 
     raw_markdown = file_path.read_text(encoding="utf-8", errors="ignore")
-    html_content = markdown.markdown(raw_markdown, extensions=["fenced_code", "tables", "toc"])
     suggested = get_article_metadata_by_wiki_path(wiki_path)
 
     if suggested:
+        title = suggested.title
+        display_markdown = prepare_article_display_markdown(raw_markdown, title, suggested)
         metadata = {
             "has_details": True,
             "type": "OpenKB Source",
@@ -343,22 +379,39 @@ def wiki_detail(request, wiki_path):
                 request.user == suggested.owner or request.user.is_staff
             ),
             "edit_url": reverse("edit_suggestion", kwargs={"article_id": suggested.pk}),
+            "delete_url": reverse("delete_suggestion", kwargs={"article_id": suggested.pk}),
         }
-        title = suggested.title
     else:
+        title = clean_wiki_title(file_path)
+        display_markdown = raw_markdown
         metadata = {
-            "has_details": False,
+            "has_details": True,
             "type": "OpenKB Wiki",
             "path": wiki_path,
-            "updated_at": datetime.fromtimestamp(file_path.stat().st_mtime).strftime("%Y-%m-%d %H:%M"),
+            "published_at": None,
+            "updated_at": datetime.fromtimestamp(file_path.stat().st_mtime),
+            "author": "OpenKB",
+            "author_email": "",
+            "keywords": [],
+            "permalink": request.build_absolute_uri(),
+            "can_edit": False,
+            "edit_url": "",
+            "delete_url": "",
         }
-        title = clean_wiki_title(file_path)
+
+    featured_articles = [
+        article for article in get_openkb_wiki_articles()
+        if article.get("path") != wiki_path
+    ][:5]
+
+    html_content = markdown.markdown(display_markdown, extensions=["fenced_code", "tables", "toc"])
 
     return render(request, "articles.html", {
         "title": title,
         "content": html_content,
         "raw_markdown": raw_markdown,
         "metadata": metadata,
+        "featured_articles": featured_articles,
     })
 
 

@@ -2,111 +2,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{ title }} - openKB</title>
+    <title>{{ title }}</title>
+    <meta property="og:title" content="{{ title }}">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="openKB powered knowledge repository">
+    <meta property="og:description" content="openKB powered knowledge repository">
+    <meta name="keywords" content="{% if metadata.keywords %}{{ metadata.keywords|join:', ' }}{% else %}openKB{% endif %}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ metadata.permalink }}">
 
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
     <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
     <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}">
 
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script>
+        (function (root) {
+            root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
+        }(this));
+    </script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
+    <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-tokenfield.min.js' %}"></script>
+    <script src="{% static 'javascripts/inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/codemirror.inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/highlight.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'lunr/lunr.min.js' %}"></script>
+    <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
 
     <style>
-        .article-content { background: #fff; padding: 25px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 35px; }
-        .article-content img { max-width: 100%; }
-        .openkb-path { color: #899aa6; font-size: 12px; margin-bottom: 15px; }
-        .article-details-panel .panel-body { padding: 24px 30px; }
-        .article-details-panel p { margin-bottom: 14px; }
+        .body_text img { max-width: 100%; height: auto; }
+        .body_text table { width: 100%; margin-bottom: 20px; }
+        .body_text pre { background: #f7f7f7; border: 1px solid #ddd; }
+        .metaData h5 { line-height: 1.5; }
+        .keywords { margin-top: 15px; margin-bottom: 35px; }
+        .keywordSeporator { color: #899aa6; padding: 0 6px; }
         .navbar-logout-form { display: inline; }
         .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
         .navbar-logout-button:hover { color: #333; background-color: transparent; }
-        .keyword-links { margin-top: 10px; margin-bottom: 25px; }
-        .keyword-links a { margin-right: 4px; }
+        .article-admin-actions { margin-top: 12px; }
+        .article-admin-actions .btn { margin-right: 6px; }
+
+        .openkb-ai-fab {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 9998;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 0;
+            background: #18bc9c;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            font-size: 24px;
+            line-height: 58px;
+            text-align: center;
+        }
+        .openkb-ai-fab:hover,
+        .openkb-ai-fab:focus {
+            background: #13987e;
+            color: #fff;
+            outline: none;
+        }
+        .openkb-ai-chat {
+            position: fixed;
+            right: 24px;
+            bottom: 92px;
+            z-index: 9999;
+            width: 380px;
+            max-width: calc(100vw - 48px);
+            display: none;
+            box-shadow: 0 6px 22px rgba(0,0,0,0.25);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .openkb-ai-chat.open { display: block; }
+        .openkb-ai-chat .panel { margin-bottom: 0; border: 0; }
+        .openkb-ai-chat .panel-heading { background: #2c3e50; color: #fff; border-color: #2c3e50; }
+        .openkb-ai-close { color: #fff; opacity: 0.85; background: transparent; border: 0; padding: 0; }
+        .openkb-ai-close:hover { opacity: 1; }
+        #openkbAiAnswer {
+            white-space: pre-wrap;
+            margin-top: 10px;
+            min-height: 120px;
+            max-height: 260px;
+            overflow: auto;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+            background: #f9fbfc;
+            color: #333;
+        }
+        #openkbRelatedArticles { max-height: 180px; overflow: auto; }
     </style>
 </head>
+
 <body class="show_footer">
-<nav class="navbar navbar-default navbar-static-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
-        </div>
-
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'suggest' %}">Suggest</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
-                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
-                    <li>
-                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">Logout</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</nav>
-
 <div class="container-fluid">
-    <div class="col-md-10 col-md-offset-1">
-        <h1>{{ title }}</h1>
-        <div class="openkb-path">{{ metadata.type }} / {{ metadata.path }}</div>
+    <div class="row searchBar">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                </div>
 
-        {% if metadata.has_details %}
-            <div class="panel panel-primary article-details-panel">
-                <div class="panel-heading">Article details:</div>
-                <div class="panel-body">
-                    <p><strong>Published date:</strong> {{ metadata.published_at|date:"d/m/Y g:iA" }}</p>
-                    <p><strong>Last updated:</strong> {{ metadata.updated_at|date:"d/m/Y g:iA" }} ({{ metadata.author }} - {{ metadata.author_email }})</p>
-                    <p><strong>Share article:</strong> <a href="mailto:?subject={{ title|urlencode }}&body={{ metadata.permalink|urlencode }}"><i class="fa fa-envelope"></i></a></p>
-                    <p><strong>Author:</strong> {{ metadata.author }} ({{ metadata.author_email }})</p>
-                    <p><strong>Permalink:</strong> <a href="{{ metadata.permalink }}">{{ metadata.permalink }}</a></p>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="{% url 'suggest' %}">Suggest</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'profile' %}">My Profile</a></li>
+                            {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                            <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                            <li>
+                                <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="navbar-logout-button" type="submit">Logout</button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li><a href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-                    {% if metadata.can_edit %}
-                        <p style="margin-top: 15px;">
-                            <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">Edit this article</a>
-                        </p>
-                    {% endif %}
+        <div class="">
+            <h1>How can we help?</h1>
+        </div>
+
+        <form action="{% url 'search' %}" id="search_form" method="get">
+            <div class="col-md-4 col-md-offset-4 search_bar">
+                <div class="input-group">
+                    <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="search">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-lg" id="btn_search" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </span>
+                </div>
+                <div id="searchResult" class="hidden col-lg-12">
+                    <ul class="list-group searchResultList"></ul>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+            <div class="col-md-3 col-lg-3">
+                <div class="panel panel-default" style="margin-top: 30px;">
+                    <div class="panel-heading">Featured articles</div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            {% if featured_articles %}
+                                {% for featured in featured_articles %}
+                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a></li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="list-group-item">No featured articles yet.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            {% if metadata.keywords %}
-                <div class="keyword-links">
-                    {% for keyword in metadata.keywords %}
-                        <a href="{% url 'search' %}?q={{ keyword|urlencode }}">{{ keyword }}</a>{% if not forloop.last %}|{% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endif %}
+            <div class="col-md-8 col-lg-8">
+                <h1 style="padding-bottom: 25px;padding-top: 15px;">{{ title }}</h1>
 
-        <div class="article-content">
-            {{ content|safe }}
+                <div class="body_text">
+                    {{ content|safe }}
+                </div>
+
+                <div class="panel panel-primary" style="margin-top: 35px;">
+                    <div class="panel-heading">Article details:</div>
+                    <div class="panel-body metaData">
+                        <h5 class="col-sm-12 col-lg-12">
+                            <strong>Published date:</strong>
+                            {% if metadata.published_at %}{{ metadata.published_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}
+                        </h5>
+                        <h5 class="col-sm-12 col-lg-12">
+                            <strong>Last updated:</strong>
+                            {% if metadata.updated_at %}{{ metadata.updated_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}
+                            {% if metadata.author %}
+                                <span class="text-info">
+                                    ({{ metadata.author }}{% if metadata.author_email %} - {{ metadata.author_email }}{% endif %})
+                                </span>
+                            {% endif %}
+                        </h5>
+                        <h5 class="col-sm-12 col-lg-12">
+                            <strong>Share article:</strong>&nbsp;
+                            <a href="mailto:?subject={{ title|urlencode }}&body={{ metadata.permalink|urlencode }}" target="_top"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+                        </h5>
+                        <h5 class="col-sm-12 col-lg-12">
+                            <strong>Author:</strong>
+                            <span class="text-info">{{ metadata.author }}{% if metadata.author_email %} ({{ metadata.author_email }}){% endif %}</span>
+                        </h5>
+                        <h5 class="col-sm-12 col-lg-12">
+                            <strong>Permalink:</strong>
+                            <a href="{{ metadata.permalink }}" target="_blank">{{ metadata.permalink }}</a>
+                        </h5>
+
+                        {% if metadata.can_edit %}
+                            <div class="col-sm-12 col-lg-12 article-admin-actions">
+                                <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">Edit article</a>
+                                <a class="btn btn-xs btn-danger" href="{{ metadata.delete_url }}">Delete article</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if metadata.keywords %}
+                    <h5 class="keywords">
+                        {% for keyword in metadata.keywords %}
+                            <a href="{% url 'search' %}?q={{ keyword|urlencode }}">{{ keyword }}</a>
+                            <span class="keywordSeporator">|</span>
+                        {% endfor %}
+                    </h5>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
+
+
+<div id="openkbAiChat" class="openkb-ai-chat" aria-hidden="true">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <strong>Ask OpenKB AI</strong>
+            <button id="openkbAiClose" class="pull-right openkb-ai-close" type="button" aria-label="Minimise OpenKB AI">
+                <i class="fa fa-minus"></i>
+            </button>
+        </div>
+        <div class="panel-body">
+            <form id="openkbAiForm">
+                <div class="input-group">
+                    <input type="text" id="openkbAiQuestion" name="question" class="form-control" placeholder="Ask OpenKB AI">
+                    <span class="input-group-btn"><button class="btn btn-success" type="submit">Ask</button></span>
+                </div>
+            </form>
+            <div style="margin-top: 15px;">
+                <strong>Answer:</strong>
+                <pre id="openkbAiAnswer">No answer yet.</pre>
+                <div id="openkbRelatedArticlesWrapper" style="display: none; margin-top: 15px;">
+                    <strong>Related articles:</strong>
+                    <ul id="openkbRelatedArticles" class="list-group" style="margin-top: 10px;"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button id="openkbAiToggle" class="openkb-ai-fab" type="button" aria-label="Open OpenKB AI chat">
+    <i class="fa fa-comments"></i>
+</button>
 
 <input type="hidden" value="" id="app_context">
 <input type="hidden" value="true" id="blank_links">
 <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
 <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
 <div id="notify_message"></div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted text-center">Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p>
+    </div>
+</footer>
+
+<script>
+    const openkbAiForm = document.getElementById("openkbAiForm");
+    const openkbAiQuestion = document.getElementById("openkbAiQuestion");
+    const openkbAiAnswer = document.getElementById("openkbAiAnswer");
+    const openkbRelatedArticlesWrapper = document.getElementById("openkbRelatedArticlesWrapper");
+    const openkbRelatedArticles = document.getElementById("openkbRelatedArticles");
+    const openkbAiChat = document.getElementById("openkbAiChat");
+    const openkbAiToggle = document.getElementById("openkbAiToggle");
+    const openkbAiClose = document.getElementById("openkbAiClose");
+
+    function setOpenKbAiChat(open) {
+        openkbAiChat.classList.toggle("open", open);
+        openkbAiChat.setAttribute("aria-hidden", open ? "false" : "true");
+        if (open) {
+            setTimeout(function() { openkbAiQuestion.focus(); }, 100);
+        }
+    }
+
+    openkbAiToggle.addEventListener("click", function() {
+        setOpenKbAiChat(!openkbAiChat.classList.contains("open"));
+    });
+
+    openkbAiClose.addEventListener("click", function() {
+        setOpenKbAiChat(false);
+    });
+
+    function renderRelatedArticles(articles) {
+        openkbRelatedArticles.innerHTML = "";
+        if (!articles || articles.length === 0) {
+            openkbRelatedArticlesWrapper.style.display = "none";
+            return;
+        }
+
+        articles.forEach(function(article) {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+
+            const title = document.createElement("a");
+            title.href = article.url;
+            title.textContent = article.title;
+
+            const meta = document.createElement("div");
+            meta.className = "openkb-path";
+            meta.textContent = article.type + " / " + article.path;
+
+            li.appendChild(title);
+            li.appendChild(meta);
+            openkbRelatedArticles.appendChild(li);
+        });
+
+        openkbRelatedArticlesWrapper.style.display = "block";
+    }
+
+    openkbAiForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const question = openkbAiQuestion.value.trim();
+        if (!question) {
+            openkbAiAnswer.textContent = "Please type a question first.";
+            renderRelatedArticles([]);
+            return;
+        }
+
+        openkbAiAnswer.textContent = "Asking OpenKB AI...";
+        renderRelatedArticles([]);
+
+        const formData = new FormData();
+        formData.append("question", question);
+
+        try {
+            const response = await fetch("{% url 'ask_openkb_ai' %}", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+
+            openkbAiAnswer.textContent = data.answer || data.error || "Something went wrong.";
+            renderRelatedArticles(data.related_articles || []);
+        } catch (error) {
+            openkbAiAnswer.textContent = "Request failed. Check Django terminal logs.";
+            renderRelatedArticles([]);
+        }
+    });
+</script>
 </body>
 </html>
