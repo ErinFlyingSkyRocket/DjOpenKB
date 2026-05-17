@@ -2,33 +2,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>My Profile - openKB</title>
+    <title>My Profile</title>
+    <meta property="og:title" content="My Profile" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
+    <meta name="description" content="Powered by openKB">
+    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="keywords" content="openKB">
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="{% static 'logo.png' %}" />
+    <meta property="og:url" content="" />
+    <link rel="canonical" href="#" />
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
-    <link rel="icon" href="{% static 'favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jasny-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script>
+(function (root) {
+/* -- Data -- */
+root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
+}(this));
+    </script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
+    <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-tokenfield.min.js' %}"></script>
+    <script src="{% static 'javascripts/inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/codemirror.inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/highlight.min.js' %}"></script>
+    <script src="{% static 'javascripts/loadingoverlay.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'javascripts/jasny-bootstrap.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'lunr/lunr.js' %}"></script>
+    <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
+    <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>.navbar-logout-form{display:inline}.navbar-logout-button{background:transparent;border:0;padding:15px;line-height:20px;color:#777}.profile-meta{color:#899aa6;font-size:12px}.article-actions form{display:inline}</style>
+    <style>
+        .navbar-logout-form { display: inline; }
+        .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
+        .navbar-logout-button:hover { color: #333; background-color: transparent; }
+        .profile-muted { color: #899aa6; font-size: 12px; }
+        .article-actions a { margin-right: 4px; }
+    </style>
 </head>
-<body class="show_footer">
-<nav class="navbar navbar-default navbar-static-top"><div class="container-fluid"><div class="navbar-header"><button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a></div><div id="navbar" class="navbar-collapse collapse"><ul class="nav navbar-nav navbar-right"><li><a href="{% url 'home' %}">Home</a></li><li><a href="{% url 'suggest' %}">Suggest</a></li><li><a href="{% url 'profile' %}">My Profile</a></li>{% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}<li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li><li><form class="navbar-logout-form" method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="navbar-logout-button" type="submit">Logout</button></form></li></ul></div></div></nav>
-<div class="container-fluid"><div class="col-md-10 col-md-offset-1">
-    <div class="row"><div class="col-md-8"><h2>My Profile</h2><p class="profile-meta">Private management page for your own suggested OpenKB articles.</p></div><div class="col-md-4 text-right" style="padding-top:20px"><a class="btn btn-success" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> Create suggestion</a></div></div>
-    <div class="panel panel-default"><div class="panel-heading">My suggested articles</div><div class="panel-body">
-        {% if articles %}
-            <table class="table table-striped table-hover">
-                <thead><tr><th>Title</th><th>Status</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead>
-                <tbody>{% for article in articles %}<tr><td><a href="{{ article.public_url }}">{{ article.title }}</a><div class="profile-meta">{{ article.wiki_path }}</div></td><td>{{ article.get_status_display }}</td><td>{{ article.created_at|date:"d/m/Y g:iA" }}</td><td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td><td class="article-actions"><a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a> <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a></td></tr>{% endfor %}</tbody>
-            </table>
-        {% else %}
-            <p>You have not suggested any articles yet.</p><a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
-        {% endif %}
-    </div></div>
-</div></div>
-<input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}"><input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}"><input type="hidden" value="" id="app_context"><input type="hidden" value="true" id="blank_links"><div id="notify_message"></div>
-</body></html>
+<body class="">
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'suggest' %}">Suggest</a></li>
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    <li>
+                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="navbar-logout-button" type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                    <h2>My Profile</h2>
+                    <p class="profile-muted">Manage your own suggested Knowledge Repository articles.</p>
+                </div>
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 text-right">
+                    <label>&nbsp;</label><br/>
+                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> Suggest article</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">My suggested articles</div>
+                        <div class="panel-body">
+                            {% if articles %}
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Article title</th>
+                                            <th>Status</th>
+                                            <th>Created</th>
+                                            <th>Last updated</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for article in articles %}
+                                            <tr>
+                                                <td>
+                                                    {% if article.status == 'published' %}
+                                                        <a href="{{ article.public_url }}">{{ article.title }}</a>
+                                                    {% else %}
+                                                        {{ article.title }}
+                                                    {% endif %}
+                                                    <div class="profile-muted">{{ article.wiki_path }}</div>
+                                                </td>
+                                                <td>{{ article.get_status_display }}</td>
+                                                <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
+                                                <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
+                                                <td class="text-right article-actions">
+                                                    <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a>
+                                                    <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p>You have not suggested any articles yet.</p>
+                                <a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
+    <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
+    <input type="hidden" value="" id="app_context">
+    <input type="hidden" value="true" id="blank_links">
+    <div id="notify_message"></div>
+</body>
+</html>

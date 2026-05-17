@@ -231,7 +231,11 @@ def profile(request):
 
 @login_required
 def edit_suggestion(request, article_id):
-    article = get_object_or_404(SuggestedArticle, pk=article_id, owner=request.user)
+    article = get_object_or_404(SuggestedArticle, pk=article_id)
+
+    if article.owner != request.user and not request.user.is_staff:
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You do not have permission to edit this article.")
 
     if request.method == "GET":
         return render(request, "suggest_edit.html", {"article": article, "current_status": article.status})
@@ -268,7 +272,11 @@ def edit_suggestion(request, article_id):
 
 @login_required
 def delete_suggestion(request, article_id):
-    article = get_object_or_404(SuggestedArticle, pk=article_id, owner=request.user)
+    article = get_object_or_404(SuggestedArticle, pk=article_id)
+
+    if article.owner != request.user and not request.user.is_staff:
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You do not have permission to delete this article.")
 
     if request.method == "POST":
         title = article.title

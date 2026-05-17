@@ -1,79 +1,76 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Delete Suggestion - openKB</title>
-
+    <title>Delete article</title>
+    <meta property="og:title" content="Delete article" />
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Powered by openKB">
+    <meta name="keywords" content="openKB">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <style>
+        .navbar-logout-form { display: inline; }
+        .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
+    </style>
 </head>
+<body class="">
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'suggest' %}">Suggest</a></li>
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    <li>
+                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="navbar-logout-button" type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<body class="show_footer">
-
-<nav class="navbar navbar-default navbar-static-top">
     <div class="container-fluid">
-
-        <div class="navbar-header">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                Knowledge Repository
-            </a>
-        </div>
-
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                <a href="{% url 'profile' %}">My Profile</a>
-            </li>
-        </ul>
-
-    </div>
-</nav>
-
-<div class="container-fluid">
-    <div class="col-md-6 col-md-offset-3">
-
-        <div class="panel panel-danger" style="margin-top: 50px;">
-
-            <div class="panel-heading">
-                Delete suggested article
+        <div class="col-md-6 col-md-offset-3" style="padding-top: 50px;">
+            <div class="panel panel-danger">
+                <div class="panel-heading">Delete suggested article</div>
+                <div class="panel-body">
+                    <p>Are you sure you want to delete <strong>{{ article.title }}</strong>?</p>
+                    <p class="text-muted">This removes the profile record and deletes the Markdown files from OpenKB raw/source storage.</p>
+                    <form method="post" action="{% url 'delete_suggestion' article.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                        <a class="btn btn-default" href="{% url 'profile' %}">Cancel</a>
+                    </form>
+                </div>
             </div>
-
-            <div class="panel-body">
-
-                <p>
-                    Are you sure you want to delete
-                    <strong>{{ article.title }}</strong>?
-                </p>
-
-                <p class="text-muted">
-                    This removes the private profile record and deletes the
-                    Markdown files from OpenKB raw/source storage.
-                </p>
-
-                <form method="post" action="{% url 'delete_suggestion' article.id %}">
-                    {% csrf_token %}
-
-                    <button class="btn btn-danger" type="submit">
-                        Delete
-                    </button>
-
-                    <a class="btn btn-default" href="{% url 'profile' %}">
-                        Cancel
-                    </a>
-                </form>
-
-            </div>
-
         </div>
-
     </div>
-</div>
 
+    <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
+    <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
+    <input type="hidden" value="" id="app_context">
+    <input type="hidden" value="true" id="blank_links">
+    <div id="notify_message"></div>
 </body>
 </html>

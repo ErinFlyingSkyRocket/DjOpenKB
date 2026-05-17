@@ -122,6 +122,7 @@ $(document).ready(function(){
         var simplemde = new SimpleMDE({
             element: $('#editor')[0],
             spellChecker: config.enable_spellchecker,
+            forceSync: true,
             toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'table', 'horizontal-rule', 'code', 'guide']
         });
 
@@ -190,9 +191,17 @@ $(document).ready(function(){
                 $('#btnVersionMenu').trigger('click');
                 $('#frm_kb_edit_reason').focus();
             }else{
+                if(typeof simplemde !== 'undefined' && simplemde && simplemde.codemirror){
+                    simplemde.codemirror.save();
+                    $('#editor').val(simplemde.value());
+                }
                 $('#edit_form').submit();
             }
         }else{
+            if(typeof simplemde !== 'undefined' && simplemde && simplemde.codemirror){
+                simplemde.codemirror.save();
+                $('#editor').val(simplemde.value());
+            }
             $('#edit_form').submit();
         }
     });
