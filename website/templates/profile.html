@@ -60,6 +60,40 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .profile-top-pagination .pager li > a,
         .profile-top-pagination .pager li > span { border-radius: 4px; margin: 0 3px; }
         .profile-table-wrap { overflow-x: auto; }
+        .profile-account-panel { margin-top: 10px; margin-bottom: 14px; }
+        .profile-account-panel .panel-heading { font-weight: 600; }
+        .profile-account-summary { color: #899aa6; font-size: 12px; margin-bottom: 12px; }
+        .profile-account-row { padding: 9px 0; border-bottom: 1px solid #eef2f4; }
+        .profile-account-row:last-child { border-bottom: 0; }
+        .profile-account-label { font-weight: 700; display: inline-block; min-width: 135px; }
+        .profile-account-value { display: inline-block; margin-right: 8px; }
+        .profile-account-edit { margin-top: 10px; padding: 12px; background: #f8fafb; border: 1px solid #e5eaee; border-radius: 3px; }
+        .profile-account-actions { margin-top: 14px; }
+        .profile-account-actions .btn { margin-right: 5px; }
+        .profile-readonly-note { color: #899aa6; font-size: 12px; margin-top: 5px; }
+        .profile-suggest-action { margin-bottom: 15px; text-align: right; }
+        .profile-suggest-side {
+            min-height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding-bottom: 14px;
+        }
+        .password-policy-box {
+            background: #f8fafb;
+            border: 1px solid #e5eaee;
+            border-radius: 3px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        .password-policy-box ul { padding-left: 18px; margin-bottom: 0; }
+        .password-rule { color: #c0392b; }
+        .password-rule.valid { color: #18bc9c; }
+        .password-match-message { margin-top: 5px; font-size: 12px; }
+        @media (max-width: 767px) {
+            .profile-suggest-side { min-height: auto; display: block; text-align: left; padding-bottom: 15px; }
+        }
     </style>
 </head>
 <body class="">
@@ -95,12 +129,111 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <div class="container-fluid">
         <div class="col-md-10 col-md-offset-1">
             <div class="row">
-                <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                <div class="col-xs-12">
                     <h2>My Profile</h2>
                     <p class="profile-muted">Manage your own suggested Knowledge Repository articles.</p>
                 </div>
-                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 text-right">
-                    <label>&nbsp;</label><br/>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7">
+                    <div class="panel panel-default profile-account-panel">
+                        <div class="panel-heading">Account summary</div>
+                        <div class="panel-body">
+                            <p class="profile-account-summary">
+                                Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here.
+                            </p>
+
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">Username:</span>
+                                <span class="profile-account-value">{{ user.username }}</span>
+                                <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox" aria-expanded="false" aria-controls="editUsernameBox">
+                                    Edit
+                                </button>
+
+                                <div class="collapse profile-account-edit" id="editUsernameBox">
+                                    <form method="post" action="{% url 'update_profile' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="profile_action" value="username">
+                                        <div class="form-group">
+                                            <label>New username</label>
+                                            <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+                                        </div>
+                                        {% if can_confirm_profile_changes %}
+                                            <div class="form-group">
+                                                <label>Confirm password</label>
+                                                <input type="password" name="current_password" class="form-control" required>
+                                            </div>
+                                        {% endif %}
+                                        <button class="btn btn-primary" type="submit">Save username</button>
+                                        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">Email:</span>
+                                <span class="profile-account-value">
+                                    {% if user.email %}{{ user.email }}{% else %}<span class="profile-muted">No email set</span>{% endif %}
+                                </span>
+
+                                {% if user_is_ldap_managed %}
+                                    <span class="profile-muted">LDAP-managed, cannot edit</span>
+                                {% else %}
+                                    <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox" aria-expanded="false" aria-controls="editEmailBox">
+                                        Edit
+                                    </button>
+
+                                    <div class="collapse profile-account-edit" id="editEmailBox">
+                                        <form method="post" action="{% url 'update_profile' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="profile_action" value="email">
+                                            <div class="form-group">
+                                                <label>New email</label>
+                                                <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                                            </div>
+                                            {% if can_confirm_profile_changes %}
+                                                <div class="form-group">
+                                                    <label>Confirm password</label>
+                                                    <input type="password" name="current_password" class="form-control" required>
+                                                </div>
+                                            {% endif %}
+                                            <button class="btn btn-primary" type="submit">Save email</button>
+                                            <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox">Cancel</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">Account type:</span>
+                                <span class="profile-account-value">
+                                    {% if user_is_ldap_managed %}LDAP-managed account{% elif user.is_staff %}Django staff/admin account{% else %}Django local account{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">Own suggested articles:</span>
+                                <span class="profile-account-value">{{ total_user_article_count }}</span>
+                            </div>
+
+                            <div class="profile-account-actions">
+                                {% if can_change_local_password %}
+                                    <button class="btn btn-default" type="button" data-toggle="modal" data-target="#changePasswordModal">
+                                        Change password
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-default" type="button" disabled title="LDAP passwords are changed through the company password system.">
+                                        Change password
+                                    </button>
+                                    <span class="profile-readonly-note">LDAP passwords are changed through the company password system.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 profile-suggest-side">
                     <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> Suggest article</a>
                 </div>
             </div>
@@ -245,10 +378,120 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         </div>
     </div>
 
+
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" action="{% url 'change_password' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="changePasswordModalLabel">Change password</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Old password</label>
+                            <input type="password" name="old_password" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New password</label>
+                            <input type="password" name="new_password1" id="newPassword1" class="form-control" autocomplete="new-password" required>
+                            <div class="password-policy-box">
+                                <strong>Password requirements:</strong>
+                                <ul>
+                                    <li id="ruleLength" class="password-rule">At least 12 characters</li>
+                                    <li id="ruleUpper" class="password-rule">At least 1 uppercase letter</li>
+                                    <li id="ruleLower" class="password-rule">At least 1 lowercase letter</li>
+                                    <li id="ruleNumber" class="password-rule">At least 1 number</li>
+                                    <li id="ruleSpecial" class="password-rule">At least 1 special character</li>
+                                    <li id="ruleUsername" class="password-rule">Must not contain your username or email name</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm new password</label>
+                            <input type="password" name="new_password2" id="newPassword2" class="form-control" autocomplete="new-password" required>
+                            <div id="passwordMatchMessage" class="password-match-message profile-muted">Re-type the new password to confirm.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
     <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
     <input type="hidden" value="" id="app_context">
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
+
+    <script>
+        (function () {
+            const passwordInput = document.getElementById("newPassword1");
+            const confirmInput = document.getElementById("newPassword2");
+            const matchMessage = document.getElementById("passwordMatchMessage");
+
+            if (!passwordInput || !confirmInput) {
+                return;
+            }
+
+            const username = "{{ user.username|escapejs }}".toLowerCase();
+            const email = "{{ user.email|escapejs }}".toLowerCase();
+            const emailName = email.indexOf("@") > -1 ? email.split("@")[0] : email;
+
+            const rules = {
+                ruleLength: function (value) { return value.length >= 12; },
+                ruleUpper: function (value) { return /[A-Z]/.test(value); },
+                ruleLower: function (value) { return /[a-z]/.test(value); },
+                ruleNumber: function (value) { return /[0-9]/.test(value); },
+                ruleSpecial: function (value) { return /[^A-Za-z0-9]/.test(value); },
+                ruleUsername: function (value) {
+                    const lowerValue = value.toLowerCase();
+                    if (username && username.length >= 3 && lowerValue.indexOf(username) !== -1) {
+                        return false;
+                    }
+                    if (emailName && emailName.length >= 3 && lowerValue.indexOf(emailName) !== -1) {
+                        return false;
+                    }
+                    return true;
+                }
+            };
+
+            function setRuleState(id, valid) {
+                const element = document.getElementById(id);
+                if (!element) {
+                    return;
+                }
+                element.classList.toggle("valid", valid);
+                element.innerHTML = (valid ? "&#10003; " : "&#10007; ") + element.textContent.replace(/^✓\s*|^✗\s*/, "");
+            }
+
+            function updatePasswordChecks() {
+                const value = passwordInput.value || "";
+                Object.keys(rules).forEach(function (ruleId) {
+                    setRuleState(ruleId, rules[ruleId](value));
+                });
+
+                if (!confirmInput.value) {
+                    matchMessage.className = "password-match-message profile-muted";
+                    matchMessage.textContent = "Re-type the new password to confirm.";
+                } else if (value === confirmInput.value) {
+                    matchMessage.className = "password-match-message text-success";
+                    matchMessage.textContent = "Passwords match.";
+                } else {
+                    matchMessage.className = "password-match-message text-danger";
+                    matchMessage.textContent = "Passwords do not match yet.";
+                }
+            }
+
+            passwordInput.addEventListener("input", updatePasswordChecks);
+            confirmInput.addEventListener("input", updatePasswordChecks);
+            updatePasswordChecks();
+        }());
+    </script>
 </body>
 </html>

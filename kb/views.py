@@ -8,8 +8,11 @@ from pathlib import Path
 import markdown
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.http import Http404, JsonResponse
@@ -206,6 +209,28 @@ def get_openkb_wiki_articles():
     return articles
 
 
+
+
+def is_ldap_managed_user(user):
+    """Return True when the account should be treated as LDAP-managed.
+
+    LDAP-created users commonly have an unusable local Django password. The
+    email/username domain check keeps the UI sensible for company LDAP accounts
+    even if the backend stores a local password differently.
+    """
+    username = (user.get_username() or "").lower()
+    email = (user.email or "").lower()
+    return (
+        not user.has_usable_password()
+        or username.endswith("@nextlabs.com")
+        or email.endswith("@nextlabs.com")
+    )
+
+
+def format_profile_display_name(user):
+    full_name = user.get_full_name().strip()
+    return full_name or user.get_username()
+
 class OpenKBLoginView(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = True
@@ -285,6 +310,7 @@ def suggest(request):
 @login_required
 def profile(request):
     search_query = request.GET.get("q", "").strip()
+    user_is_ldap_managed = is_ldap_managed_user(request.user)
 
     article_queryset = SuggestedArticle.objects.filter(owner=request.user)
     total_user_article_count = article_queryset.count()
@@ -309,7 +335,134 @@ def profile(request):
         "profile_result_count": article_queryset.count(),
         "total_user_article_count": total_user_article_count,
         "is_profile_search": bool(search_query),
+        "profile_display_name": format_profile_display_name(request.user),
+        "user_is_ldap_managed": user_is_ldap_managed,
+        "can_change_local_password": request.user.has_usable_password() and not user_is_ldap_managed,
+        "can_confirm_profile_changes": request.user.has_usable_password(),
     })
+
+
+@login_required
+def update_profile(request):
+    if request.method != "POST":
+        return redirect("profile")
+
+    User = get_user_model()
+    user = request.user
+    user_is_ldap_managed = is_ldap_managed_user(user)
+    profile_action = request.POST.get("profile_action", "").strip()
+
+    # For Django local accounts, require the current password before changing
+    # username/email. LDAP users normally do not have a local usable password,
+    # so LDAP-managed fields are protected by backend rules instead.
+    if user.has_usable_password():
+        current_password = request.POST.get("current_password", "")
+        if not user.check_password(current_password):
+            messages.error(request, "Confirm password is incorrect.")
+            return redirect("profile")
+
+    if profile_action == "username":
+        username = request.POST.get("username", "").strip()
+        if not username:
+            messages.error(request, "Username cannot be empty.")
+            return redirect("profile")
+
+        username_exists = User.objects.exclude(pk=user.pk).filter(username__iexact=username).exists()
+        if username_exists:
+            messages.error(request, "That username is already used by another account.")
+            return redirect("profile")
+
+        user.username = username
+        user.save(update_fields=["username"])
+        messages.success(request, "Username updated successfully.")
+        return redirect("profile")
+
+    if profile_action == "email":
+        if user_is_ldap_managed:
+            messages.error(request, "LDAP email is managed by LDAP/AD and cannot be changed here.")
+            return redirect("profile")
+
+        email = request.POST.get("email", "").strip()
+        user.email = email
+        user.save(update_fields=["email"])
+        messages.success(request, "Email updated successfully.")
+        return redirect("profile")
+
+    messages.error(request, "Invalid profile update request.")
+    return redirect("profile")
+
+
+
+def validate_profile_password_policy(password, user):
+    """Return password policy issues for the profile change-password form.
+
+    This enforces the local project policy used for Django-managed accounts:
+    minimum length plus uppercase, lowercase, number, and special character.
+    LDAP-managed users should change passwords through LDAP/AD instead.
+    """
+    issues = []
+
+    if len(password) < 12:
+        issues.append("Password must be at least 12 characters long.")
+    if not re.search(r"[A-Z]", password):
+        issues.append("Password must include at least 1 uppercase letter.")
+    if not re.search(r"[a-z]", password):
+        issues.append("Password must include at least 1 lowercase letter.")
+    if not re.search(r"[0-9]", password):
+        issues.append("Password must include at least 1 number.")
+    if not re.search(r"[^A-Za-z0-9]", password):
+        issues.append("Password must include at least 1 special character.")
+
+    lower_password = password.lower()
+    username = (user.get_username() or "").lower()
+    email_name = (user.email or "").split("@")[0].lower()
+
+    if username and len(username) >= 3 and username in lower_password:
+        issues.append("Password must not contain your username.")
+    if email_name and len(email_name) >= 3 and email_name in lower_password:
+        issues.append("Password must not contain the name part of your email address.")
+
+    return issues
+
+@login_required
+def change_password(request):
+    if request.method != "POST":
+        return redirect("profile")
+
+    user = request.user
+
+    if is_ldap_managed_user(user) or not user.has_usable_password():
+        messages.error(request, "This account is managed by LDAP. Please change your password through the company password system.")
+        return redirect("profile")
+
+    old_password = request.POST.get("old_password", "")
+    new_password1 = request.POST.get("new_password1", "")
+    new_password2 = request.POST.get("new_password2", "")
+
+    if not user.check_password(old_password):
+        messages.error(request, "Old password is incorrect.")
+        return redirect("profile")
+
+    if new_password1 != new_password2:
+        messages.error(request, "New password and confirm password do not match.")
+        return redirect("profile")
+
+    policy_issues = validate_profile_password_policy(new_password1, user)
+    if policy_issues:
+        messages.error(request, " ".join(policy_issues))
+        return redirect("profile")
+
+    try:
+        validate_password(new_password1, user=user)
+    except ValidationError as error:
+        messages.error(request, " ".join(error.messages))
+        return redirect("profile")
+
+    user.set_password(new_password1)
+    user.save(update_fields=["password"])
+    update_session_auth_hash(request, user)
+    messages.success(request, "Password changed successfully.")
+    return redirect("profile")
 
 
 @login_required

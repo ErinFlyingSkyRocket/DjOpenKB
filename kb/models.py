@@ -61,4 +61,4 @@ class SuggestedArticle(models.Model):
 
     @property
     def author_email(self):
-        return self.owner.email or self.owner.get_username()
+        return self.owner.email or ""
