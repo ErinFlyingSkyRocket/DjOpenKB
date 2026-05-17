@@ -468,18 +468,32 @@ $(document).on('click', '.file_delete_confirm', function(e){
 
 // show notification popup
 function show_notification(msg, type, reload_page){
-    // defaults to false
     reload_page = reload_page || false;
 
+    if(!msg){
+        return;
+    }
+
+    $('#notify_message').stop(true, true);
     $('#notify_message').removeClass();
     $('#notify_message').addClass('notify_message-' + type);
-    $('#notify_message').html(msg);
-    $('#notify_message').slideDown(600).delay(1200).slideUp(600, function(){
+    $('#notify_message').html(
+        '<span class="notify-message-text">' + msg + '</span>' +
+        '<button type="button" class="notify-message-close" aria-label="Close">&times;</button>'
+    );
+
+    $('#notify_message').css('display', 'none');
+    $('#notify_message').slideDown(300).delay(5000).slideUp(300, function(){
         if(reload_page === true){
             location.reload();
         }
     });
 }
+
+$(document).on('click', '.notify-message-close', function(e){
+    e.preventDefault();
+    $('#notify_message').stop(true, true).slideUp(200);
+});
 
 function search_form(id){
     $('form#' + id).submit();

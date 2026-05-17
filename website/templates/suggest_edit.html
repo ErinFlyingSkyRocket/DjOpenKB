@@ -1,0 +1,297 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Suggestion - openKB</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
+    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+
+    <style>
+        .suggest-preview {
+            min-height: 390px;
+            height: auto;
+            overflow: auto;
+            background: #fff;
+        }
+
+        .CodeMirror {
+            min-height: 360px;
+        }
+
+        .navbar-logout-form {
+            display: inline;
+        }
+
+        .navbar-logout-button {
+            background: transparent;
+            border: 0;
+            padding: 15px;
+            line-height: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body class="show_footer">
+
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container-fluid">
+
+        <div class="navbar-header">
+            <button
+                type="button"
+                class="navbar-toggle collapsed"
+                data-toggle="collapse"
+                data-target="#navbar"
+            >
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <a class="navbar-brand" href="{% url 'home' %}">
+                Knowledge Repository
+            </a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+
+                <li>
+                    <a href="{% url 'home' %}">Home</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'suggest' %}">Suggest</a>
+                </li>
+
+                <li>
+                    <a href="{% url 'profile' %}">My Profile</a>
+                </li>
+
+                {% if user.is_staff %}
+                    <li>
+                        <a href="/admin/">Admin</a>
+                    </li>
+                {% endif %}
+
+                <li>
+                    <form
+                        class="navbar-logout-form"
+                        method="post"
+                        action="{% url 'logout' %}"
+                    >
+                        {% csrf_token %}
+                        <button class="navbar-logout-button" type="submit">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="col-md-10 col-md-offset-1">
+
+        <h2>Edit Suggested Article</h2>
+
+        <p class="text-muted">
+            Only you and Django admins can manage this record.
+            Public users can only view the published wiki page.
+        </p>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'edit_suggestion' article.id %}">
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-8">
+                    <div class="form-group">
+                        <label>Article title *</label>
+
+                        <input
+                            type="text"
+                            name="frm_kb_title"
+                            class="form-control"
+                            minlength="5"
+                            maxlength="200"
+                            value="{{ title_value|default:article.title }}"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-2">
+                    <div class="form-group">
+                        <label>Status</label>
+
+                        <select name="status" class="form-control">
+                            <option
+                                value="published"
+                                {% if current_status == 'published' %}selected{% endif %}
+                            >
+                                Published
+                            </option>
+
+                            <option
+                                value="draft"
+                                {% if current_status == 'draft' %}selected{% endif %}
+                            >
+                                Draft
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-2 text-right">
+                    <label>&nbsp;</label>
+                    <br>
+
+                    <button class="btn btn-success" type="submit">
+                        Save
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group">
+                        <label>Article body Markdown *</label>
+
+                        <textarea
+                            id="editor"
+                            class="form-control"
+                            minlength="5"
+                            name="frm_kb_body"
+                            required
+                        >{{ body_value|default:article.body }}</textarea>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6">
+                    <div class="form-group">
+                        <label>Preview</label>
+
+                        <div
+                            id="preview"
+                            class="form-control suggest-preview"
+                        ></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label>Keywords</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="frm_kb_keywords"
+                            value="{{ keywords_value|default:article.keywords }}"
+                            placeholder="Example: SLA, priority, VPN"
+                        >
+                    </div>
+                </div>
+
+            </div>
+
+            <a class="btn btn-default" href="{% url 'profile' %}">
+                Cancel
+            </a>
+        </form>
+
+    </div>
+</div>
+
+<input
+    type="hidden"
+    id="input_notify_message"
+    value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}"
+>
+
+<input
+    type="hidden"
+    id="input_notify_message_type"
+    value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}"
+>
+
+<input type="hidden" value="" id="app_context">
+<input type="hidden" value="true" id="blank_links">
+
+<div id="notify_message"></div>
+
+<script>
+    const editorElement = document.getElementById("editor");
+    const previewElement = document.getElementById("preview");
+
+    const md = window.markdownit
+        ? window.markdownit({
+            html: false,
+            linkify: true,
+            typographer: true
+        })
+        : null;
+
+    let simplemde = null;
+
+    function renderPreview(value) {
+        if (md) {
+            previewElement.innerHTML = md.render(value || "");
+        } else {
+            previewElement.textContent = value || "";
+        }
+    }
+
+    if (window.SimpleMDE) {
+        simplemde = new SimpleMDE({
+            element: editorElement,
+            spellChecker: false,
+            status: false
+        });
+
+        simplemde.codemirror.on("change", function () {
+            renderPreview(simplemde.value());
+        });
+
+        renderPreview(simplemde.value());
+    } else {
+        editorElement.addEventListener("input", function () {
+            renderPreview(editorElement.value);
+        });
+
+        renderPreview(editorElement.value);
+    }
+</script>
+
+</body>
+</html>

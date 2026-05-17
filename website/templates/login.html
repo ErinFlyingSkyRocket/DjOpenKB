@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta property="og:title" content="Login" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Powered by openKB">
+    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="keywords" content="openKB">
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="{% static 'logo.png' %}" />
+    <meta property="og:url" content="" />
+    <link rel="canonical" href="#" />
+
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jasny-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script>
+        (function (root) {
+            root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
+        }(this));
+    </script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
+    <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-tokenfield.min.js' %}"></script>
+    <script src="{% static 'javascripts/inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/codemirror.inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/highlight.min.js' %}"></script>
+    <script src="{% static 'javascripts/loadingoverlay.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'javascripts/jasny-bootstrap.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'lunr/lunr.min.js' %}"></script>
+    <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
+    <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+</head>
+<body class="show_footer">
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'suggest' %}">Suggest</a></li>
+                <li><a href="{% url 'login' %}">Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 100px">
+        <form class="form-signin" action="{% url 'login' %}" method="post" role="form" data-toggle="validator">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <h2 class="form-signin-heading">Please sign in</h2>
+
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    Invalid username/email or password.
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="email address" value="{{ form.username.value|default:'' }}" required autofocus>
+                <p class="help-block" style="font-size: 12px; margin-bottom: 0;">Use LDAP email or a Django local username.</p>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="Password" value="" required>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+    </div>
+</div>
+
+<input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
+<input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
+<input type="hidden" value="" id="app_context">
+<input type="hidden" value="true" id="blank_links">
+<div id="notify_message"></div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Powered by <a href="http://openkb.mrvautin.com/" target="_blank">openKB</a></p>
+    </div>
+</footer>
+</body>
+</html>

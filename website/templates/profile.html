@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Profile - openKB</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <style>.navbar-logout-form{display:inline}.navbar-logout-button{background:transparent;border:0;padding:15px;line-height:20px;color:#777}.profile-meta{color:#899aa6;font-size:12px}.article-actions form{display:inline}</style>
+</head>
+<body class="show_footer">
+<nav class="navbar navbar-default navbar-static-top"><div class="container-fluid"><div class="navbar-header"><button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a></div><div id="navbar" class="navbar-collapse collapse"><ul class="nav navbar-nav navbar-right"><li><a href="{% url 'home' %}">Home</a></li><li><a href="{% url 'suggest' %}">Suggest</a></li><li><a href="{% url 'profile' %}">My Profile</a></li>{% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}<li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li><li><form class="navbar-logout-form" method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="navbar-logout-button" type="submit">Logout</button></form></li></ul></div></div></nav>
+<div class="container-fluid"><div class="col-md-10 col-md-offset-1">
+    <div class="row"><div class="col-md-8"><h2>My Profile</h2><p class="profile-meta">Private management page for your own suggested OpenKB articles.</p></div><div class="col-md-4 text-right" style="padding-top:20px"><a class="btn btn-success" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> Create suggestion</a></div></div>
+    <div class="panel panel-default"><div class="panel-heading">My suggested articles</div><div class="panel-body">
+        {% if articles %}
+            <table class="table table-striped table-hover">
+                <thead><tr><th>Title</th><th>Status</th><th>Created</th><th>Updated</th><th>Actions</th></tr></thead>
+                <tbody>{% for article in articles %}<tr><td><a href="{{ article.public_url }}">{{ article.title }}</a><div class="profile-meta">{{ article.wiki_path }}</div></td><td>{{ article.get_status_display }}</td><td>{{ article.created_at|date:"d/m/Y g:iA" }}</td><td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td><td class="article-actions"><a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a> <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a></td></tr>{% endfor %}</tbody>
+            </table>
+        {% else %}
+            <p>You have not suggested any articles yet.</p><a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
+        {% endif %}
+    </div></div>
+</div></div>
+<input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}"><input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}"><input type="hidden" value="" id="app_context"><input type="hidden" value="true" id="blank_links"><div id="notify_message"></div>
+</body></html>

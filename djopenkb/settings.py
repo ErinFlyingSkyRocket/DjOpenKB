@@ -129,7 +129,7 @@ DATABASES = {
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/login/"
+LOGOUT_REDIRECT_URL = "/"
 
 LDAP_ENABLED = os.getenv("LDAP_ENABLED", "false").lower() == "true"
 
@@ -146,6 +146,7 @@ if LDAP_ENABLED:
 
     AUTHENTICATION_BACKENDS = [
         "kb.backends.NextLabsLDAPBackend",
+        "kb.backends.EmailOrUsernameModelBackend",
         "django.contrib.auth.backends.ModelBackend",
     ]
 
@@ -180,6 +181,7 @@ if LDAP_ENABLED:
 
 else:
     AUTHENTICATION_BACKENDS = [
+        "kb.backends.EmailOrUsernameModelBackend",
         "django.contrib.auth.backends.ModelBackend",
     ]
 

@@ -176,3 +176,38 @@ p.subheading {
     background: #f5f8fa;
     border-top: 1px solid #e3eaee;
 }
+
+/* DjOpenKB top notification dropdown */
+#notify_message{
+    position: fixed !important;
+    display: none;
+    z-index: 9999;
+    top: 0px !important;
+    bottom: auto !important;
+    left: 0;
+    width: 100%;
+    min-height: 50px;
+    height: auto !important;
+    padding: 12px 55px 12px 20px !important;
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+}
+.notify_message-success{ background-color: #18bc9c !important; }
+.notify_message-danger, .notify_message-error{ background-color: #e74c3c !important; }
+.notify_message-warning{ background-color: #f39c12 !important; }
+.notify_message-info{ background-color: #3498db !important; }
+.notify-message-close{
+    position: absolute;
+    right: 18px;
+    top: 8px;
+    background: transparent;
+    border: 0;
+    color: white;
+    font-size: 28px;
+    line-height: 28px;
+    font-weight: bold;
+    opacity: 0.85;
+}
+.notify-message-close:hover{ opacity: 1; }

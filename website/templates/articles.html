@@ -15,20 +15,21 @@
 
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
 
     <style>
-        .article-container { max-width: 900px; margin: 35px auto 100px auto; }
-        .article-title { margin-bottom: 10px; }
-        .article-meta { color: #899aa6; margin-bottom: 25px; }
-        .article-content { font-size: 16px; line-height: 1.7; }
-        .article-content img { max-width: 100%; height: auto; }
-        .article-content table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
-        .article-content table th, .article-content table td { border: 1px solid #ddd; padding: 8px; }
-        .article-content pre { background: #f5f8fa; border: 1px solid #e3eaee; padding: 15px; border-radius: 4px; overflow: auto; }
-        .article-content code { background: #f5f8fa; padding: 2px 4px; border-radius: 3px; }
+        .article-content { background: #fff; padding: 25px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 35px; }
+        .article-content img { max-width: 100%; }
+        .openkb-path { color: #899aa6; font-size: 12px; margin-bottom: 15px; }
+        .article-details-panel .panel-body { padding: 24px 30px; }
+        .article-details-panel p { margin-bottom: 14px; }
+        .navbar-logout-form { display: inline; }
+        .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
+        .navbar-logout-button:hover { color: #333; background-color: transparent; }
+        .keyword-links { margin-top: 10px; margin-bottom: 25px; }
+        .keyword-links a { margin-right: 4px; }
     </style>
 </head>
-
 <body class="show_footer">
 <nav class="navbar navbar-default navbar-static-top">
     <div class="container-fluid">
@@ -39,19 +40,25 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-
-            <a class="navbar-brand" href="/">Knowledge Repository</a>
+            <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/">Home</a></li>
-                <li><a href="/suggest/">Suggest</a></li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'suggest' %}">Suggest</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="/admin/">Admin</a></li>
-                    <li><a href="/accounts/logout/">Logout</a></li>
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    <li>
+                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="navbar-logout-button" type="submit">Logout</button>
+                        </form>
+                    </li>
                 {% else %}
-                    <li><a href="/accounts/login/">Login</a></li>
+                    <li><a href="{% url 'login' %}">Login</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -59,35 +66,47 @@
 </nav>
 
 <div class="container-fluid">
-    <div class="article-container">
-        <h1 class="article-title">{{ title }}</h1>
+    <div class="col-md-10 col-md-offset-1">
+        <h1>{{ title }}</h1>
+        <div class="openkb-path">{{ metadata.type }} / {{ metadata.path }}</div>
 
-        <p class="article-meta">
-            <strong>Source:</strong> openkb-data/wiki
-            {% if metadata.path %}
-                &nbsp; / <strong>Path:</strong> {{ metadata.path }}
-            {% endif %}
-            {% if metadata.updated_at %}
-                &nbsp; / <strong>Updated:</strong> {{ metadata.updated_at }}
-            {% endif %}
-        </p>
+        {% if metadata.has_details %}
+            <div class="panel panel-primary article-details-panel">
+                <div class="panel-heading">Article details:</div>
+                <div class="panel-body">
+                    <p><strong>Published date:</strong> {{ metadata.published_at|date:"d/m/Y g:iA" }}</p>
+                    <p><strong>Last updated:</strong> {{ metadata.updated_at|date:"d/m/Y g:iA" }} ({{ metadata.author }} - {{ metadata.author_email }})</p>
+                    <p><strong>Share article:</strong> <a href="mailto:?subject={{ title|urlencode }}&body={{ metadata.permalink|urlencode }}"><i class="fa fa-envelope"></i></a></p>
+                    <p><strong>Author:</strong> {{ metadata.author }} ({{ metadata.author_email }})</p>
+                    <p><strong>Permalink:</strong> <a href="{{ metadata.permalink }}">{{ metadata.permalink }}</a></p>
 
-        <div class="article-content markdown-body">
+                    {% if metadata.can_edit %}
+                        <p style="margin-top: 15px;">
+                            <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">Edit this article</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if metadata.keywords %}
+                <div class="keyword-links">
+                    {% for keyword in metadata.keywords %}
+                        <a href="{% url 'search' %}?q={{ keyword|urlencode }}">{{ keyword }}</a>{% if not forloop.last %}|{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="article-content">
             {{ content|safe }}
         </div>
-
-        <hr>
-
-        <a href="/" class="btn btn-default">
-            <i class="fa fa-arrow-left"></i> Back to OpenKB Articles
-        </a>
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <p class="text-muted text-center">Powered by local OpenKB</p>
-    </div>
-</footer>
+<input type="hidden" value="" id="app_context">
+<input type="hidden" value="true" id="blank_links">
+<input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
+<input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
+<div id="notify_message"></div>
 </body>
 </html>

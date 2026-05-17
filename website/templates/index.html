@@ -23,22 +23,11 @@
     <link rel="icon" href="{% static 'favicon.png' %}">
 
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-
     <script>
         (function (root) {
-            root.config = {
-                "route_name": "kb",
-                "add_header_anchors": false,
-                "links_blank_page": true,
-                "typeahead_search": true,
-                "enable_spellchecker": true,
-                "mermaid": false,
-                "mermaid_options": undefined,
-                "mermaid_auto_update": true
-            };
+            root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
         }(this));
     </script>
-
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
     <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
@@ -53,33 +42,13 @@
     <script src="{% static 'javascripts/openKB.js' %}"></script>
 
     <style>
-        .openkb-path {
-            color: #899aa6;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .openkb-meta {
-            color: #899aa6;
-            font-size: 12px;
-        }
-
-        .openkb-empty {
-            padding: 20px;
-            color: #899aa6;
-        }
-
-        #openkbAiAnswer {
-            white-space: pre-wrap;
-            margin-top: 10px;
-            min-height: 120px;
-            max-height: 420px;
-            overflow: auto;
-            font-family: Consolas, Monaco, monospace;
-            font-size: 13px;
-            background: #f9fbfc;
-            color: #333;
-        }
+        .openkb-path { color: #899aa6; font-size: 12px; margin-top: 4px; }
+        .openkb-meta { color: #899aa6; font-size: 12px; }
+        .openkb-empty { padding: 20px; color: #899aa6; }
+        #openkbAiAnswer { white-space: pre-wrap; margin-top: 10px; min-height: 120px; max-height: 420px; overflow: auto; font-family: Consolas, Monaco, monospace; font-size: 13px; background: #f9fbfc; color: #333; }
+        .navbar-logout-form { display: inline; }
+        .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
+        .navbar-logout-button:hover { color: #333; background-color: transparent; }
     </style>
 </head>
 
@@ -89,60 +58,45 @@
         <nav class="navbar navbar-default navbar-static-top">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button"
-                            class="navbar-toggle collapsed"
-                            data-toggle="collapse"
-                            data-target="#navbar"
-                            aria-expanded="false"
-                            aria-controls="navbar">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-
-                    <a class="navbar-brand" href="/">Knowledge Repository</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
                 </div>
 
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/suggest/">Suggest</a></li>
-
+                        <li><a href="{% url 'suggest' %}">Suggest</a></li>
                         {% if user.is_authenticated %}
-                            <li><a href="/admin/">Admin</a></li>
-                            <li><a href="/accounts/logout/">Logout</a></li>
+                            <li><a href="{% url 'profile' %}">My Profile</a></li>
+                            {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                            <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                            <li>
+                                <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="navbar-logout-button" type="submit">Logout</button>
+                                </form>
+                            </li>
                         {% else %}
-                            <li><a href="/accounts/login/">Login</a></li>
+                            <li><a href="{% url 'login' %}">Login</a></li>
                         {% endif %}
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <div>
-            <h1>IT Help Center</h1>
-        </div>
+        <div><h1>IT Help Center</h1></div>
 
-        <form action="/search/" id="search_form" method="get">
+        <form action="{% url 'search' %}" id="search_form" method="get">
             <div class="col-md-4 col-md-offset-4 search_bar">
                 <div class="input-group">
-                    <input type="text"
-                           name="q"
-                           id="frm_search"
-                           class="form-control input-lg"
-                           placeholder="search"
-                           value="{{ search_query|default:'' }}">
-
-                    <span class="input-group-btn">
-                        <button class="btn btn-default btn-lg" id="btn_search" type="submit">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                        </button>
-                    </span>
+                    <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="search" value="{{ search_query|default:'' }}">
+                    <span class="input-group-btn"><button class="btn btn-default btn-lg" id="btn_search" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button></span>
                 </div>
-
-                <div id="searchResult" class="hidden col-lg-12">
-                    <ul class="list-group searchResultList"></ul>
-                </div>
+                <div id="searchResult" class="hidden col-lg-12"><ul class="list-group searchResultList"></ul></div>
             </div>
         </form>
     </div>
@@ -150,68 +104,32 @@
     <div class="row">
         <div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
             <h2 class="text-center"></h2>
-            <p class="subheading">
-                Get instant answers for the most common questions and learn how to use 3 characters like a pro.
-            </p>
+            <p class="subheading">Get instant answers for the most common questions and learn how to use 3 characters like a pro.</p>
         </div>
     </div>
 
     <div>
-        <div class="row featuredArticles">
-            <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-            </div>
-        </div>
+        <div class="row featuredArticles"><div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"></div></div>
 
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             <div class="panel panel-default" style="margin-top: 30px;">
-                <div class="panel-heading">
-                    {% if is_search %}
-                        ::: SEARCH RESULTS FOR "{{ search_query }}" :::
-                    {% else %}
-                        ::: TRENDING TOPICS :::
-                    {% endif %}
-                </div>
-
+                <div class="panel-heading">{% if is_search %}::: SEARCH RESULTS FOR "{{ search_query }}" :::{% else %}::: TRENDING TOPICS :::{% endif %}</div>
                 <div class="panel-body">
-                    {% if is_search %}
-                        <p class="openkb-meta">
-                            {{ result_count }} result(s) found from OpenKB files.
-                        </p>
-                    {% endif %}
-
+                    {% if is_search %}<p class="openkb-meta">{{ result_count }} result(s) found from OpenKB files.</p>{% endif %}
                     <ul class="list-group">
                         {% if articles %}
                             {% for article in articles %}
                                 <li class="list-group-item">
                                     <h4>
                                         <a href="{{ article.url }}">{{ article.title }}</a>
-
-                                        {% if article.date %}
-                                            <span class="pull-right view_count">
-                                                &nbsp; / <strong>Date:</strong> {{ article.date }}
-                                            </span>
-                                        {% endif %}
-
-                                        {% if article.type %}
-                                            <span class="pull-right view_count">
-                                                <strong>{{ article.type }}</strong>
-                                            </span>
-                                        {% endif %}
+                                        {% if article.date %}<span class="pull-right view_count">&nbsp; / <strong>Date:</strong> {{ article.date }}</span>{% endif %}
+                                        {% if article.type %}<span class="pull-right view_count"><strong>{{ article.type }}</strong></span>{% endif %}
                                     </h4>
-
-                                    <div class="openkb-path">
-                                        {{ article.path }}
-                                    </div>
+                                    <div class="openkb-path">{{ article.path }}{% if article.author %} / Author: {{ article.author }}{% endif %}</div>
                                 </li>
                             {% endfor %}
                         {% else %}
-                            <li class="list-group-item openkb-empty">
-                                {% if is_search %}
-                                    No matching OpenKB articles found.
-                                {% else %}
-                                    No OpenKB articles yet. Add a solution from Suggest.
-                                {% endif %}
-                            </li>
+                            <li class="list-group-item openkb-empty">{% if is_search %}No matching OpenKB articles found.{% else %}No OpenKB articles yet. Add a solution from Suggest.{% endif %}</li>
                         {% endif %}
                     </ul>
                 </div>
@@ -221,28 +139,16 @@
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             <div class="panel panel-default" style="margin-top: 30px;">
                 <div class="panel-heading">::: ASK OPENKB AI :::</div>
-
                 <div class="panel-body">
                     <form id="openkbAiForm">
                         <div class="input-group">
-                            <input type="text"
-                                   id="openkbAiQuestion"
-                                   name="question"
-                                   class="form-control input-lg"
-                                   placeholder="Ask OpenKB AI">
-
-                            <span class="input-group-btn">
-                                <button class="btn btn-default btn-lg" type="submit">
-                                    Ask
-                                </button>
-                            </span>
+                            <input type="text" id="openkbAiQuestion" name="question" class="form-control input-lg" placeholder="Ask OpenKB AI">
+                            <span class="input-group-btn"><button class="btn btn-default btn-lg" type="submit">Ask</button></span>
                         </div>
                     </form>
-
                     <div style="margin-top: 20px;">
                         <strong>Answer:</strong>
                         <pre id="openkbAiAnswer">No answer yet.</pre>
-
                         <div id="openkbRelatedArticlesWrapper" style="display: none; margin-top: 20px;">
                             <strong>Related articles:</strong>
                             <ul id="openkbRelatedArticles" class="list-group" style="margin-top: 10px;"></ul>
@@ -256,17 +162,11 @@
 
 <input type="hidden" value="" id="app_context">
 <input type="hidden" value="true" id="blank_links">
-<input type="hidden" id="input_notify_message" value="">
-<input type="hidden" id="input_notify_message_type" value="">
+<input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
+<input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
 <div id="notify_message"></div>
 
-<footer class="footer">
-    <div class="container">
-        <p class="text-muted text-center">
-            Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a>
-        </p>
-    </div>
-</footer>
+<footer class="footer"><div class="container"><p class="text-muted text-center">Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p></div></footer>
 
 <script>
     const openkbAiForm = document.getElementById("openkbAiForm");
@@ -277,65 +177,28 @@
 
     function renderRelatedArticles(articles) {
         openkbRelatedArticles.innerHTML = "";
-
-        if (!articles || articles.length === 0) {
-            openkbRelatedArticlesWrapper.style.display = "none";
-            return;
-        }
-
+        if (!articles || articles.length === 0) { openkbRelatedArticlesWrapper.style.display = "none"; return; }
         articles.forEach(function(article) {
-            const li = document.createElement("li");
-            li.className = "list-group-item";
-
-            const title = document.createElement("a");
-            title.href = article.url;
-            title.textContent = article.title;
-
-            const meta = document.createElement("div");
-            meta.className = "openkb-path";
-            meta.textContent = article.type + " / " + article.path;
-
-            li.appendChild(title);
-            li.appendChild(meta);
-
-            openkbRelatedArticles.appendChild(li);
+            const li = document.createElement("li"); li.className = "list-group-item";
+            const title = document.createElement("a"); title.href = article.url; title.textContent = article.title;
+            const meta = document.createElement("div"); meta.className = "openkb-path"; meta.textContent = article.type + " / " + article.path;
+            li.appendChild(title); li.appendChild(meta); openkbRelatedArticles.appendChild(li);
         });
-
         openkbRelatedArticlesWrapper.style.display = "block";
     }
 
     openkbAiForm.addEventListener("submit", async function(event) {
         event.preventDefault();
-
         const question = openkbAiQuestion.value.trim();
-
-        if (!question) {
-            openkbAiAnswer.textContent = "Please type a question first.";
-            renderRelatedArticles([]);
-            return;
-        }
-
-        openkbAiAnswer.textContent = "Asking OpenKB AI...";
-        renderRelatedArticles([]);
-
-        const formData = new FormData();
-        formData.append("question", question);
-
+        if (!question) { openkbAiAnswer.textContent = "Please type a question first."; renderRelatedArticles([]); return; }
+        openkbAiAnswer.textContent = "Asking OpenKB AI..."; renderRelatedArticles([]);
+        const formData = new FormData(); formData.append("question", question);
         try {
-            const response = await fetch("/ask-openkb-ai/", {
-                method: "POST",
-                body: formData
-            });
-
+            const response = await fetch("{% url 'ask_openkb_ai' %}", { method: "POST", body: formData });
             const data = await response.json();
-
             openkbAiAnswer.textContent = data.answer || data.error || "Something went wrong.";
             renderRelatedArticles(data.related_articles || []);
-
-        } catch (error) {
-            openkbAiAnswer.textContent = "Request failed. Check Django terminal logs.";
-            renderRelatedArticles([]);
-        }
+        } catch (error) { openkbAiAnswer.textContent = "Request failed. Check Django terminal logs."; renderRelatedArticles([]); }
     });
 </script>
 </body>
