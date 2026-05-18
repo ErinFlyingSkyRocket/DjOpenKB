@@ -171,20 +171,49 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "owner",
+        "author_username_snapshot",
+        "author_email_snapshot",
         "status",
         "filename",
         "created_at",
         "updated_at",
     )
     list_filter = ("status", "created_at", "updated_at")
-    search_fields = ("title", "body", "keywords", "owner__username", "owner__email")
-    readonly_fields = ("filename", "raw_path", "wiki_path", "image_assets", "created_at", "updated_at")
+    search_fields = (
+        "title",
+        "body",
+        "keywords",
+        "owner__username",
+        "owner__email",
+        "author_username_snapshot",
+        "author_email_snapshot",
+    )
+    readonly_fields = (
+        "filename",
+        "raw_path",
+        "wiki_path",
+        "image_assets",
+        "author_username_snapshot",
+        "author_name_snapshot",
+        "author_email_snapshot",
+        "author_account_type_snapshot",
+        "created_at",
+        "updated_at",
+    )
     fieldsets = (
         ("Article", {
             "fields": ("owner", "title", "body", "keywords", "status"),
         }),
         ("OpenKB files", {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
+        }),
+        ("Author snapshot", {
+            "fields": (
+                "author_username_snapshot",
+                "author_name_snapshot",
+                "author_email_snapshot",
+                "author_account_type_snapshot",
+            ),
         }),
         ("Timestamps", {
             "fields": ("created_at", "updated_at"),

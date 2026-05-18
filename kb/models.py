@@ -101,9 +101,15 @@ class SuggestedArticle(models.Model):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="suggested_articles",
     )
+    author_username_snapshot = models.CharField(max_length=150, blank=True)
+    author_name_snapshot = models.CharField(max_length=255, blank=True)
+    author_email_snapshot = models.EmailField(blank=True)
+    author_account_type_snapshot = models.CharField(max_length=50, blank=True)
     title = models.CharField(max_length=200)
     body = models.TextField()
     keywords = models.CharField(max_length=500, blank=True)
@@ -137,13 +143,72 @@ class SuggestedArticle(models.Model):
     def keyword_list(self):
         return [item.strip() for item in self.keywords.split(",") if item.strip()]
 
+    def refresh_author_snapshot(self):
+        """Store a copy of the current owner details on the article.
+
+        This keeps author information visible even if the User account is
+        deleted later, because owner will become NULL but these snapshot fields
+        will remain.
+        """
+        if not self.owner:
+            return
+
+        self.author_username_snapshot = self.owner.get_username()
+        self.author_name_snapshot = self.owner.get_full_name().strip()
+        self.author_email_snapshot = self.owner.email or ""
+
+        profile = getattr(self.owner, "kb_profile", None)
+        if profile:
+            self.author_account_type_snapshot = profile.get_account_type_display()
+        elif self.owner.is_superuser or self.owner.is_staff:
+            self.author_account_type_snapshot = "Admin"
+        else:
+            self.author_account_type_snapshot = ""
+
+    def save(self, *args, **kwargs):
+        if self.owner:
+            self.refresh_author_snapshot()
+
+        super().save(*args, **kwargs)
+
     @property
     def author_display(self):
-        full_name = self.owner.get_full_name().strip()
-        if full_name:
-            return full_name
-        return self.owner.get_username()
+        if self.owner:
+            full_name = self.owner.get_full_name().strip()
+            if full_name:
+                return full_name
+            return self.owner.get_username()
+
+        if self.author_name_snapshot:
+            return self.author_name_snapshot
+
+        if self.author_username_snapshot:
+            return self.author_username_snapshot
+
+        return "Deleted user"
+
+    @property
+    def author_username(self):
+        if self.owner:
+            return self.owner.get_username()
+
+        return self.author_username_snapshot or "deleted-user"
 
     @property
     def author_email(self):
-        return self.owner.email or ""
+        if self.owner:
+            return self.owner.email or ""
+
+        return self.author_email_snapshot or ""
+
+    @property
+    def author_account_type(self):
+        if self.owner:
+            profile = getattr(self.owner, "kb_profile", None)
+            if profile:
+                return profile.get_account_type_display()
+
+            if self.owner.is_superuser or self.owner.is_staff:
+                return "Admin"
+
+        return self.author_account_type_snapshot or ""

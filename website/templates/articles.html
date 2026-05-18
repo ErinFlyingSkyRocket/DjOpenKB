@@ -216,9 +216,7 @@
                             <strong>Last updated:</strong>
                             {% if metadata.updated_at %}{{ metadata.updated_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}
                             {% if metadata.author %}
-                                <span class="text-info">
-                                    ({{ metadata.author }}{% if metadata.author_email %} - {{ metadata.author_email }}{% endif %})
-                                </span>
+                                <span class="text-info">({{ metadata.author }}{% if metadata.author_email %} - {{ metadata.author_email }}{% endif %})</span>
                             {% endif %}
                         </h5>
                         <h5 class="col-sm-12 col-lg-12">
@@ -231,7 +229,7 @@
                         </h5>
                         <h5 class="col-sm-12 col-lg-12">
                             <strong>Permalink:</strong>
-                            <a href="{{ metadata.permalink }}" target="_blank">{{ metadata.permalink }}</a>
+                            <a href="{{ metadata.permalink }}">{{ metadata.permalink }}</a>
                         </h5>
 
                         {% if metadata.can_edit %}
