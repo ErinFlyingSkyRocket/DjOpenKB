@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit My Articles</title>
+    <meta property="og:title" content="Edit My Articles" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Powered by openKB">
+    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="keywords" content="openKB">
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="{% static 'logo.png' %}" />
+    <meta property="og:url" content="" />
+    <link rel="canonical" href="#" />
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jasny-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script>
+(function (root) {
+/* -- Data -- */
+root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
+}(this));
+    </script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-validator.js' %}"></script>
+    <script src="{% static 'javascripts/markdown-it-classy.js' %}"></script>
+    <script src="{% static 'javascripts/bootstrap-tokenfield.min.js' %}"></script>
+    <script src="{% static 'javascripts/inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/codemirror.inline-attachment.js' %}"></script>
+    <script src="{% static 'javascripts/highlight.min.js' %}"></script>
+    <script src="{% static 'javascripts/loadingoverlay.min.js' %}"></script>
+    <script src="{% static 'simplemde/simplemde.min.js' %}"></script>
+    <script src="{% static 'javascripts/jasny-bootstrap.min.js' %}"></script>
+    <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
+    <script src="{% static 'lunr/lunr.js' %}"></script>
+    <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
+    <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <style>
+        .navbar-logout-form { display: inline; }
+        .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
+        .navbar-logout-button:hover { color: #333; background-color: transparent; }
+        .profile-muted { color: #899aa6; font-size: 12px; }
+        .article-actions a { margin-right: 4px; }
+        .profile-search-panel { margin-bottom: 15px; }
+        .profile-pagination { margin: 12px 0 8px; text-align: center; }
+        .profile-pagination .pagination { margin: 0; }
+        .profile-pagination-meta { color: #899aa6; font-size: 12px; margin-bottom: 10px; text-align: center; }
+        .profile-top-pagination { margin: 0 0 12px; text-align: center; }
+        .profile-top-pagination .pager { margin: 0; }
+        .profile-top-pagination .pager li > a,
+        .profile-top-pagination .pager li > span { border-radius: 4px; margin: 0 3px; }
+        .profile-table-wrap { overflow-x: auto; }
+        .profile-account-panel { margin-top: 10px; margin-bottom: 14px; }
+        .profile-account-panel .panel-heading { font-weight: 600; }
+        .profile-account-summary { color: #899aa6; font-size: 12px; margin-bottom: 12px; }
+        .profile-account-row { padding: 9px 0; border-bottom: 1px solid #eef2f4; }
+        .profile-account-row:last-child { border-bottom: 0; }
+        .profile-account-label { font-weight: 700; display: inline-block; min-width: 135px; }
+        .profile-account-value { display: inline-block; margin-right: 8px; }
+        .profile-account-edit { margin-top: 10px; padding: 12px; background: #f8fafb; border: 1px solid #e5eaee; border-radius: 3px; }
+        .profile-account-actions { margin-top: 14px; }
+        .profile-account-actions .btn { margin-right: 5px; }
+        .profile-readonly-note { color: #899aa6; font-size: 12px; margin-top: 5px; }
+        .profile-suggest-action { margin-bottom: 15px; text-align: right; }
+        .profile-suggest-side {
+            min-height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding-bottom: 14px;
+        }
+        .password-policy-box {
+            background: #f8fafb;
+            border: 1px solid #e5eaee;
+            border-radius: 3px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        .password-policy-box ul { padding-left: 18px; margin-bottom: 0; }
+        .password-rule { color: #c0392b; }
+        .password-rule.valid { color: #18bc9c; }
+        .password-match-message { margin-top: 5px; font-size: 12px; }
+        @media (max-width: 767px) {
+            .profile-suggest-side { min-height: auto; display: block; text-align: left; padding-bottom: 15px; }
+        }
+    </style>
+</head>
+<body class="">
+
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    <li>
+                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="navbar-logout-button" type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2>Edit My Articles</h2>
+                    <p class="profile-muted">Search, edit, or delete your suggested Knowledge Repository articles.</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="profile-suggest-action">
+                        <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
+                        <a class="btn btn-default" href="{% url 'profile' %}"><i class="fa fa-user"></i> Back to profile</a>
+                    </div>
+
+                    <div class="panel panel-default profile-search-panel">
+                        <div class="panel-heading">Search my suggestions</div>
+                        <div class="panel-body">
+                            <form method="get" action="{% url 'edit_my_suggestions' %}">
+                                <div class="input-group">
+                                    <input type="text" name="q" class="form-control" placeholder="Search by title, body, keywords, status, or file path" value="{{ profile_search_query|default:'' }}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Search</button>
+                                    </span>
+                                </div>
+                            </form>
+                            {% if is_profile_search %}
+                                <p class="profile-muted" style="margin-top: 10px;">
+                                    Showing results for "{{ profile_search_query }}".
+                                    <a href="{% url 'edit_my_suggestions' %}">Clear search</a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">My suggested articles</div>
+                        <div class="panel-body">
+                            {% if page_obj and page_obj.paginator.num_pages > 1 %}
+                                <nav class="profile-top-pagination" aria-label="Top article pagination">
+                                    <ul class="pager">
+                                        {% if page_obj.has_previous %}
+                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; First</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>&laquo; First</span></li>
+                                            <li class="disabled"><span>&lsaquo; Previous</span></li>
+                                        {% endif %}
+
+                                        {% if page_obj.has_next %}
+                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>Next &rsaquo;</span></li>
+                                            <li class="disabled"><span>Last &raquo;</span></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            {% endif %}
+
+                            {% if articles %}
+                                <div class="profile-table-wrap">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Article title</th>
+                                                <th>Status</th>
+                                                <th>Created</th>
+                                                <th>Last updated</th>
+                                                <th class="text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for article in articles %}
+                                                <tr>
+                                                    <td>
+                                                        {% if article.status == 'published' %}
+                                                            <a href="{{ article.public_url }}">{{ article.title }}</a>
+                                                        {% else %}
+                                                            {{ article.title }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ article.get_status_display }}</td>
+                                                    <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
+                                                    <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
+                                                    <td class="text-right article-actions">
+                                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a>
+                                                        <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                {% if is_profile_search %}
+                                    <p>No matching suggested articles found.</p>
+                                    <a class="btn btn-default" href="{% url 'edit_my_suggestions' %}">Clear search</a>
+                                {% else %}
+                                    <p>You have not suggested any articles yet.</p>
+                                    <a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if page_obj and page_obj.paginator.num_pages > 1 %}
+                                <div class="profile-pagination-meta">
+                                    Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} article(s)
+                                    {% if is_profile_search %}matching "{{ profile_search_query }}"{% endif %}
+                                </div>
+
+                                <nav class="profile-pagination" aria-label="Bottom article pagination">
+                                    <ul class="pagination">
+                                        {% if page_obj.has_previous %}
+                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; First</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>&laquo; First</span></li>
+                                            <li class="disabled"><span>&lsaquo; Previous</span></li>
+                                        {% endif %}
+
+                                        <li class="active"><span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+
+                                        {% if page_obj.has_next %}
+                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
+                                        {% else %}
+                                            <li class="disabled"><span>Next &rsaquo;</span></li>
+                                            <li class="disabled"><span>Last &raquo;</span></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            {% elif page_obj %}
+                                <div class="profile-pagination-meta">
+                                    {% if is_profile_search %}
+                                        {{ profile_result_count }} matching article(s) found.
+                                    {% else %}
+                                        {{ total_user_article_count }} article(s) total.
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
+    <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
+    <input type="hidden" value="" id="app_context">
+    <input type="hidden" value="true" id="blank_links">
+    <div id="notify_message"></div>
+</body>
+</html>

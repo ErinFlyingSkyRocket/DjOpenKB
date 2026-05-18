@@ -5,6 +5,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("suggest/", views.suggest, name="suggest"),
     path("profile/", views.profile, name="profile"),
+    path("profile/articles/", views.edit_my_suggestions, name="edit_my_suggestions"),
     path("profile/update/", views.update_profile, name="update_profile"),
     path("profile/change-password/", views.change_password, name="change_password"),
     path("profile/articles/<int:article_id>/edit/", views.edit_suggestion, name="edit_suggestion"),

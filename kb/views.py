@@ -414,13 +414,29 @@ def suggest(request):
     clear_committed_pending_uploads(request, article.image_assets)
 
     messages.success(request, f"Article suggested successfully: {article.title}")
-    return redirect("profile")
+    return redirect("edit_my_suggestions")
+
+
+def get_profile_account_context(user):
+    user_is_ldap_managed = is_ldap_managed_user(user)
+
+    return {
+        "total_user_article_count": SuggestedArticle.objects.filter(owner=user).count(),
+        "profile_display_name": format_profile_display_name(user),
+        "user_is_ldap_managed": user_is_ldap_managed,
+        "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
+        "can_confirm_profile_changes": user.has_usable_password(),
+    }
 
 
 @login_required
 def profile(request):
+    return render(request, "profile.html", get_profile_account_context(request.user))
+
+
+@login_required
+def edit_my_suggestions(request):
     search_query = request.GET.get("q", "").strip()
-    user_is_ldap_managed = is_ldap_managed_user(request.user)
 
     article_queryset = SuggestedArticle.objects.filter(owner=request.user)
     total_user_article_count = article_queryset.count()
@@ -438,7 +454,7 @@ def profile(request):
     article_queryset = article_queryset.order_by("-updated_at", "-created_at")
     page_obj = paginate_articles(request, article_queryset, per_page=20)
 
-    return render(request, "profile.html", {
+    return render(request, "edit_my_suggestions.html", {
         "articles": page_obj.object_list,
         "page_obj": page_obj,
         "profile_search_query": search_query,
@@ -446,9 +462,6 @@ def profile(request):
         "total_user_article_count": total_user_article_count,
         "is_profile_search": bool(search_query),
         "profile_display_name": format_profile_display_name(request.user),
-        "user_is_ldap_managed": user_is_ldap_managed,
-        "can_change_local_password": request.user.has_usable_password() and not user_is_ldap_managed,
-        "can_confirm_profile_changes": request.user.has_usable_password(),
     })
 
 
@@ -572,7 +585,7 @@ def change_password(request):
     user.save(update_fields=["password"])
     update_session_auth_hash(request, user)
     messages.success(request, "Password changed successfully.")
-    return redirect("profile")
+    return redirect("edit_my_suggestions")
 
 
 @login_required
@@ -622,7 +635,7 @@ def edit_suggestion(request, article_id):
     clear_committed_pending_uploads(request, article.image_assets)
 
     messages.success(request, f"Article updated: {article.title}")
-    return redirect("profile")
+    return redirect("edit_my_suggestions")
 
 
 @login_required
@@ -638,7 +651,7 @@ def delete_suggestion(request, article_id):
         delete_article_files(article)
         article.delete()
         messages.success(request, f"Article deleted: {title}")
-        return redirect("profile")
+        return redirect("edit_my_suggestions")
 
     return render(request, "suggest_delete.html", {"article": article})
 
