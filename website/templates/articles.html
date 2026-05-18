@@ -325,12 +325,7 @@
             title.href = article.url;
             title.textContent = article.title;
 
-            const meta = document.createElement("div");
-            meta.className = "openkb-path";
-            meta.textContent = article.type + " / " + article.path;
-
             li.appendChild(title);
-            li.appendChild(meta);
             openkbRelatedArticles.appendChild(li);
         });
 

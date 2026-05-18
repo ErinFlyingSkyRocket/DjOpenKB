@@ -310,8 +310,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                         {% else %}
                                                             {{ article.title }}
                                                         {% endif %}
-                                                        <div class="profile-muted">{{ article.wiki_path }}</div>
-                                                        {% if article.keywords %}<div class="profile-muted">Keywords: {{ article.keywords }}</div>{% endif %}
+                                                        {# Source path and keywords are hidden here to keep the article list clean. Open the article/edit page for details. #}
                                                     </td>
                                                     <td>{{ article.get_status_display }}</td>
                                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
