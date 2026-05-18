@@ -63,23 +63,37 @@ services:
 
 
 
-cleanup-scheduler:
-  build: .
-  container_name: djopenkb-cleanup-scheduler
-  command: >
-    sh -c "while true; do
-      python manage.py cleanup_stray_upload_files --noinput;
-      sleep $${CLEANUP_INTERVAL_SECONDS:-86400};
-    done"
-  volumes:
-    - .:/app
-  env_file:
-    - .env
-  environment:
-    DJANGO_SETTINGS_MODULE: djopenkb.settings
-  depends_on:
-    - db
-  restart: unless-stopped
+  cleanup-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: djopenkb-cleanup-scheduler
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: djopenkb.settings
+      OPENKB_BASE_DIR: OpenKB-main
+      OPENKB_DATA_DIR: openkb-data
+      POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
+      POSTGRES_USER: ${POSTGRES_USER:-djopenkb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-djopenkb_password}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+      sleep 60 &&
+      while true; do
+        python manage.py cleanup_stray_upload_files --noinput;
+        sleep $${CLEANUP_INTERVAL_SECONDS:-86400};
+      done
+      "
 
 volumes:
   static_volume:
