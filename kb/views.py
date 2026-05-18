@@ -5,12 +5,13 @@ import subprocess
 import sys
 import uuid
 from datetime import datetime
+from functools import wraps
 from pathlib import Path
 
 import markdown
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth import get_user_model, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
@@ -24,7 +25,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .models import SuggestedArticle
+from .models import SuggestedArticle, UserProfile
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
@@ -334,19 +335,73 @@ def is_ldap_managed_user(user):
     )
 
 
+def get_user_profile(user):
+    if not user.is_authenticated:
+        return None
+
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    # Keep existing superuser/staff accounts visible as Admin unless already LDAP admin.
+    if (user.is_superuser or user.is_staff) and profile.account_type not in {
+        UserProfile.AccountType.ADMIN,
+        UserProfile.AccountType.LDAP_ADMIN,
+    }:
+        profile.account_type = UserProfile.AccountType.ADMIN
+        profile.save(update_fields=["account_type", "updated_at"])
+
+    return profile
+
+
+def user_can_access_main_site(user):
+    if not user.is_authenticated or not user.is_active:
+        return False
+
+    profile = get_user_profile(user)
+    return bool(profile and profile.can_access_main_site)
+
+
+def main_site_login_required(view_func):
+    @wraps(view_func)
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_access_main_site(request.user):
+            logout(request)
+            return redirect("home")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def get_account_type_display(user):
+    profile = get_user_profile(user)
+    if not profile:
+        return "Guest"
+    return profile.get_account_type_display()
+
+
 def format_profile_display_name(user):
     full_name = user.get_full_name().strip()
     return full_name or user.get_username()
 
 class OpenKBLoginView(LoginView):
     template_name = "login.html"
-    redirect_authenticated_user = True
+    redirect_authenticated_user = False
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if user_can_access_main_site(request.user):
+                return redirect(self.get_success_url())
+            logout(request)
+            return redirect("home")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        username = self.request.user.get_full_name() or self.request.user.get_username()
-        messages.success(self.request, f"Successful login. Welcome back, {username}.")
-        return response
+        user = form.get_user()
+        if not user_can_access_main_site(user):
+            logout(self.request)
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 def paginate_articles(request, articles, per_page=20):
@@ -376,7 +431,7 @@ def home(request):
     })
 
 
-@login_required
+@main_site_login_required
 def suggest(request):
     init_openkb_storage()
 
@@ -424,17 +479,18 @@ def get_profile_account_context(user):
         "total_user_article_count": SuggestedArticle.objects.filter(owner=user).count(),
         "profile_display_name": format_profile_display_name(user),
         "user_is_ldap_managed": user_is_ldap_managed,
+        "account_type_display": get_account_type_display(user),
         "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
         "can_confirm_profile_changes": user.has_usable_password(),
     }
 
 
-@login_required
+@main_site_login_required
 def profile(request):
     return render(request, "profile.html", get_profile_account_context(request.user))
 
 
-@login_required
+@main_site_login_required
 def edit_my_suggestions(request):
     search_query = request.GET.get("q", "").strip()
 
@@ -465,7 +521,7 @@ def edit_my_suggestions(request):
     })
 
 
-@login_required
+@main_site_login_required
 def update_profile(request):
     if request.method != "POST":
         return redirect("profile")
@@ -547,7 +603,7 @@ def validate_profile_password_policy(password, user):
 
     return issues
 
-@login_required
+@main_site_login_required
 def change_password(request):
     if request.method != "POST":
         return redirect("profile")
@@ -588,7 +644,7 @@ def change_password(request):
     return redirect("edit_my_suggestions")
 
 
-@login_required
+@main_site_login_required
 def edit_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
@@ -638,7 +694,7 @@ def edit_suggestion(request, article_id):
     return redirect("edit_my_suggestions")
 
 
-@login_required
+@main_site_login_required
 def delete_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
@@ -656,7 +712,7 @@ def delete_suggestion(request, article_id):
     return render(request, "suggest_delete.html", {"article": article})
 
 
-@login_required
+@main_site_login_required
 @require_POST
 def upload_article_image(request):
     """Upload a small pasted image for use inside Markdown articles.
@@ -701,7 +757,7 @@ def upload_article_image(request):
     })
 
 
-@login_required
+@main_site_login_required
 @require_POST
 def delete_article_image(request):
     """Delete a pasted image that was uploaded during the current editing session.

@@ -220,7 +220,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div class="profile-account-row">
                                 <span class="profile-account-label">Account type:</span>
                                 <span class="profile-account-value">
-                                    {% if user_is_ldap_managed %}LDAP-managed account{% elif user.is_staff %}Django staff/admin account{% else %}Django local account{% endif %}
+                                    {{ account_type_display }}
                                 </span>
                             </div>
 

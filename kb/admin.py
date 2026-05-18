@@ -1,9 +1,169 @@
 from django.contrib import admin
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
 
-from .models import SuggestedArticle
+from .models import SuggestedArticle, UserProfile
 from .views import delete_article_files, slugify_title, write_article_files
+
+
+User = get_user_model()
+
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    extra = 0
+    fields = (
+        "account_type",
+        "can_access_main_site",
+        "notes",
+        "created_at",
+        "updated_at",
+    )
+    readonly_fields = ("created_at", "updated_at")
+
+
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
+
+
+@admin.register(User)
+class UserAdmin(DefaultUserAdmin):
+    inlines = (UserProfileInline,)
+
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "main_site_account_type",
+        "main_site_access",
+    )
+    list_filter = (
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "kb_profile__account_type",
+        "kb_profile__can_access_main_site",
+    )
+    search_fields = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+    )
+    actions = (
+        "allow_main_site_access",
+        "block_main_site_access",
+        "make_django_user",
+        "make_django_admin",
+        "make_ldap_user",
+        "make_ldap_admin",
+    )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        profile, created = UserProfile.objects.get_or_create(user=obj)
+        if obj.is_superuser or obj.is_staff:
+            if profile.account_type not in {
+                UserProfile.AccountType.ADMIN,
+                UserProfile.AccountType.LDAP_ADMIN,
+            }:
+                profile.account_type = UserProfile.AccountType.ADMIN
+                profile.save(update_fields=["account_type", "updated_at"])
+
+    def main_site_account_type(self, obj):
+        profile = getattr(obj, "kb_profile", None)
+        if not profile:
+            return "-"
+        return profile.get_account_type_display()
+
+    main_site_account_type.short_description = "Account Type"
+
+    def main_site_access(self, obj):
+        profile = getattr(obj, "kb_profile", None)
+
+        if not obj.is_active:
+            return "Inactive"
+
+        if profile and profile.can_access_main_site:
+            return "Allowed"
+
+        return "Blocked"
+
+    main_site_access.short_description = "Main Site Access"
+
+    @admin.action(description="Allow selected users to access main site")
+    def allow_main_site_access(self, request, queryset):
+        for user in queryset:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.can_access_main_site = True
+            profile.save(update_fields=["can_access_main_site", "updated_at"])
+
+    @admin.action(description="Block selected users from main site")
+    def block_main_site_access(self, request, queryset):
+        for user in queryset:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.can_access_main_site = False
+            profile.save(update_fields=["can_access_main_site", "updated_at"])
+
+    @admin.action(description="Set selected users as User")
+    def make_django_user(self, request, queryset):
+        for user in queryset:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.account_type = UserProfile.AccountType.USER
+            profile.save(update_fields=["account_type", "updated_at"])
+
+    @admin.action(description="Set selected users as Admin")
+    def make_django_admin(self, request, queryset):
+        for user in queryset:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.account_type = UserProfile.AccountType.ADMIN
+            profile.save(update_fields=["account_type", "updated_at"])
+
+    @admin.action(description="Set selected users as LDAP user")
+    def make_ldap_user(self, request, queryset):
+        for user in queryset:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.account_type = UserProfile.AccountType.LDAP_USER
+            profile.save(update_fields=["account_type", "updated_at"])
+
+    @admin.action(description="Set selected users as LDAP admin")
+    def make_ldap_admin(self, request, queryset):
+        for user in queryset:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.account_type = UserProfile.AccountType.LDAP_ADMIN
+            profile.save(update_fields=["account_type", "updated_at"])
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "account_type",
+        "can_access_main_site",
+        "created_at",
+        "updated_at",
+    )
+    list_filter = (
+        "account_type",
+        "can_access_main_site",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = (
+        "user__username",
+        "user__email",
+        "user__first_name",
+        "user__last_name",
+    )
 
 
 @admin.register(SuggestedArticle)

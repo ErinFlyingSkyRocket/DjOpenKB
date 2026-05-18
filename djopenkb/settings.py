@@ -78,7 +78,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    "kb",
+    "kb.apps.KbConfig",
 ]
 
 MIDDLEWARE = [
@@ -149,6 +149,9 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 LDAP_ENABLED = os.getenv("LDAP_ENABLED", "false").lower() == "true"
+LDAP_PLACEHOLDER_ENABLED = os.getenv("LDAP_PLACEHOLDER_ENABLED", "true").lower() == "true"
+LDAP_PLACEHOLDER_AUTO_CREATE_USERS = os.getenv("LDAP_PLACEHOLDER_AUTO_CREATE_USERS", "true").lower() == "true"
+LDAP_PLACEHOLDER_PASSWORD = os.getenv("LDAP_PLACEHOLDER_PASSWORD", "ChangeThisPlaceholderPassword123!")
 
 if LDAP_ENABLED:
     try:
@@ -163,8 +166,8 @@ if LDAP_ENABLED:
 
     AUTHENTICATION_BACKENDS = [
         "kb.backends.NextLabsLDAPBackend",
+        "kb.backends.PlaceholderLDAPBackend",
         "kb.backends.EmailOrUsernameModelBackend",
-        "django.contrib.auth.backends.ModelBackend",
     ]
 
     AUTH_LDAP_SERVER_URI = os.getenv(
@@ -198,8 +201,8 @@ if LDAP_ENABLED:
 
 else:
     AUTHENTICATION_BACKENDS = [
+        "kb.backends.PlaceholderLDAPBackend",
         "kb.backends.EmailOrUsernameModelBackend",
-        "django.contrib.auth.backends.ModelBackend",
     ]
 
 

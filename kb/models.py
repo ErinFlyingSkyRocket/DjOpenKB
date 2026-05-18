@@ -4,6 +4,90 @@ from django.urls import reverse
 from django.utils import timezone
 
 
+class UserProfile(models.Model):
+    """Extra main-site account settings for Django's built-in User model.
+
+    We keep Django's default User model so existing users/migrations stay safe.
+    The account_type controls how the account should be treated in this wiki.
+    """
+
+    class AccountType(models.TextChoices):
+        ADMIN = "admin", "Admin"
+        USER = "user", "User"
+        LDAP_USER = "ldap_user", "LDAP user"
+        LDAP_ADMIN = "ldap_admin", "LDAP admin"
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="kb_profile",
+    )
+    account_type = models.CharField(
+        max_length=20,
+        choices=AccountType.choices,
+        default=AccountType.USER,
+        help_text="Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
+    )
+    can_access_main_site = models.BooleanField(
+        default=True,
+        help_text="Untick this to block the user from accessing the main wiki site.",
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Main Site User Profile"
+        verbose_name_plural = "Main Site User Profiles"
+
+    def __str__(self):
+        return f"{self.user.username} ({self.get_account_type_display()})"
+
+    @property
+    def is_admin_type(self):
+        return self.account_type in {
+            self.AccountType.ADMIN,
+            self.AccountType.LDAP_ADMIN,
+        }
+
+    @property
+    def is_ldap_type(self):
+        return self.account_type in {
+            self.AccountType.LDAP_USER,
+            self.AccountType.LDAP_ADMIN,
+        }
+
+    def save(self, *args, **kwargs):
+        """Keep Django admin permission flags aligned with the selected type.
+
+        - Admin / LDAP admin: staff access is enabled.
+        - User / LDAP user: staff and superuser access are removed.
+        - Existing createsuperuser accounts stay as superuser admin accounts.
+        """
+        super().save(*args, **kwargs)
+
+        update_fields = []
+
+        if self.account_type == self.AccountType.ADMIN:
+            if not self.user.is_staff:
+                self.user.is_staff = True
+                update_fields.append("is_staff")
+        elif self.account_type == self.AccountType.LDAP_ADMIN:
+            if not self.user.is_staff:
+                self.user.is_staff = True
+                update_fields.append("is_staff")
+        else:
+            if self.user.is_staff:
+                self.user.is_staff = False
+                update_fields.append("is_staff")
+            if self.user.is_superuser:
+                self.user.is_superuser = False
+                update_fields.append("is_superuser")
+
+        if update_fields:
+            self.user.save(update_fields=update_fields)
+
+
 class SuggestedArticle(models.Model):
     """User-submitted OpenKB article metadata.
 
