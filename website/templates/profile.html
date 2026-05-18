@@ -78,17 +78,12 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .profile-account-label { font-weight: 700; display: inline-block; min-width: 135px; }
         .profile-account-value { display: inline-block; margin-right: 8px; }
         .profile-account-edit { margin-top: 10px; padding: 12px; background: #f8fafb; border: 1px solid #e5eaee; border-radius: 3px; }
+        .profile-page-wrap { max-width: 900px; margin: 0 auto; float: none; }
         .profile-account-actions { margin-top: 14px; }
-        .profile-account-actions .btn { margin-right: 5px; }
-        .profile-readonly-note { color: #899aa6; font-size: 12px; margin-top: 5px; }
-        .profile-suggest-action { margin-bottom: 15px; text-align: right; }
-        .profile-suggest-side {
-            min-height: 300px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
-            padding-bottom: 14px;
-        }
+        .profile-account-actions .btn { margin-right: 5px; margin-bottom: 6px; }
+        .profile-readonly-note { color: #899aa6; font-size: 12px; margin-top: 5px; display: inline-block; }
+        .profile-article-buttons { margin-top: 8px; }
+        .profile-article-buttons .btn { margin-right: 6px; margin-bottom: 6px; }
         .password-policy-box {
             background: #f8fafb;
             border: 1px solid #e5eaee;
@@ -102,7 +97,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .password-rule.valid { color: #18bc9c; }
         .password-match-message { margin-top: 5px; font-size: 12px; }
         @media (max-width: 767px) {
-            .profile-suggest-side { min-height: auto; display: block; text-align: left; padding-bottom: 15px; }
+            .profile-page-wrap { max-width: none; }
+            .profile-account-label { display: block; min-width: 0; margin-bottom: 4px; }
         }
     </style>
 </head>
@@ -143,7 +139,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     </nav>
 
     <div class="container-fluid">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-xs-12 profile-page-wrap">
             <div class="row">
                 <div class="col-xs-12">
                     <h2>My Profile</h2>
@@ -152,7 +148,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             </div>
 
             <div class="row">
-                <div class="col-xs-12 col-sm-8 col-md-7 col-lg-7">
+                <div class="col-xs-12">
                     <div class="panel panel-default profile-account-panel">
                         <div class="panel-heading">Account summary</div>
                         <div class="panel-body">
@@ -231,28 +227,28 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div class="profile-account-row">
                                 <span class="profile-account-label">Own suggested articles:</span>
                                 <span class="profile-account-value">{{ total_user_article_count }}</span>
+                                <div class="profile-article-buttons">
+                                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
+                                    <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit my articles</a>
+                                </div>
                             </div>
 
-                            <div class="profile-account-actions">
-                                {% if can_change_local_password %}
-                                    <button class="btn btn-default" type="button" data-toggle="modal" data-target="#changePasswordModal">
-                                        Change password
-                                    </button>
-                                {% else %}
-                                    <button class="btn btn-default" type="button" disabled title="LDAP passwords are changed through the company password system.">
-                                        Change password
-                                    </button>
-                                    <span class="profile-readonly-note">LDAP passwords are changed through the company password system.</span>
-                                {% endif %}
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">Password:</span>
+                                <div class="profile-account-actions">
+                                    {% if can_change_local_password %}
+                                        <button class="btn btn-default" type="button" data-toggle="modal" data-target="#changePasswordModal">
+                                            Change password
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-default" type="button" disabled title="LDAP passwords are changed through the company password system.">
+                                            Change password
+                                        </button>
+                                        <span class="profile-readonly-note">LDAP passwords are changed through the company password system.</span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-xs-12 col-sm-4 col-md-5 col-lg-5 profile-suggest-side">
-                    <div>
-                        <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
-                        <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit my articles</a>
                     </div>
                 </div>
             </div>
