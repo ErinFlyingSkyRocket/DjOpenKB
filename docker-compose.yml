@@ -61,5 +61,25 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - static_volume:/app/staticfiles:ro
 
+
+
+cleanup-scheduler:
+  build: .
+  container_name: djopenkb-cleanup-scheduler
+  command: >
+    sh -c "while true; do
+      python manage.py cleanup_stray_upload_files --noinput;
+      sleep $${CLEANUP_INTERVAL_SECONDS:-86400};
+    done"
+  volumes:
+    - .:/app
+  env_file:
+    - .env
+  environment:
+    DJANGO_SETTINGS_MODULE: djopenkb.settings
+  depends_on:
+    - db
+  restart: unless-stopped
+
 volumes:
   static_volume:
