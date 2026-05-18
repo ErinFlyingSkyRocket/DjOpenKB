@@ -1,0 +1,7 @@
+Django
+gunicorn
+openkb
+markdown
+python-dotenv
+django-auth-ldap
+psycopg[binary]

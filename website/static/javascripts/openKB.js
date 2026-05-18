@@ -1,4 +1,221 @@
 $(document).ready(function(){
+
+    // Search history dropdown for normal search bars only.
+    // This does NOT attach to the OpenKB AI chatbox.
+    // Stored in browser sessionStorage, so it only lasts for the current browser session.
+    (function(){
+        var MAX_HISTORY_ITEMS = 5;
+        var MAX_VISIBLE_ITEMS = 5;
+
+        function storageAvailable(){
+            try{
+                var testKey = '__djopenkb_history_test__';
+                window.sessionStorage.setItem(testKey, '1');
+                window.sessionStorage.removeItem(testKey);
+                return true;
+            }catch(error){
+                return false;
+            }
+        }
+
+        if(!storageAvailable()){
+            return;
+        }
+
+        function getHistory(storageKey){
+            try{
+                var items = JSON.parse(window.sessionStorage.getItem(storageKey) || '[]');
+                if(!Array.isArray(items)){
+                    return [];
+                }
+                return items.filter(function(item){
+                    return typeof item === 'string' && item.trim() !== '';
+                });
+            }catch(error){
+                return [];
+            }
+        }
+
+        function setHistory(storageKey, items){
+            window.sessionStorage.setItem(storageKey, JSON.stringify(items.slice(0, MAX_HISTORY_ITEMS)));
+        }
+
+        function addHistoryItem(storageKey, value){
+            value = $.trim(value || '');
+            if(value === ''){
+                return;
+            }
+
+            var lowerValue = value.toLowerCase();
+            var items = getHistory(storageKey).filter(function(item){
+                return item.toLowerCase() !== lowerValue;
+            });
+
+            items.unshift(value);
+            setHistory(storageKey, items);
+        }
+
+        function removeHistoryItem(storageKey, value){
+            var lowerValue = (value || '').toLowerCase();
+            var items = getHistory(storageKey).filter(function(item){
+                return item.toLowerCase() !== lowerValue;
+            });
+            setHistory(storageKey, items);
+        }
+
+        function injectSearchHistoryStyles(){
+            if($('#djopenkb-search-history-style').length){
+                return;
+            }
+
+            $('head').append(
+                '<style id="djopenkb-search-history-style">' +
+                '.search-history-container{position:relative;}' +
+                '.search-history-dropdown{position:absolute;z-index:10050;background:#fff;border:1px solid #dce4ec;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.16);max-height:260px;overflow:auto;text-align:left;}' +
+                '.search-history-dropdown.hidden{display:none;}' +
+                '.search-history-title{padding:7px 11px;color:#7b8a8b;font-size:12px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #eef2f4;background:#f8fafb;}' +
+                '.search-history-item{display:flex;align-items:center;gap:8px;width:100%;border:0;background:#fff;padding:9px 10px;color:#2c3e50;text-align:left;}' +
+                '.search-history-item:hover,.search-history-item:focus{background:#f4f8fb;outline:none;}' +
+                '.search-history-term{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+                '.search-history-icon{color:#95a5a6;}' +
+                '.search-history-remove{border:0;background:transparent;color:#95a5a6;padding:0 2px;line-height:1;}' +
+                '.search-history-remove:hover{color:#c0392b;}' +
+                '</style>'
+            );
+        }
+
+        function setupHistoryDropdown($input, options){
+            if(!$input.length || $input.data('search-history-ready')){
+                return;
+            }
+
+            $input.data('search-history-ready', true);
+            $input.attr('autocomplete', 'off');
+
+            var storageKey = options.storageKey;
+            var title = options.title || 'Search history';
+
+            var $container = $input.closest('.input-group');
+            if(!$container.length){
+                $container = $input.parent();
+            }
+            $container.addClass('search-history-container');
+
+            var $dropdown = $('<div class="search-history-dropdown hidden" role="listbox"></div>');
+            $container.append($dropdown);
+
+            function positionDropdown(){
+                var inputPosition = $input.position();
+                $dropdown.css({
+                    left: inputPosition.left,
+                    top: inputPosition.top + $input.outerHeight(),
+                    width: $input.outerWidth()
+                });
+            }
+
+            function hideDropdown(){
+                $dropdown.addClass('hidden');
+            }
+
+            function renderDropdown(){
+                var history = getHistory(storageKey);
+                var currentValue = $.trim($input.val() || '').toLowerCase();
+
+                if(currentValue){
+                    history = history.filter(function(item){
+                        return item.toLowerCase().indexOf(currentValue) !== -1;
+                    });
+                }
+
+                history = history.slice(0, MAX_VISIBLE_ITEMS);
+                $dropdown.empty();
+
+                if(history.length === 0){
+                    hideDropdown();
+                    return;
+                }
+
+                $dropdown.append('<div class="search-history-title">' + title + '</div>');
+
+                history.forEach(function(item){
+                    var $row = $('<button type="button" class="search-history-item" role="option"></button>');
+                    var $icon = $('<i class="fa fa-history search-history-icon" aria-hidden="true"></i>');
+                    var $term = $('<span class="search-history-term"></span>').text(item);
+                    var $remove = $('<button type="button" class="search-history-remove" aria-label="Remove search history item"><i class="fa fa-times"></i></button>');
+
+                    $row.append($icon).append($term).append($remove);
+
+                    $row.on('mousedown', function(event){
+                        event.preventDefault();
+                    });
+
+                    $row.on('click', function(){
+                        $input.val(item).focus();
+                        hideDropdown();
+                    });
+
+                    $remove.on('click', function(event){
+                        event.preventDefault();
+                        event.stopPropagation();
+                        removeHistoryItem(storageKey, item);
+                        renderDropdown();
+                    });
+
+                    $dropdown.append($row);
+                });
+
+                positionDropdown();
+                $dropdown.removeClass('hidden');
+            }
+
+            $input.on('focus click keyup', function(event){
+                if(event.type === 'keyup' && event.key === 'Escape'){
+                    hideDropdown();
+                    return;
+                }
+                renderDropdown();
+            });
+
+            $input.on('keydown', function(event){
+                if(event.key === 'Escape'){
+                    hideDropdown();
+                }
+            });
+
+            $input.closest('form').on('submit', function(){
+                addHistoryItem(storageKey, $input.val());
+            });
+
+            $(window).on('resize', positionDropdown);
+
+            $(document).on('mousedown', function(event){
+                if(!$(event.target).closest($container).length){
+                    hideDropdown();
+                }
+            });
+        }
+
+        injectSearchHistoryStyles();
+
+        var seenInputs = [];
+        $('input[type="text"][name="q"], #frm_search').each(function(){
+            var inputId = this.id || '';
+
+            // Do not enable history for the OpenKB AI question/chatbox input.
+            if(inputId === 'openkbAiQuestion' || $(this).closest('#openkbAiBox, .openkb-ai-box, .ai-chatbox, .chatbox').length){
+                return;
+            }
+
+            if(seenInputs.indexOf(this) === -1){
+                seenInputs.push(this);
+                setupHistoryDropdown($(this), {
+                    storageKey: 'djopenkb.searchHistory',
+                    title: 'Search history'
+                });
+            }
+        });
+    }());
+
     // add the responsive image class to all images
     $('.body_text img').each(function(){
         $(this).addClass('img-responsive');
