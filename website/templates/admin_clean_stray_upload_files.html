@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Clean Stray Upload Files</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <style>
+        .navbar-logout-form { display: block; margin: 0; }
+        .navbar-logout-button {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 0;
+            padding: 15px;
+            line-height: 20px;
+            color: #777;
+            text-align: left;
+        }
+        .navbar-logout-button:hover,
+        .navbar-logout-button:focus { color: #333; background-color: transparent; outline: none; }
+        .cleanup-wrap { max-width: 1000px; margin: 0 auto; float: none; }
+        .cleanup-muted { color: #899aa6; font-size: 12px; }
+        .cleanup-summary { margin-bottom: 15px; }
+        .cleanup-summary strong { font-size: 18px; }
+        .cleanup-table-wrap { overflow-x: auto; }
+        .cleanup-thumb {
+            max-width: 90px;
+            max-height: 60px;
+            border: 1px solid #e5eaee;
+            border-radius: 3px;
+            background: #f8fafb;
+        }
+        .cleanup-actions { margin-top: 14px; }
+        .cleanup-actions .btn { margin-right: 6px; margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                        </ul>
+                    </li>
+                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
+                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    <li>
+                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="navbar-logout-button" type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="col-xs-12 cleanup-wrap">
+            <h2>Clean stray upload files</h2>
+            <p class="cleanup-muted">
+                This scans <code>openkb-data/wiki/uploads</code> and finds uploaded files that are not referenced by any Django article body,
+                article <code>image_assets</code>, or Markdown file under <code>openkb-data/wiki</code>.
+                Files newer than {{ min_age_minutes }} minute{% if min_age_minutes != 1 %}s{% endif %} are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately.
+            </p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="panel panel-default cleanup-summary">
+                <div class="panel-body">
+                    <strong>{{ stray_count }}</strong> stray upload file{% if stray_count != 1 %}s{% endif %} found
+                    <span class="cleanup-muted">({{ total_size_kb }} KB total)</span>
+                </div>
+            </div>
+
+            {% if stray_files %}
+                <div class="panel panel-warning">
+                    <div class="panel-heading">Review before deleting</div>
+                    <div class="panel-body">
+                        <p>
+                            These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed.
+                        </p>
+                        <form method="post" onsubmit="return confirm('Delete all listed stray upload files? This cannot be undone.');">
+                            {% csrf_token %}
+                            <div class="cleanup-actions">
+                                <button class="btn btn-danger" type="submit">
+                                    <i class="fa fa-trash"></i> Delete {{ stray_count }} stray file{% if stray_count != 1 %}s{% endif %}
+                                </button>
+                                <a class="btn btn-default" href="{% url 'profile' %}">Back to profile</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="cleanup-table-wrap">
+                        <table class="table table-striped table-condensed table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Preview / Open</th>
+                                    <th>Filename</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Last modified</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in stray_files %}
+                                    <tr>
+                                        <td>
+                                            {% if file.is_previewable_image %}
+                                                <a href="{{ file.url }}" target="_blank" rel="noopener">
+                                                    <img class="cleanup-thumb" src="{{ file.url }}" alt="{{ file.filename }}">
+                                                </a>
+                                            {% else %}
+                                                <a class="btn btn-xs btn-default" href="{{ file.url }}" target="_blank" rel="noopener">
+                                                    <i class="fa fa-file"></i> Open
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                        <td><code>{{ file.filename }}</code></td>
+                                        <td>{{ file.extension|upper }}</td>
+                                        <td>{{ file.size_kb }} KB</td>
+                                        <td>{{ file.modified_at|date:"Y-m-d H:i" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-success">No stray uploaded files found.</div>
+                <a class="btn btn-default" href="{% url 'profile' %}">Back to profile</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

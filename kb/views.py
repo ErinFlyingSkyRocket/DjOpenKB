@@ -25,7 +25,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .models import SuggestedArticle, UserProfile
+from .models import SuggestedArticle, UserProfile, SiteSetting
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
@@ -131,6 +131,131 @@ def clear_committed_pending_uploads(request, image_assets):
         item for item in pending_uploads if item not in image_assets
     ]
     request.session.modified = True
+
+
+def user_can_use_admin_tools(user):
+    """Return True for users allowed to use profile-level admin maintenance tools."""
+    return bool(user.is_authenticated and user.is_active and user.is_staff)
+
+
+def admin_tools_required(view_func):
+    """Require normal site access plus staff/admin permission."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_use_admin_tools(request.user):
+            from django.http import HttpResponseForbidden
+            return HttpResponseForbidden("You do not have permission to use admin maintenance tools.")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def extract_uploaded_file_filenames_from_text(text):
+    """Find /wiki/uploads/<filename> references from Markdown or rendered HTML text."""
+    if not text:
+        return set()
+
+    filenames = set(extract_article_image_filenames(text))
+
+    # Also catch HTML img src or plain pasted URLs such as:
+    # /wiki/uploads/example.png, http://host/wiki/uploads/example.png
+    for filename in re.findall(r"/wiki/uploads/([A-Za-z0-9._-]+)", text):
+        if filename and "/" not in filename and "\\" not in filename:
+            filenames.add(filename)
+
+    return filenames
+
+
+def get_all_referenced_uploaded_files():
+    """Return uploaded filenames still referenced by articles or Markdown files."""
+    referenced = set()
+
+    # 1) Trust Django article records first. This covers draft/published articles
+    # and images tracked in image_assets.
+    for article in SuggestedArticle.objects.only("body", "image_assets"):
+        referenced.update(article.image_assets or [])
+        referenced.update(extract_uploaded_file_filenames_from_text(article.body))
+
+    # 2) Also scan all OpenKB wiki Markdown files. This protects manually added
+    # Markdown files or files edited outside Django.
+    wiki_dir = settings.OPENKB_WIKI_DIR
+    if wiki_dir.exists():
+        for markdown_file in wiki_dir.rglob("*.md"):
+            try:
+                text = markdown_file.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            referenced.update(extract_uploaded_file_filenames_from_text(text))
+
+    return {
+        filename for filename in referenced
+        if filename and "/" not in filename and "\\" not in filename
+    }
+
+
+
+def get_stray_upload_cleanup_min_age_minutes():
+    """Return cleanup age threshold from Django Admin site settings."""
+    try:
+        value = SiteSetting.load().stray_upload_cleanup_min_age_minutes
+    except Exception:
+        value = 30
+
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        value = 30
+
+    return max(value, 0)
+
+def find_stray_uploaded_files(min_age_minutes=30):
+    """Return uploaded files that are not referenced anywhere.
+
+    The minimum age protects someone who is currently editing an article: a
+    file uploaded seconds ago may not be saved into Markdown yet.
+    """
+    init_openkb_storage()
+    upload_dir = get_openkb_uploads_dir().resolve()
+    referenced = get_all_referenced_uploaded_files()
+    cutoff_time = timezone.now().timestamp() - (min_age_minutes * 60)
+
+    stray_files = []
+
+    if not upload_dir.exists():
+        return stray_files
+
+    for file_path in upload_dir.iterdir():
+        if not file_path.is_file():
+            continue
+
+        filename = file_path.name
+        if filename in referenced:
+            continue
+
+        try:
+            stat = file_path.stat()
+        except OSError:
+            continue
+
+        if stat.st_mtime > cutoff_time:
+            continue
+
+        extension = file_path.suffix.lower().lstrip(".") or "(no extension)"
+        is_previewable_image = file_path.suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+
+        stray_files.append({
+            "filename": filename,
+            "url": article_image_url(filename),
+            "extension": extension,
+            "is_previewable_image": is_previewable_image,
+            "size_bytes": stat.st_size,
+            "size_kb": round(stat.st_size / 1024, 1),
+            "modified_at": datetime.fromtimestamp(stat.st_mtime),
+            "path": file_path,
+        })
+    stray_files.sort(key=lambda item: item["modified_at"], reverse=True)
+    return stray_files
 
 
 def get_article_image_cards(article):
@@ -482,12 +607,65 @@ def get_profile_account_context(user):
         "account_type_display": get_account_type_display(user),
         "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
         "can_confirm_profile_changes": user.has_usable_password(),
+        "can_use_admin_tools": user_can_use_admin_tools(user),
     }
 
 
 @main_site_login_required
 def profile(request):
     return render(request, "profile.html", get_profile_account_context(request.user))
+
+
+@admin_tools_required
+def clean_stray_upload_files(request):
+    min_age_minutes = get_stray_upload_cleanup_min_age_minutes()
+    stray_files = find_stray_uploaded_files(min_age_minutes=min_age_minutes)
+    total_size_bytes = sum(item["size_bytes"] for item in stray_files)
+
+    if request.method == "POST":
+        deleted_count = 0
+        deleted_size_bytes = 0
+        errors = []
+
+        # Re-scan on POST so the cleanup uses the latest file/article state.
+        for item in stray_files:
+            file_path = item["path"]
+            upload_dir = get_openkb_uploads_dir().resolve()
+            file_path = file_path.resolve()
+
+            try:
+                file_path.relative_to(upload_dir)
+            except ValueError:
+                errors.append(f"Skipped invalid path: {item['filename']}")
+                continue
+
+            try:
+                if file_path.exists() and file_path.is_file():
+                    deleted_size_bytes += file_path.stat().st_size
+                    file_path.unlink()
+                    deleted_count += 1
+            except OSError as error:
+                errors.append(f"Could not delete {item['filename']}: {error}")
+
+        if deleted_count:
+            messages.success(
+                request,
+                f"Cleaned up {deleted_count} stray upload file(s), freeing {round(deleted_size_bytes / 1024, 1)} KB."
+            )
+        else:
+            messages.info(request, "No stray upload files were deleted.")
+
+        for error in errors[:5]:
+            messages.error(request, error)
+
+        return redirect("clean_stray_upload_files")
+
+    return render(request, "admin_clean_stray_upload_files.html", {
+        "stray_files": stray_files,
+        "stray_count": len(stray_files),
+        "total_size_kb": round(total_size_bytes / 1024, 1),
+        "min_age_minutes": min_age_minutes,
+    })
 
 
 @main_site_login_required

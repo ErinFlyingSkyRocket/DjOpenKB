@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
 
-from .models import SuggestedArticle, UserProfile
+from .models import SuggestedArticle, SiteSetting, UserProfile
 from .views import delete_article_files, slugify_title, write_article_files
 
 
@@ -238,3 +238,26 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         for obj in queryset:
             delete_article_files(obj)
         super().delete_queryset(request, queryset)
+
+
+
+@admin.register(SiteSetting)
+class SiteSettingAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ("Stray upload cleanup", {
+            "fields": ("stray_upload_cleanup_min_age_minutes",),
+            "description": (
+                "Controls the minimum age used by My Profile → Admin tools → "
+                "Clean stray upload files. Use 0 to show files immediately."
+            ),
+        }),
+    )
+    readonly_fields = ("updated_at",)
+
+    def has_add_permission(self, request):
+        # Only allow creating the singleton if it does not already exist.
+        return not SiteSetting.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        # Prevent accidental removal of the settings row.
+        return False

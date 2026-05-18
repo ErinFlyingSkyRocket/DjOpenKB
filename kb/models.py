@@ -212,3 +212,36 @@ class SuggestedArticle(models.Model):
                 return "Admin"
 
         return self.author_account_type_snapshot or ""
+
+
+
+class SiteSetting(models.Model):
+    """Singleton-style site settings editable from Django Admin."""
+
+    stray_upload_cleanup_min_age_minutes = models.PositiveIntegerField(
+        default=30,
+        verbose_name="Stray upload cleanup minimum age (minutes)",
+        help_text=(
+            "Files newer than this many minutes are ignored by the stray upload cleanup tool. "
+            "Set to 0 to detect/delete stray uploads immediately."
+        ),
+    )
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Site setting"
+        verbose_name_plural = "Site settings"
+
+    def __str__(self):
+        return "Site settings"
+
+    def save(self, *args, **kwargs):
+        # Keep this model singleton-like: always use primary key 1.
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _created = cls.objects.get_or_create(pk=1)
+        return obj

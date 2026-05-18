@@ -84,6 +84,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .profile-readonly-note { color: #899aa6; font-size: 12px; margin-top: 5px; display: inline-block; }
         .profile-article-buttons { margin-top: 8px; }
         .profile-article-buttons .btn { margin-right: 6px; margin-bottom: 6px; }
+        .profile-admin-tools { margin-top: 8px; padding: 10px 12px; background: #f8fafb; border: 1px solid #e5eaee; border-radius: 3px; }
+        .profile-admin-tools .btn { margin-top: 6px; }
         .password-policy-box {
             background: #f8fafb;
             border: 1px solid #e5eaee;
@@ -224,14 +226,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 </span>
                             </div>
 
-                            <div class="profile-account-row">
-                                <span class="profile-account-label">Own suggested articles:</span>
-                                <span class="profile-account-value">{{ total_user_article_count }}</span>
-                                <div class="profile-article-buttons">
-                                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
-                                    <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit my articles</a>
-                                </div>
-                            </div>
 
                             <div class="profile-account-row">
                                 <span class="profile-account-label">Password:</span>
@@ -248,8 +242,39 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     {% endif %}
                                 </div>
                             </div>
+
                         </div>
                     </div>
+
+                    <div class="panel panel-default profile-account-panel">
+                        <div class="panel-heading">Articles</div>
+                        <div class="panel-body">
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">Own suggested articles:</span>
+                                <span class="profile-account-value">{{ total_user_article_count }}</span>
+                                <div class="profile-article-buttons">
+                                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
+                                    <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit my articles</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {% if can_use_admin_tools %}
+                    <div class="panel panel-default profile-account-panel">
+                        <div class="panel-heading">Admin tools</div>
+                        <div class="panel-body">
+                            <div class="profile-admin-tools">
+                                <div><strong>Clean stray upload files</strong></div>
+                                <div class="profile-muted">Finds unused files in <code>openkb-data/wiki/uploads</code> that are no longer referenced by any article or wiki Markdown file.</div>
+                                <a class="btn btn-warning editor_btn_action" href="{% url 'clean_stray_upload_files' %}">
+                                    <i class="fa fa-trash"></i> Clean stray files
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
