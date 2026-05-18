@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libldap2-dev \
     libsasl2-dev \
     ldap-utils \
+    postgresql-client \
     poppler-utils \
     tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
@@ -29,7 +30,8 @@ RUN python -m pip install \
     openkb \
     markdown \
     python-dotenv \
-    django-auth-ldap
+    django-auth-ldap \
+    "psycopg[binary]"
 
 EXPOSE 8000
 

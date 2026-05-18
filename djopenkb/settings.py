@@ -115,12 +115,29 @@ WSGI_APPLICATION = "djopenkb.wsgi.application"
 # Database
 # ---------------------------------------------------------------------
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# PostgreSQL is the default database for this project.
+# Docker Compose provides these POSTGRES_* values to the web container.
+# For quick local testing outside Docker, set USE_SQLITE=true to temporarily use db.sqlite3.
+USE_SQLITE = os.getenv("USE_SQLITE", "false").lower() == "true"
+
+if USE_SQLITE:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB", "djopenkb"),
+            "USER": os.getenv("POSTGRES_USER", "djopenkb"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "djopenkb_password"),
+            "HOST": os.getenv("POSTGRES_HOST", "db"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        }
+    }
 
 
 # ---------------------------------------------------------------------
@@ -224,13 +241,11 @@ USE_TZ = True
 # ---------------------------------------------------------------------
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
     BASE_DIR / "website" / "static",
 ]
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 # ---------------------------------------------------------------------
 # Default primary key field type

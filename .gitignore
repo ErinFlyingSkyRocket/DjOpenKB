@@ -17,6 +17,7 @@ ENV/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+*.sqlite3
 media/
 staticfiles/
 
@@ -37,6 +38,11 @@ secret_key.txt
 credentials.json
 token.json
 
+# PostgreSQL local database folder
+# Keep this folder locally if you want to preserve your Postgres data.
+# Do not commit it to GitHub.
+postgres-data/
+
 # OpenKB local/generated knowledge content
 # These are local user solutions/articles and should not go to GitHub.
 openkb-data/
@@ -52,7 +58,6 @@ website/**/*.md
 uploads/
 tmp/
 temp/
-*.sqlite3
 
 # OS files
 .DS_Store
@@ -86,6 +91,7 @@ package-lock.json
 docker-compose.override.yml
 
 # Local certificates for nginx HTTPS
-#nginx/certs/
+# Uncomment this if you do not want to commit local HTTPS certs.
+# nginx/certs/
 *.localhost.crt
 *.localhost.key
