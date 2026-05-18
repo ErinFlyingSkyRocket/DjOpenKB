@@ -272,6 +272,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     <i class="fa fa-trash"></i> Clean stray files
                                 </a>
                             </div>
+
+                            <hr>
+
+                            <div class="profile-admin-tools">
+                                <div><strong>Bulk import / export articles</strong></div>
+                                <div class="profile-muted">Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account.</div>
+                                <a class="btn btn-info editor_btn_action" href="{% url 'admin_bulk_articles' %}">
+                                    <i class="fa fa-exchange"></i> Import / Export
+                                </a>
+                            </div>
                         </div>
                     </div>
                     {% endif %}

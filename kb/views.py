@@ -1,9 +1,12 @@
 import os
+import io
 import json
 import re
+import shutil
 import subprocess
 import sys
 import uuid
+import zipfile
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
@@ -18,7 +21,7 @@ from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
-from django.http import FileResponse, Http404, JsonResponse
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -256,6 +259,254 @@ def find_stray_uploaded_files(min_age_minutes=30):
         })
     stray_files.sort(key=lambda item: item["modified_at"], reverse=True)
     return stray_files
+
+
+
+def make_unique_article_filename(title, original_filename=""):
+    """Create a unique Markdown filename for an imported article."""
+    timestamp_slug = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+    original_name = Path(original_filename or "").name
+    original_stem = Path(original_name).stem if original_name else ""
+    base_slug = slugify_title(title or original_stem or "imported-article")
+    candidate = f"{timestamp_slug}-{base_slug}.md"
+
+    while SuggestedArticle.objects.filter(filename=candidate).exists():
+        candidate = f"{timestamp_slug}-{base_slug}-{uuid.uuid4().hex[:6]}.md"
+
+    return candidate
+
+
+def safe_zip_member_name(name):
+    """Return a normalized zip member name, or empty string for unsafe paths."""
+    normalized = str(name or "").replace("\\", "/").lstrip("/")
+    parts = [part for part in normalized.split("/") if part not in {"", "."}]
+
+    if not parts or any(part == ".." for part in parts):
+        return ""
+
+    return "/".join(parts)
+
+
+def safe_uploaded_filename(name):
+    """Keep only the filename portion and strip path traversal characters."""
+    filename = Path(str(name or "").replace("\\", "/")).name.strip()
+    if not filename or filename in {".", ".."}:
+        return ""
+    return filename
+
+
+def make_unique_upload_filename(original_filename):
+    """Create a non-conflicting filename under openkb-data/wiki/uploads."""
+    upload_dir = get_openkb_uploads_dir()
+    original = safe_uploaded_filename(original_filename)
+    suffix = Path(original).suffix.lower()
+    stem = slugify_title(Path(original).stem or "uploaded-file")
+    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+
+    candidate = f"{timestamp}-{uuid.uuid4().hex[:8]}-{stem}{suffix}"
+    while (upload_dir / candidate).exists():
+        candidate = f"{timestamp}-{uuid.uuid4().hex[:12]}-{stem}{suffix}"
+
+    return candidate
+
+
+def rewrite_uploaded_file_references(text, filename_map):
+    """Rewrite /wiki/uploads/<old> references after imported files are renamed."""
+    updated = text or ""
+    for old_name, new_name in filename_map.items():
+        if not old_name or not new_name or old_name == new_name:
+            continue
+        updated = updated.replace(f"/wiki/uploads/{old_name}", f"/wiki/uploads/{new_name}")
+        updated = updated.replace(f"uploads/{old_name}", f"uploads/{new_name}")
+    return updated
+
+
+def markdown_title_and_body(markdown_text, fallback_title="Imported article"):
+    """Parse a title/body from Markdown when importing a zip without manifest.json."""
+    text = (markdown_text or "").lstrip("\ufeff")
+    lines = text.splitlines()
+    title = fallback_title
+
+    if lines and lines[0].startswith("# "):
+        title = lines[0][2:].strip() or fallback_title
+        lines = lines[1:]
+        if lines and not lines[0].strip():
+            lines = lines[1:]
+
+    body = "\n".join(lines).strip()
+
+    keyword_match = re.search(r"\n?\*\*Keywords:\*\*\s*(.+?)\s*$", body, flags=re.IGNORECASE | re.DOTALL)
+    keywords = ""
+    if keyword_match:
+        keywords = keyword_match.group(1).strip()
+        body = body[:keyword_match.start()].rstrip()
+
+    return title, body, keywords
+
+
+def build_bulk_export_payload():
+    """Build the JSON manifest and file list for article bulk export."""
+    articles = []
+    referenced_uploads = set()
+
+    for article in SuggestedArticle.objects.select_related("owner").order_by("created_at", "id"):
+        image_assets = sorted(set((article.image_assets or []) + extract_article_image_filenames(article.body)))
+        referenced_uploads.update(image_assets)
+
+        articles.append({
+            "title": article.title,
+            "body": article.body,
+            "keywords": article.keywords,
+            "status": article.status,
+            "filename": article.filename,
+            "raw_path": article.raw_path,
+            "wiki_path": article.wiki_path,
+            "image_assets": image_assets,
+            "created_at": article.created_at.isoformat() if article.created_at else "",
+            "updated_at": article.updated_at.isoformat() if article.updated_at else "",
+            "author_username": article.author_username,
+            "author_email": article.author_email,
+        })
+
+    return {
+        "format": "djopenkb-bulk-export-v1",
+        "exported_at": timezone.now().isoformat(),
+        "article_count": len(articles),
+        "articles": articles,
+        "uploads": sorted(referenced_uploads),
+    }
+
+
+def copy_imported_uploads_from_zip(zip_file, upload_member_names):
+    """Copy uploaded files from an import zip into openkb-data/wiki/uploads.
+
+    Returns a mapping of original filename -> new filename so article bodies can
+    be rewritten safely when a filename already exists.
+    """
+    upload_dir = get_openkb_uploads_dir()
+    filename_map = {}
+
+    for member_name in upload_member_names:
+        safe_member = safe_zip_member_name(member_name)
+        if not safe_member:
+            continue
+
+        original_filename = safe_uploaded_filename(safe_member)
+        if not original_filename:
+            continue
+
+        new_filename = make_unique_upload_filename(original_filename)
+        target_path = (upload_dir / new_filename).resolve()
+
+        try:
+            target_path.relative_to(upload_dir.resolve())
+        except ValueError:
+            continue
+
+        with zip_file.open(member_name, "r") as source, target_path.open("wb") as target:
+            shutil.copyfileobj(source, target)
+
+        filename_map[original_filename] = new_filename
+
+    return filename_map
+
+
+def import_articles_from_zip(uploaded_zip, owner):
+    """Import articles and uploaded files from a DjOpenKB bulk export zip.
+
+    All imported articles are assigned to the admin user performing the import.
+    """
+    imported_count = 0
+    errors = []
+
+    with zipfile.ZipFile(uploaded_zip) as archive:
+        members = [item for item in archive.infolist() if not item.is_dir()]
+        safe_names = {safe_zip_member_name(item.filename): item.filename for item in members if safe_zip_member_name(item.filename)}
+
+        # Hard safety limits for admin imports.
+        total_uncompressed = sum(item.file_size for item in members)
+        if total_uncompressed > 200 * 1024 * 1024:
+            raise ValueError("Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB.")
+
+        upload_members = [
+            original_name for safe_name, original_name in safe_names.items()
+            if safe_name.startswith("uploads/")
+        ]
+        filename_map = copy_imported_uploads_from_zip(archive, upload_members)
+
+        manifest_name = safe_names.get("manifest.json")
+        manifest = None
+        if manifest_name:
+            with archive.open(manifest_name, "r") as manifest_file:
+                manifest = json.loads(manifest_file.read().decode("utf-8"))
+
+        article_payloads = []
+
+        if manifest and manifest.get("format") == "djopenkb-bulk-export-v1":
+            for item in manifest.get("articles", []):
+                article_payloads.append({
+                    "title": item.get("title") or "Imported article",
+                    "body": item.get("body") or "",
+                    "keywords": item.get("keywords") or "",
+                    "status": item.get("status") or SuggestedArticle.Status.PUBLISHED,
+                    "filename": item.get("filename") or "",
+                })
+        else:
+            markdown_names = [
+                original_name for safe_name, original_name in safe_names.items()
+                if safe_name.lower().endswith(".md") and not safe_name.startswith("uploads/")
+            ]
+
+            for markdown_name in markdown_names:
+                safe_name = safe_zip_member_name(markdown_name)
+                with archive.open(markdown_name, "r") as markdown_file:
+                    markdown_text = markdown_file.read().decode("utf-8", errors="ignore")
+
+                title, body, keywords = markdown_title_and_body(
+                    markdown_text,
+                    fallback_title=Path(safe_name).stem.replace("-", " ").replace("_", " ").title(),
+                )
+                article_payloads.append({
+                    "title": title,
+                    "body": body,
+                    "keywords": keywords,
+                    "status": SuggestedArticle.Status.PUBLISHED,
+                    "filename": Path(safe_name).name,
+                })
+
+        if not article_payloads:
+            raise ValueError("No articles found in the zip. Include manifest.json or Markdown files.")
+
+        for item in article_payloads:
+            title = (item.get("title") or "Imported article").strip()[:200]
+            body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
+            keywords = (item.get("keywords") or "").strip()[:500]
+            status = item.get("status") or SuggestedArticle.Status.PUBLISHED
+
+            if status not in dict(SuggestedArticle.Status.choices):
+                status = SuggestedArticle.Status.PUBLISHED
+
+            filename = make_unique_article_filename(title, item.get("filename") or "")
+
+            try:
+                article = SuggestedArticle.objects.create(
+                    owner=owner,
+                    title=title,
+                    body=body,
+                    keywords=keywords,
+                    filename=filename,
+                    wiki_path=f"sources/{filename}",
+                    raw_path=f"raw/{filename}",
+                    status=status,
+                    image_assets=extract_article_image_filenames(body),
+                )
+                write_article_files(article)
+                sync_article_image_assets(article, old_assets=[])
+                imported_count += 1
+            except Exception as error:
+                errors.append(f"{title}: {error}")
+
+    return imported_count, errors
 
 
 def get_article_image_cards(article):
@@ -666,6 +917,106 @@ def clean_stray_upload_files(request):
         "total_size_kb": round(total_size_bytes / 1024, 1),
         "min_age_minutes": min_age_minutes,
     })
+
+
+
+@admin_tools_required
+def admin_bulk_articles(request):
+    """Admin page for importing/exporting article bundles."""
+    return render(request, "admin_bulk_articles.html")
+
+
+@admin_tools_required
+def export_articles_zip(request):
+    """Export all Django-managed articles plus referenced uploaded files as a zip."""
+    manifest = build_bulk_export_payload()
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("manifest.json", json.dumps(manifest, indent=2, ensure_ascii=False))
+        archive.writestr(
+            "README.txt",
+            (
+                "DjOpenKB bulk article export.\n"
+                "Import this zip from My Profile -> Admin tools -> Bulk import/export articles.\n"
+                "Articles are stored in manifest.json and articles/*.md.\n"
+                "Referenced uploaded files are stored in uploads/.\n"
+            ),
+        )
+
+        for article in manifest["articles"]:
+            article_filename = safe_uploaded_filename(article.get("filename")) or f"{slugify_title(article.get('title') or 'article')}.md"
+            archive.writestr(f"articles/{article_filename}", build_article_markdown(type("ArticleExport", (), article)))
+
+        upload_dir = get_openkb_uploads_dir().resolve()
+        exported_uploads = set()
+
+        for filename in manifest.get("uploads", []):
+            filename = safe_uploaded_filename(filename)
+            if not filename or filename in exported_uploads:
+                continue
+
+            file_path = (upload_dir / filename).resolve()
+            try:
+                file_path.relative_to(upload_dir)
+            except ValueError:
+                continue
+
+            if file_path.exists() and file_path.is_file():
+                archive.write(file_path, f"uploads/{filename}")
+                exported_uploads.add(filename)
+
+    buffer.seek(0)
+    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+    response["Content-Disposition"] = f'attachment; filename="djopenkb-export-{timestamp}.zip"'
+    return response
+
+
+@admin_tools_required
+def import_articles_zip(request):
+    """Import articles from a zip and assign ownership to the current admin user."""
+    if request.method != "POST":
+        return redirect("admin_bulk_articles")
+
+    uploaded_zip = request.FILES.get("import_zip")
+    if not uploaded_zip:
+        messages.error(request, "Please choose a .zip file to import.")
+        return redirect("admin_bulk_articles")
+
+    if not uploaded_zip.name.lower().endswith(".zip"):
+        messages.error(request, "Only .zip import files are allowed.")
+        return redirect("admin_bulk_articles")
+
+    max_upload_size = 100 * 1024 * 1024
+    if uploaded_zip.size > max_upload_size:
+        messages.error(request, "Import zip is too large. Maximum allowed size is 100 MB.")
+        return redirect("admin_bulk_articles")
+
+    try:
+        imported_count, errors = import_articles_from_zip(uploaded_zip, owner=request.user)
+    except zipfile.BadZipFile:
+        messages.error(request, "Invalid zip file.")
+        return redirect("admin_bulk_articles")
+    except ValueError as error:
+        messages.error(request, str(error))
+        return redirect("admin_bulk_articles")
+    except Exception as error:
+        messages.error(request, f"Import failed: {error}")
+        return redirect("admin_bulk_articles")
+
+    if imported_count:
+        messages.success(request, f"Imported {imported_count} article(s). Owner set to {request.user.get_username()}.")
+    else:
+        messages.warning(request, "No articles were imported.")
+
+    for error in errors[:10]:
+        messages.error(request, error)
+
+    if len(errors) > 10:
+        messages.error(request, f"{len(errors) - 10} more import error(s) were hidden.")
+
+    return redirect("admin_bulk_articles")
 
 
 @main_site_login_required
