@@ -46,9 +46,19 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
     <style>
-        .navbar-logout-form { display: inline; }
-        .navbar-logout-button { background: transparent; border: 0; padding: 15px; line-height: 20px; color: #777; }
-        .navbar-logout-button:hover { color: #333; background-color: transparent; }
+        .navbar-logout-form { display: block; margin: 0; }
+        .navbar-logout-button {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: 0;
+            padding: 15px;
+            line-height: 20px;
+            color: #777;
+            text-align: left;
+        }
+        .navbar-logout-button:hover,
+        .navbar-logout-button:focus { color: #333; background-color: transparent; outline: none; }
         .profile-muted { color: #899aa6; font-size: 12px; }
         .article-actions a { margin-right: 4px; }
         .profile-search-panel { margin-bottom: 15px; }
@@ -111,6 +121,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'profile' %}">My Profile</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -118,7 +129,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
                         </ul>
                     </li>
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
                     {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
                     <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
                     <li>
