@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "記事の一括インポート / エクスポート"
+
+msgid "Toggle navigation"
+msgstr "ナビゲーションを切り替え"
+
+msgid "Knowledge Repository"
+msgstr "ナレッジリポジトリ"
+
+msgid "My Profile"
+msgstr "マイプロフィール"
+
+msgid "Article"
+msgstr "記事"
+
+msgid "New"
+msgstr "新規"
+
+msgid "Edit"
+msgstr "編集"
+
+msgid "Admin"
+msgstr "管理者"
+
+msgid "Logged in as"
+msgstr "ログイン中:"
+
+msgid "Logout"
+msgstr "ログアウト"
+
+msgid "Bulk import / export articles"
+msgstr "記事の一括インポート / エクスポート"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "管理者専用ツール。エクスポートには記事のMarkdownと参照ファイルが含まれます:"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "インポートされた記事は、インポートを実行した管理者アカウントに割り当てられます。"
+
+msgid "Export articles"
+msgstr "記事をエクスポート"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Django管理の記事、Markdown内容、および"
+
+msgid "and all referenced uploaded files."
+msgstr "および参照されているすべてのアップロードファイル。"
+
+msgid "Export articles zip"
+msgstr "記事エクスポートzip"
+
+msgid "Import articles"
+msgstr "記事をインポート"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "このシステムからエクスポートされたzip、またはMarkdownファイルと任意の"
+
+msgid "Imported articles will be owned by"
+msgstr "インポートされた記事の所有者:"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "このzipをインポートしますか？インポートされた記事はあなたの管理者アカウントに割り当てられます。"
+
+msgid "Import zip file"
+msgstr "インポート用zipファイル"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "最大アップロードサイズ: 100 MB。最大展開サイズ: 200 MB。"
+
+msgid "Import zip"
+msgstr "zipをインポート"
+
+msgid "Back to profile"
+msgstr "プロフィールに戻る"
+
+msgid "Supported zip format"
+msgstr "対応zip形式"
+
+msgid "This tool prefers the system export format:"
+msgstr "このツールはシステムのエクスポート形式を推奨します:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "manifest.json がない場合、インポーターはzip内のすべてのMarkdownファイルをインポートしようとします。"
+
+msgid "Clean Stray Upload Files"
+msgstr "不要なアップロードファイルを削除"
+
+msgid "Clean stray upload files"
+msgstr "不要なアップロードファイルを削除"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "openkb-data/wiki/uploads をスキャンし、Djangoの記事本文で参照されていないアップロードファイルを見つけます。"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets、または openkb-data/wiki 配下のMarkdownファイル。"
+
+msgid "Review before deleting"
+msgstr "削除前に確認"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "一覧の不要なアップロードファイルをすべて削除しますか？この操作は元に戻せません。"
+
+msgid "Preview / Open"
+msgstr "プレビュー / 開く"
+
+msgid "Filename"
+msgstr "ファイル名"
+
+msgid "Type"
+msgstr "種類"
+
+msgid "Size"
+msgstr "サイズ"
+
+msgid "Last modified"
+msgstr "最終更新"
+
+msgid "No stray uploaded files found."
+msgstr "不要なアップロードファイルは見つかりません。"
+
+msgid "Login to contribute"
+msgstr "ログインして投稿"
+
+msgid "How can we help?"
+msgstr "どのようにお手伝いできますか？"
+
+msgid "Featured articles"
+msgstr "注目記事"
+
+msgid "No featured articles yet."
+msgstr "注目記事はまだありません。"
+
+msgid "Article details"
+msgstr "記事の詳細"
+
+msgid "Published date"
+msgstr "公開日"
+
+msgid "Last updated"
+msgstr "最終更新"
+
+msgid "Share article"
+msgstr "記事を共有"
+
+msgid "Author"
+msgstr "作成者"
+
+msgid "Permalink"
+msgstr "固定リンク"
+
+msgid "Edit article"
+msgstr "記事を編集"
+
+msgid "Delete article"
+msgstr "記事を削除"
+
+msgid "Ask OpenKB AI"
+msgstr "OpenKB AIに質問"
+
+msgid "Ask"
+msgstr "質問"
+
+msgid "Answer"
+msgstr "回答"
+
+msgid "No answer yet."
+msgstr "まだ回答はありません。"
+
+msgid "Related articles"
+msgstr "関連記事"
+
+msgid "search"
+msgstr "検索"
+
+msgid "Edit My Articles"
+msgstr "自分の記事を編集"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "ナレッジリポジトリの提案記事を検索、編集、削除します。"
+
+msgid "Search my suggestions"
+msgstr "自分の提案を検索"
+
+msgid "Clear search"
+msgstr "検索をクリア"
+
+msgid "Next"
+msgstr "次へ"
+
+msgid "Last"
+msgstr "最後"
+
+msgid "Article title"
+msgstr "記事タイトル"
+
+msgid "Status"
+msgstr "ステータス"
+
+msgid "Created"
+msgstr "作成日"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "No matching suggested articles found."
+msgstr "一致する提案記事が見つかりません。"
+
+msgid "You have not suggested any articles yet."
+msgstr "まだ記事を提案していません。"
+
+msgid "Create your first suggestion"
+msgstr "最初の提案を作成"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "タイトル、本文、キーワード、ステータス、またはファイルパスで検索"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "ITヘルプセンター"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "よくある質問への即時回答を得て、3文字をプロのように使う方法を学びましょう。"
+
+msgid "Date"
+msgstr "日付"
+
+msgid "Login"
+msgstr "ログイン"
+
+msgid "Please sign in"
+msgstr "サインインしてください"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "LDAPメールまたはDjangoローカルユーザー名を使用します。"
+
+msgid "Sign in"
+msgstr "サインイン"
+
+msgid "email address"
+msgstr "メールアドレス"
+
+msgid "Password"
+msgstr "パスワード"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "アカウント情報を管理します。提案記事の管理は 記事 > 編集 を使用してください。"
+
+msgid "Account summary"
+msgstr "アカウント概要"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "ユーザー名とメールはDjangoまたはLDAPアカウント情報から作成されます。LDAPメールアドレスはここでは変更できません。"
+
+msgid "Username"
+msgstr "ユーザー名"
+
+msgid "New username"
+msgstr "新しいユーザー名"
+
+msgid "Confirm password"
+msgstr "パスワードを確認"
+
+msgid "Save username"
+msgstr "ユーザー名を保存"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Email"
+msgstr "メール"
+
+msgid "No email set"
+msgstr "メール未設定"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "LDAP管理のため編集不可"
+
+msgid "New email"
+msgstr "新しいメール"
+
+msgid "Save email"
+msgstr "メールを保存"
+
+msgid "Account type"
+msgstr "アカウント種別"
+
+msgid "Language"
+msgstr "言語"
+
+msgid "Save language"
+msgstr "言語を保存"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "これはアカウントのWebサイト表示言語を変更します。記事内容は当面、元の言語のままです。"
+
+msgid "Change password"
+msgstr "パスワードを変更"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAPパスワードは会社のパスワードシステムで変更します。"
+
+msgid "Articles"
+msgstr "記事"
+
+msgid "Own suggested articles"
+msgstr "自分の提案記事"
+
+msgid "New article"
+msgstr "新しい記事"
+
+msgid "Edit my articles"
+msgstr "自分の記事を編集"
+
+msgid "Admin tools"
+msgstr "管理者ツール"
+
+msgid "Finds unused files in"
+msgstr "未使用ファイルを検索:"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "どの記事またはWiki Markdownファイルからも参照されていないもの。"
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "記事をMarkdownとアップロードファイル付きのzipとしてエクスポート、またはzipをインポートして記事を管理者アカウントに割り当てます。"
+
+msgid "Old password"
+msgstr "現在のパスワード"
+
+msgid "New password"
+msgstr "新しいパスワード"
+
+msgid "Password requirements"
+msgstr "パスワード要件"
+
+msgid "At least 12 characters"
+msgstr "12文字以上"
+
+msgid "At least 1 uppercase letter"
+msgstr "大文字を1文字以上"
+
+msgid "At least 1 lowercase letter"
+msgstr "小文字を1文字以上"
+
+msgid "At least 1 number"
+msgstr "数字を1文字以上"
+
+msgid "At least 1 special character"
+msgstr "特殊文字を1文字以上"
+
+msgid "Must not contain your username or email name"
+msgstr "ユーザー名またはメール名を含めることはできません"
+
+msgid "Confirm new password"
+msgstr "新しいパスワードを確認"
+
+msgid "Re-type the new password to confirm."
+msgstr "確認のため新しいパスワードをもう一度入力してください。"
+
+msgid "Update password"
+msgstr "パスワードを更新"
+
+msgid "Passwords match."
+msgstr "パスワードが一致しています。"
+
+msgid "Passwords do not match yet."
+msgstr "パスワードはまだ一致していません。"
+
+msgid "Suggest article"
+msgstr "記事を提案"
+
+msgid "Suggest"
+msgstr "提案"
+
+msgid "Pasted images"
+msgstr "貼り付けた画像"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "この下書きにアップロードされた画像はここに表示されます。Xをクリックすると記事から画像を削除し、アップロードファイルも削除します。"
+
+msgid "Article body (Markdown)"
+msgstr "記事本文（Markdown）"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "小さなPNG/JPG/GIF/WEBP画像をエディターに直接貼り付けるか、ボタンでアップロードできます。各画像は最大2 MBです。"
+
+msgid "Upload image"
+msgstr "画像をアップロード"
+
+msgid "Preview"
+msgstr "プレビュー"
+
+msgid "Keywords"
+msgstr "キーワード"
+
+msgid "Delete suggested article"
+msgstr "提案記事を削除"
+
+msgid "Are you sure you want to delete"
+msgstr "本当に削除しますか"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "これはプロフィールレコードを削除し、OpenKBのraw/sourceストレージからMarkdownファイルを削除します。"
+
+msgid "Published"
+msgstr "公開済み"
+
+msgid "Draft"
+msgstr "下書き"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Invalid language selected."
+msgstr "無効な言語が選択されました。"
+
+msgid "Language preference updated successfully."
+msgstr "言語設定を更新しました。"
+
+msgid "Confirm password is incorrect."
+msgstr "確認用パスワードが正しくありません。"
+
+msgid "Username cannot be empty."
+msgstr "ユーザー名は空にできません。"
+
+msgid "That username is already used by another account."
+msgstr "そのユーザー名はすでに別のアカウントで使用されています。"
+
+msgid "Username updated successfully."
+msgstr "ユーザー名を更新しました。"
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAPメールはLDAP/ADで管理されており、ここでは変更できません。"
+
+msgid "Email updated successfully."
+msgstr "メールを更新しました。"
+
+msgid "Invalid profile update request."
+msgstr "無効なプロフィール更新リクエストです。"
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "最初"
+
+msgid "Previous"
+msgstr "前へ"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "%(num_pages)s ページ中 %(number)s ページ"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: 注目トピック :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: 「%(query)s」の検索結果 :::"
+
+msgid "Clean stray files"
+msgstr "不要なファイルを削除"
+
+msgid "Import / Export"
+msgstr "インポート / エクスポート"
+
+msgid "Open"
+msgstr "開く"
+
+msgid "Document Bulk Import / Export"
+msgstr "文書の一括インポート / エクスポート"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "ナレッジリポジトリに提案した記事を検索、編集、削除できます。"
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s 件の記事"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "%(name)s が提案した記事の合計"
+
+msgid "Search suggested articles"
+msgstr "提案記事を検索"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "\"%(query)s\" の検索結果を表示しています。"
+
+msgid "My suggested articles"
+msgstr "自分の提案記事"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s 件一致 / 全 %(total)s 件"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "全 %(count)s 件"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "\"%(query)s\" に一致する %(count)s 件の記事のうち %(start)s-%(end)s 件を表示"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "%(count)s 件の記事のうち %(start)s-%(end)s 件を表示"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s 件の一致する記事が見つかりました。"
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "記事は合計 %(count)s 件です。"

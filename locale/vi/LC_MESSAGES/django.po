@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: vi\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Nhập / xuất hàng loạt bài viết"
+
+msgid "Toggle navigation"
+msgstr "Bật/tắt điều hướng"
+
+msgid "Knowledge Repository"
+msgstr "Kho tri thức"
+
+msgid "My Profile"
+msgstr "Hồ sơ của tôi"
+
+msgid "Article"
+msgstr "Bài viết"
+
+msgid "New"
+msgstr "Mới"
+
+msgid "Edit"
+msgstr "Sửa"
+
+msgid "Admin"
+msgstr "Quản trị"
+
+msgid "Logged in as"
+msgstr "Đã đăng nhập với"
+
+msgid "Logout"
+msgstr "Đăng xuất"
+
+msgid "Bulk import / export articles"
+msgstr "Nhập / xuất hàng loạt bài viết"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Công cụ chỉ dành cho quản trị viên. Bản xuất bao gồm Markdown bài viết và các tệp được tham chiếu trong"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Các bài viết đã nhập được gán cho tài khoản quản trị thực hiện việc nhập."
+
+msgid "Export articles"
+msgstr "Xuất bài viết"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Tải xuống một tệp zip chứa tất cả bài viết do Django quản lý, nội dung Markdown của chúng, một"
+
+msgid "and all referenced uploaded files."
+msgstr "và tất cả các tệp tải lên được tham chiếu."
+
+msgid "Export articles zip"
+msgstr "Zip xuất bài viết"
+
+msgid "Import articles"
+msgstr "Nhập bài viết"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Tải lên zip được xuất từ hệ thống này, hoặc zip chứa các tệp Markdown và một tùy chọn"
+
+msgid "Imported articles will be owned by"
+msgstr "Các bài viết đã nhập sẽ thuộc sở hữu của"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Nhập zip này? Các bài viết đã nhập sẽ được gán cho tài khoản quản trị của bạn."
+
+msgid "Import zip file"
+msgstr "Tệp zip nhập"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Kích thước tải lên tối đa: 100 MB. Kích thước giải nén tối đa: 200 MB."
+
+msgid "Import zip"
+msgstr "Nhập zip"
+
+msgid "Back to profile"
+msgstr "Quay lại hồ sơ"
+
+msgid "Supported zip format"
+msgstr "Định dạng zip được hỗ trợ"
+
+msgid "This tool prefers the system export format:"
+msgstr "Công cụ này ưu tiên định dạng xuất của hệ thống:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Nếu thiếu manifest.json, trình nhập sẽ cố nhập tất cả các tệp Markdown tìm thấy trong zip."
+
+msgid "Clean Stray Upload Files"
+msgstr "Dọn các tệp tải lên không còn dùng"
+
+msgid "Clean stray upload files"
+msgstr "Dọn tệp tải lên thừa"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Công cụ này quét openkb-data/wiki/uploads và tìm các tệp tải lên không được tham chiếu bởi bất kỳ nội dung bài viết Django nào,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets, hoặc tệp Markdown trong openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Xem lại trước khi xóa"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Xóa tất cả các tệp tải lên không còn dùng được liệt kê? Không thể hoàn tác."
+
+msgid "Preview / Open"
+msgstr "Xem trước / Mở"
+
+msgid "Filename"
+msgstr "Tên tệp"
+
+msgid "Type"
+msgstr "Loại"
+
+msgid "Size"
+msgstr "Kích thước"
+
+msgid "Last modified"
+msgstr "Sửa đổi lần cuối"
+
+msgid "No stray uploaded files found."
+msgstr "Không tìm thấy tệp tải lên không còn dùng."
+
+msgid "Login to contribute"
+msgstr "Đăng nhập để đóng góp"
+
+msgid "How can we help?"
+msgstr "Chúng tôi có thể giúp gì?"
+
+msgid "Featured articles"
+msgstr "Bài viết nổi bật"
+
+msgid "No featured articles yet."
+msgstr "Chưa có bài viết nổi bật."
+
+msgid "Article details"
+msgstr "Chi tiết bài viết"
+
+msgid "Published date"
+msgstr "Ngày xuất bản"
+
+msgid "Last updated"
+msgstr "Cập nhật lần cuối"
+
+msgid "Share article"
+msgstr "Chia sẻ bài viết"
+
+msgid "Author"
+msgstr "Tác giả"
+
+msgid "Permalink"
+msgstr "Liên kết cố định"
+
+msgid "Edit article"
+msgstr "Sửa bài viết"
+
+msgid "Delete article"
+msgstr "Xóa bài viết"
+
+msgid "Ask OpenKB AI"
+msgstr "Hỏi OpenKB AI"
+
+msgid "Ask"
+msgstr "Hỏi"
+
+msgid "Answer"
+msgstr "Câu trả lời"
+
+msgid "No answer yet."
+msgstr "Chưa có câu trả lời."
+
+msgid "Related articles"
+msgstr "Bài viết liên quan"
+
+msgid "search"
+msgstr "tìm kiếm"
+
+msgid "Edit My Articles"
+msgstr "Sửa bài viết của tôi"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Tìm, sửa hoặc xóa các bài viết Kho tri thức do bạn đề xuất."
+
+msgid "Search my suggestions"
+msgstr "Tìm kiếm đề xuất của tôi"
+
+msgid "Clear search"
+msgstr "Xóa tìm kiếm"
+
+msgid "Next"
+msgstr "Tiếp"
+
+msgid "Last"
+msgstr "Cuối"
+
+msgid "Article title"
+msgstr "Tiêu đề bài viết"
+
+msgid "Status"
+msgstr "Trạng thái"
+
+msgid "Created"
+msgstr "Đã tạo"
+
+msgid "Actions"
+msgstr "Hành động"
+
+msgid "Delete"
+msgstr "Xóa"
+
+msgid "No matching suggested articles found."
+msgstr "Không tìm thấy bài viết đề xuất phù hợp."
+
+msgid "You have not suggested any articles yet."
+msgstr "Bạn chưa đề xuất bài viết nào."
+
+msgid "Create your first suggestion"
+msgstr "Tạo đề xuất đầu tiên của bạn"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Tìm theo tiêu đề, nội dung, từ khóa, trạng thái hoặc đường dẫn tệp"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "Trung tâm trợ giúp CNTT"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Nhận câu trả lời tức thì cho các câu hỏi phổ biến nhất và học cách dùng 3 ký tự như chuyên gia."
+
+msgid "Date"
+msgstr "Ngày"
+
+msgid "Login"
+msgstr "Đăng nhập"
+
+msgid "Please sign in"
+msgstr "Vui lòng đăng nhập"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Dùng email LDAP hoặc tên người dùng Django cục bộ."
+
+msgid "Sign in"
+msgstr "Đăng nhập"
+
+msgid "email address"
+msgstr "địa chỉ email"
+
+msgid "Password"
+msgstr "Mật khẩu"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Quản lý chi tiết tài khoản của bạn. Dùng Bài viết > Sửa để quản lý các bài viết bạn đề xuất."
+
+msgid "Account summary"
+msgstr "Tóm tắt tài khoản"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Tên người dùng và email được tạo từ chi tiết tài khoản Django hoặc LDAP. Địa chỉ email LDAP không thể thay đổi tại đây."
+
+msgid "Username"
+msgstr "Tên người dùng"
+
+msgid "New username"
+msgstr "Tên người dùng mới"
+
+msgid "Confirm password"
+msgstr "Xác nhận mật khẩu"
+
+msgid "Save username"
+msgstr "Lưu tên người dùng"
+
+msgid "Cancel"
+msgstr "Hủy"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "No email set"
+msgstr "Chưa đặt email"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "Do LDAP quản lý, không thể chỉnh sửa"
+
+msgid "New email"
+msgstr "Email mới"
+
+msgid "Save email"
+msgstr "Lưu email"
+
+msgid "Account type"
+msgstr "Loại tài khoản"
+
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+msgid "Save language"
+msgstr "Lưu ngôn ngữ"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Điều này thay đổi ngôn ngữ giao diện trang web cho tài khoản của bạn. Nội dung bài viết hiện vẫn giữ ngôn ngữ gốc."
+
+msgid "Change password"
+msgstr "Đổi mật khẩu"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "Mật khẩu LDAP được đổi thông qua hệ thống mật khẩu của công ty."
+
+msgid "Articles"
+msgstr "Bài viết"
+
+msgid "Own suggested articles"
+msgstr "Bài viết đề xuất của tôi"
+
+msgid "New article"
+msgstr "Bài viết mới"
+
+msgid "Edit my articles"
+msgstr "Sửa bài viết của tôi"
+
+msgid "Admin tools"
+msgstr "Công cụ quản trị"
+
+msgid "Finds unused files in"
+msgstr "Tìm các tệp không dùng trong"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "không còn được tham chiếu bởi bất kỳ bài viết hoặc tệp Markdown wiki nào."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Xuất bài viết thành zip với Markdown và tệp tải lên, hoặc nhập zip và gán bài viết đã nhập cho tài khoản quản trị của bạn."
+
+msgid "Old password"
+msgstr "Mật khẩu cũ"
+
+msgid "New password"
+msgstr "Mật khẩu mới"
+
+msgid "Password requirements"
+msgstr "Yêu cầu mật khẩu"
+
+msgid "At least 12 characters"
+msgstr "Ít nhất 12 ký tự"
+
+msgid "At least 1 uppercase letter"
+msgstr "Ít nhất 1 chữ hoa"
+
+msgid "At least 1 lowercase letter"
+msgstr "Ít nhất 1 chữ thường"
+
+msgid "At least 1 number"
+msgstr "Ít nhất 1 số"
+
+msgid "At least 1 special character"
+msgstr "Ít nhất 1 ký tự đặc biệt"
+
+msgid "Must not contain your username or email name"
+msgstr "Không được chứa tên người dùng hoặc tên email của bạn"
+
+msgid "Confirm new password"
+msgstr "Xác nhận mật khẩu mới"
+
+msgid "Re-type the new password to confirm."
+msgstr "Nhập lại mật khẩu mới để xác nhận."
+
+msgid "Update password"
+msgstr "Cập nhật mật khẩu"
+
+msgid "Passwords match."
+msgstr "Mật khẩu khớp."
+
+msgid "Passwords do not match yet."
+msgstr "Mật khẩu chưa khớp."
+
+msgid "Suggest article"
+msgstr "Đề xuất bài viết"
+
+msgid "Suggest"
+msgstr "Đề xuất"
+
+msgid "Pasted images"
+msgstr "Hình ảnh đã dán"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Hình ảnh được tải lên trong bản nháp này xuất hiện ở đây. Nhấp X để xóa hình khỏi bài viết và xóa tệp đã tải lên."
+
+msgid "Article body (Markdown)"
+msgstr "Nội dung bài viết (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Bạn có thể dán ảnh PNG/JPG/GIF/WEBP nhỏ trực tiếp vào trình soạn thảo hoặc tải lên bằng nút. Tối đa 2 MB mỗi ảnh."
+
+msgid "Upload image"
+msgstr "Tải ảnh lên"
+
+msgid "Preview"
+msgstr "Xem trước"
+
+msgid "Keywords"
+msgstr "Từ khóa"
+
+msgid "Delete suggested article"
+msgstr "Xóa bài viết được đề xuất"
+
+msgid "Are you sure you want to delete"
+msgstr "Bạn có chắc muốn xóa không?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Điều này xóa bản ghi hồ sơ và xóa các tệp Markdown khỏi lưu trữ raw/source của OpenKB."
+
+msgid "Published"
+msgstr "Đã xuất bản"
+
+msgid "Draft"
+msgstr "Bản nháp"
+
+msgid "Save"
+msgstr "Lưu"
+
+msgid "Invalid language selected."
+msgstr "Ngôn ngữ đã chọn không hợp lệ."
+
+msgid "Language preference updated successfully."
+msgstr "Tùy chọn ngôn ngữ đã được cập nhật thành công."
+
+msgid "Confirm password is incorrect."
+msgstr "Mật khẩu xác nhận không đúng."
+
+msgid "Username cannot be empty."
+msgstr "Tên người dùng không được để trống."
+
+msgid "That username is already used by another account."
+msgstr "Tên người dùng đó đã được tài khoản khác sử dụng."
+
+msgid "Username updated successfully."
+msgstr "Tên người dùng đã được cập nhật thành công."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "Email LDAP do LDAP/AD quản lý và không thể thay đổi tại đây."
+
+msgid "Email updated successfully."
+msgstr "Email đã được cập nhật thành công."
+
+msgid "Invalid profile update request."
+msgstr "Yêu cầu cập nhật hồ sơ không hợp lệ."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Đầu tiên"
+
+msgid "Previous"
+msgstr "Trước"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Trang %(number)s trên %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: CHỦ ĐỀ THỊNH HÀNH :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: KẾT QUẢ TÌM KIẾM CHO \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Dọn tệp thừa"
+
+msgid "Import / Export"
+msgstr "Nhập / Xuất"
+
+msgid "Open"
+msgstr "Mở"
+
+msgid "Document Bulk Import / Export"
+msgstr "Nhập / xuất hàng loạt tài liệu"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Tìm kiếm, chỉnh sửa hoặc xóa các bài viết bạn đã đề xuất trong Kho tri thức."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s bài viết"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Tổng số bài viết do %(name)s đề xuất"
+
+msgid "Search suggested articles"
+msgstr "Tìm kiếm bài viết đã đề xuất"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Đang hiển thị kết quả cho \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Bài viết tôi đã đề xuất"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s khớp / tổng %(total)s"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "tổng %(count)s"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Đang hiển thị %(start)s-%(end)s trong %(count)s bài viết khớp với \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Đang hiển thị %(start)s-%(end)s trong %(count)s bài viết"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "Tìm thấy %(count)s bài viết khớp."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "Tổng cộng %(count)s bài viết."

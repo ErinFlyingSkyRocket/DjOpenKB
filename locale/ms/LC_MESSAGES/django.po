@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ms\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Import / eksport artikel secara pukal"
+
+msgid "Toggle navigation"
+msgstr "Togol navigasi"
+
+msgid "Knowledge Repository"
+msgstr "Repositori Pengetahuan"
+
+msgid "My Profile"
+msgstr "Profil Saya"
+
+msgid "Article"
+msgstr "Artikel"
+
+msgid "New"
+msgstr "Baharu"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Logged in as"
+msgstr "Log masuk sebagai"
+
+msgid "Logout"
+msgstr "Log keluar"
+
+msgid "Bulk import / export articles"
+msgstr "Import / eksport artikel secara pukal"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Alat untuk admin sahaja. Eksport merangkumi Markdown artikel serta fail yang dirujuk di bawah"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Artikel yang diimport ditetapkan kepada akaun admin yang melakukan import."
+
+msgid "Export articles"
+msgstr "Eksport artikel"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Muat turun zip yang mengandungi semua artikel yang diurus Django, kandungan Markdown, satu"
+
+msgid "and all referenced uploaded files."
+msgstr "dan semua fail muat naik yang dirujuk."
+
+msgid "Export articles zip"
+msgstr "Zip eksport artikel"
+
+msgid "Import articles"
+msgstr "Import artikel"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Muat naik zip yang dieksport daripada sistem ini, atau zip yang mengandungi fail Markdown dan pilihan"
+
+msgid "Imported articles will be owned by"
+msgstr "Artikel yang diimport akan dimiliki oleh"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Import zip ini? Artikel yang diimport akan ditetapkan kepada akaun admin anda."
+
+msgid "Import zip file"
+msgstr "Fail zip import"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Saiz muat naik maksimum: 100 MB. Saiz maksimum selepas dinyahmampat: 200 MB."
+
+msgid "Import zip"
+msgstr "Import zip"
+
+msgid "Back to profile"
+msgstr "Kembali ke profil"
+
+msgid "Supported zip format"
+msgstr "Format zip yang disokong"
+
+msgid "This tool prefers the system export format:"
+msgstr "Alat ini mengutamakan format eksport sistem:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Jika manifest.json tiada, pengimport akan cuba mengimport semua fail Markdown yang ditemui dalam zip."
+
+msgid "Clean Stray Upload Files"
+msgstr "Bersihkan fail muat naik terbiar"
+
+msgid "Clean stray upload files"
+msgstr "Bersihkan fail muat naik terbiar"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Ini mengimbas openkb-data/wiki/uploads dan mencari fail muat naik yang tidak dirujuk oleh mana-mana kandungan artikel Django,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets, atau fail Markdown di bawah openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Semak sebelum memadam"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Padam semua fail muat naik terbiar yang disenaraikan? Tindakan ini tidak boleh dibuat asal."
+
+msgid "Preview / Open"
+msgstr "Pratonton / Buka"
+
+msgid "Filename"
+msgstr "Nama fail"
+
+msgid "Type"
+msgstr "Jenis"
+
+msgid "Size"
+msgstr "Saiz"
+
+msgid "Last modified"
+msgstr "Terakhir diubah"
+
+msgid "No stray uploaded files found."
+msgstr "Tiada fail muat naik terbiar ditemui."
+
+msgid "Login to contribute"
+msgstr "Log masuk untuk menyumbang"
+
+msgid "How can we help?"
+msgstr "Bagaimana kami boleh membantu?"
+
+msgid "Featured articles"
+msgstr "Artikel pilihan"
+
+msgid "No featured articles yet."
+msgstr "Belum ada artikel pilihan."
+
+msgid "Article details"
+msgstr "Butiran artikel"
+
+msgid "Published date"
+msgstr "Tarikh diterbitkan"
+
+msgid "Last updated"
+msgstr "Terakhir dikemas kini"
+
+msgid "Share article"
+msgstr "Kongsi artikel"
+
+msgid "Author"
+msgstr "Pengarang"
+
+msgid "Permalink"
+msgstr "Pautan kekal"
+
+msgid "Edit article"
+msgstr "Edit artikel"
+
+msgid "Delete article"
+msgstr "Padam artikel"
+
+msgid "Ask OpenKB AI"
+msgstr "Tanya OpenKB AI"
+
+msgid "Ask"
+msgstr "Tanya"
+
+msgid "Answer"
+msgstr "Jawapan"
+
+msgid "No answer yet."
+msgstr "Belum ada jawapan."
+
+msgid "Related articles"
+msgstr "Artikel berkaitan"
+
+msgid "search"
+msgstr "cari"
+
+msgid "Edit My Articles"
+msgstr "Edit Artikel Saya"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Cari, edit, atau padam artikel Repositori Pengetahuan yang anda cadangkan."
+
+msgid "Search my suggestions"
+msgstr "Cari cadangan saya"
+
+msgid "Clear search"
+msgstr "Kosongkan carian"
+
+msgid "Next"
+msgstr "Seterusnya"
+
+msgid "Last"
+msgstr "Terakhir"
+
+msgid "Article title"
+msgstr "Tajuk artikel"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created"
+msgstr "Dicipta"
+
+msgid "Actions"
+msgstr "Tindakan"
+
+msgid "Delete"
+msgstr "Padam"
+
+msgid "No matching suggested articles found."
+msgstr "Tiada artikel cadangan yang sepadan ditemui."
+
+msgid "You have not suggested any articles yet."
+msgstr "Anda belum mencadangkan sebarang artikel."
+
+msgid "Create your first suggestion"
+msgstr "Cipta cadangan pertama anda"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Cari mengikut tajuk, kandungan, kata kunci, status, atau laluan fail"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "Pusat Bantuan IT"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Dapatkan jawapan segera untuk soalan paling lazim dan belajar menggunakan 3 aksara seperti profesional."
+
+msgid "Date"
+msgstr "Tarikh"
+
+msgid "Login"
+msgstr "Log masuk"
+
+msgid "Please sign in"
+msgstr "Sila log masuk"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Gunakan e-mel LDAP atau nama pengguna tempatan Django."
+
+msgid "Sign in"
+msgstr "Log masuk"
+
+msgid "email address"
+msgstr "alamat e-mel"
+
+msgid "Password"
+msgstr "Kata laluan"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Urus butiran akaun anda. Gunakan Artikel > Edit untuk mengurus artikel cadangan anda."
+
+msgid "Account summary"
+msgstr "Ringkasan akaun"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Nama pengguna dan e-mel dicipta daripada butiran akaun Django atau LDAP. Alamat e-mel LDAP tidak boleh diubah di sini."
+
+msgid "Username"
+msgstr "Nama pengguna"
+
+msgid "New username"
+msgstr "Nama pengguna baharu"
+
+msgid "Confirm password"
+msgstr "Sahkan kata laluan"
+
+msgid "Save username"
+msgstr "Simpan nama pengguna"
+
+msgid "Cancel"
+msgstr "Batal"
+
+msgid "Email"
+msgstr "E-mel"
+
+msgid "No email set"
+msgstr "Tiada e-mel ditetapkan"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "Diurus LDAP, tidak boleh diedit"
+
+msgid "New email"
+msgstr "E-mel baharu"
+
+msgid "Save email"
+msgstr "Simpan e-mel"
+
+msgid "Account type"
+msgstr "Jenis akaun"
+
+msgid "Language"
+msgstr "Bahasa"
+
+msgid "Save language"
+msgstr "Simpan bahasa"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Ini menukar bahasa antara muka laman web untuk akaun anda. Kandungan artikel kekal dalam bahasa asal buat masa ini."
+
+msgid "Change password"
+msgstr "Tukar kata laluan"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "Kata laluan LDAP ditukar melalui sistem kata laluan syarikat."
+
+msgid "Articles"
+msgstr "Artikel"
+
+msgid "Own suggested articles"
+msgstr "Artikel cadangan sendiri"
+
+msgid "New article"
+msgstr "Artikel baharu"
+
+msgid "Edit my articles"
+msgstr "Edit artikel saya"
+
+msgid "Admin tools"
+msgstr "Alat admin"
+
+msgid "Finds unused files in"
+msgstr "Mencari fail yang tidak digunakan dalam"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "yang tidak lagi dirujuk oleh mana-mana artikel atau fail Markdown wiki."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Eksport artikel sebagai zip dengan Markdown dan fail muat naik, atau import zip dan tetapkan artikel yang diimport kepada akaun admin anda."
+
+msgid "Old password"
+msgstr "Kata laluan lama"
+
+msgid "New password"
+msgstr "Kata laluan baharu"
+
+msgid "Password requirements"
+msgstr "Keperluan kata laluan"
+
+msgid "At least 12 characters"
+msgstr "Sekurang-kurangnya 12 aksara"
+
+msgid "At least 1 uppercase letter"
+msgstr "Sekurang-kurangnya 1 huruf besar"
+
+msgid "At least 1 lowercase letter"
+msgstr "Sekurang-kurangnya 1 huruf kecil"
+
+msgid "At least 1 number"
+msgstr "Sekurang-kurangnya 1 nombor"
+
+msgid "At least 1 special character"
+msgstr "Sekurang-kurangnya 1 aksara khas"
+
+msgid "Must not contain your username or email name"
+msgstr "Tidak boleh mengandungi nama pengguna atau nama e-mel anda"
+
+msgid "Confirm new password"
+msgstr "Sahkan kata laluan baharu"
+
+msgid "Re-type the new password to confirm."
+msgstr "Taip semula kata laluan baharu untuk pengesahan."
+
+msgid "Update password"
+msgstr "Kemas kini kata laluan"
+
+msgid "Passwords match."
+msgstr "Kata laluan sepadan."
+
+msgid "Passwords do not match yet."
+msgstr "Kata laluan belum sepadan."
+
+msgid "Suggest article"
+msgstr "Cadang artikel"
+
+msgid "Suggest"
+msgstr "Cadang"
+
+msgid "Pasted images"
+msgstr "Imej yang ditampal"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Imej yang dimuat naik dalam draf ini akan muncul di sini. Klik X untuk membuang imej daripada artikel dan memadam fail yang dimuat naik."
+
+msgid "Article body (Markdown)"
+msgstr "Kandungan artikel (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Anda boleh menampal imej kecil PNG/JPG/GIF/WEBP terus ke editor atau memuat naik satu menggunakan butang. Maksimum 2 MB setiap satu."
+
+msgid "Upload image"
+msgstr "Muat naik imej"
+
+msgid "Preview"
+msgstr "Pratonton"
+
+msgid "Keywords"
+msgstr "Kata kunci"
+
+msgid "Delete suggested article"
+msgstr "Padam artikel yang dicadangkan"
+
+msgid "Are you sure you want to delete"
+msgstr "Adakah anda pasti mahu memadam?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Ini membuang rekod profil dan memadam fail Markdown daripada storan raw/source OpenKB."
+
+msgid "Published"
+msgstr "Diterbitkan"
+
+msgid "Draft"
+msgstr "Draf"
+
+msgid "Save"
+msgstr "Simpan"
+
+msgid "Invalid language selected."
+msgstr "Bahasa yang dipilih tidak sah."
+
+msgid "Language preference updated successfully."
+msgstr "Pilihan bahasa berjaya dikemas kini."
+
+msgid "Confirm password is incorrect."
+msgstr "Kata laluan pengesahan tidak betul."
+
+msgid "Username cannot be empty."
+msgstr "Nama pengguna tidak boleh kosong."
+
+msgid "That username is already used by another account."
+msgstr "Nama pengguna itu sudah digunakan oleh akaun lain."
+
+msgid "Username updated successfully."
+msgstr "Nama pengguna berjaya dikemas kini."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "E-mel LDAP diurus oleh LDAP/AD dan tidak boleh diubah di sini."
+
+msgid "Email updated successfully."
+msgstr "E-mel berjaya dikemas kini."
+
+msgid "Invalid profile update request."
+msgstr "Permintaan kemas kini profil tidak sah."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Pertama"
+
+msgid "Previous"
+msgstr "Sebelumnya"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Halaman %(number)s daripada %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: TOPIK SOHOR KINI :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: HASIL CARIAN UNTUK \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Bersihkan fail terbiar"
+
+msgid "Import / Export"
+msgstr "Import / Eksport"
+
+msgid "Open"
+msgstr "Buka"
+
+msgid "Document Bulk Import / Export"
+msgstr "Import / eksport dokumen secara pukal"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Cari, sunting atau padam artikel yang anda cadangkan dalam Repositori Pengetahuan."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s artikel"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Jumlah artikel yang dicadangkan oleh %(name)s"
+
+msgid "Search suggested articles"
+msgstr "Cari artikel yang dicadangkan"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Memaparkan keputusan untuk \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Artikel cadangan saya"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s padanan / %(total)s jumlah"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s jumlah"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Memaparkan %(start)s-%(end)s daripada %(count)s artikel yang sepadan dengan \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Memaparkan %(start)s-%(end)s daripada %(count)s artikel"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s artikel sepadan dijumpai."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "%(count)s artikel jumlah."

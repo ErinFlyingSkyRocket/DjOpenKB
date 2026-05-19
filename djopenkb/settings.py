@@ -30,9 +30,12 @@ OPENKB_ARTICLES_DIR = OPENKB_CONTENT_DIR / "articles"
 
 
 # ---------------------------------------------------------------------
-# OpenKB AI / LiteLLM config
+# OpenKB AI chatbot / LiteLLM config
 # ---------------------------------------------------------------------
 
+# These settings are for the optional Ask OpenKB AI chat box only.
+# Django locale/.po files are still used for UI translation, and article
+# translation is intentionally NOT done by AI.
 OPENKB_AI_PROVIDER = os.getenv("OPENKB_AI_PROVIDER", "openkb-cli")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
@@ -84,9 +87,11 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "kb.middleware.UserProfileLanguageMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -101,6 +106,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -230,7 +236,37 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # ---------------------------------------------------------------------
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
+
+LANGUAGES = [
+    ("en", "English"),
+    ("de", "Deutsch"),
+    ("da", "Dansk"),
+    ("es", "Español"),
+    ("zh-hans", "简体中文"),
+    ("ru", "Русский"),
+    ("pt-br", "Português do Brasil"),
+    ("ja", "日本語"),
+    ("fi", "Suomi"),
+    ("sv", "Svenska"),
+    ("tr", "Türkçe"),
+    ("fa", "فارسی"),
+    ("ms", "Bahasa Melayu"),
+    ("ta", "தமிழ்"),
+    ("fr", "Français"),
+    ("it", "Italiano"),
+    ("ko", "한국어"),
+    ("id", "Bahasa Indonesia"),
+    ("th", "ไทย"),
+    ("vi", "Tiếng Việt"),
+    ("nl", "Nederlands"),
+    ("pl", "Polski"),
+    ("ar", "العربية"),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
 
 TIME_ZONE = "Asia/Singapore"
 

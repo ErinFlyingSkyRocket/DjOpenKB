@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fa\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "وارد کردن / صادر کردن گروهی مقاله‌ها"
+
+msgid "Toggle navigation"
+msgstr "تغییر نمایش ناوبری"
+
+msgid "Knowledge Repository"
+msgstr "مخزن دانش"
+
+msgid "My Profile"
+msgstr "پروفایل من"
+
+msgid "Article"
+msgstr "مقاله"
+
+msgid "New"
+msgstr "جدید"
+
+msgid "Edit"
+msgstr "ویرایش"
+
+msgid "Admin"
+msgstr "مدیر"
+
+msgid "Logged in as"
+msgstr "واردشده به عنوان"
+
+msgid "Logout"
+msgstr "خروج"
+
+msgid "Bulk import / export articles"
+msgstr "ورود / خروج گروهی مقالات"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "ابزار مخصوص مدیران. خروجی‌ها شامل Markdown مقاله و فایل‌های ارجاع‌شده در"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "مقالات واردشده به حساب مدیری که ورود را انجام می‌دهد اختصاص داده می‌شوند."
+
+msgid "Export articles"
+msgstr "خروجی گرفتن از مقالات"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "دانلود یک فایل zip شامل همه مقالات مدیریت‌شده توسط Django، محتوای Markdown آن‌ها، یک"
+
+msgid "and all referenced uploaded files."
+msgstr "و همه فایل‌های آپلودی ارجاع‌شده."
+
+msgid "Export articles zip"
+msgstr "خروجی zip مقالات"
+
+msgid "Import articles"
+msgstr "وارد کردن مقالات"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "یک zip خروجی‌گرفته‌شده از این سیستم، یا zip شامل فایل‌های Markdown و یک مورد اختیاری را آپلود کنید"
+
+msgid "Imported articles will be owned by"
+msgstr "مالک مقالات واردشده خواهد بود"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "این zip وارد شود؟ مقالات واردشده به حساب مدیر شما اختصاص داده می‌شوند."
+
+msgid "Import zip file"
+msgstr "فایل zip برای ورود"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "حداکثر اندازه آپلود: ۱۰۰ MB. حداکثر اندازه فشرده‌نشده: ۲۰۰ MB."
+
+msgid "Import zip"
+msgstr "وارد کردن zip"
+
+msgid "Back to profile"
+msgstr "بازگشت به نمایه"
+
+msgid "Supported zip format"
+msgstr "قالب zip پشتیبانی‌شده"
+
+msgid "This tool prefers the system export format:"
+msgstr "این ابزار قالب خروجی سیستم را ترجیح می‌دهد:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "اگر manifest.json وجود نداشته باشد، واردکننده تلاش می‌کند همه فایل‌های Markdown موجود در zip را وارد کند."
+
+msgid "Clean Stray Upload Files"
+msgstr "پاکسازی فایل‌های آپلودی بدون استفاده"
+
+msgid "Clean stray upload files"
+msgstr "پاک‌سازی فایل‌های آپلود بدون استفاده"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "این ابزار openkb-data/wiki/uploads را بررسی می‌کند و فایل‌های آپلودی را می‌یابد که در متن هیچ مقاله Django ارجاع نشده‌اند،"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets یا فایل Markdown در openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "قبل از حذف بررسی کنید"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "همه فایل‌های آپلودی بدون استفاده فهرست‌شده حذف شوند؟ این کار قابل بازگشت نیست."
+
+msgid "Preview / Open"
+msgstr "پیش‌نمایش / باز کردن"
+
+msgid "Filename"
+msgstr "نام فایل"
+
+msgid "Type"
+msgstr "نوع"
+
+msgid "Size"
+msgstr "اندازه"
+
+msgid "Last modified"
+msgstr "آخرین تغییر"
+
+msgid "No stray uploaded files found."
+msgstr "هیچ فایل آپلودی بدون استفاده‌ای یافت نشد."
+
+msgid "Login to contribute"
+msgstr "برای مشارکت وارد شوید"
+
+msgid "How can we help?"
+msgstr "چطور می‌توانیم کمک کنیم؟"
+
+msgid "Featured articles"
+msgstr "مقالات برجسته"
+
+msgid "No featured articles yet."
+msgstr "هنوز مقاله برجسته‌ای وجود ندارد."
+
+msgid "Article details"
+msgstr "جزئیات مقاله"
+
+msgid "Published date"
+msgstr "تاریخ انتشار"
+
+msgid "Last updated"
+msgstr "آخرین به‌روزرسانی"
+
+msgid "Share article"
+msgstr "اشتراک‌گذاری مقاله"
+
+msgid "Author"
+msgstr "نویسنده"
+
+msgid "Permalink"
+msgstr "پیوند دائمی"
+
+msgid "Edit article"
+msgstr "ویرایش مقاله"
+
+msgid "Delete article"
+msgstr "حذف مقاله"
+
+msgid "Ask OpenKB AI"
+msgstr "از OpenKB AI بپرسید"
+
+msgid "Ask"
+msgstr "پرسیدن"
+
+msgid "Answer"
+msgstr "پاسخ"
+
+msgid "No answer yet."
+msgstr "هنوز پاسخی وجود ندارد."
+
+msgid "Related articles"
+msgstr "مقالات مرتبط"
+
+msgid "search"
+msgstr "جستجو"
+
+msgid "Edit My Articles"
+msgstr "ویرایش مقالات من"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "مقالات پیشنهادی خود در مخزن دانش را جستجو، ویرایش یا حذف کنید."
+
+msgid "Search my suggestions"
+msgstr "جستجوی پیشنهادهای من"
+
+msgid "Clear search"
+msgstr "پاک کردن جستجو"
+
+msgid "Next"
+msgstr "بعدی"
+
+msgid "Last"
+msgstr "آخر"
+
+msgid "Article title"
+msgstr "عنوان مقاله"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Created"
+msgstr "ایجاد شد"
+
+msgid "Actions"
+msgstr "اقدامات"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "No matching suggested articles found."
+msgstr "هیچ مقاله پیشنهادی منطبقی یافت نشد."
+
+msgid "You have not suggested any articles yet."
+msgstr "هنوز هیچ مقاله‌ای پیشنهاد نکرده‌اید."
+
+msgid "Create your first suggestion"
+msgstr "اولین پیشنهاد خود را ایجاد کنید"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "جستجو بر اساس عنوان، متن، کلیدواژه‌ها، وضعیت یا مسیر فایل"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "مرکز راهنمایی فناوری اطلاعات"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "پاسخ فوری برای رایج‌ترین پرسش‌ها دریافت کنید و یاد بگیرید چگونه مانند حرفه‌ای‌ها از ۳ نویسه استفاده کنید."
+
+msgid "Date"
+msgstr "تاریخ"
+
+msgid "Login"
+msgstr "ورود"
+
+msgid "Please sign in"
+msgstr "لطفاً وارد شوید"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "از ایمیل LDAP یا نام کاربری محلی Django استفاده کنید."
+
+msgid "Sign in"
+msgstr "ورود"
+
+msgid "email address"
+msgstr "آدرس ایمیل"
+
+msgid "Password"
+msgstr "رمز عبور"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "جزئیات حساب خود را مدیریت کنید. برای مدیریت مقالات پیشنهادی خود از مقاله > ویرایش استفاده کنید."
+
+msgid "Account summary"
+msgstr "خلاصه حساب"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "نام کاربری و ایمیل از جزئیات حساب Django یا LDAP ایجاد می‌شوند. آدرس‌های ایمیل LDAP اینجا قابل تغییر نیستند."
+
+msgid "Username"
+msgstr "نام کاربری"
+
+msgid "New username"
+msgstr "نام کاربری جدید"
+
+msgid "Confirm password"
+msgstr "تأیید رمز عبور"
+
+msgid "Save username"
+msgstr "ذخیره نام کاربری"
+
+msgid "Cancel"
+msgstr "لغو"
+
+msgid "Email"
+msgstr "ایمیل"
+
+msgid "No email set"
+msgstr "ایمیلی تنظیم نشده است"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "مدیریت‌شده توسط LDAP، قابل ویرایش نیست"
+
+msgid "New email"
+msgstr "ایمیل جدید"
+
+msgid "Save email"
+msgstr "ذخیره ایمیل"
+
+msgid "Account type"
+msgstr "نوع حساب"
+
+msgid "Language"
+msgstr "زبان"
+
+msgid "Save language"
+msgstr "ذخیره زبان"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "این کار زبان رابط وب‌سایت را برای حساب شما تغییر می‌دهد. محتوای مقاله فعلاً در زبان اصلی خود باقی می‌ماند."
+
+msgid "Change password"
+msgstr "تغییر رمز عبور"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "رمزهای LDAP از طریق سیستم رمز عبور شرکت تغییر می‌کنند."
+
+msgid "Articles"
+msgstr "مقالات"
+
+msgid "Own suggested articles"
+msgstr "مقالات پیشنهادی خودم"
+
+msgid "New article"
+msgstr "مقاله جدید"
+
+msgid "Edit my articles"
+msgstr "ویرایش مقالات من"
+
+msgid "Admin tools"
+msgstr "ابزارهای مدیر"
+
+msgid "Finds unused files in"
+msgstr "فایل‌های استفاده‌نشده را در این مسیر پیدا می‌کند"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "که دیگر توسط هیچ مقاله یا فایل Markdown ویکی ارجاع داده نمی‌شوند."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "مقالات را به صورت zip همراه با Markdown و فایل‌های آپلودی خروجی بگیرید، یا یک zip وارد کنید و مقالات واردشده را به حساب مدیر خود اختصاص دهید."
+
+msgid "Old password"
+msgstr "رمز عبور قدیمی"
+
+msgid "New password"
+msgstr "رمز عبور جدید"
+
+msgid "Password requirements"
+msgstr "الزامات رمز عبور"
+
+msgid "At least 12 characters"
+msgstr "حداقل ۱۲ نویسه"
+
+msgid "At least 1 uppercase letter"
+msgstr "حداقل ۱ حرف بزرگ"
+
+msgid "At least 1 lowercase letter"
+msgstr "حداقل ۱ حرف کوچک"
+
+msgid "At least 1 number"
+msgstr "حداقل ۱ عدد"
+
+msgid "At least 1 special character"
+msgstr "حداقل ۱ نویسه خاص"
+
+msgid "Must not contain your username or email name"
+msgstr "نباید شامل نام کاربری یا نام ایمیل شما باشد"
+
+msgid "Confirm new password"
+msgstr "تأیید رمز عبور جدید"
+
+msgid "Re-type the new password to confirm."
+msgstr "برای تأیید، رمز عبور جدید را دوباره وارد کنید."
+
+msgid "Update password"
+msgstr "به‌روزرسانی رمز عبور"
+
+msgid "Passwords match."
+msgstr "رمزها مطابقت دارند."
+
+msgid "Passwords do not match yet."
+msgstr "رمزها هنوز مطابقت ندارند."
+
+msgid "Suggest article"
+msgstr "پیشنهاد مقاله"
+
+msgid "Suggest"
+msgstr "پیشنهاد"
+
+msgid "Pasted images"
+msgstr "تصاویر چسبانده‌شده"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "تصاویر آپلودشده در این پیش‌نویس اینجا نمایش داده می‌شوند. برای حذف تصویر از مقاله و حذف فایل آپلودشده روی X کلیک کنید."
+
+msgid "Article body (Markdown)"
+msgstr "متن مقاله (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "می‌توانید تصاویر کوچک PNG/JPG/GIF/WEBP را مستقیماً در ویرایشگر بچسبانید یا با دکمه آپلود کنید. حداکثر هرکدام ۲ MB."
+
+msgid "Upload image"
+msgstr "آپلود تصویر"
+
+msgid "Preview"
+msgstr "پیش‌نمایش"
+
+msgid "Keywords"
+msgstr "کلیدواژه‌ها"
+
+msgid "Delete suggested article"
+msgstr "حذف مقاله پیشنهادی"
+
+msgid "Are you sure you want to delete"
+msgstr "آیا مطمئن هستید که می‌خواهید حذف کنید؟"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "این کار رکورد پروفایل را حذف می‌کند و فایل‌های Markdown را از ذخیره‌سازی raw/source در OpenKB حذف می‌کند."
+
+msgid "Published"
+msgstr "منتشر شده"
+
+msgid "Draft"
+msgstr "پیش‌نویس"
+
+msgid "Save"
+msgstr "ذخیره"
+
+msgid "Invalid language selected."
+msgstr "زبان انتخاب‌شده نامعتبر است."
+
+msgid "Language preference updated successfully."
+msgstr "ترجیح زبان با موفقیت به‌روزرسانی شد."
+
+msgid "Confirm password is incorrect."
+msgstr "تأیید رمز عبور نادرست است."
+
+msgid "Username cannot be empty."
+msgstr "نام کاربری نمی‌تواند خالی باشد."
+
+msgid "That username is already used by another account."
+msgstr "این نام کاربری قبلاً توسط حساب دیگری استفاده شده است."
+
+msgid "Username updated successfully."
+msgstr "نام کاربری با موفقیت به‌روزرسانی شد."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "ایمیل LDAP توسط LDAP/AD مدیریت می‌شود و اینجا قابل تغییر نیست."
+
+msgid "Email updated successfully."
+msgstr "ایمیل با موفقیت به‌روزرسانی شد."
+
+msgid "Invalid profile update request."
+msgstr "درخواست به‌روزرسانی پروفایل نامعتبر است."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "اول"
+
+msgid "Previous"
+msgstr "قبلی"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "صفحه %(number)s از %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: موضوعات پرطرفدار :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: نتایج جستجو برای \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "پاک‌سازی فایل‌های بدون استفاده"
+
+msgid "Import / Export"
+msgstr "وارد کردن / صادر کردن"
+
+msgid "Open"
+msgstr "باز کردن"
+
+msgid "Document Bulk Import / Export"
+msgstr "وارد کردن / صادر کردن گروهی اسناد"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "مقالاتی را که در مخزن دانش پیشنهاد داده‌اید جستجو، ویرایش یا حذف کنید."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s مقاله"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "مجموع مقاله‌های پیشنهادشده توسط %(name)s"
+
+msgid "Search suggested articles"
+msgstr "جستجوی مقاله‌های پیشنهادی"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "نمایش نتایج برای \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "مقاله‌های پیشنهادی من"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s مورد مطابق / %(total)s کل"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s کل"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "نمایش %(start)s-%(end)s از %(count)s مقاله مطابق با \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "نمایش %(start)s-%(end)s از %(count)s مقاله"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s مقاله مطابق پیدا شد."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "در مجموع %(count)s مقاله."

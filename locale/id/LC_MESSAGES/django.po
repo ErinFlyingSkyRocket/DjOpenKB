@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: id\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Impor / ekspor artikel secara massal"
+
+msgid "Toggle navigation"
+msgstr "Alihkan navigasi"
+
+msgid "Knowledge Repository"
+msgstr "Repositori Pengetahuan"
+
+msgid "My Profile"
+msgstr "Profil Saya"
+
+msgid "Article"
+msgstr "Artikel"
+
+msgid "New"
+msgstr "Baru"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Logged in as"
+msgstr "Masuk sebagai"
+
+msgid "Logout"
+msgstr "Keluar"
+
+msgid "Bulk import / export articles"
+msgstr "Impor / ekspor artikel massal"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Alat khusus admin. Ekspor menyertakan Markdown artikel serta file yang dirujuk di bawah"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Artikel yang diimpor ditetapkan ke akun admin yang melakukan impor."
+
+msgid "Export articles"
+msgstr "Ekspor artikel"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Unduh zip yang berisi semua artikel yang dikelola Django, konten Markdown-nya, sebuah"
+
+msgid "and all referenced uploaded files."
+msgstr "dan semua file unggahan yang dirujuk."
+
+msgid "Export articles zip"
+msgstr "Zip ekspor artikel"
+
+msgid "Import articles"
+msgstr "Impor artikel"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Unggah zip yang diekspor dari sistem ini, atau zip yang berisi file Markdown dan opsional"
+
+msgid "Imported articles will be owned by"
+msgstr "Artikel yang diimpor akan dimiliki oleh"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Impor zip ini? Artikel yang diimpor akan ditetapkan ke akun admin Anda."
+
+msgid "Import zip file"
+msgstr "File zip impor"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Ukuran unggahan maksimum: 100 MB. Ukuran maksimum setelah diekstrak: 200 MB."
+
+msgid "Import zip"
+msgstr "Impor zip"
+
+msgid "Back to profile"
+msgstr "Kembali ke profil"
+
+msgid "Supported zip format"
+msgstr "Format zip yang didukung"
+
+msgid "This tool prefers the system export format:"
+msgstr "Alat ini lebih memilih format ekspor sistem:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Jika manifest.json tidak ada, pengimpor akan mencoba mengimpor semua file Markdown yang ditemukan di zip."
+
+msgid "Clean Stray Upload Files"
+msgstr "Bersihkan file unggahan yatim"
+
+msgid "Clean stray upload files"
+msgstr "Bersihkan file unggahan sisa"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Ini memindai openkb-data/wiki/uploads dan menemukan file unggahan yang tidak dirujuk oleh isi artikel Django mana pun,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets, atau file Markdown di bawah openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Tinjau sebelum menghapus"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Hapus semua file unggahan yatim yang terdaftar? Ini tidak dapat dibatalkan."
+
+msgid "Preview / Open"
+msgstr "Pratinjau / Buka"
+
+msgid "Filename"
+msgstr "Nama file"
+
+msgid "Type"
+msgstr "Jenis"
+
+msgid "Size"
+msgstr "Ukuran"
+
+msgid "Last modified"
+msgstr "Terakhir diubah"
+
+msgid "No stray uploaded files found."
+msgstr "Tidak ada file unggahan yatim ditemukan."
+
+msgid "Login to contribute"
+msgstr "Masuk untuk berkontribusi"
+
+msgid "How can we help?"
+msgstr "Bagaimana kami bisa membantu?"
+
+msgid "Featured articles"
+msgstr "Artikel unggulan"
+
+msgid "No featured articles yet."
+msgstr "Belum ada artikel unggulan."
+
+msgid "Article details"
+msgstr "Detail artikel"
+
+msgid "Published date"
+msgstr "Tanggal publikasi"
+
+msgid "Last updated"
+msgstr "Terakhir diperbarui"
+
+msgid "Share article"
+msgstr "Bagikan artikel"
+
+msgid "Author"
+msgstr "Penulis"
+
+msgid "Permalink"
+msgstr "Permalink"
+
+msgid "Edit article"
+msgstr "Edit artikel"
+
+msgid "Delete article"
+msgstr "Hapus artikel"
+
+msgid "Ask OpenKB AI"
+msgstr "Tanya OpenKB AI"
+
+msgid "Ask"
+msgstr "Tanya"
+
+msgid "Answer"
+msgstr "Jawaban"
+
+msgid "No answer yet."
+msgstr "Belum ada jawaban."
+
+msgid "Related articles"
+msgstr "Artikel terkait"
+
+msgid "search"
+msgstr "cari"
+
+msgid "Edit My Articles"
+msgstr "Edit artikel saya"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Cari, edit, atau hapus artikel Repositori Pengetahuan yang Anda sarankan."
+
+msgid "Search my suggestions"
+msgstr "Cari saran saya"
+
+msgid "Clear search"
+msgstr "Hapus pencarian"
+
+msgid "Next"
+msgstr "Berikutnya"
+
+msgid "Last"
+msgstr "Terakhir"
+
+msgid "Article title"
+msgstr "Judul artikel"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created"
+msgstr "Dibuat"
+
+msgid "Actions"
+msgstr "Tindakan"
+
+msgid "Delete"
+msgstr "Hapus"
+
+msgid "No matching suggested articles found."
+msgstr "Tidak ada artikel saran yang cocok ditemukan."
+
+msgid "You have not suggested any articles yet."
+msgstr "Anda belum menyarankan artikel apa pun."
+
+msgid "Create your first suggestion"
+msgstr "Buat saran pertama Anda"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Cari berdasarkan judul, isi, kata kunci, status, atau jalur file"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "Pusat Bantuan TI"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Dapatkan jawaban instan untuk pertanyaan paling umum dan pelajari cara menggunakan 3 karakter seperti profesional."
+
+msgid "Date"
+msgstr "Tanggal"
+
+msgid "Login"
+msgstr "Masuk"
+
+msgid "Please sign in"
+msgstr "Silakan masuk"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Gunakan email LDAP atau nama pengguna lokal Django."
+
+msgid "Sign in"
+msgstr "Masuk"
+
+msgid "email address"
+msgstr "alamat email"
+
+msgid "Password"
+msgstr "Kata sandi"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Kelola detail akun Anda. Gunakan Artikel > Edit untuk mengelola artikel yang Anda sarankan."
+
+msgid "Account summary"
+msgstr "Ringkasan akun"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Nama pengguna dan email dibuat dari detail akun Django atau LDAP. Alamat email LDAP tidak dapat diubah di sini."
+
+msgid "Username"
+msgstr "Nama pengguna"
+
+msgid "New username"
+msgstr "Nama pengguna baru"
+
+msgid "Confirm password"
+msgstr "Konfirmasi kata sandi"
+
+msgid "Save username"
+msgstr "Simpan nama pengguna"
+
+msgid "Cancel"
+msgstr "Batal"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "No email set"
+msgstr "Belum ada email"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "Dikelola LDAP, tidak dapat diedit"
+
+msgid "New email"
+msgstr "Email baru"
+
+msgid "Save email"
+msgstr "Simpan email"
+
+msgid "Account type"
+msgstr "Jenis akun"
+
+msgid "Language"
+msgstr "Bahasa"
+
+msgid "Save language"
+msgstr "Simpan bahasa"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Ini mengubah bahasa antarmuka situs web untuk akun Anda. Konten artikel tetap dalam bahasa aslinya untuk saat ini."
+
+msgid "Change password"
+msgstr "Ubah kata sandi"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "Kata sandi LDAP diubah melalui sistem kata sandi perusahaan."
+
+msgid "Articles"
+msgstr "Artikel"
+
+msgid "Own suggested articles"
+msgstr "Artikel saran milik sendiri"
+
+msgid "New article"
+msgstr "Artikel baru"
+
+msgid "Edit my articles"
+msgstr "Edit artikel saya"
+
+msgid "Admin tools"
+msgstr "Alat admin"
+
+msgid "Finds unused files in"
+msgstr "Menemukan file yang tidak digunakan di"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "yang tidak lagi dirujuk oleh artikel atau file Markdown wiki mana pun."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Ekspor artikel sebagai zip dengan Markdown dan file unggahan, atau impor zip dan tetapkan artikel yang diimpor ke akun admin Anda."
+
+msgid "Old password"
+msgstr "Kata sandi lama"
+
+msgid "New password"
+msgstr "Kata sandi baru"
+
+msgid "Password requirements"
+msgstr "Persyaratan kata sandi"
+
+msgid "At least 12 characters"
+msgstr "Minimal 12 karakter"
+
+msgid "At least 1 uppercase letter"
+msgstr "Minimal 1 huruf besar"
+
+msgid "At least 1 lowercase letter"
+msgstr "Minimal 1 huruf kecil"
+
+msgid "At least 1 number"
+msgstr "Minimal 1 angka"
+
+msgid "At least 1 special character"
+msgstr "Minimal 1 karakter khusus"
+
+msgid "Must not contain your username or email name"
+msgstr "Tidak boleh berisi nama pengguna atau nama email Anda"
+
+msgid "Confirm new password"
+msgstr "Konfirmasi kata sandi baru"
+
+msgid "Re-type the new password to confirm."
+msgstr "Ketik ulang kata sandi baru untuk konfirmasi."
+
+msgid "Update password"
+msgstr "Perbarui kata sandi"
+
+msgid "Passwords match."
+msgstr "Kata sandi cocok."
+
+msgid "Passwords do not match yet."
+msgstr "Kata sandi belum cocok."
+
+msgid "Suggest article"
+msgstr "Sarankan artikel"
+
+msgid "Suggest"
+msgstr "Sarankan"
+
+msgid "Pasted images"
+msgstr "Gambar yang ditempel"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Gambar yang diunggah dalam draf ini muncul di sini. Klik X untuk menghapus gambar dari artikel dan menghapus file unggahan."
+
+msgid "Article body (Markdown)"
+msgstr "Isi artikel (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Anda dapat menempel gambar kecil PNG/JPG/GIF/WEBP langsung ke editor atau mengunggahnya menggunakan tombol. Maksimum 2 MB masing-masing."
+
+msgid "Upload image"
+msgstr "Unggah gambar"
+
+msgid "Preview"
+msgstr "Pratinjau"
+
+msgid "Keywords"
+msgstr "Kata kunci"
+
+msgid "Delete suggested article"
+msgstr "Hapus artikel yang disarankan"
+
+msgid "Are you sure you want to delete"
+msgstr "Apakah Anda yakin ingin menghapus?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Ini menghapus catatan profil dan menghapus file Markdown dari penyimpanan raw/source OpenKB."
+
+msgid "Published"
+msgstr "Dipublikasikan"
+
+msgid "Draft"
+msgstr "Draf"
+
+msgid "Save"
+msgstr "Simpan"
+
+msgid "Invalid language selected."
+msgstr "Bahasa yang dipilih tidak valid."
+
+msgid "Language preference updated successfully."
+msgstr "Preferensi bahasa berhasil diperbarui."
+
+msgid "Confirm password is incorrect."
+msgstr "Konfirmasi kata sandi salah."
+
+msgid "Username cannot be empty."
+msgstr "Nama pengguna tidak boleh kosong."
+
+msgid "That username is already used by another account."
+msgstr "Nama pengguna itu sudah digunakan oleh akun lain."
+
+msgid "Username updated successfully."
+msgstr "Nama pengguna berhasil diperbarui."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "Email LDAP dikelola oleh LDAP/AD dan tidak dapat diubah di sini."
+
+msgid "Email updated successfully."
+msgstr "Email berhasil diperbarui."
+
+msgid "Invalid profile update request."
+msgstr "Permintaan pembaruan profil tidak valid."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Pertama"
+
+msgid "Previous"
+msgstr "Sebelumnya"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Halaman %(number)s dari %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: TOPIK POPULER :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: HASIL PENCARIAN UNTUK \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Bersihkan file sisa"
+
+msgid "Import / Export"
+msgstr "Impor / Ekspor"
+
+msgid "Open"
+msgstr "Buka"
+
+msgid "Document Bulk Import / Export"
+msgstr "Impor / ekspor dokumen secara massal"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Cari, edit, atau hapus artikel yang Anda sarankan di Repositori Pengetahuan."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s artikel"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Total artikel yang disarankan oleh %(name)s"
+
+msgid "Search suggested articles"
+msgstr "Cari artikel yang disarankan"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Menampilkan hasil untuk \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Artikel yang saya sarankan"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s cocok / %(total)s total"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s total"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Menampilkan %(start)s-%(end)s dari %(count)s artikel yang cocok dengan \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Menampilkan %(start)s-%(end)s dari %(count)s artikel"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s artikel yang cocok ditemukan."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "%(count)s artikel total."

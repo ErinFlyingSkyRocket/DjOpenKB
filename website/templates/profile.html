@@ -1,9 +1,9 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>My Profile</title>
-    <meta property="og:title" content="My Profile" />
+    <title>{% trans "My Profile" %}</title>
+    <meta property="og:title" content="{% trans 'My Profile' %}" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -110,29 +110,29 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
-                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
                         </ul>
                     </li>
-                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
                     <li>
                         <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">Logout</button>
+                            <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
                         </form>
                     </li>
                 </ul>
@@ -144,22 +144,22 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         <div class="col-xs-12 profile-page-wrap">
             <div class="row">
                 <div class="col-xs-12">
-                    <h2>My Profile</h2>
-                    <p class="profile-muted">Manage your account details. Use Article &gt; Edit to manage your suggested articles.</p>
+                    <h2>{% trans "My Profile" %}</h2>
+                    <p class="profile-muted">{% trans "Manage your account details. Use Article > Edit to manage your suggested articles." %}</p>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-xs-12">
                     <div class="panel panel-default profile-account-panel">
-                        <div class="panel-heading">Account summary</div>
+                        <div class="panel-heading">{% trans "Account summary" %}</div>
                         <div class="panel-body">
                             <p class="profile-account-summary">
-                                Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here.
+                                {% trans "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here." %}
                             </p>
 
                             <div class="profile-account-row">
-                                <span class="profile-account-label">Username:</span>
+                                <span class="profile-account-label">{% trans "Username" %}:</span>
                                 <span class="profile-account-value">{{ user.username }}</span>
                                 <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox" aria-expanded="false" aria-controls="editUsernameBox">
                                     Edit
@@ -170,29 +170,29 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         {% csrf_token %}
                                         <input type="hidden" name="profile_action" value="username">
                                         <div class="form-group">
-                                            <label>New username</label>
+                                            <label>{% trans "New username" %}</label>
                                             <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
                                         </div>
                                         {% if can_confirm_profile_changes %}
                                             <div class="form-group">
-                                                <label>Confirm password</label>
+                                                <label>{% trans "Confirm password" %}</label>
                                                 <input type="password" name="current_password" class="form-control" required>
                                             </div>
                                         {% endif %}
-                                        <button class="btn btn-primary" type="submit">Save username</button>
-                                        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox">Cancel</button>
+                                        <button class="btn btn-primary" type="submit">{% trans "Save username" %}</button>
+                                        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox">{% trans "Cancel" %}</button>
                                     </form>
                                 </div>
                             </div>
 
                             <div class="profile-account-row">
-                                <span class="profile-account-label">Email:</span>
+                                <span class="profile-account-label">{% trans "Email" %}:</span>
                                 <span class="profile-account-value">
-                                    {% if user.email %}{{ user.email }}{% else %}<span class="profile-muted">No email set</span>{% endif %}
+                                    {% if user.email %}{{ user.email }}{% else %}<span class="profile-muted">{% trans "No email set" %}</span>{% endif %}
                                 </span>
 
                                 {% if user_is_ldap_managed %}
-                                    <span class="profile-muted">LDAP-managed, cannot edit</span>
+                                    <span class="profile-muted">{% trans "LDAP-managed, cannot edit" %}</span>
                                 {% else %}
                                     <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox" aria-expanded="false" aria-controls="editEmailBox">
                                         Edit
@@ -203,42 +203,58 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             {% csrf_token %}
                                             <input type="hidden" name="profile_action" value="email">
                                             <div class="form-group">
-                                                <label>New email</label>
+                                                <label>{% trans "New email" %}</label>
                                                 <input type="email" name="email" class="form-control" value="{{ user.email }}">
                                             </div>
                                             {% if can_confirm_profile_changes %}
                                                 <div class="form-group">
-                                                    <label>Confirm password</label>
+                                                    <label>{% trans "Confirm password" %}</label>
                                                     <input type="password" name="current_password" class="form-control" required>
                                                 </div>
                                             {% endif %}
-                                            <button class="btn btn-primary" type="submit">Save email</button>
-                                            <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox">Cancel</button>
+                                            <button class="btn btn-primary" type="submit">{% trans "Save email" %}</button>
+                                            <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox">{% trans "Cancel" %}</button>
                                         </form>
                                     </div>
                                 {% endif %}
                             </div>
 
                             <div class="profile-account-row">
-                                <span class="profile-account-label">Account type:</span>
+                                <span class="profile-account-label">{% trans "Account type" %}:</span>
                                 <span class="profile-account-value">
                                     {{ account_type_display }}
                                 </span>
                             </div>
 
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">{% trans "Language" %}:</span>
+                                <form class="form-inline" method="post" action="{% url 'update_profile' %}" style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="profile_action" value="language">
+                                    <select name="preferred_language" class="form-control input-sm">
+                                        {% for code, name in supported_languages %}
+                                            <option value="{{ code }}" {% if code == profile_preferred_language %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-xs btn-primary" type="submit">{% trans "Save language" %}</button>
+                                </form>
+                                <div class="profile-muted" style="margin-top: 5px;">
+                                    {% trans "This changes the website interface language for your account. Article content stays in its original language for now." %}
+                                </div>
+                            </div>
 
                             <div class="profile-account-row">
-                                <span class="profile-account-label">Password:</span>
+                                <span class="profile-account-label">{% trans "Password" %}:</span>
                                 <div class="profile-account-actions">
                                     {% if can_change_local_password %}
                                         <button class="btn btn-default" type="button" data-toggle="modal" data-target="#changePasswordModal">
-                                            Change password
+                                            {% trans "Change password" %}
                                         </button>
                                     {% else %}
-                                        <button class="btn btn-default" type="button" disabled title="LDAP passwords are changed through the company password system.">
-                                            Change password
+                                        <button class="btn btn-default" type="button" disabled title="{% trans 'LDAP passwords are changed through the company password system.' %}">
+                                            {% trans "Change password" %}
                                         </button>
-                                        <span class="profile-readonly-note">LDAP passwords are changed through the company password system.</span>
+                                        <span class="profile-readonly-note">{% trans "LDAP passwords are changed through the company password system." %}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -247,14 +263,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     </div>
 
                     <div class="panel panel-default profile-account-panel">
-                        <div class="panel-heading">Articles</div>
+                        <div class="panel-heading">{% trans "Articles" %}</div>
                         <div class="panel-body">
                             <div class="profile-account-row">
-                                <span class="profile-account-label">Own suggested articles:</span>
+                                <span class="profile-account-label">{% trans "Own suggested articles" %}:</span>
                                 <span class="profile-account-value">{{ total_user_article_count }}</span>
                                 <div class="profile-article-buttons">
-                                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
-                                    <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit my articles</a>
+                                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
+                                    <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my articles" %}</a>
                                 </div>
                             </div>
                         </div>
@@ -263,23 +279,23 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
                     {% if can_use_admin_tools %}
                     <div class="panel panel-default profile-account-panel">
-                        <div class="panel-heading">Admin tools</div>
+                        <div class="panel-heading">{% trans "Admin tools" %}</div>
                         <div class="panel-body">
                             <div class="profile-admin-tools">
-                                <div><strong>Clean stray upload files</strong></div>
-                                <div class="profile-muted">Finds unused files in <code>openkb-data/wiki/uploads</code> that are no longer referenced by any article or wiki Markdown file.</div>
+                                <div><strong>{% trans "Clean stray upload files" %}</strong></div>
+                                <div class="profile-muted">{% trans "Finds unused files in" %} <code>openkb-data/wiki/uploads</code> {% trans "that are no longer referenced by any article or wiki Markdown file." %}</div>
                                 <a class="btn btn-warning editor_btn_action" href="{% url 'clean_stray_upload_files' %}">
-                                    <i class="fa fa-trash"></i> Clean stray files
+                                    <i class="fa fa-trash"></i> {% trans "Clean stray files" %}
                                 </a>
                             </div>
 
                             <hr>
 
                             <div class="profile-admin-tools">
-                                <div><strong>Bulk import / export articles</strong></div>
-                                <div class="profile-muted">Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account.</div>
+                                <div><strong>{% trans "Bulk import / export articles" %}</strong></div>
+                                <div class="profile-muted">{% trans "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account." %}</div>
                                 <a class="btn btn-info editor_btn_action" href="{% url 'admin_bulk_articles' %}">
-                                    <i class="fa fa-exchange"></i> Import / Export
+                                    <i class="fa fa-exchange"></i> {% trans "Import / Export" %}
                                 </a>
                             </div>
                         </div>
@@ -298,37 +314,37 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     {% csrf_token %}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="changePasswordModalLabel">Change password</h4>
+                        <h4 class="modal-title" id="changePasswordModalLabel">{% trans "Change password" %}</h4>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>Old password</label>
+                            <label>{% trans "Old password" %}</label>
                             <input type="password" name="old_password" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label>New password</label>
+                            <label>{% trans "New password" %}</label>
                             <input type="password" name="new_password1" id="newPassword1" class="form-control" autocomplete="new-password" required>
                             <div class="password-policy-box">
-                                <strong>Password requirements:</strong>
+                                <strong>{% trans "Password requirements" %}:</strong>
                                 <ul>
-                                    <li id="ruleLength" class="password-rule">At least 12 characters</li>
-                                    <li id="ruleUpper" class="password-rule">At least 1 uppercase letter</li>
-                                    <li id="ruleLower" class="password-rule">At least 1 lowercase letter</li>
-                                    <li id="ruleNumber" class="password-rule">At least 1 number</li>
-                                    <li id="ruleSpecial" class="password-rule">At least 1 special character</li>
-                                    <li id="ruleUsername" class="password-rule">Must not contain your username or email name</li>
+                                    <li id="ruleLength" class="password-rule">{% trans "At least 12 characters" %}</li>
+                                    <li id="ruleUpper" class="password-rule">{% trans "At least 1 uppercase letter" %}</li>
+                                    <li id="ruleLower" class="password-rule">{% trans "At least 1 lowercase letter" %}</li>
+                                    <li id="ruleNumber" class="password-rule">{% trans "At least 1 number" %}</li>
+                                    <li id="ruleSpecial" class="password-rule">{% trans "At least 1 special character" %}</li>
+                                    <li id="ruleUsername" class="password-rule">{% trans "Must not contain your username or email name" %}</li>
                                 </ul>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Confirm new password</label>
+                            <label>{% trans "Confirm new password" %}</label>
                             <input type="password" name="new_password2" id="newPassword2" class="form-control" autocomplete="new-password" required>
-                            <div id="passwordMatchMessage" class="password-match-message profile-muted">Re-type the new password to confirm.</div>
+                            <div id="passwordMatchMessage" class="password-match-message profile-muted">{% trans "Re-type the new password to confirm." %}</div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update password</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans "Update password" %}</button>
                     </div>
                 </form>
             </div>
@@ -361,7 +377,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 ruleLower: function (value) { return /[a-z]/.test(value); },
                 ruleNumber: function (value) { return /[0-9]/.test(value); },
                 ruleSpecial: function (value) { return /[^A-Za-z0-9]/.test(value); },
-                ruleUsername: function (value) {
+                rule{% trans "Username" %}: function (value) {
                     const lowerValue = value.toLowerCase();
                     if (username && username.length >= 3 && lowerValue.indexOf(username) !== -1) {
                         return false;
@@ -390,13 +406,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
                 if (!confirmInput.value) {
                     matchMessage.className = "password-match-message profile-muted";
-                    matchMessage.textContent = "Re-type the new password to confirm.";
+                    matchMessage.textContent = "{% trans "Re-type the new password to confirm." %}";
                 } else if (value === confirmInput.value) {
                     matchMessage.className = "password-match-message text-success";
-                    matchMessage.textContent = "Passwords match.";
+                    matchMessage.textContent = "{% trans 'Passwords match.' %}";
                 } else {
                     matchMessage.className = "password-match-message text-danger";
-                    matchMessage.textContent = "Passwords do not match yet.";
+                    matchMessage.textContent = "{% trans 'Passwords do not match yet.' %}";
                 }
             }
 

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class UserProfile(models.Model):
@@ -12,10 +13,10 @@ class UserProfile(models.Model):
     """
 
     class AccountType(models.TextChoices):
-        ADMIN = "admin", "Admin"
-        USER = "user", "User"
-        LDAP_USER = "ldap_user", "LDAP user"
-        LDAP_ADMIN = "ldap_admin", "LDAP admin"
+        ADMIN = "admin", _("Admin")
+        USER = "user", _("User")
+        LDAP_USER = "ldap_user", _("LDAP user")
+        LDAP_ADMIN = "ldap_admin", _("LDAP admin")
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -31,6 +32,12 @@ class UserProfile(models.Model):
     can_access_main_site = models.BooleanField(
         default=True,
         help_text="Untick this to block the user from accessing the main wiki site.",
+    )
+    preferred_language = models.CharField(
+        max_length=20,
+        choices=settings.LANGUAGES,
+        default=settings.LANGUAGE_CODE,
+        help_text="Preferred language for the main wiki user interface.",
     )
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -96,8 +103,8 @@ class SuggestedArticle(models.Model):
     """
 
     class Status(models.TextChoices):
-        PUBLISHED = "published", "Published"
-        DRAFT = "draft", "Draft"
+        PUBLISHED = "published", _("Published")
+        DRAFT = "draft", _("Draft")
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -212,7 +219,6 @@ class SuggestedArticle(models.Model):
                 return "Admin"
 
         return self.author_account_type_snapshot or ""
-
 
 
 class SiteSetting(models.Model):

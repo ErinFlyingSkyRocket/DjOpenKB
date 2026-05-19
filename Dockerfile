@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     git \
     curl \
+    gettext \
     libmagic1 \
     libldap2-dev \
     libsasl2-dev \

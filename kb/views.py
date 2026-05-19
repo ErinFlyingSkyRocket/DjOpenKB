@@ -24,7 +24,8 @@ from django.db.models import Q
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import timezone, translation
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -715,7 +716,7 @@ def get_user_profile(user):
     if not user.is_authenticated:
         return None
 
-    profile, _ = UserProfile.objects.get_or_create(user=user)
+    profile, created = UserProfile.objects.get_or_create(user=user)
 
     # Keep existing superuser/staff accounts visible as Admin unless already LDAP admin.
     if (user.is_superuser or user.is_staff) and profile.account_type not in {
@@ -850,6 +851,7 @@ def suggest(request):
 
 def get_profile_account_context(user):
     user_is_ldap_managed = is_ldap_managed_user(user)
+    profile, created = UserProfile.objects.get_or_create(user=user)
 
     return {
         "total_user_article_count": SuggestedArticle.objects.filter(owner=user).count(),
@@ -859,6 +861,8 @@ def get_profile_account_context(user):
         "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
         "can_confirm_profile_changes": user.has_usable_password(),
         "can_use_admin_tools": user_can_use_admin_tools(user),
+        "profile_preferred_language": profile.preferred_language,
+        "supported_languages": settings.LANGUAGES,
     }
 
 
@@ -1060,43 +1064,61 @@ def update_profile(request):
     user_is_ldap_managed = is_ldap_managed_user(user)
     profile_action = request.POST.get("profile_action", "").strip()
 
+    if profile_action == "language":
+        language_code = request.POST.get("preferred_language", "").strip()
+        allowed_codes = {code for code, _name in settings.LANGUAGES}
+
+        if language_code not in allowed_codes:
+            messages.error(request, _("Invalid language selected."))
+            return redirect("profile")
+
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        profile.preferred_language = language_code
+        profile.save(update_fields=["preferred_language", "updated_at"])
+
+        translation.activate(language_code)
+        request.LANGUAGE_CODE = language_code
+
+        messages.success(request, _("Language preference updated successfully."))
+        return redirect("profile")
+
     # For Django local accounts, require the current password before changing
     # username/email. LDAP users normally do not have a local usable password,
     # so LDAP-managed fields are protected by backend rules instead.
     if user.has_usable_password():
         current_password = request.POST.get("current_password", "")
         if not user.check_password(current_password):
-            messages.error(request, "Confirm password is incorrect.")
+            messages.error(request, _("Confirm password is incorrect."))
             return redirect("profile")
 
     if profile_action == "username":
         username = request.POST.get("username", "").strip()
         if not username:
-            messages.error(request, "Username cannot be empty.")
+            messages.error(request, _("Username cannot be empty."))
             return redirect("profile")
 
         username_exists = User.objects.exclude(pk=user.pk).filter(username__iexact=username).exists()
         if username_exists:
-            messages.error(request, "That username is already used by another account.")
+            messages.error(request, _("That username is already used by another account."))
             return redirect("profile")
 
         user.username = username
         user.save(update_fields=["username"])
-        messages.success(request, "Username updated successfully.")
+        messages.success(request, _("Username updated successfully."))
         return redirect("profile")
 
     if profile_action == "email":
         if user_is_ldap_managed:
-            messages.error(request, "LDAP email is managed by LDAP/AD and cannot be changed here.")
+            messages.error(request, _("LDAP email is managed by LDAP/AD and cannot be changed here."))
             return redirect("profile")
 
         email = request.POST.get("email", "").strip()
         user.email = email
         user.save(update_fields=["email"])
-        messages.success(request, "Email updated successfully.")
+        messages.success(request, _("Email updated successfully."))
         return redirect("profile")
 
-    messages.error(request, "Invalid profile update request.")
+    messages.error(request, _("Invalid profile update request."))
     return redirect("profile")
 
 

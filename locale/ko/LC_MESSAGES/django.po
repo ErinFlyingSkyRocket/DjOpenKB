@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ko\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "문서 일괄 가져오기 / 내보내기"
+
+msgid "Toggle navigation"
+msgstr "탐색 전환"
+
+msgid "Knowledge Repository"
+msgstr "지식 저장소"
+
+msgid "My Profile"
+msgstr "내 프로필"
+
+msgid "Article"
+msgstr "문서"
+
+msgid "New"
+msgstr "새로 만들기"
+
+msgid "Edit"
+msgstr "편집"
+
+msgid "Admin"
+msgstr "관리자"
+
+msgid "Logged in as"
+msgstr "로그인 사용자"
+
+msgid "Logout"
+msgstr "로그아웃"
+
+msgid "Bulk import / export articles"
+msgstr "문서 일괄 가져오기 / 내보내기"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "관리자 전용 도구입니다. 내보내기에는 문서 Markdown과 다음 위치의 참조 파일이 포함됩니다"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "가져온 문서는 가져오기를 수행하는 관리자 계정에 할당됩니다."
+
+msgid "Export articles"
+msgstr "문서 내보내기"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Django가 관리하는 모든 문서, Markdown 콘텐츠, 하나의 항목을 포함하는 zip 다운로드"
+
+msgid "and all referenced uploaded files."
+msgstr "및 모든 참조된 업로드 파일."
+
+msgid "Export articles zip"
+msgstr "문서 내보내기 zip"
+
+msgid "Import articles"
+msgstr "문서 가져오기"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "이 시스템에서 내보낸 zip 또는 Markdown 파일과 선택 사항이 포함된 zip을 업로드하세요"
+
+msgid "Imported articles will be owned by"
+msgstr "가져온 문서의 소유자는"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "이 zip을 가져오시겠습니까? 가져온 문서는 관리자 계정에 할당됩니다."
+
+msgid "Import zip file"
+msgstr "가져오기 zip 파일"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "최대 업로드 크기: 100 MB. 최대 압축 해제 크기: 200 MB."
+
+msgid "Import zip"
+msgstr "zip 가져오기"
+
+msgid "Back to profile"
+msgstr "프로필로 돌아가기"
+
+msgid "Supported zip format"
+msgstr "지원되는 zip 형식"
+
+msgid "This tool prefers the system export format:"
+msgstr "이 도구는 시스템 내보내기 형식을 선호합니다:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "manifest.json이 없으면 가져오기 도구가 zip에서 찾은 모든 Markdown 파일을 가져오려고 시도합니다."
+
+msgid "Clean Stray Upload Files"
+msgstr "고아 업로드 파일 정리"
+
+msgid "Clean stray upload files"
+msgstr "불필요한 업로드 파일 정리"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "openkb-data/wiki/uploads를 스캔하여 Django 문서 본문에서 참조되지 않는 업로드 파일을 찾습니다,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets 또는 openkb-data/wiki 아래의 Markdown 파일."
+
+msgid "Review before deleting"
+msgstr "삭제 전 검토"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "나열된 모든 고아 업로드 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+
+msgid "Preview / Open"
+msgstr "미리보기 / 열기"
+
+msgid "Filename"
+msgstr "파일 이름"
+
+msgid "Type"
+msgstr "유형"
+
+msgid "Size"
+msgstr "크기"
+
+msgid "Last modified"
+msgstr "마지막 수정"
+
+msgid "No stray uploaded files found."
+msgstr "고아 업로드 파일을 찾을 수 없습니다."
+
+msgid "Login to contribute"
+msgstr "기여하려면 로그인"
+
+msgid "How can we help?"
+msgstr "무엇을 도와드릴까요?"
+
+msgid "Featured articles"
+msgstr "추천 문서"
+
+msgid "No featured articles yet."
+msgstr "아직 추천 문서가 없습니다."
+
+msgid "Article details"
+msgstr "문서 세부 정보"
+
+msgid "Published date"
+msgstr "게시일"
+
+msgid "Last updated"
+msgstr "마지막 업데이트"
+
+msgid "Share article"
+msgstr "문서 공유"
+
+msgid "Author"
+msgstr "작성자"
+
+msgid "Permalink"
+msgstr "고정 링크"
+
+msgid "Edit article"
+msgstr "문서 편집"
+
+msgid "Delete article"
+msgstr "문서 삭제"
+
+msgid "Ask OpenKB AI"
+msgstr "OpenKB AI에 질문"
+
+msgid "Ask"
+msgstr "질문"
+
+msgid "Answer"
+msgstr "답변"
+
+msgid "No answer yet."
+msgstr "아직 답변이 없습니다."
+
+msgid "Related articles"
+msgstr "관련 문서"
+
+msgid "search"
+msgstr "검색"
+
+msgid "Edit My Articles"
+msgstr "내 문서 편집"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "지식 저장소에서 제안한 문서를 검색, 편집 또는 삭제합니다."
+
+msgid "Search my suggestions"
+msgstr "내 제안 검색"
+
+msgid "Clear search"
+msgstr "검색 지우기"
+
+msgid "Next"
+msgstr "다음"
+
+msgid "Last"
+msgstr "마지막"
+
+msgid "Article title"
+msgstr "문서 제목"
+
+msgid "Status"
+msgstr "상태"
+
+msgid "Created"
+msgstr "생성됨"
+
+msgid "Actions"
+msgstr "작업"
+
+msgid "Delete"
+msgstr "삭제"
+
+msgid "No matching suggested articles found."
+msgstr "일치하는 제안 문서를 찾을 수 없습니다."
+
+msgid "You have not suggested any articles yet."
+msgstr "아직 제안한 문서가 없습니다."
+
+msgid "Create your first suggestion"
+msgstr "첫 번째 제안 만들기"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "제목, 본문, 키워드, 상태 또는 파일 경로로 검색"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "IT 도움말 센터"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "가장 일반적인 질문에 대한 즉시 답변을 받고 3자를 전문가처럼 사용하는 방법을 배워보세요."
+
+msgid "Date"
+msgstr "날짜"
+
+msgid "Login"
+msgstr "로그인"
+
+msgid "Please sign in"
+msgstr "로그인해 주세요"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "LDAP 이메일 또는 Django 로컬 사용자 이름을 사용하세요."
+
+msgid "Sign in"
+msgstr "로그인"
+
+msgid "email address"
+msgstr "이메일 주소"
+
+msgid "Password"
+msgstr "비밀번호"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "계정 정보를 관리하세요. 제안한 문서를 관리하려면 문서 > 편집을 사용하세요."
+
+msgid "Account summary"
+msgstr "계정 요약"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "사용자 이름과 이메일은 Django 또는 LDAP 계정 정보에서 생성됩니다. LDAP 이메일 주소는 여기에서 변경할 수 없습니다."
+
+msgid "Username"
+msgstr "사용자 이름"
+
+msgid "New username"
+msgstr "새 사용자 이름"
+
+msgid "Confirm password"
+msgstr "비밀번호 확인"
+
+msgid "Save username"
+msgstr "사용자 이름 저장"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Email"
+msgstr "이메일"
+
+msgid "No email set"
+msgstr "이메일이 설정되지 않음"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "LDAP 관리됨, 편집 불가"
+
+msgid "New email"
+msgstr "새 이메일"
+
+msgid "Save email"
+msgstr "이메일 저장"
+
+msgid "Account type"
+msgstr "계정 유형"
+
+msgid "Language"
+msgstr "언어"
+
+msgid "Save language"
+msgstr "언어 저장"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "이 설정은 계정의 웹사이트 인터페이스 언어를 변경합니다. 문서 내용은 당분간 원래 언어로 유지됩니다."
+
+msgid "Change password"
+msgstr "비밀번호 변경"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP 비밀번호는 회사 비밀번호 시스템을 통해 변경됩니다."
+
+msgid "Articles"
+msgstr "문서"
+
+msgid "Own suggested articles"
+msgstr "내 제안 문서"
+
+msgid "New article"
+msgstr "새 문서"
+
+msgid "Edit my articles"
+msgstr "내 문서 편집"
+
+msgid "Admin tools"
+msgstr "관리자 도구"
+
+msgid "Finds unused files in"
+msgstr "사용하지 않는 파일 찾기 위치"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "더 이상 어떤 문서나 wiki Markdown 파일에서도 참조되지 않는 것."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "문서를 Markdown 및 업로드 파일이 포함된 zip으로 내보내거나 zip을 가져와 가져온 문서를 관리자 계정에 할당합니다."
+
+msgid "Old password"
+msgstr "이전 비밀번호"
+
+msgid "New password"
+msgstr "새 비밀번호"
+
+msgid "Password requirements"
+msgstr "비밀번호 요구 사항"
+
+msgid "At least 12 characters"
+msgstr "12자 이상"
+
+msgid "At least 1 uppercase letter"
+msgstr "대문자 1개 이상"
+
+msgid "At least 1 lowercase letter"
+msgstr "소문자 1개 이상"
+
+msgid "At least 1 number"
+msgstr "숫자 1개 이상"
+
+msgid "At least 1 special character"
+msgstr "특수 문자 1개 이상"
+
+msgid "Must not contain your username or email name"
+msgstr "사용자 이름 또는 이메일 이름을 포함할 수 없습니다"
+
+msgid "Confirm new password"
+msgstr "새 비밀번호 확인"
+
+msgid "Re-type the new password to confirm."
+msgstr "확인을 위해 새 비밀번호를 다시 입력하세요."
+
+msgid "Update password"
+msgstr "비밀번호 업데이트"
+
+msgid "Passwords match."
+msgstr "비밀번호가 일치합니다."
+
+msgid "Passwords do not match yet."
+msgstr "비밀번호가 아직 일치하지 않습니다."
+
+msgid "Suggest article"
+msgstr "문서 제안"
+
+msgid "Suggest"
+msgstr "제안"
+
+msgid "Pasted images"
+msgstr "붙여넣은 이미지"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "이 초안에 업로드된 이미지는 여기에 표시됩니다. X를 클릭하면 문서에서 이미지를 제거하고 업로드된 파일을 삭제합니다."
+
+msgid "Article body (Markdown)"
+msgstr "문서 본문 (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "작은 PNG/JPG/GIF/WEBP 이미지를 편집기에 직접 붙여넣거나 버튼을 사용해 업로드할 수 있습니다. 각 최대 2 MB."
+
+msgid "Upload image"
+msgstr "이미지 업로드"
+
+msgid "Preview"
+msgstr "미리보기"
+
+msgid "Keywords"
+msgstr "키워드"
+
+msgid "Delete suggested article"
+msgstr "제안 문서 삭제"
+
+msgid "Are you sure you want to delete"
+msgstr "정말 삭제하시겠습니까?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "프로필 기록을 제거하고 OpenKB raw/source 저장소에서 Markdown 파일을 삭제합니다."
+
+msgid "Published"
+msgstr "게시됨"
+
+msgid "Draft"
+msgstr "초안"
+
+msgid "Save"
+msgstr "저장"
+
+msgid "Invalid language selected."
+msgstr "잘못된 언어가 선택되었습니다."
+
+msgid "Language preference updated successfully."
+msgstr "언어 기본 설정이 성공적으로 업데이트되었습니다."
+
+msgid "Confirm password is incorrect."
+msgstr "확인 비밀번호가 올바르지 않습니다."
+
+msgid "Username cannot be empty."
+msgstr "사용자 이름은 비워 둘 수 없습니다."
+
+msgid "That username is already used by another account."
+msgstr "해당 사용자 이름은 이미 다른 계정에서 사용 중입니다."
+
+msgid "Username updated successfully."
+msgstr "사용자 이름이 성공적으로 업데이트되었습니다."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP 이메일은 LDAP/AD에서 관리되며 여기에서 변경할 수 없습니다."
+
+msgid "Email updated successfully."
+msgstr "이메일이 성공적으로 업데이트되었습니다."
+
+msgid "Invalid profile update request."
+msgstr "잘못된 프로필 업데이트 요청입니다."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "처음"
+
+msgid "Previous"
+msgstr "이전"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "%(num_pages)s페이지 중 %(number)s페이지"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: 인기 주제 :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: \"%(query)s\" 검색 결과 :::"
+
+msgid "Clean stray files"
+msgstr "불필요한 파일 정리"
+
+msgid "Import / Export"
+msgstr "가져오기 / 내보내기"
+
+msgid "Open"
+msgstr "열기"
+
+msgid "Document Bulk Import / Export"
+msgstr "문서 일괄 가져오기 / 내보내기"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "지식 저장소에 제안한 문서를 검색, 편집 또는 삭제합니다."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "문서 %(count)s개"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "%(name)s님이 제안한 총 문서 수"
+
+msgid "Search suggested articles"
+msgstr "제안 문서 검색"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "\"%(query)s\"에 대한 결과를 표시합니다."
+
+msgid "My suggested articles"
+msgstr "내가 제안한 문서"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "일치 %(matching)s개 / 총 %(total)s개"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "총 %(count)s개"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "\"%(query)s\"와 일치하는 문서 %(count)s개 중 %(start)s-%(end)s개 표시"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "문서 %(count)s개 중 %(start)s-%(end)s개 표시"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "일치하는 문서 %(count)s개를 찾았습니다."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "총 문서 %(count)s개."

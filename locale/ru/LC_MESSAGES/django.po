@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Массовый импорт / экспорт статей"
+
+msgid "Toggle navigation"
+msgstr "Переключить навигацию"
+
+msgid "Knowledge Repository"
+msgstr "Репозиторий знаний"
+
+msgid "My Profile"
+msgstr "Мой профиль"
+
+msgid "Article"
+msgstr "Статья"
+
+msgid "New"
+msgstr "Новый"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Admin"
+msgstr "Администратор"
+
+msgid "Logged in as"
+msgstr "Вошел как"
+
+msgid "Logout"
+msgstr "Выйти"
+
+msgid "Bulk import / export articles"
+msgstr "Массовый импорт / экспорт статей"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Инструмент только для администраторов. Экспорт включает Markdown статьи и связанные файлы в"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Импортированные статьи назначаются аккаунту администратора, выполняющему импорт."
+
+msgid "Export articles"
+msgstr "Экспорт статей"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Скачать zip, содержащий все статьи Django, их Markdown-содержимое, а"
+
+msgid "and all referenced uploaded files."
+msgstr "и все связанные загруженные файлы."
+
+msgid "Export articles zip"
+msgstr "Zip экспорта статей"
+
+msgid "Import articles"
+msgstr "Импорт статей"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Загрузите zip, экспортированный из этой системы, или zip с Markdown-файлами и необязательным"
+
+msgid "Imported articles will be owned by"
+msgstr "Импортированные статьи будут принадлежать"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Импортировать этот zip? Импортированные статьи будут назначены вашему аккаунту администратора."
+
+msgid "Import zip file"
+msgstr "Файл zip для импорта"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Максимальный размер загрузки: 100 МБ. Максимальный распакованный размер: 200 МБ."
+
+msgid "Import zip"
+msgstr "Импортировать zip"
+
+msgid "Back to profile"
+msgstr "Вернуться к профилю"
+
+msgid "Supported zip format"
+msgstr "Поддерживаемый формат zip"
+
+msgid "This tool prefers the system export format:"
+msgstr "Этот инструмент предпочитает системный формат экспорта:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Если manifest.json отсутствует, импортер попытается импортировать все Markdown-файлы, найденные в zip."
+
+msgid "Clean Stray Upload Files"
+msgstr "Очистить лишние загруженные файлы"
+
+msgid "Clean stray upload files"
+msgstr "Очистить лишние загруженные файлы"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Сканирует openkb-data/wiki/uploads и находит загруженные файлы, которые не упоминаются в тексте ни одной статьи Django,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets или Markdown-файл в openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Проверить перед удалением"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Удалить все перечисленные лишние загруженные файлы? Это действие нельзя отменить."
+
+msgid "Preview / Open"
+msgstr "Предпросмотр / Открыть"
+
+msgid "Filename"
+msgstr "Имя файла"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Last modified"
+msgstr "Последнее изменение"
+
+msgid "No stray uploaded files found."
+msgstr "Лишние загруженные файлы не найдены."
+
+msgid "Login to contribute"
+msgstr "Войдите, чтобы внести вклад"
+
+msgid "How can we help?"
+msgstr "Чем мы можем помочь?"
+
+msgid "Featured articles"
+msgstr "Избранные статьи"
+
+msgid "No featured articles yet."
+msgstr "Избранных статей пока нет."
+
+msgid "Article details"
+msgstr "Сведения о статье"
+
+msgid "Published date"
+msgstr "Дата публикации"
+
+msgid "Last updated"
+msgstr "Последнее обновление"
+
+msgid "Share article"
+msgstr "Поделиться статьей"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Permalink"
+msgstr "Постоянная ссылка"
+
+msgid "Edit article"
+msgstr "Редактировать статью"
+
+msgid "Delete article"
+msgstr "Удалить статью"
+
+msgid "Ask OpenKB AI"
+msgstr "Спросить OpenKB AI"
+
+msgid "Ask"
+msgstr "Спросить"
+
+msgid "Answer"
+msgstr "Ответ"
+
+msgid "No answer yet."
+msgstr "Ответа пока нет."
+
+msgid "Related articles"
+msgstr "Связанные статьи"
+
+msgid "search"
+msgstr "поиск"
+
+msgid "Edit My Articles"
+msgstr "Редактировать мои статьи"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Ищите, редактируйте или удаляйте свои предложенные статьи в Репозитории знаний."
+
+msgid "Search my suggestions"
+msgstr "Искать мои предложения"
+
+msgid "Clear search"
+msgstr "Очистить поиск"
+
+msgid "Next"
+msgstr "Следующая"
+
+msgid "Last"
+msgstr "Последняя"
+
+msgid "Article title"
+msgstr "Заголовок статьи"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Created"
+msgstr "Создано"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "No matching suggested articles found."
+msgstr "Подходящие предложенные статьи не найдены."
+
+msgid "You have not suggested any articles yet."
+msgstr "Вы еще не предложили ни одной статьи."
+
+msgid "Create your first suggestion"
+msgstr "Создайте первое предложение"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Поиск по заголовку, тексту, ключевым словам, статусу или пути файла"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "Центр ИТ-помощи"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Получайте мгновенные ответы на самые частые вопросы и узнайте, как использовать 3 символа как профессионал."
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Login"
+msgstr "Войти"
+
+msgid "Please sign in"
+msgstr "Пожалуйста, войдите"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Используйте LDAP-электронную почту или локальное имя пользователя Django."
+
+msgid "Sign in"
+msgstr "Войти"
+
+msgid "email address"
+msgstr "адрес электронной почты"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Управляйте данными аккаунта. Используйте Статья > Редактировать для управления предложенными статьями."
+
+msgid "Account summary"
+msgstr "Сводка аккаунта"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Имя пользователя и электронная почта создаются из данных аккаунта Django или LDAP. LDAP-адреса электронной почты нельзя изменить здесь."
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "New username"
+msgstr "Новое имя пользователя"
+
+msgid "Confirm password"
+msgstr "Подтвердите пароль"
+
+msgid "Save username"
+msgstr "Сохранить имя пользователя"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Email"
+msgstr "Электронная почта"
+
+msgid "No email set"
+msgstr "Электронная почта не указана"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "Управляется LDAP, редактирование невозможно"
+
+msgid "New email"
+msgstr "Новая электронная почта"
+
+msgid "Save email"
+msgstr "Сохранить электронную почту"
+
+msgid "Account type"
+msgstr "Тип аккаунта"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Save language"
+msgstr "Сохранить язык"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Это меняет язык интерфейса сайта для вашего аккаунта. Содержимое статей пока остается на исходном языке."
+
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP-пароли изменяются через корпоративную систему паролей."
+
+msgid "Articles"
+msgstr "Статьи"
+
+msgid "Own suggested articles"
+msgstr "Собственные предложенные статьи"
+
+msgid "New article"
+msgstr "Новая статья"
+
+msgid "Edit my articles"
+msgstr "Редактировать мои статьи"
+
+msgid "Admin tools"
+msgstr "Инструменты администратора"
+
+msgid "Finds unused files in"
+msgstr "Находит неиспользуемые файлы в"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "которые больше не упоминаются ни одной статьей или Markdown-файлом wiki."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Экспортируйте статьи как zip с Markdown и загруженными файлами или импортируйте zip и назначьте импортированные статьи вашему аккаунту администратора."
+
+msgid "Old password"
+msgstr "Старый пароль"
+
+msgid "New password"
+msgstr "Новый пароль"
+
+msgid "Password requirements"
+msgstr "Требования к паролю"
+
+msgid "At least 12 characters"
+msgstr "Минимум 12 символов"
+
+msgid "At least 1 uppercase letter"
+msgstr "Минимум 1 заглавная буква"
+
+msgid "At least 1 lowercase letter"
+msgstr "Минимум 1 строчная буква"
+
+msgid "At least 1 number"
+msgstr "Минимум 1 цифра"
+
+msgid "At least 1 special character"
+msgstr "Минимум 1 специальный символ"
+
+msgid "Must not contain your username or email name"
+msgstr "Не должен содержать ваше имя пользователя или имя электронной почты"
+
+msgid "Confirm new password"
+msgstr "Подтвердите новый пароль"
+
+msgid "Re-type the new password to confirm."
+msgstr "Введите новый пароль еще раз для подтверждения."
+
+msgid "Update password"
+msgstr "Обновить пароль"
+
+msgid "Passwords match."
+msgstr "Пароли совпадают."
+
+msgid "Passwords do not match yet."
+msgstr "Пароли пока не совпадают."
+
+msgid "Suggest article"
+msgstr "Предложить статью"
+
+msgid "Suggest"
+msgstr "Предложить"
+
+msgid "Pasted images"
+msgstr "Вставленные изображения"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Изображения, загруженные в этот черновик, отображаются здесь. Нажмите X, чтобы удалить изображение из статьи и удалить загруженный файл."
+
+msgid "Article body (Markdown)"
+msgstr "Текст статьи (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Вы можете вставлять небольшие изображения PNG/JPG/GIF/WEBP прямо в редактор или загрузить их кнопкой. Максимум 2 МБ каждое."
+
+msgid "Upload image"
+msgstr "Загрузить изображение"
+
+msgid "Preview"
+msgstr "Предпросмотр"
+
+msgid "Keywords"
+msgstr "Ключевые слова"
+
+msgid "Delete suggested article"
+msgstr "Удалить предложенную статью"
+
+msgid "Are you sure you want to delete"
+msgstr "Вы уверены, что хотите удалить?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Это удаляет запись профиля и Markdown-файлы из raw/source-хранилища OpenKB."
+
+msgid "Published"
+msgstr "Опубликовано"
+
+msgid "Draft"
+msgstr "Черновик"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Invalid language selected."
+msgstr "Выбран недопустимый язык."
+
+msgid "Language preference updated successfully."
+msgstr "Настройка языка успешно обновлена."
+
+msgid "Confirm password is incorrect."
+msgstr "Пароль подтверждения неверен."
+
+msgid "Username cannot be empty."
+msgstr "Имя пользователя не может быть пустым."
+
+msgid "That username is already used by another account."
+msgstr "Это имя пользователя уже используется другим аккаунтом."
+
+msgid "Username updated successfully."
+msgstr "Имя пользователя успешно обновлено."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP-электронная почта управляется LDAP/AD и не может быть изменена здесь."
+
+msgid "Email updated successfully."
+msgstr "Электронная почта успешно обновлена."
+
+msgid "Invalid profile update request."
+msgstr "Недопустимый запрос на обновление профиля."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Первая"
+
+msgid "Previous"
+msgstr "Предыдущая"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Страница %(number)s из %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: ПОПУЛЯРНЫЕ ТЕМЫ :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: РЕЗУЛЬТАТЫ ПОИСКА ДЛЯ \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Очистить лишние файлы"
+
+msgid "Import / Export"
+msgstr "Импорт / Экспорт"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Document Bulk Import / Export"
+msgstr "Массовый импорт / экспорт документов"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Ищите, редактируйте или удаляйте статьи, которые вы предложили в репозитории знаний."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s статей"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Всего статей, предложенных пользователем %(name)s"
+
+msgid "Search suggested articles"
+msgstr "Поиск предложенных статей"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Показаны результаты для «%(query)s»."
+
+msgid "My suggested articles"
+msgstr "Мои предложенные статьи"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s совпадений / всего %(total)s"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "Всего %(count)s"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Показаны %(start)s-%(end)s из %(count)s статей, соответствующих «%(query)s»"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Показаны %(start)s-%(end)s из %(count)s статей"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "Найдено %(count)s подходящих статей."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "Всего %(count)s статей."

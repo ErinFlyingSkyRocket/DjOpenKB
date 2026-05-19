@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ta\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "கட்டுரைகளை மொத்தமாக இறக்குமதி / ஏற்றுமதி செய்"
+
+msgid "Toggle navigation"
+msgstr "வழிசெலுத்தலை மாற்று"
+
+msgid "Knowledge Repository"
+msgstr "அறிவு களஞ்சியம்"
+
+msgid "My Profile"
+msgstr "என் சுயவிவரம்"
+
+msgid "Article"
+msgstr "கட்டுரை"
+
+msgid "New"
+msgstr "புதிய"
+
+msgid "Edit"
+msgstr "திருத்து"
+
+msgid "Admin"
+msgstr "நிர்வாகி"
+
+msgid "Logged in as"
+msgstr "உள்நுழைந்தவர்"
+
+msgid "Logout"
+msgstr "வெளியேறு"
+
+msgid "Bulk import / export articles"
+msgstr "கட்டுரைகளை மொத்தமாக இறக்குமதி / ஏற்றுமதி செய்"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "நிர்வாகிகளுக்கான கருவி மட்டும். ஏற்றுமதிகளில் கட்டுரை Markdown மற்றும் கீழே குறிப்பிடப்பட்ட கோப்புகள் அடங்கும்"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "இறக்குமதி செய்யப்பட்ட கட்டுரைகள் இறக்குமதி செய்கிற நிர்வாகி கணக்கிற்கு ஒதுக்கப்படும்."
+
+msgid "Export articles"
+msgstr "கட்டுரைகளை ஏற்றுமதி செய்"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Django நிர்வகிக்கும் அனைத்து கட்டுரைகள், அவற்றின் Markdown உள்ளடக்கம், ஒரு ஆகியவற்றைக் கொண்ட zip ஐ பதிவிறக்கு"
+
+msgid "and all referenced uploaded files."
+msgstr "மற்றும் குறிப்பிடப்பட்ட அனைத்து பதிவேற்ற கோப்புகள்."
+
+msgid "Export articles zip"
+msgstr "கட்டுரை ஏற்றுமதி zip"
+
+msgid "Import articles"
+msgstr "கட்டுரைகளை இறக்குமதி செய்"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "இந்த அமைப்பிலிருந்து ஏற்றுமதி செய்யப்பட்ட zip அல்லது Markdown கோப்புகள் மற்றும் விருப்பமான ஒன்றைக் கொண்ட zip ஐ பதிவேற்று"
+
+msgid "Imported articles will be owned by"
+msgstr "இறக்குமதி செய்யப்பட்ட கட்டுரைகள் இவருடையதாக இருக்கும்"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "இந்த zip ஐ இறக்குமதி செய்யவா? இறக்குமதி செய்யப்பட்ட கட்டுரைகள் உங்கள் நிர்வாகி கணக்கிற்கு ஒதுக்கப்படும்."
+
+msgid "Import zip file"
+msgstr "இறக்குமதி zip கோப்பு"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "அதிகபட்ச பதிவேற்ற அளவு: 100 MB. அதிகபட்ச சுருக்கம் நீக்கப்பட்ட அளவு: 200 MB."
+
+msgid "Import zip"
+msgstr "zip ஐ இறக்குமதி செய்"
+
+msgid "Back to profile"
+msgstr "சுயவிவரத்திற்குத் திரும்பு"
+
+msgid "Supported zip format"
+msgstr "ஆதரிக்கப்படும் zip வடிவம்"
+
+msgid "This tool prefers the system export format:"
+msgstr "இந்த கருவி கணினி ஏற்றுமதி வடிவத்தை விரும்புகிறது:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "manifest.json இல்லையெனில், இறக்குமதி கருவி zip இல் உள்ள அனைத்து Markdown கோப்புகளையும் இறக்குமதி செய்ய முயலும்."
+
+msgid "Clean Stray Upload Files"
+msgstr "பயன்பாடற்ற பதிவேற்ற கோப்புகளை சுத்தம் செய்"
+
+msgid "Clean stray upload files"
+msgstr "பயன்பாடற்ற பதிவேற்ற கோப்புகளை சுத்தம் செய்"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "இது openkb-data/wiki/uploads ஐ ஸ்கேன் செய்து எந்த Django கட்டுரை உள்ளடக்கத்திலும் குறிப்பிடப்படாத பதிவேற்ற கோப்புகளை கண்டறியும்,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets, அல்லது openkb-data/wiki கீழ் உள்ள Markdown கோப்பு."
+
+msgid "Review before deleting"
+msgstr "நீக்கும் முன் பரிசீலிக்கவும்"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "பட்டியலிடப்பட்ட அனைத்து பயன்பாடற்ற பதிவேற்ற கோப்புகளையும் நீக்கவா? இதை மீட்டெடுக்க முடியாது."
+
+msgid "Preview / Open"
+msgstr "முன்னோட்டம் / திற"
+
+msgid "Filename"
+msgstr "கோப்பு பெயர்"
+
+msgid "Type"
+msgstr "வகை"
+
+msgid "Size"
+msgstr "அளவு"
+
+msgid "Last modified"
+msgstr "கடைசியாக மாற்றப்பட்டது"
+
+msgid "No stray uploaded files found."
+msgstr "பயன்பாடற்ற பதிவேற்ற கோப்புகள் கிடைக்கவில்லை."
+
+msgid "Login to contribute"
+msgstr "பங்களிக்க உள்நுழை"
+
+msgid "How can we help?"
+msgstr "நாங்கள் எப்படி உதவலாம்?"
+
+msgid "Featured articles"
+msgstr "சிறப்பு கட்டுரைகள்"
+
+msgid "No featured articles yet."
+msgstr "இன்னும் சிறப்பு கட்டுரைகள் இல்லை."
+
+msgid "Article details"
+msgstr "கட்டுரை விவரங்கள்"
+
+msgid "Published date"
+msgstr "வெளியீட்டு தேதி"
+
+msgid "Last updated"
+msgstr "கடைசியாக புதுப்பிக்கப்பட்டது"
+
+msgid "Share article"
+msgstr "கட்டுரையை பகிர்"
+
+msgid "Author"
+msgstr "ஆசிரியர்"
+
+msgid "Permalink"
+msgstr "நிரந்தர இணைப்பு"
+
+msgid "Edit article"
+msgstr "கட்டுரையை திருத்து"
+
+msgid "Delete article"
+msgstr "கட்டுரையை நீக்கு"
+
+msgid "Ask OpenKB AI"
+msgstr "OpenKB AI-யிடம் கேள்"
+
+msgid "Ask"
+msgstr "கேள்"
+
+msgid "Answer"
+msgstr "பதில்"
+
+msgid "No answer yet."
+msgstr "இன்னும் பதில் இல்லை."
+
+msgid "Related articles"
+msgstr "தொடர்புடைய கட்டுரைகள்"
+
+msgid "search"
+msgstr "தேடு"
+
+msgid "Edit My Articles"
+msgstr "என் கட்டுரைகளை திருத்து"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "அறிவு களஞ்சியத்தில் உங்கள் பரிந்துரைக் கட்டுரைகளை தேடு, திருத்து அல்லது நீக்கு."
+
+msgid "Search my suggestions"
+msgstr "என் பரிந்துரைகளை தேடு"
+
+msgid "Clear search"
+msgstr "தேடலை அழி"
+
+msgid "Next"
+msgstr "அடுத்தது"
+
+msgid "Last"
+msgstr "கடைசி"
+
+msgid "Article title"
+msgstr "கட்டுரை தலைப்பு"
+
+msgid "Status"
+msgstr "நிலை"
+
+msgid "Created"
+msgstr "உருவாக்கப்பட்டது"
+
+msgid "Actions"
+msgstr "செயல்கள்"
+
+msgid "Delete"
+msgstr "நீக்கு"
+
+msgid "No matching suggested articles found."
+msgstr "பொருந்தும் பரிந்துரைக் கட்டுரைகள் கிடைக்கவில்லை."
+
+msgid "You have not suggested any articles yet."
+msgstr "நீங்கள் இதுவரை எந்த கட்டுரையையும் பரிந்துரைக்கவில்லை."
+
+msgid "Create your first suggestion"
+msgstr "உங்கள் முதல் பரிந்துரையை உருவாக்கு"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "தலைப்பு, உள்ளடக்கம், முக்கிய சொற்கள், நிலை அல்லது கோப்பு பாதை மூலம் தேடு"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "IT உதவி மையம்"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "மிகவும் பொதுவான கேள்விகளுக்கான உடனடி பதில்களைப் பெறுங்கள் மற்றும் 3 எழுத்துகளை தொழில்முறை நபரைப் போல பயன்படுத்த கற்றுக்கொள்ளுங்கள்."
+
+msgid "Date"
+msgstr "தேதி"
+
+msgid "Login"
+msgstr "உள்நுழை"
+
+msgid "Please sign in"
+msgstr "தயவுசெய்து உள்நுழையவும்"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "LDAP மின்னஞ்சல் அல்லது Django உள்ளூர் பயனர் பெயரை பயன்படுத்தவும்."
+
+msgid "Sign in"
+msgstr "உள்நுழை"
+
+msgid "email address"
+msgstr "மின்னஞ்சல் முகவரி"
+
+msgid "Password"
+msgstr "கடவுச்சொல்"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "உங்கள் கணக்கு விவரங்களை நிர்வகிக்கவும். உங்கள் பரிந்துரைக் கட்டுரைகளை நிர்வகிக்க கட்டுரை > திருத்து பயன்படுத்தவும்."
+
+msgid "Account summary"
+msgstr "கணக்கு சுருக்கம்"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "பயனர் பெயரும் மின்னஞ்சலும் Django அல்லது LDAP கணக்கு விவரங்களிலிருந்து உருவாக்கப்படுகின்றன. LDAP மின்னஞ்சல் முகவரிகளை இங்கே மாற்ற முடியாது."
+
+msgid "Username"
+msgstr "பயனர் பெயர்"
+
+msgid "New username"
+msgstr "புதிய பயனர் பெயர்"
+
+msgid "Confirm password"
+msgstr "கடவுச்சொல்லை உறுதிப்படுத்து"
+
+msgid "Save username"
+msgstr "பயனர் பெயரை சேமி"
+
+msgid "Cancel"
+msgstr "ரத்து செய்"
+
+msgid "Email"
+msgstr "மின்னஞ்சல்"
+
+msgid "No email set"
+msgstr "மின்னஞ்சல் அமைக்கப்படவில்லை"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "LDAP மூலம் நிர்வகிக்கப்படுகிறது, திருத்த முடியாது"
+
+msgid "New email"
+msgstr "புதிய மின்னஞ்சல்"
+
+msgid "Save email"
+msgstr "மின்னஞ்சலை சேமி"
+
+msgid "Account type"
+msgstr "கணக்கு வகை"
+
+msgid "Language"
+msgstr "மொழி"
+
+msgid "Save language"
+msgstr "மொழியை சேமி"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "இது உங்கள் கணக்கிற்கான இணையதள இடைமுக மொழியை மாற்றுகிறது. கட்டுரை உள்ளடக்கம் இப்போது அதன் மூல மொழியிலேயே இருக்கும்."
+
+msgid "Change password"
+msgstr "கடவுச்சொல்லை மாற்று"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP கடவுச்சொற்கள் நிறுவனத்தின் கடவுச்சொல் அமைப்பின் மூலம் மாற்றப்படும்."
+
+msgid "Articles"
+msgstr "கட்டுரைகள்"
+
+msgid "Own suggested articles"
+msgstr "என் பரிந்துரைக் கட்டுரைகள்"
+
+msgid "New article"
+msgstr "புதிய கட்டுரை"
+
+msgid "Edit my articles"
+msgstr "என் கட்டுரைகளை திருத்து"
+
+msgid "Admin tools"
+msgstr "நிர்வாகி கருவிகள்"
+
+msgid "Finds unused files in"
+msgstr "இதில் பயன்படுத்தப்படாத கோப்புகளை கண்டறியும்"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "எந்த கட்டுரை அல்லது wiki Markdown கோப்பாலும் இனி குறிப்பிடப்படாதவை."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "கட்டுரைகளை Markdown மற்றும் பதிவேற்றப்பட்ட கோப்புகளுடன் zip ஆக ஏற்றுமதி செய்யவும், அல்லது zip ஐ இறக்குமதி செய்து கட்டுரைகளை உங்கள் நிர்வாகி கணக்கிற்கு ஒதுக்கவும்."
+
+msgid "Old password"
+msgstr "பழைய கடவுச்சொல்"
+
+msgid "New password"
+msgstr "புதிய கடவுச்சொல்"
+
+msgid "Password requirements"
+msgstr "கடவுச்சொல் தேவைகள்"
+
+msgid "At least 12 characters"
+msgstr "குறைந்தது 12 எழுத்துகள்"
+
+msgid "At least 1 uppercase letter"
+msgstr "குறைந்தது 1 பெரிய எழுத்து"
+
+msgid "At least 1 lowercase letter"
+msgstr "குறைந்தது 1 சிறிய எழுத்து"
+
+msgid "At least 1 number"
+msgstr "குறைந்தது 1 எண்"
+
+msgid "At least 1 special character"
+msgstr "குறைந்தது 1 சிறப்பு எழுத்து"
+
+msgid "Must not contain your username or email name"
+msgstr "உங்கள் பயனர் பெயர் அல்லது மின்னஞ்சல் பெயர் இருக்கக்கூடாது"
+
+msgid "Confirm new password"
+msgstr "புதிய கடவுச்சொல்லை உறுதிப்படுத்து"
+
+msgid "Re-type the new password to confirm."
+msgstr "உறுதிப்படுத்த புதிய கடவுச்சொல்லை மீண்டும் தட்டச்சு செய்யவும்."
+
+msgid "Update password"
+msgstr "கடவுச்சொல்லை புதுப்பி"
+
+msgid "Passwords match."
+msgstr "கடவுச்சொற்கள் பொருந்துகின்றன."
+
+msgid "Passwords do not match yet."
+msgstr "கடவுச்சொற்கள் இன்னும் பொருந்தவில்லை."
+
+msgid "Suggest article"
+msgstr "கட்டுரையை பரிந்துரை"
+
+msgid "Suggest"
+msgstr "பரிந்துரை"
+
+msgid "Pasted images"
+msgstr "ஒட்டப்பட்ட படங்கள்"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "இந்த வரைவில் பதிவேற்றப்பட்ட படங்கள் இங்கே தோன்றும். கட்டுரையிலிருந்து படத்தை அகற்றி பதிவேற்றப்பட்ட கோப்பை நீக்க X ஐ கிளிக் செய்யவும்."
+
+msgid "Article body (Markdown)"
+msgstr "கட்டுரை உள்ளடக்கம் (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "சிறிய PNG/JPG/GIF/WEBP படங்களை நேரடியாக எடிட்டரில் ஒட்டலாம் அல்லது பொத்தானைப் பயன்படுத்தி பதிவேற்றலாம். ஒவ்வொன்றும் அதிகபட்சம் 2 MB."
+
+msgid "Upload image"
+msgstr "படத்தை பதிவேற்று"
+
+msgid "Preview"
+msgstr "முன்னோட்டம்"
+
+msgid "Keywords"
+msgstr "முக்கிய சொற்கள்"
+
+msgid "Delete suggested article"
+msgstr "பரிந்துரைக்கப்பட்ட கட்டுரையை நீக்கு"
+
+msgid "Are you sure you want to delete"
+msgstr "நீங்கள் நிச்சயமாக நீக்க விரும்புகிறீர்களா?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "இது சுயவிவர பதிவை அகற்றி OpenKB raw/source சேமிப்பகத்திலிருந்து Markdown கோப்புகளை நீக்கும்."
+
+msgid "Published"
+msgstr "வெளியிடப்பட்டது"
+
+msgid "Draft"
+msgstr "வரைவு"
+
+msgid "Save"
+msgstr "சேமி"
+
+msgid "Invalid language selected."
+msgstr "தவறான மொழி தேர்ந்தெடுக்கப்பட்டது."
+
+msgid "Language preference updated successfully."
+msgstr "மொழி விருப்பம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது."
+
+msgid "Confirm password is incorrect."
+msgstr "உறுதிப்படுத்தும் கடவுச்சொல் தவறானது."
+
+msgid "Username cannot be empty."
+msgstr "பயனர் பெயர் காலியாக இருக்க முடியாது."
+
+msgid "That username is already used by another account."
+msgstr "அந்த பயனர் பெயர் ஏற்கனவே மற்றொரு கணக்கால் பயன்படுத்தப்படுகிறது."
+
+msgid "Username updated successfully."
+msgstr "பயனர் பெயர் வெற்றிகரமாக புதுப்பிக்கப்பட்டது."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP மின்னஞ்சல் LDAP/AD மூலம் நிர்வகிக்கப்படுகிறது, இங்கே மாற்ற முடியாது."
+
+msgid "Email updated successfully."
+msgstr "மின்னஞ்சல் வெற்றிகரமாக புதுப்பிக்கப்பட்டது."
+
+msgid "Invalid profile update request."
+msgstr "தவறான சுயவிவர புதுப்பிப்பு கோரிக்கை."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "முதல்"
+
+msgid "Previous"
+msgstr "முந்தையது"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "பக்கம் %(number)s / %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: பிரபலமான தலைப்புகள் :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: \"%(query)s\" க்கான தேடல் முடிவுகள் :::"
+
+msgid "Clean stray files"
+msgstr "பயன்பாடற்ற கோப்புகளை சுத்தம் செய்"
+
+msgid "Import / Export"
+msgstr "இறக்குமதி / ஏற்றுமதி"
+
+msgid "Open"
+msgstr "திற"
+
+msgid "Document Bulk Import / Export"
+msgstr "ஆவணங்களை மொத்தமாக இறக்குமதி / ஏற்றுமதி செய்"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "அறிவு களஞ்சியத்தில் நீங்கள் பரிந்துரைத்த கட்டுரைகளைத் தேட, திருத்த அல்லது நீக்கலாம்."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s கட்டுரைகள்"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "%(name)s பரிந்துரைத்த மொத்த கட்டுரைகள்"
+
+msgid "Search suggested articles"
+msgstr "பரிந்துரைக்கப்பட்ட கட்டுரைகளைத் தேடுங்கள்"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "\"%(query)s\" க்கான முடிவுகள் காட்டப்படுகின்றன."
+
+msgid "My suggested articles"
+msgstr "எனது பரிந்துரைக்கப்பட்ட கட்டுரைகள்"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s பொருந்தும் / மொத்தம் %(total)s"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "மொத்தம் %(count)s"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "\"%(query)s\" உடன் பொருந்தும் %(count)s கட்டுரைகளில் %(start)s-%(end)s காட்டப்படுகிறது"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "%(count)s கட்டுரைகளில் %(start)s-%(end)s காட்டப்படுகிறது"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s பொருந்தும் கட்டுரைகள் கண்டறியப்பட்டன."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "மொத்தம் %(count)s கட்டுரைகள்."

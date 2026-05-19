@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh-hans\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "文章批量导入 / 导出"
+
+msgid "Toggle navigation"
+msgstr "切换导航"
+
+msgid "Knowledge Repository"
+msgstr "知识库"
+
+msgid "My Profile"
+msgstr "我的个人资料"
+
+msgid "Article"
+msgstr "文章"
+
+msgid "New"
+msgstr "新建"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Admin"
+msgstr "管理员"
+
+msgid "Logged in as"
+msgstr "登录为"
+
+msgid "Logout"
+msgstr "登出"
+
+msgid "Bulk import / export articles"
+msgstr "批量导入 / 导出文章"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "仅管理员工具。导出内容包括文章 Markdown 以及以下位置引用的文件"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "导入的文章将分配给执行导入的管理员账户。"
+
+msgid "Export articles"
+msgstr "导出文章"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "下载一个 zip，其中包含所有由 Django 管理的文章、其 Markdown 内容、一个"
+
+msgid "and all referenced uploaded files."
+msgstr "以及所有被引用的上传文件。"
+
+msgid "Export articles zip"
+msgstr "导出文章 zip"
+
+msgid "Import articles"
+msgstr "导入文章"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "上传从此系统导出的 zip，或上传包含 Markdown 文件和可选内容的 zip"
+
+msgid "Imported articles will be owned by"
+msgstr "导入的文章将归属于"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "导入此 zip？导入的文章将分配给你的管理员账户。"
+
+msgid "Import zip file"
+msgstr "导入 zip 文件"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "最大上传大小：100 MB。最大解压大小：200 MB。"
+
+msgid "Import zip"
+msgstr "导入 zip"
+
+msgid "Back to profile"
+msgstr "返回个人资料"
+
+msgid "Supported zip format"
+msgstr "支持的 zip 格式"
+
+msgid "This tool prefers the system export format:"
+msgstr "此工具优先使用系统导出格式："
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "如果缺少 manifest.json，导入器将尝试导入 zip 中找到的所有 Markdown 文件。"
+
+msgid "Clean Stray Upload Files"
+msgstr "清理无引用的上传文件"
+
+msgid "Clean stray upload files"
+msgstr "清理无用上传文件"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "这会扫描 openkb-data/wiki/uploads，并查找未被任何 Django 文章正文引用的上传文件，"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets，或 openkb-data/wiki 下的 Markdown 文件。"
+
+msgid "Review before deleting"
+msgstr "删除前请检查"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "删除列出的所有无引用上传文件？此操作无法撤销。"
+
+msgid "Preview / Open"
+msgstr "预览 / 打开"
+
+msgid "Filename"
+msgstr "文件名"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Size"
+msgstr "大小"
+
+msgid "Last modified"
+msgstr "最后修改"
+
+msgid "No stray uploaded files found."
+msgstr "未找到无引用的上传文件。"
+
+msgid "Login to contribute"
+msgstr "登录以贡献"
+
+msgid "How can we help?"
+msgstr "我们可以如何帮助？"
+
+msgid "Featured articles"
+msgstr "精选文章"
+
+msgid "No featured articles yet."
+msgstr "暂无精选文章。"
+
+msgid "Article details"
+msgstr "文章详情"
+
+msgid "Published date"
+msgstr "发布日期"
+
+msgid "Last updated"
+msgstr "最后更新"
+
+msgid "Share article"
+msgstr "分享文章"
+
+msgid "Author"
+msgstr "作者"
+
+msgid "Permalink"
+msgstr "永久链接"
+
+msgid "Edit article"
+msgstr "编辑文章"
+
+msgid "Delete article"
+msgstr "删除文章"
+
+msgid "Ask OpenKB AI"
+msgstr "询问 OpenKB AI"
+
+msgid "Ask"
+msgstr "提问"
+
+msgid "Answer"
+msgstr "答案"
+
+msgid "No answer yet."
+msgstr "暂无答案。"
+
+msgid "Related articles"
+msgstr "相关文章"
+
+msgid "search"
+msgstr "搜索"
+
+msgid "Edit My Articles"
+msgstr "编辑我的文章"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "搜索、编辑或删除你在知识库中建议的文章。"
+
+msgid "Search my suggestions"
+msgstr "搜索我的建议"
+
+msgid "Clear search"
+msgstr "清除搜索"
+
+msgid "Next"
+msgstr "下一页"
+
+msgid "Last"
+msgstr "最后一页"
+
+msgid "Article title"
+msgstr "文章标题"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Created"
+msgstr "已创建"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "No matching suggested articles found."
+msgstr "未找到匹配的建议文章。"
+
+msgid "You have not suggested any articles yet."
+msgstr "你尚未建议任何文章。"
+
+msgid "Create your first suggestion"
+msgstr "创建你的第一个建议"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "按标题、正文、关键词、状态或文件路径搜索"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "IT 帮助中心"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "即时获取最常见问题的答案，并学习如何像专业人士一样使用 3 个字符。"
+
+msgid "Date"
+msgstr "日期"
+
+msgid "Login"
+msgstr "登录"
+
+msgid "Please sign in"
+msgstr "请登录"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "使用 LDAP 电子邮件或 Django 本地用户名。"
+
+msgid "Sign in"
+msgstr "登录"
+
+msgid "email address"
+msgstr "电子邮件地址"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "管理你的账户详情。使用 文章 > 编辑 来管理你建议的文章。"
+
+msgid "Account summary"
+msgstr "账户摘要"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "用户名和电子邮件由 Django 或 LDAP 账户详情创建。LDAP 电子邮件地址无法在此处更改。"
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "New username"
+msgstr "新用户名"
+
+msgid "Confirm password"
+msgstr "确认密码"
+
+msgid "Save username"
+msgstr "保存用户名"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Email"
+msgstr "电子邮件"
+
+msgid "No email set"
+msgstr "未设置电子邮件"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "由 LDAP 管理，无法编辑"
+
+msgid "New email"
+msgstr "新电子邮件"
+
+msgid "Save email"
+msgstr "保存电子邮件"
+
+msgid "Account type"
+msgstr "账户类型"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Save language"
+msgstr "保存语言"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "这会更改你账户的网站界面语言。文章内容目前仍保留原始语言。"
+
+msgid "Change password"
+msgstr "更改密码"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP 密码通过公司的密码系统更改。"
+
+msgid "Articles"
+msgstr "文章"
+
+msgid "Own suggested articles"
+msgstr "我建议的文章"
+
+msgid "New article"
+msgstr "新建文章"
+
+msgid "Edit my articles"
+msgstr "编辑我的文章"
+
+msgid "Admin tools"
+msgstr "管理员工具"
+
+msgid "Finds unused files in"
+msgstr "查找未使用文件的位置"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "不再被任何文章或 wiki Markdown 文件引用的内容。"
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "将文章导出为包含 Markdown 和上传文件的 zip，或导入 zip 并将导入的文章分配给你的管理员账户。"
+
+msgid "Old password"
+msgstr "旧密码"
+
+msgid "New password"
+msgstr "新密码"
+
+msgid "Password requirements"
+msgstr "密码要求"
+
+msgid "At least 12 characters"
+msgstr "至少 12 个字符"
+
+msgid "At least 1 uppercase letter"
+msgstr "至少 1 个大写字母"
+
+msgid "At least 1 lowercase letter"
+msgstr "至少 1 个小写字母"
+
+msgid "At least 1 number"
+msgstr "至少 1 个数字"
+
+msgid "At least 1 special character"
+msgstr "至少 1 个特殊字符"
+
+msgid "Must not contain your username or email name"
+msgstr "不得包含你的用户名或电子邮件名称"
+
+msgid "Confirm new password"
+msgstr "确认新密码"
+
+msgid "Re-type the new password to confirm."
+msgstr "请再次输入新密码以确认。"
+
+msgid "Update password"
+msgstr "更新密码"
+
+msgid "Passwords match."
+msgstr "密码匹配。"
+
+msgid "Passwords do not match yet."
+msgstr "密码尚不匹配。"
+
+msgid "Suggest article"
+msgstr "建议文章"
+
+msgid "Suggest"
+msgstr "建议"
+
+msgid "Pasted images"
+msgstr "粘贴的图片"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "此草稿中上传的图片会显示在这里。点击 X 可从文章中移除图片并删除已上传文件。"
+
+msgid "Article body (Markdown)"
+msgstr "文章正文（Markdown）"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "你可以将小型 PNG/JPG/GIF/WEBP 图片直接粘贴到编辑器中，或使用按钮上传。每张最大 2 MB。"
+
+msgid "Upload image"
+msgstr "上传图片"
+
+msgid "Preview"
+msgstr "预览"
+
+msgid "Keywords"
+msgstr "关键词"
+
+msgid "Delete suggested article"
+msgstr "删除建议文章"
+
+msgid "Are you sure you want to delete"
+msgstr "确定要删除吗？"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "这会移除个人资料记录，并从 OpenKB raw/source 存储中删除 Markdown 文件。"
+
+msgid "Published"
+msgstr "已发布"
+
+msgid "Draft"
+msgstr "草稿"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Invalid language selected."
+msgstr "选择的语言无效。"
+
+msgid "Language preference updated successfully."
+msgstr "语言偏好已成功更新。"
+
+msgid "Confirm password is incorrect."
+msgstr "确认密码不正确。"
+
+msgid "Username cannot be empty."
+msgstr "用户名不能为空。"
+
+msgid "That username is already used by another account."
+msgstr "该用户名已被另一个账户使用。"
+
+msgid "Username updated successfully."
+msgstr "用户名已成功更新。"
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP 电子邮件由 LDAP/AD 管理，无法在此处更改。"
+
+msgid "Email updated successfully."
+msgstr "电子邮件已成功更新。"
+
+msgid "Invalid profile update request."
+msgstr "个人资料更新请求无效。"
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "第一页"
+
+msgid "Previous"
+msgstr "上一页"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "第 %(number)s 页，共 %(num_pages)s 页"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: 热门主题 :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: “%(query)s”的搜索结果 :::"
+
+msgid "Clean stray files"
+msgstr "清理无用文件"
+
+msgid "Import / Export"
+msgstr "导入 / 导出"
+
+msgid "Open"
+msgstr "打开"
+
+msgid "Document Bulk Import / Export"
+msgstr "文档批量导入 / 导出"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "搜索、编辑或删除你在知识库中建议的文章。"
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s 篇文章"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "%(name)s 建议的文章总数"
+
+msgid "Search suggested articles"
+msgstr "搜索建议的文章"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "正在显示“%(query)s”的结果。"
+
+msgid "My suggested articles"
+msgstr "我的建议文章"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s 个匹配 / 共 %(total)s 个"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "共 %(count)s 个"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "正在显示与“%(query)s”匹配的 %(count)s 篇文章中的第 %(start)s-%(end)s 项"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "正在显示 %(count)s 篇文章中的第 %(start)s-%(end)s 项"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "找到 %(count)s 篇匹配文章。"
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "共 %(count)s 篇文章。"

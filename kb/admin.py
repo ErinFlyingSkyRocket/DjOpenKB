@@ -17,6 +17,7 @@ class UserProfileInline(admin.StackedInline):
     fields = (
         "account_type",
         "can_access_main_site",
+        "preferred_language",
         "notes",
         "created_at",
         "updated_at",
@@ -149,12 +150,14 @@ class UserProfileAdmin(admin.ModelAdmin):
         "user",
         "account_type",
         "can_access_main_site",
+        "preferred_language",
         "created_at",
         "updated_at",
     )
     list_filter = (
         "account_type",
         "can_access_main_site",
+        "preferred_language",
         "created_at",
         "updated_at",
     )

@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fi\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Artikkelien joukkotuonti / -vienti"
+
+msgid "Toggle navigation"
+msgstr "Vaihda navigointi"
+
+msgid "Knowledge Repository"
+msgstr "Tietovarasto"
+
+msgid "My Profile"
+msgstr "Profiilini"
+
+msgid "Article"
+msgstr "Artikkeli"
+
+msgid "New"
+msgstr "Uusi"
+
+msgid "Edit"
+msgstr "Muokkaa"
+
+msgid "Admin"
+msgstr "Ylläpitäjä"
+
+msgid "Logged in as"
+msgstr "Kirjautuneena käyttäjänä"
+
+msgid "Logout"
+msgstr "Kirjaudu ulos"
+
+msgid "Bulk import / export articles"
+msgstr "Artikkelien joukko tuonti / vienti"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Vain ylläpitäjille tarkoitettu työkalu. Viennit sisältävät artikkelin Markdownin sekä viitatut tiedostot kohteessa"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Tuodut artikkelit määritetään tuonnin suorittavalle ylläpitäjätilille."
+
+msgid "Export articles"
+msgstr "Vie artikkeleita"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Lataa zip, joka sisältää kaikki Djangon hallinnoimat artikkelit, niiden Markdown-sisällön, yhden"
+
+msgid "and all referenced uploaded files."
+msgstr "ja kaikki viitatut ladatut tiedostot."
+
+msgid "Export articles zip"
+msgstr "Vie artikkelit zipinä"
+
+msgid "Import articles"
+msgstr "Tuo artikkeleita"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Lataa tästä järjestelmästä viety zip tai zip, joka sisältää Markdown-tiedostoja ja valinnaisen"
+
+msgid "Imported articles will be owned by"
+msgstr "Tuotujen artikkeleiden omistaja on"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Tuodaanko tämä zip? Tuodut artikkelit määritetään ylläpitäjätilillesi."
+
+msgid "Import zip file"
+msgstr "Tuonti-zip-tiedosto"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Suurin latauskoko: 100 MB. Suurin purkamaton koko: 200 MB."
+
+msgid "Import zip"
+msgstr "Tuo zip"
+
+msgid "Back to profile"
+msgstr "Takaisin profiiliin"
+
+msgid "Supported zip format"
+msgstr "Tuettu zip-muoto"
+
+msgid "This tool prefers the system export format:"
+msgstr "Tämä työkalu suosii järjestelmän vientimuotoa:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Jos manifest.json puuttuu, tuoja yrittää tuoda kaikki zipistä löytyvät Markdown-tiedostot."
+
+msgid "Clean Stray Upload Files"
+msgstr "Siivoa irralliset ladatut tiedostot"
+
+msgid "Clean stray upload files"
+msgstr "Siivoa käyttämättömät lataustiedostot"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Tämä tarkistaa openkb-data/wiki/uploads ja etsii ladattuja tiedostoja, joihin mikään Django-artikkelin sisältö ei viittaa,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets tai Markdown-tiedosto kohteessa openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Tarkista ennen poistamista"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Poistetaanko kaikki luetellut irralliset ladatut tiedostot? Tätä ei voi perua."
+
+msgid "Preview / Open"
+msgstr "Esikatselu / Avaa"
+
+msgid "Filename"
+msgstr "Tiedostonimi"
+
+msgid "Type"
+msgstr "Tyyppi"
+
+msgid "Size"
+msgstr "Koko"
+
+msgid "Last modified"
+msgstr "Viimeksi muokattu"
+
+msgid "No stray uploaded files found."
+msgstr "Irrallisia ladattuja tiedostoja ei löytynyt."
+
+msgid "Login to contribute"
+msgstr "Kirjaudu sisään osallistuaksesi"
+
+msgid "How can we help?"
+msgstr "Miten voimme auttaa?"
+
+msgid "Featured articles"
+msgstr "Esittelyssä olevat artikkelit"
+
+msgid "No featured articles yet."
+msgstr "Ei esittelyartikkeleita vielä."
+
+msgid "Article details"
+msgstr "Artikkelin tiedot"
+
+msgid "Published date"
+msgstr "Julkaisupäivä"
+
+msgid "Last updated"
+msgstr "Viimeksi päivitetty"
+
+msgid "Share article"
+msgstr "Jaa artikkeli"
+
+msgid "Author"
+msgstr "Tekijä"
+
+msgid "Permalink"
+msgstr "Pysyvä linkki"
+
+msgid "Edit article"
+msgstr "Muokkaa artikkelia"
+
+msgid "Delete article"
+msgstr "Poista artikkeli"
+
+msgid "Ask OpenKB AI"
+msgstr "Kysy OpenKB AI:lta"
+
+msgid "Ask"
+msgstr "Kysy"
+
+msgid "Answer"
+msgstr "Vastaus"
+
+msgid "No answer yet."
+msgstr "Ei vastausta vielä."
+
+msgid "Related articles"
+msgstr "Liittyvät artikkelit"
+
+msgid "search"
+msgstr "haku"
+
+msgid "Edit My Articles"
+msgstr "Muokkaa artikkeleitani"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Hae, muokkaa tai poista ehdottamiasi Tietovaraston artikkeleita."
+
+msgid "Search my suggestions"
+msgstr "Hae ehdotuksistani"
+
+msgid "Clear search"
+msgstr "Tyhjennä haku"
+
+msgid "Next"
+msgstr "Seuraava"
+
+msgid "Last"
+msgstr "Viimeinen"
+
+msgid "Article title"
+msgstr "Artikkelin otsikko"
+
+msgid "Status"
+msgstr "Tila"
+
+msgid "Created"
+msgstr "Luotu"
+
+msgid "Actions"
+msgstr "Toiminnot"
+
+msgid "Delete"
+msgstr "Poista"
+
+msgid "No matching suggested articles found."
+msgstr "Vastaavia ehdotettuja artikkeleita ei löytynyt."
+
+msgid "You have not suggested any articles yet."
+msgstr "Et ole vielä ehdottanut artikkeleita."
+
+msgid "Create your first suggestion"
+msgstr "Luo ensimmäinen ehdotuksesi"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Hae otsikon, sisällön, avainsanojen, tilan tai tiedostopolun perusteella"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "IT-tukikeskus"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Saat välittömät vastaukset yleisimpiin kysymyksiin ja opit käyttämään 3 merkkiä kuin ammattilainen."
+
+msgid "Date"
+msgstr "Päivämäärä"
+
+msgid "Login"
+msgstr "Kirjaudu sisään"
+
+msgid "Please sign in"
+msgstr "Kirjaudu sisään"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Käytä LDAP-sähköpostia tai paikallista Django-käyttäjänimeä."
+
+msgid "Sign in"
+msgstr "Kirjaudu sisään"
+
+msgid "email address"
+msgstr "sähköpostiosoite"
+
+msgid "Password"
+msgstr "Salasana"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Hallinnoi tilitietojasi. Käytä Artikkeli > Muokkaa hallitaksesi ehdottamiasi artikkeleita."
+
+msgid "Account summary"
+msgstr "Tilin yhteenveto"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Käyttäjänimi ja sähköposti luodaan Django- tai LDAP-tilitiedoista. LDAP-sähköpostiosoitteita ei voi muuttaa täällä."
+
+msgid "Username"
+msgstr "Käyttäjänimi"
+
+msgid "New username"
+msgstr "Uusi käyttäjänimi"
+
+msgid "Confirm password"
+msgstr "Vahvista salasana"
+
+msgid "Save username"
+msgstr "Tallenna käyttäjänimi"
+
+msgid "Cancel"
+msgstr "Peruuta"
+
+msgid "Email"
+msgstr "Sähköposti"
+
+msgid "No email set"
+msgstr "Sähköpostia ei asetettu"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "LDAP-hallittu, ei muokattavissa"
+
+msgid "New email"
+msgstr "Uusi sähköposti"
+
+msgid "Save email"
+msgstr "Tallenna sähköposti"
+
+msgid "Account type"
+msgstr "Tilin tyyppi"
+
+msgid "Language"
+msgstr "Kieli"
+
+msgid "Save language"
+msgstr "Tallenna kieli"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Tämä muuttaa verkkosivuston käyttöliittymän kielen tilillesi. Artikkelien sisältö pysyy toistaiseksi alkuperäisellä kielellä."
+
+msgid "Change password"
+msgstr "Vaihda salasana"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP-salasanat vaihdetaan yrityksen salasanajärjestelmän kautta."
+
+msgid "Articles"
+msgstr "Artikkelit"
+
+msgid "Own suggested articles"
+msgstr "Omat ehdotetut artikkelit"
+
+msgid "New article"
+msgstr "Uusi artikkeli"
+
+msgid "Edit my articles"
+msgstr "Muokkaa artikkeleitani"
+
+msgid "Admin tools"
+msgstr "Ylläpitäjän työkalut"
+
+msgid "Finds unused files in"
+msgstr "Etsii käyttämättömiä tiedostoja kohteesta"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "joihin mikään artikkeli tai wiki Markdown -tiedosto ei enää viittaa."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Vie artikkelit zip-tiedostona Markdownin ja ladattujen tiedostojen kanssa, tai tuo zip ja määritä tuodut artikkelit ylläpitäjätilillesi."
+
+msgid "Old password"
+msgstr "Vanha salasana"
+
+msgid "New password"
+msgstr "Uusi salasana"
+
+msgid "Password requirements"
+msgstr "Salasanavaatimukset"
+
+msgid "At least 12 characters"
+msgstr "Vähintään 12 merkkiä"
+
+msgid "At least 1 uppercase letter"
+msgstr "Vähintään 1 iso kirjain"
+
+msgid "At least 1 lowercase letter"
+msgstr "Vähintään 1 pieni kirjain"
+
+msgid "At least 1 number"
+msgstr "Vähintään 1 numero"
+
+msgid "At least 1 special character"
+msgstr "Vähintään 1 erikoismerkki"
+
+msgid "Must not contain your username or email name"
+msgstr "Ei saa sisältää käyttäjänimeäsi tai sähköpostinimeäsi"
+
+msgid "Confirm new password"
+msgstr "Vahvista uusi salasana"
+
+msgid "Re-type the new password to confirm."
+msgstr "Kirjoita uusi salasana uudelleen vahvistaaksesi."
+
+msgid "Update password"
+msgstr "Päivitä salasana"
+
+msgid "Passwords match."
+msgstr "Salasanat täsmäävät."
+
+msgid "Passwords do not match yet."
+msgstr "Salasanat eivät vielä täsmää."
+
+msgid "Suggest article"
+msgstr "Ehdota artikkelia"
+
+msgid "Suggest"
+msgstr "Ehdota"
+
+msgid "Pasted images"
+msgstr "Liitetyt kuvat"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Tähän luonnokseen ladatut kuvat näkyvät tässä. Napsauta X poistaaksesi kuvan artikkelista ja poistaaksesi ladatun tiedoston."
+
+msgid "Article body (Markdown)"
+msgstr "Artikkelin sisältö (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Voit liittää pieniä PNG/JPG/GIF/WEBP-kuvia suoraan editoriin tai ladata yhden painikkeella. Enintään 2 MB kukin."
+
+msgid "Upload image"
+msgstr "Lataa kuva"
+
+msgid "Preview"
+msgstr "Esikatselu"
+
+msgid "Keywords"
+msgstr "Avainsanat"
+
+msgid "Delete suggested article"
+msgstr "Poista ehdotettu artikkeli"
+
+msgid "Are you sure you want to delete"
+msgstr "Haluatko varmasti poistaa?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Tämä poistaa profiilitietueen ja poistaa Markdown-tiedostot OpenKB:n raw/source-tallennuksesta."
+
+msgid "Published"
+msgstr "Julkaistu"
+
+msgid "Draft"
+msgstr "Luonnos"
+
+msgid "Save"
+msgstr "Tallenna"
+
+msgid "Invalid language selected."
+msgstr "Virheellinen kieli valittu."
+
+msgid "Language preference updated successfully."
+msgstr "Kieliasetus päivitettiin onnistuneesti."
+
+msgid "Confirm password is incorrect."
+msgstr "Vahvistussalasana on virheellinen."
+
+msgid "Username cannot be empty."
+msgstr "Käyttäjänimi ei voi olla tyhjä."
+
+msgid "That username is already used by another account."
+msgstr "Tämä käyttäjänimi on jo toisen tilin käytössä."
+
+msgid "Username updated successfully."
+msgstr "Käyttäjänimi päivitettiin onnistuneesti."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP-sähköpostia hallitaan LDAP/AD:n kautta, eikä sitä voi muuttaa täällä."
+
+msgid "Email updated successfully."
+msgstr "Sähköposti päivitettiin onnistuneesti."
+
+msgid "Invalid profile update request."
+msgstr "Virheellinen profiilin päivityspyyntö."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Ensimmäinen"
+
+msgid "Previous"
+msgstr "Edellinen"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Sivu %(number)s / %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: SUOSITUT AIHEET :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: HAKUTULOKSET HAULLE \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Siivoa käyttämättömät tiedostot"
+
+msgid "Import / Export"
+msgstr "Tuo / Vie"
+
+msgid "Open"
+msgstr "Avaa"
+
+msgid "Document Bulk Import / Export"
+msgstr "Asiakirjojen joukkotuonti / -vienti"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Hae, muokkaa tai poista artikkeleita, joita olet ehdottanut tietovarastoon."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s artikkelia"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Yhteensä %(name)s käyttäjän ehdottamat artikkelit"
+
+msgid "Search suggested articles"
+msgstr "Hae ehdotettuja artikkeleita"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Näytetään tulokset haulle \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Ehdottamani artikkelit"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s osumaa / %(total)s yhteensä"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s yhteensä"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Näytetään %(start)s-%(end)s / %(count)s artikkelia haulle \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Näytetään %(start)s-%(end)s / %(count)s artikkelia"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s vastaavaa artikkelia löytyi."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "%(count)s artikkelia yhteensä."

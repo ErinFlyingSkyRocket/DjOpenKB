@@ -1,6 +1,7 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{{ title }}</title>
     <meta property="og:title" content="{{ title }}">
@@ -125,35 +126,35 @@
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
+                        <span class="sr-only">{% trans "Toggle navigation" %}</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
                 </div>
 
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'profile' %}">My Profile</a></li>
+                            <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
-                                    <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                                    <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                                    <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
                                 </ul>
                             </li>
-                            {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                            <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                            {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                            <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
                             <li>
                                 <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
-                                    <button class="navbar-logout-button" type="submit">Logout</button>
+                                    <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
                                 </form>
                             </li>
                         {% else %}
-                            <li><a href="{% url 'login' %}">Login to contribute</a></li>
+                            <li><a href="{% url 'login' %}">{% trans "Login to contribute" %}</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -161,13 +162,13 @@
         </nav>
 
         <div class="">
-            <h1>How can we help?</h1>
+            <h1>{% trans "How can we help?" %}</h1>
         </div>
 
         <form action="{% url 'search' %}" id="search_form" method="get">
             <div class="col-md-4 col-md-offset-4 search_bar">
                 <div class="input-group">
-                    <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="search">
+                    <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="{% trans 'search' %}">
                     <span class="input-group-btn">
                         <button class="btn btn-default btn-lg" id="btn_search" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </span>
@@ -183,7 +184,7 @@
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             <div class="col-md-3 col-lg-3">
                 <div class="panel panel-default" style="margin-top: 30px;">
-                    <div class="panel-heading">Featured articles</div>
+                    <div class="panel-heading">{% trans "Featured articles" %}</div>
                     <div class="panel-body">
                         <ul class="list-group">
                             {% if featured_articles %}
@@ -191,7 +192,7 @@
                                     <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a></li>
                                 {% endfor %}
                             {% else %}
-                                <li class="list-group-item">No featured articles yet.</li>
+                                <li class="list-group-item">{% trans "No featured articles yet." %}</li>
                             {% endif %}
                         </ul>
                     </div>
@@ -206,36 +207,36 @@
                 </div>
 
                 <div class="panel panel-primary" style="margin-top: 35px;">
-                    <div class="panel-heading">Article details:</div>
+                    <div class="panel-heading">{% trans "Article details" %}:</div>
                     <div class="panel-body metaData">
                         <h5 class="col-sm-12 col-lg-12">
-                            <strong>Published date:</strong>
+                            <strong>{% trans "Published date" %}:</strong>
                             {% if metadata.published_at %}{{ metadata.published_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}
                         </h5>
                         <h5 class="col-sm-12 col-lg-12">
-                            <strong>Last updated:</strong>
+                            <strong>{% trans "Last updated" %}:</strong>
                             {% if metadata.updated_at %}{{ metadata.updated_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}
                             {% if metadata.author %}
                                 <span class="text-info">({{ metadata.author }}{% if metadata.author_email %} - {{ metadata.author_email }}{% endif %})</span>
                             {% endif %}
                         </h5>
                         <h5 class="col-sm-12 col-lg-12">
-                            <strong>Share article:</strong>&nbsp;
+                            <strong>{% trans "Share article" %}:</strong>&nbsp;
                             <a href="mailto:?subject={{ title|urlencode }}&body={{ metadata.permalink|urlencode }}" target="_top"><i class="fa fa-envelope" aria-hidden="true"></i></a>
                         </h5>
                         <h5 class="col-sm-12 col-lg-12">
-                            <strong>Author:</strong>
+                            <strong>{% trans "Author" %}:</strong>
                             <span class="text-info">{{ metadata.author }}{% if metadata.author_email %} ({{ metadata.author_email }}){% endif %}</span>
                         </h5>
                         <h5 class="col-sm-12 col-lg-12">
-                            <strong>Permalink:</strong>
+                            <strong>{% trans "Permalink" %}:</strong>
                             <a href="{{ metadata.permalink }}">{{ metadata.permalink }}</a>
                         </h5>
 
                         {% if metadata.can_edit %}
                             <div class="col-sm-12 col-lg-12 article-admin-actions">
-                                <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">Edit article</a>
-                                <a class="btn btn-xs btn-danger" href="{{ metadata.delete_url }}">Delete article</a>
+                                <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">{% trans "Edit article" %}</a>
+                                <a class="btn btn-xs btn-danger" href="{{ metadata.delete_url }}">{% trans "Delete article" %}</a>
                             </div>
                         {% endif %}
                     </div>
@@ -258,7 +259,7 @@
 <div id="openkbAiChat" class="openkb-ai-chat" aria-hidden="true">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <strong>Ask OpenKB AI</strong>
+            <strong>{% trans "Ask OpenKB AI" %}</strong>
             <button id="openkbAiClose" class="pull-right openkb-ai-close" type="button" aria-label="Minimise OpenKB AI">
                 <i class="fa fa-minus"></i>
             </button>
@@ -266,15 +267,15 @@
         <div class="panel-body">
             <form id="openkbAiForm">
                 <div class="input-group">
-                    <input type="text" id="openkbAiQuestion" name="question" class="form-control" placeholder="Ask OpenKB AI">
-                    <span class="input-group-btn"><button class="btn btn-success" type="submit">Ask</button></span>
+                    <input type="text" id="openkbAiQuestion" name="question" class="form-control" placeholder="{% trans 'Ask OpenKB AI' %}">
+                    <span class="input-group-btn"><button class="btn btn-success" type="submit">{% trans "Ask" %}</button></span>
                 </div>
             </form>
             <div style="margin-top: 15px;">
-                <strong>Answer:</strong>
-                <pre id="openkbAiAnswer">No answer yet.</pre>
+                <strong>{% trans "Answer" %}:</strong>
+                <pre id="openkbAiAnswer">{% trans "No answer yet." %}</pre>
                 <div id="openkbRelatedArticlesWrapper" style="display: none; margin-top: 15px;">
-                    <strong>Related articles:</strong>
+                    <strong>{% trans "Related articles" %}:</strong>
                     <ul id="openkbRelatedArticles" class="list-group" style="margin-top: 10px;"></ul>
                 </div>
             </div>

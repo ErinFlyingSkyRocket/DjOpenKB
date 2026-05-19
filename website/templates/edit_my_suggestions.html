@@ -1,8 +1,9 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>Edit My Articles</title>
+    <title>{% trans "Edit My Articles" %}</title>
     <meta property="og:title" content="Edit My Articles" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -82,9 +83,17 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .profile-account-actions .btn { margin-right: 5px; }
         .profile-readonly-note { color: #899aa6; font-size: 12px; margin-top: 5px; }
         .profile-suggest-action { margin-bottom: 15px; text-align: right; }
-        .article-count-summary { margin: 8px 0 16px; }
-        .article-count-badge { display: inline-block; margin-right: 8px; padding: 5px 10px; border-radius: 12px; background: #eef5f9; color: #2c3e50; font-weight: 600; }
+        .edit-page-header { margin-bottom: 18px; }
+        .edit-page-title { margin-bottom: 6px; }
+        .article-count-summary { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .article-count-badge { display: inline-block; padding: 6px 12px; border-radius: 16px; background: #eef5f9; color: #2c3e50; font-weight: 700; }
         .article-count-muted { color: #899aa6; }
+        .edit-actions-bar { margin: 2px 0 14px; text-align: right; }
+        .suggestion-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .suggestion-panel-title { font-weight: 700; }
+        .suggestion-panel-count { color: #2c3e50; font-size: 13px; }
+        .profile-table-wrap table > thead > tr > th { white-space: nowrap; }
+        .profile-table-wrap table > tbody > tr > td { vertical-align: middle; }
         .profile-suggest-side {
             min-height: 300px;
             display: flex;
@@ -116,29 +125,29 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
-                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
                         </ul>
                     </li>
-                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
                     <li>
                         <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">Logout</button>
+                            <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
                         </form>
                     </li>
                 </ul>
@@ -149,72 +158,73 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         <div class="col-md-10 col-md-offset-1">
             <div class="row">
                 <div class="col-xs-12">
-                    <h2>Edit My Articles</h2>
-                    <p class="profile-muted">Search, edit, or delete your suggested Knowledge Repository articles.</p>
-                    <div class="article-count-summary">
-                        <span class="article-count-badge">{{ total_user_article_count }} article{{ total_user_article_count|pluralize }}</span>
-                        <span class="article-count-muted">Total articles suggested by {{ profile_display_name }}</span>
+                    <div class="edit-page-header">
+                        <h2 class="edit-page-title">{% trans "Edit My Articles" %}</h2>
+                        <p class="profile-muted">{% trans "Search, edit, or delete articles you suggested in the Knowledge Repository." %}</p>
+                        <div class="article-count-summary">
+                            <span class="article-count-badge">{% blocktrans with count=total_user_article_count %}{{ count }} articles{% endblocktrans %}</span>
+                            <span class="article-count-muted">{% blocktrans with name=profile_display_name %}Total articles suggested by {{ name }}{% endblocktrans %}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="profile-suggest-action">
-                        <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New article</a>
-                        <a class="btn btn-default" href="{% url 'profile' %}"><i class="fa fa-user"></i> Back to profile</a>
+                    <div class="edit-actions-bar">
+                        <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
+                        <a class="btn btn-default" href="{% url 'profile' %}"><i class="fa fa-user"></i> {% trans "Back to profile" %}</a>
                     </div>
 
                     <div class="panel panel-default profile-search-panel">
-                        <div class="panel-heading">Search my suggestions</div>
+                        <div class="panel-heading"><strong>{% trans "Search suggested articles" %}</strong></div>
                         <div class="panel-body">
                             <form method="get" action="{% url 'edit_my_suggestions' %}">
                                 <div class="input-group">
-                                    <input type="text" name="q" class="form-control" placeholder="Search by title, body, keywords, status, or file path" value="{{ profile_search_query|default:'' }}">
+                                    <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> Search</button>
+                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                                     </span>
                                 </div>
                             </form>
                             {% if is_profile_search %}
                                 <p class="profile-muted" style="margin-top: 10px;">
-                                    Showing results for "{{ profile_search_query }}".
-                                    <a href="{% url 'edit_my_suggestions' %}">Clear search</a>
+                                    {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
+                                    <a href="{% url 'edit_my_suggestions' %}">{% trans "Clear search" %}</a>
                                 </p>
                             {% endif %}
                         </div>
                     </div>
 
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            My suggested articles
-                            <span class="pull-right">
+                        <div class="panel-heading suggestion-panel-heading">
+                            <span class="suggestion-panel-title">{% trans "My suggested articles" %}</span>
+                            <span class="suggestion-panel-count">
                                 {% if is_profile_search %}
-                                    {{ profile_result_count }} matching / {{ total_user_article_count }} total
+                                    {% blocktrans with matching=profile_result_count total=total_user_article_count %}{{ matching }} matching / {{ total }} total{% endblocktrans %}
                                 {% else %}
-                                    {{ total_user_article_count }} total
+                                    {% blocktrans with count=total_user_article_count %}{{ count }} total{% endblocktrans %}
                                 {% endif %}
                             </span>
-                            <div class="clearfix"></div>
                         </div>
                         <div class="panel-body">
                             {% if page_obj and page_obj.paginator.num_pages > 1 %}
                                 <nav class="profile-top-pagination" aria-label="Top article pagination">
                                     <ul class="pager">
                                         {% if page_obj.has_previous %}
-                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; First</a></li>
-                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
+                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
                                         {% else %}
-                                            <li class="disabled"><span>&laquo; First</span></li>
-                                            <li class="disabled"><span>&lsaquo; Previous</span></li>
+                                            <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                                            <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
                                         {% endif %}
 
                                         {% if page_obj.has_next %}
-                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
-                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
+                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
                                         {% else %}
-                                            <li class="disabled"><span>Next &rsaquo;</span></li>
-                                            <li class="disabled"><span>Last &raquo;</span></li>
+                                            <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                                            <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
                                         {% endif %}
                                     </ul>
                                 </nav>
@@ -225,11 +235,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     <table class="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Article title</th>
-                                                <th>Status</th>
-                                                <th>Created</th>
-                                                <th>Last updated</th>
-                                                <th class="text-right">Actions</th>
+                                                <th>{% trans "Article title" %}</th>
+                                                <th>{% trans "Status" %}</th>
+                                                <th>{% trans "Created" %}</th>
+                                                <th>{% trans "Last updated" %}</th>
+                                                <th class="text-right">{% trans "Actions" %}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -246,8 +256,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
                                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                                     <td class="text-right article-actions">
-                                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">Edit</a>
-                                                        <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">Delete</a>
+                                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}">{% trans "Edit" %}</a>
+                                                        <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}">{% trans "Delete" %}</a>
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -256,47 +266,50 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 </div>
                             {% else %}
                                 {% if is_profile_search %}
-                                    <p>No matching suggested articles found.</p>
-                                    <a class="btn btn-default" href="{% url 'edit_my_suggestions' %}">Clear search</a>
+                                    <p>{% trans "No matching suggested articles found." %}</p>
+                                    <a class="btn btn-default" href="{% url 'edit_my_suggestions' %}">{% trans "Clear search" %}</a>
                                 {% else %}
-                                    <p>You have not suggested any articles yet.</p>
-                                    <a class="btn btn-success" href="{% url 'suggest' %}">Create your first suggestion</a>
+                                    <p>{% trans "You have not suggested any articles yet." %}</p>
+                                    <a class="btn btn-success" href="{% url 'suggest' %}">{% trans "Create your first suggestion" %}</a>
                                 {% endif %}
                             {% endif %}
 
                             {% if page_obj and page_obj.paginator.num_pages > 1 %}
                                 <div class="profile-pagination-meta">
-                                    Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} article(s)
-                                    {% if is_profile_search %}matching "{{ profile_search_query }}"{% endif %}
+                                    {% if is_profile_search %}
+                                        {% blocktrans with start=page_obj.start_index end=page_obj.end_index count=page_obj.paginator.count query=profile_search_query %}Showing {{ start }}-{{ end }} of {{ count }} articles matching "{{ query }}"{% endblocktrans %}
+                                    {% else %}
+                                        {% blocktrans with start=page_obj.start_index end=page_obj.end_index count=page_obj.paginator.count %}Showing {{ start }}-{{ end }} of {{ count }} articles{% endblocktrans %}
+                                    {% endif %}
                                 </div>
 
                                 <nav class="profile-pagination" aria-label="Bottom article pagination">
                                     <ul class="pagination">
                                         {% if page_obj.has_previous %}
-                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; First</a></li>
-                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; Previous</a></li>
+                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
                                         {% else %}
-                                            <li class="disabled"><span>&laquo; First</span></li>
-                                            <li class="disabled"><span>&lsaquo; Previous</span></li>
+                                            <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                                            <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
                                         {% endif %}
 
-                                        <li class="active"><span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                                        <li class="active"><span>{% blocktrans with number=page_obj.number num_pages=page_obj.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}</span></li>
 
                                         {% if page_obj.has_next %}
-                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Next &rsaquo;</a></li>
-                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">Last &raquo;</a></li>
+                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
                                         {% else %}
-                                            <li class="disabled"><span>Next &rsaquo;</span></li>
-                                            <li class="disabled"><span>Last &raquo;</span></li>
+                                            <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                                            <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
                                         {% endif %}
                                     </ul>
                                 </nav>
                             {% elif page_obj %}
                                 <div class="profile-pagination-meta">
                                     {% if is_profile_search %}
-                                        {{ profile_result_count }} matching article(s) found.
+                                        {% blocktrans with count=profile_result_count %}{{ count }} matching articles found.{% endblocktrans %}
                                     {% else %}
-                                        {{ total_user_article_count }} article(s) total.
+                                        {% blocktrans with count=total_user_article_count %}{{ count }} articles total.{% endblocktrans %}
                                     {% endif %}
                                 </div>
                             {% endif %}

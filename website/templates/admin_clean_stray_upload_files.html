@@ -1,8 +1,9 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>Clean Stray Upload Files</title>
+    <title>{% trans "Clean Stray Upload Files" %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -48,29 +49,29 @@
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
-                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
                         </ul>
                     </li>
-                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
                     <li>
                         <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">Logout</button>
+                            <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
                         </form>
                     </li>
                 </ul>
@@ -80,10 +81,10 @@
 
     <div class="container-fluid">
         <div class="col-xs-12 cleanup-wrap">
-            <h2>Clean stray upload files</h2>
+            <h2>{% trans "Clean stray upload files" %}</h2>
             <p class="cleanup-muted">
-                This scans <code>openkb-data/wiki/uploads</code> and finds uploaded files that are not referenced by any Django article body,
-                article <code>image_assets</code>, or Markdown file under <code>openkb-data/wiki</code>.
+                {% trans "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body," %}
+                {% trans "article image_assets, or Markdown file under openkb-data/wiki." %}
                 Files newer than {{ min_age_minutes }} minute{% if min_age_minutes != 1 %}s{% endif %} are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately.
             </p>
 
@@ -102,18 +103,18 @@
 
             {% if stray_files %}
                 <div class="panel panel-warning">
-                    <div class="panel-heading">Review before deleting</div>
+                    <div class="panel-heading">{% trans "Review before deleting" %}</div>
                     <div class="panel-body">
                         <p>
                             These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed.
                         </p>
-                        <form method="post" onsubmit="return confirm('Delete all listed stray upload files? This cannot be undone.');">
+                        <form method="post" onsubmit="return confirm('{% trans "Delete all listed stray upload files? This cannot be undone." %}');">
                             {% csrf_token %}
                             <div class="cleanup-actions">
                                 <button class="btn btn-danger" type="submit">
                                     <i class="fa fa-trash"></i> Delete {{ stray_count }} stray file{% if stray_count != 1 %}s{% endif %}
                                 </button>
-                                <a class="btn btn-default" href="{% url 'profile' %}">Back to profile</a>
+                                <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Back to profile" %}</a>
                             </div>
                         </form>
                     </div>
@@ -122,11 +123,11 @@
                         <table class="table table-striped table-condensed table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Preview / Open</th>
-                                    <th>Filename</th>
-                                    <th>Type</th>
-                                    <th>Size</th>
-                                    <th>Last modified</th>
+                                    <th>{% trans "Preview / Open" %}</th>
+                                    <th>{% trans "Filename" %}</th>
+                                    <th>{% trans "Type" %}</th>
+                                    <th>{% trans "Size" %}</th>
+                                    <th>{% trans "Last modified" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -139,7 +140,7 @@
                                                 </a>
                                             {% else %}
                                                 <a class="btn btn-xs btn-default" href="{{ file.url }}" target="_blank" rel="noopener">
-                                                    <i class="fa fa-file"></i> Open
+                                                    <i class="fa fa-file"></i> {% trans "Open" %}
                                                 </a>
                                             {% endif %}
                                         </td>
@@ -154,8 +155,8 @@
                     </div>
                 </div>
             {% else %}
-                <div class="alert alert-success">No stray uploaded files found.</div>
-                <a class="btn btn-default" href="{% url 'profile' %}">Back to profile</a>
+                <div class="alert alert-success">{% trans "No stray uploaded files found." %}</div>
+                <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Back to profile" %}</a>
             {% endif %}
         </div>
     </div>

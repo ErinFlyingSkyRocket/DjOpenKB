@@ -1,8 +1,9 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>Suggest article</title>
+    <title>{% trans "Suggest article" %}</title>
     <meta property="og:title" content="Suggest article" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,29 +70,29 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
-                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
                         </ul>
                     </li>
-                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
                     <li>
                         <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">Logout</button>
+                            <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
                         </form>
                     </li>
                 </ul>
@@ -110,20 +111,20 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div id="header row">
                         <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
                             <div class="form-group">
-                                <label for="preview">Article title *</label><br/>
+                                <label for="preview">{% trans "Article title" %} *</label><br/>
                                 <input type="text" name="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:'' }}" required/>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
                             <label for="preview">&nbsp;</label><br/>
-                            <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">Suggest</button>
+                            <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Suggest" %}</button>
                         </div>
                     </div>
 
                     <div class="col-xs-12">
                         <div id="pastedImagePanel" class="pasted-image-panel">
-                            <div class="pasted-image-panel-title">Pasted images</div>
-                            <p class="text-muted" style="margin-bottom: 8px;">Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file.</p>
+                            <div class="pasted-image-panel-title">{% trans "Pasted images" %}</div>
+                            <p class="text-muted" style="margin-bottom: 8px;">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
                             <div id="pastedImageList" class="pasted-image-list"></div>
                         </div>
                     </div>
@@ -131,10 +132,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div id="editor-pagewrapper row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group suggest-editor" id="editor-wrapper-suggest">
-                                <label for="editor">Article body (Markdown) *</label>
-                                <p class="text-muted" style="margin-bottom: 6px;">You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each.</p>
+                                <label for="editor">{% trans "Article body (Markdown)" %} *</label>
+                                <p class="text-muted" style="margin-bottom: 6px;">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %}</p>
                                 <p>
-                                    <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> Upload image</button>
+                                    <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
                                     <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
                                 </p>
                                 <textarea id="editor" minlength="5" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" class="form-control" required>{{ body_value|default:'' }}</textarea>
@@ -142,7 +143,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group" id="preview-wrapper">
-                                <label for="preview">Preview</label>
+                                <label for="preview">{% trans "Preview" %}</label>
                                 <div id="preview" name="preview" class="form-control suggest-preview" rows="10"></div>
                             </div>
                         </div>
@@ -150,7 +151,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <footer>
                         <div class="col-xs-12">
                             <div class="form-group">
-                                <label>Keywords</label><br/>
+                                <label>{% trans "Keywords" %}</label><br/>
                                 <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:'' }}">
                             </div>
                         </div>

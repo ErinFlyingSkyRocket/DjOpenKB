@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: th\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "นำเข้า / ส่งออกบทความแบบกลุ่ม"
+
+msgid "Toggle navigation"
+msgstr "สลับการนำทาง"
+
+msgid "Knowledge Repository"
+msgstr "คลังความรู้"
+
+msgid "My Profile"
+msgstr "โปรไฟล์ของฉัน"
+
+msgid "Article"
+msgstr "บทความ"
+
+msgid "New"
+msgstr "ใหม่"
+
+msgid "Edit"
+msgstr "แก้ไข"
+
+msgid "Admin"
+msgstr "ผู้ดูแลระบบ"
+
+msgid "Logged in as"
+msgstr "เข้าสู่ระบบในชื่อ"
+
+msgid "Logout"
+msgstr "ออกจากระบบ"
+
+msgid "Bulk import / export articles"
+msgstr "นำเข้า / ส่งออกบทความเป็นชุด"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "เครื่องมือสำหรับผู้ดูแลระบบเท่านั้น การส่งออกมี Markdown ของบทความและไฟล์ที่อ้างอิงภายใต้"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "บทความที่นำเข้าจะถูกกำหนดให้กับบัญชีผู้ดูแลระบบที่ทำการนำเข้า"
+
+msgid "Export articles"
+msgstr "ส่งออกบทความ"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "ดาวน์โหลด zip ที่มีบทความทั้งหมดที่ Django จัดการ เนื้อหา Markdown ของบทความ และ"
+
+msgid "and all referenced uploaded files."
+msgstr "และไฟล์อัปโหลดที่อ้างอิงทั้งหมด"
+
+msgid "Export articles zip"
+msgstr "zip ส่งออกบทความ"
+
+msgid "Import articles"
+msgstr "นำเข้าบทความ"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "อัปโหลด zip ที่ส่งออกจากระบบนี้ หรือ zip ที่มีไฟล์ Markdown และตัวเลือก"
+
+msgid "Imported articles will be owned by"
+msgstr "บทความที่นำเข้าจะเป็นของ"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "นำเข้า zip นี้หรือไม่? บทความที่นำเข้าจะถูกกำหนดให้กับบัญชีผู้ดูแลระบบของคุณ"
+
+msgid "Import zip file"
+msgstr "ไฟล์ zip สำหรับนำเข้า"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "ขนาดอัปโหลดสูงสุด: 100 MB ขนาดหลังแตกไฟล์สูงสุด: 200 MB"
+
+msgid "Import zip"
+msgstr "นำเข้า zip"
+
+msgid "Back to profile"
+msgstr "กลับไปที่โปรไฟล์"
+
+msgid "Supported zip format"
+msgstr "รูปแบบ zip ที่รองรับ"
+
+msgid "This tool prefers the system export format:"
+msgstr "เครื่องมือนี้แนะนำให้ใช้รูปแบบส่งออกของระบบ:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "หากไม่มี manifest.json ตัวนำเข้าจะพยายามนำเข้าไฟล์ Markdown ทั้งหมดที่พบใน zip"
+
+msgid "Clean Stray Upload Files"
+msgstr "ล้างไฟล์อัปโหลดที่ไม่ถูกใช้งาน"
+
+msgid "Clean stray upload files"
+msgstr "ล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "ระบบจะสแกน openkb-data/wiki/uploads และค้นหาไฟล์อัปโหลดที่ไม่ได้อ้างอิงโดยเนื้อหาบทความ Django ใด ๆ"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets หรือไฟล์ Markdown ภายใต้ openkb-data/wiki"
+
+msgid "Review before deleting"
+msgstr "ตรวจสอบก่อนลบ"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "ลบไฟล์อัปโหลดที่ไม่ถูกใช้งานทั้งหมดในรายการหรือไม่? การดำเนินการนี้ย้อนกลับไม่ได้"
+
+msgid "Preview / Open"
+msgstr "ดูตัวอย่าง / เปิด"
+
+msgid "Filename"
+msgstr "ชื่อไฟล์"
+
+msgid "Type"
+msgstr "ประเภท"
+
+msgid "Size"
+msgstr "ขนาด"
+
+msgid "Last modified"
+msgstr "แก้ไขล่าสุด"
+
+msgid "No stray uploaded files found."
+msgstr "ไม่พบไฟล์อัปโหลดที่ไม่ถูกใช้งาน"
+
+msgid "Login to contribute"
+msgstr "เข้าสู่ระบบเพื่อมีส่วนร่วม"
+
+msgid "How can we help?"
+msgstr "เราจะช่วยได้อย่างไร?"
+
+msgid "Featured articles"
+msgstr "บทความเด่น"
+
+msgid "No featured articles yet."
+msgstr "ยังไม่มีบทความเด่น"
+
+msgid "Article details"
+msgstr "รายละเอียดบทความ"
+
+msgid "Published date"
+msgstr "วันที่เผยแพร่"
+
+msgid "Last updated"
+msgstr "อัปเดตล่าสุด"
+
+msgid "Share article"
+msgstr "แชร์บทความ"
+
+msgid "Author"
+msgstr "ผู้เขียน"
+
+msgid "Permalink"
+msgstr "ลิงก์ถาวร"
+
+msgid "Edit article"
+msgstr "แก้ไขบทความ"
+
+msgid "Delete article"
+msgstr "ลบบทความ"
+
+msgid "Ask OpenKB AI"
+msgstr "ถาม OpenKB AI"
+
+msgid "Ask"
+msgstr "ถาม"
+
+msgid "Answer"
+msgstr "คำตอบ"
+
+msgid "No answer yet."
+msgstr "ยังไม่มีคำตอบ"
+
+msgid "Related articles"
+msgstr "บทความที่เกี่ยวข้อง"
+
+msgid "search"
+msgstr "ค้นหา"
+
+msgid "Edit My Articles"
+msgstr "แก้ไขบทความของฉัน"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "ค้นหา แก้ไข หรือลบบทความคลังความรู้ที่คุณแนะนำ"
+
+msgid "Search my suggestions"
+msgstr "ค้นหาคำแนะนำของฉัน"
+
+msgid "Clear search"
+msgstr "ล้างการค้นหา"
+
+msgid "Next"
+msgstr "ถัดไป"
+
+msgid "Last"
+msgstr "หน้าสุดท้าย"
+
+msgid "Article title"
+msgstr "ชื่อบทความ"
+
+msgid "Status"
+msgstr "สถานะ"
+
+msgid "Created"
+msgstr "สร้างแล้ว"
+
+msgid "Actions"
+msgstr "การดำเนินการ"
+
+msgid "Delete"
+msgstr "ลบ"
+
+msgid "No matching suggested articles found."
+msgstr "ไม่พบบทความที่แนะนำซึ่งตรงกัน"
+
+msgid "You have not suggested any articles yet."
+msgstr "คุณยังไม่ได้แนะนำบทความใด ๆ"
+
+msgid "Create your first suggestion"
+msgstr "สร้างคำแนะนำแรกของคุณ"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "ค้นหาตามชื่อเรื่อง เนื้อหา คำสำคัญ สถานะ หรือเส้นทางไฟล์"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "ศูนย์ช่วยเหลือ IT"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "รับคำตอบทันทีสำหรับคำถามที่พบบ่อยที่สุด และเรียนรู้วิธีใช้ 3 ตัวอักษรอย่างมืออาชีพ"
+
+msgid "Date"
+msgstr "วันที่"
+
+msgid "Login"
+msgstr "เข้าสู่ระบบ"
+
+msgid "Please sign in"
+msgstr "กรุณาเข้าสู่ระบบ"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "ใช้อีเมล LDAP หรือชื่อผู้ใช้ Django ภายใน"
+
+msgid "Sign in"
+msgstr "เข้าสู่ระบบ"
+
+msgid "email address"
+msgstr "ที่อยู่อีเมล"
+
+msgid "Password"
+msgstr "รหัสผ่าน"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "จัดการรายละเอียดบัญชีของคุณ ใช้ บทความ > แก้ไข เพื่อจัดการบทความที่คุณแนะนำ"
+
+msgid "Account summary"
+msgstr "สรุปบัญชี"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "ชื่อผู้ใช้และอีเมลสร้างจากรายละเอียดบัญชี Django หรือ LDAP ไม่สามารถเปลี่ยนอีเมล LDAP ได้ที่นี่"
+
+msgid "Username"
+msgstr "ชื่อผู้ใช้"
+
+msgid "New username"
+msgstr "ชื่อผู้ใช้ใหม่"
+
+msgid "Confirm password"
+msgstr "ยืนยันรหัสผ่าน"
+
+msgid "Save username"
+msgstr "บันทึกชื่อผู้ใช้"
+
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+msgid "Email"
+msgstr "อีเมล"
+
+msgid "No email set"
+msgstr "ยังไม่ได้ตั้งค่าอีเมล"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "จัดการโดย LDAP แก้ไขไม่ได้"
+
+msgid "New email"
+msgstr "อีเมลใหม่"
+
+msgid "Save email"
+msgstr "บันทึกอีเมล"
+
+msgid "Account type"
+msgstr "ประเภทบัญชี"
+
+msgid "Language"
+msgstr "ภาษา"
+
+msgid "Save language"
+msgstr "บันทึกภาษา"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "การดำเนินการนี้เปลี่ยนภาษาส่วนติดต่อเว็บไซต์สำหรับบัญชีของคุณ เนื้อหาบทความยังคงเป็นภาษาดั้งเดิมในขณะนี้"
+
+msgid "Change password"
+msgstr "เปลี่ยนรหัสผ่าน"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "รหัสผ่าน LDAP เปลี่ยนผ่านระบบรหัสผ่านของบริษัท"
+
+msgid "Articles"
+msgstr "บทความ"
+
+msgid "Own suggested articles"
+msgstr "บทความที่ฉันแนะนำ"
+
+msgid "New article"
+msgstr "บทความใหม่"
+
+msgid "Edit my articles"
+msgstr "แก้ไขบทความของฉัน"
+
+msgid "Admin tools"
+msgstr "เครื่องมือผู้ดูแลระบบ"
+
+msgid "Finds unused files in"
+msgstr "ค้นหาไฟล์ที่ไม่ได้ใช้ใน"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "ที่ไม่ได้ถูกอ้างอิงโดยบทความหรือไฟล์ Markdown wiki ใด ๆ อีกต่อไป"
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "ส่งออกบทความเป็น zip พร้อม Markdown และไฟล์อัปโหลด หรือนำเข้า zip และกำหนดบทความที่นำเข้าให้กับบัญชีผู้ดูแลระบบของคุณ"
+
+msgid "Old password"
+msgstr "รหัสผ่านเก่า"
+
+msgid "New password"
+msgstr "รหัสผ่านใหม่"
+
+msgid "Password requirements"
+msgstr "ข้อกำหนดรหัสผ่าน"
+
+msgid "At least 12 characters"
+msgstr "อย่างน้อย 12 อักขระ"
+
+msgid "At least 1 uppercase letter"
+msgstr "อย่างน้อย 1 ตัวอักษรพิมพ์ใหญ่"
+
+msgid "At least 1 lowercase letter"
+msgstr "อย่างน้อย 1 ตัวอักษรพิมพ์เล็ก"
+
+msgid "At least 1 number"
+msgstr "อย่างน้อย 1 ตัวเลข"
+
+msgid "At least 1 special character"
+msgstr "อย่างน้อย 1 อักขระพิเศษ"
+
+msgid "Must not contain your username or email name"
+msgstr "ต้องไม่มีชื่อผู้ใช้หรือชื่ออีเมลของคุณ"
+
+msgid "Confirm new password"
+msgstr "ยืนยันรหัสผ่านใหม่"
+
+msgid "Re-type the new password to confirm."
+msgstr "พิมพ์รหัสผ่านใหม่อีกครั้งเพื่อยืนยัน"
+
+msgid "Update password"
+msgstr "อัปเดตรหัสผ่าน"
+
+msgid "Passwords match."
+msgstr "รหัสผ่านตรงกัน"
+
+msgid "Passwords do not match yet."
+msgstr "รหัสผ่านยังไม่ตรงกัน"
+
+msgid "Suggest article"
+msgstr "แนะนำบทความ"
+
+msgid "Suggest"
+msgstr "แนะนำ"
+
+msgid "Pasted images"
+msgstr "รูปภาพที่วาง"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "รูปภาพที่อัปโหลดในฉบับร่างนี้จะแสดงที่นี่ คลิก X เพื่อลบรูปภาพออกจากบทความและลบไฟล์ที่อัปโหลด"
+
+msgid "Article body (Markdown)"
+msgstr "เนื้อหาบทความ (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "คุณสามารถวางรูปภาพ PNG/JPG/GIF/WEBP ขนาดเล็กลงในตัวแก้ไขโดยตรง หรืออัปโหลดด้วยปุ่มได้ สูงสุดรูปละ 2 MB"
+
+msgid "Upload image"
+msgstr "อัปโหลดรูปภาพ"
+
+msgid "Preview"
+msgstr "ดูตัวอย่าง"
+
+msgid "Keywords"
+msgstr "คำสำคัญ"
+
+msgid "Delete suggested article"
+msgstr "ลบบทความที่แนะนำ"
+
+msgid "Are you sure you want to delete"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการลบ?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "การดำเนินการนี้ลบบันทึกโปรไฟล์และลบไฟล์ Markdown จากที่เก็บ raw/source ของ OpenKB"
+
+msgid "Published"
+msgstr "เผยแพร่แล้ว"
+
+msgid "Draft"
+msgstr "ฉบับร่าง"
+
+msgid "Save"
+msgstr "บันทึก"
+
+msgid "Invalid language selected."
+msgstr "เลือกภาษาไม่ถูกต้อง"
+
+msgid "Language preference updated successfully."
+msgstr "อัปเดตการตั้งค่าภาษาเรียบร้อยแล้ว"
+
+msgid "Confirm password is incorrect."
+msgstr "รหัสผ่านยืนยันไม่ถูกต้อง"
+
+msgid "Username cannot be empty."
+msgstr "ชื่อผู้ใช้ต้องไม่ว่างเปล่า"
+
+msgid "That username is already used by another account."
+msgstr "ชื่อผู้ใช้นั้นถูกใช้โดยบัญชีอื่นแล้ว"
+
+msgid "Username updated successfully."
+msgstr "อัปเดตชื่อผู้ใช้สำเร็จ"
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "อีเมล LDAP ถูกจัดการโดย LDAP/AD และไม่สามารถเปลี่ยนได้ที่นี่"
+
+msgid "Email updated successfully."
+msgstr "อัปเดตอีเมลสำเร็จ"
+
+msgid "Invalid profile update request."
+msgstr "คำขออัปเดตโปรไฟล์ไม่ถูกต้อง"
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "หน้าแรก"
+
+msgid "Previous"
+msgstr "ก่อนหน้า"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "หน้า %(number)s จาก %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: หัวข้อยอดนิยม :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: ผลการค้นหาสำหรับ \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "ล้างไฟล์ที่ไม่ได้ใช้งาน"
+
+msgid "Import / Export"
+msgstr "นำเข้า / ส่งออก"
+
+msgid "Open"
+msgstr "เปิด"
+
+msgid "Document Bulk Import / Export"
+msgstr "นำเข้า / ส่งออกเอกสารแบบกลุ่ม"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "ค้นหา แก้ไข หรือลบบทความที่คุณเสนอไว้ในคลังความรู้"
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s บทความ"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "จำนวนบทความทั้งหมดที่เสนอโดย %(name)s"
+
+msgid "Search suggested articles"
+msgstr "ค้นหาบทความที่เสนอ"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "กำลังแสดงผลลัพธ์สำหรับ \"%(query)s\""
+
+msgid "My suggested articles"
+msgstr "บทความที่ฉันเสนอ"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "ตรงกัน %(matching)s รายการ / ทั้งหมด %(total)s รายการ"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "ทั้งหมด %(count)s รายการ"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "กำลังแสดง %(start)s-%(end)s จาก %(count)s บทความที่ตรงกับ \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "กำลังแสดง %(start)s-%(end)s จาก %(count)s บทความ"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "พบบทความที่ตรงกัน %(count)s รายการ"
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "บทความทั้งหมด %(count)s รายการ"

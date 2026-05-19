@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Importation / exportation groupée des articles"
+
+msgid "Toggle navigation"
+msgstr "Basculer la navigation"
+
+msgid "Knowledge Repository"
+msgstr "Référentiel de connaissances"
+
+msgid "My Profile"
+msgstr "Mon profil"
+
+msgid "Article"
+msgstr "Article"
+
+msgid "New"
+msgstr "Nouveau"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Logged in as"
+msgstr "Connecté en tant que"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Bulk import / export articles"
+msgstr "Importation / exportation d’articles en masse"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Outil réservé aux administrateurs. Les exports incluent le Markdown de l’article ainsi que les fichiers référencés sous"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Les articles importés sont attribués au compte administrateur qui effectue l’importation."
+
+msgid "Export articles"
+msgstr "Exporter les articles"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Télécharger un zip contenant tous les articles gérés par Django, leur contenu Markdown, un"
+
+msgid "and all referenced uploaded files."
+msgstr "et tous les fichiers téléversés référencés."
+
+msgid "Export articles zip"
+msgstr "Zip d’export des articles"
+
+msgid "Import articles"
+msgstr "Importer des articles"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Téléversez un zip exporté depuis ce système, ou un zip contenant des fichiers Markdown et un fichier facultatif"
+
+msgid "Imported articles will be owned by"
+msgstr "Les articles importés appartiendront à"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Importer ce zip ? Les articles importés seront attribués à votre compte administrateur."
+
+msgid "Import zip file"
+msgstr "Fichier zip d’importation"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Taille maximale de téléversement : 100 MB. Taille maximale décompressée : 200 MB."
+
+msgid "Import zip"
+msgstr "Importer un zip"
+
+msgid "Back to profile"
+msgstr "Retour au profil"
+
+msgid "Supported zip format"
+msgstr "Format zip pris en charge"
+
+msgid "This tool prefers the system export format:"
+msgstr "Cet outil préfère le format d’export système :"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Si manifest.json est absent, l’importateur essaiera d’importer tous les fichiers Markdown trouvés dans le zip."
+
+msgid "Clean Stray Upload Files"
+msgstr "Nettoyer les fichiers téléversés orphelins"
+
+msgid "Clean stray upload files"
+msgstr "Nettoyer les fichiers téléversés orphelins"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Cela analyse openkb-data/wiki/uploads et trouve les fichiers téléversés qui ne sont référencés par aucun corps d’article Django,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets, ou fichier Markdown sous openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Vérifier avant suppression"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Supprimer tous les fichiers téléversés orphelins listés ? Cette action est irréversible."
+
+msgid "Preview / Open"
+msgstr "Aperçu / Ouvrir"
+
+msgid "Filename"
+msgstr "Nom de fichier"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Size"
+msgstr "Taille"
+
+msgid "Last modified"
+msgstr "Dernière modification"
+
+msgid "No stray uploaded files found."
+msgstr "Aucun fichier téléversé orphelin trouvé."
+
+msgid "Login to contribute"
+msgstr "Connectez-vous pour contribuer"
+
+msgid "How can we help?"
+msgstr "Comment pouvons-nous aider ?"
+
+msgid "Featured articles"
+msgstr "Articles en vedette"
+
+msgid "No featured articles yet."
+msgstr "Aucun article en vedette pour le moment."
+
+msgid "Article details"
+msgstr "Détails de l’article"
+
+msgid "Published date"
+msgstr "Date de publication"
+
+msgid "Last updated"
+msgstr "Dernière mise à jour"
+
+msgid "Share article"
+msgstr "Partager l’article"
+
+msgid "Author"
+msgstr "Auteur"
+
+msgid "Permalink"
+msgstr "Permalien"
+
+msgid "Edit article"
+msgstr "Modifier l’article"
+
+msgid "Delete article"
+msgstr "Supprimer l’article"
+
+msgid "Ask OpenKB AI"
+msgstr "Demander à OpenKB AI"
+
+msgid "Ask"
+msgstr "Demander"
+
+msgid "Answer"
+msgstr "Réponse"
+
+msgid "No answer yet."
+msgstr "Pas encore de réponse."
+
+msgid "Related articles"
+msgstr "Articles connexes"
+
+msgid "search"
+msgstr "rechercher"
+
+msgid "Edit My Articles"
+msgstr "Modifier mes articles"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Recherchez, modifiez ou supprimez vos articles suggérés dans le Référentiel de connaissances."
+
+msgid "Search my suggestions"
+msgstr "Rechercher mes suggestions"
+
+msgid "Clear search"
+msgstr "Effacer la recherche"
+
+msgid "Next"
+msgstr "Suivante"
+
+msgid "Last"
+msgstr "Dernière"
+
+msgid "Article title"
+msgstr "Titre de l’article"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Created"
+msgstr "Créé"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "No matching suggested articles found."
+msgstr "Aucun article suggéré correspondant trouvé."
+
+msgid "You have not suggested any articles yet."
+msgstr "Vous n’avez encore suggéré aucun article."
+
+msgid "Create your first suggestion"
+msgstr "Créer votre première suggestion"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Rechercher par titre, corps, mots-clés, statut ou chemin de fichier"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "Centre d’aide informatique"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Obtenez des réponses instantanées aux questions les plus courantes et apprenez à utiliser 3 caractères comme un pro."
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Please sign in"
+msgstr "Veuillez vous connecter"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Utilisez l’e-mail LDAP ou un nom d’utilisateur Django local."
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+msgid "email address"
+msgstr "adresse e-mail"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Gérez les détails de votre compte. Utilisez Article > Modifier pour gérer vos articles suggérés."
+
+msgid "Account summary"
+msgstr "Résumé du compte"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Le nom d’utilisateur et l’e-mail sont créés à partir des détails du compte Django ou LDAP. Les adresses e-mail LDAP ne peuvent pas être modifiées ici."
+
+msgid "Username"
+msgstr "Nom d’utilisateur"
+
+msgid "New username"
+msgstr "Nouveau nom d’utilisateur"
+
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+msgid "Save username"
+msgstr "Enregistrer le nom d’utilisateur"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "No email set"
+msgstr "Aucun e-mail défini"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "Géré par LDAP, modification impossible"
+
+msgid "New email"
+msgstr "Nouvel e-mail"
+
+msgid "Save email"
+msgstr "Enregistrer l’e-mail"
+
+msgid "Account type"
+msgstr "Type de compte"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Save language"
+msgstr "Enregistrer la langue"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Cela change la langue de l’interface du site pour votre compte. Le contenu des articles reste dans sa langue d’origine pour le moment."
+
+msgid "Change password"
+msgstr "Changer le mot de passe"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "Les mots de passe LDAP sont modifiés via le système de mot de passe de l’entreprise."
+
+msgid "Articles"
+msgstr "Articles"
+
+msgid "Own suggested articles"
+msgstr "Mes articles suggérés"
+
+msgid "New article"
+msgstr "Nouvel article"
+
+msgid "Edit my articles"
+msgstr "Modifier mes articles"
+
+msgid "Admin tools"
+msgstr "Outils d’administration"
+
+msgid "Finds unused files in"
+msgstr "Trouve les fichiers inutilisés dans"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "qui ne sont plus référencés par aucun article ou fichier Markdown wiki."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Exportez les articles sous forme de zip avec Markdown et fichiers téléversés, ou importez un zip et attribuez les articles importés à votre compte administrateur."
+
+msgid "Old password"
+msgstr "Ancien mot de passe"
+
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+msgid "Password requirements"
+msgstr "Exigences du mot de passe"
+
+msgid "At least 12 characters"
+msgstr "Au moins 12 caractères"
+
+msgid "At least 1 uppercase letter"
+msgstr "Au moins 1 lettre majuscule"
+
+msgid "At least 1 lowercase letter"
+msgstr "Au moins 1 lettre minuscule"
+
+msgid "At least 1 number"
+msgstr "Au moins 1 chiffre"
+
+msgid "At least 1 special character"
+msgstr "Au moins 1 caractère spécial"
+
+msgid "Must not contain your username or email name"
+msgstr "Ne doit pas contenir votre nom d’utilisateur ni le nom de votre e-mail"
+
+msgid "Confirm new password"
+msgstr "Confirmer le nouveau mot de passe"
+
+msgid "Re-type the new password to confirm."
+msgstr "Saisissez à nouveau le nouveau mot de passe pour confirmer."
+
+msgid "Update password"
+msgstr "Mettre à jour le mot de passe"
+
+msgid "Passwords match."
+msgstr "Les mots de passe correspondent."
+
+msgid "Passwords do not match yet."
+msgstr "Les mots de passe ne correspondent pas encore."
+
+msgid "Suggest article"
+msgstr "Suggérer un article"
+
+msgid "Suggest"
+msgstr "Suggérer"
+
+msgid "Pasted images"
+msgstr "Images collées"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Les images téléversées dans ce brouillon apparaissent ici. Cliquez sur X pour retirer l’image de l’article et supprimer le fichier téléversé."
+
+msgid "Article body (Markdown)"
+msgstr "Corps de l’article (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Vous pouvez coller de petites images PNG/JPG/GIF/WEBP directement dans l’éditeur ou en téléverser une avec le bouton. Maximum 2 MB chacune."
+
+msgid "Upload image"
+msgstr "Téléverser une image"
+
+msgid "Preview"
+msgstr "Aperçu"
+
+msgid "Keywords"
+msgstr "Mots-clés"
+
+msgid "Delete suggested article"
+msgstr "Supprimer l’article suggéré"
+
+msgid "Are you sure you want to delete"
+msgstr "Voulez-vous vraiment supprimer ?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Cela supprime l’enregistrement du profil et les fichiers Markdown du stockage raw/source d’OpenKB."
+
+msgid "Published"
+msgstr "Publié"
+
+msgid "Draft"
+msgstr "Brouillon"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Invalid language selected."
+msgstr "Langue sélectionnée invalide."
+
+msgid "Language preference updated successfully."
+msgstr "Préférence de langue mise à jour avec succès."
+
+msgid "Confirm password is incorrect."
+msgstr "Le mot de passe de confirmation est incorrect."
+
+msgid "Username cannot be empty."
+msgstr "Le nom d’utilisateur ne peut pas être vide."
+
+msgid "That username is already used by another account."
+msgstr "Ce nom d’utilisateur est déjà utilisé par un autre compte."
+
+msgid "Username updated successfully."
+msgstr "Nom d’utilisateur mis à jour avec succès."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "L’e-mail LDAP est géré par LDAP/AD et ne peut pas être modifié ici."
+
+msgid "Email updated successfully."
+msgstr "E-mail mis à jour avec succès."
+
+msgid "Invalid profile update request."
+msgstr "Demande de mise à jour du profil invalide."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Première"
+
+msgid "Previous"
+msgstr "Précédente"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Page %(number)s sur %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: SUJETS TENDANCE :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: RÉSULTATS DE RECHERCHE POUR \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Nettoyer les fichiers orphelins"
+
+msgid "Import / Export"
+msgstr "Importer / Exporter"
+
+msgid "Open"
+msgstr "Ouvrir"
+
+msgid "Document Bulk Import / Export"
+msgstr "Importation / exportation groupée de documents"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Recherchez, modifiez ou supprimez les articles que vous avez suggérés dans le référentiel de connaissances."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s articles"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Nombre total d’articles suggérés par %(name)s"
+
+msgid "Search suggested articles"
+msgstr "Rechercher des articles suggérés"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Résultats affichés pour \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Mes articles suggérés"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s correspondants / %(total)s au total"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s au total"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Affichage de %(start)s-%(end)s sur %(count)s articles correspondant à \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Affichage de %(start)s-%(end)s sur %(count)s articles"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s articles correspondants trouvés."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "%(count)s articles au total."

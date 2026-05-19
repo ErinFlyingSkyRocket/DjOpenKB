@@ -1,8 +1,9 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>Bulk Import / Export Articles</title>
+    <title>{% trans "Bulk Import / Export Articles" %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -39,29 +40,29 @@
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
+                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'home' %}">Knowledge Repository</a>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'profile' %}">My Profile</a></li>
+                    <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Article <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> New</a></li>
-                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> Edit</a></li>
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
                         </ul>
                     </li>
-                    {% if user.is_staff %}<li><a href="/admin/">Admin</a></li>{% endif %}
-                    <li class="navbar-text">Logged in as {{ user.get_full_name|default:user.username }}</li>
+                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
                     <li>
                         <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">Logout</button>
+                            <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
                         </form>
                     </li>
                 </ul>
@@ -71,10 +72,10 @@
 
     <div class="container-fluid">
         <div class="col-xs-12 bulk-wrap">
-            <h2>Bulk import / export articles</h2>
+            <h2>{% trans "Bulk import / export articles" %}</h2>
             <p class="bulk-muted">
-                Admin-only tool. Exports include article Markdown plus referenced files under <code>openkb-data/wiki/uploads</code>.
-                Imported articles are assigned to the admin account performing the import.
+                {% trans "Admin-only tool. Exports include article Markdown plus referenced files under" %} <code>openkb-data/wiki/uploads</code>.
+                {% trans "Imported articles are assigned to the admin account performing the import." %}
             </p>
 
             {% if messages %}
@@ -84,53 +85,53 @@
             {% endif %}
 
             <div class="panel panel-default bulk-card">
-                <div class="panel-heading">Export articles</div>
+                <div class="panel-heading">{% trans "Export articles" %}</div>
                 <div class="panel-body">
                     <p>
-                        Download a zip containing all Django-managed articles, their Markdown content, a <code>manifest.json</code>,
-                        and all referenced uploaded files.
+                        {% trans "Download a zip containing all Django-managed articles, their Markdown content, a" %} <code>manifest.json</code>,
+                        {% trans "and all referenced uploaded files." %}
                     </p>
                     <div class="bulk-actions">
                         <a class="btn btn-success" href="{% url 'export_articles_zip' %}">
-                            <i class="fa fa-download"></i> Export articles zip
+                            <i class="fa fa-download"></i> {% trans "Export articles zip" %}
                         </a>
                     </div>
                 </div>
             </div>
 
             <div class="panel panel-warning bulk-card">
-                <div class="panel-heading">Import articles</div>
+                <div class="panel-heading">{% trans "Import articles" %}</div>
                 <div class="panel-body">
                     <p>
-                        Upload a zip exported from this system, or a zip containing Markdown files and an optional <code>uploads/</code> folder.
-                        Imported articles will be owned by <strong>{{ user.get_username }}</strong>.
+                        {% trans "Upload a zip exported from this system, or a zip containing Markdown files and an optional" %} <code>uploads/</code> folder.
+                        {% trans "Imported articles will be owned by" %} <strong>{{ user.get_username }}</strong>.
                     </p>
 
-                    <form method="post" action="{% url 'import_articles_zip' %}" enctype="multipart/form-data" onsubmit="return confirm('Import this zip? Imported articles will be assigned to your admin account.');">
+                    <form method="post" action="{% url 'import_articles_zip' %}" enctype="multipart/form-data" onsubmit="return confirm('{% trans "Import this zip? Imported articles will be assigned to your admin account." %}');">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label>Import zip file</label>
+                            <label>{% trans "Import zip file" %}</label>
                             <input type="file" name="import_zip" class="form-control" accept=".zip" required>
-                            <p class="help-block">Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB.</p>
+                            <p class="help-block">{% trans "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB." %}</p>
                         </div>
                         <button class="btn btn-warning" type="submit">
-                            <i class="fa fa-upload"></i> Import zip
+                            <i class="fa fa-upload"></i> {% trans "Import zip" %}
                         </button>
-                        <a class="btn btn-default" href="{% url 'profile' %}">Back to profile</a>
+                        <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Back to profile" %}</a>
                     </form>
                 </div>
             </div>
 
             <div class="panel panel-info bulk-card">
-                <div class="panel-heading">Supported zip format</div>
+                <div class="panel-heading">{% trans "Supported zip format" %}</div>
                 <div class="panel-body">
-                    <p>This tool prefers the system export format:</p>
+                    <p>{% trans "This tool prefers the system export format:" %}</p>
                     <pre class="bulk-code">manifest.json
 articles/example-article.md
 uploads/example-image.png
 uploads/example-file.pdf</pre>
                     <p class="bulk-muted">
-                        If <code>manifest.json</code> is missing, the importer will try to import all Markdown files found in the zip.
+                        {% trans "If manifest.json is missing, the importer will try to import all Markdown files found in the zip." %}
                     </p>
                 </div>
             </div>

@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: da\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Masseimport / -eksport af artikler"
+
+msgid "Toggle navigation"
+msgstr "Skift navigation"
+
+msgid "Knowledge Repository"
+msgstr "Vidensarkiv"
+
+msgid "My Profile"
+msgstr "Min profil"
+
+msgid "Article"
+msgstr "Artikel"
+
+msgid "New"
+msgstr "Ny"
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Logged in as"
+msgstr "Logget ind som"
+
+msgid "Logout"
+msgstr "Log ud"
+
+msgid "Bulk import / export articles"
+msgstr "Masseimport / eksport af artikler"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Kun for administratorer. Eksport inkluderer artikel-Markdown samt refererede filer under"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Importerede artikler tildeles den adminkonto, der udfører importen."
+
+msgid "Export articles"
+msgstr "Eksporter artikler"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Download en zip, der indeholder alle Django-administrerede artikler, deres Markdown-indhold, en"
+
+msgid "and all referenced uploaded files."
+msgstr "og alle refererede uploadede filer."
+
+msgid "Export articles zip"
+msgstr "Eksporter artikel-zip"
+
+msgid "Import articles"
+msgstr "Importer artikler"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Upload en zip eksporteret fra dette system, eller en zip med Markdown-filer og en valgfri"
+
+msgid "Imported articles will be owned by"
+msgstr "Importerede artikler vil ejes af"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Importer denne zip? Importerede artikler tildeles din adminkonto."
+
+msgid "Import zip file"
+msgstr "Importer zip-fil"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Maksimal uploadstørrelse: 100 MB. Maksimal udpakket størrelse: 200 MB."
+
+msgid "Import zip"
+msgstr "Importer zip"
+
+msgid "Back to profile"
+msgstr "Tilbage til profil"
+
+msgid "Supported zip format"
+msgstr "Understøttet zip-format"
+
+msgid "This tool prefers the system export format:"
+msgstr "Dette værktøj foretrækker systemets eksportformat:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Hvis manifest.json mangler, vil importøren forsøge at importere alle Markdown-filer fundet i zip-filen."
+
+msgid "Clean Stray Upload Files"
+msgstr "Ryd forældreløse uploadfiler"
+
+msgid "Clean stray upload files"
+msgstr "Ryd ubrugte uploadfiler"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Dette scanner openkb-data/wiki/uploads og finder uploadede filer, der ikke refereres af nogen Django-artikeltekst,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets, eller Markdown-fil under openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Gennemgå før sletning"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Slet alle viste forældreløse uploadfiler? Dette kan ikke fortrydes."
+
+msgid "Preview / Open"
+msgstr "Forhåndsvisning / Åbn"
+
+msgid "Filename"
+msgstr "Filnavn"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Size"
+msgstr "Størrelse"
+
+msgid "Last modified"
+msgstr "Sidst ændret"
+
+msgid "No stray uploaded files found."
+msgstr "Ingen forældreløse uploadfiler fundet."
+
+msgid "Login to contribute"
+msgstr "Log ind for at bidrage"
+
+msgid "How can we help?"
+msgstr "Hvordan kan vi hjælpe?"
+
+msgid "Featured articles"
+msgstr "Fremhævede artikler"
+
+msgid "No featured articles yet."
+msgstr "Ingen fremhævede artikler endnu."
+
+msgid "Article details"
+msgstr "Artikeldetaljer"
+
+msgid "Published date"
+msgstr "Udgivelsesdato"
+
+msgid "Last updated"
+msgstr "Sidst opdateret"
+
+msgid "Share article"
+msgstr "Del artikel"
+
+msgid "Author"
+msgstr "Forfatter"
+
+msgid "Permalink"
+msgstr "Permalink"
+
+msgid "Edit article"
+msgstr "Rediger artikel"
+
+msgid "Delete article"
+msgstr "Slet artikel"
+
+msgid "Ask OpenKB AI"
+msgstr "Spørg OpenKB AI"
+
+msgid "Ask"
+msgstr "Spørg"
+
+msgid "Answer"
+msgstr "Svar"
+
+msgid "No answer yet."
+msgstr "Intet svar endnu."
+
+msgid "Related articles"
+msgstr "Relaterede artikler"
+
+msgid "search"
+msgstr "søg"
+
+msgid "Edit My Articles"
+msgstr "Rediger mine artikler"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Søg, rediger eller slet dine foreslåede artikler i Vidensarkivet."
+
+msgid "Search my suggestions"
+msgstr "Søg i mine forslag"
+
+msgid "Clear search"
+msgstr "Ryd søgning"
+
+msgid "Next"
+msgstr "Næste"
+
+msgid "Last"
+msgstr "Sidste"
+
+msgid "Article title"
+msgstr "Artikeltitel"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created"
+msgstr "Oprettet"
+
+msgid "Actions"
+msgstr "Handlinger"
+
+msgid "Delete"
+msgstr "Slet"
+
+msgid "No matching suggested articles found."
+msgstr "Ingen matchende foreslåede artikler fundet."
+
+msgid "You have not suggested any articles yet."
+msgstr "Du har ikke foreslået nogen artikler endnu."
+
+msgid "Create your first suggestion"
+msgstr "Opret dit første forslag"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Søg efter titel, indhold, nøgleord, status eller filsti"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "IT Hjælpecenter"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Få øjeblikkelige svar på de mest almindelige spørgsmål, og lær at bruge 3 tegn som en professionel."
+
+msgid "Date"
+msgstr "Dato"
+
+msgid "Login"
+msgstr "Log ind"
+
+msgid "Please sign in"
+msgstr "Log venligst ind"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Brug LDAP-e-mail eller et lokalt Django-brugernavn."
+
+msgid "Sign in"
+msgstr "Log ind"
+
+msgid "email address"
+msgstr "e-mailadresse"
+
+msgid "Password"
+msgstr "Adgangskode"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Administrer dine kontooplysninger. Brug Artikel > Rediger til at administrere dine foreslåede artikler."
+
+msgid "Account summary"
+msgstr "Kontooversigt"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Brugernavn og e-mail oprettes fra Django- eller LDAP-kontooplysninger. LDAP-e-mailadresser kan ikke ændres her."
+
+msgid "Username"
+msgstr "Brugernavn"
+
+msgid "New username"
+msgstr "Nyt brugernavn"
+
+msgid "Confirm password"
+msgstr "Bekræft adgangskode"
+
+msgid "Save username"
+msgstr "Gem brugernavn"
+
+msgid "Cancel"
+msgstr "Annuller"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "No email set"
+msgstr "Ingen e-mail angivet"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "LDAP-administreret, kan ikke redigeres"
+
+msgid "New email"
+msgstr "Ny e-mail"
+
+msgid "Save email"
+msgstr "Gem e-mail"
+
+msgid "Account type"
+msgstr "Kontotype"
+
+msgid "Language"
+msgstr "Sprog"
+
+msgid "Save language"
+msgstr "Gem sprog"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Dette ændrer webstedets interfacesprog for din konto. Artikelindhold forbliver på originalsproget indtil videre."
+
+msgid "Change password"
+msgstr "Skift adgangskode"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP-adgangskoder ændres via virksomhedens adgangskodesystem."
+
+msgid "Articles"
+msgstr "Artikler"
+
+msgid "Own suggested articles"
+msgstr "Egne foreslåede artikler"
+
+msgid "New article"
+msgstr "Ny artikel"
+
+msgid "Edit my articles"
+msgstr "Rediger mine artikler"
+
+msgid "Admin tools"
+msgstr "Adminværktøjer"
+
+msgid "Finds unused files in"
+msgstr "Finder ubrugte filer i"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "der ikke længere refereres af nogen artikel eller wiki Markdown-fil."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Eksporter artikler som en zip med Markdown og uploadede filer, eller importer en zip og tildel importerede artikler til din adminkonto."
+
+msgid "Old password"
+msgstr "Gammel adgangskode"
+
+msgid "New password"
+msgstr "Ny adgangskode"
+
+msgid "Password requirements"
+msgstr "Krav til adgangskode"
+
+msgid "At least 12 characters"
+msgstr "Mindst 12 tegn"
+
+msgid "At least 1 uppercase letter"
+msgstr "Mindst 1 stort bogstav"
+
+msgid "At least 1 lowercase letter"
+msgstr "Mindst 1 lille bogstav"
+
+msgid "At least 1 number"
+msgstr "Mindst 1 tal"
+
+msgid "At least 1 special character"
+msgstr "Mindst 1 specialtegn"
+
+msgid "Must not contain your username or email name"
+msgstr "Må ikke indeholde dit brugernavn eller e-mailnavn"
+
+msgid "Confirm new password"
+msgstr "Bekræft ny adgangskode"
+
+msgid "Re-type the new password to confirm."
+msgstr "Indtast den nye adgangskode igen for at bekræfte."
+
+msgid "Update password"
+msgstr "Opdater adgangskode"
+
+msgid "Passwords match."
+msgstr "Adgangskoderne matcher."
+
+msgid "Passwords do not match yet."
+msgstr "Adgangskoderne matcher ikke endnu."
+
+msgid "Suggest article"
+msgstr "Foreslå artikel"
+
+msgid "Suggest"
+msgstr "Foreslå"
+
+msgid "Pasted images"
+msgstr "Indsatte billeder"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Billeder uploadet i denne kladde vises her. Klik X for at fjerne billedet fra artiklen og slette den uploadede fil."
+
+msgid "Article body (Markdown)"
+msgstr "Artikelindhold (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Du kan indsætte små PNG/JPG/GIF/WEBP-billeder direkte i editoren eller uploade et med knappen. Maksimalt 2 MB hver."
+
+msgid "Upload image"
+msgstr "Upload billede"
+
+msgid "Preview"
+msgstr "Forhåndsvisning"
+
+msgid "Keywords"
+msgstr "Nøgleord"
+
+msgid "Delete suggested article"
+msgstr "Slet foreslået artikel"
+
+msgid "Are you sure you want to delete"
+msgstr "Er du sikker på, at du vil slette?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Dette fjerner profilposten og sletter Markdown-filerne fra OpenKB raw/source-lageret."
+
+msgid "Published"
+msgstr "Udgivet"
+
+msgid "Draft"
+msgstr "Kladde"
+
+msgid "Save"
+msgstr "Gem"
+
+msgid "Invalid language selected."
+msgstr "Ugyldigt sprog valgt."
+
+msgid "Language preference updated successfully."
+msgstr "Sprogindstilling opdateret."
+
+msgid "Confirm password is incorrect."
+msgstr "Bekræftelsesadgangskoden er forkert."
+
+msgid "Username cannot be empty."
+msgstr "Brugernavn må ikke være tomt."
+
+msgid "That username is already used by another account."
+msgstr "Det brugernavn bruges allerede af en anden konto."
+
+msgid "Username updated successfully."
+msgstr "Brugernavn opdateret."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP-e-mail administreres af LDAP/AD og kan ikke ændres her."
+
+msgid "Email updated successfully."
+msgstr "E-mail opdateret."
+
+msgid "Invalid profile update request."
+msgstr "Ugyldig anmodning om profilopdatering."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Første"
+
+msgid "Previous"
+msgstr "Forrige"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Side %(number)s af %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: POPULÆRE EMNER :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: SØGERESULTATER FOR \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Ryd ubrugte filer"
+
+msgid "Import / Export"
+msgstr "Import / eksport"
+
+msgid "Open"
+msgstr "Åbn"
+
+msgid "Document Bulk Import / Export"
+msgstr "Masseimport / -eksport af dokumenter"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Søg, rediger eller slet artikler, du har foreslået i vidensbasen."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s artikler"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Samlet antal artikler foreslået af %(name)s"
+
+msgid "Search suggested articles"
+msgstr "Søg i foreslåede artikler"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Viser resultater for \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Mine foreslåede artikler"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s matcher / %(total)s i alt"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s i alt"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Viser %(start)s-%(end)s af %(count)s artikler, der matcher \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Viser %(start)s-%(end)s af %(count)s artikler"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s matchende artikler fundet."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "%(count)s artikler i alt."

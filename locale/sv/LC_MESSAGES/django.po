@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sv\n"
+
+msgid "Bulk Import / Export Articles"
+msgstr "Massimport / -export av artiklar"
+
+msgid "Toggle navigation"
+msgstr "Växla navigering"
+
+msgid "Knowledge Repository"
+msgstr "Kunskapsarkiv"
+
+msgid "My Profile"
+msgstr "Min profil"
+
+msgid "Article"
+msgstr "Artikel"
+
+msgid "New"
+msgstr "Ny"
+
+msgid "Edit"
+msgstr "Redigera"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Logged in as"
+msgstr "Inloggad som"
+
+msgid "Logout"
+msgstr "Logga ut"
+
+msgid "Bulk import / export articles"
+msgstr "Massimport / export av artiklar"
+
+msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr "Endast för administratörer. Exporter innehåller artikelns Markdown samt refererade filer under"
+
+msgid "Imported articles are assigned to the admin account performing the import."
+msgstr "Importerade artiklar tilldelas adminkontot som utför importen."
+
+msgid "Export articles"
+msgstr "Exportera artiklar"
+
+msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgstr "Ladda ner en zip som innehåller alla Django-hanterade artiklar, deras Markdown-innehåll, en"
+
+msgid "and all referenced uploaded files."
+msgstr "och alla refererade uppladdade filer."
+
+msgid "Export articles zip"
+msgstr "Exportera artikel-zip"
+
+msgid "Import articles"
+msgstr "Importera artiklar"
+
+msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgstr "Ladda upp en zip exporterad från detta system, eller en zip som innehåller Markdown-filer och en valfri"
+
+msgid "Imported articles will be owned by"
+msgstr "Importerade artiklar kommer att ägas av"
+
+msgid "Import this zip? Imported articles will be assigned to your admin account."
+msgstr "Importera denna zip? Importerade artiklar tilldelas ditt adminkonto."
+
+msgid "Import zip file"
+msgstr "Importera zip-fil"
+
+msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
+msgstr "Maximal uppladdningsstorlek: 100 MB. Maximal okomprimerad storlek: 200 MB."
+
+msgid "Import zip"
+msgstr "Importera zip"
+
+msgid "Back to profile"
+msgstr "Tillbaka till profil"
+
+msgid "Supported zip format"
+msgstr "Stött zip-format"
+
+msgid "This tool prefers the system export format:"
+msgstr "Detta verktyg föredrar systemets exportformat:"
+
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
+msgstr "Om manifest.json saknas försöker importören importera alla Markdown-filer som hittas i zip-filen."
+
+msgid "Clean Stray Upload Files"
+msgstr "Rensa övergivna uppladdade filer"
+
+msgid "Clean stray upload files"
+msgstr "Rensa överblivna uppladdningsfiler"
+
+msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
+msgstr "Detta skannar openkb-data/wiki/uploads och hittar uppladdade filer som inte refereras av någon Django-artikeltext,"
+
+msgid "article image_assets, or Markdown file under openkb-data/wiki."
+msgstr "article image_assets eller Markdown-fil under openkb-data/wiki."
+
+msgid "Review before deleting"
+msgstr "Granska innan borttagning"
+
+msgid "Delete all listed stray upload files? This cannot be undone."
+msgstr "Ta bort alla listade övergivna uppladdade filer? Detta kan inte ångras."
+
+msgid "Preview / Open"
+msgstr "Förhandsgranska / Öppna"
+
+msgid "Filename"
+msgstr "Filnamn"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Size"
+msgstr "Storlek"
+
+msgid "Last modified"
+msgstr "Senast ändrad"
+
+msgid "No stray uploaded files found."
+msgstr "Inga övergivna uppladdade filer hittades."
+
+msgid "Login to contribute"
+msgstr "Logga in för att bidra"
+
+msgid "How can we help?"
+msgstr "Hur kan vi hjälpa?"
+
+msgid "Featured articles"
+msgstr "Utvalda artiklar"
+
+msgid "No featured articles yet."
+msgstr "Inga utvalda artiklar ännu."
+
+msgid "Article details"
+msgstr "Artikeldetaljer"
+
+msgid "Published date"
+msgstr "Publiceringsdatum"
+
+msgid "Last updated"
+msgstr "Senast uppdaterad"
+
+msgid "Share article"
+msgstr "Dela artikel"
+
+msgid "Author"
+msgstr "Författare"
+
+msgid "Permalink"
+msgstr "Permalänk"
+
+msgid "Edit article"
+msgstr "Redigera artikel"
+
+msgid "Delete article"
+msgstr "Ta bort artikel"
+
+msgid "Ask OpenKB AI"
+msgstr "Fråga OpenKB AI"
+
+msgid "Ask"
+msgstr "Fråga"
+
+msgid "Answer"
+msgstr "Svar"
+
+msgid "No answer yet."
+msgstr "Inget svar ännu."
+
+msgid "Related articles"
+msgstr "Relaterade artiklar"
+
+msgid "search"
+msgstr "sök"
+
+msgid "Edit My Articles"
+msgstr "Redigera mina artiklar"
+
+msgid "Search, edit, or delete your suggested Knowledge Repository articles."
+msgstr "Sök, redigera eller ta bort dina föreslagna artiklar i Kunskapsarkivet."
+
+msgid "Search my suggestions"
+msgstr "Sök i mina förslag"
+
+msgid "Clear search"
+msgstr "Rensa sökning"
+
+msgid "Next"
+msgstr "Nästa"
+
+msgid "Last"
+msgstr "Sista"
+
+msgid "Article title"
+msgstr "Artikeltitel"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created"
+msgstr "Skapad"
+
+msgid "Actions"
+msgstr "Åtgärder"
+
+msgid "Delete"
+msgstr "Ta bort"
+
+msgid "No matching suggested articles found."
+msgstr "Inga matchande föreslagna artiklar hittades."
+
+msgid "You have not suggested any articles yet."
+msgstr "Du har inte föreslagit några artiklar ännu."
+
+msgid "Create your first suggestion"
+msgstr "Skapa ditt första förslag"
+
+msgid "Search by title, body, keywords, status, or file path"
+msgstr "Sök efter titel, innehåll, nyckelord, status eller filsökväg"
+
+msgid "openKB"
+msgstr "openKB"
+
+msgid "IT Help Center"
+msgstr "IT Hjälpcenter"
+
+msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
+msgstr "Få omedelbara svar på de vanligaste frågorna och lär dig att använda 3 tecken som ett proffs."
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Login"
+msgstr "Logga in"
+
+msgid "Please sign in"
+msgstr "Logga in"
+
+msgid "Use LDAP email or a Django local username."
+msgstr "Använd LDAP-e-post eller ett lokalt Django-användarnamn."
+
+msgid "Sign in"
+msgstr "Logga in"
+
+msgid "email address"
+msgstr "e-postadress"
+
+msgid "Password"
+msgstr "Lösenord"
+
+msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
+msgstr "Hantera dina kontouppgifter. Använd Artikel > Redigera för att hantera dina föreslagna artiklar."
+
+msgid "Account summary"
+msgstr "Kontosammanfattning"
+
+msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
+msgstr "Användarnamn och e-post skapas från Django- eller LDAP-kontouppgifter. LDAP-e-postadresser kan inte ändras här."
+
+msgid "Username"
+msgstr "Användarnamn"
+
+msgid "New username"
+msgstr "Nytt användarnamn"
+
+msgid "Confirm password"
+msgstr "Bekräfta lösenord"
+
+msgid "Save username"
+msgstr "Spara användarnamn"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Email"
+msgstr "E-post"
+
+msgid "No email set"
+msgstr "Ingen e-post angiven"
+
+msgid "LDAP-managed, cannot edit"
+msgstr "LDAP-hanterad, kan inte redigeras"
+
+msgid "New email"
+msgstr "Ny e-post"
+
+msgid "Save email"
+msgstr "Spara e-post"
+
+msgid "Account type"
+msgstr "Kontotyp"
+
+msgid "Language"
+msgstr "Språk"
+
+msgid "Save language"
+msgstr "Spara språk"
+
+msgid "This changes the website interface language for your account. Article content stays in its original language for now."
+msgstr "Detta ändrar webbplatsens gränssnittsspråk för ditt konto. Artikelinnehåll förblir på originalspråket tills vidare."
+
+msgid "Change password"
+msgstr "Ändra lösenord"
+
+msgid "LDAP passwords are changed through the company password system."
+msgstr "LDAP-lösenord ändras via företagets lösenordssystem."
+
+msgid "Articles"
+msgstr "Artiklar"
+
+msgid "Own suggested articles"
+msgstr "Egna föreslagna artiklar"
+
+msgid "New article"
+msgstr "Ny artikel"
+
+msgid "Edit my articles"
+msgstr "Redigera mina artiklar"
+
+msgid "Admin tools"
+msgstr "Adminverktyg"
+
+msgid "Finds unused files in"
+msgstr "Hittar oanvända filer i"
+
+msgid "that are no longer referenced by any article or wiki Markdown file."
+msgstr "som inte längre refereras av någon artikel eller wiki Markdown-fil."
+
+msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
+msgstr "Exportera artiklar som en zip med Markdown och uppladdade filer, eller importera en zip och tilldela importerade artiklar till ditt adminkonto."
+
+msgid "Old password"
+msgstr "Gammalt lösenord"
+
+msgid "New password"
+msgstr "Nytt lösenord"
+
+msgid "Password requirements"
+msgstr "Lösenordskrav"
+
+msgid "At least 12 characters"
+msgstr "Minst 12 tecken"
+
+msgid "At least 1 uppercase letter"
+msgstr "Minst 1 versal bokstav"
+
+msgid "At least 1 lowercase letter"
+msgstr "Minst 1 gemen bokstav"
+
+msgid "At least 1 number"
+msgstr "Minst 1 siffra"
+
+msgid "At least 1 special character"
+msgstr "Minst 1 specialtecken"
+
+msgid "Must not contain your username or email name"
+msgstr "Får inte innehålla ditt användarnamn eller e-postnamn"
+
+msgid "Confirm new password"
+msgstr "Bekräfta nytt lösenord"
+
+msgid "Re-type the new password to confirm."
+msgstr "Skriv det nya lösenordet igen för att bekräfta."
+
+msgid "Update password"
+msgstr "Uppdatera lösenord"
+
+msgid "Passwords match."
+msgstr "Lösenorden matchar."
+
+msgid "Passwords do not match yet."
+msgstr "Lösenorden matchar inte ännu."
+
+msgid "Suggest article"
+msgstr "Föreslå artikel"
+
+msgid "Suggest"
+msgstr "Föreslå"
+
+msgid "Pasted images"
+msgstr "Inklistrade bilder"
+
+msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
+msgstr "Bilder som laddats upp i detta utkast visas här. Klicka på X för att ta bort bilden från artikeln och radera den uppladdade filen."
+
+msgid "Article body (Markdown)"
+msgstr "Artikelinnehåll (Markdown)"
+
+msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
+msgstr "Du kan klistra in små PNG/JPG/GIF/WEBP-bilder direkt i editorn eller ladda upp en med knappen. Maximalt 2 MB vardera."
+
+msgid "Upload image"
+msgstr "Ladda upp bild"
+
+msgid "Preview"
+msgstr "Förhandsgranska"
+
+msgid "Keywords"
+msgstr "Nyckelord"
+
+msgid "Delete suggested article"
+msgstr "Ta bort föreslagen artikel"
+
+msgid "Are you sure you want to delete"
+msgstr "Är du säker på att du vill ta bort?"
+
+msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
+msgstr "Detta tar bort profilposten och raderar Markdown-filerna från OpenKB raw/source-lagring."
+
+msgid "Published"
+msgstr "Publicerad"
+
+msgid "Draft"
+msgstr "Utkast"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Invalid language selected."
+msgstr "Ogiltigt språk valt."
+
+msgid "Language preference updated successfully."
+msgstr "Språkinställning uppdaterad."
+
+msgid "Confirm password is incorrect."
+msgstr "Bekräftelselösenordet är felaktigt."
+
+msgid "Username cannot be empty."
+msgstr "Användarnamn kan inte vara tomt."
+
+msgid "That username is already used by another account."
+msgstr "Det användarnamnet används redan av ett annat konto."
+
+msgid "Username updated successfully."
+msgstr "Användarnamn uppdaterat."
+
+msgid "LDAP email is managed by LDAP/AD and cannot be changed here."
+msgstr "LDAP-e-post hanteras av LDAP/AD och kan inte ändras här."
+
+msgid "Email updated successfully."
+msgstr "E-post uppdaterad."
+
+msgid "Invalid profile update request."
+msgstr "Ogiltig begäran om profiluppdatering."
+
+msgid "sys"
+msgstr "sys"
+
+msgid "First"
+msgstr "Första"
+
+msgid "Previous"
+msgstr "Föregående"
+
+msgid "Page %(number)s of %(num_pages)s"
+msgstr "Sida %(number)s av %(num_pages)s"
+
+msgid "::: TRENDING TOPICS :::"
+msgstr "::: POPULÄRA ÄMNEN :::"
+
+msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
+msgstr "::: SÖKRESULTAT FÖR \"%(query)s\" :::"
+
+msgid "Clean stray files"
+msgstr "Rensa överblivna filer"
+
+msgid "Import / Export"
+msgstr "Importera / Exportera"
+
+msgid "Open"
+msgstr "Öppna"
+
+msgid "Document Bulk Import / Export"
+msgstr "Massimport / -export av dokument"
+
+msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr "Sök, redigera eller ta bort artiklar som du har föreslagit i kunskapsarkivet."
+
+#, python-format
+msgid "%(count)s articles"
+msgstr "%(count)s artiklar"
+
+#, python-format
+msgid "Total articles suggested by %(name)s"
+msgstr "Totalt antal artiklar föreslagna av %(name)s"
+
+msgid "Search suggested articles"
+msgstr "Sök föreslagna artiklar"
+
+#, python-format
+msgid "Showing results for \"%(query)s\"."
+msgstr "Visar resultat för \"%(query)s\"."
+
+msgid "My suggested articles"
+msgstr "Mina föreslagna artiklar"
+
+#, python-format
+msgid "%(matching)s matching / %(total)s total"
+msgstr "%(matching)s matchande / %(total)s totalt"
+
+#, python-format
+msgid "%(count)s total"
+msgstr "%(count)s totalt"
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
+msgstr "Visar %(start)s-%(end)s av %(count)s artiklar som matchar \"%(query)s\""
+
+#, python-format
+msgid "Showing %(start)s-%(end)s of %(count)s articles"
+msgstr "Visar %(start)s-%(end)s av %(count)s artiklar"
+
+#, python-format
+msgid "%(count)s matching articles found."
+msgstr "%(count)s matchande artiklar hittades."
+
+#, python-format
+msgid "%(count)s articles total."
+msgstr "%(count)s artiklar totalt."
