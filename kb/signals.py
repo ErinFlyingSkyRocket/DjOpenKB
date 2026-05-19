@@ -24,6 +24,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             defaults={
                 "account_type": account_type,
                 "can_access_main_site": True,
+                "preferred_language": "en",
             },
         )
 
