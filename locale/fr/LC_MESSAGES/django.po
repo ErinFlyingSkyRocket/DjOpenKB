@@ -564,3 +564,84 @@ msgstr "Vote d’article"
 
 msgid "Article votes"
 msgstr "Votes d’article"
+
+msgid "Pending"
+msgstr "En attente"
+
+msgid "Pending approval"
+msgstr "En attente d’approbation"
+
+msgid "Save draft"
+msgstr "Enregistrer le brouillon"
+
+msgid "Submit for approval"
+msgstr "Soumettre pour approbation"
+
+msgid "Draft saved successfully."
+msgstr "Brouillon enregistré avec succès."
+
+msgid "Article submitted for admin approval."
+msgstr "Article soumis à l’approbation de l’administrateur."
+
+msgid "Article updated successfully."
+msgstr "Article mis à jour avec succès."
+
+msgid "Manage pending articles"
+msgstr "Gérer les articles en attente"
+
+msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Examinez les articles soumis par les utilisateurs en attente d’approbation avant publication."
+
+msgid "Review user-submitted articles before they become publicly visible."
+msgstr "Examinez les articles soumis par les utilisateurs avant qu’ils ne soient publics."
+
+msgid "pending articles"
+msgstr "articles en attente"
+
+msgid "Search pending articles"
+msgstr "Rechercher des articles en attente"
+
+msgid "Submitted by"
+msgstr "Soumis par"
+
+msgid "Review / Edit"
+msgstr "Examiner / Modifier"
+
+msgid "Approve"
+msgstr "Approuver"
+
+msgid "Return to draft"
+msgstr "Renvoyer au brouillon"
+
+msgid "No pending articles match your search."
+msgstr "Aucun article en attente ne correspond à votre recherche."
+
+msgid "There are no pending articles right now."
+msgstr "Il n’y a aucun article en attente actuellement."
+
+msgid "Article approved and published."
+msgstr "Article approuvé et publié."
+
+msgid "Article returned to draft."
+msgstr "Article renvoyé au brouillon."
+
+msgid "Only pending articles can be approved from this page."
+msgstr "Seuls les articles en attente peuvent être approuvés depuis cette page."
+
+msgid "Only pending articles can be returned to draft from this page."
+msgstr "Seuls les articles en attente peuvent être renvoyés au brouillon depuis cette page."
+
+msgid "Pending failed"
+msgstr "Validation échouée"
+
+msgid "Article marked as pending failed."
+msgstr "L’article a été marqué comme validation échouée."
+
+msgid "Approved by"
+msgstr "Approuvé par"
+
+msgid "Approved at"
+msgstr "Approuvé le"
+
+msgid "Approval"
+msgstr "Approbation"

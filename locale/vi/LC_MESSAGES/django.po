@@ -564,3 +564,84 @@ msgstr "Bình chọn bài viết"
 
 msgid "Article votes"
 msgstr "Bình chọn bài viết"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "Pending approval"
+msgstr "Pending approval"
+
+msgid "Save draft"
+msgstr "Save draft"
+
+msgid "Submit for approval"
+msgstr "Submit for approval"
+
+msgid "Draft saved successfully."
+msgstr "Draft saved successfully."
+
+msgid "Article submitted for admin approval."
+msgstr "Article submitted for admin approval."
+
+msgid "Article updated successfully."
+msgstr "Article updated successfully."
+
+msgid "Manage pending articles"
+msgstr "Manage pending articles"
+
+msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Review user-submitted articles waiting for admin approval before they become public."
+
+msgid "Review user-submitted articles before they become publicly visible."
+msgstr "Review user-submitted articles before they become publicly visible."
+
+msgid "pending articles"
+msgstr "pending articles"
+
+msgid "Search pending articles"
+msgstr "Search pending articles"
+
+msgid "Submitted by"
+msgstr "Submitted by"
+
+msgid "Review / Edit"
+msgstr "Review / Edit"
+
+msgid "Approve"
+msgstr "Approve"
+
+msgid "Return to draft"
+msgstr "Return to draft"
+
+msgid "No pending articles match your search."
+msgstr "No pending articles match your search."
+
+msgid "There are no pending articles right now."
+msgstr "There are no pending articles right now."
+
+msgid "Article approved and published."
+msgstr "Article approved and published."
+
+msgid "Article returned to draft."
+msgstr "Article returned to draft."
+
+msgid "Only pending articles can be approved from this page."
+msgstr "Only pending articles can be approved from this page."
+
+msgid "Only pending articles can be returned to draft from this page."
+msgstr "Only pending articles can be returned to draft from this page."
+
+msgid "Pending failed"
+msgstr "Duyệt thất bại"
+
+msgid "Article marked as pending failed."
+msgstr "Bài viết đã được đánh dấu là duyệt thất bại."
+
+msgid "Approved by"
+msgstr "Được duyệt bởi"
+
+msgid "Approved at"
+msgstr "Được duyệt lúc"
+
+msgid "Approval"
+msgstr "Phê duyệt"

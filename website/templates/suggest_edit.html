@@ -84,6 +84,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
                             <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
+                            {% if user.is_staff %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
                         </ul>
                     </li>
                     {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
@@ -125,15 +126,38 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <div class="form-group">
                                 <label>{% trans "Status" %}</label><br/>
-                                <select name="status" class="form-control">
-                                    <option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Published" %}</option>
-                                    <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
-                                </select>
+                                {% if user.is_staff %}
+                                    <select name="status" class="form-control">
+                                        <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
+                                        <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
+                                        <option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Pending failed" %}</option>
+                                        <option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Published" %}</option>
+                                    </select>
+                                {% else %}
+                                    <p class="form-control-static">
+                                        {% if current_status == 'draft' %}
+                                            <span class="label label-default">{% trans "Draft" %}</span>
+                                        {% elif current_status == 'pending' %}
+                                            <span class="label label-warning">{% trans "Pending approval" %}</span>
+                                        {% elif current_status == 'failed' %}
+                                            <span class="label label-danger">{% trans "Pending failed" %}</span>
+                                        {% else %}
+                                            <span class="label label-success">{% trans "Published" %}</span>
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
                             <label for="preview">&nbsp;</label><br/>
-                            <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
+                            {% if user.is_staff %}
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
+                            {% elif current_status == 'published' %}
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="save">{% trans "Save" %}</button>
+                            {% else %}
+                                <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
+                            {% endif %}
                         </div>
                     </div>
 

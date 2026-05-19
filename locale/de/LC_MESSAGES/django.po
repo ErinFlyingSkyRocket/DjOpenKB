@@ -564,3 +564,84 @@ msgstr "Artikelbewertung"
 
 msgid "Article votes"
 msgstr "Artikelbewertungen"
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "Pending approval"
+msgstr "Wartet auf Genehmigung"
+
+msgid "Save draft"
+msgstr "Entwurf speichern"
+
+msgid "Submit for approval"
+msgstr "Zur Genehmigung einreichen"
+
+msgid "Draft saved successfully."
+msgstr "Entwurf wurde erfolgreich gespeichert."
+
+msgid "Article submitted for admin approval."
+msgstr "Artikel wurde zur Administratorgenehmigung eingereicht."
+
+msgid "Article updated successfully."
+msgstr "Artikel wurde erfolgreich aktualisiert."
+
+msgid "Manage pending articles"
+msgstr "Ausstehende Artikel verwalten"
+
+msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Prüfen Sie von Benutzern eingereichte Artikel, die vor der Veröffentlichung auf Administratorgenehmigung warten."
+
+msgid "Review user-submitted articles before they become publicly visible."
+msgstr "Prüfen Sie von Benutzern eingereichte Artikel, bevor sie öffentlich sichtbar werden."
+
+msgid "pending articles"
+msgstr "ausstehende Artikel"
+
+msgid "Search pending articles"
+msgstr "Ausstehende Artikel suchen"
+
+msgid "Submitted by"
+msgstr "Eingereicht von"
+
+msgid "Review / Edit"
+msgstr "Prüfen / Bearbeiten"
+
+msgid "Approve"
+msgstr "Genehmigen"
+
+msgid "Return to draft"
+msgstr "Zum Entwurf zurücksetzen"
+
+msgid "No pending articles match your search."
+msgstr "Keine ausstehenden Artikel entsprechen Ihrer Suche."
+
+msgid "There are no pending articles right now."
+msgstr "Derzeit gibt es keine ausstehenden Artikel."
+
+msgid "Article approved and published."
+msgstr "Artikel genehmigt und veröffentlicht."
+
+msgid "Article returned to draft."
+msgstr "Artikel wurde zum Entwurf zurückgesetzt."
+
+msgid "Only pending articles can be approved from this page."
+msgstr "Auf dieser Seite können nur ausstehende Artikel genehmigt werden."
+
+msgid "Only pending articles can be returned to draft from this page."
+msgstr "Auf dieser Seite können nur ausstehende Artikel zum Entwurf zurückgesetzt werden."
+
+msgid "Pending failed"
+msgstr "Prüfung fehlgeschlagen"
+
+msgid "Article marked as pending failed."
+msgstr "Artikel wurde als Prüfung fehlgeschlagen markiert."
+
+msgid "Approved by"
+msgstr "Genehmigt von"
+
+msgid "Approved at"
+msgstr "Genehmigt am"
+
+msgid "Approval"
+msgstr "Genehmigung"

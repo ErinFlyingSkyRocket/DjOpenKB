@@ -139,6 +139,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
                             <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
+                            {% if user.is_staff %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
                         </ul>
                     </li>
                     {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
@@ -259,7 +260,17 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                             {{ article.title }}
                                                         {% endif %}
                                                     </td>
-                                                    <td>{{ article.get_status_display }}</td>
+                                                    <td>
+                                                        {% if article.status == 'published' %}
+                                                            <span class="label label-success">{% trans "Published" %}</span>
+                                                        {% elif article.status == 'pending' %}
+                                                            <span class="label label-warning">{% trans "Pending approval" %}</span>
+                                                        {% elif article.status == 'failed' %}
+                                                            <span class="label label-danger">{% trans "Pending failed" %}</span>
+                                                        {% else %}
+                                                            <span class="label label-default">{% trans "Draft" %}</span>
+                                                        {% endif %}
+                                                    </td>
                                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
                                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                                     <td class="text-right article-actions">

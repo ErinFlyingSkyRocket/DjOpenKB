@@ -564,3 +564,84 @@ msgstr "Voto del artículo"
 
 msgid "Article votes"
 msgstr "Votos del artículo"
+
+msgid "Pending"
+msgstr "Pendiente"
+
+msgid "Pending approval"
+msgstr "Pendiente de aprobación"
+
+msgid "Save draft"
+msgstr "Guardar borrador"
+
+msgid "Submit for approval"
+msgstr "Enviar para aprobación"
+
+msgid "Draft saved successfully."
+msgstr "Borrador guardado correctamente."
+
+msgid "Article submitted for admin approval."
+msgstr "Artículo enviado para aprobación del administrador."
+
+msgid "Article updated successfully."
+msgstr "Artículo actualizado correctamente."
+
+msgid "Manage pending articles"
+msgstr "Gestionar artículos pendientes"
+
+msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Revisa los artículos enviados por usuarios que esperan aprobación del administrador antes de hacerse públicos."
+
+msgid "Review user-submitted articles before they become publicly visible."
+msgstr "Revisa los artículos enviados por usuarios antes de que sean visibles públicamente."
+
+msgid "pending articles"
+msgstr "artículos pendientes"
+
+msgid "Search pending articles"
+msgstr "Buscar artículos pendientes"
+
+msgid "Submitted by"
+msgstr "Enviado por"
+
+msgid "Review / Edit"
+msgstr "Revisar / Editar"
+
+msgid "Approve"
+msgstr "Aprobar"
+
+msgid "Return to draft"
+msgstr "Devolver a borrador"
+
+msgid "No pending articles match your search."
+msgstr "No hay artículos pendientes que coincidan con tu búsqueda."
+
+msgid "There are no pending articles right now."
+msgstr "No hay artículos pendientes ahora mismo."
+
+msgid "Article approved and published."
+msgstr "Artículo aprobado y publicado."
+
+msgid "Article returned to draft."
+msgstr "Artículo devuelto a borrador."
+
+msgid "Only pending articles can be approved from this page."
+msgstr "Solo se pueden aprobar artículos pendientes desde esta página."
+
+msgid "Only pending articles can be returned to draft from this page."
+msgstr "Solo se pueden devolver a borrador artículos pendientes desde esta página."
+
+msgid "Pending failed"
+msgstr "Revisión fallida"
+
+msgid "Article marked as pending failed."
+msgstr "El artículo se marcó como revisión fallida."
+
+msgid "Approved by"
+msgstr "Aprobado por"
+
+msgid "Approved at"
+msgstr "Aprobado el"
+
+msgid "Approval"
+msgstr "Aprobación"

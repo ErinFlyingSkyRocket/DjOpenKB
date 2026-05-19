@@ -564,3 +564,84 @@ msgstr "Undian artikel"
 
 msgid "Article votes"
 msgstr "Undian artikel"
+
+msgid "Pending"
+msgstr "Menunggu"
+
+msgid "Pending approval"
+msgstr "Menunggu kelulusan"
+
+msgid "Save draft"
+msgstr "Simpan draf"
+
+msgid "Submit for approval"
+msgstr "Hantar untuk kelulusan"
+
+msgid "Draft saved successfully."
+msgstr "Draf berjaya disimpan."
+
+msgid "Article submitted for admin approval."
+msgstr "Artikel telah dihantar untuk kelulusan admin."
+
+msgid "Article updated successfully."
+msgstr "Artikel berjaya dikemas kini."
+
+msgid "Manage pending articles"
+msgstr "Urus artikel menunggu kelulusan"
+
+msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Semak artikel yang dihantar pengguna dan menunggu kelulusan admin sebelum dipaparkan kepada umum."
+
+msgid "Review user-submitted articles before they become publicly visible."
+msgstr "Semak artikel yang dihantar pengguna sebelum ia dipaparkan kepada umum."
+
+msgid "pending articles"
+msgstr "artikel menunggu kelulusan"
+
+msgid "Search pending articles"
+msgstr "Cari artikel menunggu kelulusan"
+
+msgid "Submitted by"
+msgstr "Dihantar oleh"
+
+msgid "Review / Edit"
+msgstr "Semak / Edit"
+
+msgid "Approve"
+msgstr "Luluskan"
+
+msgid "Return to draft"
+msgstr "Kembalikan ke draf"
+
+msgid "No pending articles match your search."
+msgstr "Tiada artikel menunggu kelulusan yang sepadan dengan carian anda."
+
+msgid "There are no pending articles right now."
+msgstr "Tiada artikel menunggu kelulusan buat masa ini."
+
+msgid "Article approved and published."
+msgstr "Artikel telah diluluskan dan diterbitkan."
+
+msgid "Article returned to draft."
+msgstr "Artikel telah dikembalikan ke draf."
+
+msgid "Only pending articles can be approved from this page."
+msgstr "Hanya artikel menunggu kelulusan boleh diluluskan dari halaman ini."
+
+msgid "Only pending articles can be returned to draft from this page."
+msgstr "Hanya artikel menunggu kelulusan boleh dikembalikan ke draf dari halaman ini."
+
+msgid "Pending failed"
+msgstr "Kelulusan gagal"
+
+msgid "Article marked as pending failed."
+msgstr "Artikel ditandakan sebagai kelulusan gagal."
+
+msgid "Approved by"
+msgstr "Diluluskan oleh"
+
+msgid "Approved at"
+msgstr "Diluluskan pada"
+
+msgid "Approval"
+msgstr "Kelulusan"

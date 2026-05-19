@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .models import ArticleVote, SuggestedArticle, SiteSetting, UserProfile
 from .views import delete_article_files, slugify_title, write_article_files
@@ -177,6 +178,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "author_username_snapshot",
         "author_email_snapshot",
         "status",
+        "approved_by",
+        "approved_at",
         "view_count",
         "helpful_vote_count",
         "unhelpful_vote_count",
@@ -184,7 +187,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    list_filter = ("status", "created_at", "updated_at")
+    list_filter = ("status", "approved_by", "approved_at", "created_at", "updated_at")
+    actions = ("approve_selected_articles", "mark_selected_articles_pending_failed")
     search_fields = (
         "title",
         "body",
@@ -199,6 +203,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "raw_path",
         "wiki_path",
         "image_assets",
+        "approved_by",
+        "approved_at",
         "view_count",
         "helpful_vote_count",
         "unhelpful_vote_count",
@@ -212,6 +218,9 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
     fieldsets = (
         ("Article", {
             "fields": ("owner", "title", "body", "keywords", "status"),
+        }),
+        (_("Approval"), {
+            "fields": ("approved_by", "approved_at"),
         }),
         ("OpenKB files", {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
@@ -232,6 +241,25 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         }),
     )
 
+    @admin.action(description="Approve selected pending articles")
+    def approve_selected_articles(self, request, queryset):
+        for article in queryset:
+            article.status = SuggestedArticle.Status.PUBLISHED
+            article.approved_by = request.user
+            article.approved_at = timezone.now()
+            article.save(update_fields=["status", "approved_by", "approved_at", "updated_at"])
+            write_article_files(article)
+
+    @admin.action(description="Mark selected articles as pending failed")
+    def mark_selected_articles_pending_failed(self, request, queryset):
+        for article in queryset:
+            article.status = SuggestedArticle.Status.FAILED
+            article.approved_by = None
+            article.approved_at = None
+            article.save(update_fields=["status", "approved_by", "approved_at", "updated_at"])
+            write_article_files(article)
+
+
 
     def helpful_vote_count(self, obj):
         return obj.votes.filter(value=ArticleVote.VoteValue.UP).count()
@@ -249,6 +277,13 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             obj.filename = f"{timestamp_slug}-{slugify_title(obj.title)}.md"
             obj.raw_path = f"raw/{obj.filename}"
             obj.wiki_path = f"sources/{obj.filename}"
+
+        if obj.status == SuggestedArticle.Status.PUBLISHED and not obj.approved_by:
+            obj.approved_by = request.user
+            obj.approved_at = timezone.now()
+        elif obj.status != SuggestedArticle.Status.PUBLISHED:
+            obj.approved_by = None
+            obj.approved_at = None
 
         super().save_model(request, obj, form, change)
         write_article_files(obj)

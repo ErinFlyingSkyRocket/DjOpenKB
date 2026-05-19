@@ -14,6 +14,7 @@ urlpatterns = [
     path("profile/admin/bulk-articles/", views.admin_bulk_articles, name="admin_bulk_articles"),
     path("profile/admin/bulk-articles/export/", views.export_articles_zip, name="export_articles_zip"),
     path("profile/admin/bulk-articles/import/", views.import_articles_zip, name="import_articles_zip"),
+    path("profile/admin/pending-articles/", views.manage_pending_articles, name="manage_pending_articles"),
     path("profile/articles/<int:article_id>/edit/", views.edit_suggestion, name="edit_suggestion"),
     path("profile/articles/<int:article_id>/delete/", views.delete_suggestion, name="delete_suggestion"),
     path("search/", views.search_articles, name="search"),

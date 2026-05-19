@@ -103,8 +103,10 @@ class SuggestedArticle(models.Model):
     """
 
     class Status(models.TextChoices):
-        PUBLISHED = "published", _("Published")
         DRAFT = "draft", _("Draft")
+        PENDING = "pending", _("Pending")
+        FAILED = "failed", _("Pending failed")
+        PUBLISHED = "published", _("Published")
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -123,7 +125,22 @@ class SuggestedArticle(models.Model):
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.PUBLISHED,
+        default=Status.DRAFT,
+    )
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_articles",
+        verbose_name=_("Approved by"),
+        help_text="Admin user who approved this article for public display.",
+    )
+    approved_at = models.DateTimeField(
+        verbose_name=_("Approved at"),
+        null=True,
+        blank=True,
+        help_text="Date and time when this article was approved for public display.",
     )
     view_count = models.PositiveIntegerField(
         default=0,

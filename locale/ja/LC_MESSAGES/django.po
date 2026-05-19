@@ -564,3 +564,84 @@ msgstr "記事の投票"
 
 msgid "Article votes"
 msgstr "記事の投票"
+
+msgid "Pending"
+msgstr "保留中"
+
+msgid "Pending approval"
+msgstr "承認待ち"
+
+msgid "Save draft"
+msgstr "下書きを保存"
+
+msgid "Submit for approval"
+msgstr "承認申請"
+
+msgid "Draft saved successfully."
+msgstr "下書きを保存しました。"
+
+msgid "Article submitted for admin approval."
+msgstr "記事を管理者承認に送信しました。"
+
+msgid "Article updated successfully."
+msgstr "記事を更新しました。"
+
+msgid "Manage pending articles"
+msgstr "承認待ち記事の管理"
+
+msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "公開前に管理者承認を待っているユーザー投稿記事を確認します。"
+
+msgid "Review user-submitted articles before they become publicly visible."
+msgstr "ユーザー投稿記事が公開される前に確認します。"
+
+msgid "pending articles"
+msgstr "件の承認待ち記事"
+
+msgid "Search pending articles"
+msgstr "承認待ち記事を検索"
+
+msgid "Submitted by"
+msgstr "投稿者"
+
+msgid "Review / Edit"
+msgstr "確認 / 編集"
+
+msgid "Approve"
+msgstr "承認"
+
+msgid "Return to draft"
+msgstr "下書きに戻す"
+
+msgid "No pending articles match your search."
+msgstr "検索に一致する承認待ち記事はありません。"
+
+msgid "There are no pending articles right now."
+msgstr "現在、承認待ちの記事はありません。"
+
+msgid "Article approved and published."
+msgstr "記事を承認して公開しました。"
+
+msgid "Article returned to draft."
+msgstr "記事を下書きに戻しました。"
+
+msgid "Only pending articles can be approved from this page."
+msgstr "このページでは承認待ちの記事のみ承認できます。"
+
+msgid "Only pending articles can be returned to draft from this page."
+msgstr "このページでは承認待ちの記事のみ下書きに戻せます。"
+
+msgid "Pending failed"
+msgstr "承認失敗"
+
+msgid "Article marked as pending failed."
+msgstr "記事を承認失敗としてマークしました。"
+
+msgid "Approved by"
+msgstr "承認者"
+
+msgid "Approved at"
+msgstr "承認日時"
+
+msgid "Approval"
+msgstr "承認"

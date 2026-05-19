@@ -84,6 +84,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
                             <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
+                            {% if user.is_staff %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
                         </ul>
                     </li>
                     {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
@@ -124,7 +125,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
                             <label for="preview">&nbsp;</label><br/>
-                            <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Suggest" %}</button>
+                            <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
+                            <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
                         </div>
                     </div>
 

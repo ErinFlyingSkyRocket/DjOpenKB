@@ -888,10 +888,16 @@ def suggest(request):
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
+    submit_action = request.POST.get("submit_action", "submit").strip()
+    status = (
+        SuggestedArticle.Status.DRAFT
+        if submit_action == "draft"
+        else SuggestedArticle.Status.PENDING
+    )
 
     if len(title) < 5 or len(body) < 5:
         return render(request, "suggest.html", {
-            "error": "Article title and body must be at least 5 characters.",
+            "error": _("Article title and body must be at least 5 characters."),
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
@@ -908,14 +914,17 @@ def suggest(request):
         filename=filename,
         wiki_path=f"sources/{filename}",
         raw_path=f"raw/{filename}",
-        status=SuggestedArticle.Status.PUBLISHED,
+        status=status,
         image_assets=extract_article_image_filenames(body),
     )
     write_article_files(article)
     sync_article_image_assets(article, old_assets=[])
     clear_committed_pending_uploads(request, article.image_assets)
 
-    messages.success(request, f"Article suggested successfully: {article.title}")
+    if status == SuggestedArticle.Status.DRAFT:
+        messages.success(request, _("Draft saved successfully."))
+    else:
+        messages.success(request, _("Article submitted for admin approval."))
     return redirect("edit_my_suggestions")
 
 
@@ -1124,6 +1133,40 @@ def edit_my_suggestions(request):
     })
 
 
+@admin_tools_required
+def manage_pending_articles(request):
+    search_query = request.GET.get("q", "").strip()
+
+    article_queryset = SuggestedArticle.objects.select_related("owner").filter(
+        status=SuggestedArticle.Status.PENDING
+    )
+    total_pending_article_count = article_queryset.count()
+
+    if search_query:
+        article_queryset = article_queryset.filter(
+            Q(title__icontains=search_query)
+            | Q(body__icontains=search_query)
+            | Q(keywords__icontains=search_query)
+            | Q(filename__icontains=search_query)
+            | Q(owner__username__icontains=search_query)
+            | Q(owner__email__icontains=search_query)
+            | Q(author_username_snapshot__icontains=search_query)
+            | Q(author_email_snapshot__icontains=search_query)
+        )
+
+    article_queryset = article_queryset.order_by("created_at", "updated_at")
+    page_obj = paginate_articles(request, article_queryset, per_page=20)
+
+    return render(request, "admin_pending_articles.html", {
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "pending_search_query": search_query,
+        "pending_result_count": article_queryset.count(),
+        "total_pending_article_count": total_pending_article_count,
+        "is_pending_search": bool(search_query),
+    })
+
+
 @main_site_login_required
 def update_profile(request):
     if request.method != "POST":
@@ -1290,15 +1333,28 @@ def edit_suggestion(request, article_id):
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
-    status = request.POST.get("status", SuggestedArticle.Status.PUBLISHED)
+    submit_action = request.POST.get("submit_action", "save").strip()
 
-    if status not in SuggestedArticle.Status.values:
-        status = SuggestedArticle.Status.PUBLISHED
+    previous_status = article.status
+
+    if request.user.is_staff:
+        status = request.POST.get("status", article.status).strip()
+        if status not in SuggestedArticle.Status.values:
+            status = article.status
+    else:
+        if article.status == SuggestedArticle.Status.PUBLISHED:
+            # Once an article is approved, normal users cannot move it back to draft/pending.
+            status = SuggestedArticle.Status.PUBLISHED
+        elif submit_action == "draft":
+            status = SuggestedArticle.Status.DRAFT
+        else:
+            # User publish/submit means pending admin approval, never direct public publishing.
+            status = SuggestedArticle.Status.PENDING
 
     if len(title) < 5 or len(body) < 5:
         return render(request, "suggest_edit.html", {
             "article": article,
-            "error": "Article title and body must be at least 5 characters.",
+            "error": _("Article title and body must be at least 5 characters."),
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
@@ -1313,12 +1369,29 @@ def edit_suggestion(request, article_id):
     article.keywords = keywords_raw
     article.status = status
     article.image_assets = extract_article_image_filenames(body)
+
+    if request.user.is_staff and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
+        article.approved_by = request.user
+        article.approved_at = timezone.now()
+    elif status != SuggestedArticle.Status.PUBLISHED:
+        article.approved_by = None
+        article.approved_at = None
+
     article.save()
     write_article_files(article)
     sync_article_image_assets(article, old_assets=old_image_assets)
     clear_committed_pending_uploads(request, article.image_assets)
 
-    messages.success(request, f"Article updated: {article.title}")
+    if status == SuggestedArticle.Status.DRAFT:
+        messages.success(request, _("Draft saved successfully."))
+    elif status == SuggestedArticle.Status.PENDING:
+        messages.success(request, _("Article submitted for admin approval."))
+    elif status == SuggestedArticle.Status.FAILED:
+        messages.success(request, _("Article marked as pending failed."))
+    elif status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
+        messages.success(request, _("Article approved and published."))
+    else:
+        messages.success(request, _("Article updated successfully."))
     return redirect("edit_my_suggestions")
 
 

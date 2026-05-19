@@ -127,6 +127,7 @@
                                 <ul class="dropdown-menu">
                                     <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
                                     <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
+                            {% if user.is_staff %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
                                 </ul>
                             </li>
                             {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}

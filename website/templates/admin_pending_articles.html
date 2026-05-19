@@ -1,0 +1,169 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Manage pending articles" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <style>
+        .admin-pending-wrap { max-width: 1100px; margin: 0 auto; float: none; }
+        .pending-summary-card { border: 1px solid #e5eaee; border-radius: 4px; padding: 14px 16px; margin-bottom: 14px; background: #f8fafb; }
+        .pending-summary-number { font-size: 26px; font-weight: 700; margin-right: 8px; }
+        .pending-muted { color: #899aa6; }
+        .pending-toolbar { margin: 12px 0 16px; }
+        .pending-table-wrap { overflow-x: auto; }
+        .pending-actions form { display: inline-block; margin: 0 0 4px 4px; }
+        .navbar-logout-form { display: block; margin: 0; }
+        .navbar-logout-button { display:block;width:100%;padding:3px 20px;clear:both;font-weight:400;line-height:1.42857143;color:#333;white-space:nowrap;text-align:left;background:transparent;border:0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
+                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
+                            {% if user.is_staff %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
+                        </ul>
+                    </li>
+                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    {% include "_language_selector.html" %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }} <span class="caret"></span></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="{% url 'profile' %}"><i class="fa fa-user"></i> {% trans "My Profile" %}</a></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="navbar-logout-button"><i class="fa fa-sign-out"></i> {% trans "Logout" %}</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="col-xs-12 admin-pending-wrap">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <h2>{% trans "Manage pending articles" %}</h2>
+            <p class="pending-muted">{% trans "Review user-submitted articles before they become publicly visible." %}</p>
+
+            <div class="pending-summary-card">
+                <span class="pending-summary-number">{{ total_pending_article_count }}</span>
+                <span>{% trans "pending articles" %}</span>
+                {% if is_pending_search %}
+                    <span class="pending-muted">&middot; {{ pending_result_count }} {% trans "matching" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="pending-toolbar">
+                <form method="get" class="form-inline">
+                    <div class="form-group">
+                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search pending articles' %}" value="{{ pending_search_query|default:'' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
+                    {% if is_pending_search %}
+                        <a class="btn btn-default" href="{% url 'manage_pending_articles' %}">{% trans "Clear search" %}</a>
+                    {% endif %}
+                    <a class="btn btn-default pull-right" href="{% url 'profile' %}"><i class="fa fa-arrow-left"></i> {% trans "Back to profile" %}</a>
+                </form>
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="Pending article pages">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?page=1{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
+                            <li><a href="?page={{ page_obj.previous_page_number }}{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                            <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
+                        {% endif %}
+                        <li class="active"><span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span></li>
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
+                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                            <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+            {% if articles %}
+                <div class="pending-table-wrap">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Article title" %}</th>
+                                <th>{% trans "Submitted by" %}</th>
+                                <th>{% trans "Created" %}</th>
+                                <th>{% trans "Last updated" %}</th>
+                                <th class="text-right">{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for article in articles %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ article.title }}</strong><br>
+                                        <span class="label label-warning">{% trans "Pending approval" %}</span>
+                                    </td>
+                                    <td>
+                                        {{ article.author_display }}
+                                        {% if article.author_email %}<br><small class="pending-muted">{{ article.author_email }}</small>{% endif %}
+                                    </td>
+                                    <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
+                                    <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
+                                    <td class="text-right pending-actions">
+                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}"><i class="fa fa-pencil"></i> {% trans "Review / Edit" %}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    {% if is_pending_search %}
+                        {% trans "No pending articles match your search." %}
+                    {% else %}
+                        {% trans "There are no pending articles right now." %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
