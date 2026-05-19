@@ -192,7 +192,10 @@
                                 <li class="list-group-item">
                                     <h4>
                                         <a href="{{ article.url }}">{{ article.title }}</a>
-                                        {% if article.date %}<span class="pull-right view_count"><strong>{% trans "Date" %}:</strong> {{ article.date }}</span>{% endif %}
+                                        <span class="pull-right view_count">
+                                            <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
+                                            {% if article.date %}&nbsp;/&nbsp;<strong>{% trans "Date" %}:</strong> {{ article.date }}{% endif %}
+                                        </span>
                                     </h4>
                                 </li>
                             {% endfor %}

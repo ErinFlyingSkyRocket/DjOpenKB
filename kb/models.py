@@ -125,6 +125,10 @@ class SuggestedArticle(models.Model):
         choices=Status.choices,
         default=Status.PUBLISHED,
     )
+    view_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of unique session views for this article.",
+    )
     filename = models.CharField(max_length=255, unique=True, blank=True)
     raw_path = models.CharField(max_length=500, blank=True)
     wiki_path = models.CharField(max_length=500, blank=True)

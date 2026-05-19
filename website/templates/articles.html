@@ -232,6 +232,10 @@
                             <strong>{% trans "Permalink" %}:</strong>
                             <a href="{{ metadata.permalink }}">{{ metadata.permalink }}</a>
                         </h5>
+                        <h5 class="col-sm-12 col-lg-12">
+                            <strong>{% trans "View count" %}:</strong>
+                            {{ metadata.view_count|default:0 }}
+                        </h5>
 
                         {% if metadata.can_edit %}
                             <div class="col-sm-12 col-lg-12 article-admin-actions">

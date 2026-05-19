@@ -522,3 +522,6 @@ msgstr "%(count)s articles correspondants trouvés."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "%(count)s articles au total."
+
+msgid "View count"
+msgstr "Nombre de vues"

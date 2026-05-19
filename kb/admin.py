@@ -177,6 +177,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "author_username_snapshot",
         "author_email_snapshot",
         "status",
+        "view_count",
         "filename",
         "created_at",
         "updated_at",
@@ -196,6 +197,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "raw_path",
         "wiki_path",
         "image_assets",
+        "view_count",
         "author_username_snapshot",
         "author_name_snapshot",
         "author_email_snapshot",
@@ -209,6 +211,9 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         }),
         ("OpenKB files", {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
+        }),
+        ("Article statistics", {
+            "fields": ("view_count",),
         }),
         ("Author snapshot", {
             "fields": (

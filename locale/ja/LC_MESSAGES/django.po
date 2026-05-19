@@ -522,3 +522,6 @@ msgstr "%(count)s 件の一致する記事が見つかりました。"
 #, python-format
 msgid "%(count)s articles total."
 msgstr "記事は合計 %(count)s 件です。"
+
+msgid "View count"
+msgstr "表示回数"

@@ -522,3 +522,6 @@ msgstr "일치하는 문서 %(count)s개를 찾았습니다."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "총 문서 %(count)s개."
+
+msgid "View count"
+msgstr "조회수"

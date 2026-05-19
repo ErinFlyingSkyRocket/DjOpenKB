@@ -522,3 +522,6 @@ msgstr "Tìm thấy %(count)s bài viết khớp."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "Tổng cộng %(count)s bài viết."
+
+msgid "View count"
+msgstr "Số lượt xem"

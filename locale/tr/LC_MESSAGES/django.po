@@ -522,3 +522,6 @@ msgstr "%(count)s eşleşen makale bulundu."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "Toplam %(count)s makale."
+
+msgid "View count"
+msgstr "Görüntüleme sayısı"

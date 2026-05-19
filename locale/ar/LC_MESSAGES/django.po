@@ -522,3 +522,6 @@ msgstr "تم العثور على %(count)s مقالة مطابقة."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "إجمالي %(count)s مقالة."
+
+msgid "View count"
+msgstr "عدد المشاهدات"

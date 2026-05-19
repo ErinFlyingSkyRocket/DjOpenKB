@@ -522,3 +522,6 @@ msgstr "%(count)s பொருந்தும் கட்டுரைகள் 
 #, python-format
 msgid "%(count)s articles total."
 msgstr "மொத்தம் %(count)s கட்டுரைகள்."
+
+msgid "View count"
+msgstr "பார்வை எண்ணிக்கை"

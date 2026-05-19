@@ -522,3 +522,6 @@ msgstr "%(count)s overeenkomende artikelen gevonden."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "%(count)s artikelen totaal."
+
+msgid "View count"
+msgstr "Aantal weergaven"

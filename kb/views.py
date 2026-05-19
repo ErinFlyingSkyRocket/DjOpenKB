@@ -20,7 +20,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.db.models import Q
+from django.db.models import F, Q
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -645,7 +645,31 @@ def get_article_metadata_by_wiki_path(wiki_path):
         return None
 
 
-def get_openkb_wiki_articles():
+
+def record_article_session_view(request, article):
+    """Increment an article view count once per browser session.
+
+    This prevents simple page refreshes from repeatedly increasing the counter.
+    A different browser/session can still count as a new view.
+    """
+    if not article or not article.pk:
+        return
+
+    session_key = "viewed_suggested_article_ids"
+    viewed_ids = request.session.get(session_key, [])
+    article_key = str(article.pk)
+
+    if article_key in viewed_ids:
+        return
+
+    SuggestedArticle.objects.filter(pk=article.pk).update(view_count=F("view_count") + 1)
+    article.view_count = (article.view_count or 0) + 1
+
+    viewed_ids.append(article_key)
+    request.session[session_key] = viewed_ids[-1000:]
+    request.session.modified = True
+
+def get_openkb_wiki_articles(sort_by_views=False):
     """Read OpenKB Markdown files from openkb-data/wiki, including raw content."""
     init_openkb_storage()
 
@@ -683,14 +707,20 @@ def get_openkb_wiki_articles():
             "title": suggested.title if suggested else clean_wiki_title(file_path),
             "type": article_type,
             "date": modified_at,
-            "views": "",
+            "views": suggested.view_count if suggested else 0,
             "url": f"/wiki/{relative_path}",
             "path": relative_path,
             "raw_markdown": raw_markdown,
             "author": suggested.author_display if suggested else "",
         })
 
-    articles.sort(key=lambda item: item["date"], reverse=True)
+    if sort_by_views:
+        articles.sort(
+            key=lambda item: (item.get("views") or 0, item.get("date") or ""),
+            reverse=True,
+        )
+    else:
+        articles.sort(key=lambda item: item["date"], reverse=True)
     return articles
 
 
@@ -797,7 +827,7 @@ def paginate_articles(request, articles, per_page=20):
 
 
 def home(request):
-    all_articles = get_openkb_wiki_articles()
+    all_articles = get_openkb_wiki_articles(sort_by_views=True)
     page_obj = paginate_articles(request, all_articles, per_page=20)
 
     return render(request, "index.html", {
@@ -1382,6 +1412,7 @@ def wiki_detail(request, wiki_path):
     suggested = get_article_metadata_by_wiki_path(wiki_path)
 
     if suggested:
+        record_article_session_view(request, suggested)
         title = suggested.title
         display_markdown = prepare_article_display_markdown(raw_markdown, title, suggested)
         metadata = {
@@ -1396,6 +1427,7 @@ def wiki_detail(request, wiki_path):
             "author_account_type": suggested.author_account_type,
             "keywords": suggested.keyword_list,
             "permalink": request.build_absolute_uri(suggested.public_url),
+            "view_count": suggested.view_count,
             "can_edit": request.user.is_authenticated and (
                 request.user == suggested.owner or request.user.is_staff
             ),
@@ -1417,6 +1449,7 @@ def wiki_detail(request, wiki_path):
             "author_account_type": "",
             "keywords": [],
             "permalink": request.build_absolute_uri(),
+            "view_count": 0,
             "can_edit": False,
             "edit_url": "",
             "delete_url": "",

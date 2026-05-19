@@ -522,3 +522,6 @@ msgstr "%(count)s vastaavaa artikkelia löytyi."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "%(count)s artikkelia yhteensä."
+
+msgid "View count"
+msgstr "Katselukerrat"

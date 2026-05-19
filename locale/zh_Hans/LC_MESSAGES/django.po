@@ -522,3 +522,6 @@ msgstr "找到 %(count)s 篇匹配文章。"
 #, python-format
 msgid "%(count)s articles total."
 msgstr "共 %(count)s 篇文章。"
+
+msgid "View count"
+msgstr "浏览次数"

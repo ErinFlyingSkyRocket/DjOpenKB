@@ -522,3 +522,6 @@ msgstr "%(count)s artikel sepadan dijumpai."
 #, python-format
 msgid "%(count)s articles total."
 msgstr "%(count)s artikel jumlah."
+
+msgid "View count"
+msgstr "Bilangan paparan"
