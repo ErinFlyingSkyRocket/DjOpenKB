@@ -49,7 +49,6 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{% url 'profile' %}">{% trans "My Profile" %}</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -58,13 +57,21 @@
                         </ul>
                     </li>
                     {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
-                    <li class="navbar-text">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }}</li>
-                    <li>
-                        <form class="navbar-logout-form" method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button class="navbar-logout-button" type="submit">{% trans "Logout" %}</button>
-                        </form>
-                    </li>
+                    {% include "_language_selector.html" %}
+                    <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }} <span class="caret"></span></a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li><a href="{% url 'profile' %}"><i class="fa fa-user"></i> {% trans "My Profile" %}</a></li>
+                                    <li>
+                                        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+                                            {% csrf_token %}
+                                            <button type="submit" style="display:block;width:100%;padding:3px 20px;clear:both;font-weight:400;line-height:1.42857143;color:#333;white-space:nowrap;text-align:left;background:transparent;border:0;">
+                                                <i class="fa fa-sign-out"></i> {% trans "Logout" %}
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
                 </ul>
             </div>
         </div>

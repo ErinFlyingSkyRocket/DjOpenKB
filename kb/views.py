@@ -26,6 +26,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone, translation
 from django.utils.translation import gettext as _
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -811,6 +812,45 @@ class OpenKBLoginView(LoginView):
         return super().form_valid(form)
 
 
+@require_POST
+def set_site_language(request):
+    """Set the active UI language from the navbar dropdown.
+
+    Anonymous users store the choice in the django_language cookie.
+    Logged-in users also sync the same choice to their UserProfile.
+    """
+    language_code = (request.POST.get("language") or "").strip().lower()
+    allowed_codes = {code for code, _name in settings.LANGUAGES}
+
+    if language_code not in allowed_codes:
+        language_code = settings.LANGUAGE_CODE
+
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or reverse("home")
+    if not url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        next_url = reverse("home")
+
+    if request.user.is_authenticated:
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        profile.preferred_language = language_code
+        profile.save(update_fields=["preferred_language", "updated_at"])
+
+    translation.activate(language_code)
+    request.LANGUAGE_CODE = language_code
+
+    response = redirect(next_url)
+    response.set_cookie(
+        settings.LANGUAGE_COOKIE_NAME,
+        language_code,
+        max_age=60 * 60 * 24 * 365,
+        samesite="Lax",
+    )
+    return response
+
+
 def paginate_articles(request, articles, per_page=20):
     """Paginate article lists safely for the index/search page."""
     paginator = Paginator(articles, per_page)
@@ -1110,7 +1150,14 @@ def update_profile(request):
         request.LANGUAGE_CODE = language_code
 
         messages.success(request, _("Language preference updated successfully."))
-        return redirect("profile")
+        response = redirect("profile")
+        response.set_cookie(
+            settings.LANGUAGE_COOKIE_NAME,
+            language_code,
+            max_age=60 * 60 * 24 * 365,
+            samesite="Lax",
+        )
+        return response
 
     # For Django local accounts, require the current password before changing
     # username/email. LDAP users normally do not have a local usable password,

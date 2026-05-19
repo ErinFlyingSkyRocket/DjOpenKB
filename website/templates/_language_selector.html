@@ -1,0 +1,49 @@
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
+{% get_available_languages as AVAILABLE_LANGUAGES %}
+<style>
+    .navbar-language-selector .dropdown-menu { max-height: 360px; overflow-y: auto; }
+    .navbar-language-selector .language-option-form { margin: 0; }
+    .navbar-language-selector .language-option-button {
+        display: block;
+        width: 100%;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        text-align: left;
+        background: transparent;
+        border: 0;
+    }
+    .navbar-language-selector .language-option-button:hover,
+    .navbar-language-selector .language-option-button:focus {
+        color: #262626;
+        text-decoration: none;
+        background-color: #f5f5f5;
+        outline: none;
+    }
+    .navbar-language-selector .language-option-button.is-active {
+        font-weight: 700;
+    }
+</style>
+<li class="dropdown navbar-language-selector">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+        {% trans "Language" %} <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+        {% for code, name in AVAILABLE_LANGUAGES %}
+            <li>
+                <form class="language-option-form" method="post" action="{% url 'set_site_language' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <input type="hidden" name="language" value="{{ code }}">
+                    <button type="submit" class="language-option-button{% if code == CURRENT_LANGUAGE %} is-active{% endif %}">
+                        {% if code == CURRENT_LANGUAGE %}<i class="fa fa-check"></i> {% endif %}{{ name }}
+                    </button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</li>

@@ -268,6 +268,9 @@ LOCALE_PATHS = [
     BASE_DIR / "locale",
 ]
 
+LANGUAGE_COOKIE_AGE = 60 * 60 * 24 * 365
+LANGUAGE_COOKIE_SAMESITE = "Lax"
+
 TIME_ZONE = "Asia/Singapore"
 
 USE_I18N = True

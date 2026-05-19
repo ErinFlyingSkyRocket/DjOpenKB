@@ -62,6 +62,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
+                {% include "_language_selector.html" %}
                 <li><a href="{% url 'login' %}">{% trans "Login to contribute" %}</a></li>
             </ul>
         </div>
