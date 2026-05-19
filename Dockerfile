@@ -28,11 +28,12 @@ RUN python -m pip install --upgrade pip setuptools wheel
 RUN python -m pip install \
     django \
     gunicorn \
-    openkb \
     markdown \
     python-dotenv \
     django-auth-ldap \
     "psycopg[binary]"
+
+RUN python -m pip install -e /app/OpenKB-main
 
 EXPOSE 8000
 

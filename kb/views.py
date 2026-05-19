@@ -48,6 +48,18 @@ def init_openkb_storage():
     settings.OPENKB_RAW_DIR.mkdir(parents=True, exist_ok=True)
     settings.OPENKB_WIKI_DIR.mkdir(parents=True, exist_ok=True)
     (settings.OPENKB_WIKI_DIR / "sources").mkdir(parents=True, exist_ok=True)
+    (settings.OPENKB_WIKI_DIR / "summaries").mkdir(parents=True, exist_ok=True)
+    (settings.OPENKB_WIKI_DIR / "concepts").mkdir(parents=True, exist_ok=True)
+
+    index_file = settings.OPENKB_WIKI_DIR / "index.md"
+    if not index_file.exists():
+        index_file.write_text(
+            "# Knowledge Base Index\n\n"
+            "## Documents\n\n"
+            "## Concepts\n\n"
+            "## Explorations\n",
+            encoding="utf-8",
+        )
 
 
 def get_openkb_uploads_dir():
@@ -548,6 +560,161 @@ def build_article_markdown(article):
     )
 
 
+def plain_markdown_excerpt(markdown_text, max_length=260):
+    """Create a short plain-text summary from Markdown for the OpenKB AI index."""
+    text = markdown_text or ""
+
+    # Remove YAML front matter, images, links, and common Markdown symbols.
+    text = re.sub(r"^---.*?---", " ", text, flags=re.DOTALL).strip()
+    text = re.sub(r"!\[[^\]]*\]\([^)]+\)", " ", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = re.sub(r"\*\*Keywords:\*\*\s*.*", " ", text, flags=re.IGNORECASE)
+    text = re.sub(r"[#>*_`~|\-]+", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+
+    if not text:
+        return "Django published OpenKB article."
+
+    if len(text) > max_length:
+        text = text[:max_length].rsplit(" ", 1)[0].rstrip() + "..."
+
+    return text
+
+
+def extract_markdown_title(file_path, raw_markdown):
+    """Use the first Markdown H1 as the AI title, otherwise fallback to filename."""
+    for line in (raw_markdown or "").splitlines():
+        line = line.strip()
+        if line.startswith("# "):
+            return line[2:].strip() or clean_wiki_title(file_path)
+    return clean_wiki_title(file_path)
+
+
+def extract_index_section(existing_text, heading):
+    """Preserve non-Django OpenKB sections when rebuilding index.md."""
+    lines = existing_text.splitlines()
+    start = None
+
+    for index, line in enumerate(lines):
+        if line.strip() == heading:
+            start = index + 1
+            break
+
+    if start is None:
+        return ""
+
+    end = len(lines)
+    for index in range(start, len(lines)):
+        if lines[index].startswith("## "):
+            end = index
+            break
+
+    return "\n".join(lines[start:end]).strip()
+
+
+def sync_openkb_ai_index():
+    """Make Ask OpenKB AI aware of Django-published source articles.
+
+    OpenKB query starts from wiki/index.md and wiki/summaries/*.md.
+    Django writes published articles directly into wiki/sources/*.md, so this
+    function creates lightweight summaries and rebuilds index.md from sources.
+    No LLM call is made here, so it is safe to run before each AI query.
+    """
+    init_openkb_storage()
+
+    wiki_dir = settings.OPENKB_WIKI_DIR
+    sources_dir = wiki_dir / "sources"
+    summaries_dir = wiki_dir / "summaries"
+    index_file = wiki_dir / "index.md"
+
+    sources_dir.mkdir(parents=True, exist_ok=True)
+    summaries_dir.mkdir(parents=True, exist_ok=True)
+
+    existing_index = ""
+    if index_file.exists():
+        existing_index = index_file.read_text(encoding="utf-8", errors="ignore")
+
+    existing_concepts = extract_index_section(existing_index, "## Concepts")
+    existing_explorations = extract_index_section(existing_index, "## Explorations")
+
+    # Remove old Django-generated summaries so deleted/unpublished articles vanish
+    # from AI results. Keep any non-generated summaries that may exist.
+    for summary_file in summaries_dir.glob("*.md"):
+        try:
+            text = summary_file.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        if "generated_by: django-openkb-sync" in text:
+            try:
+                summary_file.unlink()
+            except OSError:
+                pass
+
+    documents = []
+
+    for source_path in sorted(sources_dir.rglob("*.md")):
+        if source_path.name in IGNORED_WIKI_NAMES:
+            continue
+
+        try:
+            raw_markdown = source_path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+
+        relative_source = source_path.relative_to(wiki_dir).as_posix()
+        doc_name = source_path.stem
+        summary_relative = f"summaries/{doc_name}"
+        title = extract_markdown_title(source_path, raw_markdown)
+        brief = plain_markdown_excerpt(raw_markdown)
+
+        summary_text = (
+            "---\n"
+            "doc_type: short\n"
+            "generated_by: django-openkb-sync\n"
+            f"full_text: {relative_source}\n"
+            "---\n\n"
+            f"# {title}\n\n"
+            f"{brief}\n\n"
+            f"Full article path: `{relative_source}`.\n"
+        )
+
+        (summaries_dir / f"{doc_name}.md").write_text(summary_text, encoding="utf-8")
+
+        documents.append({
+            "summary_relative": summary_relative,
+            "title": title,
+            "brief": brief,
+        })
+
+    index_lines = [
+        "# Knowledge Base Index",
+        "",
+        "## Documents",
+    ]
+
+    if documents:
+        for item in documents:
+            index_lines.append(
+                f"- [[{item['summary_relative']}]] (short) — {item['title']}: {item['brief']}"
+            )
+    else:
+        index_lines.append("")
+
+    index_lines.extend(["", "## Concepts"])
+    if existing_concepts:
+        index_lines.extend(existing_concepts.splitlines())
+    else:
+        index_lines.append("")
+
+    index_lines.extend(["", "## Explorations"])
+    if existing_explorations:
+        index_lines.extend(existing_explorations.splitlines())
+    else:
+        index_lines.append("")
+
+    index_file.write_text("\n".join(index_lines).rstrip() + "\n", encoding="utf-8")
+
+
 def prepare_article_display_markdown(raw_markdown, title, suggested=None):
     """Remove Django-generated wrapper Markdown from public article display.
 
@@ -613,6 +780,8 @@ def write_article_files(article):
         wiki_path=article.wiki_path,
     )
 
+    sync_openkb_ai_index()
+
 
 def delete_article_files(article):
     """Delete Markdown files and image assets for a user-owned article."""
@@ -634,6 +803,8 @@ def delete_article_files(article):
     for filename in (article.image_assets or extract_article_image_filenames(article.body)):
         if not image_is_used_by_other_article(filename, current_article=article):
             delete_uploaded_image_file(filename)
+
+    sync_openkb_ai_index()
 
 
 def get_article_metadata_by_wiki_path(wiki_path):
@@ -692,12 +863,16 @@ def get_openkb_wiki_articles(sort_by_views=False):
             continue
 
         relative_path = file_path.relative_to(wiki_dir).as_posix()
+
+        # Summaries are generated only for Ask OpenKB AI. Do not display them
+        # as duplicate public articles in the wiki/search pages.
+        if relative_path.startswith("summaries/"):
+            continue
+
         suggested = suggested_by_path.get(relative_path)
         modified_at = datetime.fromtimestamp(file_path.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
 
-        if relative_path.startswith("summaries/"):
-            article_type = "OpenKB AI Summary"
-        elif relative_path.startswith("sources/"):
+        if relative_path.startswith("sources/"):
             article_type = "OpenKB Source"
         else:
             article_type = "OpenKB Wiki"
@@ -1695,8 +1870,9 @@ def search_articles(request):
 
 
 def run_openkb_query(question):
-    """Call the original OpenKB CLI from inside openkb-data."""
+    """Call the local bundled OpenKB CLI against the synced Django OpenKB data."""
     init_openkb_storage()
+    sync_openkb_ai_index()
 
     env = os.environ.copy()
 
@@ -1710,21 +1886,29 @@ def run_openkb_query(question):
     env["OPENKB_GEMINI_MODEL"] = getattr(settings, "OPENKB_GEMINI_MODEL", "gemini/gemini-2.5-flash")
     env["LITELLM_DROP_PARAMS"] = "true"
     env["DROP_PARAMS"] = "true"
+    env["OPENKB_DIR"] = str(settings.OPENKB_DATA_DIR)
+    env["PYTHONPATH"] = (
+        str(settings.OPENKB_BASE_DIR)
+        + os.pathsep
+        + env.get("PYTHONPATH", "")
+    )
 
     command = (
+        "import sys; "
         "import litellm; "
         "litellm.drop_params = True; "
+        f"sys.path.insert(0, {str(settings.OPENKB_BASE_DIR)!r}); "
         "from openkb.cli import cli; "
         "cli.main("
-        "args=['query', __import__('sys').argv[1]], "
+        "args=['--kb-dir', sys.argv[2], 'query', sys.argv[1]], "
         "prog_name='openkb', "
         "standalone_mode=False"
         ")"
     )
 
     result = subprocess.run(
-        [sys.executable, "-c", command, question],
-        cwd=str(settings.OPENKB_DATA_DIR),
+        [sys.executable, "-c", command, question, str(settings.OPENKB_DATA_DIR)],
+        cwd=str(settings.BASE_DIR),
         env=env,
         capture_output=True,
         text=True,
@@ -1740,6 +1924,7 @@ def run_openkb_query(question):
 def find_related_openkb_articles(question, limit=5):
     """Find related OpenKB articles so Ask OpenKB AI can show clickable sources."""
     init_openkb_storage()
+    sync_openkb_ai_index()
 
     query = question.lower().strip()
     query_words = [
@@ -1762,6 +1947,12 @@ def find_related_openkb_articles(question, limit=5):
             continue
 
         relative_path = file_path.relative_to(wiki_dir).as_posix()
+
+        # Hide generated summaries from the related-articles UI to avoid
+        # duplicate source/summary entries. The AI still uses them internally.
+        if relative_path.startswith("summaries/"):
+            continue
+
         raw_markdown = file_path.read_text(encoding="utf-8", errors="ignore")
 
         searchable_text = " ".join([
