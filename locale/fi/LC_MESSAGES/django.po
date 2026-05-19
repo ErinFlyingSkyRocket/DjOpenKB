@@ -525,3 +525,42 @@ msgstr "%(count)s artikkelia yhteensä."
 
 msgid "View count"
 msgstr "Katselukerrat"
+
+msgid "Was this article helpful?"
+msgstr "Oliko tästä artikkelista apua?"
+
+msgid "Thumbs up"
+msgstr "Peukku ylös"
+
+msgid "Thumbs down"
+msgstr "Peukku alas"
+
+msgid "Likes"
+msgstr "Tykkäykset"
+
+msgid "Dislikes"
+msgstr "Ei-tykkäykset"
+
+msgid "Sign in to make your opinion count."
+msgstr "Kirjaudu sisään, jotta mielipiteesi huomioidaan."
+
+msgid "Invalid vote."
+msgstr "Virheellinen ääni."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Kiitos. Äänesi on tallennettu."
+
+msgid "Your vote has been updated."
+msgstr "Äänesi on päivitetty."
+
+msgid "Helpful"
+msgstr "Hyödyllinen"
+
+msgid "Not helpful"
+msgstr "Ei hyödyllinen"
+
+msgid "Article vote"
+msgstr "Artikkelin ääni"
+
+msgid "Article votes"
+msgstr "Artikkelin äänet"

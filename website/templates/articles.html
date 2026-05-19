@@ -65,6 +65,96 @@
         .article-admin-actions { margin-top: 12px; }
         .article-admin-actions .btn { margin-right: 6px; }
 
+        .article-vote-box {
+            margin: 28px 0 25px;
+            padding: 16px 18px;
+            border: 1px solid #d9e2e8;
+            border-radius: 4px;
+            background: #f8fbfc;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .article-vote-question {
+            margin-right: 6px;
+            color: #2c3e50;
+        }
+        .article-vote-form { display: inline-block; margin: 0; }
+        .article-vote-button {
+            min-width: 34px;
+            height: 34px;
+            border: 1px solid #cfd9df;
+            border-radius: 4px;
+            background: #fff;
+            color: #34495e;
+            text-align: center;
+        }
+        .article-vote-button:hover,
+        .article-vote-button:focus {
+            background: #eef5f7;
+            outline: none;
+        }
+        .article-vote-button.vote-up.active {
+            background: #2ecc71;
+            border-color: #27ae60;
+            color: #fff;
+        }
+        .article-vote-button.vote-down.active {
+            background: #e74c3c;
+            border-color: #c0392b;
+            color: #fff;
+        }
+        .article-vote-counts {
+            margin-left: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .article-vote-guest-wrapper {
+            position: relative;
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .article-vote-guest-hint {
+            display: none;
+            position: absolute;
+            right: 0;
+            bottom: 44px;
+            min-width: 245px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #d9e2e8;
+            background: #fff;
+            color: #2c3e50;
+            box-shadow: 0 4px 14px rgba(0,0,0,.12);
+            font-size: 13px;
+            z-index: 20;
+        }
+        .article-vote-guest-hint:after {
+            content: "";
+            position: absolute;
+            right: 18px;
+            bottom: -7px;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-right: 1px solid #d9e2e8;
+            border-bottom: 1px solid #d9e2e8;
+            transform: rotate(45deg);
+        }
+        .article-vote-guest-hint.show { display: block; }
+        .article-vote-login-note {
+            margin: 28px 0 25px;
+            padding: 15px 18px;
+            border-left: 4px solid #18bc9c;
+            background: #f8fbfc;
+            color: #2c3e50;
+            text-align: right;
+        }
+        .article-vote-login-note i { color: #18bc9c; margin-right: 6px; }
+
         .openkb-ai-fab {
             position: fixed;
             right: 24px;
@@ -214,6 +304,52 @@
                     {{ content|safe }}
                 </div>
 
+
+                {% if metadata.vote_url %}
+                    <div class="article-vote-box">
+                        <span class="article-vote-question">{% trans "Was this article helpful?" %}</span>
+
+                        {% if user.is_authenticated %}
+                            <form class="article-vote-form" method="post" action="{{ metadata.vote_url }}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="vote" value="up">
+                                <button type="submit" class="article-vote-button vote-up{% if metadata.user_vote == 1 %} active{% endif %}" title="{% trans 'Thumbs up' %}" aria-label="{% trans 'Thumbs up' %}">
+                                    <i class="fa fa-thumbs-o-up"></i>
+                                </button>
+                            </form>
+                            <form class="article-vote-form" method="post" action="{{ metadata.vote_url }}">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <input type="hidden" name="vote" value="down">
+                                <button type="submit" class="article-vote-button vote-down{% if metadata.user_vote == -1 %} active{% endif %}" title="{% trans 'Thumbs down' %}" aria-label="{% trans 'Thumbs down' %}">
+                                    <i class="fa fa-thumbs-o-down"></i>
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="article-vote-guest-wrapper">
+                                <button type="button" class="article-vote-button vote-up js-guest-vote" title="{% trans 'Thumbs up' %}" aria-label="{% trans 'Thumbs up' %}">
+                                    <i class="fa fa-thumbs-o-up"></i>
+                                </button>
+                                <button type="button" class="article-vote-button vote-down js-guest-vote" title="{% trans 'Thumbs down' %}" aria-label="{% trans 'Thumbs down' %}">
+                                    <i class="fa fa-thumbs-o-down"></i>
+                                </button>
+                                <span class="article-vote-guest-hint" id="articleVoteGuestHint">
+                                    <i class="fa fa-commenting-o"></i>
+                                    <a href="{{ metadata.login_url }}">{% trans "Sign in to make your opinion count." %}</a>
+                                </span>
+                            </span>
+                        {% endif %}
+
+                        <span class="article-vote-counts">
+                            {% trans "Likes" %}: {{ metadata.helpful_vote_count|default:0 }}
+                            {% if user.is_staff %}
+                                / {% trans "Dislikes" %}: {{ metadata.unhelpful_vote_count|default:0 }}
+                            {% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+
                 <div class="panel panel-primary" style="margin-top: 35px;">
                     <div class="panel-heading">{% trans "Article details" %}:</div>
                     <div class="panel-body metaData">
@@ -317,6 +453,26 @@
     const openkbAiAnswer = document.getElementById("openkbAiAnswer");
     const openkbRelatedArticlesWrapper = document.getElementById("openkbRelatedArticlesWrapper");
     const openkbRelatedArticles = document.getElementById("openkbRelatedArticles");
+    const guestVoteButtons = document.querySelectorAll(".js-guest-vote");
+    const guestVoteHint = document.getElementById("articleVoteGuestHint");
+    let guestVoteHintTimer = null;
+
+    guestVoteButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            if (!guestVoteHint) { return; }
+            guestVoteHint.classList.add("show");
+            clearTimeout(guestVoteHintTimer);
+            guestVoteHintTimer = setTimeout(function() {
+                guestVoteHint.classList.remove("show");
+            }, 3000);
+        });
+    });
+
+    document.addEventListener("click", function(event) {
+        if (!guestVoteHint || event.target.closest(".article-vote-guest-wrapper")) { return; }
+        guestVoteHint.classList.remove("show");
+    });
+
     const openkbAiChat = document.getElementById("openkbAiChat");
     const openkbAiToggle = document.getElementById("openkbAiToggle");
     const openkbAiClose = document.getElementById("openkbAiClose");

@@ -525,3 +525,42 @@ msgstr "در مجموع %(count)s مقاله."
 
 msgid "View count"
 msgstr "تعداد بازدید"
+
+msgid "Was this article helpful?"
+msgstr "آیا این مقاله مفید بود؟"
+
+msgid "Thumbs up"
+msgstr "پسندیدم"
+
+msgid "Thumbs down"
+msgstr "نپسندیدم"
+
+msgid "Likes"
+msgstr "پسندها"
+
+msgid "Dislikes"
+msgstr "نپسندها"
+
+msgid "Sign in to make your opinion count."
+msgstr "برای ثبت نظر خود وارد شوید."
+
+msgid "Invalid vote."
+msgstr "رأی نامعتبر است."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "متشکریم. رأی شما ذخیره شد."
+
+msgid "Your vote has been updated."
+msgstr "رأی شما به‌روزرسانی شد."
+
+msgid "Helpful"
+msgstr "مفید"
+
+msgid "Not helpful"
+msgstr "غیرمفید"
+
+msgid "Article vote"
+msgstr "رأی مقاله"
+
+msgid "Article votes"
+msgstr "رأی‌های مقاله"

@@ -224,6 +224,50 @@ class SuggestedArticle(models.Model):
 
         return self.author_account_type_snapshot or ""
 
+    @property
+    def helpful_vote_count(self):
+        return self.votes.filter(value=ArticleVote.VoteValue.UP).count()
+
+    @property
+    def unhelpful_vote_count(self):
+        return self.votes.filter(value=ArticleVote.VoteValue.DOWN).count()
+
+    @property
+    def total_vote_count(self):
+        return self.votes.count()
+
+
+class ArticleVote(models.Model):
+    """One helpful/unhelpful vote per user per article."""
+
+    class VoteValue(models.IntegerChoices):
+        UP = 1, _("Helpful")
+        DOWN = -1, _("Not helpful")
+
+    article = models.ForeignKey(
+        SuggestedArticle,
+        on_delete=models.CASCADE,
+        related_name="votes",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="article_votes",
+    )
+    value = models.SmallIntegerField(choices=VoteValue.choices)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("article", "user")
+        ordering = ["-updated_at"]
+        verbose_name = "Article vote"
+        verbose_name_plural = "Article votes"
+
+    def __str__(self):
+        label = "Helpful" if self.value == self.VoteValue.UP else "Not helpful"
+        return f"{self.article.title} - {self.user} - {label}"
+
 
 class SiteSetting(models.Model):
     """Singleton-style site settings editable from Django Admin."""

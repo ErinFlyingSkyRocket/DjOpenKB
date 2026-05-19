@@ -525,3 +525,42 @@ msgstr "إجمالي %(count)s مقالة."
 
 msgid "View count"
 msgstr "عدد المشاهدات"
+
+msgid "Was this article helpful?"
+msgstr "هل كانت هذه المقالة مفيدة؟"
+
+msgid "Thumbs up"
+msgstr "إعجاب"
+
+msgid "Thumbs down"
+msgstr "عدم إعجاب"
+
+msgid "Likes"
+msgstr "الإعجابات"
+
+msgid "Dislikes"
+msgstr "عدم الإعجاب"
+
+msgid "Sign in to make your opinion count."
+msgstr "سجّل الدخول ليتم احتساب رأيك."
+
+msgid "Invalid vote."
+msgstr "تصويت غير صالح."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "شكرًا لك. تم حفظ تصويتك."
+
+msgid "Your vote has been updated."
+msgstr "تم تحديث تصويتك."
+
+msgid "Helpful"
+msgstr "مفيد"
+
+msgid "Not helpful"
+msgstr "غير مفيد"
+
+msgid "Article vote"
+msgstr "تصويت المقالة"
+
+msgid "Article votes"
+msgstr "تصويتات المقالة"

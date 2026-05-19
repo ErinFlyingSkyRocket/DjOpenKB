@@ -525,3 +525,42 @@ msgstr "மொத்தம் %(count)s கட்டுரைகள்."
 
 msgid "View count"
 msgstr "பார்வை எண்ணிக்கை"
+
+msgid "Was this article helpful?"
+msgstr "இந்த கட்டுரை உதவியாக இருந்ததா?"
+
+msgid "Thumbs up"
+msgstr "பிடித்தது"
+
+msgid "Thumbs down"
+msgstr "பிடிக்கவில்லை"
+
+msgid "Likes"
+msgstr "பிடித்தவை"
+
+msgid "Dislikes"
+msgstr "பிடிக்காதவை"
+
+msgid "Sign in to make your opinion count."
+msgstr "உங்கள் கருத்து கணக்கில் கொள்ள உள்நுழையவும்."
+
+msgid "Invalid vote."
+msgstr "தவறான வாக்கு."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "நன்றி. உங்கள் வாக்கு சேமிக்கப்பட்டது."
+
+msgid "Your vote has been updated."
+msgstr "உங்கள் வாக்கு புதுப்பிக்கப்பட்டது."
+
+msgid "Helpful"
+msgstr "உதவிகரமானது"
+
+msgid "Not helpful"
+msgstr "உதவிகரமல்ல"
+
+msgid "Article vote"
+msgstr "கட்டுரை வாக்கு"
+
+msgid "Article votes"
+msgstr "கட்டுரை வாக்குகள்"

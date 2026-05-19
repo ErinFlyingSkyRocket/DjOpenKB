@@ -525,3 +525,42 @@ msgstr "記事は合計 %(count)s 件です。"
 
 msgid "View count"
 msgstr "表示回数"
+
+msgid "Was this article helpful?"
+msgstr "この記事は役に立ちましたか？"
+
+msgid "Thumbs up"
+msgstr "高評価"
+
+msgid "Thumbs down"
+msgstr "低評価"
+
+msgid "Likes"
+msgstr "高評価"
+
+msgid "Dislikes"
+msgstr "低評価"
+
+msgid "Sign in to make your opinion count."
+msgstr "意見を反映するにはサインインしてください。"
+
+msgid "Invalid vote."
+msgstr "無効な投票です。"
+
+msgid "Thank you. Your vote has been saved."
+msgstr "ありがとうございます。投票が保存されました。"
+
+msgid "Your vote has been updated."
+msgstr "投票が更新されました。"
+
+msgid "Helpful"
+msgstr "役に立つ"
+
+msgid "Not helpful"
+msgstr "役に立たない"
+
+msgid "Article vote"
+msgstr "記事の投票"
+
+msgid "Article votes"
+msgstr "記事の投票"

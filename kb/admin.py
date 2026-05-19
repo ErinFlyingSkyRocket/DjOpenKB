@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
 
-from .models import SuggestedArticle, SiteSetting, UserProfile
+from .models import ArticleVote, SuggestedArticle, SiteSetting, UserProfile
 from .views import delete_article_files, slugify_title, write_article_files
 
 
@@ -178,6 +178,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "author_email_snapshot",
         "status",
         "view_count",
+        "helpful_vote_count",
+        "unhelpful_vote_count",
         "filename",
         "created_at",
         "updated_at",
@@ -198,6 +200,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "wiki_path",
         "image_assets",
         "view_count",
+        "helpful_vote_count",
+        "unhelpful_vote_count",
         "author_username_snapshot",
         "author_name_snapshot",
         "author_email_snapshot",
@@ -213,7 +217,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
         }),
         ("Article statistics", {
-            "fields": ("view_count",),
+            "fields": ("view_count", "helpful_vote_count", "unhelpful_vote_count"),
         }),
         ("Author snapshot", {
             "fields": (
@@ -227,6 +231,17 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             "fields": ("created_at", "updated_at"),
         }),
     )
+
+
+    def helpful_vote_count(self, obj):
+        return obj.votes.filter(value=ArticleVote.VoteValue.UP).count()
+
+    helpful_vote_count.short_description = "Likes"
+
+    def unhelpful_vote_count(self, obj):
+        return obj.votes.filter(value=ArticleVote.VoteValue.DOWN).count()
+
+    unhelpful_vote_count.short_description = "Dislikes"
 
     def save_model(self, request, obj, form, change):
         if not obj.filename:
@@ -247,6 +262,23 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             delete_article_files(obj)
         super().delete_queryset(request, queryset)
 
+
+
+@admin.register(ArticleVote)
+class ArticleVoteAdmin(admin.ModelAdmin):
+    list_display = ("article", "user", "vote_label", "created_at", "updated_at")
+    list_filter = ("value", "created_at", "updated_at")
+    search_fields = ("article__title", "user__username", "user__email")
+    readonly_fields = ("created_at", "updated_at")
+
+    def vote_label(self, obj):
+        if obj.value == ArticleVote.VoteValue.UP:
+            return "Like"
+        if obj.value == ArticleVote.VoteValue.DOWN:
+            return "Dislike"
+        return obj.value
+
+    vote_label.short_description = "Vote"
 
 
 @admin.register(SiteSetting)

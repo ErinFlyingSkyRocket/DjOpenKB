@@ -525,3 +525,42 @@ msgstr "%(count)s artikel jumlah."
 
 msgid "View count"
 msgstr "Bilangan paparan"
+
+msgid "Was this article helpful?"
+msgstr "Adakah artikel ini membantu?"
+
+msgid "Thumbs up"
+msgstr "Suka"
+
+msgid "Thumbs down"
+msgstr "Tidak suka"
+
+msgid "Likes"
+msgstr "Suka"
+
+msgid "Dislikes"
+msgstr "Tidak suka"
+
+msgid "Sign in to make your opinion count."
+msgstr "Log masuk untuk mengira pendapat anda."
+
+msgid "Invalid vote."
+msgstr "Undian tidak sah."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Terima kasih. Undian anda telah disimpan."
+
+msgid "Your vote has been updated."
+msgstr "Undian anda telah dikemas kini."
+
+msgid "Helpful"
+msgstr "Membantu"
+
+msgid "Not helpful"
+msgstr "Tidak membantu"
+
+msgid "Article vote"
+msgstr "Undian artikel"
+
+msgid "Article votes"
+msgstr "Undian artikel"

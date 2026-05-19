@@ -525,3 +525,42 @@ msgstr "Всего %(count)s статей."
 
 msgid "View count"
 msgstr "Количество просмотров"
+
+msgid "Was this article helpful?"
+msgstr "Была ли эта статья полезной?"
+
+msgid "Thumbs up"
+msgstr "Нравится"
+
+msgid "Thumbs down"
+msgstr "Не нравится"
+
+msgid "Likes"
+msgstr "Нравится"
+
+msgid "Dislikes"
+msgstr "Не нравится"
+
+msgid "Sign in to make your opinion count."
+msgstr "Войдите, чтобы ваше мнение было учтено."
+
+msgid "Invalid vote."
+msgstr "Недопустимый голос."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Спасибо. Ваш голос сохранён."
+
+msgid "Your vote has been updated."
+msgstr "Ваш голос обновлён."
+
+msgid "Helpful"
+msgstr "Полезно"
+
+msgid "Not helpful"
+msgstr "Не полезно"
+
+msgid "Article vote"
+msgstr "Голос за статью"
+
+msgid "Article votes"
+msgstr "Голоса за статью"

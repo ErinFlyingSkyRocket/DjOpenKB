@@ -30,7 +30,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from .models import SuggestedArticle, UserProfile, SiteSetting
+from .models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
@@ -1475,6 +1475,16 @@ def wiki_detail(request, wiki_path):
             "keywords": suggested.keyword_list,
             "permalink": request.build_absolute_uri(suggested.public_url),
             "view_count": suggested.view_count,
+            "helpful_vote_count": suggested.votes.filter(value=ArticleVote.VoteValue.UP).count(),
+            "unhelpful_vote_count": suggested.votes.filter(value=ArticleVote.VoteValue.DOWN).count(),
+            "total_vote_count": suggested.votes.count(),
+            "user_vote": (
+                suggested.votes.filter(user=request.user).values_list("value", flat=True).first()
+                if request.user.is_authenticated else None
+            ),
+            "vote_url": reverse("vote_article", kwargs={"article_id": suggested.pk}),
+            "can_vote": request.user.is_authenticated,
+            "login_url": f'{reverse("login")}?next={request.get_full_path()}',
             "can_edit": request.user.is_authenticated and (
                 request.user == suggested.owner or request.user.is_staff
             ),
@@ -1497,6 +1507,13 @@ def wiki_detail(request, wiki_path):
             "keywords": [],
             "permalink": request.build_absolute_uri(),
             "view_count": 0,
+            "helpful_vote_count": 0,
+            "unhelpful_vote_count": 0,
+            "total_vote_count": 0,
+            "user_vote": None,
+            "vote_url": "",
+            "can_vote": False,
+            "login_url": f'{reverse("login")}?next={request.get_full_path()}',
             "can_edit": False,
             "edit_url": "",
             "delete_url": "",
@@ -1516,6 +1533,58 @@ def wiki_detail(request, wiki_path):
         "metadata": metadata,
         "featured_articles": featured_articles,
     })
+
+
+
+@require_POST
+@login_required
+@main_site_login_required
+def vote_article(request, article_id):
+    """Save one helpful/unhelpful vote per logged-in user per article."""
+    article = get_object_or_404(
+        SuggestedArticle,
+        pk=article_id,
+        status=SuggestedArticle.Status.PUBLISHED,
+    )
+
+    vote_value = request.POST.get("vote")
+    if vote_value == "up":
+        value = ArticleVote.VoteValue.UP
+    elif vote_value == "down":
+        value = ArticleVote.VoteValue.DOWN
+    else:
+        messages.error(request, _("Invalid vote."))
+        return redirect(article.public_url)
+
+    existing_vote = ArticleVote.objects.filter(
+        article=article,
+        user=request.user,
+    ).first()
+
+    if existing_vote and existing_vote.value == value:
+        existing_vote.delete()
+        messages.success(request, _("Your vote has been removed."))
+    elif existing_vote:
+        existing_vote.value = value
+        existing_vote.save(update_fields=["value", "updated_at"])
+        messages.success(request, _("Your vote has been updated."))
+    else:
+        ArticleVote.objects.create(
+            article=article,
+            user=request.user,
+            value=value,
+        )
+        messages.success(request, _("Thank you. Your vote has been saved."))
+
+    next_url = request.POST.get("next") or article.public_url
+    if not url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        next_url = article.public_url
+
+    return redirect(next_url)
 
 
 def search_articles(request):

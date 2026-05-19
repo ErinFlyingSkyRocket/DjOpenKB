@@ -525,3 +525,42 @@ msgstr "Toplam %(count)s makale."
 
 msgid "View count"
 msgstr "Görüntüleme sayısı"
+
+msgid "Was this article helpful?"
+msgstr "Bu makale faydalı oldu mu?"
+
+msgid "Thumbs up"
+msgstr "Beğen"
+
+msgid "Thumbs down"
+msgstr "Beğenme"
+
+msgid "Likes"
+msgstr "Beğeniler"
+
+msgid "Dislikes"
+msgstr "Beğenmeme"
+
+msgid "Sign in to make your opinion count."
+msgstr "Görüşünüzün sayılması için oturum açın."
+
+msgid "Invalid vote."
+msgstr "Geçersiz oy."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Teşekkürler. Oyunuz kaydedildi."
+
+msgid "Your vote has been updated."
+msgstr "Oyunuz güncellendi."
+
+msgid "Helpful"
+msgstr "Faydalı"
+
+msgid "Not helpful"
+msgstr "Faydalı değil"
+
+msgid "Article vote"
+msgstr "Makale oyu"
+
+msgid "Article votes"
+msgstr "Makale oyları"

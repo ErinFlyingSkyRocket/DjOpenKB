@@ -525,3 +525,42 @@ msgstr "%(count)s artiklar totalt."
 
 msgid "View count"
 msgstr "Visningsantal"
+
+msgid "Was this article helpful?"
+msgstr "Var den här artikeln hjälpsam?"
+
+msgid "Thumbs up"
+msgstr "Tummen upp"
+
+msgid "Thumbs down"
+msgstr "Tummen ner"
+
+msgid "Likes"
+msgstr "Gilla"
+
+msgid "Dislikes"
+msgstr "Ogilla"
+
+msgid "Sign in to make your opinion count."
+msgstr "Logga in för att din åsikt ska räknas."
+
+msgid "Invalid vote."
+msgstr "Ogiltig röst."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Tack. Din röst har sparats."
+
+msgid "Your vote has been updated."
+msgstr "Din röst har uppdaterats."
+
+msgid "Helpful"
+msgstr "Hjälpsam"
+
+msgid "Not helpful"
+msgstr "Inte hjälpsam"
+
+msgid "Article vote"
+msgstr "Artikelröst"
+
+msgid "Article votes"
+msgstr "Artikelröster"

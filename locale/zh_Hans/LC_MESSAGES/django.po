@@ -525,3 +525,42 @@ msgstr "共 %(count)s 篇文章。"
 
 msgid "View count"
 msgstr "浏览次数"
+
+msgid "Was this article helpful?"
+msgstr "这篇文章有帮助吗？"
+
+msgid "Thumbs up"
+msgstr "点赞"
+
+msgid "Thumbs down"
+msgstr "点踩"
+
+msgid "Likes"
+msgstr "点赞"
+
+msgid "Dislikes"
+msgstr "点踩"
+
+msgid "Sign in to make your opinion count."
+msgstr "登录以表达你的意见。"
+
+msgid "Invalid vote."
+msgstr "无效的投票。"
+
+msgid "Thank you. Your vote has been saved."
+msgstr "谢谢，你的投票已保存。"
+
+msgid "Your vote has been updated."
+msgstr "你的投票已更新。"
+
+msgid "Helpful"
+msgstr "有帮助"
+
+msgid "Not helpful"
+msgstr "没有帮助"
+
+msgid "Article vote"
+msgstr "文章投票"
+
+msgid "Article votes"
+msgstr "文章投票"

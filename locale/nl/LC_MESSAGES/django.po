@@ -525,3 +525,42 @@ msgstr "%(count)s artikelen totaal."
 
 msgid "View count"
 msgstr "Aantal weergaven"
+
+msgid "Was this article helpful?"
+msgstr "Was dit artikel nuttig?"
+
+msgid "Thumbs up"
+msgstr "Vind ik leuk"
+
+msgid "Thumbs down"
+msgstr "Vind ik niet leuk"
+
+msgid "Likes"
+msgstr "Likes"
+
+msgid "Dislikes"
+msgstr "Dislikes"
+
+msgid "Sign in to make your opinion count."
+msgstr "Meld u aan om uw mening mee te laten tellen."
+
+msgid "Invalid vote."
+msgstr "Ongeldige stem."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Bedankt. Uw stem is opgeslagen."
+
+msgid "Your vote has been updated."
+msgstr "Uw stem is bijgewerkt."
+
+msgid "Helpful"
+msgstr "Nuttig"
+
+msgid "Not helpful"
+msgstr "Niet nuttig"
+
+msgid "Article vote"
+msgstr "Artikelstem"
+
+msgid "Article votes"
+msgstr "Artikelstemmen"

@@ -525,3 +525,42 @@ msgstr "총 문서 %(count)s개."
 
 msgid "View count"
 msgstr "조회수"
+
+msgid "Was this article helpful?"
+msgstr "이 문서가 도움이 되었나요?"
+
+msgid "Thumbs up"
+msgstr "좋아요"
+
+msgid "Thumbs down"
+msgstr "싫어요"
+
+msgid "Likes"
+msgstr "좋아요"
+
+msgid "Dislikes"
+msgstr "싫어요"
+
+msgid "Sign in to make your opinion count."
+msgstr "의견을 반영하려면 로그인하세요."
+
+msgid "Invalid vote."
+msgstr "잘못된 투표입니다."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "감사합니다. 투표가 저장되었습니다."
+
+msgid "Your vote has been updated."
+msgstr "투표가 업데이트되었습니다."
+
+msgid "Helpful"
+msgstr "도움됨"
+
+msgid "Not helpful"
+msgstr "도움되지 않음"
+
+msgid "Article vote"
+msgstr "문서 투표"
+
+msgid "Article votes"
+msgstr "문서 투표"

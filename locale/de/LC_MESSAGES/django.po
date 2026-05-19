@@ -525,3 +525,42 @@ msgstr "%(count)s Artikel insgesamt."
 
 msgid "View count"
 msgstr "Aufrufe"
+
+msgid "Was this article helpful?"
+msgstr "War dieser Artikel hilfreich?"
+
+msgid "Thumbs up"
+msgstr "Daumen hoch"
+
+msgid "Thumbs down"
+msgstr "Daumen runter"
+
+msgid "Likes"
+msgstr "Likes"
+
+msgid "Dislikes"
+msgstr "Dislikes"
+
+msgid "Sign in to make your opinion count."
+msgstr "Melden Sie sich an, damit Ihre Meinung zählt."
+
+msgid "Invalid vote."
+msgstr "Ungültige Abstimmung."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Danke. Ihre Stimme wurde gespeichert."
+
+msgid "Your vote has been updated."
+msgstr "Ihre Stimme wurde aktualisiert."
+
+msgid "Helpful"
+msgstr "Hilfreich"
+
+msgid "Not helpful"
+msgstr "Nicht hilfreich"
+
+msgid "Article vote"
+msgstr "Artikelbewertung"
+
+msgid "Article votes"
+msgstr "Artikelbewertungen"

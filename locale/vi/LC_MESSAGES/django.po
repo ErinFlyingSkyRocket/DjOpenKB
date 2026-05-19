@@ -525,3 +525,42 @@ msgstr "Tổng cộng %(count)s bài viết."
 
 msgid "View count"
 msgstr "Số lượt xem"
+
+msgid "Was this article helpful?"
+msgstr "Bài viết này có hữu ích không?"
+
+msgid "Thumbs up"
+msgstr "Thích"
+
+msgid "Thumbs down"
+msgstr "Không thích"
+
+msgid "Likes"
+msgstr "Lượt thích"
+
+msgid "Dislikes"
+msgstr "Lượt không thích"
+
+msgid "Sign in to make your opinion count."
+msgstr "Đăng nhập để ý kiến của bạn được tính."
+
+msgid "Invalid vote."
+msgstr "Bình chọn không hợp lệ."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Cảm ơn. Bình chọn của bạn đã được lưu."
+
+msgid "Your vote has been updated."
+msgstr "Bình chọn của bạn đã được cập nhật."
+
+msgid "Helpful"
+msgstr "Hữu ích"
+
+msgid "Not helpful"
+msgstr "Không hữu ích"
+
+msgid "Article vote"
+msgstr "Bình chọn bài viết"
+
+msgid "Article votes"
+msgstr "Bình chọn bài viết"

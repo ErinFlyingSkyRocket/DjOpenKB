@@ -525,3 +525,42 @@ msgstr "%(count)s artikler i alt."
 
 msgid "View count"
 msgstr "Visningstal"
+
+msgid "Was this article helpful?"
+msgstr "Var denne artikel nyttig?"
+
+msgid "Thumbs up"
+msgstr "Synes godt om"
+
+msgid "Thumbs down"
+msgstr "Synes ikke om"
+
+msgid "Likes"
+msgstr "Synes godt om"
+
+msgid "Dislikes"
+msgstr "Synes ikke om"
+
+msgid "Sign in to make your opinion count."
+msgstr "Log ind for at lade din mening tælle."
+
+msgid "Invalid vote."
+msgstr "Ugyldig stemme."
+
+msgid "Thank you. Your vote has been saved."
+msgstr "Tak. Din stemme er gemt."
+
+msgid "Your vote has been updated."
+msgstr "Din stemme er opdateret."
+
+msgid "Helpful"
+msgstr "Nyttig"
+
+msgid "Not helpful"
+msgstr "Ikke nyttig"
+
+msgid "Article vote"
+msgstr "Artikelstemme"
+
+msgid "Article votes"
+msgstr "Artikelstemmer"
