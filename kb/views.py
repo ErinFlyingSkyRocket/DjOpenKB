@@ -1,10 +1,12 @@
 import os
 import io
 import json
+import logging
 import re
 import shutil
 import subprocess
 import sys
+import time
 import uuid
 import zipfile
 from datetime import datetime
@@ -18,6 +20,7 @@ from django.contrib.auth import get_user_model, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import F, Q
@@ -27,13 +30,14 @@ from django.urls import reverse
 from django.utils import timezone, translation
 from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
+
+logger = logging.getLogger(__name__)
 
 
 def slugify_title(title):
@@ -2042,20 +2046,106 @@ def find_related_openkb_articles(question, limit=5):
     return results
 
 
-@csrf_exempt
+def get_client_ip(request):
+    """Return the best available client IP, respecting the nginx proxy header."""
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "unknown")
+
+
+def get_openkb_ai_rate_identifier(request):
+    """Rate-limit logged-in users by user id, anonymous visitors by IP."""
+    if request.user.is_authenticated:
+        return f"user:{request.user.pk}"
+    return f"ip:{get_client_ip(request)}"
+
+
+def check_openkb_ai_rate_limit(request):
+    """Return (allowed, retry_after_seconds). Log when a user/IP is blocked."""
+    identifier = get_openkb_ai_rate_identifier(request)
+    now = int(time.time())
+
+    window_seconds = settings.OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS
+    max_requests = settings.OPENKB_AI_RATE_LIMIT_MAX_REQUESTS
+    block_seconds = settings.OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS
+
+    block_key = f"openkb_ai:block:{identifier}"
+    if cache.get(block_key):
+        logger.warning(
+            "OpenKB AI blocked request while temporary block is active: identifier=%s ip=%s user_id=%s",
+            identifier,
+            get_client_ip(request),
+            request.user.pk if request.user.is_authenticated else "anonymous",
+        )
+        return False, block_seconds
+
+    attempts_key = f"openkb_ai:attempts:{identifier}"
+    attempts = cache.get(attempts_key, [])
+    attempts = [timestamp for timestamp in attempts if now - timestamp < window_seconds]
+
+    if len(attempts) >= max_requests:
+        cache.set(block_key, True, block_seconds)
+        cache.set(attempts_key, attempts, window_seconds)
+        logger.warning(
+            "OpenKB AI rate limit exceeded: identifier=%s ip=%s user_id=%s attempts=%s window_seconds=%s block_seconds=%s",
+            identifier,
+            get_client_ip(request),
+            request.user.pk if request.user.is_authenticated else "anonymous",
+            len(attempts),
+            window_seconds,
+            block_seconds,
+        )
+        return False, block_seconds
+
+    attempts.append(now)
+    cache.set(attempts_key, attempts, window_seconds)
+    return True, 0
+
+
 def ask_openkb_ai(request):
     """Use the real local OpenKB AI query flow."""
     if request.method != "POST":
         return JsonResponse({"error": "POST request required"}, status=405)
 
+    allowed, retry_after = check_openkb_ai_rate_limit(request)
+    if not allowed:
+        return JsonResponse(
+            {
+                "error": "Too many OpenKB AI questions. Please wait a few minutes before trying again.",
+                "retry_after_seconds": retry_after,
+                "related_articles": [],
+            },
+            status=429,
+        )
+
     question = request.POST.get("question", "").strip()
 
     if not question:
-        return JsonResponse({"error": "Please type a question first."}, status=400)
+        return JsonResponse({"error": "Please type a question first.", "related_articles": []}, status=400)
+
+    max_prompt_chars = settings.OPENKB_AI_MAX_PROMPT_CHARS
+    if len(question) > max_prompt_chars:
+        logger.info(
+            "OpenKB AI prompt rejected because it is too long: identifier=%s ip=%s user_id=%s length=%s max_length=%s",
+            get_openkb_ai_rate_identifier(request),
+            get_client_ip(request),
+            request.user.pk if request.user.is_authenticated else "anonymous",
+            len(question),
+            max_prompt_chars,
+        )
+        return JsonResponse(
+            {
+                "error": f"Question is too long. Please keep it under {max_prompt_chars} characters.",
+                "related_articles": [],
+            },
+            status=400,
+        )
 
     if not settings.OPENKB_DATA_DIR.exists():
         return JsonResponse({
-            "error": "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
+            "error": "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py.",
+            "related_articles": [],
         }, status=500)
 
     try:
@@ -2073,15 +2163,31 @@ def ask_openkb_ai(request):
 
     except FileNotFoundError:
         return JsonResponse({
-            "error": "OpenKB CLI not found. Run: python -m pip install -e OpenKB-main"
+            "error": "OpenKB CLI not found. Run: python -m pip install -e OpenKB-main",
+            "related_articles": [],
         }, status=500)
 
     except subprocess.TimeoutExpired:
+        logger.warning(
+            "OpenKB AI query timed out: identifier=%s ip=%s user_id=%s question_length=%s",
+            get_openkb_ai_rate_identifier(request),
+            get_client_ip(request),
+            request.user.pk if request.user.is_authenticated else "anonymous",
+            len(question),
+        )
         return JsonResponse({
-            "error": "OpenKB AI query timed out. Try a shorter question."
+            "error": "OpenKB AI query timed out. Try a shorter question.",
+            "related_articles": [],
         }, status=500)
 
     except Exception as error:
+        logger.exception(
+            "OpenKB AI query failed: identifier=%s ip=%s user_id=%s question_length=%s",
+            get_openkb_ai_rate_identifier(request),
+            get_client_ip(request),
+            request.user.pk if request.user.is_authenticated else "anonymous",
+            len(question),
+        )
         return JsonResponse({
             "error": f"OpenKB AI query failed: {str(error)}",
             "related_articles": [],

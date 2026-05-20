@@ -42,6 +42,13 @@ LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 OPENKB_GEMINI_MODEL = os.getenv("OPENKB_GEMINI_MODEL", "gemini/gemini-2.5-flash")
 LITELLM_DROP_PARAMS = os.getenv("LITELLM_DROP_PARAMS", "true")
 
+# Safety limits for the public Ask OpenKB AI endpoint.
+# These values can be overridden in your root .env file.
+OPENKB_AI_MAX_PROMPT_CHARS = int(os.getenv("OPENKB_AI_MAX_PROMPT_CHARS", "1000"))
+OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = int(os.getenv("OPENKB_AI_RATE_LIMIT_MAX_REQUESTS", "5"))
+OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS", "60"))
+OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = int(os.getenv("OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS", "300"))
+
 
 # ---------------------------------------------------------------------
 # Django security / basics
@@ -115,6 +122,37 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "djopenkb.wsgi.application"
+
+
+# ---------------------------------------------------------------------
+# Cache / logging
+# ---------------------------------------------------------------------
+
+# Used for lightweight Ask OpenKB AI rate limiting. For multi-container
+# production deployments, replace this with Redis or another shared cache.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "djopenkb-local-cache",
+    }
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "kb": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_KB_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+    },
+}
 
 
 # ---------------------------------------------------------------------

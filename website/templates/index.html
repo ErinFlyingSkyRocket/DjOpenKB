@@ -330,7 +330,11 @@
         openkbAiAnswer.textContent = "Asking OpenKB AI..."; renderRelatedArticles([]);
         const formData = new FormData(); formData.append("question", question);
         try {
-            const response = await fetch("{% url 'ask_openkb_ai' %}", { method: "POST", body: formData });
+            const response = await fetch("{% url 'ask_openkb_ai' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: formData
+            });
             const data = await response.json();
             openkbAiAnswer.textContent = data.answer || data.error || "Something went wrong.";
             renderRelatedArticles(data.related_articles || []);

@@ -540,6 +540,7 @@
         try {
             const response = await fetch("{% url 'ask_openkb_ai' %}", {
                 method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
                 body: formData
             });
             const data = await response.json();
