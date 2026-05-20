@@ -290,16 +290,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="panel-heading">{% trans "Admin tools" %}</div>
                         <div class="panel-body">
                             <div class="profile-admin-tools">
-                                <div><strong>{% trans "Manage pending articles" %}</strong></div>
-                                <div class="profile-muted">{% trans "Review user-submitted articles waiting for admin approval before they become public." %}</div>
-                                <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">
-                                    <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
-                                </a>
-                            </div>
-
-                            <hr>
-
-                            <div class="profile-admin-tools">
                                 <div><strong>{% trans "Clean stray upload files" %}</strong></div>
                                 <div class="profile-muted">{% trans "Finds unused files in" %} <code>openkb-data/wiki/uploads</code> {% trans "that are no longer referenced by any article or wiki Markdown file." %}</div>
                                 <a class="btn btn-warning editor_btn_action" href="{% url 'clean_stray_upload_files' %}">
@@ -314,6 +304,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <div class="profile-muted">{% trans "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account." %}</div>
                                 <a class="btn btn-info editor_btn_action" href="{% url 'admin_bulk_articles' %}">
                                     <i class="fa fa-exchange"></i> {% trans "Import / Export" %}
+                                </a>
+                            </div>
+
+                            <hr>
+
+                            <div class="profile-admin-tools">
+                                <div><strong>{% trans "Manage pending articles" %}</strong></div>
+                                <div class="profile-muted">{% trans "Review user-submitted articles waiting for admin approval before they become public." %}</div>
+                                <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">
+                                    <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
                                 </a>
                             </div>
                         </div>
