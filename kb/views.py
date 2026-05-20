@@ -812,7 +812,7 @@ def reconcile_openkb_article_files():
 
     for article in SuggestedArticle.objects.all().order_by("id"):
         ensure_article_filename(article)
-        write_article_files(article, sync_ai=False)
+        write_article_files(article, sync_ai=False, mark_ai_stale=False)
         managed_filenames.add(article.filename)
 
     for source_path in sources_dir.glob("*.md"):
@@ -839,6 +839,93 @@ def write_openkb_django_sync_state(documents):
         json.dumps(state, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+
+
+def get_openkb_ai_sync_state_path():
+    """Return the lightweight state file used to decide whether AI sync is needed."""
+    state_dir = settings.OPENKB_DATA_DIR / ".openkb"
+    state_dir.mkdir(parents=True, exist_ok=True)
+    return state_dir / "django_ai_sync_state.json"
+
+
+def write_openkb_ai_sync_state(stale, reason, extra=None):
+    """Persist whether Ask OpenKB AI needs a fresh Django/OpenKB sync."""
+    init_openkb_storage()
+    now_iso = timezone.localtime(timezone.now()).isoformat()
+    state = {
+        "generated_by": "django-openkb-ai-sync-state",
+        "stale": bool(stale),
+        "reason": reason,
+        "updated_at": now_iso,
+    }
+
+    existing = read_openkb_ai_sync_state(default={})
+    if stale:
+        state["stale_since"] = existing.get("stale_since") or now_iso
+        if existing.get("last_synced_at"):
+            state["last_synced_at"] = existing.get("last_synced_at")
+    else:
+        state["last_synced_at"] = now_iso
+
+    if extra:
+        state.update(extra)
+
+    get_openkb_ai_sync_state_path().write_text(
+        json.dumps(state, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return state
+
+
+def read_openkb_ai_sync_state(default=None):
+    """Read the on-demand AI sync state file."""
+    path = get_openkb_ai_sync_state_path()
+    if not path.exists():
+        return default if default is not None else {"stale": True, "reason": "No AI sync state found."}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return default if default is not None else {"stale": True, "reason": "AI sync state could not be read."}
+
+
+def mark_openkb_ai_stale(reason="Article content changed."):
+    """Mark OpenKB AI index as needing a rebuild later.
+
+    This is intentionally cheap and is used during article create/edit/publish/delete
+    flows so admin redirects stay fast. The actual full sync happens only when
+    someone asks OpenKB AI or when the management command is run manually.
+    """
+    try:
+        write_openkb_ai_sync_state(True, reason)
+    except Exception as error:
+        logger.warning("Could not mark OpenKB AI sync state as stale: %s", error)
+
+
+def openkb_ai_sync_is_stale():
+    """Return True when the AI index should be rebuilt before answering."""
+    state = read_openkb_ai_sync_state()
+    if state.get("stale", True):
+        return True
+
+    wiki_dir = settings.OPENKB_WIKI_DIR
+    index_file = wiki_dir / "index.md"
+    summaries_dir = wiki_dir / "summaries"
+    if not index_file.exists() or not summaries_dir.exists():
+        return True
+
+    return False
+
+
+def ensure_openkb_ai_synced():
+    """Synchronize OpenKB AI files only when article changes made them stale."""
+    if openkb_ai_sync_is_stale():
+        logger.info("OpenKB AI index is stale; syncing on demand before answering.")
+        sync_openkb_ai_index()
+    else:
+        logger.info("OpenKB AI index is fresh; skipping sync before answering.")
+
+
 
 
 def sync_openkb_ai_index():
@@ -946,6 +1033,11 @@ def sync_openkb_ai_index():
 
     index_file.write_text("\n".join(index_lines).rstrip() + "\n", encoding="utf-8")
     write_openkb_django_sync_state(documents)
+    write_openkb_ai_sync_state(
+        False,
+        "OpenKB AI index synced.",
+        {"published_document_count": len(documents)},
+    )
 
 
 def prepare_article_display_markdown(raw_markdown, title, suggested=None):
@@ -1047,8 +1139,14 @@ def render_safe_markdown(markdown_text):
         strip=True,
     )
 
-def write_article_files(article, sync_ai=True):
-    """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files."""
+def write_article_files(article, sync_ai=False, mark_ai_stale=True):
+    """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files.
+
+    Full AI summary/index rebuilds are intentionally not done here. Article save,
+    publish, import, and delete flows should stay fast, so they only mark the AI
+    index as stale. The heavier sync runs on demand when Ask OpenKB AI is used.
+    The sync_ai argument is kept for backward compatibility with older callers.
+    """
     init_openkb_storage()
 
     ensure_article_filename(article)
@@ -1075,8 +1173,8 @@ def write_article_files(article, sync_ai=True):
         wiki_path=article.wiki_path,
     )
 
-    if sync_ai:
-        sync_openkb_ai_index()
+    if mark_ai_stale or sync_ai:
+        mark_openkb_ai_stale("Article Markdown files changed.")
 
 
 def delete_article_files(article):
@@ -1100,7 +1198,7 @@ def delete_article_files(article):
         if not image_is_used_by_other_article(filename, current_article=article):
             delete_uploaded_image_file(filename)
 
-    sync_openkb_ai_index()
+    mark_openkb_ai_stale("Article Markdown files deleted.")
 
 
 def get_article_metadata_by_wiki_path(wiki_path):
@@ -2231,7 +2329,7 @@ def search_articles(request):
 def run_openkb_query(question):
     """Call the local bundled OpenKB CLI against the synced Django OpenKB data."""
     init_openkb_storage()
-    sync_openkb_ai_index()
+    ensure_openkb_ai_synced()
 
     env = os.environ.copy()
 
@@ -2283,7 +2381,7 @@ def run_openkb_query(question):
 def find_related_openkb_articles(question, limit=5):
     """Find related OpenKB articles so Ask OpenKB AI can show clickable sources."""
     init_openkb_storage()
-    sync_openkb_ai_index()
+    ensure_openkb_ai_synced()
 
     query = question.lower().strip()
     query_words = [
