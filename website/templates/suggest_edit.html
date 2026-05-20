@@ -288,6 +288,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
     const uploadUrl = "{% url 'upload_article_image' %}";
     const deleteUrl = "{% url 'delete_article_image' %}";
+    const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
     const csrfToken = "{{ csrf_token }}";
     const uploadedImages = new Map();
     const uploadedHashes = new Map();
@@ -477,6 +478,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     }
 
     async function uploadImage(file) {
+        if (!file || !allowedImageTypes.has(file.type)) {
+            showPasteMessage("Only PNG, JPG, GIF, or WEBP images are allowed.", "danger");
+            return;
+        }
         const hash = await fileHash(file);
         if (uploadedHashes.has(hash)) {
             showPasteMessage("This image is already uploaded in this draft. Use the X preview button to remove it first.", "warning");
@@ -522,8 +527,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
     function handleImageFiles(files) {
         Array.from(files || []).forEach(function (file) {
-            if (file && file.type && file.type.indexOf("image/") === 0) {
+            if (file && allowedImageTypes.has(file.type)) {
                 uploadImage(file);
+            } else if (file && file.type && file.type.indexOf("image/") === 0) {
+                showPasteMessage("Only PNG, JPG, GIF, or WEBP images are allowed.", "danger");
             }
         });
     }
@@ -541,14 +548,22 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
-            if (item.kind === "file" && item.type.indexOf("image/") === 0) {
-                const file = item.getAsFile();
-                if (file) {
-                    event.preventDefault();
-                    uploadImage(file);
-                }
+            if (item.kind !== "file" || !item.type || item.type.indexOf("image/") !== 0) {
+                continue;
+            }
+
+            event.preventDefault();
+
+            if (!allowedImageTypes.has(item.type)) {
+                showPasteMessage("Only PNG, JPG, GIF, or WEBP images are allowed.", "danger");
                 break;
             }
+
+            const file = item.getAsFile();
+            if (file) {
+                uploadImage(file);
+            }
+            break;
         }
     });
 

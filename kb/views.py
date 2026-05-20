@@ -13,7 +13,9 @@ from datetime import datetime
 from functools import wraps
 from pathlib import Path
 
+import bleach
 import markdown
+from PIL import Image, UnidentifiedImageError
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout, update_session_auth_hash
@@ -73,14 +75,81 @@ def get_openkb_uploads_dir():
     return upload_dir
 
 
-def is_allowed_article_image(uploaded_file):
-    allowed_types = {
-        "image/png": ".png",
-        "image/jpeg": ".jpg",
-        "image/gif": ".gif",
-        "image/webp": ".webp",
+ALLOWED_ARTICLE_IMAGE_FORMATS = {
+    "PNG": {"extension": ".png", "content_type": "image/png"},
+    "JPEG": {"extension": ".jpg", "content_type": "image/jpeg"},
+    "GIF": {"extension": ".gif", "content_type": "image/gif"},
+    "WEBP": {"extension": ".webp", "content_type": "image/webp"},
+}
+ALLOWED_ARTICLE_IMAGE_EXTENSIONS = {
+    info["extension"] for info in ALLOWED_ARTICLE_IMAGE_FORMATS.values()
+} | {".jpeg"}
+MAX_ARTICLE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
+MAX_ARTICLE_IMAGE_PIXELS = 20_000_000
+
+
+def validate_article_image_upload(uploaded_file):
+    """Return image metadata when an uploaded file is a safe supported image.
+
+    Browser-reported content_type can be faked, so this verifies the actual file
+    bytes with Pillow and only accepts PNG, JPG/JPEG, GIF, and WEBP.
+    """
+    original_suffix = Path(uploaded_file.name or "").suffix.lower()
+    if original_suffix and original_suffix not in ALLOWED_ARTICLE_IMAGE_EXTENSIONS:
+        raise ValidationError("Only PNG, JPG, GIF, or WEBP images are allowed.")
+
+    if uploaded_file.size > MAX_ARTICLE_IMAGE_SIZE_BYTES:
+        raise ValidationError("Image is too large. Maximum allowed size is 2 MB.")
+
+    try:
+        uploaded_file.seek(0)
+        with Image.open(uploaded_file) as image:
+            image.verify()
+            detected_format = (image.format or "").upper()
+            width, height = image.size
+    except (UnidentifiedImageError, OSError, ValueError):
+        raise ValidationError("The uploaded file is not a valid image.")
+    finally:
+        try:
+            uploaded_file.seek(0)
+        except Exception:
+            pass
+
+    image_info = ALLOWED_ARTICLE_IMAGE_FORMATS.get(detected_format)
+    if not image_info:
+        raise ValidationError("Only PNG, JPG, GIF, or WEBP images are allowed.")
+
+    if width * height > MAX_ARTICLE_IMAGE_PIXELS:
+        raise ValidationError("Image dimensions are too large. Please upload a smaller image.")
+
+    return {
+        "format": detected_format,
+        "extension": image_info["extension"],
+        "content_type": image_info["content_type"],
+        "width": width,
+        "height": height,
     }
-    return allowed_types.get(uploaded_file.content_type)
+
+
+def is_allowed_article_image_filename(filename):
+    """Return True only for server-managed image filenames."""
+    safe_name = safe_uploaded_filename(filename)
+    if not safe_name or safe_name != filename:
+        return False
+    return Path(safe_name).suffix.lower() in ALLOWED_ARTICLE_IMAGE_EXTENSIONS
+
+
+def uploaded_image_content_type(filename):
+    suffix = Path(filename or "").suffix.lower()
+    if suffix in {".jpg", ".jpeg"}:
+        return "image/jpeg"
+    if suffix == ".png":
+        return "image/png"
+    if suffix == ".gif":
+        return "image/gif"
+    if suffix == ".webp":
+        return "image/webp"
+    return "application/octet-stream"
 
 
 ARTICLE_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(/wiki/uploads/([A-Za-z0-9._-]+)\)")
@@ -421,9 +490,32 @@ def copy_imported_uploads_from_zip(zip_file, upload_member_names):
         except ValueError:
             continue
 
-        with zip_file.open(member_name, "r") as source, target_path.open("wb") as target:
-            shutil.copyfileobj(source, target)
+        if Path(original_filename).suffix.lower() not in ALLOWED_ARTICLE_IMAGE_EXTENSIONS:
+            continue
 
+        with zip_file.open(member_name, "r") as source:
+            data = source.read(MAX_ARTICLE_IMAGE_SIZE_BYTES + 1)
+
+        if len(data) > MAX_ARTICLE_IMAGE_SIZE_BYTES:
+            continue
+
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        temp_upload = SimpleUploadedFile(original_filename, data)
+
+        try:
+            image_info = validate_article_image_upload(temp_upload)
+        except ValidationError:
+            continue
+
+        # Rename using the verified image type rather than trusting the zip filename.
+        new_filename = make_unique_upload_filename(Path(original_filename).with_suffix(image_info["extension"]).name)
+        target_path = (upload_dir / new_filename).resolve()
+        try:
+            target_path.relative_to(upload_dir.resolve())
+        except ValueError:
+            continue
+
+        target_path.write_bytes(data)
         filename_map[original_filename] = new_filename
 
     return filename_map
@@ -753,6 +845,69 @@ def prepare_article_display_markdown(raw_markdown, title, suggested=None):
 
     return cleaned
 
+
+
+
+def is_safe_article_upload_src(tag, name, value):
+    """Allow only local /wiki/uploads/<safe-image-filename> image sources."""
+    if name != "src":
+        return False
+
+    prefix = "/wiki/uploads/"
+    if not value.startswith(prefix):
+        return False
+
+    filename = value[len(prefix):]
+    return is_allowed_article_image_filename(filename)
+
+
+def article_html_attribute_filter(tag, name, value):
+    """Attribute allow-list for sanitized rendered Markdown."""
+    if tag == "img":
+        if name == "src":
+            return is_safe_article_upload_src(tag, name, value)
+        if name in {"alt", "title"}:
+            return True
+        return False
+
+    if tag == "a":
+        return name in {"href", "title"}
+
+    if tag in {"code", "pre"}:
+        return name == "class"
+
+    if tag in {"th", "td"}:
+        return name in {"align", "colspan", "rowspan"}
+
+    if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+        return name == "id"
+
+    return False
+
+
+def render_safe_markdown(markdown_text):
+    """Render Markdown and sanitize raw HTML before displaying an article."""
+    html = markdown.markdown(
+        markdown_text or "",
+        extensions=["fenced_code", "tables", "toc"],
+        output_format="html5",
+    )
+
+    allowed_tags = set(bleach.sanitizer.ALLOWED_TAGS) | {
+        "p", "br", "hr",
+        "h1", "h2", "h3", "h4", "h5", "h6",
+        "pre", "span",
+        "table", "thead", "tbody", "tr", "th", "td",
+        "img",
+    }
+
+    return bleach.clean(
+        html,
+        tags=allowed_tags,
+        attributes=article_html_attribute_filter,
+        protocols=["http", "https", "mailto"],
+        strip=True,
+    )
 
 def write_article_files(article):
     """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files."""
@@ -1629,13 +1784,13 @@ def upload_article_image(request):
     if not uploaded_file:
         return JsonResponse({"error": "No image file received."}, status=400)
 
-    extension = is_allowed_article_image(uploaded_file)
-    if not extension:
-        return JsonResponse({"error": "Only PNG, JPG, GIF, or WEBP images are allowed."}, status=400)
+    try:
+        image_info = validate_article_image_upload(uploaded_file)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return JsonResponse({"error": message}, status=400)
 
-    max_size = 2 * 1024 * 1024
-    if uploaded_file.size > max_size:
-        return JsonResponse({"error": "Image is too large. Maximum allowed size is 2 MB."}, status=400)
+    extension = image_info["extension"]
 
     upload_dir = get_openkb_uploads_dir()
     timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
@@ -1697,24 +1852,21 @@ def delete_article_image(request):
 
 def serve_article_image(request, filename):
     """Serve images pasted into Markdown articles from openkb-data/wiki/uploads."""
+    if not is_allowed_article_image_filename(filename):
+        raise Http404("Image not found")
+
     upload_dir = get_openkb_uploads_dir().resolve()
     file_path = (upload_dir / filename).resolve()
 
-    if not str(file_path).startswith(str(upload_dir)):
+    try:
+        file_path.relative_to(upload_dir)
+    except ValueError:
         raise Http404("Invalid image path")
 
     if not file_path.exists() or not file_path.is_file():
         raise Http404("Image not found")
 
-    content_types = {
-        ".png": "image/png",
-        ".jpg": "image/jpeg",
-        ".jpeg": "image/jpeg",
-        ".gif": "image/gif",
-        ".webp": "image/webp",
-    }
-    content_type = content_types.get(file_path.suffix.lower(), "application/octet-stream")
-    return FileResponse(file_path.open("rb"), content_type=content_type)
+    return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
 
 
 def wiki_detail(request, wiki_path):
@@ -1799,7 +1951,7 @@ def wiki_detail(request, wiki_path):
         if article.get("path") != wiki_path
     ][:5]
 
-    html_content = markdown.markdown(display_markdown, extensions=["fenced_code", "tables", "toc"])
+    html_content = render_safe_markdown(display_markdown)
 
     return render(request, "articles.html", {
         "title": title,

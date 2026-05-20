@@ -29,6 +29,8 @@ RUN python -m pip install \
     django \
     gunicorn \
     markdown \
+    bleach \
+    pillow \
     python-dotenv \
     django-auth-ldap \
     "psycopg[binary]"
