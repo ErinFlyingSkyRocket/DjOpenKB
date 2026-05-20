@@ -193,8 +193,8 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 LDAP_ENABLED = os.getenv("LDAP_ENABLED", "false").lower() == "true"
-LDAP_PLACEHOLDER_ENABLED = os.getenv("LDAP_PLACEHOLDER_ENABLED", "true").lower() == "true"
-LDAP_PLACEHOLDER_AUTO_CREATE_USERS = os.getenv("LDAP_PLACEHOLDER_AUTO_CREATE_USERS", "true").lower() == "true"
+LDAP_PLACEHOLDER_ENABLED = os.getenv("LDAP_PLACEHOLDER_ENABLED", "false").lower() == "true"
+LDAP_PLACEHOLDER_AUTO_CREATE_USERS = os.getenv("LDAP_PLACEHOLDER_AUTO_CREATE_USERS", "false").lower() == "true"
 LDAP_PLACEHOLDER_PASSWORD = os.getenv("LDAP_PLACEHOLDER_PASSWORD", "ChangeThisPlaceholderPassword123!")
 
 if LDAP_ENABLED:

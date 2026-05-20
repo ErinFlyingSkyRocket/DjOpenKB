@@ -1,8 +1,20 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+import re
+
+
+def normalize_article_title(title):
+    """Normalize article titles so duplicates are caught case-insensitively.
+
+    This intentionally ignores leading/trailing spaces, repeated internal
+    whitespace, and letter case, so these are treated as the same title:
+    "My Article", " my   article ", and "MY ARTICLE".
+    """
+    return re.sub(r"\s+", " ", (title or "").strip()).casefold()
 
 
 class UserProfile(models.Model):
@@ -165,6 +177,24 @@ class SuggestedArticle(models.Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        """Prevent duplicate article titles across drafts, pending, failed, and published articles."""
+        super().clean()
+
+        normalized_title = normalize_article_title(self.title)
+        if not normalized_title:
+            return
+
+        queryset = SuggestedArticle.objects.all()
+        if self.pk:
+            queryset = queryset.exclude(pk=self.pk)
+
+        for article in queryset.only("id", "title"):
+            if normalize_article_title(article.title) == normalized_title:
+                raise ValidationError({
+                    "title": _("An article with this title already exists. Please use a different title.")
+                })
 
     @property
     def public_url(self):

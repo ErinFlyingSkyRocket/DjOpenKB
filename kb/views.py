@@ -34,10 +34,11 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from .models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting
+from .models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting, normalize_article_title
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
+DJANGO_ARTICLE_SOURCE_MARKER = "generated_by: django-suggested-article"
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,26 @@ def slugify_title(title):
     slug = re.sub(r"[^a-z0-9]+", "-", slug)
     slug = slug.strip("-")
     return slug or "untitled"
+
+
+def find_duplicate_article_by_title(title, exclude_pk=None):
+    """Return an existing article with the same normalized title, if any."""
+    normalized_title = normalize_article_title(title)
+    if not normalized_title:
+        return None
+
+    queryset = SuggestedArticle.objects.all()
+    if exclude_pk:
+        queryset = queryset.exclude(pk=exclude_pk)
+
+    for article in queryset.only("id", "title"):
+        if normalize_article_title(article.title) == normalized_title:
+            return article
+    return None
+
+
+def duplicate_title_error_message(title):
+    return _("An article with the title ‘%(title)s’ already exists. Please use a different title.") % {"title": title}
 
 
 def init_openkb_storage():
@@ -587,6 +608,8 @@ def import_articles_from_zip(uploaded_zip, owner):
         if not article_payloads:
             raise ValueError("No articles found in the zip. Include manifest.json or Markdown files.")
 
+        seen_import_titles = set()
+
         for item in article_payloads:
             title = (item.get("title") or "Imported article").strip()[:200]
             body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
@@ -595,6 +618,17 @@ def import_articles_from_zip(uploaded_zip, owner):
 
             if status not in dict(SuggestedArticle.Status.choices):
                 status = SuggestedArticle.Status.PUBLISHED
+
+            normalized_title = normalize_article_title(title)
+            if normalized_title in seen_import_titles:
+                errors.append(f"Skipped duplicate title inside import zip: {title}")
+                continue
+            seen_import_titles.add(normalized_title)
+
+            duplicate_article = find_duplicate_article_by_title(title)
+            if duplicate_article:
+                errors.append(f"Skipped duplicate title already in OpenKB: {title}")
+                continue
 
             filename = make_unique_article_filename(title, item.get("filename") or "")
 
@@ -649,7 +683,9 @@ def build_article_markdown(article):
     if article.keywords:
         keyword_line = f"\n\n**Keywords:** {article.keywords}"
 
+    article_id = getattr(article, "id", "") or "export"
     return (
+        f"<!-- {DJANGO_ARTICLE_SOURCE_MARKER}; article_id: {article_id} -->\n"
         f"# {article.title}\n\n"
         f"{article.body}\n"
         f"{keyword_line}\n"
@@ -660,8 +696,9 @@ def plain_markdown_excerpt(markdown_text, max_length=260):
     """Create a short plain-text summary from Markdown for the OpenKB AI index."""
     text = markdown_text or ""
 
-    # Remove YAML front matter, images, links, and common Markdown symbols.
+    # Remove YAML front matter, HTML comments, images, links, and common Markdown symbols.
     text = re.sub(r"^---.*?---", " ", text, flags=re.DOTALL).strip()
+    text = re.sub(r"<!--.*?-->", " ", text, flags=re.DOTALL)
     text = re.sub(r"!\[[^\]]*\]\([^)]+\)", " ", text)
     text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
     text = re.sub(r"\*\*Keywords:\*\*\s*.*", " ", text, flags=re.IGNORECASE)
@@ -708,6 +745,77 @@ def extract_index_section(existing_text, heading):
     return "\n".join(lines[start:end]).strip()
 
 
+def ensure_article_filename(article):
+    """Ensure every SuggestedArticle has a stable Markdown filename."""
+    if article.filename:
+        return article.filename
+
+    timestamp_slug = timezone.localtime(article.created_at or timezone.now()).strftime("%Y%m%d-%H%M%S")
+    base_slug = slugify_title(article.title)
+    candidate = f"{timestamp_slug}-{base_slug}.md"
+    counter = 2
+    while SuggestedArticle.objects.filter(filename=candidate).exclude(pk=article.pk).exists():
+        candidate = f"{timestamp_slug}-{base_slug}-{counter}.md"
+        counter += 1
+
+    article.filename = candidate
+    return article.filename
+
+
+def source_file_is_django_managed(path):
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")[:500]
+    except OSError:
+        return False
+    return DJANGO_ARTICLE_SOURCE_MARKER in text
+
+
+def reconcile_openkb_article_files():
+    """Reconcile OpenKB files from the Django database as the source of truth.
+
+    - Every Django article gets a raw Markdown file.
+    - Only published Django articles get a public wiki/sources file.
+    - Unpublished Django articles have their source file removed.
+    - Old source files generated by this Django integration are removed when the
+      database article no longer exists. Manually-created OpenKB source files are
+      left untouched.
+    """
+    init_openkb_storage()
+
+    sources_dir = settings.OPENKB_WIKI_DIR / "sources"
+    managed_filenames = set()
+
+    for article in SuggestedArticle.objects.all().order_by("id"):
+        ensure_article_filename(article)
+        write_article_files(article, sync_ai=False)
+        managed_filenames.add(article.filename)
+
+    for source_path in sources_dir.glob("*.md"):
+        if source_path.name in managed_filenames or source_path.name in IGNORED_WIKI_NAMES:
+            continue
+        if source_file_is_django_managed(source_path):
+            try:
+                source_path.unlink()
+            except OSError as error:
+                logger.warning("Could not remove stale Django OpenKB source %s: %s", source_path, error)
+
+
+def write_openkb_django_sync_state(documents):
+    """Write a small audit file so OpenKB/Django sync state can be inspected."""
+    state_dir = settings.OPENKB_DATA_DIR / ".openkb"
+    state_dir.mkdir(parents=True, exist_ok=True)
+    state = {
+        "generated_by": "django-openkb-sync",
+        "synced_at": timezone.localtime(timezone.now()).isoformat(),
+        "published_document_count": len(documents),
+        "documents": documents,
+    }
+    (state_dir / "django_sync_state.json").write_text(
+        json.dumps(state, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
 def sync_openkb_ai_index():
     """Make Ask OpenKB AI aware of Django-published source articles.
 
@@ -717,6 +825,7 @@ def sync_openkb_ai_index():
     No LLM call is made here, so it is safe to run before each AI query.
     """
     init_openkb_storage()
+    reconcile_openkb_article_files()
 
     wiki_dir = settings.OPENKB_WIKI_DIR
     sources_dir = wiki_dir / "sources"
@@ -777,9 +886,11 @@ def sync_openkb_ai_index():
         (summaries_dir / f"{doc_name}.md").write_text(summary_text, encoding="utf-8")
 
         documents.append({
-            "summary_relative": summary_relative,
+            "source_relative": relative_source,
+            "summary_relative": f"{summary_relative}.md",
             "title": title,
             "brief": brief,
+            "django_managed": DJANGO_ARTICLE_SOURCE_MARKER in raw_markdown,
         })
 
     index_lines = [
@@ -791,7 +902,7 @@ def sync_openkb_ai_index():
     if documents:
         for item in documents:
             index_lines.append(
-                f"- [[{item['summary_relative']}]] (short) — {item['title']}: {item['brief']}"
+                f"- [[{item['summary_relative'].removesuffix('.md')}]] (short) — {item['title']}: {item['brief']}"
             )
     else:
         index_lines.append("")
@@ -809,6 +920,7 @@ def sync_openkb_ai_index():
         index_lines.append("")
 
     index_file.write_text("\n".join(index_lines).rstrip() + "\n", encoding="utf-8")
+    write_openkb_django_sync_state(documents)
 
 
 def prepare_article_display_markdown(raw_markdown, title, suggested=None):
@@ -820,6 +932,7 @@ def prepare_article_display_markdown(raw_markdown, title, suggested=None):
     OpenKB layout, so remove those generated lines to avoid duplicate UI text.
     """
     cleaned = raw_markdown.lstrip("\ufeff")
+    cleaned = re.sub(r"^\s*<!--\s*generated_by:\s*django-suggested-article.*?-->\s*", "", cleaned, flags=re.DOTALL)
 
     # Remove the first Markdown H1 only when it matches the article title.
     lines = cleaned.splitlines()
@@ -909,13 +1022,11 @@ def render_safe_markdown(markdown_text):
         strip=True,
     )
 
-def write_article_files(article):
+def write_article_files(article, sync_ai=True):
     """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files."""
     init_openkb_storage()
 
-    if not article.filename:
-        timestamp_slug = timezone.localtime(article.created_at or timezone.now()).strftime("%Y%m%d-%H%M%S")
-        article.filename = f"{timestamp_slug}-{slugify_title(article.title)}.md"
+    ensure_article_filename(article)
 
     raw_file_path = settings.OPENKB_RAW_DIR / article.filename
     sources_dir = settings.OPENKB_WIKI_DIR / "sources"
@@ -939,7 +1050,8 @@ def write_article_files(article):
         wiki_path=article.wiki_path,
     )
 
-    sync_openkb_ai_index()
+    if sync_ai:
+        sync_openkb_ai_index()
 
 
 def delete_article_files(article):
@@ -1232,6 +1344,15 @@ def suggest(request):
     if len(title) < 5 or len(body) < 5:
         return render(request, "suggest.html", {
             "error": _("Article title and body must be at least 5 characters."),
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+        })
+
+    duplicate_article = find_duplicate_article_by_title(title)
+    if duplicate_article:
+        return render(request, "suggest.html", {
+            "error": duplicate_title_error_message(title),
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
@@ -1714,6 +1835,20 @@ def edit_suggestion(request, article_id):
             "status_value": status,
             "current_status": status,
             "review_notes_value": request.POST.get("review_notes", article.review_notes),
+            "existing_images_json": json.dumps(get_article_image_cards(article)),
+        })
+
+    duplicate_article = find_duplicate_article_by_title(title, exclude_pk=article.pk)
+    if duplicate_article:
+        return render(request, "suggest_edit.html", {
+            "article": article,
+            "error": duplicate_title_error_message(title),
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "status_value": status,
+            "current_status": status,
+            "review_notes_value": review_notes,
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
