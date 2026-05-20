@@ -40,6 +40,21 @@ from ..models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting, no
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
 DJANGO_ARTICLE_SOURCE_MARKER = "generated_by: django-suggested-article"
 
+# Small image files that users paste/upload into suggested Markdown articles.
+# These are served through the protected /wiki/uploads/<filename> view, not by
+# exposing the uploads directory directly.
+ALLOWED_ARTICLE_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+ALLOWED_ARTICLE_IMAGE_FORMATS = {
+    "PNG": {"extension": ".png", "content_type": "image/png"},
+    "JPEG": {"extension": ".jpg", "content_type": "image/jpeg"},
+    "JPG": {"extension": ".jpg", "content_type": "image/jpeg"},
+    "GIF": {"extension": ".gif", "content_type": "image/gif"},
+    "WEBP": {"extension": ".webp", "content_type": "image/webp"},
+}
+MAX_ARTICLE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
+MAX_ARTICLE_IMAGE_PIXELS = 16_000_000
+ARTICLE_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(/wiki/uploads/([^)/?#]+)(?:[?#][^)]*)?\)")
+
 logger = logging.getLogger(__name__)
 
 

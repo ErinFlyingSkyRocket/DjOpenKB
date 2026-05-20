@@ -315,7 +315,14 @@ def delete_article_image(request):
 
 
 def serve_article_image(request, filename):
-    """Serve images pasted into Markdown articles from openkb-data/wiki/uploads."""
+    """Serve article images safely.
+
+    Published article images are public. Draft/pending/failed article images are
+    only visible to the article owner or site admins, so admins can review
+    pending submissions without exposing private draft uploads to everyone.
+    Newly uploaded images that are not saved into an article yet are visible
+    only in the uploader's current editing session.
+    """
     if not is_allowed_article_image_filename(filename):
         raise Http404("Image not found")
 
@@ -329,5 +336,28 @@ def serve_article_image(request, filename):
 
     if not file_path.exists() or not file_path.is_file():
         raise Http404("Image not found")
+
+    referenced_articles = SuggestedArticle.objects.filter(
+        Q(image_assets__contains=[filename]) | Q(body__icontains=f"/wiki/uploads/{filename}")
+    ).select_related("owner")
+
+    has_reference = referenced_articles.exists()
+    is_public_image = referenced_articles.filter(status=SuggestedArticle.Status.PUBLISHED).exists()
+
+    if not is_public_image:
+        allowed = False
+
+        if request.user.is_authenticated:
+            if user_is_site_admin(request.user):
+                allowed = True
+            else:
+                allowed = referenced_articles.filter(owner=request.user).exists()
+
+        if not allowed and not has_reference:
+            pending_uploads = request.session.get("pending_article_uploads", [])
+            allowed = filename in pending_uploads
+
+        if not allowed:
+            raise Http404("Image not found")
 
     return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
