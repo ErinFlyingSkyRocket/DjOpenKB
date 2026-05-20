@@ -4,14 +4,14 @@
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{% trans "Login" %}</title>
-    <meta property="og:title" content="Login" />
+    <meta property="og:title" content="{% trans 'Login' %}" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Powered by openKB">
-    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="description" content="{% trans 'Powered by openKB' %}">
+    <meta property="og:description" content="{% trans 'openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search' %}" />
     <meta name="keywords" content="openKB">
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="{% trans 'article' %}" />
     <meta property="og:image" content="{% static 'logo.png' %}" />
     <meta property="og:url" content="" />
     <link rel="canonical" href="#" />
@@ -59,7 +59,7 @@
 
             {% if form.errors %}
                 <div class="alert alert-danger">
-                    Invalid username/email or password.
+                    {% trans "Invalid username/email or password." %}
                 </div>
             {% endif %}
 
@@ -83,7 +83,7 @@
 
 <footer class="footer">
     <div class="container">
-        <p class="text-muted">Powered by <a href="http://openkb.mrvautin.com/" target="_blank">openKB</a></p>
+        <p class="text-muted">{% trans "Powered by" %} <a href="http://openkb.mrvautin.com/" target="_blank">openKB</a></p>
     </div>
 </footer>
 </body>

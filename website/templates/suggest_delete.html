@@ -4,11 +4,11 @@
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{% trans "Delete article" %}</title>
-    <meta property="og:title" content="Delete article" />
+    <meta property="og:title" content="{% trans 'Delete article' %}" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Powered by openKB">
+    <meta name="description" content="{% trans 'Powered by openKB' %}">
     <meta name="keywords" content="openKB">
     <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">

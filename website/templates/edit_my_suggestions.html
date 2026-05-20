@@ -8,10 +8,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Powered by openKB">
-    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="description" content="{% trans 'Powered by openKB' %}">
+    <meta property="og:description" content="{% trans 'openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search' %}" />
     <meta name="keywords" content="openKB">
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="{% trans 'article' %}" />
     <meta property="og:image" content="{% static 'logo.png' %}" />
     <meta property="og:url" content="" />
     <link rel="canonical" href="#" />
@@ -164,7 +164,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="panel-body">
                             {% if page_obj and page_obj.paginator.num_pages > 1 %}
-                                <nav class="profile-top-pagination" aria-label="Top article pagination">
+                                <nav class="profile-top-pagination" aria-label="{% trans 'Top article pagination' %}">
                                     <ul class="pager">
                                         {% if page_obj.has_previous %}
                                             <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
@@ -248,7 +248,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     {% endif %}
                                 </div>
 
-                                <nav class="profile-pagination" aria-label="Bottom article pagination">
+                                <nav class="profile-pagination" aria-label="{% trans 'Bottom article pagination' %}">
                                     <ul class="pagination">
                                         {% if page_obj.has_previous %}
                                             <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>

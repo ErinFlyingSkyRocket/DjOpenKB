@@ -7,10 +7,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Powered by openKB">
-    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="description" content="{% trans 'Powered by openKB' %}">
+    <meta property="og:description" content="{% trans 'openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search' %}" />
     <meta name="keywords" content="openKB">
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="{% trans 'article' %}" />
     <meta property="og:image" content="{% static 'logo.png' %}" />
     <meta property="og:url" content="" />
     <link rel="canonical" href="#" />
@@ -277,7 +277,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 <form method="post" action="{% url 'change_password' %}">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="changePasswordModalLabel">{% trans "Change password" %}</h4>
                     </div>
                     <div class="modal-body">

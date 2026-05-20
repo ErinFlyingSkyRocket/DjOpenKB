@@ -59,7 +59,7 @@
             </div>
 
             {% if page_obj.paginator.num_pages > 1 %}
-                <nav aria-label="Pending article pages">
+                <nav aria-label="{% trans 'Pending article pages' %}">
                     <ul class="pagination">
                         {% if page_obj.has_previous %}
                             <li><a href="?page=1{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>

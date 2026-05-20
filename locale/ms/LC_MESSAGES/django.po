@@ -645,3 +645,197 @@ msgstr "Diluluskan pada"
 
 msgid "Approval"
 msgstr "Kelulusan"
+
+# Added for latest template i18n coverage
+
+msgid "::: SEARCH RESULTS FOR \"{{ query }}\" :::"
+msgstr "::: SEARCH RESULTS FOR \"{{ query }}\" :::"
+
+msgid "Article image"
+msgstr "Article image"
+
+msgid "Article pagination"
+msgstr "Article pagination"
+
+msgid "Ask for related articles when you want source links."
+msgstr "Ask for related articles when you want source links."
+
+msgid "Ask one question at a time."
+msgstr "Ask one question at a time."
+
+msgid "Ask questions using general keywords or article topics."
+msgstr "Ask questions using general keywords or article topics."
+
+msgid "Bottom article pagination"
+msgstr "Bottom article pagination"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Delete {{ count }} stray file"
+msgstr "Delete {{ count }} stray file"
+
+msgid "Delete {{ count }} stray files"
+msgstr "Delete {{ count }} stray files"
+
+msgid "Explain what the user needs to fix before resubmitting this article."
+msgstr "Explain what the user needs to fix before resubmitting this article."
+
+msgid "Files newer than {{ minutes }} minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Files newer than {{ minutes }} minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+
+msgid "Files newer than {{ minutes }} minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Files newer than {{ minutes }} minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+
+msgid "Hi, I am OpenKB AI."
+msgstr "Hi, I am OpenKB AI."
+
+msgid "I can help you find articles and answer questions from the wiki."
+msgstr "I can help you find articles and answer questions from the wiki."
+
+msgid "Image removed from this article draft."
+msgstr "Image removed from this article draft."
+
+msgid "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Image removed from this draft. Save the article to delete it from storage."
+
+msgid "Image upload failed."
+msgstr "Image upload failed."
+
+msgid "Image upload failed. Check Django terminal logs."
+msgstr "Image upload failed. Check Django terminal logs."
+
+msgid "Image uploaded and inserted into the article."
+msgstr "Image uploaded and inserted into the article."
+
+msgid "Invalid username/email or password."
+msgstr "Invalid username/email or password."
+
+msgid "Minimise OpenKB AI"
+msgstr "Minimise OpenKB AI"
+
+msgid "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "No OpenKB articles yet. Add a solution from Suggest."
+
+msgid "No matching OpenKB articles found."
+msgstr "No matching OpenKB articles found."
+
+msgid "No related articles yet."
+msgstr "No related articles yet."
+
+msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+
+msgid "Open OpenKB AI chat"
+msgstr "Open OpenKB AI chat"
+
+msgid "OpenKB AI is thinking..."
+msgstr "OpenKB AI is thinking..."
+
+msgid "Page {{ current }} of {{ total }}"
+msgstr "Page {{ current }} of {{ total }}"
+
+msgid "Page {{ number }} of {{ num_pages }}"
+msgstr "Page {{ number }} of {{ num_pages }}"
+
+msgid "Pending article pages"
+msgstr "Pending article pages"
+
+msgid "Pending failed comments"
+msgstr "Pending failed comments"
+
+msgid "Please type a question first."
+msgstr "Please type a question first."
+
+msgid "Powered by"
+msgstr "Powered by"
+
+msgid "Powered by openKB"
+msgstr "Powered by openKB"
+
+msgid "Ready"
+msgstr "Ready"
+
+msgid "Recommended articles"
+msgstr "Recommended articles"
+
+msgid "Remove image from article"
+msgstr "Remove image from article"
+
+msgid "Request failed. Check Django terminal logs."
+msgstr "Request failed. Check Django terminal logs."
+
+msgid "Review comments history"
+msgstr "Review comments history"
+
+msgid "Search"
+msgstr "cari"
+
+msgid "Showing results for \"{{ query }}\"."
+msgstr "Showing results for \"{{ query }}\"."
+
+msgid "Showing {{ start }}-{{ end }} of {{ count }} article(s)"
+msgstr "Showing {{ start }}-{{ end }} of {{ count }} article(s)"
+
+msgid "Showing {{ start }}-{{ end }} of {{ count }} articles"
+msgstr "Showing {{ start }}-{{ end }} of {{ count }} articles"
+
+msgid "Showing {{ start }}-{{ end }} of {{ count }} articles matching \"{{ query }}\""
+msgstr "Showing {{ start }}-{{ end }} of {{ count }} articles matching \"{{ query }}\""
+
+msgid "Something went wrong."
+msgstr "Something went wrong."
+
+msgid "These comments are shown to the article owner while the article is Draft or Pending failed. They are hidden while the article is Pending approval."
+msgstr "These comments are shown to the article owner while the article is Draft or Pending failed. They are hidden while the article is Pending approval."
+
+msgid "These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed."
+msgstr "These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed."
+
+msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+
+msgid "Top article pagination"
+msgstr "Top article pagination"
+
+msgid "Total articles suggested by {{ name }}"
+msgstr "Total articles suggested by {{ name }}"
+
+msgid "article"
+msgstr "Artikel"
+
+msgid "matching"
+msgstr "matching"
+
+msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+
+msgid "openKB powered knowledge repository"
+msgstr "openKB powered knowledge repository"
+
+msgid "stray upload file found"
+msgstr "stray upload file found"
+
+msgid "stray upload files found"
+msgstr "stray upload files found"
+
+msgid "{{ count }} articles"
+msgstr "{{ count }} articles"
+
+msgid "{{ count }} articles total."
+msgstr "{{ count }} articles total."
+
+msgid "{{ count }} matching articles found."
+msgstr "{{ count }} matching articles found."
+
+msgid "{{ count }} result(s) found from OpenKB files."
+msgstr "{{ count }} result(s) found from OpenKB files."
+
+msgid "{{ count }} total"
+msgstr "{{ count }} total"
+
+msgid "{{ matching }} matching / {{ total }} total"
+msgstr "{{ matching }} matching / {{ total }} total"
+
+msgid "{{ size }} KB total"
+msgstr "{{ size }} KB total"

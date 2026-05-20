@@ -9,10 +9,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="openKB powered knowledge repository">
-    <meta property="og:description" content="openKB powered knowledge repository">
+    <meta name="description" content="{% trans 'openKB powered knowledge repository' %}">
+    <meta property="og:description" content="{% trans 'openKB powered knowledge repository' %}">
     <meta name="keywords" content="{% if metadata.keywords %}{{ metadata.keywords|join:', ' }}{% else %}openKB{% endif %}">
-    <meta property="og:type" content="article">
+    <meta property="og:type" content="{% trans 'article' %}">
     <meta property="og:url" content="{{ metadata.permalink }}">
 
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
@@ -369,7 +369,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <strong>{% trans "Ask OpenKB AI" %}</strong>
-            <button id="openkbAiClose" class="pull-right openkb-ai-close" type="button" aria-label="Minimise OpenKB AI">
+            <button id="openkbAiClose" class="pull-right openkb-ai-close" type="button" aria-label="{% trans 'Minimise OpenKB AI' %}">
                 <i class="fa fa-minus"></i>
             </button>
         </div>
@@ -406,7 +406,7 @@
     </div>
 </div>
 
-<button id="openkbAiToggle" class="openkb-ai-fab" type="button" aria-label="Open OpenKB AI chat">
+<button id="openkbAiToggle" class="openkb-ai-fab" type="button" aria-label="{% trans 'Open OpenKB AI chat' %}">
     <i class="fa fa-comments"></i>
 </button>
 
@@ -418,7 +418,7 @@
 
 <footer class="footer">
     <div class="container">
-        <p class="text-muted text-center">Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p>
+        <p class="text-muted text-center">{% trans "Powered by" %} <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p>
     </div>
 </footer>
 
@@ -469,7 +469,7 @@
         openkbAiThinking = thinking;
         openkbAiQuestion.disabled = thinking;
         openkbAiSend.disabled = thinking;
-        openkbAiStatus.textContent = thinking ? "OpenKB AI is thinking..." : "Ask one question at a time.";
+        openkbAiStatus.textContent = thinking ? "{% trans 'OpenKB AI is thinking...' %}" : "{% trans 'Ask one question at a time.' %}";
     }
 
     function scrollOpenKbAiThread() {
@@ -513,7 +513,7 @@
 
         const title = document.createElement("div");
         title.className = "openkb-ai-related-title";
-        title.textContent = "Recommended articles";
+        title.textContent = "{% trans 'Recommended articles' %}";
         wrapper.appendChild(title);
 
         selected.forEach(function(article) {
@@ -541,7 +541,7 @@
 
         const question = openkbAiQuestion.value.trim();
         if (!question) {
-            appendOpenKbAiMessage("bot", "Please type a question first.");
+            appendOpenKbAiMessage("bot", "{% trans 'Please type a question first.' %}");
             return;
         }
 
@@ -563,7 +563,7 @@
                 body: formData
             });
             const data = await response.json();
-            const answer = data.answer || data.error || "Something went wrong.";
+            const answer = data.answer || data.error || "{% trans 'Something went wrong.' %}";
             const safeText = document.createElement("div");
             safeText.textContent = answer;
             const relatedHtml = data.show_related_articles ? buildRelatedArticlesHtml(data.related_articles || []) : "";
@@ -571,7 +571,7 @@
             appendOpenKbAiMessage("bot", "", { html: safeText.innerHTML + relatedHtml });
         } catch (error) {
             typingRow.remove();
-            appendOpenKbAiMessage("bot", "Request failed. Check Django terminal logs.");
+            appendOpenKbAiMessage("bot", "{% trans 'Request failed. Check Django terminal logs.' %}");
         } finally {
             setOpenKbAiThinking(false);
             openkbAiQuestion.focus();

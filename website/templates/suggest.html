@@ -4,14 +4,14 @@
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{% trans "Suggest article" %}</title>
-    <meta property="og:title" content="Suggest article" />
+    <meta property="og:title" content="{% trans 'Suggest article' %}" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="description" content="Powered by openKB">
-    <meta property="og:description" content="openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search" />
+    <meta name="description" content="{% trans 'Powered by openKB' %}">
+    <meta property="og:description" content="{% trans 'openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search' %}" />
     <meta name="keywords" content="openKB">
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="{% trans 'article' %}" />
     <meta property="og:image" content="{% static 'logo.png' %}" />
     <meta property="og:url" content="" />
     <link rel="canonical" href="#" />
@@ -274,13 +274,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
         const image = document.createElement("img");
         image.src = info.url;
-        image.alt = "Article image";
+        image.alt = "{% trans 'Article image' %}";
 
         const removeButton = document.createElement("button");
         removeButton.type = "button";
         removeButton.className = "pasted-image-remove";
-        removeButton.title = "Remove image from article";
-        removeButton.setAttribute("aria-label", "Remove image from article");
+        removeButton.title = "{% trans 'Remove image from article' %}";
+        removeButton.setAttribute("aria-label", "{% trans 'Remove image from article' %}");
         removeButton.innerHTML = "&times;";
 
         removeButton.addEventListener("click", async function () {
@@ -307,7 +307,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             }
             card.remove();
             ensureImagePanelVisible();
-            showPasteMessage(info.existing ? "Image removed from this draft. Save the article to delete it from storage." : "Image removed from this article draft.", "success");
+            showPasteMessage(info.existing ? "{% trans 'Image removed from this draft. Save the article to delete it from storage.' %}" : "{% trans 'Image removed from this article draft.' %}", "success");
         });
 
         card.appendChild(image);
@@ -318,12 +318,12 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
     async function uploadImage(file) {
         if (!file || !allowedImageTypes.has(file.type)) {
-            showPasteMessage("Only PNG, JPG, GIF, or WEBP images are allowed.", "danger");
+            showPasteMessage("{% trans 'Only PNG, JPG, GIF, or WEBP images are allowed.' %}", "danger");
             return;
         }
         const hash = await fileHash(file);
         if (uploadedHashes.has(hash)) {
-            showPasteMessage("This image is already uploaded in this draft. Use the X preview button to remove it first.", "warning");
+            showPasteMessage("{% trans 'This image is already uploaded in this draft. Use the X preview button to remove it first.' %}", "warning");
             return;
         }
 
@@ -343,7 +343,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
             if (!response.ok) {
                 removeMarkdown(placeholder);
-                showPasteMessage(data.error || "Image upload failed.", "danger");
+                showPasteMessage(data.error || "{% trans 'Image upload failed.' %}", "danger");
                 return;
             }
 
@@ -357,10 +357,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             };
             uploadedHashes.set(hash, data.filename);
             addImageCard(info);
-            showPasteMessage("Image uploaded and inserted into the article.", "success");
+            showPasteMessage("{% trans 'Image uploaded and inserted into the article.' %}", "success");
         } catch (error) {
             removeMarkdown(placeholder);
-            showPasteMessage("Image upload failed. Check Django terminal logs.", "danger");
+            showPasteMessage("{% trans 'Image upload failed. Check Django terminal logs.' %}", "danger");
         }
     }
 
@@ -369,7 +369,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             if (file && allowedImageTypes.has(file.type)) {
                 uploadImage(file);
             } else if (file && file.type && file.type.indexOf("image/") === 0) {
-                showPasteMessage("Only PNG, JPG, GIF, or WEBP images are allowed.", "danger");
+                showPasteMessage("{% trans 'Only PNG, JPG, GIF, or WEBP images are allowed.' %}", "danger");
             }
         });
     }
@@ -394,7 +394,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             event.preventDefault();
 
             if (!allowedImageTypes.has(item.type)) {
-                showPasteMessage("Only PNG, JPG, GIF, or WEBP images are allowed.", "danger");
+                showPasteMessage("{% trans 'Only PNG, JPG, GIF, or WEBP images are allowed.' %}", "danger");
                 break;
             }
 

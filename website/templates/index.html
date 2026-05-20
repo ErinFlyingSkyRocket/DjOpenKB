@@ -4,15 +4,15 @@
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
     <title>{% trans "openKB" %}</title>
-    <meta property="og:title" content="openKB">
+    <meta property="og:title" content="{% trans 'openKB' %}">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <meta name="description" content="openKB powered knowledge repository">
-    <meta property="og:description" content="openKB powered knowledge repository">
+    <meta name="description" content="{% trans 'openKB powered knowledge repository' %}">
+    <meta property="og:description" content="{% trans 'openKB powered knowledge repository' %}">
     <meta name="keywords" content="openKB">
-    <meta property="og:type" content="article">
+    <meta property="og:type" content="{% trans 'article' %}">
 
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
@@ -166,7 +166,7 @@
             <div class="panel panel-default" style="margin-top: 30px;">
                 <div class="panel-heading">{% if is_search %}{% blocktrans with query=search_query %}::: SEARCH RESULTS FOR "{{ query }}" :::{% endblocktrans %}{% else %}{% trans "::: TRENDING TOPICS :::" %}{% endif %}</div>
                 <div class="panel-body">
-                    {% if is_search %}<p class="openkb-meta">{{ result_count }} result(s) found from OpenKB files.</p>{% endif %}
+                    {% if is_search %}<p class="openkb-meta">{% blocktrans with count=result_count %}{{ count }} result(s) found from OpenKB files.{% endblocktrans %}</p>{% endif %}
 
                     <ul class="list-group">
                         {% if articles %}
@@ -185,16 +185,16 @@
                                 </li>
                             {% endfor %}
                         {% else %}
-                            <li class="list-group-item openkb-empty">{% if is_search %}No matching OpenKB articles found.{% else %}No OpenKB articles yet. Add a solution from Suggest.{% endif %}</li>
+                            <li class="list-group-item openkb-empty">{% if is_search %}{% trans "No matching OpenKB articles found." %}{% else %}{% trans "No OpenKB articles yet. Add a solution from Suggest." %}{% endif %}</li>
                         {% endif %}
                     </ul>
 
                     {% if page_obj and page_obj.paginator.num_pages > 1 %}
                         <div class="openkb-pagination-meta">
-                            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} article(s)
+                            {% blocktrans with start=page_obj.start_index end=page_obj.end_index count=page_obj.paginator.count %}Showing {{ start }}-{{ end }} of {{ count }} article(s){% endblocktrans %}
                         </div>
 
-                        <nav class="openkb-pagination" aria-label="Article pagination">
+                        <nav class="openkb-pagination" aria-label="{% trans 'Article pagination' %}">
                             <ul class="pagination">
                                 {% if page_obj.has_previous %}
                                     <li><a href="?page=1{% if search_query %}&q={{ search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
@@ -226,7 +226,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <strong>{% trans "Ask OpenKB AI" %}</strong>
-            <button id="openkbAiClose" class="pull-right openkb-ai-close" type="button" aria-label="Minimise OpenKB AI">
+            <button id="openkbAiClose" class="pull-right openkb-ai-close" type="button" aria-label="{% trans 'Minimise OpenKB AI' %}">
                 <i class="fa fa-minus"></i>
             </button>
         </div>
@@ -263,7 +263,7 @@
     </div>
 </div>
 
-<button id="openkbAiToggle" class="openkb-ai-fab" type="button" aria-label="Open OpenKB AI chat">
+<button id="openkbAiToggle" class="openkb-ai-fab" type="button" aria-label="{% trans 'Open OpenKB AI chat' %}">
     <i class="fa fa-comments"></i>
 </button>
 
@@ -273,7 +273,7 @@
 <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
 <div id="notify_message"></div>
 
-<footer class="footer"><div class="container"><p class="text-muted text-center">Powered by <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p></div></footer>
+<footer class="footer"><div class="container"><p class="text-muted text-center">{% trans "Powered by" %} <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p></div></footer>
 
 <script>
     const openkbAiForm = document.getElementById("openkbAiForm");
@@ -302,7 +302,7 @@
         openkbAiThinking = thinking;
         openkbAiQuestion.disabled = thinking;
         openkbAiSend.disabled = thinking;
-        openkbAiStatus.textContent = thinking ? "OpenKB AI is thinking..." : "Ask one question at a time.";
+        openkbAiStatus.textContent = thinking ? "{% trans 'OpenKB AI is thinking...' %}" : "{% trans 'Ask one question at a time.' %}";
     }
 
     function scrollOpenKbAiThread() {
@@ -346,7 +346,7 @@
 
         const title = document.createElement("div");
         title.className = "openkb-ai-related-title";
-        title.textContent = "Recommended articles";
+        title.textContent = "{% trans 'Recommended articles' %}";
         wrapper.appendChild(title);
 
         selected.forEach(function(article) {
@@ -374,7 +374,7 @@
 
         const question = openkbAiQuestion.value.trim();
         if (!question) {
-            appendOpenKbAiMessage("bot", "Please type a question first.");
+            appendOpenKbAiMessage("bot", "{% trans 'Please type a question first.' %}");
             return;
         }
 
@@ -396,7 +396,7 @@
                 body: formData
             });
             const data = await response.json();
-            const answer = data.answer || data.error || "Something went wrong.";
+            const answer = data.answer || data.error || "{% trans 'Something went wrong.' %}";
             const safeText = document.createElement("div");
             safeText.textContent = answer;
             const relatedHtml = data.show_related_articles ? buildRelatedArticlesHtml(data.related_articles || []) : "";
@@ -404,7 +404,7 @@
             appendOpenKbAiMessage("bot", "", { html: safeText.innerHTML + relatedHtml });
         } catch (error) {
             typingRow.remove();
-            appendOpenKbAiMessage("bot", "Request failed. Check Django terminal logs.");
+            appendOpenKbAiMessage("bot", "{% trans 'Request failed. Check Django terminal logs.' %}");
         } finally {
             setOpenKbAiThinking(false);
             openkbAiQuestion.focus();

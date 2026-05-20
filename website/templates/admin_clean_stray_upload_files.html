@@ -39,7 +39,11 @@
             <p class="cleanup-muted">
                 {% trans "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body," %}
                 {% trans "article image_assets, or Markdown file under openkb-data/wiki." %}
-                Files newer than {{ min_age_minutes }} minute{% if min_age_minutes != 1 %}s{% endif %} are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately.
+                {% if min_age_minutes == 1 %}
+                    {% blocktrans with minutes=min_age_minutes %}Files newer than {{ minutes }} minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately.{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with minutes=min_age_minutes %}Files newer than {{ minutes }} minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately.{% endblocktrans %}
+                {% endif %}
             </p>
 
             {% if messages %}
@@ -50,8 +54,8 @@
 
             <div class="panel panel-default cleanup-summary">
                 <div class="panel-body">
-                    <strong>{{ stray_count }}</strong> stray upload file{% if stray_count != 1 %}s{% endif %} found
-                    <span class="cleanup-muted">({{ total_size_kb }} KB total)</span>
+                    <strong>{{ stray_count }}</strong> {% if stray_count == 1 %}{% trans "stray upload file found" %}{% else %}{% trans "stray upload files found" %}{% endif %}
+                    <span class="cleanup-muted">({% blocktrans with size=total_size_kb %}{{ size }} KB total{% endblocktrans %})</span>
                 </div>
             </div>
 
@@ -60,13 +64,13 @@
                     <div class="panel-heading">{% trans "Review before deleting" %}</div>
                     <div class="panel-body">
                         <p>
-                            These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed.
+                            {% trans "These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed." %}
                         </p>
-                        <form method="post" onsubmit="return confirm('{% trans "Delete all listed stray upload files? This cannot be undone." %}');">
+                        <form method="post" onsubmit="return confirm('{% trans 'Delete all listed stray upload files? This cannot be undone.' %}');">
                             {% csrf_token %}
                             <div class="cleanup-actions">
                                 <button class="btn btn-danger" type="submit">
-                                    <i class="fa fa-trash"></i> Delete {{ stray_count }} stray file{% if stray_count != 1 %}s{% endif %}
+                                    <i class="fa fa-trash"></i> {% if stray_count == 1 %}{% blocktrans with count=stray_count %}Delete {{ count }} stray file{% endblocktrans %}{% else %}{% blocktrans with count=stray_count %}Delete {{ count }} stray files{% endblocktrans %}{% endif %}
                                 </button>
                                 <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Back to profile" %}</a>
                             </div>
