@@ -1,0 +1,183 @@
+from .services import *
+
+
+def clean_stray_upload_files(request):
+    min_age_minutes = get_stray_upload_cleanup_min_age_minutes()
+    stray_files = find_stray_uploaded_files(min_age_minutes=min_age_minutes)
+    total_size_bytes = sum(item["size_bytes"] for item in stray_files)
+
+    if request.method == "POST":
+        deleted_count = 0
+        deleted_size_bytes = 0
+        errors = []
+
+        # Re-scan on POST so the cleanup uses the latest file/article state.
+        for item in stray_files:
+            file_path = item["path"]
+            upload_dir = get_openkb_uploads_dir().resolve()
+            file_path = file_path.resolve()
+
+            try:
+                file_path.relative_to(upload_dir)
+            except ValueError:
+                errors.append(f"Skipped invalid path: {item['filename']}")
+                continue
+
+            try:
+                if file_path.exists() and file_path.is_file():
+                    deleted_size_bytes += file_path.stat().st_size
+                    file_path.unlink()
+                    deleted_count += 1
+            except OSError as error:
+                errors.append(f"Could not delete {item['filename']}: {error}")
+
+        if deleted_count:
+            messages.success(
+                request,
+                f"Cleaned up {deleted_count} stray upload file(s), freeing {round(deleted_size_bytes / 1024, 1)} KB."
+            )
+        else:
+            messages.info(request, "No stray upload files were deleted.")
+
+        for error in errors[:5]:
+            messages.error(request, error)
+
+        return redirect("clean_stray_upload_files")
+
+    return render(request, "admin_clean_stray_upload_files.html", {
+        "stray_files": stray_files,
+        "stray_count": len(stray_files),
+        "total_size_kb": round(total_size_bytes / 1024, 1),
+        "min_age_minutes": min_age_minutes,
+    })
+
+
+def admin_bulk_articles(request):
+    """Admin page for importing/exporting article bundles."""
+    return render(request, "admin_bulk_articles.html")
+
+
+def export_articles_zip(request):
+    """Export all Django-managed articles plus referenced uploaded files as a zip."""
+    manifest = build_bulk_export_payload()
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("manifest.json", json.dumps(manifest, indent=2, ensure_ascii=False))
+        archive.writestr(
+            "README.txt",
+            (
+                "DjOpenKB bulk article export.\n"
+                "Import this zip from My Profile -> Admin tools -> Bulk import/export articles.\n"
+                "Articles are stored in manifest.json and articles/*.md.\n"
+                "Referenced uploaded files are stored in uploads/.\n"
+            ),
+        )
+
+        for article in manifest["articles"]:
+            article_filename = safe_uploaded_filename(article.get("filename")) or f"{slugify_title(article.get('title') or 'article')}.md"
+            archive.writestr(f"articles/{article_filename}", build_article_markdown(type("ArticleExport", (), article)))
+
+        upload_dir = get_openkb_uploads_dir().resolve()
+        exported_uploads = set()
+
+        for filename in manifest.get("uploads", []):
+            filename = safe_uploaded_filename(filename)
+            if not filename or filename in exported_uploads:
+                continue
+
+            file_path = (upload_dir / filename).resolve()
+            try:
+                file_path.relative_to(upload_dir)
+            except ValueError:
+                continue
+
+            if file_path.exists() and file_path.is_file():
+                archive.write(file_path, f"uploads/{filename}")
+                exported_uploads.add(filename)
+
+    buffer.seek(0)
+    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+    response["Content-Disposition"] = f'attachment; filename="djopenkb-export-{timestamp}.zip"'
+    return response
+
+
+def import_articles_zip(request):
+    """Import articles from a zip and assign ownership to the current admin user."""
+    if request.method != "POST":
+        return redirect("admin_bulk_articles")
+
+    uploaded_zip = request.FILES.get("import_zip")
+    if not uploaded_zip:
+        messages.error(request, "Please choose a .zip file to import.")
+        return redirect("admin_bulk_articles")
+
+    if not uploaded_zip.name.lower().endswith(".zip"):
+        messages.error(request, "Only .zip import files are allowed.")
+        return redirect("admin_bulk_articles")
+
+    max_upload_size = 100 * 1024 * 1024
+    if uploaded_zip.size > max_upload_size:
+        messages.error(request, "Import zip is too large. Maximum allowed size is 100 MB.")
+        return redirect("admin_bulk_articles")
+
+    try:
+        imported_count, errors = import_articles_from_zip(uploaded_zip, owner=request.user)
+    except zipfile.BadZipFile:
+        messages.error(request, "Invalid zip file.")
+        return redirect("admin_bulk_articles")
+    except ValueError as error:
+        messages.error(request, str(error))
+        return redirect("admin_bulk_articles")
+    except Exception as error:
+        messages.error(request, f"Import failed: {error}")
+        return redirect("admin_bulk_articles")
+
+    if imported_count:
+        messages.success(request, f"Imported {imported_count} article(s). Owner set to {request.user.get_username()}.")
+    else:
+        messages.warning(request, "No articles were imported.")
+
+    for error in errors[:10]:
+        messages.error(request, error)
+
+    if len(errors) > 10:
+        messages.error(request, f"{len(errors) - 10} more import error(s) were hidden.")
+
+    return redirect("admin_bulk_articles")
+
+
+def manage_pending_articles(request):
+    search_query = request.GET.get("q", "").strip()
+
+    article_queryset = SuggestedArticle.objects.select_related("owner").filter(
+        status=SuggestedArticle.Status.PENDING
+    )
+    total_pending_article_count = article_queryset.count()
+
+    if search_query:
+        article_queryset = article_queryset.filter(
+            Q(title__icontains=search_query)
+            | Q(body__icontains=search_query)
+            | Q(keywords__icontains=search_query)
+            | Q(review_notes__icontains=search_query)
+            | Q(review_notes_history__icontains=search_query)
+            | Q(filename__icontains=search_query)
+            | Q(owner__username__icontains=search_query)
+            | Q(owner__email__icontains=search_query)
+            | Q(author_username_snapshot__icontains=search_query)
+            | Q(author_email_snapshot__icontains=search_query)
+        )
+
+    article_queryset = article_queryset.order_by("created_at", "updated_at")
+    page_obj = paginate_articles(request, article_queryset, per_page=20)
+
+    return render(request, "admin_pending_articles.html", {
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "pending_search_query": search_query,
+        "pending_result_count": article_queryset.count(),
+        "total_pending_article_count": total_pending_article_count,
+        "is_pending_search": bool(search_query),
+    })

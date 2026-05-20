@@ -34,7 +34,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from .models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting, normalize_article_title
+from ..models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting, normalize_article_title
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
@@ -150,19 +150,6 @@ def get_openkb_uploads_dir():
     return upload_dir
 
 
-ALLOWED_ARTICLE_IMAGE_FORMATS = {
-    "PNG": {"extension": ".png", "content_type": "image/png"},
-    "JPEG": {"extension": ".jpg", "content_type": "image/jpeg"},
-    "GIF": {"extension": ".gif", "content_type": "image/gif"},
-    "WEBP": {"extension": ".webp", "content_type": "image/webp"},
-}
-ALLOWED_ARTICLE_IMAGE_EXTENSIONS = {
-    info["extension"] for info in ALLOWED_ARTICLE_IMAGE_FORMATS.values()
-} | {".jpeg"}
-MAX_ARTICLE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
-MAX_ARTICLE_IMAGE_PIXELS = 20_000_000
-
-
 def validate_article_image_upload(uploaded_file):
     """Return image metadata when an uploaded file is a safe supported image.
 
@@ -225,9 +212,6 @@ def uploaded_image_content_type(filename):
     if suffix == ".webp":
         return "image/webp"
     return "application/octet-stream"
-
-
-ARTICLE_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(/wiki/uploads/([A-Za-z0-9._-]+)\)")
 
 
 def extract_article_image_filenames(markdown_text):
@@ -363,7 +347,6 @@ def get_all_referenced_uploaded_files():
     }
 
 
-
 def get_stray_upload_cleanup_min_age_minutes():
     """Return cleanup age threshold from Django Admin site settings."""
     try:
@@ -377,6 +360,7 @@ def get_stray_upload_cleanup_min_age_minutes():
         value = 30
 
     return max(value, 0)
+
 
 def find_stray_uploaded_files(min_age_minutes=30):
     """Return uploaded files that are not referenced anywhere.
@@ -425,7 +409,6 @@ def find_stray_uploaded_files(min_age_minutes=30):
         })
     stray_files.sort(key=lambda item: item["modified_at"], reverse=True)
     return stray_files
-
 
 
 def make_unique_article_filename(title, original_filename=""):
@@ -959,8 +942,6 @@ def ensure_openkb_ai_synced():
         logger.info("OpenKB AI index is fresh; skipping sync before answering.")
 
 
-
-
 def sync_openkb_ai_index():
     """Make Ask OpenKB AI aware of Django-published source articles.
 
@@ -1108,8 +1089,6 @@ def prepare_article_display_markdown(raw_markdown, title, suggested=None):
     return cleaned
 
 
-
-
 def is_safe_article_upload_src(tag, name, value):
     """Allow only local /wiki/uploads/<safe-image-filename> image sources."""
     if name != "src":
@@ -1170,6 +1149,7 @@ def render_safe_markdown(markdown_text):
         protocols=["http", "https", "mailto"],
         strip=True,
     )
+
 
 def write_article_files(article, sync_ai=False, mark_ai_stale=True):
     """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files.
@@ -1243,7 +1223,6 @@ def get_article_metadata_by_wiki_path(wiki_path):
         return None
 
 
-
 def record_article_session_view(request, article):
     """Increment an article view count once per browser session.
 
@@ -1266,6 +1245,7 @@ def record_article_session_view(request, article):
     viewed_ids.append(article_key)
     request.session[session_key] = viewed_ids[-1000:]
     request.session.modified = True
+
 
 def get_openkb_wiki_articles(sort_by_views=False):
     """Return public article cards from published Django articles only.
@@ -1303,8 +1283,6 @@ def get_openkb_wiki_articles(sort_by_views=False):
     else:
         articles.sort(key=lambda item: item["date"], reverse=True)
     return articles
-
-
 
 
 def is_ldap_managed_user(user):
@@ -1370,65 +1348,6 @@ def get_account_type_display(user):
 def format_profile_display_name(user):
     full_name = user.get_full_name().strip()
     return full_name or user.get_username()
-
-class OpenKBLoginView(LoginView):
-    template_name = "login.html"
-    redirect_authenticated_user = False
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            if user_can_access_main_site(request.user):
-                return redirect(self.get_success_url())
-            logout(request)
-            return redirect("home")
-
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        user = form.get_user()
-        if not user_can_access_main_site(user):
-            logout(self.request)
-            return self.form_invalid(form)
-        return super().form_valid(form)
-
-
-@require_POST
-def set_site_language(request):
-    """Set the active UI language from the navbar dropdown.
-
-    Anonymous users store the choice in the django_language cookie.
-    Logged-in users also sync the same choice to their UserProfile.
-    """
-    language_code = (request.POST.get("language") or "").strip().lower()
-    allowed_codes = {code for code, _name in settings.LANGUAGES}
-
-    if language_code not in allowed_codes:
-        language_code = settings.LANGUAGE_CODE
-
-    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or reverse("home")
-    if not url_has_allowed_host_and_scheme(
-        url=next_url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
-        next_url = reverse("home")
-
-    if request.user.is_authenticated:
-        profile, created = UserProfile.objects.get_or_create(user=request.user)
-        profile.preferred_language = language_code
-        profile.save(update_fields=["preferred_language", "updated_at"])
-
-    translation.activate(language_code)
-    request.LANGUAGE_CODE = language_code
-
-    response = redirect(next_url)
-    response.set_cookie(
-        settings.LANGUAGE_COOKIE_NAME,
-        language_code,
-        max_age=60 * 60 * 24 * 365,
-        samesite="Lax",
-    )
-    return response
 
 
 def paginate_articles(request, articles, per_page=20):
@@ -1627,77 +1546,6 @@ def get_contextual_related_articles(current_article, limit=5):
     return scored[:limit]
 
 
-def home(request):
-    all_articles = get_openkb_wiki_articles(sort_by_views=True)
-    page_obj = paginate_articles(request, all_articles, per_page=10)
-
-    return render(request, "index.html", {
-        "articles": page_obj.object_list,
-        "page_obj": page_obj,
-        "paginator": page_obj.paginator,
-        "total_article_count": len(all_articles),
-    })
-
-
-@main_site_login_required
-def suggest(request):
-    init_openkb_storage()
-
-    if request.method == "GET":
-        return render(request, "suggest.html")
-
-    title = request.POST.get("frm_kb_title", "").strip()
-    body = request.POST.get("frm_kb_body", "").strip()
-    keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
-    submit_action = request.POST.get("submit_action", "submit").strip()
-    status = (
-        SuggestedArticle.Status.DRAFT
-        if submit_action == "draft"
-        else SuggestedArticle.Status.PENDING
-    )
-
-    if len(title) < 5 or len(body) < 5:
-        return render(request, "suggest.html", {
-            "error": _("Article title and body must be at least 5 characters."),
-            "title_value": title,
-            "body_value": body,
-            "keywords_value": keywords_raw,
-        })
-
-    duplicate_article = find_duplicate_article_by_title(title)
-    if duplicate_article:
-        return render(request, "suggest.html", {
-            "error": duplicate_title_error_message(title),
-            "title_value": title,
-            "body_value": body,
-            "keywords_value": keywords_raw,
-        })
-
-    timestamp_slug = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
-    filename = f"{timestamp_slug}-{slugify_title(title)}.md"
-
-    article = SuggestedArticle.objects.create(
-        owner=request.user,
-        title=title,
-        body=body,
-        keywords=keywords_raw,
-        filename=filename,
-        wiki_path=f"sources/{filename}",
-        raw_path=f"raw/{filename}",
-        status=status,
-        image_assets=extract_article_image_filenames(body),
-    )
-    write_article_files(article)
-    sync_article_image_assets(article, old_assets=[])
-    clear_committed_pending_uploads(request, article.image_assets)
-
-    if status == SuggestedArticle.Status.DRAFT:
-        messages.success(request, _("Draft saved successfully."))
-    else:
-        messages.success(request, _("Article submitted for admin approval."))
-    return redirect("edit_my_suggestions")
-
-
 def get_profile_account_context(user):
     user_is_ldap_managed = is_ldap_managed_user(user)
     profile, created = UserProfile.objects.get_or_create(user=user)
@@ -1713,308 +1561,6 @@ def get_profile_account_context(user):
         "profile_preferred_language": profile.preferred_language,
         "supported_languages": settings.LANGUAGES,
     }
-
-
-@main_site_login_required
-def profile(request):
-    return render(request, "profile.html", get_profile_account_context(request.user))
-
-
-@admin_tools_required
-def clean_stray_upload_files(request):
-    min_age_minutes = get_stray_upload_cleanup_min_age_minutes()
-    stray_files = find_stray_uploaded_files(min_age_minutes=min_age_minutes)
-    total_size_bytes = sum(item["size_bytes"] for item in stray_files)
-
-    if request.method == "POST":
-        deleted_count = 0
-        deleted_size_bytes = 0
-        errors = []
-
-        # Re-scan on POST so the cleanup uses the latest file/article state.
-        for item in stray_files:
-            file_path = item["path"]
-            upload_dir = get_openkb_uploads_dir().resolve()
-            file_path = file_path.resolve()
-
-            try:
-                file_path.relative_to(upload_dir)
-            except ValueError:
-                errors.append(f"Skipped invalid path: {item['filename']}")
-                continue
-
-            try:
-                if file_path.exists() and file_path.is_file():
-                    deleted_size_bytes += file_path.stat().st_size
-                    file_path.unlink()
-                    deleted_count += 1
-            except OSError as error:
-                errors.append(f"Could not delete {item['filename']}: {error}")
-
-        if deleted_count:
-            messages.success(
-                request,
-                f"Cleaned up {deleted_count} stray upload file(s), freeing {round(deleted_size_bytes / 1024, 1)} KB."
-            )
-        else:
-            messages.info(request, "No stray upload files were deleted.")
-
-        for error in errors[:5]:
-            messages.error(request, error)
-
-        return redirect("clean_stray_upload_files")
-
-    return render(request, "admin_clean_stray_upload_files.html", {
-        "stray_files": stray_files,
-        "stray_count": len(stray_files),
-        "total_size_kb": round(total_size_bytes / 1024, 1),
-        "min_age_minutes": min_age_minutes,
-    })
-
-
-
-@admin_tools_required
-def admin_bulk_articles(request):
-    """Admin page for importing/exporting article bundles."""
-    return render(request, "admin_bulk_articles.html")
-
-
-@admin_tools_required
-def export_articles_zip(request):
-    """Export all Django-managed articles plus referenced uploaded files as a zip."""
-    manifest = build_bulk_export_payload()
-
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("manifest.json", json.dumps(manifest, indent=2, ensure_ascii=False))
-        archive.writestr(
-            "README.txt",
-            (
-                "DjOpenKB bulk article export.\n"
-                "Import this zip from My Profile -> Admin tools -> Bulk import/export articles.\n"
-                "Articles are stored in manifest.json and articles/*.md.\n"
-                "Referenced uploaded files are stored in uploads/.\n"
-            ),
-        )
-
-        for article in manifest["articles"]:
-            article_filename = safe_uploaded_filename(article.get("filename")) or f"{slugify_title(article.get('title') or 'article')}.md"
-            archive.writestr(f"articles/{article_filename}", build_article_markdown(type("ArticleExport", (), article)))
-
-        upload_dir = get_openkb_uploads_dir().resolve()
-        exported_uploads = set()
-
-        for filename in manifest.get("uploads", []):
-            filename = safe_uploaded_filename(filename)
-            if not filename or filename in exported_uploads:
-                continue
-
-            file_path = (upload_dir / filename).resolve()
-            try:
-                file_path.relative_to(upload_dir)
-            except ValueError:
-                continue
-
-            if file_path.exists() and file_path.is_file():
-                archive.write(file_path, f"uploads/{filename}")
-                exported_uploads.add(filename)
-
-    buffer.seek(0)
-    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
-    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
-    response["Content-Disposition"] = f'attachment; filename="djopenkb-export-{timestamp}.zip"'
-    return response
-
-
-@admin_tools_required
-def import_articles_zip(request):
-    """Import articles from a zip and assign ownership to the current admin user."""
-    if request.method != "POST":
-        return redirect("admin_bulk_articles")
-
-    uploaded_zip = request.FILES.get("import_zip")
-    if not uploaded_zip:
-        messages.error(request, "Please choose a .zip file to import.")
-        return redirect("admin_bulk_articles")
-
-    if not uploaded_zip.name.lower().endswith(".zip"):
-        messages.error(request, "Only .zip import files are allowed.")
-        return redirect("admin_bulk_articles")
-
-    max_upload_size = 100 * 1024 * 1024
-    if uploaded_zip.size > max_upload_size:
-        messages.error(request, "Import zip is too large. Maximum allowed size is 100 MB.")
-        return redirect("admin_bulk_articles")
-
-    try:
-        imported_count, errors = import_articles_from_zip(uploaded_zip, owner=request.user)
-    except zipfile.BadZipFile:
-        messages.error(request, "Invalid zip file.")
-        return redirect("admin_bulk_articles")
-    except ValueError as error:
-        messages.error(request, str(error))
-        return redirect("admin_bulk_articles")
-    except Exception as error:
-        messages.error(request, f"Import failed: {error}")
-        return redirect("admin_bulk_articles")
-
-    if imported_count:
-        messages.success(request, f"Imported {imported_count} article(s). Owner set to {request.user.get_username()}.")
-    else:
-        messages.warning(request, "No articles were imported.")
-
-    for error in errors[:10]:
-        messages.error(request, error)
-
-    if len(errors) > 10:
-        messages.error(request, f"{len(errors) - 10} more import error(s) were hidden.")
-
-    return redirect("admin_bulk_articles")
-
-
-@main_site_login_required
-def edit_my_suggestions(request):
-    search_query = request.GET.get("q", "").strip()
-
-    article_queryset = SuggestedArticle.objects.filter(owner=request.user)
-    total_user_article_count = article_queryset.count()
-
-    if search_query:
-        article_queryset = article_queryset.filter(
-            Q(title__icontains=search_query)
-            | Q(body__icontains=search_query)
-            | Q(keywords__icontains=search_query)
-            | Q(status__icontains=search_query)
-            | Q(review_notes__icontains=search_query)
-            | Q(review_notes_history__icontains=search_query)
-            | Q(filename__icontains=search_query)
-            | Q(wiki_path__icontains=search_query)
-        )
-
-    article_queryset = article_queryset.order_by("-updated_at", "-created_at")
-    page_obj = paginate_articles(request, article_queryset, per_page=20)
-
-    return render(request, "edit_my_suggestions.html", {
-        "articles": page_obj.object_list,
-        "page_obj": page_obj,
-        "profile_search_query": search_query,
-        "profile_result_count": article_queryset.count(),
-        "total_user_article_count": total_user_article_count,
-        "is_profile_search": bool(search_query),
-        "profile_display_name": format_profile_display_name(request.user),
-    })
-
-
-@admin_tools_required
-def manage_pending_articles(request):
-    search_query = request.GET.get("q", "").strip()
-
-    article_queryset = SuggestedArticle.objects.select_related("owner").filter(
-        status=SuggestedArticle.Status.PENDING
-    )
-    total_pending_article_count = article_queryset.count()
-
-    if search_query:
-        article_queryset = article_queryset.filter(
-            Q(title__icontains=search_query)
-            | Q(body__icontains=search_query)
-            | Q(keywords__icontains=search_query)
-            | Q(review_notes__icontains=search_query)
-            | Q(review_notes_history__icontains=search_query)
-            | Q(filename__icontains=search_query)
-            | Q(owner__username__icontains=search_query)
-            | Q(owner__email__icontains=search_query)
-            | Q(author_username_snapshot__icontains=search_query)
-            | Q(author_email_snapshot__icontains=search_query)
-        )
-
-    article_queryset = article_queryset.order_by("created_at", "updated_at")
-    page_obj = paginate_articles(request, article_queryset, per_page=20)
-
-    return render(request, "admin_pending_articles.html", {
-        "articles": page_obj.object_list,
-        "page_obj": page_obj,
-        "pending_search_query": search_query,
-        "pending_result_count": article_queryset.count(),
-        "total_pending_article_count": total_pending_article_count,
-        "is_pending_search": bool(search_query),
-    })
-
-
-@main_site_login_required
-def update_profile(request):
-    if request.method != "POST":
-        return redirect("profile")
-
-    User = get_user_model()
-    user = request.user
-    user_is_ldap_managed = is_ldap_managed_user(user)
-    profile_action = request.POST.get("profile_action", "").strip()
-
-    if profile_action == "language":
-        language_code = request.POST.get("preferred_language", "").strip()
-        allowed_codes = {code for code, _name in settings.LANGUAGES}
-
-        if language_code not in allowed_codes:
-            messages.error(request, _("Invalid language selected."))
-            return redirect("profile")
-
-        profile, created = UserProfile.objects.get_or_create(user=user)
-        profile.preferred_language = language_code
-        profile.save(update_fields=["preferred_language", "updated_at"])
-
-        translation.activate(language_code)
-        request.LANGUAGE_CODE = language_code
-
-        messages.success(request, _("Language preference updated successfully."))
-        response = redirect("profile")
-        response.set_cookie(
-            settings.LANGUAGE_COOKIE_NAME,
-            language_code,
-            max_age=60 * 60 * 24 * 365,
-            samesite="Lax",
-        )
-        return response
-
-    # For Django local accounts, require the current password before changing
-    # username/email. LDAP users normally do not have a local usable password,
-    # so LDAP-managed fields are protected by backend rules instead.
-    if user.has_usable_password():
-        current_password = request.POST.get("current_password", "")
-        if not user.check_password(current_password):
-            messages.error(request, _("Confirm password is incorrect."))
-            return redirect("profile")
-
-    if profile_action == "username":
-        username = request.POST.get("username", "").strip()
-        if not username:
-            messages.error(request, _("Username cannot be empty."))
-            return redirect("profile")
-
-        username_exists = User.objects.exclude(pk=user.pk).filter(username__iexact=username).exists()
-        if username_exists:
-            messages.error(request, _("That username is already used by another account."))
-            return redirect("profile")
-
-        user.username = username
-        user.save(update_fields=["username"])
-        messages.success(request, _("Username updated successfully."))
-        return redirect("profile")
-
-    if profile_action == "email":
-        if user_is_ldap_managed:
-            messages.error(request, _("LDAP email is managed by LDAP/AD and cannot be changed here."))
-            return redirect("profile")
-
-        email = request.POST.get("email", "").strip()
-        user.email = email
-        user.save(update_fields=["email"])
-        messages.success(request, _("Email updated successfully."))
-        return redirect("profile")
-
-    messages.error(request, _("Invalid profile update request."))
-    return redirect("profile")
-
 
 
 def validate_profile_password_policy(password, user):
@@ -2047,447 +1593,6 @@ def validate_profile_password_policy(password, user):
         issues.append("Password must not contain the name part of your email address.")
 
     return issues
-
-@main_site_login_required
-def change_password(request):
-    if request.method != "POST":
-        return redirect("profile")
-
-    user = request.user
-
-    if is_ldap_managed_user(user) or not user.has_usable_password():
-        messages.error(request, "This account is managed by LDAP. Please change your password through the company password system.")
-        return redirect("profile")
-
-    old_password = request.POST.get("old_password", "")
-    new_password1 = request.POST.get("new_password1", "")
-    new_password2 = request.POST.get("new_password2", "")
-
-    if not user.check_password(old_password):
-        messages.error(request, "Old password is incorrect.")
-        return redirect("profile")
-
-    if new_password1 != new_password2:
-        messages.error(request, "New password and confirm password do not match.")
-        return redirect("profile")
-
-    policy_issues = validate_profile_password_policy(new_password1, user)
-    if policy_issues:
-        messages.error(request, " ".join(policy_issues))
-        return redirect("profile")
-
-    try:
-        validate_password(new_password1, user=user)
-    except ValidationError as error:
-        messages.error(request, " ".join(error.messages))
-        return redirect("profile")
-
-    user.set_password(new_password1)
-    user.save(update_fields=["password"])
-    update_session_auth_hash(request, user)
-    messages.success(request, "Password changed successfully.")
-    return redirect("edit_my_suggestions")
-
-
-@main_site_login_required
-def edit_suggestion(request, article_id):
-    article = get_object_or_404(SuggestedArticle, pk=article_id)
-
-    if not user_can_manage_article(request.user, article):
-        raise Http404("Article not found")
-
-    return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
-
-    def render_edit_form(extra_context=None):
-        context = {
-            "article": article,
-            "current_status": extra_context.get("current_status", article.status) if extra_context else article.status,
-            "review_notes_value": article.review_notes,
-            "review_notes_history": get_review_notes_history(article),
-            "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
-            "existing_images_json": json.dumps(get_article_image_cards(article)),
-            "return_url": return_url,
-        }
-        if extra_context:
-            context.update(extra_context)
-        return render(request, "suggest_edit.html", context)
-
-    if request.method == "GET":
-        return render_edit_form()
-
-    title = request.POST.get("frm_kb_title", "").strip()
-    body = request.POST.get("frm_kb_body", "").strip()
-    keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
-    submit_action = request.POST.get("submit_action", "save").strip()
-
-    previous_status = article.status
-
-    if user_is_site_admin(request.user):
-        status = request.POST.get("status", article.status).strip()
-        if status not in SuggestedArticle.Status.values:
-            status = article.status
-    else:
-        if article.status == SuggestedArticle.Status.PUBLISHED:
-            # Once an article is approved, normal users cannot move it back to draft/pending.
-            status = SuggestedArticle.Status.PUBLISHED
-        elif submit_action == "draft":
-            status = SuggestedArticle.Status.DRAFT
-        else:
-            # User publish/submit means pending admin approval, never direct public publishing.
-            status = SuggestedArticle.Status.PENDING
-
-    if user_is_site_admin(request.user):
-        review_notes = (request.POST.get("review_notes") or "").strip()
-    else:
-        review_notes = article.review_notes
-
-    error_context = {
-        "title_value": title,
-        "body_value": body,
-        "keywords_value": keywords_raw,
-        "status_value": status,
-        "current_status": status,
-        "review_notes_value": review_notes,
-        "review_notes_history": get_review_notes_history(article),
-        "existing_images_json": json.dumps(get_article_image_cards(article)),
-        "return_url": return_url,
-    }
-
-    if user_is_site_admin(request.user) and status == SuggestedArticle.Status.FAILED and not review_notes:
-        return render_edit_form({
-            **error_context,
-            "error": _("Please enter Pending failed comments before marking this article as Pending failed."),
-        })
-
-    if len(title) < 5 or len(body) < 5:
-        return render_edit_form({
-            **error_context,
-            "review_notes_value": request.POST.get("review_notes", article.review_notes),
-            "error": _("Article title and body must be at least 5 characters."),
-        })
-
-    duplicate_article = find_duplicate_article_by_title(title, exclude_pk=article.pk)
-    if duplicate_article:
-        return render_edit_form({
-            **error_context,
-            "error": duplicate_title_error_message(title),
-        })
-
-    old_image_assets = list(article.image_assets or extract_article_image_filenames(article.body))
-    article.title = title
-    article.body = body
-    article.keywords = keywords_raw
-    article.status = status
-    article.image_assets = extract_article_image_filenames(body)
-
-    if user_is_site_admin(request.user):
-        if status == SuggestedArticle.Status.FAILED:
-            if review_notes != article.review_notes or previous_status != SuggestedArticle.Status.FAILED:
-                article.add_review_note_history(review_notes, reviewer=request.user, action="pending_failed")
-            article.review_notes = review_notes
-        elif status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.PUBLISHED}:
-            if article.review_notes:
-                article.archive_current_review_note(actor=request.user, action=f"cleared_on_{status}")
-            article.review_notes = ""
-    elif status == SuggestedArticle.Status.PENDING and previous_status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED}:
-        if article.review_notes:
-            article.archive_current_review_note(actor=request.user, action="resubmitted")
-        article.review_notes = ""
-
-    if user_is_site_admin(request.user) and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
-        article.approved_by = request.user
-        article.approved_at = timezone.now()
-    elif status != SuggestedArticle.Status.PUBLISHED:
-        article.approved_by = None
-        article.approved_at = None
-
-    article.save()
-    write_article_files(article)
-    sync_article_image_assets(article, old_assets=old_image_assets)
-    clear_committed_pending_uploads(request, article.image_assets)
-
-    if status == SuggestedArticle.Status.DRAFT:
-        messages.success(request, _("Draft saved successfully."))
-    elif status == SuggestedArticle.Status.PENDING:
-        messages.success(request, _("Article submitted for admin approval."))
-    elif status == SuggestedArticle.Status.FAILED:
-        messages.success(request, _("Article marked as pending failed."))
-    elif status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
-        messages.success(request, _("Article approved and published."))
-    else:
-        messages.success(request, _("Article updated successfully."))
-    return redirect(return_url)
-
-
-@main_site_login_required
-def delete_suggestion(request, article_id):
-    article = get_object_or_404(SuggestedArticle, pk=article_id)
-
-    if not user_can_manage_article(request.user, article):
-        raise Http404("Article not found")
-
-    return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
-
-    if request.method == "POST":
-        title = article.title
-        delete_article_files(article)
-        article.delete()
-        messages.success(request, f"Article deleted: {title}")
-        return redirect(return_url)
-
-    return render(request, "suggest_delete.html", {"article": article, "return_url": return_url})
-
-
-@main_site_login_required
-@require_POST
-def upload_article_image(request):
-    """Upload a small pasted image for use inside Markdown articles.
-
-    The endpoint is intentionally login-protected because only logged-in users
-    can create/edit suggestions. The returned Markdown can be inserted directly
-    into the editor, for example: ![image](/wiki/uploads/abc.png)
-    """
-    uploaded_file = request.FILES.get("image")
-
-    if not uploaded_file:
-        return JsonResponse({"error": "No image file received."}, status=400)
-
-    try:
-        image_info = validate_article_image_upload(uploaded_file)
-    except ValidationError as error:
-        message = error.messages[0] if getattr(error, "messages", None) else str(error)
-        return JsonResponse({"error": message}, status=400)
-
-    extension = image_info["extension"]
-
-    upload_dir = get_openkb_uploads_dir()
-    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
-    filename = f"{timestamp}-{uuid.uuid4().hex[:12]}{extension}"
-    file_path = upload_dir / filename
-
-    with file_path.open("wb") as destination:
-        for chunk in uploaded_file.chunks():
-            destination.write(chunk)
-
-    pending_uploads = request.session.get("pending_article_uploads", [])
-    if filename not in pending_uploads:
-        pending_uploads.append(filename)
-    request.session["pending_article_uploads"] = pending_uploads[-100:]
-    request.session.modified = True
-
-    image_url = f"/wiki/uploads/{filename}"
-    return JsonResponse({
-        "url": image_url,
-        "filename": filename,
-        "markdown": f"![image]({image_url})",
-    })
-
-
-@main_site_login_required
-@require_POST
-def delete_article_image(request):
-    """Delete a pasted image that was uploaded during the current editing session.
-
-    This endpoint is used by the editor's image preview tray. It only deletes
-    filenames stored in the current session's pending upload list, so a user
-    cannot delete arbitrary article images by guessing a filename.
-    """
-    filename = (request.POST.get("filename") or "").strip()
-    if not filename:
-        return JsonResponse({"error": "No image filename received."}, status=400)
-
-    # Basic filename-only guard. Uploaded names are generated by the server and
-    # should not contain path separators.
-    if "/" in filename or "\\" in filename or filename in {".", ".."}:
-        return JsonResponse({"error": "Invalid image filename."}, status=400)
-
-    pending_uploads = request.session.get("pending_article_uploads", [])
-    if filename not in pending_uploads and not user_is_site_admin(request.user):
-        return JsonResponse({"error": "This image is not removable from this editing session."}, status=403)
-
-    upload_dir = get_openkb_uploads_dir().resolve()
-    file_path = (upload_dir / filename).resolve()
-    if not str(file_path).startswith(str(upload_dir)):
-        return JsonResponse({"error": "Invalid image path."}, status=400)
-
-    if file_path.exists() and file_path.is_file():
-        file_path.unlink()
-
-    request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
-    request.session.modified = True
-    return JsonResponse({"deleted": True})
-
-
-def serve_article_image(request, filename):
-    """Serve images pasted into Markdown articles from openkb-data/wiki/uploads."""
-    if not is_allowed_article_image_filename(filename):
-        raise Http404("Image not found")
-
-    upload_dir = get_openkb_uploads_dir().resolve()
-    file_path = (upload_dir / filename).resolve()
-
-    try:
-        file_path.relative_to(upload_dir)
-    except ValueError:
-        raise Http404("Invalid image path")
-
-    if not file_path.exists() or not file_path.is_file():
-        raise Http404("Image not found")
-
-    return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
-
-
-def article_detail(request, article_id):
-    """Display an article through Django without exposing raw /wiki/*.md paths."""
-    article = get_object_or_404(SuggestedArticle.objects.select_related("owner"), pk=article_id)
-
-    if article.status != SuggestedArticle.Status.PUBLISHED and not user_can_manage_article(request.user, article):
-        raise Http404("Article not found")
-
-    record_article_session_view(request, article)
-
-    raw_markdown = build_article_markdown(article)
-    display_markdown = prepare_article_display_markdown(raw_markdown, article.title, article)
-    html_content = render_safe_markdown(display_markdown)
-
-    metadata = {
-        "has_details": True,
-        "type": "Article",
-        "path": "",
-        "published_at": article.approved_at or article.created_at,
-        "updated_at": article.updated_at,
-        "author": article.author_display,
-        "author_username": article.author_username,
-        "author_email": article.author_email,
-        "author_account_type": article.author_account_type,
-        "keywords": article.keyword_list,
-        "permalink": request.build_absolute_uri(article.public_url),
-        "view_count": article.view_count,
-        "helpful_vote_count": article.votes.filter(value=ArticleVote.VoteValue.UP).count(),
-        "unhelpful_vote_count": article.votes.filter(value=ArticleVote.VoteValue.DOWN).count(),
-        "total_vote_count": article.votes.count(),
-        "user_vote": (
-            article.votes.filter(user=request.user).values_list("value", flat=True).first()
-            if request.user.is_authenticated else None
-        ),
-        "vote_url": reverse("vote_article", kwargs={"article_id": article.pk}) if article.status == SuggestedArticle.Status.PUBLISHED else "",
-        "can_vote": request.user.is_authenticated and article.status == SuggestedArticle.Status.PUBLISHED,
-        "login_url": f'{reverse("login")}?next={request.get_full_path()}',
-        "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
-        "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),
-        "delete_url": reverse("delete_suggestion", kwargs={"article_id": article.pk}),
-    }
-
-    current_article_context = {
-        "title": article.title,
-        "path": "",
-        "raw_markdown": raw_markdown,
-        "keywords": article.keyword_list,
-        "author": article.author_display,
-    }
-    featured_articles = get_contextual_related_articles(current_article_context, limit=5)
-
-    return render(request, "articles.html", {
-        "title": article.title,
-        "content": html_content,
-        "raw_markdown": raw_markdown,
-        "metadata": metadata,
-        "featured_articles": featured_articles,
-        "can_use_admin_tools": user_can_use_admin_tools(request.user),
-    })
-
-
-def wiki_detail(request, wiki_path):
-    """Block direct public access to raw OpenKB Markdown files.
-
-    /wiki/uploads/<image> remains available through serve_article_image. For old
-    article links under /wiki/sources/<file>.md, redirect to the safe Django
-    article route. All other OpenKB internals such as index.md, log.md,
-    summaries/, concepts/, and AGENTS.md return 404.
-    """
-    suggested = get_article_metadata_by_wiki_path(wiki_path)
-    if suggested:
-        return redirect(suggested.public_url)
-
-    raise Http404("Wiki page not found")
-
-
-
-
-@require_POST
-@login_required
-@main_site_login_required
-def vote_article(request, article_id):
-    """Save one helpful/unhelpful vote per logged-in user per article."""
-    article = get_object_or_404(
-        SuggestedArticle,
-        pk=article_id,
-        status=SuggestedArticle.Status.PUBLISHED,
-    )
-
-    vote_value = request.POST.get("vote")
-    if vote_value == "up":
-        value = ArticleVote.VoteValue.UP
-    elif vote_value == "down":
-        value = ArticleVote.VoteValue.DOWN
-    else:
-        messages.error(request, _("Invalid vote."))
-        return redirect(article.public_url)
-
-    existing_vote = ArticleVote.objects.filter(
-        article=article,
-        user=request.user,
-    ).first()
-
-    if existing_vote and existing_vote.value == value:
-        existing_vote.delete()
-        messages.success(request, _("Your vote has been removed."))
-    elif existing_vote:
-        existing_vote.value = value
-        existing_vote.save(update_fields=["value", "updated_at"])
-        messages.success(request, _("Your vote has been updated."))
-    else:
-        ArticleVote.objects.create(
-            article=article,
-            user=request.user,
-            value=value,
-        )
-        messages.success(request, _("Thank you. Your vote has been saved."))
-
-    next_url = request.POST.get("next") or article.public_url
-    if not url_has_allowed_host_and_scheme(
-        next_url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
-        next_url = article.public_url
-
-    return redirect(next_url)
-
-
-def search_articles(request):
-    """Search OpenKB articles with relevance ranking instead of plain substring order."""
-    init_openkb_storage()
-
-    query_original = request.GET.get("q", "").strip()
-    all_public_articles = get_openkb_wiki_articles(sort_by_views=not bool(query_original))
-
-    if query_original:
-        all_articles = rank_articles_for_query(all_public_articles, query_original)
-    else:
-        all_articles = all_public_articles
-
-    page_obj = paginate_articles(request, all_articles, per_page=20)
-
-    return render(request, "index.html", {
-        "articles": page_obj.object_list,
-        "page_obj": page_obj,
-        "paginator": page_obj.paginator,
-        "search_query": query_original,
-        "is_search": bool(query_original),
-        "result_count": len(all_articles),
-        "total_article_count": len(all_public_articles),
-    })
 
 
 def run_openkb_query(question):
@@ -2630,7 +1735,6 @@ def check_openkb_ai_rate_limit(request):
     return True, 0
 
 
-
 def clean_openkb_ai_answer(answer):
     """Hide internal OpenKB/source-path details before showing AI output."""
     cleaned = answer or ""
@@ -2738,6 +1842,7 @@ def clean_openkb_ai_error_message(error):
 
     return "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
 
+
 def openkb_ai_output_indicates_error(output):
     """Detect CLI error text that was printed as output instead of raised."""
     lowered = (output or "").lower().strip()
@@ -2753,122 +1858,3 @@ def openkb_ai_output_indicates_error(output):
         "you exceeded your current quota",
     ]
     return any(marker in lowered for marker in error_markers)
-
-
-def ask_openkb_ai(request):
-    """Use the real local OpenKB AI query flow."""
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required"}, status=405)
-
-    allowed, retry_after = check_openkb_ai_rate_limit(request)
-    if not allowed:
-        return JsonResponse(
-            {
-                "error": "Too many OpenKB AI questions. Please wait a few minutes before trying again.",
-                "retry_after_seconds": retry_after,
-                "related_articles": [],
-                "show_related_articles": False,
-            },
-            status=429,
-        )
-
-    question = request.POST.get("question", "").strip()
-
-    if not question:
-        return JsonResponse({"error": "Please type a question first.", "related_articles": [], "show_related_articles": False}, status=400)
-
-    max_prompt_chars = settings.OPENKB_AI_MAX_PROMPT_CHARS
-    if len(question) > max_prompt_chars:
-        logger.info(
-            "OpenKB AI prompt rejected because it is too long: identifier=%s ip=%s user_id=%s length=%s max_length=%s",
-            get_openkb_ai_rate_identifier(request),
-            get_client_ip(request),
-            request.user.pk if request.user.is_authenticated else "anonymous",
-            len(question),
-            max_prompt_chars,
-        )
-        return JsonResponse(
-            {
-                "error": f"Question is too long. Please keep it under {max_prompt_chars} characters.",
-                "related_articles": [],
-                "show_related_articles": False,
-            },
-            status=400,
-        )
-
-    if not settings.OPENKB_DATA_DIR.exists():
-        return JsonResponse({
-            "error": "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py.",
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
-
-    try:
-        raw_answer = run_openkb_query(question)
-
-        if openkb_ai_output_indicates_error(raw_answer):
-            logger.warning(
-                "OpenKB AI returned provider error output: identifier=%s ip=%s user_id=%s question_length=%s output_length=%s",
-                get_openkb_ai_rate_identifier(request),
-                get_client_ip(request),
-                request.user.pk if request.user.is_authenticated else "anonymous",
-                len(question),
-                len(raw_answer or ""),
-            )
-            return JsonResponse({
-                "error": clean_openkb_ai_error_message(raw_answer),
-                "related_articles": [],
-                "show_related_articles": False,
-            }, status=503)
-
-        answer = clean_openkb_ai_answer(raw_answer)
-
-        if not answer:
-            answer = "OpenKB AI returned an empty response."
-
-        related_articles = []
-        if not answer_indicates_no_openkb_match(answer):
-            related_articles = find_related_openkb_articles(question)
-
-        show_related_articles = should_show_openkb_related_articles(question, answer, related_articles)
-
-        return JsonResponse({
-            "answer": answer,
-            "related_articles": related_articles if show_related_articles else [],
-            "show_related_articles": show_related_articles,
-        })
-
-    except FileNotFoundError:
-        return JsonResponse({
-            "error": "OpenKB CLI not found. Run: python -m pip install -e OpenKB-main",
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
-
-    except subprocess.TimeoutExpired:
-        logger.warning(
-            "OpenKB AI query timed out: identifier=%s ip=%s user_id=%s question_length=%s",
-            get_openkb_ai_rate_identifier(request),
-            get_client_ip(request),
-            request.user.pk if request.user.is_authenticated else "anonymous",
-            len(question),
-        )
-        return JsonResponse({
-            "error": "OpenKB AI query timed out. Try a shorter question.",
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
-
-    except Exception as error:
-        logger.exception(
-            "OpenKB AI query failed: identifier=%s ip=%s user_id=%s question_length=%s",
-            get_openkb_ai_rate_identifier(request),
-            get_client_ip(request),
-            request.user.pk if request.user.is_authenticated else "anonymous",
-            len(question),
-        )
-        return JsonResponse({
-            "error": clean_openkb_ai_error_message(error),
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
