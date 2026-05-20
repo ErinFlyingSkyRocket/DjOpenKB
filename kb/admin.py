@@ -180,6 +180,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "status",
         "approved_by",
         "approved_at",
+        "review_notes_preview",
         "view_count",
         "helpful_vote_count",
         "unhelpful_vote_count",
@@ -197,6 +198,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "owner__email",
         "author_username_snapshot",
         "author_email_snapshot",
+        "review_notes",
     )
     readonly_fields = (
         "filename",
@@ -205,6 +207,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "image_assets",
         "approved_by",
         "approved_at",
+        "review_notes_preview",
         "view_count",
         "helpful_vote_count",
         "unhelpful_vote_count",
@@ -219,8 +222,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         ("Article", {
             "fields": ("owner", "title", "body", "keywords", "status"),
         }),
-        (_("Approval"), {
-            "fields": ("approved_by", "approved_at"),
+        (_("Approval / review"), {
+            "fields": ("approved_by", "approved_at", "review_notes"),
         }),
         ("OpenKB files", {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
@@ -256,10 +259,19 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             article.status = SuggestedArticle.Status.FAILED
             article.approved_by = None
             article.approved_at = None
-            article.save(update_fields=["status", "approved_by", "approved_at", "updated_at"])
+            if not article.review_notes:
+                article.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+            article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "updated_at"])
             write_article_files(article)
 
 
+
+    def review_notes_preview(self, obj):
+        if not obj.review_notes:
+            return "-"
+        return obj.review_notes[:80] + ("..." if len(obj.review_notes) > 80 else "")
+
+    review_notes_preview.short_description = "Pending failed comments"
 
     def helpful_vote_count(self, obj):
         return obj.votes.filter(value=ArticleVote.VoteValue.UP).count()
@@ -284,6 +296,9 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         elif obj.status != SuggestedArticle.Status.PUBLISHED:
             obj.approved_by = None
             obj.approved_at = None
+
+        if obj.status == SuggestedArticle.Status.FAILED and not obj.review_notes:
+            obj.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 
         super().save_model(request, obj, form, change)
         write_article_files(obj)

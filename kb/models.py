@@ -142,6 +142,11 @@ class SuggestedArticle(models.Model):
         blank=True,
         help_text="Date and time when this article was approved for public display.",
     )
+    review_notes = models.TextField(
+        blank=True,
+        verbose_name=_("Pending failed comments"),
+        help_text="Admin feedback shown to the article owner when the article is in Draft or Pending failed status.",
+    )
     view_count = models.PositiveIntegerField(
         default=0,
         help_text="Number of unique session views for this article.",

@@ -1290,6 +1290,7 @@ def edit_my_suggestions(request):
             | Q(body__icontains=search_query)
             | Q(keywords__icontains=search_query)
             | Q(status__icontains=search_query)
+            | Q(review_notes__icontains=search_query)
             | Q(filename__icontains=search_query)
             | Q(wiki_path__icontains=search_query)
         )
@@ -1322,6 +1323,7 @@ def manage_pending_articles(request):
             Q(title__icontains=search_query)
             | Q(body__icontains=search_query)
             | Q(keywords__icontains=search_query)
+            | Q(review_notes__icontains=search_query)
             | Q(filename__icontains=search_query)
             | Q(owner__username__icontains=search_query)
             | Q(owner__email__icontains=search_query)
@@ -1502,6 +1504,8 @@ def edit_suggestion(request, article_id):
         return render(request, "suggest_edit.html", {
             "article": article,
             "current_status": article.status,
+            "review_notes_value": article.review_notes,
+            "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
@@ -1526,6 +1530,21 @@ def edit_suggestion(request, article_id):
             # User publish/submit means pending admin approval, never direct public publishing.
             status = SuggestedArticle.Status.PENDING
 
+    review_notes = (request.POST.get("review_notes") or article.review_notes or "").strip()
+
+    if request.user.is_staff and status == SuggestedArticle.Status.FAILED and not review_notes:
+        return render(request, "suggest_edit.html", {
+            "article": article,
+            "error": _("Please enter Pending failed comments before marking this article as Pending failed."),
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "status_value": status,
+            "current_status": status,
+            "review_notes_value": review_notes,
+            "existing_images_json": json.dumps(get_article_image_cards(article)),
+        })
+
     if len(title) < 5 or len(body) < 5:
         return render(request, "suggest_edit.html", {
             "article": article,
@@ -1535,6 +1554,7 @@ def edit_suggestion(request, article_id):
             "keywords_value": keywords_raw,
             "status_value": status,
             "current_status": status,
+            "review_notes_value": request.POST.get("review_notes", article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
@@ -1544,6 +1564,9 @@ def edit_suggestion(request, article_id):
     article.keywords = keywords_raw
     article.status = status
     article.image_assets = extract_article_image_filenames(body)
+
+    if request.user.is_staff and status == SuggestedArticle.Status.FAILED:
+        article.review_notes = review_notes
 
     if request.user.is_staff and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
         article.approved_by = request.user
