@@ -19,6 +19,7 @@ urlpatterns = [
     path("profile/articles/<int:article_id>/delete/", views.delete_suggestion, name="delete_suggestion"),
     path("search/", views.search_articles, name="search"),
     path("ask-openkb-ai/", views.ask_openkb_ai, name="ask_openkb_ai"),
+    path("articles/<int:article_id>/", views.article_detail, name="article_detail"),
     path("articles/<int:article_id>/vote/", views.vote_article, name="vote_article"),
     path("article-image-upload/", views.upload_article_image, name="upload_article_image"),
     path("article-image-delete/", views.delete_article_image, name="delete_article_image"),

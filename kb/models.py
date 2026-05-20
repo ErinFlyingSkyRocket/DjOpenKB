@@ -245,9 +245,9 @@ class SuggestedArticle(models.Model):
 
     @property
     def public_url(self):
-        if not self.wiki_path:
+        if not self.pk:
             return "#"
-        return reverse("wiki_detail", kwargs={"wiki_path": self.wiki_path})
+        return reverse("article_detail", kwargs={"article_id": self.pk})
 
     @property
     def keyword_list(self):

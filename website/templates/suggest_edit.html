@@ -121,10 +121,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
                             <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
-                            {% if user.is_staff %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
+                            {% if user.is_superuser or user.kb_profile.is_admin_type %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
                         </ul>
                     </li>
-                    {% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+                    {% if user.is_superuser or user.kb_profile.is_admin_type %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
                     {% include "_language_selector.html" %}
                     <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }} <span class="caret"></span></a>
@@ -164,7 +164,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <div class="form-group">
                                 <label>{% trans "Status" %}</label><br/>
-                                {% if user.is_staff %}
+                                {% if user.is_superuser or user.kb_profile.is_admin_type %}
                                     <select name="status" id="articleStatusSelect" class="form-control">
                                         <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
                                         <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
@@ -188,7 +188,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
                             <label for="preview">&nbsp;</label><br/>
-                            {% if user.is_staff %}
+                            {% if user.is_superuser or user.kb_profile.is_admin_type %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
                             {% elif current_status == 'published' %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="save">{% trans "Save" %}</button>
@@ -199,7 +199,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                     </div>
 
-                    {% if user.is_staff %}
+                    {% if user.is_superuser or user.kb_profile.is_admin_type %}
                         <div class="col-xs-12">
                             <div id="adminReviewNotesGroup" class="admin-review-notes" {% if current_status != 'failed' %}style="display:none;"{% endif %}>
                                 <div class="form-group" style="margin-bottom:0;">

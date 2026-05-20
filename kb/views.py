@@ -103,6 +103,27 @@ def get_safe_return_url(request, fallback_view_name="edit_my_suggestions"):
     return reverse(fallback_view_name)
 
 
+def user_is_site_admin(user):
+    """Return True only for explicitly trusted DjOpenKB admins.
+
+    Staff status alone is not enough for profile-level admin tools. A user must
+    be a superuser or have a UserProfile account type of Admin / LDAP admin.
+    """
+    if not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    if user.is_superuser:
+        return True
+
+    profile = getattr(user, "kb_profile", None)
+    return bool(profile and profile.is_admin_type)
+
+
+def user_can_manage_article(user, article):
+    """Return True when a user can edit/delete an article they do not own."""
+    return bool(article and (article.owner == user or user_is_site_admin(user)))
+
+
 def init_openkb_storage():
     settings.OPENKB_DATA_DIR.mkdir(parents=True, exist_ok=True)
     settings.OPENKB_RAW_DIR.mkdir(parents=True, exist_ok=True)
@@ -279,17 +300,21 @@ def clear_committed_pending_uploads(request, image_assets):
 
 def user_can_use_admin_tools(user):
     """Return True for users allowed to use profile-level admin maintenance tools."""
-    return bool(user.is_authenticated and user.is_active and user.is_staff)
+    return user_is_site_admin(user)
 
 
 def admin_tools_required(view_func):
-    """Require normal site access plus staff/admin permission."""
+    """Require normal site access plus explicit DjOpenKB admin permission.
+
+    Anonymous users are still redirected to login by main_site_login_required.
+    Logged-in non-admin users receive 404 so admin-tool route discovery is less
+    useful to scanners such as Gobuster.
+    """
     @wraps(view_func)
     @main_site_login_required
     def wrapper(request, *args, **kwargs):
         if not user_can_use_admin_tools(request.user):
-            from django.http import HttpResponseForbidden
-            return HttpResponseForbidden("You do not have permission to use admin maintenance tools.")
+            raise Http404("Page not found")
         return view_func(request, *args, **kwargs)
 
     return wrapper
@@ -1243,54 +1268,31 @@ def record_article_session_view(request, article):
     request.session.modified = True
 
 def get_openkb_wiki_articles(sort_by_views=False):
-    """Read OpenKB Markdown files from openkb-data/wiki, including raw content."""
-    init_openkb_storage()
+    """Return public article cards from published Django articles only.
 
-    wiki_dir = settings.OPENKB_WIKI_DIR
+    Raw /wiki/*.md files are no longer treated as public pages. OpenKB still
+    uses wiki/sources internally for AI indexing, but the website links to the
+    safe Django article route instead of exposing Markdown file paths.
+    """
     articles = []
 
-    if not wiki_dir.exists():
-        return articles
+    queryset = SuggestedArticle.objects.select_related("owner").filter(
+        status=SuggestedArticle.Status.PUBLISHED,
+    )
 
-    suggested_by_path = {
-        item.wiki_path: item
-        for item in SuggestedArticle.objects.select_related("owner").filter(
-            status=SuggestedArticle.Status.PUBLISHED,
-        )
-    }
-
-    for file_path in wiki_dir.rglob("*.md"):
-        if file_path.name in IGNORED_WIKI_NAMES:
-            continue
-
-        relative_path = file_path.relative_to(wiki_dir).as_posix()
-
-        # Summaries are generated only for Ask OpenKB AI. Do not display them
-        # as duplicate public articles in the wiki/search pages.
-        if relative_path.startswith("summaries/"):
-            continue
-
-        suggested = suggested_by_path.get(relative_path)
-        modified_at = datetime.fromtimestamp(file_path.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
-
-        if relative_path.startswith("sources/"):
-            article_type = "OpenKB Source"
-        else:
-            article_type = "OpenKB Wiki"
-
-        raw_markdown = file_path.read_text(encoding="utf-8", errors="ignore")
-
+    for suggested in queryset:
+        modified_at = timezone.localtime(suggested.updated_at).strftime("%Y-%m-%d %H:%M")
         articles.append({
-            "title": suggested.title if suggested else clean_wiki_title(file_path),
-            "type": article_type,
+            "title": suggested.title,
+            "type": "Article",
             "date": modified_at,
-            "views": suggested.view_count if suggested else 0,
-            "url": f"/wiki/{relative_path}",
-            "path": relative_path,
-            "raw_markdown": raw_markdown,
-            "author": suggested.author_display if suggested else "",
-            "keywords": suggested.keyword_list if suggested else [],
-            "suggested_id": suggested.pk if suggested else None,
+            "views": suggested.view_count or 0,
+            "url": suggested.public_url,
+            "path": "",
+            "raw_markdown": build_article_markdown(suggested),
+            "author": suggested.author_display,
+            "keywords": suggested.keyword_list,
+            "suggested_id": suggested.pk,
         })
 
     if sort_by_views:
@@ -2091,9 +2093,8 @@ def change_password(request):
 def edit_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
-    if article.owner != request.user and not request.user.is_staff:
-        from django.http import HttpResponseForbidden
-        return HttpResponseForbidden("You do not have permission to edit this article.")
+    if not user_can_manage_article(request.user, article):
+        raise Http404("Article not found")
 
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
@@ -2121,7 +2122,7 @@ def edit_suggestion(request, article_id):
 
     previous_status = article.status
 
-    if request.user.is_staff:
+    if user_is_site_admin(request.user):
         status = request.POST.get("status", article.status).strip()
         if status not in SuggestedArticle.Status.values:
             status = article.status
@@ -2135,7 +2136,7 @@ def edit_suggestion(request, article_id):
             # User publish/submit means pending admin approval, never direct public publishing.
             status = SuggestedArticle.Status.PENDING
 
-    if request.user.is_staff:
+    if user_is_site_admin(request.user):
         review_notes = (request.POST.get("review_notes") or "").strip()
     else:
         review_notes = article.review_notes
@@ -2152,7 +2153,7 @@ def edit_suggestion(request, article_id):
         "return_url": return_url,
     }
 
-    if request.user.is_staff and status == SuggestedArticle.Status.FAILED and not review_notes:
+    if user_is_site_admin(request.user) and status == SuggestedArticle.Status.FAILED and not review_notes:
         return render_edit_form({
             **error_context,
             "error": _("Please enter Pending failed comments before marking this article as Pending failed."),
@@ -2179,7 +2180,7 @@ def edit_suggestion(request, article_id):
     article.status = status
     article.image_assets = extract_article_image_filenames(body)
 
-    if request.user.is_staff:
+    if user_is_site_admin(request.user):
         if status == SuggestedArticle.Status.FAILED:
             if review_notes != article.review_notes or previous_status != SuggestedArticle.Status.FAILED:
                 article.add_review_note_history(review_notes, reviewer=request.user, action="pending_failed")
@@ -2193,7 +2194,7 @@ def edit_suggestion(request, article_id):
             article.archive_current_review_note(actor=request.user, action="resubmitted")
         article.review_notes = ""
 
-    if request.user.is_staff and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
+    if user_is_site_admin(request.user) and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
         article.approved_by = request.user
         article.approved_at = timezone.now()
     elif status != SuggestedArticle.Status.PUBLISHED:
@@ -2222,9 +2223,8 @@ def edit_suggestion(request, article_id):
 def delete_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
-    if article.owner != request.user and not request.user.is_staff:
-        from django.http import HttpResponseForbidden
-        return HttpResponseForbidden("You do not have permission to delete this article.")
+    if not user_can_manage_article(request.user, article):
+        raise Http404("Article not found")
 
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
@@ -2302,7 +2302,7 @@ def delete_article_image(request):
         return JsonResponse({"error": "Invalid image filename."}, status=400)
 
     pending_uploads = request.session.get("pending_article_uploads", [])
-    if filename not in pending_uploads and not request.user.is_staff:
+    if filename not in pending_uploads and not user_is_site_admin(request.user):
         return JsonResponse({"error": "This image is not removable from this editing session."}, status=403)
 
     upload_dir = get_openkb_uploads_dir().resolve()
@@ -2337,101 +2337,80 @@ def serve_article_image(request, filename):
     return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
 
 
-def wiki_detail(request, wiki_path):
-    """Display Markdown files from openkb-data/wiki/."""
-    init_openkb_storage()
+def article_detail(request, article_id):
+    """Display an article through Django without exposing raw /wiki/*.md paths."""
+    article = get_object_or_404(SuggestedArticle.objects.select_related("owner"), pk=article_id)
 
-    wiki_dir = settings.OPENKB_WIKI_DIR.resolve()
-    file_path = (wiki_dir / wiki_path).resolve()
+    if article.status != SuggestedArticle.Status.PUBLISHED and not user_can_manage_article(request.user, article):
+        raise Http404("Article not found")
 
-    if not str(file_path).startswith(str(wiki_dir)):
-        raise Http404("Invalid wiki path")
+    record_article_session_view(request, article)
 
-    if not file_path.exists() or not file_path.is_file() or file_path.suffix.lower() != ".md":
-        raise Http404("Wiki page not found")
+    raw_markdown = build_article_markdown(article)
+    display_markdown = prepare_article_display_markdown(raw_markdown, article.title, article)
+    html_content = render_safe_markdown(display_markdown)
 
-    raw_markdown = file_path.read_text(encoding="utf-8", errors="ignore")
-    suggested = get_article_metadata_by_wiki_path(wiki_path)
-
-    if suggested:
-        record_article_session_view(request, suggested)
-        title = suggested.title
-        display_markdown = prepare_article_display_markdown(raw_markdown, title, suggested)
-        metadata = {
-            "has_details": True,
-            "type": "OpenKB Source",
-            "path": wiki_path,
-            "published_at": suggested.created_at,
-            "updated_at": suggested.updated_at,
-            "author": suggested.author_display,
-            "author_username": suggested.author_username,
-            "author_email": suggested.author_email,
-            "author_account_type": suggested.author_account_type,
-            "keywords": suggested.keyword_list,
-            "permalink": request.build_absolute_uri(suggested.public_url),
-            "view_count": suggested.view_count,
-            "helpful_vote_count": suggested.votes.filter(value=ArticleVote.VoteValue.UP).count(),
-            "unhelpful_vote_count": suggested.votes.filter(value=ArticleVote.VoteValue.DOWN).count(),
-            "total_vote_count": suggested.votes.count(),
-            "user_vote": (
-                suggested.votes.filter(user=request.user).values_list("value", flat=True).first()
-                if request.user.is_authenticated else None
-            ),
-            "vote_url": reverse("vote_article", kwargs={"article_id": suggested.pk}),
-            "can_vote": request.user.is_authenticated,
-            "login_url": f'{reverse("login")}?next={request.get_full_path()}',
-            "can_edit": request.user.is_authenticated and (
-                request.user == suggested.owner or request.user.is_staff
-            ),
-            "edit_url": reverse("edit_suggestion", kwargs={"article_id": suggested.pk}),
-            "delete_url": reverse("delete_suggestion", kwargs={"article_id": suggested.pk}),
-        }
-    else:
-        title = clean_wiki_title(file_path)
-        display_markdown = raw_markdown
-        metadata = {
-            "has_details": True,
-            "type": "OpenKB Wiki",
-            "path": wiki_path,
-            "published_at": None,
-            "updated_at": datetime.fromtimestamp(file_path.stat().st_mtime),
-            "author": "OpenKB",
-            "author_username": "",
-            "author_email": "",
-            "author_account_type": "",
-            "keywords": [],
-            "permalink": request.build_absolute_uri(),
-            "view_count": 0,
-            "helpful_vote_count": 0,
-            "unhelpful_vote_count": 0,
-            "total_vote_count": 0,
-            "user_vote": None,
-            "vote_url": "",
-            "can_vote": False,
-            "login_url": f'{reverse("login")}?next={request.get_full_path()}',
-            "can_edit": False,
-            "edit_url": "",
-            "delete_url": "",
-        }
+    metadata = {
+        "has_details": True,
+        "type": "Article",
+        "path": "",
+        "published_at": article.approved_at or article.created_at,
+        "updated_at": article.updated_at,
+        "author": article.author_display,
+        "author_username": article.author_username,
+        "author_email": article.author_email,
+        "author_account_type": article.author_account_type,
+        "keywords": article.keyword_list,
+        "permalink": request.build_absolute_uri(article.public_url),
+        "view_count": article.view_count,
+        "helpful_vote_count": article.votes.filter(value=ArticleVote.VoteValue.UP).count(),
+        "unhelpful_vote_count": article.votes.filter(value=ArticleVote.VoteValue.DOWN).count(),
+        "total_vote_count": article.votes.count(),
+        "user_vote": (
+            article.votes.filter(user=request.user).values_list("value", flat=True).first()
+            if request.user.is_authenticated else None
+        ),
+        "vote_url": reverse("vote_article", kwargs={"article_id": article.pk}) if article.status == SuggestedArticle.Status.PUBLISHED else "",
+        "can_vote": request.user.is_authenticated and article.status == SuggestedArticle.Status.PUBLISHED,
+        "login_url": f'{reverse("login")}?next={request.get_full_path()}',
+        "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
+        "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),
+        "delete_url": reverse("delete_suggestion", kwargs={"article_id": article.pk}),
+    }
 
     current_article_context = {
-        "title": title,
-        "path": wiki_path,
+        "title": article.title,
+        "path": "",
         "raw_markdown": raw_markdown,
-        "keywords": metadata.get("keywords", []),
-        "author": metadata.get("author", ""),
+        "keywords": article.keyword_list,
+        "author": article.author_display,
     }
     featured_articles = get_contextual_related_articles(current_article_context, limit=5)
 
-    html_content = render_safe_markdown(display_markdown)
-
     return render(request, "articles.html", {
-        "title": title,
+        "title": article.title,
         "content": html_content,
         "raw_markdown": raw_markdown,
         "metadata": metadata,
         "featured_articles": featured_articles,
+        "can_use_admin_tools": user_can_use_admin_tools(request.user),
     })
+
+
+def wiki_detail(request, wiki_path):
+    """Block direct public access to raw OpenKB Markdown files.
+
+    /wiki/uploads/<image> remains available through serve_article_image. For old
+    article links under /wiki/sources/<file>.md, redirect to the safe Django
+    article route. All other OpenKB internals such as index.md, log.md,
+    summaries/, concepts/, and AGENTS.md return 404.
+    """
+    suggested = get_article_metadata_by_wiki_path(wiki_path)
+    if suggested:
+        return redirect(suggested.public_url)
+
+    raise Http404("Wiki page not found")
+
 
 
 
