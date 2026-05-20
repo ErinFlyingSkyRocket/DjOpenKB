@@ -2738,13 +2738,42 @@ def should_show_openkb_related_articles(question, answer, related_articles=None)
 
 def clean_openkb_ai_error_message(error):
     """Return a user-friendly AI error while detailed info remains in logs."""
-    text = str(error)
+    text = str(error or "")
     lowered = text.lower()
+
+    if (
+        "429" in lowered
+        or "ratelimit" in lowered
+        or "rate limit" in lowered
+        or "quota" in lowered
+        or "resource_exhausted" in lowered
+        or "too many requests" in lowered
+    ):
+        return "OpenKB AI has reached its temporary usage limit. Please try again later or contact IT support if the issue persists."
+
     if "503" in lowered or "serviceunavailable" in lowered or "high demand" in lowered or "unavailable" in lowered:
-        return "OpenKB AI is temporarily busy because the AI model is experiencing high demand. Please try again in a few minutes."
+        return "OpenKB AI is temporarily busy. Please try again later or contact IT support if the issue persists."
+
     if "timeout" in lowered:
-        return "OpenKB AI took too long to respond. Try a shorter question."
-    return "OpenKB AI could not complete the request. Please try again later."
+        return "OpenKB AI took too long to respond. Please try a shorter question or contact IT support if the issue persists."
+
+    return "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+
+def openkb_ai_output_indicates_error(output):
+    """Detect CLI error text that was printed as output instead of raised."""
+    lowered = (output or "").lower().strip()
+    if not lowered:
+        return False
+    error_markers = [
+        "[error] query failed",
+        "litellm.ratelimiterror",
+        "litellm.serviceunavailableerror",
+        "geminiexception",
+        "resource_exhausted",
+        "quota exceeded",
+        "you exceeded your current quota",
+    ]
+    return any(marker in lowered for marker in error_markers)
 
 
 def ask_openkb_ai(request):
@@ -2796,7 +2825,24 @@ def ask_openkb_ai(request):
         }, status=500)
 
     try:
-        answer = clean_openkb_ai_answer(run_openkb_query(question))
+        raw_answer = run_openkb_query(question)
+
+        if openkb_ai_output_indicates_error(raw_answer):
+            logger.warning(
+                "OpenKB AI returned provider error output: identifier=%s ip=%s user_id=%s question_length=%s output_length=%s",
+                get_openkb_ai_rate_identifier(request),
+                get_client_ip(request),
+                request.user.pk if request.user.is_authenticated else "anonymous",
+                len(question),
+                len(raw_answer or ""),
+            )
+            return JsonResponse({
+                "error": clean_openkb_ai_error_message(raw_answer),
+                "related_articles": [],
+                "show_related_articles": False,
+            }, status=503)
+
+        answer = clean_openkb_ai_answer(raw_answer)
 
         if not answer:
             answer = "OpenKB AI returned an empty response."

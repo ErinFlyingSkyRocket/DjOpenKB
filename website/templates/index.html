@@ -123,6 +123,7 @@
         .openkb-ai-message-text { white-space: pre-wrap; line-height: 1.45; }
         .openkb-ai-welcome { white-space: normal; }
         .openkb-ai-welcome-title { font-weight: 600; margin-bottom: 6px; }
+        .openkb-ai-welcome-intro { margin-bottom: 8px; }
         .openkb-ai-welcome-list { margin: 0; padding-left: 18px; }
         .openkb-ai-welcome-list li { margin-bottom: 4px; }
         .openkb-ai-time { display: block; margin-top: 4px; font-size: 11px; opacity: 0.68; text-align: right; }
@@ -295,7 +296,8 @@
                 <div class="openkb-ai-row bot">
                     <div class="openkb-ai-bubble">
                         <div class="openkb-ai-message-text openkb-ai-welcome">
-                            <div class="openkb-ai-welcome-title">{% trans "Hi, I am OpenKB AI. I can help you find published articles and answer questions from the wiki." %}</div>
+                            <div class="openkb-ai-welcome-title">{% trans "Hi, I am OpenKB AI." %}</div>
+                            <div class="openkb-ai-welcome-intro">{% trans "I can help you find articles and answer questions from the wiki." %}</div>
                             <ul class="openkb-ai-welcome-list">
                                 <li>{% trans "Ask questions using general keywords or article topics." %}</li>
                                 <li>{% trans "Ask for related articles when you want source links." %}</li>
