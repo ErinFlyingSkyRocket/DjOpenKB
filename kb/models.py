@@ -156,8 +156,14 @@ class SuggestedArticle(models.Model):
     )
     review_notes = models.TextField(
         blank=True,
-        verbose_name=_("Pending failed comments"),
-        help_text="Admin feedback shown to the article owner when the article is in Draft or Pending failed status.",
+        verbose_name=_("Current pending failed comments"),
+        help_text="Current admin feedback shown to the article owner while the article is in Draft or Pending failed status.",
+    )
+    review_notes_history = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name=_("Pending failed comments history"),
+        help_text="Historical review feedback entries from previous rejection/resubmission rounds.",
     )
     view_count = models.PositiveIntegerField(
         default=0,
@@ -195,6 +201,47 @@ class SuggestedArticle(models.Model):
                 raise ValidationError({
                     "title": _("An article with this title already exists. Please use a different title.")
                 })
+
+
+    def add_review_note_history(self, note, reviewer=None, action="pending_failed"):
+        """Append a review note to history while avoiding exact duplicate consecutive entries."""
+        note = (note or "").strip()
+        if not note:
+            return False
+
+        history = list(self.review_notes_history or [])
+        reviewer_label = "System"
+        reviewer_id = None
+
+        if reviewer is not None and getattr(reviewer, "is_authenticated", False):
+            reviewer_id = reviewer.pk
+            reviewer_label = reviewer.get_username() or getattr(reviewer, "email", "") or f"User {reviewer.pk}"
+
+        entry = {
+            "note": note,
+            "action": action,
+            "status": self.status,
+            "reviewer": reviewer_label,
+            "reviewer_id": reviewer_id,
+            "created_at": timezone.now().isoformat(),
+        }
+
+        if history:
+            last_entry = history[-1]
+            if (
+                last_entry.get("note") == entry["note"]
+                and last_entry.get("action") == entry["action"]
+                and last_entry.get("status") == entry["status"]
+            ):
+                return False
+
+        history.append(entry)
+        self.review_notes_history = history[-50:]
+        return True
+
+    def archive_current_review_note(self, actor=None, action="cleared"):
+        """Move the current review note into history before clearing it."""
+        return self.add_review_note_history(self.review_notes, reviewer=actor, action=action)
 
     @property
     def public_url(self):

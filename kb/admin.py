@@ -181,6 +181,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "approved_by",
         "approved_at",
         "review_notes_preview",
+        "review_notes_history_count",
         "view_count",
         "helpful_vote_count",
         "unhelpful_vote_count",
@@ -199,6 +200,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "author_username_snapshot",
         "author_email_snapshot",
         "review_notes",
+        "review_notes_history",
     )
     readonly_fields = (
         "filename",
@@ -208,6 +210,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "approved_by",
         "approved_at",
         "review_notes_preview",
+        "review_notes_history_count",
         "view_count",
         "helpful_vote_count",
         "unhelpful_vote_count",
@@ -223,7 +226,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             "fields": ("owner", "title", "body", "keywords", "status"),
         }),
         (_("Approval / review"), {
-            "fields": ("approved_by", "approved_at", "review_notes"),
+            "fields": ("approved_by", "approved_at", "review_notes", "review_notes_history"),
         }),
         ("OpenKB files", {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
@@ -247,10 +250,13 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
     @admin.action(description="Approve selected pending articles")
     def approve_selected_articles(self, request, queryset):
         for article in queryset:
+            if article.review_notes:
+                article.archive_current_review_note(actor=request.user, action="approved")
+            article.review_notes = ""
             article.status = SuggestedArticle.Status.PUBLISHED
             article.approved_by = request.user
             article.approved_at = timezone.now()
-            article.save(update_fields=["status", "approved_by", "approved_at", "updated_at"])
+            article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"])
             write_article_files(article)
 
     @admin.action(description="Mark selected articles as pending failed")
@@ -261,7 +267,8 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             article.approved_at = None
             if not article.review_notes:
                 article.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
-            article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "updated_at"])
+            article.add_review_note_history(article.review_notes, reviewer=request.user, action="pending_failed")
+            article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"])
             write_article_files(article)
 
 
@@ -271,7 +278,12 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             return "-"
         return obj.review_notes[:80] + ("..." if len(obj.review_notes) > 80 else "")
 
-    review_notes_preview.short_description = "Pending failed comments"
+    review_notes_preview.short_description = "Current pending failed comments"
+
+    def review_notes_history_count(self, obj):
+        return len(obj.review_notes_history or [])
+
+    review_notes_history_count.short_description = "Review history"
 
     def helpful_vote_count(self, obj):
         return obj.votes.filter(value=ArticleVote.VoteValue.UP).count()
@@ -284,6 +296,14 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
     unhelpful_vote_count.short_description = "Dislikes"
 
     def save_model(self, request, obj, form, change):
+        previous_status = None
+        previous_review_notes = ""
+        if change and obj.pk:
+            previous_article = SuggestedArticle.objects.filter(pk=obj.pk).only("status", "review_notes").first()
+            if previous_article:
+                previous_status = previous_article.status
+                previous_review_notes = previous_article.review_notes
+
         if not obj.filename:
             timestamp_slug = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
             obj.filename = f"{timestamp_slug}-{slugify_title(obj.title)}.md"
@@ -297,8 +317,15 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             obj.approved_by = None
             obj.approved_at = None
 
-        if obj.status == SuggestedArticle.Status.FAILED and not obj.review_notes:
-            obj.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+        if obj.status == SuggestedArticle.Status.FAILED:
+            if not obj.review_notes:
+                obj.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+            if obj.review_notes != previous_review_notes or previous_status != SuggestedArticle.Status.FAILED:
+                obj.add_review_note_history(obj.review_notes, reviewer=request.user, action="pending_failed")
+        elif obj.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.PUBLISHED}:
+            if obj.review_notes:
+                obj.archive_current_review_note(actor=request.user, action=f"cleared_on_{obj.status}")
+            obj.review_notes = ""
 
         super().save_model(request, obj, form, change)
         write_article_files(obj)

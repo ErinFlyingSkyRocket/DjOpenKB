@@ -70,6 +70,14 @@ def duplicate_title_error_message(title):
     return _("An article with the title ‘%(title)s’ already exists. Please use a different title.") % {"title": title}
 
 
+def get_review_notes_history(article):
+    """Return review-note history newest first for templates."""
+    history = article.review_notes_history or []
+    if not isinstance(history, list):
+        return []
+    return list(reversed(history))
+
+
 def init_openkb_storage():
     settings.OPENKB_DATA_DIR.mkdir(parents=True, exist_ok=True)
     settings.OPENKB_RAW_DIR.mkdir(parents=True, exist_ok=True)
@@ -1571,6 +1579,7 @@ def edit_my_suggestions(request):
             | Q(keywords__icontains=search_query)
             | Q(status__icontains=search_query)
             | Q(review_notes__icontains=search_query)
+            | Q(review_notes_history__icontains=search_query)
             | Q(filename__icontains=search_query)
             | Q(wiki_path__icontains=search_query)
         )
@@ -1604,6 +1613,7 @@ def manage_pending_articles(request):
             | Q(body__icontains=search_query)
             | Q(keywords__icontains=search_query)
             | Q(review_notes__icontains=search_query)
+            | Q(review_notes_history__icontains=search_query)
             | Q(filename__icontains=search_query)
             | Q(owner__username__icontains=search_query)
             | Q(owner__email__icontains=search_query)
@@ -1785,6 +1795,7 @@ def edit_suggestion(request, article_id):
             "article": article,
             "current_status": article.status,
             "review_notes_value": article.review_notes,
+            "review_notes_history": get_review_notes_history(article),
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
@@ -1810,7 +1821,10 @@ def edit_suggestion(request, article_id):
             # User publish/submit means pending admin approval, never direct public publishing.
             status = SuggestedArticle.Status.PENDING
 
-    review_notes = (request.POST.get("review_notes") or article.review_notes or "").strip()
+    if request.user.is_staff:
+        review_notes = (request.POST.get("review_notes") or "").strip()
+    else:
+        review_notes = article.review_notes
 
     if request.user.is_staff and status == SuggestedArticle.Status.FAILED and not review_notes:
         return render(request, "suggest_edit.html", {
@@ -1822,6 +1836,7 @@ def edit_suggestion(request, article_id):
             "status_value": status,
             "current_status": status,
             "review_notes_value": review_notes,
+            "review_notes_history": get_review_notes_history(article),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
@@ -1835,6 +1850,7 @@ def edit_suggestion(request, article_id):
             "status_value": status,
             "current_status": status,
             "review_notes_value": request.POST.get("review_notes", article.review_notes),
+            "review_notes_history": get_review_notes_history(article),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
@@ -1849,6 +1865,7 @@ def edit_suggestion(request, article_id):
             "status_value": status,
             "current_status": status,
             "review_notes_value": review_notes,
+            "review_notes_history": get_review_notes_history(article),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
@@ -1859,8 +1876,19 @@ def edit_suggestion(request, article_id):
     article.status = status
     article.image_assets = extract_article_image_filenames(body)
 
-    if request.user.is_staff and status == SuggestedArticle.Status.FAILED:
-        article.review_notes = review_notes
+    if request.user.is_staff:
+        if status == SuggestedArticle.Status.FAILED:
+            if review_notes != article.review_notes or previous_status != SuggestedArticle.Status.FAILED:
+                article.add_review_note_history(review_notes, reviewer=request.user, action="pending_failed")
+            article.review_notes = review_notes
+        elif status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.PUBLISHED}:
+            if article.review_notes:
+                article.archive_current_review_note(actor=request.user, action=f"cleared_on_{status}")
+            article.review_notes = ""
+    elif status == SuggestedArticle.Status.PENDING and previous_status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED}:
+        if article.review_notes:
+            article.archive_current_review_note(actor=request.user, action="resubmitted")
+        article.review_notes = ""
 
     if request.user.is_staff and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
         article.approved_by = request.user
