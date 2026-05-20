@@ -15,19 +15,6 @@
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
     <style>
-        .navbar-logout-form { display: block; margin: 0; }
-        .navbar-logout-button {
-            display: block;
-            width: 100%;
-            background: transparent;
-            border: 0;
-            padding: 15px;
-            line-height: 20px;
-            color: #777;
-            text-align: left;
-        }
-        .navbar-logout-button:hover,
-        .navbar-logout-button:focus { color: #333; background-color: transparent; outline: none; }
         .cleanup-wrap { max-width: 1000px; margin: 0 auto; float: none; }
         .cleanup-muted { color: #899aa6; font-size: 12px; }
         .cleanup-summary { margin-bottom: 15px; }
@@ -45,49 +32,8 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-static-top">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">{% trans "Toggle navigation" %}</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
-                            <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a></li>
-                            {% if user.is_superuser or user.kb_profile.is_admin_type %}<li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>{% endif %}
-                        </ul>
-                    </li>
-                    {% if user.is_superuser or user.kb_profile.is_admin_type %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
-                    {% include "_language_selector.html" %}
-                    <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Logged in as" %} {{ user.get_full_name|default:user.username }} <span class="caret"></span></a>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    <li><a href="{% url 'profile' %}"><i class="fa fa-user"></i> {% trans "My Profile" %}</a></li>
-                                    <li>
-                                        <form method="post" action="{% url 'logout' %}" style="margin:0;">
-                                            {% csrf_token %}
-                                            <button type="submit" style="display:block;width:100%;padding:3px 20px;clear:both;font-weight:400;line-height:1.42857143;color:#333;white-space:nowrap;text-align:left;background:transparent;border:0;">
-                                                <i class="fa fa-sign-out"></i> {% trans "Logout" %}
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
+    {% include "_navbar.html" %}
+<div class="container-fluid">
         <div class="col-xs-12 cleanup-wrap">
             <h2>{% trans "Clean stray upload files" %}</h2>
             <p class="cleanup-muted">

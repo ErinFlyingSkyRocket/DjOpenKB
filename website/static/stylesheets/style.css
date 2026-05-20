@@ -276,3 +276,30 @@ html{
     opacity: 0.85;
 }
 .notify-message-close:hover{ opacity: 1; }
+
+/* Shared DjOpenKB navbar actions */
+.navbar-logout-form {
+    display: block;
+    margin: 0;
+}
+
+.navbar-logout-button {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.navbar-logout-button:hover,
+.navbar-logout-button:focus {
+    color: #333;
+    background-color: transparent;
+    outline: none;
+}
