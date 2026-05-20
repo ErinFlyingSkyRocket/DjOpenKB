@@ -999,8 +999,7 @@ def sync_openkb_ai_index():
             f"full_text: {relative_source}\n"
             "---\n\n"
             f"# {title}\n\n"
-            f"{brief}\n\n"
-            f"Full article path: `{relative_source}`.\n"
+            f"{brief}\n"
         )
 
         (summaries_dir / f"{doc_name}.md").write_text(summary_text, encoding="utf-8")
@@ -2564,8 +2563,8 @@ def run_openkb_query(question):
     return result.stdout.strip()
 
 
-def find_related_openkb_articles(question, limit=5):
-    """Find related OpenKB articles for Ask OpenKB AI using the same ranking engine."""
+def find_related_openkb_articles(question, limit=3):
+    """Find up to three strongly related OpenKB articles for Ask OpenKB AI."""
     init_openkb_storage()
     ensure_openkb_ai_synced()
 
@@ -2578,11 +2577,14 @@ def find_related_openkb_articles(question, limit=5):
         if not path or path in seen_paths:
             continue
 
+        # Avoid recommending weak/accidental matches. Strong title/body/keyword
+        # matches comfortably exceed this; tiny one-word matches usually do not.
+        if int(item.get("search_score") or 0) < 25:
+            continue
+
         seen_paths.add(path)
         results.append({
             "title": item.get("title", "Untitled"),
-            "type": item.get("type", "OpenKB Article"),
-            "path": path,
             "url": item.get("url", f"/wiki/{path}"),
         })
 
@@ -2649,6 +2651,102 @@ def check_openkb_ai_rate_limit(request):
     return True, 0
 
 
+
+def clean_openkb_ai_answer(answer):
+    """Hide internal OpenKB/source-path details before showing AI output."""
+    cleaned = answer or ""
+
+    # Remove internal source path bullets/lines that OpenKB may echo from summaries.
+    cleaned = re.sub(
+        r"(?im)^\s*[-*]?\s*(?:\*\*)?full\s+article\s+path(?:\*\*)?\s*:?\s*`?[^\n`]+`?\s*$",
+        "",
+        cleaned,
+    )
+    cleaned = re.sub(
+        r"(?im)^\s*[-*]?\s*openkb\s+source\s*/\s*sources/[^\n]+$",
+        "",
+        cleaned,
+    )
+    cleaned = re.sub(
+        r"(?im)^\s*[-*]?\s*source\s*:?\s*`?(?:sources|summaries)/[^\n`]+`?\s*$",
+        "",
+        cleaned,
+    )
+    cleaned = re.sub(
+        r"(?im)^\s*[-*]?\s*`?(?:sources|summaries)/[^\n`]+\.md`?\s*$",
+        "",
+        cleaned,
+    )
+
+    # Collapse excess blank lines left by removed metadata.
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
+    return cleaned
+
+
+def answer_indicates_no_openkb_match(answer):
+    """Detect common no-result answers so we do not recommend random articles."""
+    lowered = (answer or "").lower()
+    no_match_phrases = [
+        "couldn't find any information",
+        "could not find any information",
+        "i couldn't find",
+        "i could not find",
+        "no information",
+        "not find information",
+        "not found in the wiki",
+        "not in the wiki",
+        "no relevant",
+        "no matching",
+        "nothing about",
+    ]
+    return any(phrase in lowered for phrase in no_match_phrases)
+
+
+def should_show_openkb_related_articles(question, answer, related_articles=None):
+    """Show article recommendations only when they are useful.
+
+    Rules:
+    - never show recommendations when OpenKB AI says no relevant wiki info was found;
+    - show recommendations when there are strong article matches for the user prompt;
+    - article/source wording in the prompt is helpful, but no longer required.
+
+    This lets prompts such as "anything about priority?" show the matching article,
+    while prompts with no wiki match, such as "anything about awesome?", stay clean.
+    """
+    if answer_indicates_no_openkb_match(answer):
+        return False
+
+    if related_articles is not None:
+        return bool(related_articles)
+
+    prompt = (question or "").lower()
+    article_intent_terms = [
+        "article", "articles",
+        "related article", "related articles",
+        "recommend article", "recommend articles",
+        "recommendation", "recommendations",
+        "source", "sources",
+        "reference", "references",
+        "link", "links",
+        "where can i read", "where to read",
+        "documentation", "docs",
+        "show article", "show articles",
+        "find article", "find articles",
+    ]
+    return any(term in prompt for term in article_intent_terms)
+
+
+def clean_openkb_ai_error_message(error):
+    """Return a user-friendly AI error while detailed info remains in logs."""
+    text = str(error)
+    lowered = text.lower()
+    if "503" in lowered or "serviceunavailable" in lowered or "high demand" in lowered or "unavailable" in lowered:
+        return "OpenKB AI is temporarily busy because the AI model is experiencing high demand. Please try again in a few minutes."
+    if "timeout" in lowered:
+        return "OpenKB AI took too long to respond. Try a shorter question."
+    return "OpenKB AI could not complete the request. Please try again later."
+
+
 def ask_openkb_ai(request):
     """Use the real local OpenKB AI query flow."""
     if request.method != "POST":
@@ -2661,6 +2759,7 @@ def ask_openkb_ai(request):
                 "error": "Too many OpenKB AI questions. Please wait a few minutes before trying again.",
                 "retry_after_seconds": retry_after,
                 "related_articles": [],
+                "show_related_articles": False,
             },
             status=429,
         )
@@ -2668,7 +2767,7 @@ def ask_openkb_ai(request):
     question = request.POST.get("question", "").strip()
 
     if not question:
-        return JsonResponse({"error": "Please type a question first.", "related_articles": []}, status=400)
+        return JsonResponse({"error": "Please type a question first.", "related_articles": [], "show_related_articles": False}, status=400)
 
     max_prompt_chars = settings.OPENKB_AI_MAX_PROMPT_CHARS
     if len(question) > max_prompt_chars:
@@ -2684,6 +2783,7 @@ def ask_openkb_ai(request):
             {
                 "error": f"Question is too long. Please keep it under {max_prompt_chars} characters.",
                 "related_articles": [],
+                "show_related_articles": False,
             },
             status=400,
         )
@@ -2692,25 +2792,32 @@ def ask_openkb_ai(request):
         return JsonResponse({
             "error": "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py.",
             "related_articles": [],
+            "show_related_articles": False,
         }, status=500)
 
     try:
-        answer = run_openkb_query(question)
+        answer = clean_openkb_ai_answer(run_openkb_query(question))
 
         if not answer:
             answer = "OpenKB AI returned an empty response."
 
-        related_articles = find_related_openkb_articles(question)
+        related_articles = []
+        if not answer_indicates_no_openkb_match(answer):
+            related_articles = find_related_openkb_articles(question)
+
+        show_related_articles = should_show_openkb_related_articles(question, answer, related_articles)
 
         return JsonResponse({
             "answer": answer,
-            "related_articles": related_articles,
+            "related_articles": related_articles if show_related_articles else [],
+            "show_related_articles": show_related_articles,
         })
 
     except FileNotFoundError:
         return JsonResponse({
             "error": "OpenKB CLI not found. Run: python -m pip install -e OpenKB-main",
             "related_articles": [],
+            "show_related_articles": False,
         }, status=500)
 
     except subprocess.TimeoutExpired:
@@ -2724,6 +2831,7 @@ def ask_openkb_ai(request):
         return JsonResponse({
             "error": "OpenKB AI query timed out. Try a shorter question.",
             "related_articles": [],
+            "show_related_articles": False,
         }, status=500)
 
     except Exception as error:
@@ -2735,6 +2843,7 @@ def ask_openkb_ai(request):
             len(question),
         )
         return JsonResponse({
-            "error": f"OpenKB AI query failed: {str(error)}",
+            "error": clean_openkb_ai_error_message(error),
             "related_articles": [],
+            "show_related_articles": False,
         }, status=500)

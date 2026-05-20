@@ -172,40 +172,58 @@
             text-align: center;
         }
         .openkb-ai-fab:hover,
-        .openkb-ai-fab:focus {
-            background: #13987e;
-            color: #fff;
-            outline: none;
-        }
+        .openkb-ai-fab:focus { background: #13987e; color: #fff; outline: none; }
         .openkb-ai-chat {
             position: fixed;
             right: 24px;
             bottom: 92px;
             z-index: 9999;
-            width: 380px;
-            max-width: calc(100vw - 48px);
+            width: 420px;
+            max-width: calc(100vw - 32px);
             display: none;
-            box-shadow: 0 6px 22px rgba(0,0,0,0.25);
-            border-radius: 4px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+            border-radius: 18px;
             overflow: hidden;
         }
         .openkb-ai-chat.open { display: block; }
-        .openkb-ai-chat .panel { margin-bottom: 0; border: 0; }
-        .openkb-ai-chat .panel-heading { background: #2c3e50; color: #fff; border-color: #2c3e50; }
+        .openkb-ai-chat .panel { margin-bottom: 0; border: 0; border-radius: 18px; overflow: hidden; }
+        .openkb-ai-chat .panel-heading { background: #2c3e50; color: #fff; border-color: #2c3e50; padding: 12px 15px; }
         .openkb-ai-close { color: #fff; opacity: 0.85; background: transparent; border: 0; padding: 0; }
         .openkb-ai-close:hover { opacity: 1; }
-        #openkbAiAnswer {
-            white-space: pre-wrap;
-            margin-top: 10px;
-            min-height: 120px;
-            max-height: 260px;
-            overflow: auto;
-            font-family: Consolas, Monaco, monospace;
-            font-size: 13px;
-            background: #f9fbfc;
-            color: #333;
+        .openkb-ai-body { padding: 0; background: #eef2f5; }
+        .openkb-ai-thread {
+            min-height: 300px;
+            max-height: 430px;
+            overflow-y: auto;
+            padding: 14px;
+            background: linear-gradient(180deg, #eef2f5 0%, #f7fafc 100%);
         }
-        #openkbRelatedArticles { max-height: 180px; overflow: auto; }
+        .openkb-ai-row { display: flex; margin-bottom: 10px; }
+        .openkb-ai-row.user { justify-content: flex-end; }
+        .openkb-ai-row.bot { justify-content: flex-start; }
+        .openkb-ai-bubble {
+            max-width: 82%;
+            padding: 9px 12px 6px;
+            border-radius: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            word-wrap: break-word;
+        }
+        .openkb-ai-row.user .openkb-ai-bubble { background: #18bc9c; color: #fff; border-bottom-right-radius: 4px; }
+        .openkb-ai-row.bot .openkb-ai-bubble { background: #fff; color: #2c3e50; border-bottom-left-radius: 4px; }
+        .openkb-ai-message-text { white-space: pre-wrap; line-height: 1.45; }
+        .openkb-ai-welcome { white-space: normal; }
+        .openkb-ai-welcome-title { font-weight: 600; margin-bottom: 6px; }
+        .openkb-ai-welcome-list { margin: 0; padding-left: 18px; }
+        .openkb-ai-welcome-list li { margin-bottom: 4px; }
+        .openkb-ai-time { display: block; margin-top: 4px; font-size: 11px; opacity: 0.68; text-align: right; }
+        .openkb-ai-form-wrap { padding: 12px; background: #fff; border-top: 1px solid #dde4ea; }
+        .openkb-ai-send[disabled],
+        #openkbAiQuestion[disabled] { cursor: not-allowed; opacity: 0.65; }
+        .openkb-ai-typing { display: inline-block; letter-spacing: 2px; }
+        .openkb-ai-related { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(44,62,80,0.12); white-space: normal; }
+        .openkb-ai-related-title { font-weight: bold; font-size: 12px; margin-bottom: 6px; }
+        .openkb-ai-related a { display: block; margin-bottom: 5px; }
+        .openkb-ai-related-meta { color: #777; font-size: 11px; }
     </style>
 </head>
 
@@ -413,20 +431,33 @@
                 <i class="fa fa-minus"></i>
             </button>
         </div>
-        <div class="panel-body">
-            <form id="openkbAiForm">
-                <div class="input-group">
-                    <input type="text" id="openkbAiQuestion" name="question" class="form-control" placeholder="{% trans 'Ask OpenKB AI' %}">
-                    <span class="input-group-btn"><button class="btn btn-success" type="submit">{% trans "Ask" %}</button></span>
+        <div class="panel-body openkb-ai-body">
+            <div id="openkbAiThread" class="openkb-ai-thread" aria-live="polite">
+                <div class="openkb-ai-row bot">
+                    <div class="openkb-ai-bubble">
+                        <div class="openkb-ai-message-text openkb-ai-welcome">
+                            <div class="openkb-ai-welcome-title">{% trans "Hi, I am OpenKB AI. I can help you find published articles and answer questions from the wiki." %}</div>
+                            <ul class="openkb-ai-welcome-list">
+                                <li>{% trans "Ask questions using general keywords or article topics." %}</li>
+                                <li>{% trans "Ask for related articles when you want source links." %}</li>
+                            </ul>
+                        </div>
+                        <span class="openkb-ai-time">{% trans "Ready" %}</span>
+                    </div>
                 </div>
-            </form>
-            <div style="margin-top: 15px;">
-                <strong>{% trans "Answer" %}:</strong>
-                <pre id="openkbAiAnswer">{% trans "No answer yet." %}</pre>
-                <div id="openkbRelatedArticlesWrapper" style="display: none; margin-top: 15px;">
-                    <strong>{% trans "Related articles" %}:</strong>
-                    <ul id="openkbRelatedArticles" class="list-group" style="margin-top: 10px;"></ul>
-                </div>
+            </div>
+            <div class="openkb-ai-form-wrap">
+                <form id="openkbAiForm">
+                    <div class="input-group">
+                        <input type="text" id="openkbAiQuestion" name="question" class="form-control" autocomplete="off" placeholder="{% trans 'Ask OpenKB AI' %}">
+                        <span class="input-group-btn">
+                            <button id="openkbAiSend" class="btn btn-success openkb-ai-send" type="submit">
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                        </span>
+                    </div>
+                    <small id="openkbAiStatus" class="text-muted">{% trans "Ask one question at a time." %}</small>
+                </form>
             </div>
         </div>
     </div>
@@ -451,9 +482,9 @@
 <script>
     const openkbAiForm = document.getElementById("openkbAiForm");
     const openkbAiQuestion = document.getElementById("openkbAiQuestion");
-    const openkbAiAnswer = document.getElementById("openkbAiAnswer");
-    const openkbRelatedArticlesWrapper = document.getElementById("openkbRelatedArticlesWrapper");
-    const openkbRelatedArticles = document.getElementById("openkbRelatedArticles");
+    const openkbAiSend = document.getElementById("openkbAiSend");
+    const openkbAiStatus = document.getElementById("openkbAiStatus");
+    const openkbAiThread = document.getElementById("openkbAiThread");
     const guestVoteButtons = document.querySelectorAll(".js-guest-vote");
     const guestVoteHint = document.getElementById("articleVoteGuestHint");
     let guestVoteHintTimer = null;
@@ -477,13 +508,80 @@
     const openkbAiChat = document.getElementById("openkbAiChat");
     const openkbAiToggle = document.getElementById("openkbAiToggle");
     const openkbAiClose = document.getElementById("openkbAiClose");
+    let openkbAiThinking = false;
+
+    function getOpenKbAiTime() {
+        return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
 
     function setOpenKbAiChat(open) {
         openkbAiChat.classList.toggle("open", open);
         openkbAiChat.setAttribute("aria-hidden", open ? "false" : "true");
-        if (open) {
+        if (open && !openkbAiThinking) {
             setTimeout(function() { openkbAiQuestion.focus(); }, 100);
         }
+    }
+
+    function setOpenKbAiThinking(thinking) {
+        openkbAiThinking = thinking;
+        openkbAiQuestion.disabled = thinking;
+        openkbAiSend.disabled = thinking;
+        openkbAiStatus.textContent = thinking ? "OpenKB AI is thinking..." : "Ask one question at a time.";
+    }
+
+    function scrollOpenKbAiThread() {
+        openkbAiThread.scrollTop = openkbAiThread.scrollHeight;
+    }
+
+    function appendOpenKbAiMessage(sender, text, options) {
+        const row = document.createElement("div");
+        row.className = "openkb-ai-row " + sender;
+
+        const bubble = document.createElement("div");
+        bubble.className = "openkb-ai-bubble";
+
+        const messageText = document.createElement("div");
+        messageText.className = "openkb-ai-message-text";
+
+        if (options && options.html) {
+            messageText.innerHTML = options.html;
+        } else {
+            messageText.textContent = text;
+        }
+
+        const time = document.createElement("span");
+        time.className = "openkb-ai-time";
+        time.textContent = getOpenKbAiTime();
+        bubble.appendChild(messageText);
+        bubble.appendChild(time);
+
+        row.appendChild(bubble);
+        openkbAiThread.appendChild(row);
+        scrollOpenKbAiThread();
+        return row;
+    }
+
+    function buildRelatedArticlesHtml(articles) {
+        const selected = (articles || []).slice(0, 3);
+        if (!selected.length) { return ""; }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "openkb-ai-related";
+
+        const title = document.createElement("div");
+        title.className = "openkb-ai-related-title";
+        title.textContent = "Recommended articles";
+        wrapper.appendChild(title);
+
+        selected.forEach(function(article) {
+            const link = document.createElement("a");
+            link.href = article.url;
+            link.textContent = article.title;
+            wrapper.appendChild(link);
+
+        });
+
+        return wrapper.outerHTML;
     }
 
     openkbAiToggle.addEventListener("click", function() {
@@ -494,45 +592,23 @@
         setOpenKbAiChat(false);
     });
 
-    function renderRelatedArticles(articles) {
-        openkbRelatedArticles.innerHTML = "";
-        if (!articles || articles.length === 0) {
-            openkbRelatedArticlesWrapper.style.display = "none";
-            return;
-        }
-
-        articles.forEach(function(article) {
-            const li = document.createElement("li");
-            li.className = "list-group-item";
-
-            const title = document.createElement("a");
-            title.href = article.url;
-            title.textContent = article.title;
-
-            const meta = document.createElement("div");
-            meta.className = "openkb-path";
-            meta.textContent = article.type + " / " + article.path;
-
-            li.appendChild(title);
-            li.appendChild(meta);
-            openkbRelatedArticles.appendChild(li);
-        });
-
-        openkbRelatedArticlesWrapper.style.display = "block";
-    }
-
     openkbAiForm.addEventListener("submit", async function(event) {
         event.preventDefault();
+        if (openkbAiThinking) { return; }
 
         const question = openkbAiQuestion.value.trim();
         if (!question) {
-            openkbAiAnswer.textContent = "Please type a question first.";
-            renderRelatedArticles([]);
+            appendOpenKbAiMessage("bot", "Please type a question first.");
             return;
         }
 
-        openkbAiAnswer.textContent = "Asking OpenKB AI...";
-        renderRelatedArticles([]);
+        appendOpenKbAiMessage("user", question);
+        openkbAiQuestion.value = "";
+        setOpenKbAiThinking(true);
+
+        const typingRow = appendOpenKbAiMessage("bot", "", {
+            html: '<span class="openkb-ai-typing">•••</span>'
+        });
 
         const formData = new FormData();
         formData.append("question", question);
@@ -544,12 +620,18 @@
                 body: formData
             });
             const data = await response.json();
-
-            openkbAiAnswer.textContent = data.answer || data.error || "Something went wrong.";
-            renderRelatedArticles(data.related_articles || []);
+            const answer = data.answer || data.error || "Something went wrong.";
+            const safeText = document.createElement("div");
+            safeText.textContent = answer;
+            const relatedHtml = data.show_related_articles ? buildRelatedArticlesHtml(data.related_articles || []) : "";
+            typingRow.remove();
+            appendOpenKbAiMessage("bot", "", { html: safeText.innerHTML + relatedHtml });
         } catch (error) {
-            openkbAiAnswer.textContent = "Request failed. Check Django terminal logs.";
-            renderRelatedArticles([]);
+            typingRow.remove();
+            appendOpenKbAiMessage("bot", "Request failed. Check Django terminal logs.");
+        } finally {
+            setOpenKbAiThinking(false);
+            openkbAiQuestion.focus();
         }
     });
 </script>
