@@ -206,6 +206,9 @@
                                             {% if article.date %}&nbsp;/&nbsp;<strong>{% trans "Date" %}:</strong> {{ article.date }}{% endif %}
                                         </span>
                                     </h4>
+                                    {% if article.search_excerpt %}
+                                        <p class="text-muted openkb-search-excerpt">{{ article.search_excerpt }}</p>
+                                    {% endif %}
                                 </li>
                             {% endfor %}
                         {% else %}

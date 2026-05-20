@@ -283,7 +283,7 @@
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             <div class="col-md-3 col-lg-3">
                 <div class="panel panel-default" style="margin-top: 30px;">
-                    <div class="panel-heading">{% trans "Featured articles" %}</div>
+                    <div class="panel-heading">{% trans "Related articles" %}</div>
                     <div class="panel-body">
                         <ul class="list-group">
                             {% if featured_articles %}
@@ -291,7 +291,7 @@
                                     <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a></li>
                                 {% endfor %}
                             {% else %}
-                                <li class="list-group-item">{% trans "No featured articles yet." %}</li>
+                                <li class="list-group-item">{% trans "No related articles yet." %}</li>
                             {% endif %}
                         </ul>
                     </div>

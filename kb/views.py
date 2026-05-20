@@ -43,6 +43,14 @@ DJANGO_ARTICLE_SOURCE_MARKER = "generated_by: django-suggested-article"
 logger = logging.getLogger(__name__)
 
 
+SEARCH_STOPWORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "can", "do", "does",
+    "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on",
+    "or", "our", "the", "this", "to", "was", "we", "what", "when", "where",
+    "which", "who", "why", "with", "you", "your",
+}
+
+
 def slugify_title(title):
     slug = title.strip().lower()
     slug = re.sub(r"[^a-z0-9]+", "-", slug)
@@ -1282,6 +1290,8 @@ def get_openkb_wiki_articles(sort_by_views=False):
             "path": relative_path,
             "raw_markdown": raw_markdown,
             "author": suggested.author_display if suggested else "",
+            "keywords": suggested.keyword_list if suggested else [],
+            "suggested_id": suggested.pk if suggested else None,
         })
 
     if sort_by_views:
@@ -1435,9 +1445,190 @@ def paginate_articles(request, articles, per_page=20):
     return page_obj
 
 
+def tokenize_search_query(value):
+    """Return meaningful lowercase search tokens for ranking and related articles."""
+    return [
+        word
+        for word in re.findall(r"[a-zA-Z0-9]+", (value or "").lower())
+        if len(word) >= 2 and word not in SEARCH_STOPWORDS
+    ]
+
+
+def strip_markdown_for_search(markdown_text):
+    """Create lightweight plain text from Markdown for snippets and ranking."""
+    text = re.sub(r"```.*?```", " ", markdown_text or "", flags=re.DOTALL)
+    text = re.sub(r"`([^`]+)`", r"\1", text)
+    text = re.sub(r"!?\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    text = re.sub(r"[#>*_~\-|]+", " ", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
+def build_search_excerpt(raw_markdown, query_words, max_length=180):
+    """Return a short result snippet around the first useful query token."""
+    plain_text = strip_markdown_for_search(raw_markdown)
+    if not plain_text:
+        return ""
+
+    lower_text = plain_text.lower()
+    first_match = -1
+    for word in query_words:
+        index = lower_text.find(word)
+        if index >= 0 and (first_match == -1 or index < first_match):
+            first_match = index
+
+    if first_match < 0:
+        return plain_text[:max_length].rstrip() + ("…" if len(plain_text) > max_length else "")
+
+    start = max(0, first_match - 70)
+    end = min(len(plain_text), start + max_length)
+    snippet = plain_text[start:end].strip()
+    if start > 0:
+        snippet = "…" + snippet
+    if end < len(plain_text):
+        snippet = snippet + "…"
+    return snippet
+
+
+def score_article_for_query(article, query):
+    """Score one public article for a user query. Higher means more relevant."""
+    query = (query or "").strip().lower()
+    query_words = tokenize_search_query(query)
+    if not query and not query_words:
+        return 0
+
+    title = (article.get("title") or "").lower()
+    raw_markdown = article.get("raw_markdown") or ""
+    body = strip_markdown_for_search(raw_markdown).lower()
+    keywords = " ".join(article.get("keywords") or []).lower()
+    path = (article.get("path") or "").lower()
+    author = (article.get("author") or "").lower()
+
+    score = 0
+
+    if query:
+        if title == query:
+            score += 150
+        elif query in title:
+            score += 90
+        if query in keywords:
+            score += 70
+        if query in body:
+            score += 35
+        if query in path:
+            score += 15
+
+    matched_words = 0
+    for word in query_words:
+        word_score = 0
+        if word in title:
+            word_score += 20
+        if word in keywords:
+            word_score += 16
+        if word in path:
+            word_score += 7
+        if word in author:
+            word_score += 4
+
+        body_hits = body.count(word)
+        if body_hits:
+            word_score += min(body_hits, 8) * 2
+
+        if word_score:
+            matched_words += 1
+            score += word_score
+
+    if query_words and matched_words == len(query_words):
+        score += 30
+    elif query_words and matched_words:
+        score += matched_words * 3
+
+    # Small tie-breakers: stronger source files, viewed articles, then recent files.
+    if (article.get("type") or "").lower() == "openkb source":
+        score += 5
+    score += min(int(article.get("views") or 0), 50)
+
+    return score
+
+
+def rank_articles_for_query(articles, query):
+    """Return matching articles sorted by relevance for the search page."""
+    query_words = tokenize_search_query(query)
+    ranked = []
+
+    for article in articles:
+        score = score_article_for_query(article, query)
+        if score <= 0:
+            continue
+
+        item = dict(article)
+        item["search_score"] = score
+        item["search_excerpt"] = build_search_excerpt(item.get("raw_markdown", ""), query_words)
+        ranked.append(item)
+
+    ranked.sort(
+        key=lambda item: (
+            item.get("search_score") or 0,
+            item.get("views") or 0,
+            item.get("date") or "",
+        ),
+        reverse=True,
+    )
+    return ranked
+
+
+def get_contextual_related_articles(current_article, limit=5):
+    """Return article-page related links using title, keywords, body overlap, and views."""
+    if not current_article:
+        return []
+
+    current_path = current_article.get("path") or ""
+    current_keywords = " ".join(current_article.get("keywords") or [])
+    current_title = current_article.get("title") or ""
+    body_tokens = tokenize_search_query(strip_markdown_for_search(current_article.get("raw_markdown") or ""))
+    unique_body_tokens = list(dict.fromkeys(body_tokens))[:30]
+    related_query = " ".join([current_title, current_keywords, " ".join(unique_body_tokens)]).strip()
+
+    candidates = [
+        article
+        for article in get_openkb_wiki_articles(sort_by_views=True)
+        if article.get("path") != current_path
+    ]
+
+    scored = []
+    for article in candidates:
+        score = score_article_for_query(article, related_query)
+        if score > 0:
+            item = dict(article)
+            item["related_score"] = score
+            scored.append(item)
+
+    scored.sort(
+        key=lambda item: (
+            item.get("related_score") or 0,
+            item.get("views") or 0,
+            item.get("date") or "",
+        ),
+        reverse=True,
+    )
+
+    # Fallback to trending/recent articles if the article has too little text to match.
+    if len(scored) < limit:
+        seen = {item.get("path") for item in scored}
+        for article in candidates:
+            if article.get("path") in seen:
+                continue
+            scored.append(article)
+            seen.add(article.get("path"))
+            if len(scored) >= limit:
+                break
+
+    return scored[:limit]
+
+
 def home(request):
     all_articles = get_openkb_wiki_articles(sort_by_views=True)
-    page_obj = paginate_articles(request, all_articles, per_page=20)
+    page_obj = paginate_articles(request, all_articles, per_page=10)
 
     return render(request, "index.html", {
         "articles": page_obj.object_list,
@@ -2224,10 +2415,14 @@ def wiki_detail(request, wiki_path):
             "delete_url": "",
         }
 
-    featured_articles = [
-        article for article in get_openkb_wiki_articles()
-        if article.get("path") != wiki_path
-    ][:5]
+    current_article_context = {
+        "title": title,
+        "path": wiki_path,
+        "raw_markdown": raw_markdown,
+        "keywords": metadata.get("keywords", []),
+        "author": metadata.get("author", ""),
+    }
+    featured_articles = get_contextual_related_articles(current_article_context, limit=5)
 
     html_content = render_safe_markdown(display_markdown)
 
@@ -2293,26 +2488,17 @@ def vote_article(request, article_id):
 
 
 def search_articles(request):
-    """Search OpenKB source and summary Markdown files."""
+    """Search OpenKB articles with relevance ranking instead of plain substring order."""
     init_openkb_storage()
 
     query_original = request.GET.get("q", "").strip()
-    query = query_original.lower()
-    results = []
+    all_public_articles = get_openkb_wiki_articles(sort_by_views=not bool(query_original))
 
-    if query:
-        for article in get_openkb_wiki_articles():
-            file_path = settings.OPENKB_WIKI_DIR / article["path"]
-            if not file_path.exists():
-                continue
+    if query_original:
+        all_articles = rank_articles_for_query(all_public_articles, query_original)
+    else:
+        all_articles = all_public_articles
 
-            body = file_path.read_text(encoding="utf-8", errors="ignore")
-            searchable_text = " ".join([article["title"], body]).lower()
-
-            if query in searchable_text:
-                results.append(article)
-
-    all_articles = results if query_original else get_openkb_wiki_articles()
     page_obj = paginate_articles(request, all_articles, per_page=20)
 
     return render(request, "index.html", {
@@ -2321,8 +2507,8 @@ def search_articles(request):
         "paginator": page_obj.paginator,
         "search_query": query_original,
         "is_search": bool(query_original),
-        "result_count": len(results),
-        "total_article_count": len(all_articles),
+        "result_count": len(all_articles),
+        "total_article_count": len(all_public_articles),
     })
 
 
@@ -2379,95 +2565,25 @@ def run_openkb_query(question):
 
 
 def find_related_openkb_articles(question, limit=5):
-    """Find related OpenKB articles so Ask OpenKB AI can show clickable sources."""
+    """Find related OpenKB articles for Ask OpenKB AI using the same ranking engine."""
     init_openkb_storage()
     ensure_openkb_ai_synced()
 
-    query = question.lower().strip()
-    query_words = [
-        word for word in re.findall(r"[a-zA-Z0-9]+", query)
-        if len(word) >= 2
-    ]
-
-    if not query_words:
-        return []
-
-    wiki_dir = settings.OPENKB_WIKI_DIR
-
-    if not wiki_dir.exists():
-        return []
-
-    related = []
-
-    for file_path in wiki_dir.rglob("*.md"):
-        if file_path.name in IGNORED_WIKI_NAMES:
-            continue
-
-        relative_path = file_path.relative_to(wiki_dir).as_posix()
-
-        # Hide generated summaries from the related-articles UI to avoid
-        # duplicate source/summary entries. The AI still uses them internally.
-        if relative_path.startswith("summaries/"):
-            continue
-
-        raw_markdown = file_path.read_text(encoding="utf-8", errors="ignore")
-
-        searchable_text = " ".join([
-            file_path.stem,
-            relative_path,
-            raw_markdown,
-        ]).lower()
-
-        score = 0
-
-        for word in query_words:
-            if word in searchable_text:
-                score += 1
-
-            if word in file_path.stem.lower():
-                score += 3
-
-            if word in relative_path.lower():
-                score += 2
-
-        if query and query in searchable_text:
-            score += 10
-
-        if relative_path.startswith("sources/"):
-            score += 5
-            article_type = "OpenKB Source"
-        elif relative_path.startswith("summaries/"):
-            score += 1
-            article_type = "OpenKB AI Summary"
-        else:
-            score += 3
-            article_type = "OpenKB Wiki"
-
-        if score > 0:
-            suggested = get_article_metadata_by_wiki_path(relative_path)
-            related.append({
-                "score": score,
-                "title": suggested.title if suggested else clean_wiki_title(file_path),
-                "type": article_type,
-                "path": relative_path,
-                "url": f"/wiki/{relative_path}",
-            })
-
-    related.sort(key=lambda item: item["score"], reverse=True)
-
+    ranked_articles = rank_articles_for_query(get_openkb_wiki_articles(), question)
     results = []
     seen_paths = set()
 
-    for item in related:
-        if item["path"] in seen_paths:
+    for item in ranked_articles:
+        path = item.get("path")
+        if not path or path in seen_paths:
             continue
 
-        seen_paths.add(item["path"])
+        seen_paths.add(path)
         results.append({
-            "title": item["title"],
-            "type": item["type"],
-            "path": item["path"],
-            "url": item["url"],
+            "title": item.get("title", "Untitled"),
+            "type": item.get("type", "OpenKB Article"),
+            "path": path,
+            "url": item.get("url", f"/wiki/{path}"),
         })
 
         if len(results) >= limit:

@@ -25,15 +25,7 @@ COPY . /app/
 
 RUN python -m pip install --upgrade pip setuptools wheel
 
-RUN python -m pip install \
-    django \
-    gunicorn \
-    markdown \
-    bleach \
-    pillow \
-    python-dotenv \
-    django-auth-ldap \
-    "psycopg[binary]"
+RUN python -m pip install -r requirements.txt
 
 RUN python -m pip install -e /app/OpenKB-main
 
