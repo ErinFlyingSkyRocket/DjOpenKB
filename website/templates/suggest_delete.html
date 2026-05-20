@@ -84,9 +84,10 @@
                     <p>{% trans "Are you sure you want to delete" %} <strong>{{ article.title }}</strong>?</p>
                     <p class="text-muted">{% trans "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage." %}</p>
                     <form method="post" action="{% url 'delete_suggestion' article.id %}">
+                        <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                         {% csrf_token %}
                         <button class="btn btn-danger" type="submit">{% trans "Delete" %}</button>
-                        <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Cancel" %}</a>
+                        <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Cancel" %}</a>
                     </form>
                 </div>
             </div>

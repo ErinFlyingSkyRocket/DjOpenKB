@@ -147,7 +147,7 @@
                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                     <td class="text-right pending-actions">
-                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}"><i class="fa fa-pencil"></i> {% trans "Review / Edit" %}</a>
+                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}"><i class="fa fa-pencil"></i> {% trans "Review / Edit" %}</a>
                                     </td>
                                 </tr>
                             {% endfor %}

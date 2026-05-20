@@ -151,6 +151,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             {% endif %}
             <div class="row">
                 <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
+                    <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
                     <div id="header row">
@@ -291,7 +292,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                     </footer>
                     <div class="col-xs-12">
-                        <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Cancel" %}</a>
+                        <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Cancel" %}</a>
                     </div>
                 </form>
             </div>

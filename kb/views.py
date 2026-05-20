@@ -78,6 +78,23 @@ def get_review_notes_history(article):
     return list(reversed(history))
 
 
+def get_safe_return_url(request, fallback_view_name="edit_my_suggestions"):
+    """Return a safe local URL for edit/delete flows.
+
+    This lets the same article edit/delete views send users back to the page
+    they came from, such as Manage pending articles for admins or Edit my
+    articles for owners, without allowing open redirects.
+    """
+    candidate = (request.POST.get("next") or request.GET.get("next") or "").strip()
+    if candidate and url_has_allowed_host_and_scheme(
+        candidate,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return candidate
+    return reverse(fallback_view_name)
+
+
 def init_openkb_storage():
     settings.OPENKB_DATA_DIR.mkdir(parents=True, exist_ok=True)
     settings.OPENKB_RAW_DIR.mkdir(parents=True, exist_ok=True)
@@ -1790,15 +1807,24 @@ def edit_suggestion(request, article_id):
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("You do not have permission to edit this article.")
 
-    if request.method == "GET":
-        return render(request, "suggest_edit.html", {
+    return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
+
+    def render_edit_form(extra_context=None):
+        context = {
             "article": article,
-            "current_status": article.status,
+            "current_status": extra_context.get("current_status", article.status) if extra_context else article.status,
             "review_notes_value": article.review_notes,
             "review_notes_history": get_review_notes_history(article),
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article)),
-        })
+            "return_url": return_url,
+        }
+        if extra_context:
+            context.update(extra_context)
+        return render(request, "suggest_edit.html", context)
+
+    if request.method == "GET":
+        return render_edit_form()
 
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
@@ -1826,47 +1852,36 @@ def edit_suggestion(request, article_id):
     else:
         review_notes = article.review_notes
 
+    error_context = {
+        "title_value": title,
+        "body_value": body,
+        "keywords_value": keywords_raw,
+        "status_value": status,
+        "current_status": status,
+        "review_notes_value": review_notes,
+        "review_notes_history": get_review_notes_history(article),
+        "existing_images_json": json.dumps(get_article_image_cards(article)),
+        "return_url": return_url,
+    }
+
     if request.user.is_staff and status == SuggestedArticle.Status.FAILED and not review_notes:
-        return render(request, "suggest_edit.html", {
-            "article": article,
+        return render_edit_form({
+            **error_context,
             "error": _("Please enter Pending failed comments before marking this article as Pending failed."),
-            "title_value": title,
-            "body_value": body,
-            "keywords_value": keywords_raw,
-            "status_value": status,
-            "current_status": status,
-            "review_notes_value": review_notes,
-            "review_notes_history": get_review_notes_history(article),
-            "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
     if len(title) < 5 or len(body) < 5:
-        return render(request, "suggest_edit.html", {
-            "article": article,
-            "error": _("Article title and body must be at least 5 characters."),
-            "title_value": title,
-            "body_value": body,
-            "keywords_value": keywords_raw,
-            "status_value": status,
-            "current_status": status,
+        return render_edit_form({
+            **error_context,
             "review_notes_value": request.POST.get("review_notes", article.review_notes),
-            "review_notes_history": get_review_notes_history(article),
-            "existing_images_json": json.dumps(get_article_image_cards(article)),
+            "error": _("Article title and body must be at least 5 characters."),
         })
 
     duplicate_article = find_duplicate_article_by_title(title, exclude_pk=article.pk)
     if duplicate_article:
-        return render(request, "suggest_edit.html", {
-            "article": article,
+        return render_edit_form({
+            **error_context,
             "error": duplicate_title_error_message(title),
-            "title_value": title,
-            "body_value": body,
-            "keywords_value": keywords_raw,
-            "status_value": status,
-            "current_status": status,
-            "review_notes_value": review_notes,
-            "review_notes_history": get_review_notes_history(article),
-            "existing_images_json": json.dumps(get_article_image_cards(article)),
         })
 
     old_image_assets = list(article.image_assets or extract_article_image_filenames(article.body))
@@ -1912,7 +1927,7 @@ def edit_suggestion(request, article_id):
         messages.success(request, _("Article approved and published."))
     else:
         messages.success(request, _("Article updated successfully."))
-    return redirect("edit_my_suggestions")
+    return redirect(return_url)
 
 
 @main_site_login_required
@@ -1923,14 +1938,16 @@ def delete_suggestion(request, article_id):
         from django.http import HttpResponseForbidden
         return HttpResponseForbidden("You do not have permission to delete this article.")
 
+    return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
+
     if request.method == "POST":
         title = article.title
         delete_article_files(article)
         article.delete()
         messages.success(request, f"Article deleted: {title}")
-        return redirect("edit_my_suggestions")
+        return redirect(return_url)
 
-    return render(request, "suggest_delete.html", {"article": article})
+    return render(request, "suggest_delete.html", {"article": article, "return_url": return_url})
 
 
 @main_site_login_required
