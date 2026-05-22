@@ -10,27 +10,79 @@ except ImportError:  # allows local non-LDAP development when LDAP_ENABLED=false
     LDAPBackend = object
 
 
-class NextLabsLDAPBackend(LDAPBackend):
-    """Real LDAP backend placeholder.
+def _requested_login_mode(request):
+    if request is None:
+        return ""
+    return (request.POST.get("login_mode") or "").strip().lower()
 
-    Enable this later when AD details are ready. For now, the project can use
-    PlaceholderLDAPBackend for fake LDAP sign-in/sign-up testing.
+
+class NextLabsLDAPBackend(LDAPBackend):
+    """Active Directory / LDAP backend.
+
+    This backend is used when the login form submits login_mode=ad. It normalizes
+    common AD login formats so test users can sign in as:
+    - alice
+    - alice@openkb.local
+    - OPENKB\alice
+
+    The actual bind/search is still handled by django-auth-ldap.
     """
 
-    allowed_domain = "@nextlabs.com"
+    def _normalize_username_for_ldap(self, username):
+        login_value = (username or "").strip()
+        if not login_value:
+            return ""
+
+        ad_domain = getattr(settings, "LDAP_AD_DOMAIN", "").strip().lower()
+        netbios_domain = getattr(settings, "LDAP_NETBIOS_DOMAIN", "").strip().upper()
+
+        # OPENKB\alice -> alice
+        if "\\" in login_value:
+            prefix, login_value = login_value.split("\\", 1)
+            if netbios_domain and prefix.strip().upper() != netbios_domain:
+                return ""
+
+        login_value = login_value.strip()
+
+        # alice -> alice@openkb.local when a lab AD domain is configured.
+        if "@" not in login_value and ad_domain:
+            return f"{login_value}@{ad_domain}"
+
+        return login_value
+
+    def _is_allowed_domain(self, username):
+        allowed_domains = list(getattr(settings, "LDAP_ALLOWED_EMAIL_DOMAINS", []) or [])
+        ad_domain = getattr(settings, "LDAP_AD_DOMAIN", "").strip().lower()
+        if ad_domain and ad_domain not in allowed_domains:
+            allowed_domains.append(ad_domain)
+
+        if not allowed_domains:
+            return True
+
+        login_value = (username or "").strip().lower()
+        if "@" not in login_value:
+            return True
+
+        domain = login_value.rsplit("@", 1)[1]
+        return domain in allowed_domains
 
     def authenticate(self, request, username=None, password=None, **kwargs):
+        if _requested_login_mode(request) not in {"", "ad", "ldap"}:
+            return None
+
+        if not getattr(settings, "LDAP_ENABLED", False):
+            return None
+
         if not username or not password:
             return None
 
-        username = username.strip().lower()
-
-        if not username.endswith(self.allowed_domain):
+        ldap_username = self._normalize_username_for_ldap(username)
+        if not ldap_username or not self._is_allowed_domain(ldap_username):
             return None
 
         user = super().authenticate(
             request,
-            username=username,
+            username=ldap_username,
             password=password,
             **kwargs,
         )
@@ -42,6 +94,11 @@ class NextLabsLDAPBackend(LDAPBackend):
         if profile.account_type == UserProfile.AccountType.USER:
             profile.account_type = UserProfile.AccountType.LDAP_USER
             profile.save(update_fields=["account_type", "updated_at"])
+
+        # AD-managed users should not have a local fallback password.
+        if user.has_usable_password():
+            user.set_unusable_password()
+            user.save(update_fields=["password"])
 
         if not profile.can_access_main_site:
             return None
@@ -60,6 +117,9 @@ class EmailOrUsernameModelBackend(ModelBackend):
     """
 
     def authenticate(self, request, username=None, password=None, **kwargs):
+        if _requested_login_mode(request) in {"ad", "ldap"}:
+            return None
+
         if not username or not password:
             return None
 
@@ -96,13 +156,16 @@ class EmailOrUsernameModelBackend(ModelBackend):
 class PlaceholderLDAPBackend(ModelBackend):
     """Temporary fake LDAP backend for development.
 
-    This does not connect to AD. It lets you test LDAP user flows now:
+    This does not connect to AD. It lets you test LDAP user flows before AD is up:
     - Existing LDAP user / LDAP admin can sign in with the placeholder password.
     - New LDAP users can be auto-created if LDAP_PLACEHOLDER_AUTO_CREATE_USERS=true.
     - A Django admin can later promote an LDAP user to LDAP admin in /admin/.
     """
 
     def authenticate(self, request, username=None, password=None, **kwargs):
+        if _requested_login_mode(request) not in {"", "ad", "ldap"}:
+            return None
+
         if not getattr(settings, "LDAP_PLACEHOLDER_ENABLED", False):
             return None
 

@@ -185,7 +185,7 @@ else:
 
 
 # ---------------------------------------------------------------------
-# Authentication / LDAP
+# Authentication / LDAP / Active Directory
 # ---------------------------------------------------------------------
 
 LOGIN_URL = "/login/"
@@ -196,6 +196,18 @@ LDAP_ENABLED = os.getenv("LDAP_ENABLED", "false").lower() == "true"
 LDAP_PLACEHOLDER_ENABLED = os.getenv("LDAP_PLACEHOLDER_ENABLED", "false").lower() == "true"
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS = os.getenv("LDAP_PLACEHOLDER_AUTO_CREATE_USERS", "false").lower() == "true"
 LDAP_PLACEHOLDER_PASSWORD = os.getenv("LDAP_PLACEHOLDER_PASSWORD", "ChangeThisPlaceholderPassword123!")
+
+# These are used by kb.backends.NextLabsLDAPBackend to normalize AD usernames.
+# Example lab values:
+#   LDAP_AD_DOMAIN=openkb.local
+#   LDAP_NETBIOS_DOMAIN=OPENKB
+LDAP_AD_DOMAIN = os.getenv("LDAP_AD_DOMAIN", "").strip().lower()
+LDAP_NETBIOS_DOMAIN = os.getenv("LDAP_NETBIOS_DOMAIN", "").strip().upper()
+LDAP_ALLOWED_EMAIL_DOMAINS = [
+    item.strip().lower()
+    for item in os.getenv("LDAP_ALLOWED_EMAIL_DOMAINS", "").split(",")
+    if item.strip()
+]
 
 if LDAP_ENABLED:
     try:
@@ -216,16 +228,22 @@ if LDAP_ENABLED:
 
     AUTH_LDAP_SERVER_URI = os.getenv(
         "LDAP_SERVER_URI",
-        "ldap://your-ad-server.nextlabs.com:389",
+        "ldap://192.168.56.10:389",
     )
 
+    # Use a low-privilege AD service account for searching users.
+    # Example:
+    #   CN=svc_djopenkb,OU=Service Accounts,DC=openkb,DC=local
     AUTH_LDAP_BIND_DN = os.getenv("LDAP_BIND_DN", "")
     AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD", "")
 
     AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        os.getenv("LDAP_USER_SEARCH_BASE", "DC=nextlabs,DC=com"),
+        os.getenv("LDAP_USER_SEARCH_BASE", "DC=openkb,DC=local"),
         ldap.SCOPE_SUBTREE,
-        os.getenv("LDAP_USER_FILTER", "(userPrincipalName=%(user)s)"),
+        os.getenv(
+            "LDAP_USER_FILTER",
+            "(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))",
+        ),
     )
 
     AUTH_LDAP_USER_ATTR_MAP = {
@@ -239,9 +257,11 @@ if LDAP_ENABLED:
 
     AUTH_LDAP_CONNECTION_OPTIONS = {
         ldap.OPT_REFERRALS: 0,
+        ldap.OPT_NETWORK_TIMEOUT: int(os.getenv("LDAP_NETWORK_TIMEOUT", "5")),
+        ldap.OPT_TIMEOUT: int(os.getenv("LDAP_OPERATION_TIMEOUT", "5")),
     }
 
-    AUTH_LDAP_CACHE_TIMEOUT = 3600
+    AUTH_LDAP_CACHE_TIMEOUT = int(os.getenv("LDAP_CACHE_TIMEOUT", "3600"))
 
 else:
     AUTHENTICATION_BACKENDS = [
