@@ -63,6 +63,10 @@ SEARCH_STOPWORDS = {
     "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on",
     "or", "our", "the", "this", "to", "was", "we", "what", "when", "where",
     "which", "who", "why", "with", "you", "your",
+    # Chat filler / greetings should not make Ask OpenKB AI recommend random
+    # articles just because words like "there" appear in article bodies.
+    "hi", "hello", "hey", "there", "still", "alive", "thanks", "thank",
+    "please", "pls", "ok", "okay", "yo",
 }
 
 
@@ -1676,35 +1680,191 @@ def run_openkb_query(question):
     return result.stdout.strip()
 
 
-def find_related_openkb_articles(question, limit=3):
-    """Find up to three strongly related OpenKB articles for Ask OpenKB AI."""
-    init_openkb_storage()
-    ensure_openkb_ai_synced()
+OPENKB_AI_SMALL_TALK_PATTERNS = [
+    r"^hi+$",
+    r"^hi\s+there[!.?]*$",
+    r"^hello+$",
+    r"^hello\s+there[!.?]*$",
+    r"^hey+$",
+    r"^hey\s+there[!.?]*$",
+    r"^are\s+you\s+there[?.!]*$",
+    r"^are\s+you\s+still\s+there[?.!]*$",
+    r"^are\s+you\s+still\s+here[?.!]*$",
+    r"^you\s+there[?.!]*$",
+    r"^test[?.!]*$",
+    r"^testing[?.!]*$",
+]
 
-    ranked_articles = rank_articles_for_query(get_openkb_wiki_articles(), question)
+
+def is_openkb_small_talk_request(question):
+    """Return True for greetings/status checks that should not trigger article search.
+
+    Without this guard, a short message such as "hi there" can accidentally
+    match published articles because generic words appear in article bodies.
+    """
+    prompt = re.sub(r"\s+", " ", (question or "").strip().lower())
+    if not prompt:
+        return False
+
+    if len(prompt) <= 80:
+        for pattern in OPENKB_AI_SMALL_TALK_PATTERNS:
+            if re.fullmatch(pattern, prompt):
+                return True
+
+    tokens = tokenize_search_query(prompt)
+    return not tokens and len(prompt) <= 80
+
+
+def build_openkb_small_talk_answer(question=None):
+    """Return a normal chat response for greetings/status messages."""
+    prompt = ((question or "").strip().lower())
+    if "still" in prompt or "there" in prompt or "here" in prompt:
+        return "Yes, I’m here. Ask me a question about the knowledge base, or ask me to recommend published articles."
+    if "test" in prompt:
+        return "OpenKB AI is ready. Ask me a knowledge-base question or request relevant articles."
+    return "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
+
+
+OPENKB_AI_ARTICLE_INTENT_TERMS = [
+    "article", "articles",
+    "related article", "related articles",
+    "recommend article", "recommend articles",
+    "recommendation", "recommendations",
+    "source", "sources",
+    "reference", "references",
+    "link", "links",
+    "where can i read", "where to read",
+    "documentation", "docs",
+    "show article", "show articles",
+    "find article", "find articles",
+    "relevant article", "relevant articles",
+    "anything about", "any article", "any articles",
+    "is there any article", "is there any articles",
+]
+
+
+def is_openkb_article_recommendation_request(question):
+    """Return True when the user is mainly asking for article links.
+
+    These requests should be answered from the local published-article database
+    first, without waiting for the external LLM provider. This keeps the chatbox
+    useful for anonymous users and logged-in users even when Gemini/LiteLLM is
+    slow, rate-limited, or unavailable.
+    """
+    prompt = (question or "").lower()
+    return any(term in prompt for term in OPENKB_AI_ARTICLE_INTENT_TERMS)
+
+
+def normalize_openkb_article_query(question):
+    """Remove chat/request filler words so article search can match titles better."""
+    query = (question or "").strip()
+
+    quoted = re.findall(r"[\"']([^\"']{2,})[\"']", query)
+    if quoted:
+        return " ".join(quoted).strip()
+
+    cleaned = query.lower()
+    replacements = [
+        "is there any articles about", "is there any article about",
+        "are there any articles about", "are there any article about",
+        "is there any articles on", "is there any article on",
+        "are there any articles on", "are there any article on",
+        "any relevant articles on", "any relevant article on",
+        "any relevant articles about", "any relevant article about",
+        "any articles about", "any article about",
+        "any articles on", "any article on",
+        "articles about", "article about",
+        "articles on", "article on",
+        "recommend articles about", "recommend article about",
+        "recommend articles on", "recommend article on",
+        "find articles about", "find article about",
+        "find articles on", "find article on",
+        "show articles about", "show article about",
+        "show articles on", "show article on",
+        "anything about", "something about",
+        "relevant article", "relevant articles",
+        "published article", "published articles",
+        "wiki article", "wiki articles",
+        "documentation", "docs",
+        "please", "can you", "could you", "help me",
+    ]
+    for phrase in replacements:
+        cleaned = cleaned.replace(phrase, " ")
+
+    cleaned = re.sub(r"[^a-z0-9@._\- ]+", " ", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned or query
+
+
+def find_related_openkb_articles(question, limit=5, minimum_score=None):
+    """Find strongly related published articles for Ask OpenKB AI.
+
+    This searches Django-published articles directly instead of depending on the
+    external OpenKB/Gemini answer. It is safe for anonymous users because it only
+    returns public article titles/URLs that the website already exposes.
+    """
+    init_openkb_storage()
+
+    # Do not recommend articles for greetings or very short chat filler.
+    # This prevents messages like "hi there" from returning random trending
+    # articles when the external provider is unavailable.
+    if is_openkb_small_talk_request(question):
+        return []
+
+    article_query = normalize_openkb_article_query(question)
+    query_words = tokenize_search_query(article_query)
+
+    # If the user did not clearly ask for articles and the query has no useful
+    # searchable keywords, there is nothing safe to recommend.
+    if not is_openkb_article_recommendation_request(question) and not query_words:
+        return []
+
+    ranked_articles = rank_articles_for_query(get_openkb_wiki_articles(), article_query)
+
+    if not ranked_articles and article_query != (question or ""):
+        ranked_articles = rank_articles_for_query(get_openkb_wiki_articles(), question)
+
+    if minimum_score is None:
+        minimum_score = 10 if is_openkb_article_recommendation_request(question) else 35
+
     results = []
-    seen_paths = set()
+    seen_keys = set()
 
     for item in ranked_articles:
-        path = item.get("path")
-        if not path or path in seen_paths:
+        key = item.get("suggested_id") or item.get("url") or item.get("path") or item.get("title")
+        if not key or key in seen_keys:
             continue
 
-        # Avoid recommending weak/accidental matches. Strong title/body/keyword
-        # matches comfortably exceed this; tiny one-word matches usually do not.
-        if int(item.get("search_score") or 0) < 25:
+        if int(item.get("search_score") or 0) < int(minimum_score):
             continue
 
-        seen_paths.add(path)
+        seen_keys.add(key)
         results.append({
             "title": item.get("title", "Untitled"),
-            "url": item.get("url", f"/wiki/{path}"),
+            "url": item.get("url") or (f"/wiki/{item.get('path')}" if item.get("path") else "#"),
+            "snippet": item.get("search_excerpt") or "",
         })
 
         if len(results) >= limit:
             break
 
     return results
+
+def build_openkb_article_recommendation_answer(question, related_articles):
+    """Create a concise chat answer for article/link requests."""
+    if related_articles:
+        count = len(related_articles)
+        article_word = "article" if count == 1 else "articles"
+        return f"I found {count} relevant published {article_word}."
+
+    cleaned_query = normalize_openkb_article_query(question)
+    if cleaned_query and cleaned_query != (question or ""):
+        return (
+            f"I could not find a matching published article for '{cleaned_query}'. "
+            "Try another keyword or check whether the article is published."
+        )
+
+    return "I could not find a matching published article. Try another keyword or check whether the article is published."
 
 
 def get_client_ip(request):
@@ -1815,37 +1975,14 @@ def answer_indicates_no_openkb_match(answer):
 
 
 def should_show_openkb_related_articles(question, answer, related_articles=None):
-    """Show article recommendations only when they are useful.
-
-    Rules:
-    - never show recommendations when OpenKB AI says no relevant wiki info was found;
-    - show recommendations when there are strong article matches for the user prompt;
-    - article/source wording in the prompt is helpful, but no longer required.
-
-    This lets prompts such as "anything about priority?" show the matching article,
-    while prompts with no wiki match, such as "anything about awesome?", stay clean.
-    """
-    if answer_indicates_no_openkb_match(answer):
-        return False
-
+    """Show article recommendations when there are matching public articles."""
     if related_articles is not None:
         return bool(related_articles)
 
-    prompt = (question or "").lower()
-    article_intent_terms = [
-        "article", "articles",
-        "related article", "related articles",
-        "recommend article", "recommend articles",
-        "recommendation", "recommendations",
-        "source", "sources",
-        "reference", "references",
-        "link", "links",
-        "where can i read", "where to read",
-        "documentation", "docs",
-        "show article", "show articles",
-        "find article", "find articles",
-    ]
-    return any(term in prompt for term in article_intent_terms)
+    if answer_indicates_no_openkb_match(answer):
+        return False
+
+    return is_openkb_article_recommendation_request(question)
 
 
 def clean_openkb_ai_error_message(error):
@@ -1861,15 +1998,30 @@ def clean_openkb_ai_error_message(error):
         or "resource_exhausted" in lowered
         or "too many requests" in lowered
     ):
-        return "OpenKB AI has reached its temporary usage limit. Please try again later or contact IT support if the issue persists."
+        return "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
 
     if "503" in lowered or "serviceunavailable" in lowered or "high demand" in lowered or "unavailable" in lowered:
-        return "OpenKB AI is temporarily busy. Please try again later or contact IT support if the issue persists."
+        return "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
 
     if "timeout" in lowered:
-        return "OpenKB AI took too long to respond. Please try a shorter question or contact IT support if the issue persists."
+        return "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."
 
     return "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+
+
+def redact_openkb_debug_text(text, max_chars=2000):
+    """Return debug text for logs without exposing common API-key formats."""
+    value = str(text or "")[:max_chars]
+
+    # Gemini API keys often begin with AIza. Keep only the prefix so logs prove
+    # a key existed without leaking the full secret.
+    value = re.sub(r"AIza[0-9A-Za-z_\-]{20,}", "AIza...REDACTED", value)
+
+    # Generic Authorization/Bearer/key patterns seen in SDK/provider errors.
+    value = re.sub(r"(?i)(authorization\s*[:=]\s*bearer\s+)[^\s,;]+", r"\1REDACTED", value)
+    value = re.sub(r"(?i)((?:api[_-]?key|key)\s*[:=]\s*)[^\s,;]+", r"\1REDACTED", value)
+
+    return value
 
 
 def openkb_ai_output_indicates_error(output):
