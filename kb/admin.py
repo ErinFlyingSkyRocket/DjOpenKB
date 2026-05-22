@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import Http404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
@@ -68,6 +69,52 @@ class UserAdmin(DefaultUserAdmin):
         "make_ldap_user",
         "make_ldap_admin",
     )
+
+    def _is_domain_user(self, obj):
+        """Return True when this Django user is managed by AD/LDAP."""
+        profile = getattr(obj, "kb_profile", None)
+        return bool(profile and profile.is_ldap_type)
+
+    def domain_password_status(self, obj):
+        return "Domain password is managed in Active Directory and cannot be changed from Django admin."
+
+    domain_password_status.short_description = "Password"
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj and self._is_domain_user(obj) and "domain_password_status" not in readonly_fields:
+            readonly_fields.append("domain_password_status")
+        return tuple(readonly_fields)
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if not obj or not self._is_domain_user(obj):
+            return fieldsets
+
+        cleaned_fieldsets = []
+        for title, options in fieldsets:
+            options = dict(options)
+            fields = options.get("fields", ())
+
+            def replace_password_field(value):
+                if value == "password":
+                    return "domain_password_status"
+                if isinstance(value, (list, tuple)):
+                    replaced = [replace_password_field(item) for item in value]
+                    return tuple(item for item in replaced if item)
+                return value
+
+            replaced_fields = replace_password_field(fields)
+            options["fields"] = replaced_fields
+            cleaned_fieldsets.append((title, options))
+
+        return tuple(cleaned_fieldsets)
+
+    def user_change_password(self, request, id, form_url=""):
+        obj = self.get_object(request, id)
+        if obj and self._is_domain_user(obj):
+            raise Http404("Domain user passwords are managed in Active Directory.")
+        return super().user_change_password(request, id, form_url)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

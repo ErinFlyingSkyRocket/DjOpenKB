@@ -1,4 +1,5 @@
 from .services import *
+from django.utils.translation import gettext as _
 
 
 def home(request):

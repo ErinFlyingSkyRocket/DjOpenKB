@@ -73,7 +73,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
                             <label for="preview">&nbsp;</label><br/>
                             <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
-                            <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
+                            {% if can_publish_directly %}
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Publish article" %}</button>
+                            {% else %}
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
+                            {% endif %}
                         </div>
                     </div>
 

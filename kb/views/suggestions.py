@@ -1,24 +1,38 @@
 from .services import *
+from django.utils.translation import gettext as _
 
 
 def suggest(request):
     init_openkb_storage()
+    is_admin = user_is_site_admin(request.user)
+
+    def render_suggest_form(extra_context=None):
+        context = {
+            "can_publish_directly": is_admin,
+        }
+        if extra_context:
+            context.update(extra_context)
+        return render(request, "suggest.html", context)
 
     if request.method == "GET":
-        return render(request, "suggest.html")
+        return render_suggest_form()
 
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
     submit_action = request.POST.get("submit_action", "submit").strip()
-    status = (
-        SuggestedArticle.Status.DRAFT
-        if submit_action == "draft"
-        else SuggestedArticle.Status.PENDING
-    )
+
+    if submit_action == "draft":
+        status = SuggestedArticle.Status.DRAFT
+    elif is_admin:
+        # Admin-created articles do not require approval. They are published
+        # immediately when the admin uses the main submit button.
+        status = SuggestedArticle.Status.PUBLISHED
+    else:
+        status = SuggestedArticle.Status.PENDING
 
     if len(title) < 5 or len(body) < 5:
-        return render(request, "suggest.html", {
+        return render_suggest_form({
             "error": _("Article title and body must be at least 5 characters."),
             "title_value": title,
             "body_value": body,
@@ -27,7 +41,7 @@ def suggest(request):
 
     duplicate_article = find_duplicate_article_by_title(title)
     if duplicate_article:
-        return render(request, "suggest.html", {
+        return render_suggest_form({
             "error": duplicate_title_error_message(title),
             "title_value": title,
             "body_value": body,
@@ -46,6 +60,8 @@ def suggest(request):
         wiki_path=f"sources/{filename}",
         raw_path=f"raw/{filename}",
         status=status,
+        approved_by=request.user if status == SuggestedArticle.Status.PUBLISHED else None,
+        approved_at=timezone.now() if status == SuggestedArticle.Status.PUBLISHED else None,
         image_assets=extract_article_image_filenames(body),
     )
     write_article_files(article)
@@ -54,6 +70,8 @@ def suggest(request):
 
     if status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
+    elif status == SuggestedArticle.Status.PUBLISHED:
+        messages.success(request, _("Article published successfully."))
     else:
         messages.success(request, _("Article submitted for admin approval."))
     return redirect("edit_my_suggestions")
