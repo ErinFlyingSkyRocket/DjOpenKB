@@ -108,13 +108,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div class="panel panel-default profile-account-panel">
                         <div class="panel-heading">{% trans "Account summary" %}</div>
                         <div class="panel-body">
-                            <p class="profile-account-summary">
-                                {% trans "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here." %}
-                            </p>
-
                             <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Username" %}:</span>
                                 <span class="profile-account-value">{{ user.username }}</span>
+                                {% if not user_is_ldap_managed %}
                                 <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox" aria-expanded="false" aria-controls="editUsernameBox">
                                     Edit
                                 </button>
@@ -137,6 +134,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox">{% trans "Cancel" %}</button>
                                     </form>
                                 </div>
+                                {% endif %}
                             </div>
 
                             <div class="profile-account-row">
@@ -145,9 +143,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     {% if user.email %}{{ user.email }}{% else %}<span class="profile-muted">{% trans "No email set" %}</span>{% endif %}
                                 </span>
 
-                                {% if user_is_ldap_managed %}
-                                    <span class="profile-muted">{% trans "LDAP-managed, cannot edit" %}</span>
-                                {% else %}
+                                {% if not user_is_ldap_managed %}
                                     <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox" aria-expanded="false" aria-controls="editEmailBox">
                                         Edit
                                     </button>
@@ -192,9 +188,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     </select>
                                     <button class="btn btn-xs btn-primary" type="submit">{% trans "Save language" %}</button>
                                 </form>
-                                <div class="profile-muted" style="margin-top: 5px;">
-                                    {% trans "This changes the website interface language for your account. Article content stays in its original language for now." %}
-                                </div>
                             </div>
 
                             <div class="profile-account-row">
@@ -205,10 +198,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             {% trans "Change password" %}
                                         </button>
                                     {% else %}
-                                        <button class="btn btn-default" type="button" disabled title="{% trans 'LDAP passwords are changed through the company password system.' %}">
+                                        <button class="btn btn-default" type="button" disabled title="{% trans 'Password syncs with your company password.' %}">
                                             {% trans "Change password" %}
                                         </button>
-                                        <span class="profile-readonly-note">{% trans "LDAP passwords are changed through the company password system." %}</span>
+                                        <span class="profile-readonly-note">{% trans "Password syncs with your company password." %}</span>
                                     {% endif %}
                                 </div>
                             </div>

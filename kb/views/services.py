@@ -1301,18 +1301,22 @@ def get_openkb_wiki_articles(sort_by_views=False):
 
 
 def is_ldap_managed_user(user):
-    """Return True when the account should be treated as LDAP-managed.
+    """Return True when the account should be treated as a domain-managed account."""
+    profile = getattr(user, "kb_profile", None)
+    if profile and profile.is_ldap_type:
+        return True
 
-    LDAP-created users commonly have an unusable local Django password. The
-    email/username domain check keeps the UI sensible for company LDAP accounts
-    even if the backend stores a local password differently.
-    """
     username = (user.get_username() or "").lower()
     email = (user.email or "").lower()
+    allowed_domains = set(getattr(settings, "LDAP_ALLOWED_EMAIL_DOMAINS", []) or [])
+    ad_domain = (getattr(settings, "LDAP_AD_DOMAIN", "") or "").strip().lower()
+    if ad_domain:
+        allowed_domains.add(ad_domain)
+
     return (
         not user.has_usable_password()
-        or username.endswith("@nextlabs.com")
-        or email.endswith("@nextlabs.com")
+        or any(username.endswith(f"@{domain}") for domain in allowed_domains)
+        or any(email.endswith(f"@{domain}") for domain in allowed_domains)
     )
 
 
@@ -1357,6 +1361,16 @@ def get_account_type_display(user):
     profile = get_user_profile(user)
     if not profile:
         return "Guest"
+
+    if profile.account_type == UserProfile.AccountType.LDAP_USER:
+        return "Domain User"
+    if profile.account_type == UserProfile.AccountType.LDAP_ADMIN:
+        return "Domain Admin"
+    if profile.account_type == UserProfile.AccountType.USER:
+        return "Local User"
+    if profile.account_type == UserProfile.AccountType.ADMIN:
+        return "Local Admin"
+
     return profile.get_account_type_display()
 
 

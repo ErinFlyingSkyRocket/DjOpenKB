@@ -125,7 +125,7 @@ def update_profile(request):
 
     if profile_action == "email":
         if user_is_ldap_managed:
-            messages.error(request, _("LDAP email is managed by LDAP/AD and cannot be changed here."))
+            messages.error(request, _("This email address is managed by your domain account and cannot be changed here."))
             return redirect("profile")
 
         email = request.POST.get("email", "").strip()
@@ -145,7 +145,7 @@ def change_password(request):
     user = request.user
 
     if is_ldap_managed_user(user) or not user.has_usable_password():
-        messages.error(request, "This account is managed by LDAP. Please change your password through the company password system.")
+        messages.error(request, "Password syncs with your company password. Please change it through the company password system.")
         return redirect("profile")
 
     old_password = request.POST.get("old_password", "")

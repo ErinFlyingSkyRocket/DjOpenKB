@@ -96,9 +96,20 @@ class NextLabsLDAPBackend(LDAPBackend):
             profile.save(update_fields=["account_type", "updated_at"])
 
         # AD-managed users should not have a local fallback password.
+        user_update_fields = []
         if user.has_usable_password():
             user.set_unusable_password()
-            user.save(update_fields=["password"])
+            user_update_fields.append("password")
+
+        # Some AD lab accounts do not have the mail attribute filled in.
+        # In that case, use the validated UPN/domain login as the Django email
+        # so the profile page and article metadata still show an address.
+        if not (user.email or "").strip() and "@" in ldap_username:
+            user.email = ldap_username.lower()
+            user_update_fields.append("email")
+
+        if user_update_fields:
+            user.save(update_fields=sorted(set(user_update_fields)))
 
         if not profile.can_access_main_site:
             return None
