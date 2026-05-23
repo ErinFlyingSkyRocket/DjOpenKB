@@ -29,6 +29,13 @@ staticfiles/
 secrets.json
 secret_key.txt
 
+# Vault local deployment data/secrets - never commit
+vault/file/
+vault/logs/
+vault/keys/
+vault/bootstrap/djopenkb.env
+!vault/bootstrap/djopenkb.env.example
+
 # API keys / credentials
 *.pem
 *.key
@@ -39,12 +46,9 @@ credentials.json
 token.json
 
 # PostgreSQL local database folder
-# Keep this folder locally if you want to preserve your Postgres data.
-# Do not commit it to GitHub.
 postgres-data/
 
 # OpenKB local/generated knowledge content
-# These are local user solutions/articles and should not go to GitHub.
 openkb-data/
 openkb-data/raw/
 openkb-data/wiki/
@@ -64,10 +68,8 @@ temp/
 Thumbs.db
 desktop.ini
 
-# VS Code
+# IDE
 .vscode/
-
-# PyCharm
 .idea/
 
 # Test/cache
@@ -80,7 +82,7 @@ build/
 dist/
 *.egg-info/
 
-# Node/npm if any old OpenKB files use it
+# Node/npm
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -90,8 +92,6 @@ package-lock.json
 # Docker local overrides
 docker-compose.override.yml
 
-# Local certificates for nginx HTTPS
-# Uncomment this if you do not want to commit local HTTPS certs.
-# nginx/certs/
+# Local certificates
 *.localhost.crt
 *.localhost.key

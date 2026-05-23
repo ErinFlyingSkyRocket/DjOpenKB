@@ -1,0 +1,9 @@
+FROM postgres:16-alpine
+
+RUN apk add --no-cache curl jq ca-certificates
+
+COPY docker/postgres-vault-entrypoint.sh /usr/local/bin/postgres-vault-entrypoint.sh
+RUN chmod +x /usr/local/bin/postgres-vault-entrypoint.sh
+
+ENTRYPOINT ["postgres-vault-entrypoint.sh"]
+CMD ["postgres"]
