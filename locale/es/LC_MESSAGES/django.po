@@ -590,7 +590,7 @@ msgid "Manage pending articles"
 msgstr "Gestionar artículos pendientes"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Revisa los artículos enviados por usuarios que esperan aprobación del administrador antes de hacerse públicos."
+msgstr "Revisa los artículos enviados por usuarios que esperan aprobación del administrador antes de que sean públicos."
 
 msgid "Review user-submitted articles before they become publicly visible."
 msgstr "Revisa los artículos enviados por usuarios antes de que sean visibles públicamente."
@@ -614,10 +614,10 @@ msgid "Return to draft"
 msgstr "Devolver a borrador"
 
 msgid "No pending articles match your search."
-msgstr "No hay artículos pendientes que coincidan con tu búsqueda."
+msgstr "Ningún artículo pendiente coincide con tu búsqueda."
 
 msgid "There are no pending articles right now."
-msgstr "No hay artículos pendientes ahora mismo."
+msgstr "No hay artículos pendientes en este momento."
 
 msgid "Article approved and published."
 msgstr "Artículo aprobado y publicado."
@@ -626,10 +626,10 @@ msgid "Article returned to draft."
 msgstr "Artículo devuelto a borrador."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Solo se pueden aprobar artículos pendientes desde esta página."
+msgstr "Solo los artículos pendientes pueden aprobarse desde esta página."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Solo se pueden devolver a borrador artículos pendientes desde esta página."
+msgstr "Solo los artículos pendientes pueden devolverse a borrador desde esta página."
 
 msgid "Pending failed"
 msgstr "Revisión fallida"

@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "Голоса за статью"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "Ожидает"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "Ожидает одобрения"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "Сохранить черновик"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "Отправить на одобрение"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "Черновик успешно сохранён."
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "Статья отправлена администратору на одобрение."
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "Статья успешно обновлена."
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "Управление ожидающими статьями"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Проверьте статьи пользователей, ожидающие одобрения администратора, прежде чем они станут публичными."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "Проверьте статьи пользователей перед их публикацией."
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "ожидающие статьи"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "Поиск ожидающих статей"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "Отправил"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "Проверить / Изменить"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "Одобрить"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "Вернуть в черновик"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "Нет ожидающих статей, соответствующих вашему поиску."
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "Сейчас нет ожидающих статей."
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "Статья одобрена и опубликована."
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "Статья возвращена в черновик."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "На этой странице можно одобрять только ожидающие статьи."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "На этой странице можно возвращать в черновик только ожидающие статьи."
 
 msgid "Pending failed"
 msgstr "Проверка не пройдена"

@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "Makale oyları"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "Beklemede"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "Onay bekliyor"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "Taslağı kaydet"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "Onaya gönder"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "Taslak başarıyla kaydedildi."
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "Makale yönetici onayına gönderildi."
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "Makale başarıyla güncellendi."
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "Bekleyen makaleleri yönet"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Herkese açık olmadan önce yönetici onayı bekleyen kullanıcı makalelerini inceleyin."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "Kullanıcıların gönderdiği makaleleri herkese açık görünmeden önce inceleyin."
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "bekleyen makaleler"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "Bekleyen makalelerde ara"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "Gönderen"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "İncele / Düzenle"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "Onayla"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "Taslağa geri gönder"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "Aramanızla eşleşen bekleyen makale yok."
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "Şu anda bekleyen makale yok."
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "Makale onaylandı ve yayınlandı."
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "Makale taslağa geri gönderildi."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "Bu sayfadan yalnızca bekleyen makaleler onaylanabilir."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "Bu sayfadan yalnızca bekleyen makaleler taslağa geri gönderilebilir."
 
 msgid "Pending failed"
 msgstr "Onay başarısız"

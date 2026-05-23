@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "Voti articolo"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "In attesa"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "In attesa di approvazione"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "Salva bozza"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "Invia per approvazione"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "Bozza salvata correttamente."
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "Articolo inviato per l’approvazione dell’amministratore."
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "Articolo aggiornato correttamente."
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "Gestisci articoli in attesa"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Rivedi gli articoli inviati dagli utenti in attesa dell’approvazione dell’amministratore prima che diventino pubblici."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "Rivedi gli articoli inviati dagli utenti prima che diventino visibili pubblicamente."
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "articoli in attesa"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "Cerca articoli in attesa"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "Inviato da"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "Rivedi / Modifica"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "Approva"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "Rimanda a bozza"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "Nessun articolo in attesa corrisponde alla ricerca."
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "Non ci sono articoli in attesa al momento."
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "Articolo approvato e pubblicato."
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "Articolo rimandato a bozza."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "Solo gli articoli in attesa possono essere approvati da questa pagina."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "Solo gli articoli in attesa possono essere rimandati a bozza da questa pagina."
 
 msgid "Pending failed"
 msgstr "Approvazione non riuscita"

@@ -581,25 +581,25 @@ msgid "Draft saved successfully."
 msgstr "Draf berjaya disimpan."
 
 msgid "Article submitted for admin approval."
-msgstr "Artikel telah dihantar untuk kelulusan admin."
+msgstr "Artikel dihantar untuk kelulusan pentadbir."
 
 msgid "Article updated successfully."
 msgstr "Artikel berjaya dikemas kini."
 
 msgid "Manage pending articles"
-msgstr "Urus artikel menunggu kelulusan"
+msgstr "Urus artikel menunggu"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Semak artikel yang dihantar pengguna dan menunggu kelulusan admin sebelum dipaparkan kepada umum."
+msgstr "Semak artikel yang dihantar pengguna dan menunggu kelulusan pentadbir sebelum diterbitkan."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Semak artikel yang dihantar pengguna sebelum ia dipaparkan kepada umum."
+msgstr "Semak artikel yang dihantar pengguna sebelum ia kelihatan kepada umum."
 
 msgid "pending articles"
-msgstr "artikel menunggu kelulusan"
+msgstr "artikel menunggu"
 
 msgid "Search pending articles"
-msgstr "Cari artikel menunggu kelulusan"
+msgstr "Cari artikel menunggu"
 
 msgid "Submitted by"
 msgstr "Dihantar oleh"
@@ -614,22 +614,22 @@ msgid "Return to draft"
 msgstr "Kembalikan ke draf"
 
 msgid "No pending articles match your search."
-msgstr "Tiada artikel menunggu kelulusan yang sepadan dengan carian anda."
+msgstr "Tiada artikel menunggu yang sepadan dengan carian anda."
 
 msgid "There are no pending articles right now."
-msgstr "Tiada artikel menunggu kelulusan buat masa ini."
+msgstr "Tiada artikel menunggu buat masa ini."
 
 msgid "Article approved and published."
-msgstr "Artikel telah diluluskan dan diterbitkan."
+msgstr "Artikel diluluskan dan diterbitkan."
 
 msgid "Article returned to draft."
-msgstr "Artikel telah dikembalikan ke draf."
+msgstr "Artikel dikembalikan ke draf."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Hanya artikel menunggu kelulusan boleh diluluskan dari halaman ini."
+msgstr "Hanya artikel menunggu boleh diluluskan dari halaman ini."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Hanya artikel menunggu kelulusan boleh dikembalikan ke draf dari halaman ini."
+msgstr "Hanya artikel menunggu boleh dikembalikan ke draf dari halaman ini."
 
 msgid "Pending failed"
 msgstr "Kelulusan gagal"

@@ -578,22 +578,22 @@ msgid "Submit for approval"
 msgstr "Zur Genehmigung einreichen"
 
 msgid "Draft saved successfully."
-msgstr "Entwurf wurde erfolgreich gespeichert."
+msgstr "Entwurf erfolgreich gespeichert."
 
 msgid "Article submitted for admin approval."
-msgstr "Artikel wurde zur Administratorgenehmigung eingereicht."
+msgstr "Artikel zur Administratorgenehmigung eingereicht."
 
 msgid "Article updated successfully."
-msgstr "Artikel wurde erfolgreich aktualisiert."
+msgstr "Artikel erfolgreich aktualisiert."
 
 msgid "Manage pending articles"
 msgstr "Ausstehende Artikel verwalten"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Prüfen Sie von Benutzern eingereichte Artikel, die vor der Veröffentlichung auf Administratorgenehmigung warten."
+msgstr "Überprüfen Sie von Benutzern eingereichte Artikel, die auf Administratorgenehmigung warten, bevor sie öffentlich werden."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Prüfen Sie von Benutzern eingereichte Artikel, bevor sie öffentlich sichtbar werden."
+msgstr "Überprüfen Sie von Benutzern eingereichte Artikel, bevor sie öffentlich sichtbar werden."
 
 msgid "pending articles"
 msgstr "ausstehende Artikel"
@@ -611,7 +611,7 @@ msgid "Approve"
 msgstr "Genehmigen"
 
 msgid "Return to draft"
-msgstr "Zum Entwurf zurücksetzen"
+msgstr "Zum Entwurf zurückgeben"
 
 msgid "No pending articles match your search."
 msgstr "Keine ausstehenden Artikel entsprechen Ihrer Suche."
@@ -623,13 +623,13 @@ msgid "Article approved and published."
 msgstr "Artikel genehmigt und veröffentlicht."
 
 msgid "Article returned to draft."
-msgstr "Artikel wurde zum Entwurf zurückgesetzt."
+msgstr "Artikel zum Entwurf zurückgegeben."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Auf dieser Seite können nur ausstehende Artikel genehmigt werden."
+msgstr "Nur ausstehende Artikel können auf dieser Seite genehmigt werden."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Auf dieser Seite können nur ausstehende Artikel zum Entwurf zurückgesetzt werden."
+msgstr "Nur ausstehende Artikel können von dieser Seite zum Entwurf zurückgegeben werden."
 
 msgid "Pending failed"
 msgstr "Prüfung fehlgeschlagen"

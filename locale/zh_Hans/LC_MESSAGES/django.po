@@ -566,40 +566,40 @@ msgid "Article votes"
 msgstr "文章投票"
 
 msgid "Pending"
-msgstr "待审核"
+msgstr "待处理"
 
 msgid "Pending approval"
-msgstr "等待审核"
+msgstr "待审批"
 
 msgid "Save draft"
 msgstr "保存草稿"
 
 msgid "Submit for approval"
-msgstr "提交审核"
+msgstr "提交审批"
 
 msgid "Draft saved successfully."
 msgstr "草稿已成功保存。"
 
 msgid "Article submitted for admin approval."
-msgstr "文章已提交给管理员审核。"
+msgstr "文章已提交给管理员审批。"
 
 msgid "Article updated successfully."
 msgstr "文章已成功更新。"
 
 msgid "Manage pending articles"
-msgstr "管理待审核文章"
+msgstr "管理待审批文章"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "审核用户提交、等待管理员批准后才会公开的文章。"
+msgstr "在用户提交的文章公开之前，审核等待管理员批准的文章。"
 
 msgid "Review user-submitted articles before they become publicly visible."
 msgstr "在用户提交的文章公开显示之前进行审核。"
 
 msgid "pending articles"
-msgstr "篇待审核文章"
+msgstr "待审批文章"
 
 msgid "Search pending articles"
-msgstr "搜索待审核文章"
+msgstr "搜索待审批文章"
 
 msgid "Submitted by"
 msgstr "提交者"
@@ -614,10 +614,10 @@ msgid "Return to draft"
 msgstr "退回草稿"
 
 msgid "No pending articles match your search."
-msgstr "没有符合搜索条件的待审核文章。"
+msgstr "没有符合搜索条件的待审批文章。"
 
 msgid "There are no pending articles right now."
-msgstr "目前没有待审核文章。"
+msgstr "目前没有待审批文章。"
 
 msgid "Article approved and published."
 msgstr "文章已批准并发布。"
@@ -626,10 +626,10 @@ msgid "Article returned to draft."
 msgstr "文章已退回草稿。"
 
 msgid "Only pending articles can be approved from this page."
-msgstr "此页面只能批准待审核文章。"
+msgstr "只有待审批文章可以在此页面批准。"
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "此页面只能将待审核文章退回草稿。"
+msgstr "只有待审批文章可以在此页面退回草稿。"
 
 msgid "Pending failed"
 msgstr "审核未通过"

@@ -590,10 +590,10 @@ msgid "Manage pending articles"
 msgstr "Gérer les articles en attente"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Examinez les articles soumis par les utilisateurs en attente d’approbation avant publication."
+msgstr "Examinez les articles soumis par les utilisateurs en attente d’approbation administrateur avant leur publication."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Examinez les articles soumis par les utilisateurs avant qu’ils ne soient publics."
+msgstr "Examinez les articles soumis par les utilisateurs avant qu’ils ne soient visibles publiquement."
 
 msgid "pending articles"
 msgstr "articles en attente"
@@ -617,7 +617,7 @@ msgid "No pending articles match your search."
 msgstr "Aucun article en attente ne correspond à votre recherche."
 
 msgid "There are no pending articles right now."
-msgstr "Il n’y a aucun article en attente actuellement."
+msgstr "Il n’y a aucun article en attente pour le moment."
 
 msgid "Article approved and published."
 msgstr "Article approuvé et publié."

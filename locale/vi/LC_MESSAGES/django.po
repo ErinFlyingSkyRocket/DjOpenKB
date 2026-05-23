@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "Bình chọn bài viết"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "Đang chờ"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "Chờ phê duyệt"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "Lưu bản nháp"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "Gửi để phê duyệt"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "Đã lưu bản nháp thành công."
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "Bài viết đã được gửi để quản trị viên phê duyệt."
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "Đã cập nhật bài viết thành công."
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "Quản lý bài viết đang chờ"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Xem lại các bài viết do người dùng gửi đang chờ quản trị viên phê duyệt trước khi công khai."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "Xem lại các bài viết do người dùng gửi trước khi hiển thị công khai."
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "bài viết đang chờ"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "Tìm bài viết đang chờ"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "Gửi bởi"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "Xem lại / Sửa"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "Phê duyệt"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "Trả về bản nháp"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "Không có bài viết đang chờ nào khớp với tìm kiếm của bạn."
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "Hiện không có bài viết nào đang chờ."
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "Bài viết đã được phê duyệt và xuất bản."
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "Bài viết đã được trả về bản nháp."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "Chỉ các bài viết đang chờ mới có thể được phê duyệt từ trang này."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "Chỉ các bài viết đang chờ mới có thể được trả về bản nháp từ trang này."
 
 msgid "Pending failed"
 msgstr "Duyệt thất bại"

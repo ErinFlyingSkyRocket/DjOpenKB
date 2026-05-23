@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "โหวตบทความ"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "รอดำเนินการ"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "รอการอนุมัติ"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "บันทึกฉบับร่าง"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "ส่งเพื่ออนุมัติ"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "บันทึกฉบับร่างเรียบร้อยแล้ว"
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "ส่งบทความเพื่อให้ผู้ดูแลอนุมัติแล้ว"
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "อัปเดตบทความเรียบร้อยแล้ว"
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "จัดการบทความที่รออนุมัติ"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "ตรวจสอบบทความที่ผู้ใช้ส่งมาและรอการอนุมัติจากผู้ดูแลก่อนเผยแพร่"
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "ตรวจสอบบทความที่ผู้ใช้ส่งมาก่อนให้แสดงต่อสาธารณะ"
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "บทความที่รออนุมัติ"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "ค้นหาบทความที่รออนุมัติ"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "ส่งโดย"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "ตรวจสอบ / แก้ไข"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "อนุมัติ"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "ส่งกลับเป็นฉบับร่าง"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "ไม่มีบทความที่รออนุมัติตรงกับการค้นหา"
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "ขณะนี้ไม่มีบทความที่รออนุมัติ"
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "อนุมัติและเผยแพร่บทความแล้ว"
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "ส่งบทความกลับเป็นฉบับร่างแล้ว"
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "อนุมัติได้เฉพาะบทความที่รออนุมัติจากหน้านี้"
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "ส่งกลับเป็นฉบับร่างได้เฉพาะบทความที่รออนุมัติจากหน้านี้"
 
 msgid "Pending failed"
 msgstr "การอนุมัติไม่สำเร็จ"

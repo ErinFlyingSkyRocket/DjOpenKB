@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "문서 투표"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "대기 중"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "승인 대기"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "초안 저장"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "승인 요청"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "초안이 저장되었습니다."
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "관리자 승인을 위해 문서를 제출했습니다."
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "문서가 업데이트되었습니다."
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "대기 중인 문서 관리"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "공개되기 전에 관리자 승인을 기다리는 사용자 제출 문서를 검토합니다."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "사용자가 제출한 문서가 공개되기 전에 검토합니다."
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "대기 중인 문서"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "대기 중인 문서 검색"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "제출자"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "검토 / 편집"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "승인"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "초안으로 되돌리기"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "검색과 일치하는 대기 문서가 없습니다."
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "현재 대기 중인 문서가 없습니다."
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "문서가 승인되어 게시되었습니다."
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "문서가 초안으로 되돌아갔습니다."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "이 페이지에서는 대기 중인 문서만 승인할 수 있습니다."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "이 페이지에서는 대기 중인 문서만 초안으로 되돌릴 수 있습니다."
 
 msgid "Pending failed"
 msgstr "승인 실패"

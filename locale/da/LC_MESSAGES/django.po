@@ -566,70 +566,70 @@ msgid "Article votes"
 msgstr "Artikelstemmer"
 
 msgid "Pending"
-msgstr "Pending"
+msgstr "Afventer"
 
 msgid "Pending approval"
-msgstr "Pending approval"
+msgstr "Afventer godkendelse"
 
 msgid "Save draft"
-msgstr "Save draft"
+msgstr "Gem kladde"
 
 msgid "Submit for approval"
-msgstr "Submit for approval"
+msgstr "Send til godkendelse"
 
 msgid "Draft saved successfully."
-msgstr "Draft saved successfully."
+msgstr "Kladde gemt."
 
 msgid "Article submitted for admin approval."
-msgstr "Article submitted for admin approval."
+msgstr "Artiklen blev sendt til administratorgodkendelse."
 
 msgid "Article updated successfully."
-msgstr "Article updated successfully."
+msgstr "Artiklen blev opdateret."
 
 msgid "Manage pending articles"
-msgstr "Manage pending articles"
+msgstr "Administrer afventende artikler"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Review user-submitted articles waiting for admin approval before they become public."
+msgstr "Gennemgå brugerindsendte artikler, der afventer administratorgodkendelse, før de bliver offentlige."
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "Review user-submitted articles before they become publicly visible."
+msgstr "Gennemgå brugerindsendte artikler, før de bliver offentligt synlige."
 
 msgid "pending articles"
-msgstr "pending articles"
+msgstr "afventende artikler"
 
 msgid "Search pending articles"
-msgstr "Search pending articles"
+msgstr "Søg i afventende artikler"
 
 msgid "Submitted by"
-msgstr "Submitted by"
+msgstr "Indsendt af"
 
 msgid "Review / Edit"
-msgstr "Review / Edit"
+msgstr "Gennemgå / Rediger"
 
 msgid "Approve"
-msgstr "Approve"
+msgstr "Godkend"
 
 msgid "Return to draft"
-msgstr "Return to draft"
+msgstr "Send tilbage til kladde"
 
 msgid "No pending articles match your search."
-msgstr "No pending articles match your search."
+msgstr "Ingen afventende artikler matcher din søgning."
 
 msgid "There are no pending articles right now."
-msgstr "There are no pending articles right now."
+msgstr "Der er ingen afventende artikler lige nu."
 
 msgid "Article approved and published."
-msgstr "Article approved and published."
+msgstr "Artiklen blev godkendt og udgivet."
 
 msgid "Article returned to draft."
-msgstr "Article returned to draft."
+msgstr "Artiklen blev sendt tilbage til kladde."
 
 msgid "Only pending articles can be approved from this page."
-msgstr "Only pending articles can be approved from this page."
+msgstr "Kun afventende artikler kan godkendes fra denne side."
 
 msgid "Only pending articles can be returned to draft from this page."
-msgstr "Only pending articles can be returned to draft from this page."
+msgstr "Kun afventende artikler kan sendes tilbage til kladde fra denne side."
 
 msgid "Pending failed"
 msgstr "Afventer mislykkedes"

@@ -575,28 +575,28 @@ msgid "Save draft"
 msgstr "下書きを保存"
 
 msgid "Submit for approval"
-msgstr "承認申請"
+msgstr "承認に提出"
 
 msgid "Draft saved successfully."
 msgstr "下書きを保存しました。"
 
 msgid "Article submitted for admin approval."
-msgstr "記事を管理者承認に送信しました。"
+msgstr "記事を管理者の承認に提出しました。"
 
 msgid "Article updated successfully."
 msgstr "記事を更新しました。"
 
 msgid "Manage pending articles"
-msgstr "承認待ち記事の管理"
+msgstr "承認待ち記事を管理"
 
 msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "公開前に管理者承認を待っているユーザー投稿記事を確認します。"
+msgstr "公開前に、管理者承認を待っているユーザー投稿記事を確認します。"
 
 msgid "Review user-submitted articles before they become publicly visible."
-msgstr "ユーザー投稿記事が公開される前に確認します。"
+msgstr "ユーザー投稿記事が公開表示される前に確認します。"
 
 msgid "pending articles"
-msgstr "件の承認待ち記事"
+msgstr "承認待ち記事"
 
 msgid "Search pending articles"
 msgstr "承認待ち記事を検索"
