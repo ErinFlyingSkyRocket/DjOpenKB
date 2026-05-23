@@ -51,33 +51,101 @@
 <body class="show_footer">
 {% include "_navbar.html" %}
 <div class="container-fluid">
-    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 100px">
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 90px">
         <form class="form-signin" action="{% url 'login' %}" method="post" role="form" data-toggle="validator">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
-            <h2 class="form-signin-heading">{% trans "Please sign in" %}</h2>
+
+            <input type="hidden" id="id_login_mode" name="login_mode" value="{{ request.POST.login_mode|default:'ad' }}">
+
+            <h2 id="login-heading" class="form-signin-heading" style="margin-bottom: 8px;">{% trans "Sign in to DjOpenKB" %}</h2>
+            <p id="login-description" class="text-muted" style="margin-bottom: 20px;">
+                {% trans "Please sign in using your NextLabs AD email account to access the knowledge repository." %}
+            </p>
 
             {% if form.errors %}
                 <div class="alert alert-danger">
-                    {% trans "Invalid username/email or password." %}
+                    {% trans "Invalid account credentials. Please check your username and password." %}
                 </div>
             {% endif %}
 
             <div class="form-group">
-                <input type="text" name="username" class="form-control" placeholder="{% trans 'username, email, or DOMAIN\username' %}" value="{{ form.username.value|default:'' }}" required autofocus>
-                <p class="help-block" style="font-size: 12px; margin-bottom: 0;">{% trans "Use your AD domain account or a Django local account." %}</p>
+                <label id="username-label" class="sr-only" for="id_username">{% trans "NextLabs AD email or username" %}</label>
+                <input id="id_username" type="text" name="username" class="form-control" placeholder="{% trans 'NextLabs AD email or username' %}" value="{{ form.username.value|default:'' }}" required autofocus>
+                <p id="ad-login-help" class="help-block" style="font-size: 12px; margin-bottom: 0;">
+                    {% trans "Example:" %} <code>&lt;username&gt;@nextlabs.com</code>, <code>&lt;username&gt;</code>, {% trans "or" %} <code>NEXTLABS\&lt;username&gt;</code>.
+                </p>
             </div>
             <div class="form-group">
-                <input type="password" name="password" class="form-control" placeholder="{% trans 'Password' %}" value="" required>
+                <label class="sr-only" for="id_password">{% trans "Password" %}</label>
+                <input id="id_password" type="password" name="password" class="form-control" placeholder="{% trans 'Password' %}" value="" required>
             </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit" name="login_mode" value="local">{% trans "Sign in with local account" %}</button>
-            <button class="btn btn-lg btn-default btn-block" type="submit" name="login_mode" value="ad" style="margin-top: 10px;">
-                <i class="fa fa-windows" aria-hidden="true"></i>
-                {% trans "Sign in with domain account" %}
+
+            <button id="login-submit-button" class="btn btn-lg btn-primary btn-block" type="submit">
+                <i id="login-submit-icon" class="fa fa-windows" aria-hidden="true"></i>
+                <span id="login-submit-text">{% trans "Sign in with NextLabs AD" %}</span>
             </button>
-            <p class="help-block text-center" style="font-size: 12px; margin-top: 10px;">
-                {% trans "For AD, use username, user@domain, or DOMAIN\username." %}
+
+            <p class="help-block text-center" style="font-size: 12px; margin-top: 14px;">
+                <a href="#" id="switch-to-local-login">{% trans "Local account access" %}</a>
+                <a href="#" id="switch-to-ad-login" style="display: none;">{% trans "Back to NextLabs AD sign-in" %}</a>
             </p>
+
+            <script>
+                (function () {
+                    var modeInput = document.getElementById('id_login_mode');
+                    var heading = document.getElementById('login-heading');
+                    var description = document.getElementById('login-description');
+                    var usernameInput = document.getElementById('id_username');
+                    var usernameLabel = document.getElementById('username-label');
+                    var adHelp = document.getElementById('ad-login-help');
+                    var submitButton = document.getElementById('login-submit-button');
+                    var submitIcon = document.getElementById('login-submit-icon');
+                    var submitText = document.getElementById('login-submit-text');
+                    var localLink = document.getElementById('switch-to-local-login');
+                    var adLink = document.getElementById('switch-to-ad-login');
+
+                    var text = {
+                        adHeading: "{% trans 'Sign in to DjOpenKB' %}",
+                        adDescription: "{% trans 'Please sign in using your NextLabs AD email account to access the knowledge repository.' %}",
+                        adUsername: "{% trans 'NextLabs AD email or username' %}",
+                        adSubmit: "{% trans 'Sign in with NextLabs AD' %}",
+                        localHeading: "{% trans 'Local account sign-in' %}",
+                        localDescription: "{% trans 'Sign in with your local DjOpenKB account.' %}",
+                        localUsername: "{% trans 'Local username or email' %}",
+                        localSubmit: "{% trans 'Sign in with local account' %}"
+                    };
+
+                    function setMode(mode) {
+                        var isLocal = mode === 'local';
+                        modeInput.value = isLocal ? 'local' : 'ad';
+                        heading.textContent = isLocal ? text.localHeading : text.adHeading;
+                        description.textContent = isLocal ? text.localDescription : text.adDescription;
+                        usernameLabel.textContent = isLocal ? text.localUsername : text.adUsername;
+                        usernameInput.setAttribute('placeholder', isLocal ? text.localUsername : text.adUsername);
+                        submitText.textContent = isLocal ? text.localSubmit : text.adSubmit;
+                        submitButton.className = isLocal ? 'btn btn-lg btn-default btn-block' : 'btn btn-lg btn-primary btn-block';
+                        submitIcon.className = isLocal ? 'fa fa-user' : 'fa fa-windows';
+                        adHelp.style.display = isLocal ? 'none' : '';
+                        localLink.style.display = isLocal ? 'none' : '';
+                        adLink.style.display = isLocal ? '' : 'none';
+                        usernameInput.focus();
+                    }
+
+                    localLink.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        setMode('local');
+                    });
+                    adLink.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        setMode('ad');
+                    });
+
+                    // Preserve the submitted login mode after validation/authentication errors.
+                    // This keeps users on the local login view if local sign-in fails.
+                    setMode((modeInput.value || 'ad').toLowerCase() === 'local' ? 'local' : 'ad');
+                }());
+            </script>
         </form>
     </div>
 </div>

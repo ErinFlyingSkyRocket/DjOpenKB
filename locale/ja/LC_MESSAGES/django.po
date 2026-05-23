@@ -681,3 +681,71 @@ msgstr "%(count)s 件の未使用ファイルを削除"
 
 msgid "Delete %(count)s stray files"
 msgstr "%(count)s 件の未使用ファイルを削除"
+
+#: website/templates/login.html
+msgid "Sign in to DjOpenKB"
+msgstr "DjOpenKB にサインイン"
+
+#: website/templates/login.html
+msgid "Use your NextLabs AD email account to access the knowledge repository."
+msgstr "NextLabs AD のメールアカウントを使用してナレッジリポジトリにアクセスします。"
+
+#: website/templates/login.html
+msgid "Invalid account credentials. Please check your username and password."
+msgstr "アカウント認証情報が無効です。ユーザー名とパスワードを確認してください。"
+
+#: website/templates/login.html
+msgid "NextLabs AD email or username"
+msgstr "NextLabs AD メールまたはユーザー名"
+
+#: website/templates/login.html
+msgid "Example: alice@openkb.local, alice, or OPENKB\\alice."
+msgstr "例: alice@openkb.local、alice、または OPENKB\\alice。"
+
+#: website/templates/login.html
+msgid "Sign in with NextLabs AD"
+msgstr "NextLabs AD でサインイン"
+
+#: website/templates/login.html
+msgid "Local account access"
+msgstr "ローカルアカウントアクセス"
+
+#: website/templates/login.html
+msgid "Sign in with local Django account"
+msgstr "ローカル Django アカウントでサインイン"
+
+#: website/templates/login.html
+msgid "Use local sign-in only for Django administrator or break-glass accounts."
+msgstr "ローカルサインインは Django 管理者または緊急用アカウントのみに使用してください。"
+
+#: website/templates/login.html
+msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
+msgstr "ナレッジリポジトリにアクセスするには、NextLabs AD のメールアカウントでサインインしてください。"
+
+#: website/templates/login.html
+msgid "Example:"
+msgstr "例:"
+
+#: website/templates/login.html
+msgid "or"
+msgstr "または"
+
+#: website/templates/login.html
+msgid "Back to NextLabs AD sign-in"
+msgstr "NextLabs AD サインインに戻る"
+
+#: website/templates/login.html
+msgid "Local account sign-in"
+msgstr "ローカルアカウントのサインイン"
+
+#: website/templates/login.html
+msgid "Sign in with your local DjOpenKB account."
+msgstr "ローカル DjOpenKB アカウントでサインインします。"
+
+#: website/templates/login.html
+msgid "Local username or email"
+msgstr "ローカルユーザー名またはメール"
+
+#: website/templates/login.html
+msgid "Sign in with local account"
+msgstr "ローカルアカウントでサインイン"

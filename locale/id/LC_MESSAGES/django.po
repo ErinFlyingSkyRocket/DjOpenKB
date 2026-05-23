@@ -681,3 +681,71 @@ msgstr "Hapus %(count)s file tidak terpakai"
 
 msgid "Delete %(count)s stray files"
 msgstr "Hapus %(count)s file tidak terpakai"
+
+#: website/templates/login.html
+msgid "Sign in to DjOpenKB"
+msgstr "Masuk ke DjOpenKB"
+
+#: website/templates/login.html
+msgid "Use your NextLabs AD email account to access the knowledge repository."
+msgstr "Gunakan akun email NextLabs AD Anda untuk mengakses repositori pengetahuan."
+
+#: website/templates/login.html
+msgid "Invalid account credentials. Please check your username and password."
+msgstr "Kredensial akun tidak valid. Periksa nama pengguna dan kata sandi."
+
+#: website/templates/login.html
+msgid "NextLabs AD email or username"
+msgstr "Email atau nama pengguna NextLabs AD"
+
+#: website/templates/login.html
+msgid "Example: alice@openkb.local, alice, or OPENKB\\alice."
+msgstr "Contoh: alice@openkb.local, alice, atau OPENKB\\alice."
+
+#: website/templates/login.html
+msgid "Sign in with NextLabs AD"
+msgstr "Masuk dengan NextLabs AD"
+
+#: website/templates/login.html
+msgid "Local account access"
+msgstr "Akses akun lokal"
+
+#: website/templates/login.html
+msgid "Sign in with local Django account"
+msgstr "Masuk dengan akun Django lokal"
+
+#: website/templates/login.html
+msgid "Use local sign-in only for Django administrator or break-glass accounts."
+msgstr "Gunakan login lokal hanya untuk administrator Django atau akun darurat."
+
+#: website/templates/login.html
+msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
+msgstr "Silakan masuk menggunakan akun email NextLabs AD Anda untuk mengakses repositori pengetahuan."
+
+#: website/templates/login.html
+msgid "Example:"
+msgstr "Contoh:"
+
+#: website/templates/login.html
+msgid "or"
+msgstr "atau"
+
+#: website/templates/login.html
+msgid "Back to NextLabs AD sign-in"
+msgstr "Kembali ke login NextLabs AD"
+
+#: website/templates/login.html
+msgid "Local account sign-in"
+msgstr "Login akun lokal"
+
+#: website/templates/login.html
+msgid "Sign in with your local DjOpenKB account."
+msgstr "Masuk dengan akun DjOpenKB lokal Anda."
+
+#: website/templates/login.html
+msgid "Local username or email"
+msgstr "Nama pengguna atau email lokal"
+
+#: website/templates/login.html
+msgid "Sign in with local account"
+msgstr "Masuk dengan akun lokal"

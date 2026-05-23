@@ -681,3 +681,71 @@ msgstr "Supprimer %(count)s fichier inutilisé"
 
 msgid "Delete %(count)s stray files"
 msgstr "Supprimer %(count)s fichiers inutilisés"
+
+#: website/templates/login.html
+msgid "Sign in to DjOpenKB"
+msgstr "Se connecter à DjOpenKB"
+
+#: website/templates/login.html
+msgid "Use your NextLabs AD email account to access the knowledge repository."
+msgstr "Utilisez votre compte e-mail NextLabs AD pour accéder au référentiel de connaissances."
+
+#: website/templates/login.html
+msgid "Invalid account credentials. Please check your username and password."
+msgstr "Identifiants de compte invalides. Vérifiez votre nom d’utilisateur et votre mot de passe."
+
+#: website/templates/login.html
+msgid "NextLabs AD email or username"
+msgstr "E-mail ou nom d’utilisateur NextLabs AD"
+
+#: website/templates/login.html
+msgid "Example: alice@openkb.local, alice, or OPENKB\\alice."
+msgstr "Exemple : alice@openkb.local, alice ou OPENKB\\alice."
+
+#: website/templates/login.html
+msgid "Sign in with NextLabs AD"
+msgstr "Se connecter avec NextLabs AD"
+
+#: website/templates/login.html
+msgid "Local account access"
+msgstr "Accès par compte local"
+
+#: website/templates/login.html
+msgid "Sign in with local Django account"
+msgstr "Se connecter avec un compte Django local"
+
+#: website/templates/login.html
+msgid "Use local sign-in only for Django administrator or break-glass accounts."
+msgstr "Utilisez la connexion locale uniquement pour les administrateurs Django ou les comptes de secours."
+
+#: website/templates/login.html
+msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
+msgstr "Connectez-vous avec votre compte e-mail NextLabs AD pour accéder au référentiel de connaissances."
+
+#: website/templates/login.html
+msgid "Example:"
+msgstr "Exemple :"
+
+#: website/templates/login.html
+msgid "or"
+msgstr "ou"
+
+#: website/templates/login.html
+msgid "Back to NextLabs AD sign-in"
+msgstr "Retour à la connexion NextLabs AD"
+
+#: website/templates/login.html
+msgid "Local account sign-in"
+msgstr "Connexion par compte local"
+
+#: website/templates/login.html
+msgid "Sign in with your local DjOpenKB account."
+msgstr "Connectez-vous avec votre compte DjOpenKB local."
+
+#: website/templates/login.html
+msgid "Local username or email"
+msgstr "Nom d’utilisateur ou e-mail local"
+
+#: website/templates/login.html
+msgid "Sign in with local account"
+msgstr "Se connecter avec un compte local"

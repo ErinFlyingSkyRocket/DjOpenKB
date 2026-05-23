@@ -681,3 +681,71 @@ msgstr "删除 %(count)s 个未使用文件"
 
 msgid "Delete %(count)s stray files"
 msgstr "删除 %(count)s 个未使用文件"
+
+#: website/templates/login.html
+msgid "Sign in to DjOpenKB"
+msgstr "登录 DjOpenKB"
+
+#: website/templates/login.html
+msgid "Use your NextLabs AD email account to access the knowledge repository."
+msgstr "使用你的 NextLabs AD 邮箱账户访问知识库。"
+
+#: website/templates/login.html
+msgid "Invalid account credentials. Please check your username and password."
+msgstr "账户凭据无效。请检查用户名和密码。"
+
+#: website/templates/login.html
+msgid "NextLabs AD email or username"
+msgstr "NextLabs AD 邮箱或用户名"
+
+#: website/templates/login.html
+msgid "Example: alice@openkb.local, alice, or OPENKB\\alice."
+msgstr "示例：alice@openkb.local、alice 或 OPENKB\\alice。"
+
+#: website/templates/login.html
+msgid "Sign in with NextLabs AD"
+msgstr "使用 NextLabs AD 登录"
+
+#: website/templates/login.html
+msgid "Local account access"
+msgstr "本地账户访问"
+
+#: website/templates/login.html
+msgid "Sign in with local Django account"
+msgstr "使用本地 Django 账户登录"
+
+#: website/templates/login.html
+msgid "Use local sign-in only for Django administrator or break-glass accounts."
+msgstr "仅 Django 管理员或应急账户使用本地登录。"
+
+#: website/templates/login.html
+msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
+msgstr "请使用你的 NextLabs AD 邮箱账户登录以访问知识库。"
+
+#: website/templates/login.html
+msgid "Example:"
+msgstr "示例："
+
+#: website/templates/login.html
+msgid "or"
+msgstr "或"
+
+#: website/templates/login.html
+msgid "Back to NextLabs AD sign-in"
+msgstr "返回 NextLabs AD 登录"
+
+#: website/templates/login.html
+msgid "Local account sign-in"
+msgstr "本地账户登录"
+
+#: website/templates/login.html
+msgid "Sign in with your local DjOpenKB account."
+msgstr "使用你的本地 DjOpenKB 账户登录。"
+
+#: website/templates/login.html
+msgid "Local username or email"
+msgstr "本地用户名或邮箱"
+
+#: website/templates/login.html
+msgid "Sign in with local account"
+msgstr "使用本地账户登录"

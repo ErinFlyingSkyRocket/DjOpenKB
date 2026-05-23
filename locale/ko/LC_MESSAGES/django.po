@@ -681,3 +681,71 @@ msgstr "사용하지 않는 파일 %(count)s개 삭제"
 
 msgid "Delete %(count)s stray files"
 msgstr "사용하지 않는 파일 %(count)s개 삭제"
+
+#: website/templates/login.html
+msgid "Sign in to DjOpenKB"
+msgstr "DjOpenKB에 로그인"
+
+#: website/templates/login.html
+msgid "Use your NextLabs AD email account to access the knowledge repository."
+msgstr "NextLabs AD 이메일 계정으로 지식 저장소에 접속하세요."
+
+#: website/templates/login.html
+msgid "Invalid account credentials. Please check your username and password."
+msgstr "계정 자격 증명이 올바르지 않습니다. 사용자 이름과 비밀번호를 확인하세요."
+
+#: website/templates/login.html
+msgid "NextLabs AD email or username"
+msgstr "NextLabs AD 이메일 또는 사용자 이름"
+
+#: website/templates/login.html
+msgid "Example: alice@openkb.local, alice, or OPENKB\\alice."
+msgstr "예: alice@openkb.local, alice 또는 OPENKB\\alice."
+
+#: website/templates/login.html
+msgid "Sign in with NextLabs AD"
+msgstr "NextLabs AD로 로그인"
+
+#: website/templates/login.html
+msgid "Local account access"
+msgstr "로컬 계정 액세스"
+
+#: website/templates/login.html
+msgid "Sign in with local Django account"
+msgstr "로컬 Django 계정으로 로그인"
+
+#: website/templates/login.html
+msgid "Use local sign-in only for Django administrator or break-glass accounts."
+msgstr "로컬 로그인은 Django 관리자 또는 비상 계정에만 사용하세요."
+
+#: website/templates/login.html
+msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
+msgstr "지식 저장소에 접속하려면 NextLabs AD 이메일 계정으로 로그인하세요."
+
+#: website/templates/login.html
+msgid "Example:"
+msgstr "예:"
+
+#: website/templates/login.html
+msgid "or"
+msgstr "또는"
+
+#: website/templates/login.html
+msgid "Back to NextLabs AD sign-in"
+msgstr "NextLabs AD 로그인으로 돌아가기"
+
+#: website/templates/login.html
+msgid "Local account sign-in"
+msgstr "로컬 계정 로그인"
+
+#: website/templates/login.html
+msgid "Sign in with your local DjOpenKB account."
+msgstr "로컬 DjOpenKB 계정으로 로그인하세요."
+
+#: website/templates/login.html
+msgid "Local username or email"
+msgstr "로컬 사용자 이름 또는 이메일"
+
+#: website/templates/login.html
+msgid "Sign in with local account"
+msgstr "로컬 계정으로 로그인"
