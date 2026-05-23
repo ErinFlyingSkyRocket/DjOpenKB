@@ -7,17 +7,11 @@ services:
     cap_add:
       - IPC_LOCK
     environment:
-      VAULT_ADDR: http://127.0.0.1:18200
+      VAULT_ADDR: http://127.0.0.1:8200
     entrypoint: ["vault"]
     command: ["server", "-config=/vault/config/vault.hcl"]
     ports:
-      - "127.0.0.1:18200:18200"
-    healthcheck:
-      test: ["CMD-SHELL", "VAULT_ADDR=http://127.0.0.1:18200 vault status >/dev/null 2>&1; code=$$?; [ $$code -eq 0 ] || [ $$code -eq 2 ]"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 10s
+      - "127.0.0.1:8200:8200"
     volumes:
       - ./vault/config:/vault/config
       - ./vault/file:/vault/file
@@ -29,9 +23,9 @@ services:
     container_name: djopenkb-vault-init
     depends_on:
       vault:
-        condition: service_healthy
+        condition: service_started
     environment:
-      VAULT_ADDR: http://vault:18200
+      VAULT_ADDR: http://vault:8200
     volumes:
       - ./vault/config:/vault/config:ro
       - ./vault/scripts:/vault/scripts:ro
@@ -47,9 +41,9 @@ services:
     restart: unless-stopped
     depends_on:
       vault:
-        condition: service_healthy
+        condition: service_started
     environment:
-      VAULT_ADDR: http://vault:18200
+      VAULT_ADDR: http://vault:8200
       VAULT_AUTO_UNSEAL_INTERVAL_SECONDS: ${VAULT_AUTO_UNSEAL_INTERVAL_SECONDS:-15}
     volumes:
       - ./vault/config:/vault/config:ro
@@ -70,7 +64,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
       POSTGRES_USER: ${POSTGRES_USER:-djopenkb}
       VAULT_ENABLED: "true"
-      VAULT_ADDR: http://vault:18200
+      VAULT_ADDR: http://vault:8200
       VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt
       VAULT_KV_MOUNT: ${VAULT_KV_MOUNT:-secret}
       VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}
@@ -118,7 +112,7 @@ services:
       LDAP_USER_FILTER: "${LDAP_USER_FILTER:-(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))}"
       LDAP_BIND_DN: "${LDAP_BIND_DN:-}"
       VAULT_ENABLED: "true"
-      VAULT_ADDR: http://vault:18200
+      VAULT_ADDR: http://vault:8200
       VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt
       VAULT_KV_MOUNT: ${VAULT_KV_MOUNT:-secret}
       VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}
@@ -182,7 +176,7 @@ services:
       LDAP_USER_FILTER: "${LDAP_USER_FILTER:-(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))}"
       LDAP_BIND_DN: "${LDAP_BIND_DN:-}"
       VAULT_ENABLED: "true"
-      VAULT_ADDR: http://vault:18200
+      VAULT_ADDR: http://vault:8200
       VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt
       VAULT_KV_MOUNT: ${VAULT_KV_MOUNT:-secret}
       VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}

@@ -6,9 +6,10 @@ storage "file" {
 }
 
 listener "tcp" {
-  address     = "0.0.0.0:18200"
-  tls_disable = true
+  address         = "0.0.0.0:8200"
+  cluster_address = "0.0.0.0:8201"
+  tls_disable     = true
 }
 
-api_addr = "http://vault:18200"
-cluster_addr = "http://vault:18201"
+api_addr     = "http://vault:8200"
+cluster_addr = "http://vault:8201"

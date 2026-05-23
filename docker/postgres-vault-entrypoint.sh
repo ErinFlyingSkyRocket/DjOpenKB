@@ -4,7 +4,7 @@ set -eu
 log() { echo "[postgres-vault] $*"; }
 
 if [ "${VAULT_ENABLED:-false}" = "true" ]; then
-  VAULT_ADDR="${VAULT_ADDR:-http://vault:18200}"
+  VAULT_ADDR="${VAULT_ADDR:-http://vault:8200}"
   VAULT_KV_MOUNT="${VAULT_KV_MOUNT:-secret}"
   VAULT_SECRET_PATH="${VAULT_SECRET_PATH:-djopenkb}"
   VAULT_TOKEN="${VAULT_TOKEN:-}"

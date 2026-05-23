@@ -57,7 +57,7 @@ def _load_vault_secrets() -> dict:
         _VAULT_SECRET_CACHE = {}
         return _VAULT_SECRET_CACHE
 
-    addr = os.getenv("VAULT_ADDR", "http://vault:18200").rstrip("/")
+    addr = os.getenv("VAULT_ADDR", "http://vault:8200").rstrip("/")
     mount = os.getenv("VAULT_KV_MOUNT", "secret").strip("/") or "secret"
     secret_path = os.getenv("VAULT_SECRET_PATH", "djopenkb").strip("/") or "djopenkb"
 
@@ -250,6 +250,16 @@ LOGGING = {
         "kb": {
             "handlers": ["console"],
             "level": os.getenv("DJANGO_KB_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "kb.backends": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LDAP_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "django_auth_ldap": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LDAP_LOG_LEVEL", "INFO"),
             "propagate": False,
         },
     },

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-export VAULT_ADDR="${VAULT_ADDR:-http://vault:18200}"
+export VAULT_ADDR="${VAULT_ADDR:-http://vault:8200}"
 KEY_DIR="/vault/keys"
 UNSEAL_KEY_FILE="$KEY_DIR/unseal-key.txt"
 ROOT_TOKEN_FILE="$KEY_DIR/root-token.txt"

@@ -1,8 +1,12 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
 from .models import UserProfile
+
+logger = logging.getLogger(__name__)
 
 try:
     from django_auth_ldap.backend import LDAPBackend
@@ -44,10 +48,11 @@ class NextLabsLDAPBackend(LDAPBackend):
 
         login_value = login_value.strip()
 
-        # alice -> alice@openkb.local when a lab AD domain is configured.
-        if "@" not in login_value and ad_domain:
-            return f"{login_value}@{ad_domain}"
-
+        # Important: do NOT automatically convert "alice" into
+        # "alice@domain". The LDAP search filter also checks sAMAccountName, and
+        # AD lab users commonly log in with their sAMAccountName. If we rewrite
+        # it to a UPN first, the search becomes sAMAccountName=alice@domain,
+        # which will not match normal AD accounts.
         return login_value
 
     def _is_allowed_domain(self, username):
@@ -76,19 +81,34 @@ class NextLabsLDAPBackend(LDAPBackend):
         if not username or not password:
             return None
 
+        login_mode = _requested_login_mode(request)
         ldap_username = self._normalize_username_for_ldap(username)
-        if not ldap_username or not self._is_allowed_domain(ldap_username):
+        if not ldap_username:
+            logger.warning("LDAP login rejected: empty/invalid username after normalization. mode=%s input=%r", login_mode, username)
             return None
 
-        user = super().authenticate(
-            request,
-            username=ldap_username,
-            password=password,
-            **kwargs,
-        )
+        if not self._is_allowed_domain(ldap_username):
+            logger.warning("LDAP login rejected: domain not allowed. mode=%s input=%r normalized=%r", login_mode, username, ldap_username)
+            return None
+
+        logger.info("LDAP login attempt started. mode=%s input=%r normalized=%r", login_mode, username, ldap_username)
+
+        try:
+            user = super().authenticate(
+                request,
+                username=ldap_username,
+                password=password,
+                **kwargs,
+            )
+        except Exception:
+            logger.exception("LDAP login failed with backend exception. input=%r normalized=%r", username, ldap_username)
+            return None
 
         if user is None:
+            logger.warning("LDAP login failed: django-auth-ldap returned no user. input=%r normalized=%r", username, ldap_username)
             return None
+
+        logger.info("LDAP login succeeded for username=%r django_user=%r", ldap_username, user.get_username())
 
         profile, _ = UserProfile.objects.get_or_create(user=user)
         if profile.account_type == UserProfile.AccountType.USER:
@@ -104,9 +124,15 @@ class NextLabsLDAPBackend(LDAPBackend):
         # Some AD lab accounts do not have the mail attribute filled in.
         # In that case, use the validated UPN/domain login as the Django email
         # so the profile page and article metadata still show an address.
-        if not (user.email or "").strip() and "@" in ldap_username:
-            user.email = ldap_username.lower()
-            user_update_fields.append("email")
+        if not (user.email or "").strip():
+            if "@" in ldap_username:
+                user.email = ldap_username.lower()
+                user_update_fields.append("email")
+            else:
+                ad_domain = getattr(settings, "LDAP_AD_DOMAIN", "").strip().lower()
+                if ad_domain:
+                    user.email = f"{ldap_username.lower()}@{ad_domain}"
+                    user_update_fields.append("email")
 
         if user_update_fields:
             user.save(update_fields=sorted(set(user_update_fields)))
