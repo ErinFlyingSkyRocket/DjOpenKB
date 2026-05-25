@@ -1,913 +1,451 @@
-# DjOpenKB
+# DjOpenKB Deployment Guide
 
-DjOpenKB is a Django-based web wiki project integrated with OpenKB.  
-The application runs behind Nginx with HTTPS on port `8080` using Docker Compose.
+DjOpenKB is deployed with Docker Compose. The application runs behind Nginx on HTTPS port `8080`, uses PostgreSQL for Django data, stores application secrets in Vault, and keeps OpenKB knowledge-base content under `openkb-data/`.
 
-This version uses PostgreSQL for Django data such as user accounts, admin data, sessions, and Django model records. OpenKB content remains file-based inside `openkb-data/`.
-
-## Project Structure
-
-```text
-DjOpenKB/
-├── djopenkb/              # Django project settings and URLs
-├── kb/                    # Django app
-├── website/               # Templates and static files
-├── openkb-data/           # OpenKB knowledge base data
-│   ├── raw/               # Raw markdown/text documents
-│   └── wiki/              # Generated wiki content
-├── postgres-data/         # Local PostgreSQL data folder, do not delete if keeping DB data
-├── nginx/
-│   ├── nginx.conf         # Nginx HTTPS reverse proxy config
-│   ├── generate-localhost-cert.bat
-│   ├── generate-localhost-cert.ps1
-│   ├── generate-localhost-cert.sh
-│   └── certs/             # Local SSL certificate files
-│       ├── localhost.crt
-│       └── localhost.key
-├── Dockerfile
-├── docker-compose.yml
-├── manage.py
-└── .env
-```
-
-## Requirements
-
-Make sure these are installed:
-
-```text
-Docker Desktop
-Git
-OpenSSL
-```
-
-For Windows, OpenSSL can be used through Git Bash or Git for Windows.
-
-Docker Desktop must be running before starting the web application.
+This guide focuses on **how to install, run, maintain, and update the application**.
 
 ---
 
-## 1. Generate Local HTTPS Certificate
+## 1. Server Requirements
 
-This project uses a local self-signed SSL certificate for HTTPS access through Nginx.
-
-The generated certificate files are:
-
-```text
-nginx/certs/localhost.crt
-nginx/certs/localhost.key
-```
-
-These files are mounted into the Nginx Docker container and used for:
-
-```text
-https://localhost:8080
-```
-
-### Windows Certificate Generation
-
-Go to the `nginx` folder:
-
-```powershell
-cd C:\Users\Erinc\Desktop\DjOpenKB\DjOpenKB\nginx
-```
-
-Run the certificate generator:
-
-```powershell
-.\generate-localhost-cert.bat
-```
-
-This should create:
-
-```text
-nginx/certs/localhost.crt
-nginx/certs/localhost.key
-```
-
-### Linux Certificate Generation
-
-Go to the `nginx` folder:
-
-```bash
-cd nginx
-```
-
-Make the Bash script executable:
-
-```bash
-chmod +x generate-localhost-cert.sh
-```
-
-Run it:
-
-```bash
-./generate-localhost-cert.sh
-```
-
-This should create:
-
-```text
-nginx/certs/localhost.crt
-nginx/certs/localhost.key
-```
-
-If OpenSSL is missing, install it first.
-
-Ubuntu/Debian:
+Install these on the Linux server:
 
 ```bash
 sudo apt update
-sudo apt install openssl -y
+sudo apt install -y git openssl
 ```
 
-CentOS/RHEL/Fedora:
+Install Docker Engine and Docker Compose Plugin:
 
 ```bash
-sudo dnf install openssl -y
+sudo apt install -y docker.io docker-compose-plugin
+sudo systemctl enable docker
+sudo systemctl start docker
 ```
 
-### Nginx Docker Certificate Mount
-
-In `docker-compose.yml`, the Nginx service should mount the cert folder like this:
-
-```yaml
-volumes:
-  - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-  - ./nginx/certs:/etc/nginx/certs:ro
-ports:
-  - "8080:8080"
-```
-
-Inside `nginx/nginx.conf`, the certificate paths should be:
-
-```nginx
-ssl_certificate     /etc/nginx/certs/localhost.crt;
-ssl_certificate_key /etc/nginx/certs/localhost.key;
-```
-
-Because this is a self-signed certificate, the browser may show a warning such as:
-
-```text
-Your connection is not private
-```
-
-This is normal for local development. Continue to:
-
-```text
-https://localhost:8080
-```
-
-after accepting the browser warning.
-
----
-
-## 2. Initialize OpenKB Data
-
-OpenKB should be initialized inside the `openkb-data` folder.
-
-Do **not** initialize OpenKB inside `OpenKB-main`.
-
-Correct folder:
-
-```text
-DjOpenKB/openkb-data
-```
-
-Wrong folder:
-
-```text
-DjOpenKB/OpenKB-main
-```
-
-From the project root:
-
-```powershell
-cd C:\Users\Erinc\Desktop\DjOpenKB\DjOpenKB
-```
-
-Go into `openkb-data`:
-
-```powershell
-cd openkb-data
-```
-
-Initialize OpenKB:
-
-```powershell
-openkb init
-```
-
-Add your knowledge base files into:
-
-```text
-openkb-data/raw/
-```
-
-Example:
-
-```text
-openkb-data/raw/test.md
-```
-
-Then add the raw documents into OpenKB:
-
-```powershell
-openkb add raw
-```
-
-Test OpenKB manually:
-
-```powershell
-openkb query "What is this knowledge base about?"
-```
-
-If this works, the web application should also be able to query OpenKB.
-
-For Linux, the same commands apply:
+Optional, allow your current Linux user to run Docker without `sudo`:
 
 ```bash
-cd openkb-data
-openkb init
-openkb add raw
-openkb query "What is this knowledge base about?"
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+Check that Docker is ready:
+
+```bash
+docker --version
+docker compose version
 ```
 
 ---
 
-## 3. Environment File
+## 2. Download the Application
 
-Create or update `.env` in the project root:
+Clone the repository on the Linux server:
+
+```bash
+git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
+cd DjOpenKB
+```
+
+If the repository already exists, update it with:
+
+```bash
+cd DjOpenKB
+git pull
+```
+
+---
+
+## 3. Configure Non-Secret Settings
+
+Create the runtime `.env` file from the example:
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+The `.env` file should contain non-secret deployment settings such as:
 
 ```env
+DJANGO_DEBUG=false
+
+POSTGRES_DB=djopenkb
+POSTGRES_USER=djopenkb
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+
 OPENKB_BASE_DIR=OpenKB-main
 OPENKB_DATA_DIR=openkb-data
 OPENKB_AI_PROVIDER=openkb-cli
 OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
 LITELLM_DROP_PARAMS=true
 
-DJANGO_DEBUG=true
-DJANGO_SECRET_KEY=change-this-to-your-own-secret-key
-
-POSTGRES_DB=djopenkb
-POSTGRES_USER=djopenkb
-POSTGRES_PASSWORD=change-this-password
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-USE_SQLITE=false
-
-GEMINI_API_KEY=your_gemini_api_key_here
-LLM_API_KEY=your_gemini_api_key_here
-
-LDAP_ENABLED=false
-LDAP_SERVER_URI=ldap://your-ad-server.nextlabs.com:389
-LDAP_BIND_DN=CN=ldap-reader,OU=Service Accounts,DC=nextlabs,DC=com
-LDAP_BIND_PASSWORD=your_ldap_password_here
-LDAP_USER_SEARCH_BASE=DC=nextlabs,DC=com
-LDAP_USER_FILTER=(userPrincipalName=%(user)s)
-```
-
-For local testing without LDAP, keep:
-
-```env
-LDAP_ENABLED=false
-```
-
-When LDAP is ready, change it to:
-
-```env
 LDAP_ENABLED=true
-```
-
-Do not commit `.env` to GitHub because it may contain API keys, LDAP passwords, and Django secrets.
-
----
-
-## 4. PostgreSQL Data Storage
-
-Django uses PostgreSQL for application database records.
-
-This includes:
-
-```text
-Django admin accounts
-Normal user accounts
-Groups and permissions
-Login sessions
-Django app model data
-Suggested articles or article records stored as Django models
-```
-
-The database files are stored locally in the project folder:
-
-```text
-postgres-data/
-```
-
-This folder is mounted into the PostgreSQL Docker container:
-
-```yaml
-./postgres-data:/var/lib/postgresql/data
-```
-
-This means your database can survive even if you delete Docker containers and images, as long as you keep the local `postgres-data/` folder.
-
-Important:
-
-```text
-Do not delete postgres-data/ if you want to keep PostgreSQL data.
-Do not commit postgres-data/ to GitHub.
-```
-
-Your OpenKB files are separate and remain stored in:
-
-```text
-openkb-data/raw/
-openkb-data/wiki/
-```
-
----
-
-## 5. Start the Website
-
-From the project root:
-
-```powershell
-cd C:\Users\Erinc\Desktop\DjOpenKB\DjOpenKB
-```
-
-Build and start the containers:
-
-```powershell
-docker compose up --build
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose up --build
-```
-
-For Linux:
-
-```bash
-docker compose up --build
-```
-
-After it starts, open:
-
-```text
-https://localhost:8080
-```
-
-The web container is configured to run these automatically during startup:
-
-```sh
-python manage.py migrate --noinput
-python manage.py collectstatic --noinput
-gunicorn djopenkb.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 300
-```
-
-So normally, migrations will run automatically when the container starts.
-
----
-
-## 6. Run Django Migrations Manually
-
-If you want to run migrations manually, use this after the containers are running:
-
-```powershell
-docker compose exec web python manage.py migrate
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose exec web python manage.py migrate
-```
-
-For Linux:
-
-```bash
-docker compose exec web python manage.py migrate
-```
-
-To check migration status:
-
-```powershell
-docker compose exec web python manage.py showmigrations
-```
-
-To create new migration files after changing Django models:
-
-```powershell
-docker compose exec web python manage.py makemigrations
-```
-
-Then apply them:
-
-```powershell
-docker compose exec web python manage.py migrate
-```
-
----
-
-## 7. Create Django Admin Account
-
-After PostgreSQL is running and migrations have completed, create a new admin account:
-
-```powershell
-docker compose exec web python manage.py createsuperuser
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose exec web python manage.py createsuperuser
-```
-
-For Linux:
-
-```bash
-docker compose exec web python manage.py createsuperuser
-```
-
-Follow the prompts:
-
-```text
-Username:
-Email address:
-Password:
-Password again:
-```
-
-Then log in to Django admin at:
-
-```text
-https://localhost:8080/admin/
-```
-
-If you delete `postgres-data/`, the admin account will be deleted too and you must run `createsuperuser` again.
-
----
-
-## 8. Stop the Website
-
-Press:
-
-```text
-Ctrl + C
-```
-
-Then run:
-
-```powershell
-docker compose down
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose down
-```
-
-For Linux:
-
-```bash
-docker compose down
-```
-
-This stops and removes the containers but keeps your local PostgreSQL data because it is stored in:
-
-```text
-postgres-data/
-```
-
----
-
-## 9. Rebuild After Code Changes
-
-If Python packages, `Dockerfile`, or Docker Compose settings are changed:
-
-```powershell
-docker compose down
-docker compose up --build
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose down
-docker-compose up --build
-```
-
-If only HTML, CSS, or Python code is changed, usually this is enough:
-
-```powershell
-docker compose restart
-```
-
-For Linux:
-
-```bash
-docker compose down
-docker compose up --build
-```
-
----
-
-## 10. Reset the PostgreSQL Database
-
-Only do this if you intentionally want to delete all Django database data.
-
-Stop containers:
-
-```powershell
-docker compose down
-```
-
-Then delete this folder from the project:
-
-```text
-postgres-data/
-```
-
-Start again:
-
-```powershell
-docker compose up --build
-```
-
-Then create a new admin account:
-
-```powershell
-docker compose exec web python manage.py createsuperuser
-```
-
-Important: deleting Docker images does not delete `postgres-data/`. Deleting the `postgres-data/` folder does delete your database.
-
----
-
-## 11. SQLite Notes
-
-This project now uses PostgreSQL by default.
-
-Old SQLite file:
-
-```text
-db.sqlite3
-```
-
-can be deleted after confirming the website works with PostgreSQL.
-
-To temporarily use SQLite again, set this in `.env`:
-
-```env
-USE_SQLITE=true
-```
-
-For normal PostgreSQL usage, keep:
-
-```env
-USE_SQLITE=false
-```
-
----
-
-## 12. OpenKB Notes
-
-Important:
-
-```text
-OpenKB-main = OpenKB source/package folder
-openkb-data = actual knowledge base folder
-```
-
-Always run OpenKB commands from:
-
-```text
-DjOpenKB/openkb-data
-```
-
-Correct:
-
-```powershell
-cd openkb-data
-openkb init
-openkb add raw
-openkb query "your question"
-```
-
-Wrong:
-
-```powershell
-cd OpenKB-main
-openkb init
-```
-
-The Django app should use `openkb-data` as the working directory when running OpenKB queries.
-
-Inside Docker, this folder is available as:
-
-```text
-/app/openkb-data
-```
-
----
-
-## 13. Testing Inside Docker
-
-Enter the Django container:
-
-```powershell
-docker compose exec web sh
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose exec web sh
-```
-
-Check OpenKB:
-
-```sh
-cd /app/openkb-data
-openkb query "What is this knowledge base about?"
-```
-
-Check Django:
-
-```sh
-python manage.py check
-```
-
-Check the database connection:
-
-```sh
-python manage.py dbshell
-```
-
-Exit `dbshell` with:
-
-```sql
-\q
-```
-
-Check LDAP package installation:
-
-```sh
-python -c "import ldap; import django_auth_ldap; print('LDAP packages OK')"
-```
-
----
-
-## 14. LDAP / Active Directory Notes
-
-LDAP is optional.
-
-For normal local testing, use:
-
-```env
-LDAP_ENABLED=false
-```
-
-When LDAP is enabled, the application will use Active Directory login.
-
-Example LDAP-related `.env` settings:
-
-```env
-LDAP_ENABLED=true
-LDAP_SERVER_URI=ldap://your-ad-server.nextlabs.com:389
-LDAP_BIND_DN=CN=ldap-reader,OU=Service Accounts,DC=nextlabs,DC=com
-LDAP_BIND_PASSWORD=your_ldap_password_here
+LDAP_SERVER_URI=ldap://<AD-SERVER-IP>:389
+LDAP_AD_DOMAIN=nextlabs.com
+LDAP_NETBIOS_DOMAIN=NEXTLABS
+LDAP_ALLOWED_EMAIL_DOMAINS=nextlabs.com
 LDAP_USER_SEARCH_BASE=DC=nextlabs,DC=com
-LDAP_USER_FILTER=(userPrincipalName=%(user)s)
+LDAP_USER_FILTER=(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))
+LDAP_BIND_DN=<service-account>@nextlabs.com
+
+USE_SQLITE=false
+
+VAULT_KV_MOUNT=secret
+VAULT_SECRET_PATH=djopenkb
+VAULT_AUTO_UNSEAL_INTERVAL_SECONDS=15
 ```
 
-To test LDAP inside Docker:
-
-```powershell
-docker compose exec web sh
-```
-
-Then run:
-
-```sh
-ldapsearch -x \
-  -H "$LDAP_SERVER_URI" \
-  -D "$LDAP_BIND_DN" \
-  -w "$LDAP_BIND_PASSWORD" \
-  -b "$LDAP_USER_SEARCH_BASE" \
-  "(userPrincipalName=user@nextlabs.com)"
-```
-
-Replace:
-
-```text
-user@nextlabs.com
-```
-
-with a real Active Directory email account.
+Do **not** put passwords, API keys, or Django secret keys in `.env`.
 
 ---
 
-## 15. Common Issues
+## 4. Configure Vault Bootstrap Secrets
 
-### No knowledge base found
-
-Error:
+Vault stores application secrets such as:
 
 ```text
-No knowledge base found. Run `openkb init` first.
+DJANGO_SECRET_KEY
+POSTGRES_PASSWORD
+LDAP_BIND_PASSWORD
+GEMINI_API_KEY
+LLM_API_KEY
 ```
 
-Fix:
+Create the bootstrap secret file:
 
-```powershell
-cd openkb-data
-openkb init
-openkb add raw
+```bash
+cp vault/bootstrap/djopenkb.env.example vault/bootstrap/djopenkb.env
+nano vault/bootstrap/djopenkb.env
 ```
 
-Also make sure the Django code runs OpenKB using `openkb-data` as the current working directory.
-
-Inside Docker, test with:
-
-```sh
-cd /app/openkb-data
-openkb query "What is this knowledge base about?"
-```
-
-### 502 Bad Gateway
-
-This usually means the Django container is not running correctly.
-
-Check logs:
-
-```powershell
-docker compose logs web
-```
-
-For older Docker Compose:
-
-```powershell
-docker-compose logs web
-```
-
-### PostgreSQL connection refused
-
-This means Django cannot connect to the database container yet.
-
-Check that the database container is running:
-
-```powershell
-docker compose ps
-```
-
-Check database logs:
-
-```powershell
-docker compose logs db
-```
-
-Make sure `.env` contains:
+Use quoted values for secrets:
 
 ```env
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-USE_SQLITE=false
+DJANGO_SECRET_KEY="replace-with-a-long-random-django-secret-key"
+POSTGRES_PASSWORD="replace-with-a-stable-postgres-password"
+
+GEMINI_API_KEY="replace-with-your-api-key"
+LLM_API_KEY="replace-with-your-api-key"
+
+LDAP_BIND_PASSWORD="replace-with-service-account-password"
+LDAP_PLACEHOLDER_PASSWORD="replace-with-placeholder-password-or-leave-random"
 ```
 
-Then restart:
-
-```powershell
-docker compose down
-docker compose up --build
-```
-
-### Admin login does not work
-
-If this is a fresh PostgreSQL setup, old SQLite admin accounts are not automatically available.
-
-Create a new admin account:
-
-```powershell
-docker compose exec web python manage.py createsuperuser
-```
-
-### Old SQLite data missing
-
-This is expected if you switched to PostgreSQL without migrating old SQLite data.
-
-Django is now reading from PostgreSQL, not from:
+Important notes:
 
 ```text
-db.sqlite3
+POSTGRES_PASSWORD must stay stable after the database is created.
+Changing POSTGRES_PASSWORD later requires updating the password inside PostgreSQL too.
+Do not run docker compose down -v unless you intentionally want to wipe Vault/Postgres data.
 ```
 
-### HTTPS certificate error
+After Vault has seeded the secret successfully, remove the plaintext bootstrap file:
 
-This is normal because the certificate is self-signed.
-
-Open:
-
-```text
-https://localhost:8080
+```bash
+rm -f vault/bootstrap/djopenkb.env
 ```
 
-Then accept the browser warning.
+---
 
-### Nginx cannot find certificate
+## 5. Generate Local HTTPS Certificate
 
-Make sure these files exist:
+Generate the Nginx certificate:
+
+```bash
+cd nginx
+chmod +x generate-localhost-cert.sh
+./generate-localhost-cert.sh
+cd ..
+```
+
+This creates:
 
 ```text
 nginx/certs/localhost.crt
 nginx/certs/localhost.key
 ```
 
-Then restart:
-
-```powershell
-docker compose restart nginx
-```
-
-### LDAP login not working
-
-Check `.env` values:
-
-```env
-LDAP_ENABLED=true
-LDAP_SERVER_URI=...
-LDAP_BIND_DN=...
-LDAP_BIND_PASSWORD=...
-LDAP_USER_SEARCH_BASE=...
-LDAP_USER_FILTER=...
-```
-
-Then test inside Docker:
-
-```sh
-ldapsearch -x \
-  -H "$LDAP_SERVER_URI" \
-  -D "$LDAP_BIND_DN" \
-  -w "$LDAP_BIND_PASSWORD" \
-  -b "$LDAP_USER_SEARCH_BASE" \
-  "(userPrincipalName=user@nextlabs.com)"
-```
+For a real deployment, replace these with a proper certificate for the server hostname.
 
 ---
 
-## 16. Useful Docker Commands
+## 6. Start the Application
 
-View all logs:
+From the project root:
 
-```powershell
-docker compose logs
+```bash
+docker compose up --build -d
 ```
 
-View web logs only:
+Watch logs:
 
-```powershell
-docker compose logs web
+```bash
+docker compose logs -f
 ```
 
-View database logs only:
+Check running services:
 
-```powershell
-docker compose logs db
+```bash
+docker compose ps
 ```
 
-View Nginx logs only:
-
-```powershell
-docker compose logs nginx
-```
-
-Restart containers:
-
-```powershell
-docker compose restart
-```
-
-Stop and remove containers:
-
-```powershell
-docker compose down
-```
-
-Rebuild everything:
-
-```powershell
-docker compose up --build
-```
-
-For older Docker Compose, replace `docker compose` with `docker-compose`.
-
----
-
-## Access URL
+Expected services include:
 
 ```text
-https://localhost:8080
+djopenkb-vault
+djopenkb-vault-auto-unseal
+djopenkb-vault-init
+djopenkb-postgres
+djopenkb-web
+djopenkb-nginx
+djopenkb-cleanup-scheduler
+```
+
+Open the site:
+
+```text
+https://<server-ip>:8080
+```
+
+For local testing on the server:
+
+```text
+https://127.0.0.1:8080
+```
+
+---
+
+## 7. Create a Local Admin Account
+
+After the containers are running, create a Django superuser:
+
+```bash
+docker compose exec web python manage.py createsuperuser
+```
+
+Use this account for Django admin/local fallback access.
+
+---
+
+## 8. Verify AD Login
+
+Check that the web container can reach the AD server:
+
+```bash
+docker compose exec web python -c "import socket; s=socket.socket(); s.settimeout(5); s.connect(('<AD-SERVER-IP>',389)); print('LDAP 389 reachable'); s.close()"
+```
+
+Check the LDAP settings loaded by Django:
+
+```bash
+docker compose exec web python manage.py shell -c "from django.conf import settings; print(settings.AUTH_LDAP_SERVER_URI); print(settings.AUTH_LDAP_BIND_DN); print(bool(settings.AUTH_LDAP_BIND_PASSWORD))"
+```
+
+Test LDAP service-account bind and user search:
+
+```bash
+docker compose exec web python manage.py test_ldap_auth <username> --bind-dn <service-account>@nextlabs.com --prompt-bind-password
+```
+
+Test full AD authentication:
+
+```bash
+docker compose exec web python manage.py test_ldap_auth <username> --auth
+```
+
+Then sign in from the login page using the domain login option.
+
+---
+
+## 9. Normal Restart
+
+For normal restart without wiping data:
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+Or restart selected services:
+
+```bash
+docker compose restart web nginx
+```
+
+Do **not** use this for normal restart:
+
+```bash
+docker compose down -v
+```
+
+That removes Docker volumes and can wipe persistent data.
+
+---
+
+## 10. Updating the Application
+
+Pull the latest code:
+
+```bash
+git pull
+```
+
+Rebuild and recreate the application containers:
+
+```bash
+docker compose up -d --build --force-recreate web nginx cleanup-scheduler
+```
+
+If database migrations are included:
+
+```bash
+docker compose exec web python manage.py migrate
+```
+
+If static files changed:
+
+```bash
+docker compose exec web python manage.py collectstatic --noinput
+```
+
+For full rebuild:
+
+```bash
+docker compose up -d --build --force-recreate
+```
+
+---
+
+## 11. Updating Vault Secrets Later
+
+If you need to update LDAP/API secrets later, recreate the bootstrap file temporarily:
+
+```bash
+cp vault/bootstrap/djopenkb.env.example vault/bootstrap/djopenkb.env
+nano vault/bootstrap/djopenkb.env
+```
+
+Set only the secrets you intentionally want to update, then run:
+
+```bash
+docker compose up --force-recreate vault-init
+docker compose restart web cleanup-scheduler
+```
+
+After confirming the application works:
+
+```bash
+rm -f vault/bootstrap/djopenkb.env
+```
+
+For `POSTGRES_PASSWORD`, do not rotate it this way unless you also update the password inside the existing PostgreSQL database.
+
+---
+
+## 12. Backup and Restore
+
+Back up these persistent folders:
+
+```text
+postgres-data/
+vault/file/
+vault/keys/
+openkb-data/
+nginx/certs/
+```
+
+Example backup command:
+
+```bash
+tar -czf djopenkb-backup-$(date +%Y%m%d).tar.gz postgres-data vault/file vault/keys openkb-data nginx/certs
+```
+
+To restore, stop the application, restore the folders, then start Docker Compose again:
+
+```bash
+docker compose down
+tar -xzf djopenkb-backup-YYYYMMDD.tar.gz
+docker compose up -d
+```
+
+---
+
+## 13. Useful Commands
+
+View logs:
+
+```bash
+docker compose logs -f web
+docker compose logs -f nginx
+docker compose logs -f vault
+docker compose logs -f db
+```
+
+Run migrations:
+
+```bash
+docker compose exec web python manage.py migrate
+```
+
+Create superuser:
+
+```bash
+docker compose exec web python manage.py createsuperuser
+```
+
+Open Django shell:
+
+```bash
+docker compose exec web python manage.py shell
+```
+
+Check Vault secret access:
+
+```bash
+docker compose exec vault vault status
+```
+
+Re-sync OpenKB AI data if needed:
+
+```bash
+docker compose exec web python manage.py sync_openkb_ai
+```
+
+Clean stray upload files manually:
+
+```bash
+docker compose exec web python manage.py cleanup_stray_upload_files --noinput
+```
+
+---
+
+## 14. Common Issues
+
+### Website does not start after changing `POSTGRES_PASSWORD`
+
+The existing PostgreSQL database still expects the old password. Keep `POSTGRES_PASSWORD` stable after first boot, or update the password inside Postgres before changing Vault.
+
+### AD login fails with `INVALID_CREDENTIALS data 52e`
+
+This usually means the LDAP service account password is wrong or stale in Vault. Update `LDAP_BIND_PASSWORD` in Vault and restart the web container.
+
+### Browser shows certificate warning
+
+This is expected for a self-signed local certificate. Use a proper certificate for production.
+
+### Docker cannot find `docker-compose.yml`
+
+Run commands from the project root:
+
+```bash
+cd DjOpenKB
+```
+
+or specify the compose file explicitly:
+
+```bash
+docker compose -f /path/to/DjOpenKB/docker-compose.yml ps
 ```
