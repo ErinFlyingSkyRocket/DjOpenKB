@@ -7,41 +7,65 @@ from django.utils.crypto import constant_time_compare
 from .models import UserMFADevice
 
 
-LOCAL_MFA_SESSION_KEY = "djopenkb_local_mfa_verified"
-LOCAL_MFA_USER_SESSION_KEY = "djopenkb_local_mfa_verified_user_id"
+MFA_SESSION_KEY = "djopenkb_mfa_verified"
+MFA_USER_SESSION_KEY = "djopenkb_mfa_verified_user_id"
 
 PRE_MFA_USER_ID_SESSION_KEY = "djopenkb_pre_mfa_user_id"
 PRE_MFA_BACKEND_SESSION_KEY = "djopenkb_pre_mfa_backend"
 PRE_MFA_NEXT_SESSION_KEY = "djopenkb_pre_mfa_next"
+
+# Backwards-compatible names from the earlier local-only MFA implementation.
+LOCAL_MFA_SESSION_KEY = MFA_SESSION_KEY
+LOCAL_MFA_USER_SESSION_KEY = MFA_USER_SESSION_KEY
 
 
 def get_totp_issuer():
     return getattr(settings, "MFA_TOTP_ISSUER", "DjOpenKB")
 
 
-def get_local_mfa_backend(user=None):
-    """Return the backend to use when completing local MFA login.
+def _configured_backend_contains(name_fragment):
+    for backend in getattr(settings, "AUTHENTICATION_BACKENDS", []):
+        if name_fragment in backend:
+            return backend
+    return None
 
-    AuthenticationForm normally stores the successful backend on the user
-    object. If that is unavailable, fall back to the local Django backend.
+
+def get_mfa_completion_backend(user=None):
+    """Return the backend used when MFA completes the login.
+
+    Password authentication already happened before MFA. This function only tells
+    Django which backend should own the final authenticated session.
     """
     backend = getattr(user, "backend", None)
     if backend:
         return backend
 
-    for candidate in reversed(getattr(settings, "AUTHENTICATION_BACKENDS", [])):
-        if "EmailOrUsernameModelBackend" in candidate or "ModelBackend" in candidate:
-            return candidate
+    profile = getattr(user, "kb_profile", None)
+    if profile and getattr(profile, "is_ldap_type", False):
+        return (
+            _configured_backend_contains("NextLabsLDAPBackend")
+            or _configured_backend_contains("LDAPBackend")
+            or _configured_backend_contains("PlaceholderLDAPBackend")
+        )
 
-    backends = list(getattr(settings, "AUTHENTICATION_BACKENDS", []))
-    return backends[-1] if backends else None
+    return (
+        _configured_backend_contains("EmailOrUsernameModelBackend")
+        or _configured_backend_contains("ModelBackend")
+        or (list(getattr(settings, "AUTHENTICATION_BACKENDS", []))[-1]
+            if getattr(settings, "AUTHENTICATION_BACKENDS", []) else None)
+    )
 
 
-def user_requires_local_mfa(user):
-    """Return True for local Django-managed accounts that must pass MFA.
+# Backwards-compatible alias used by older imports.
+get_local_mfa_backend = get_mfa_completion_backend
 
-    LDAP/AD users are intentionally excluded for now. Local users, staff and
-    superusers are included. This makes MFA part of the local login criteria.
+
+def user_requires_mfa(user):
+    """Return True when the user must complete site-level TOTP MFA.
+
+    MFA is a login criterion for both local Django accounts and LDAP/AD accounts.
+    A password-authenticated user is not considered fully signed in until MFA
+    setup/verification has completed.
     """
     if not user or not getattr(user, "is_authenticated", False):
         return False
@@ -50,11 +74,15 @@ def user_requires_local_mfa(user):
         return False
 
     profile = getattr(user, "kb_profile", None)
-    if profile and getattr(profile, "is_ldap_type", False):
+    if profile and not getattr(profile, "can_access_main_site", True):
         return False
 
-    # Local Django users/admins should have a usable password.
-    return bool(user.has_usable_password())
+    return True
+
+
+# Backwards-compatible name from the earlier local-only implementation.
+def user_requires_local_mfa(user):
+    return user_requires_mfa(user)
 
 
 def get_or_create_mfa_device(user):
@@ -68,32 +96,44 @@ def get_or_create_mfa_device(user):
     return device
 
 
-def local_mfa_is_verified(request):
+def mfa_is_verified(request):
     """True only when the current authenticated session completed MFA."""
     user = getattr(request, "user", None)
     if not user or not getattr(user, "is_authenticated", False):
         return False
 
     return bool(
-        request.session.get(LOCAL_MFA_SESSION_KEY)
-        and str(request.session.get(LOCAL_MFA_USER_SESSION_KEY)) == str(user.pk)
+        request.session.get(MFA_SESSION_KEY)
+        and constant_time_compare(str(request.session.get(MFA_USER_SESSION_KEY)), str(user.pk))
     )
 
 
-def mark_local_mfa_verified(request, user=None):
+# Backwards-compatible alias used by older imports.
+local_mfa_is_verified = mfa_is_verified
+
+
+def mark_mfa_verified(request, user=None):
     user = user or getattr(request, "user", None)
     if not user or not getattr(user, "is_authenticated", False):
         return
 
-    request.session[LOCAL_MFA_SESSION_KEY] = True
-    request.session[LOCAL_MFA_USER_SESSION_KEY] = str(user.pk)
+    request.session[MFA_SESSION_KEY] = True
+    request.session[MFA_USER_SESSION_KEY] = str(user.pk)
     request.session.modified = True
 
 
-def clear_local_mfa_verified(request):
-    request.session.pop(LOCAL_MFA_SESSION_KEY, None)
-    request.session.pop(LOCAL_MFA_USER_SESSION_KEY, None)
+# Backwards-compatible alias used by older imports.
+mark_local_mfa_verified = mark_mfa_verified
+
+
+def clear_mfa_verified(request):
+    request.session.pop(MFA_SESSION_KEY, None)
+    request.session.pop(MFA_USER_SESSION_KEY, None)
     request.session.modified = True
+
+
+# Backwards-compatible alias used by older imports.
+clear_local_mfa_verified = clear_mfa_verified
 
 
 def clear_pending_mfa_login(request):
@@ -104,14 +144,14 @@ def clear_pending_mfa_login(request):
 
 
 def begin_pending_mfa_login(request, user, next_url=None, backend=None):
-    """Store a password-authenticated but MFA-incomplete local login.
+    """Store a password-authenticated but MFA-incomplete login.
 
-    The user is deliberately not logged in yet. After TOTP setup/verification
-    succeeds, complete_pending_mfa_login() creates the real Django session.
+    The real Django authenticated session is created only after TOTP
+    setup/verification succeeds.
     """
-    clear_local_mfa_verified(request)
+    clear_mfa_verified(request)
     request.session[PRE_MFA_USER_ID_SESSION_KEY] = str(user.pk)
-    request.session[PRE_MFA_BACKEND_SESSION_KEY] = backend or get_local_mfa_backend(user)
+    request.session[PRE_MFA_BACKEND_SESSION_KEY] = backend or get_mfa_completion_backend(user)
     request.session[PRE_MFA_NEXT_SESSION_KEY] = next_url or reverse("home")
     request.session.modified = True
 
@@ -128,7 +168,7 @@ def get_pending_mfa_user(request):
         clear_pending_mfa_login(request)
         return None
 
-    if not user_requires_local_mfa(user):
+    if not user_requires_mfa(user):
         clear_pending_mfa_login(request)
         return None
 
@@ -141,17 +181,8 @@ def pending_mfa_next_url(request, default=None):
 
 def pending_mfa_target_name(request):
     """Return mfa_setup or mfa_verify for the current pending/authenticated user."""
-    user = get_pending_mfa_user(request)
-    if user is None:
-        user = getattr(request, "user", None)
-
-    if not user or not getattr(user, "is_authenticated", False) and user is not None:
-        # Pending user objects from get_pending_mfa_user are normal User objects
-        # with is_authenticated=True as a property, so this branch is mostly for
-        # anonymous requests without a pending login.
-        pass
-
-    if not user:
+    user = get_pending_mfa_user(request) or getattr(request, "user", None)
+    if not user or not getattr(user, "is_authenticated", False):
         return None
 
     device = getattr(user, "kb_mfa_device", None)
@@ -162,7 +193,7 @@ def pending_mfa_target_name(request):
 
 def complete_pending_mfa_login(request, user):
     """Promote the pending MFA session into a real authenticated session."""
-    backend = request.session.get(PRE_MFA_BACKEND_SESSION_KEY) or get_local_mfa_backend(user)
+    backend = request.session.get(PRE_MFA_BACKEND_SESSION_KEY) or get_mfa_completion_backend(user)
     next_url = pending_mfa_next_url(request)
 
     clear_pending_mfa_login(request)
@@ -172,7 +203,7 @@ def complete_pending_mfa_login(request, user):
     else:
         auth_login(request, user)
 
-    mark_local_mfa_verified(request, user)
+    mark_mfa_verified(request, user)
     request.session[PRE_MFA_NEXT_SESSION_KEY] = next_url
     request.session.modified = True
     return next_url

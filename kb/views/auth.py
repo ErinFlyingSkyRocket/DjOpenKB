@@ -1,10 +1,10 @@
 from .services import *
 from ..mfa import (
     begin_pending_mfa_login,
-    clear_local_mfa_verified,
+    clear_mfa_verified,
     clear_pending_mfa_login,
     get_or_create_mfa_device,
-    user_requires_local_mfa,
+    user_requires_mfa,
 )
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, LogoutView
@@ -21,8 +21,8 @@ class OpenKBLoginView(LoginView):
                 logout(request)
                 return redirect("home")
 
-            if user_requires_local_mfa(request.user):
-                clear_local_mfa_verified(request)
+            if user_requires_mfa(request.user):
+                clear_mfa_verified(request)
                 device = get_or_create_mfa_device(request.user)
                 if device.confirmed:
                     return redirect("mfa_verify")
@@ -38,12 +38,12 @@ class OpenKBLoginView(LoginView):
             logout(self.request)
             return self.form_invalid(form)
 
-        if user_requires_local_mfa(user):
-            # MFA is part of local login completion. Do not create the real
+        if user_requires_mfa(user):
+            # MFA is part of login completion. Do not create the real
             # Django login session yet. Store a pending-MFA session and only log
             # the user in after setup/verification succeeds.
             clear_pending_mfa_login(self.request)
-            clear_local_mfa_verified(self.request)
+            clear_mfa_verified(self.request)
             device = get_or_create_mfa_device(user)
             begin_pending_mfa_login(
                 self.request,
@@ -64,9 +64,9 @@ class OpenKBLogoutView(LogoutView):
 
     def dispatch(self, request, *args, **kwargs):
         from kb.middleware import set_strict_no_cache_headers
-        from kb.mfa import clear_local_mfa_verified, clear_pending_mfa_login
+        from kb.mfa import clear_mfa_verified, clear_pending_mfa_login
 
-        clear_local_mfa_verified(request)
+        clear_mfa_verified(request)
         clear_pending_mfa_login(request)
         response = super().dispatch(request, *args, **kwargs)
         set_strict_no_cache_headers(response)

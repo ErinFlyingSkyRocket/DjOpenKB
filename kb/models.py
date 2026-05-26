@@ -108,11 +108,11 @@ class UserProfile(models.Model):
 
 
 class UserMFADevice(models.Model):
-    """TOTP authenticator device for local Django users.
+    """TOTP authenticator device for DjOpenKB users.
 
-    LDAP/AD users are intentionally not enforced yet; their MFA can be wired
-    later through SSO or a separate AD-specific flow. Local Django users and
-    admins must have one confirmed device before using the site.
+    MFA is enforced as a login criterion for both local Django accounts and
+    LDAP/AD accounts. Users must have one confirmed device before using the
+    protected site.
     """
 
     user = models.OneToOneField(

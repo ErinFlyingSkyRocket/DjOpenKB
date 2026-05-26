@@ -14,15 +14,15 @@ from django.utils.translation import gettext as _
 
 from ..mfa import (
     begin_pending_mfa_login,
-    clear_local_mfa_verified,
+    clear_mfa_verified,
     complete_pending_mfa_login,
     get_or_create_mfa_device,
     get_pending_mfa_user,
     get_totp_issuer,
-    local_mfa_is_verified,
-    mark_local_mfa_verified,
+    mfa_is_verified,
+    mark_mfa_verified,
     pending_mfa_next_url,
-    user_requires_local_mfa,
+    user_requires_mfa,
     verify_totp_code,
 )
 
@@ -74,7 +74,7 @@ def _mfa_subject_user(request):
         return pending_user
 
     user = getattr(request, "user", None)
-    if user and user.is_authenticated and user_requires_local_mfa(user):
+    if user and user.is_authenticated and user_requires_mfa(user):
         return user
 
     return None
@@ -85,7 +85,7 @@ def _finish_mfa(request, user):
     if get_pending_mfa_user(request):
         return complete_pending_mfa_login(request, user)
 
-    mark_local_mfa_verified(request, user)
+    mark_mfa_verified(request, user)
     return _safe_next_url(request)
 
 
@@ -95,7 +95,7 @@ def mfa_setup(request):
         messages.warning(request, _("Please sign in before setting up MFA."))
         return redirect("login")
 
-    if not user_requires_local_mfa(user):
+    if not user_requires_mfa(user):
         return redirect("login")
 
     device = get_or_create_mfa_device(user)
@@ -103,7 +103,7 @@ def mfa_setup(request):
     if device.confirmed:
         return redirect("mfa_verify")
 
-    clear_local_mfa_verified(request)
+    clear_mfa_verified(request)
 
     totp = pyotp.TOTP(device.secret)
     label = user.email or user.get_username()
@@ -136,14 +136,14 @@ def mfa_verify(request):
         messages.warning(request, _("Please sign in before verifying MFA."))
         return redirect("login")
 
-    if not user_requires_local_mfa(user):
+    if not user_requires_mfa(user):
         return redirect("login")
 
     device = getattr(user, "kb_mfa_device", None)
     if not device or not device.confirmed:
         return redirect("mfa_setup")
 
-    if request.user.is_authenticated and request.user.pk == user.pk and local_mfa_is_verified(request):
+    if request.user.is_authenticated and request.user.pk == user.pk and mfa_is_verified(request):
         return redirect(_safe_next_url(request))
 
     if request.method == "POST":
@@ -164,8 +164,8 @@ def reset_mfa(request):
         return redirect("profile")
 
     user = request.user
-    if not user_requires_local_mfa(user):
-        messages.info(request, _("MFA reset is currently available for local DjOpenKB accounts only."))
+    if not user_requires_mfa(user):
+        messages.info(request, _("MFA reset is available for your DjOpenKB account."))
         return redirect("profile")
 
     device = get_or_create_mfa_device(user)
@@ -179,7 +179,7 @@ def reset_mfa(request):
     # MFA is a login criterion. After reset, the old authenticated session is no
     # longer allowed. Convert it to a pending-MFA session and force setup now.
     next_url = reverse("profile")
-    backend = getattr(user, "backend", None)
+    backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
     logout(request)
     begin_pending_mfa_login(request, user, next_url=next_url, backend=backend)
 

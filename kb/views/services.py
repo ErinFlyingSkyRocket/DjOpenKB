@@ -35,7 +35,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from ..models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
-from ..mfa import user_requires_local_mfa
+from ..mfa import user_requires_mfa
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
@@ -1630,7 +1630,7 @@ def get_profile_account_context(user):
     user_is_ldap_managed = is_ldap_managed_user(user)
     profile, created = UserProfile.objects.get_or_create(user=user)
     mfa_device = getattr(user, "kb_mfa_device", None)
-    local_mfa_required = user_requires_local_mfa(user)
+    mfa_required = user_requires_mfa(user)
 
     return {
         "total_user_article_count": SuggestedArticle.objects.filter(owner=user).count(),
@@ -1642,7 +1642,8 @@ def get_profile_account_context(user):
         "can_use_admin_tools": user_can_use_admin_tools(user),
         "profile_preferred_language": profile.preferred_language,
         "supported_languages": settings.LANGUAGES,
-        "local_mfa_required": local_mfa_required,
+        "mfa_required": mfa_required,
+        "local_mfa_required": mfa_required,  # backwards-compatible template key
         "mfa_device": mfa_device,
         "mfa_enabled": bool(mfa_device and mfa_device.confirmed),
         "mfa_last_verified_at": getattr(mfa_device, "last_verified_at", None),

@@ -7,9 +7,9 @@ from django.utils.translation import gettext as _
 
 from .mfa import (
     get_pending_mfa_user,
-    local_mfa_is_verified,
+    mfa_is_verified,
     pending_mfa_target_name,
-    user_requires_local_mfa,
+    user_requires_mfa,
 )
 from .models import UserProfile
 
@@ -60,12 +60,12 @@ def set_strict_no_cache_headers(response):
 
 
 class LocalMFARequiredMiddleware:
-    """Server-side MFA login gate for local Django users/admins.
+    """Server-side MFA login gate for all DjOpenKB users.
 
-    MFA is treated as part of login completion. After a local user's password is
-    accepted, they are stored in a pending-MFA session, not a fully authenticated
-    Django session. Until setup/verification succeeds, every internal DjOpenKB
-    page redirects back to the required MFA page.
+    MFA is treated as part of login completion. After AD or local password
+    authentication succeeds, users are stored in a pending-MFA session, not a
+    fully authenticated Django session. Until setup/verification succeeds, every
+    internal DjOpenKB page redirects back to the required MFA page.
     """
 
     def __init__(self, get_response):
@@ -86,14 +86,6 @@ class LocalMFARequiredMiddleware:
         )
         return any(path.startswith(prefix) for prefix in allowed_prefixes if prefix)
 
-    def _auth_paths(self):
-        names = ("mfa_setup", "mfa_verify", "logout")
-        paths = set()
-        for name in names:
-            value = self._reverse_or_none(name)
-            if value:
-                paths.add(value)
-        return paths
 
     def _redirect_to_target(self, request, target_name):
         target_path = reverse(target_name)
@@ -130,10 +122,10 @@ class LocalMFARequiredMiddleware:
 
     def _gate_authenticated_local_user(self, request, path):
         user = getattr(request, "user", None)
-        if not user or not user.is_authenticated or not user_requires_local_mfa(user):
+        if not user or not user.is_authenticated or not user_requires_mfa(user):
             return None
 
-        if local_mfa_is_verified(request):
+        if mfa_is_verified(request):
             return None
 
         if self._path_is_public_asset(path):
@@ -173,7 +165,7 @@ class LocalMFARequiredMiddleware:
             return set_strict_no_cache_headers(response)
 
         user = getattr(request, "user", None)
-        if user and user.is_authenticated and user_requires_local_mfa(user):
+        if user and user.is_authenticated and user_requires_mfa(user):
             return set_strict_no_cache_headers(response)
 
         return response
