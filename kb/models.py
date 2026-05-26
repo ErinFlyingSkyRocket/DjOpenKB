@@ -107,6 +107,46 @@ class UserProfile(models.Model):
             self.user.save(update_fields=update_fields)
 
 
+class UserMFADevice(models.Model):
+    """TOTP authenticator device for local Django users.
+
+    LDAP/AD users are intentionally not enforced yet; their MFA can be wired
+    later through SSO or a separate AD-specific flow. Local Django users and
+    admins must have one confirmed device before using the site.
+    """
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="kb_mfa_device",
+    )
+    secret = models.CharField(max_length=64)
+    confirmed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    last_verified_at = models.DateTimeField(null=True, blank=True)
+    reset_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "User MFA device"
+        verbose_name_plural = "User MFA devices"
+
+    def __str__(self):
+        status = "confirmed" if self.confirmed else "setup pending"
+        return f"{self.user.username} MFA ({status})"
+
+    def mark_confirmed(self):
+        now = timezone.now()
+        self.confirmed = True
+        self.confirmed_at = now
+        self.last_verified_at = now
+        self.save(update_fields=["confirmed", "confirmed_at", "last_verified_at"])
+
+    def mark_verified(self):
+        self.last_verified_at = timezone.now()
+        self.save(update_fields=["last_verified_at"])
+
+
 class SuggestedArticle(models.Model):
     """User-submitted OpenKB article metadata.
 

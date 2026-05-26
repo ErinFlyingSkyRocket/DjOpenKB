@@ -1,16 +1,21 @@
 from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.urls import NoReverseMatch, reverse
 from django.utils import translation
+from django.utils.translation import gettext as _
 
+from .mfa import (
+    get_pending_mfa_user,
+    local_mfa_is_verified,
+    pending_mfa_target_name,
+    user_requires_local_mfa,
+)
 from .models import UserProfile
 
 
 class UserProfileLanguageMiddleware:
-    """Activate the logged-in user's saved UI language.
-
-    Django's LocaleMiddleware handles normal language detection first. This
-    middleware then gives the user's profile preference priority after
-    AuthenticationMiddleware has attached request.user.
-    """
+    """Activate the logged-in user's saved UI language."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -33,5 +38,175 @@ class UserProfileLanguageMiddleware:
 
         if user and user.is_authenticated:
             response.set_cookie(settings.LANGUAGE_COOKIE_NAME, request.LANGUAGE_CODE)
+
+        return response
+
+
+def set_strict_no_cache_headers(response):
+    """Prevent browser back/forward cache from showing stale auth/MFA pages."""
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0, private"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+    response["X-Accel-Expires"] = "0"
+
+    existing_vary = response.get("Vary")
+    if existing_vary:
+        vary_parts = {part.strip() for part in existing_vary.split(",") if part.strip()}
+        vary_parts.add("Cookie")
+        response["Vary"] = ", ".join(sorted(vary_parts))
+    else:
+        response["Vary"] = "Cookie"
+    return response
+
+
+class LocalMFARequiredMiddleware:
+    """Server-side MFA login gate for local Django users/admins.
+
+    MFA is treated as part of login completion. After a local user's password is
+    accepted, they are stored in a pending-MFA session, not a fully authenticated
+    Django session. Until setup/verification succeeds, every internal DjOpenKB
+    page redirects back to the required MFA page.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def _reverse_or_none(self, name):
+        try:
+            return reverse(name)
+        except NoReverseMatch:
+            return None
+
+    def _path_is_public_asset(self, path):
+        allowed_prefixes = (
+            settings.STATIC_URL,
+            getattr(settings, "MEDIA_URL", "/media/"),
+            "/favicon.ico",
+            "/robots.txt",
+        )
+        return any(path.startswith(prefix) for prefix in allowed_prefixes if prefix)
+
+    def _auth_paths(self):
+        names = ("mfa_setup", "mfa_verify", "logout")
+        paths = set()
+        for name in names:
+            value = self._reverse_or_none(name)
+            if value:
+                paths.add(value)
+        return paths
+
+    def _redirect_to_target(self, request, target_name):
+        target_path = reverse(target_name)
+        path = request.path_info or request.path
+        if path == target_path:
+            response = redirect(target_name)
+        else:
+            response = redirect(f"{target_path}?next={request.get_full_path()}")
+        return set_strict_no_cache_headers(response)
+
+    def _gate_pending_mfa_login(self, request, path):
+        pending_user = get_pending_mfa_user(request)
+        if not pending_user:
+            return None
+
+        if self._path_is_public_asset(path):
+            return None
+
+        logout_path = self._reverse_or_none("logout")
+        if logout_path and path == logout_path:
+            return None
+
+        target_name = pending_mfa_target_name(request) or "mfa_setup"
+        target_path = reverse(target_name)
+
+        if path != target_path:
+            messages.warning(
+                request,
+                _("Complete MFA before continuing. You are not fully signed in until MFA is completed."),
+            )
+            return self._redirect_to_target(request, target_name)
+
+        return None
+
+    def _gate_authenticated_local_user(self, request, path):
+        user = getattr(request, "user", None)
+        if not user or not user.is_authenticated or not user_requires_local_mfa(user):
+            return None
+
+        if local_mfa_is_verified(request):
+            return None
+
+        if self._path_is_public_asset(path):
+            return None
+
+        logout_path = self._reverse_or_none("logout")
+        if logout_path and path == logout_path:
+            return None
+
+        target_name = pending_mfa_target_name(request) or "mfa_setup"
+        target_path = reverse(target_name)
+
+        if path != target_path:
+            messages.warning(
+                request,
+                _("Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."),
+            )
+            return self._redirect_to_target(request, target_name)
+
+        return None
+
+    def __call__(self, request):
+        path = request.path_info or request.path
+
+        # Pending MFA users are password-authenticated but not fully logged in.
+        pending_response = self._gate_pending_mfa_login(request, path)
+        if pending_response is not None:
+            return pending_response
+
+        authenticated_response = self._gate_authenticated_local_user(request, path)
+        if authenticated_response is not None:
+            return authenticated_response
+
+        response = self.get_response(request)
+
+        if get_pending_mfa_user(request):
+            return set_strict_no_cache_headers(response)
+
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated and user_requires_local_mfa(user):
+            return set_strict_no_cache_headers(response)
+
+        return response
+
+
+class AuthSessionCacheControlMiddleware:
+    """Apply no-store headers to login/logout/MFA and authenticated pages."""
+
+    AUTH_PATH_NAMES = ("login", "logout", "mfa_setup", "mfa_verify", "reset_mfa")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def _auth_paths(self):
+        paths = set()
+        for name in self.AUTH_PATH_NAMES:
+            try:
+                paths.add(reverse(name))
+            except NoReverseMatch:
+                continue
+        return paths
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        path = request.path_info or request.path
+        user = getattr(request, "user", None)
+        should_no_store = bool(user and user.is_authenticated)
+        should_no_store = should_no_store or bool(get_pending_mfa_user(request))
+        should_no_store = should_no_store or path in self._auth_paths()
+        should_no_store = should_no_store or path.startswith("/admin/")
+
+        if should_no_store:
+            set_strict_no_cache_headers(response)
 
         return response

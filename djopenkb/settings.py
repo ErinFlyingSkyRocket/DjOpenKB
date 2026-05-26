@@ -199,8 +199,10 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "kb.middleware.UserProfileLanguageMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "kb.middleware.UserProfileLanguageMiddleware",
+    "kb.middleware.LocalMFARequiredMiddleware",
+    "kb.middleware.AuthSessionCacheControlMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -302,6 +304,9 @@ else:
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+# Site-level TOTP MFA. Currently enforced for local Django users/admins only.
+MFA_TOTP_ISSUER = config_value("MFA_TOTP_ISSUER", "DjOpenKB")
 
 LDAP_ENABLED = config_value("LDAP_ENABLED", "false").lower() == "true"
 LDAP_PLACEHOLDER_ENABLED = config_value("LDAP_PLACEHOLDER_ENABLED", "false").lower() == "true"

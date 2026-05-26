@@ -1,4 +1,13 @@
 from .services import *
+from ..mfa import (
+    begin_pending_mfa_login,
+    clear_local_mfa_verified,
+    clear_pending_mfa_login,
+    get_or_create_mfa_device,
+    user_requires_local_mfa,
+)
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView, LogoutView
 from django.utils.translation import gettext as _
 
 
@@ -8,10 +17,18 @@ class OpenKBLoginView(LoginView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            if user_can_access_main_site(request.user):
-                return redirect(self.get_success_url())
-            logout(request)
-            return redirect("home")
+            if not user_can_access_main_site(request.user):
+                logout(request)
+                return redirect("home")
+
+            if user_requires_local_mfa(request.user):
+                clear_local_mfa_verified(request)
+                device = get_or_create_mfa_device(request.user)
+                if device.confirmed:
+                    return redirect("mfa_verify")
+                return redirect("mfa_setup")
+
+            return redirect(self.get_success_url())
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -20,7 +37,41 @@ class OpenKBLoginView(LoginView):
         if not user_can_access_main_site(user):
             logout(self.request)
             return self.form_invalid(form)
+
+        if user_requires_local_mfa(user):
+            # MFA is part of local login completion. Do not create the real
+            # Django login session yet. Store a pending-MFA session and only log
+            # the user in after setup/verification succeeds.
+            clear_pending_mfa_login(self.request)
+            clear_local_mfa_verified(self.request)
+            device = get_or_create_mfa_device(user)
+            begin_pending_mfa_login(
+                self.request,
+                user,
+                next_url=self.get_success_url(),
+                backend=getattr(user, "backend", None),
+            )
+            if device.confirmed:
+                return redirect("mfa_verify")
+            return redirect("mfa_setup")
+
         return super().form_valid(form)
+
+
+class OpenKBLogoutView(LogoutView):
+    """Logout view that prevents browser back/forward cache from showing stale pages."""
+    next_page = "login"
+
+    def dispatch(self, request, *args, **kwargs):
+        from kb.middleware import set_strict_no_cache_headers
+        from kb.mfa import clear_local_mfa_verified, clear_pending_mfa_login
+
+        clear_local_mfa_verified(request)
+        clear_pending_mfa_login(request)
+        response = super().dispatch(request, *args, **kwargs)
+        set_strict_no_cache_headers(response)
+        response["Clear-Site-Data"] = '"cache"'
+        return response
 
 
 def set_site_language(request):

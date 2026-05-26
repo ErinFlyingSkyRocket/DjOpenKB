@@ -75,6 +75,9 @@
                 <p id="ad-login-help" class="help-block" style="font-size: 12px; margin-bottom: 0;">
                     {% trans "Example:" %} <code>&lt;username&gt;@nextlabs.com</code>, <code>&lt;username&gt;</code>, {% trans "or" %} <code>NEXTLABS\&lt;username&gt;</code>.
                 </p>
+                <p id="local-login-help" class="help-block" style="font-size: 12px; margin-bottom: 0; display: none;">
+                    {% trans "Local accounts require authenticator verification after password sign-in." %}
+                </p>
             </div>
             <div class="form-group">
                 <label class="sr-only" for="id_password">{% trans "Password" %}</label>
@@ -99,6 +102,7 @@
                     var usernameInput = document.getElementById('id_username');
                     var usernameLabel = document.getElementById('username-label');
                     var adHelp = document.getElementById('ad-login-help');
+                    var localHelp = document.getElementById('local-login-help');
                     var submitButton = document.getElementById('login-submit-button');
                     var submitIcon = document.getElementById('login-submit-icon');
                     var submitText = document.getElementById('login-submit-text');
@@ -127,6 +131,7 @@
                         submitButton.className = isLocal ? 'btn btn-lg btn-default btn-block' : 'btn btn-lg btn-primary btn-block';
                         submitIcon.className = isLocal ? 'fa fa-user' : 'fa fa-windows';
                         adHelp.style.display = isLocal ? 'none' : '';
+                        if (localHelp) { localHelp.style.display = isLocal ? '' : 'none'; }
                         localLink.style.display = isLocal ? 'none' : '';
                         adLink.style.display = isLocal ? '' : 'none';
                         usernameInput.focus();

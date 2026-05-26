@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .models import ArticleVote, SuggestedArticle, SiteSetting, UserProfile
+from .models import ArticleVote, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .views import delete_article_files, slugify_title, write_article_files
 
 
@@ -215,6 +215,21 @@ class UserProfileAdmin(admin.ModelAdmin):
         "user__first_name",
         "user__last_name",
     )
+
+
+@admin.register(UserMFADevice)
+class UserMFADeviceAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "confirmed",
+        "confirmed_at",
+        "last_verified_at",
+        "reset_at",
+        "created_at",
+    )
+    list_filter = ("confirmed", "confirmed_at", "last_verified_at", "reset_at")
+    search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
+    readonly_fields = ("secret", "created_at", "confirmed_at", "last_verified_at", "reset_at")
 
 
 @admin.register(SuggestedArticle)

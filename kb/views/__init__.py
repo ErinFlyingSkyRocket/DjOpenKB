@@ -13,7 +13,7 @@ from .services import (
     sync_openkb_ai_index,
     write_article_files,
 )
-from .auth import OpenKBLoginView, set_site_language, profile, update_profile, change_password
+from .auth import OpenKBLoginView, OpenKBLogoutView, set_site_language, profile, update_profile, change_password
 from .main import home, article_detail, wiki_detail, vote_article, search_articles
 from .suggestions import (
     suggest,
@@ -32,9 +32,11 @@ from .admin import (
     manage_pending_articles,
 )
 from .ai import ask_openkb_ai
+from .mfa import mfa_setup, mfa_verify, reset_mfa
 
 __all__ = [
     "OpenKBLoginView",
+    "OpenKBLogoutView",
     "set_site_language",
     "profile",
     "update_profile",
@@ -57,6 +59,9 @@ __all__ = [
     "import_articles_zip",
     "manage_pending_articles",
     "ask_openkb_ai",
+    "mfa_setup",
+    "mfa_verify",
+    "reset_mfa",
     "delete_article_files",
     "find_stray_uploaded_files",
     "get_openkb_uploads_dir",

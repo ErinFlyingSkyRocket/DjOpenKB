@@ -190,6 +190,38 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 </form>
                             </div>
 
+
+                            <div class="profile-account-row">
+                                <span class="profile-account-label">{% trans "Multi-factor authentication" %}:</span>
+                                <span class="profile-account-value">
+                                    {% if user_is_ldap_managed %}
+                                        {% trans "Managed by NextLabs AD" %}
+                                    {% elif mfa_enabled %}
+                                        {% trans "Enabled" %}
+                                    {% else %}
+                                        {% trans "Setup required" %}
+                                    {% endif %}
+                                </span>
+
+                                {% if user_is_ldap_managed %}
+                                    <span class="profile-readonly-note">{% trans "Domain account MFA display is prepared for future SSO integration." %}</span>
+                                {% else %}
+                                    {% if mfa_enabled and mfa_last_verified_at %}
+                                        <span class="profile-readonly-note">{% trans "Last verified" %}: {{ mfa_last_verified_at }}</span>
+                                    {% endif %}
+                                    <div class="profile-account-actions">
+                                        {% if mfa_enabled %}
+                                            <form method="post" action="{% url 'reset_mfa' %}" style="display:inline;" onsubmit="return confirm('{% trans 'Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?' %}');">
+                                                {% csrf_token %}
+                                                <button class="btn btn-warning" type="submit">{% trans "Reset MFA" %}</button>
+                                            </form>
+                                        {% else %}
+                                            <a class="btn btn-primary" href="{% url 'mfa_setup' %}">{% trans "Set up authenticator" %}</a>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
                             <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Password" %}:</span>
                                 <div class="profile-account-actions">

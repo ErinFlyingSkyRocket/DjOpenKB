@@ -1,0 +1,56 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Authenticator verification" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</head>
+<body class="show_footer">
+<div class="container-fluid">
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 90px">
+        <div class="alert alert-warning">
+            <strong>{% trans "MFA verification is required." %}</strong><br>
+            {% trans "Your password was accepted, but you are not fully signed in until this verification is completed. Changing the URL or using browser navigation will return you here." %}
+        </div>
+
+        <form class="form-signin" method="post" action="{% url 'mfa_verify' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <h2 class="form-signin-heading" style="margin-bottom: 8px;">{% trans "Authenticator verification" %}</h2>
+            <p class="text-muted" style="margin-bottom: 20px;">{% trans "Enter the 6-digit code from your authenticator app to continue." %}</p>
+
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+            {% endfor %}
+
+            <div class="form-group">
+                <label class="sr-only" for="id_code">{% trans "6-digit authenticator code" %}</label>
+                <input id="id_code" name="code" class="form-control" placeholder="{% trans '6-digit authenticator code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required autofocus>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">
+                <i class="fa fa-lock"></i> {% trans "Verify" %}
+            </button>
+        </form>
+
+        <form method="post" action="{% url 'logout' %}" style="margin-top: 12px;">
+            {% csrf_token %}
+            <button class="btn btn-default btn-block" type="submit">
+                <i class="fa fa-sign-out"></i> {% trans "Cancel and sign out" %}
+            </button>
+        </form>
+    </div>
+</div>
+<footer class="footer"><div class="container"><p class="text-muted">{% trans "Powered by" %} <a href="http://openkb.mrvautin.com/" target="_blank">openKB</a></p></div></footer>
+</body>
+</html>
