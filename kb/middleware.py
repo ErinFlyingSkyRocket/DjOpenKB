@@ -1,12 +1,15 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import get_user_model, logout
 from django.shortcuts import redirect
 from django.urls import NoReverseMatch, reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
 
 from .mfa import (
+    begin_pending_mfa_login,
     get_pending_mfa_user,
+    get_or_create_mfa_device,
     mfa_is_verified,
     pending_mfa_target_name,
     user_requires_mfa,
@@ -147,6 +150,43 @@ class LocalMFARequiredMiddleware:
 
         return None
 
+    def _admin_path_requires_mfa(self, path):
+        return path.startswith("/admin/") or path == "/admin"
+
+    def _session_user_after_login(self, request):
+        user_id = request.session.get("_auth_user_id")
+        if not user_id:
+            return None
+
+        User = get_user_model()
+        try:
+            return User.objects.get(pk=user_id, is_active=True)
+        except User.DoesNotExist:
+            return None
+
+    def _target_for_user(self, user):
+        device = getattr(user, "kb_mfa_device", None) or get_or_create_mfa_device(user)
+        return "mfa_verify" if device.confirmed else "mfa_setup"
+
+    def _convert_admin_session_to_pending_mfa(self, request, user, next_url=None):
+        """Turn a direct Django-admin login into a pending MFA login.
+
+        Django admin has its own login view. Without this conversion, admin users
+        can create a real Django session before completing DjOpenKB MFA. This
+        makes MFA part of the admin login criteria too.
+        """
+        backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
+        next_url = next_url or request.get_full_path() or reverse("admin:index")
+        target_name = self._target_for_user(user)
+
+        logout(request)
+        begin_pending_mfa_login(request, user, next_url=next_url, backend=backend)
+        messages.warning(
+            request,
+            _("Complete MFA before accessing the Django admin site."),
+        )
+        return self._redirect_to_target(request, target_name)
+
     def __call__(self, request):
         path = request.path_info or request.path
 
@@ -155,11 +195,36 @@ class LocalMFARequiredMiddleware:
         if pending_response is not None:
             return pending_response
 
+        # If a direct /admin/ request already has an authenticated session but
+        # MFA was not completed, convert it into a pending-MFA session. This
+        # prevents admin users from bypassing the normal DjOpenKB login page.
+        user = getattr(request, "user", None)
+        if (
+            self._admin_path_requires_mfa(path)
+            and user
+            and user.is_authenticated
+            and user_requires_mfa(user)
+            and not mfa_is_verified(request)
+        ):
+            return self._convert_admin_session_to_pending_mfa(request, user, next_url=request.get_full_path())
+
         authenticated_response = self._gate_authenticated_local_user(request, path)
         if authenticated_response is not None:
             return authenticated_response
 
         response = self.get_response(request)
+
+        # Catch direct Django-admin login POST. The admin login view may create
+        # a Django session before redirecting. If that happens, immediately
+        # replace it with a pending-MFA session and redirect to MFA.
+        if self._admin_path_requires_mfa(path) and not get_pending_mfa_user(request):
+            session_user = self._session_user_after_login(request)
+            if session_user and user_requires_mfa(session_user) and not mfa_is_verified(request):
+                return self._convert_admin_session_to_pending_mfa(
+                    request,
+                    session_user,
+                    next_url=request.GET.get("next") or reverse("admin:index"),
+                )
 
         if get_pending_mfa_user(request):
             return set_strict_no_cache_headers(response)

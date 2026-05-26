@@ -1,11 +1,16 @@
-from django.contrib import admin
-from django.http import Http404
+from django.contrib import admin, messages
+from django.contrib.admin.utils import quote
+from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import path, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from .models import ArticleVote, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, slugify_title, write_article_files
 
 
@@ -47,6 +52,7 @@ class UserAdmin(DefaultUserAdmin):
         "is_superuser",
         "main_site_account_type",
         "main_site_access",
+        "mfa_status_display",
     )
     list_filter = (
         "is_active",
@@ -54,6 +60,7 @@ class UserAdmin(DefaultUserAdmin):
         "is_superuser",
         "kb_profile__account_type",
         "kb_profile__can_access_main_site",
+        "kb_mfa_device__confirmed",
     )
     search_fields = (
         "username",
@@ -68,6 +75,7 @@ class UserAdmin(DefaultUserAdmin):
         "make_django_admin",
         "make_ldap_user",
         "make_ldap_admin",
+        "reset_mfa_for_selected_users",
     )
 
     def _is_domain_user(self, obj):
@@ -84,29 +92,45 @@ class UserAdmin(DefaultUserAdmin):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and self._is_domain_user(obj) and "domain_password_status" not in readonly_fields:
             readonly_fields.append("domain_password_status")
+        if obj:
+            for field in ("mfa_status_display", "mfa_reset_button"):
+                if field not in readonly_fields:
+                    readonly_fields.append(field)
         return tuple(readonly_fields)
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
-        if not obj or not self._is_domain_user(obj):
-            return fieldsets
 
         cleaned_fieldsets = []
         for title, options in fieldsets:
             options = dict(options)
             fields = options.get("fields", ())
 
-            def replace_password_field(value):
-                if value == "password":
-                    return "domain_password_status"
-                if isinstance(value, (list, tuple)):
-                    replaced = [replace_password_field(item) for item in value]
-                    return tuple(item for item in replaced if item)
-                return value
+            if obj and self._is_domain_user(obj):
+                def replace_password_field(value):
+                    if value == "password":
+                        return "domain_password_status"
+                    if isinstance(value, (list, tuple)):
+                        replaced = [replace_password_field(item) for item in value]
+                        return tuple(item for item in replaced if item)
+                    return value
 
-            replaced_fields = replace_password_field(fields)
-            options["fields"] = replaced_fields
+                fields = replace_password_field(fields)
+
+            options["fields"] = fields
             cleaned_fieldsets.append((title, options))
+
+        if obj:
+            cleaned_fieldsets.append((
+                _("Multi-factor authentication"),
+                {
+                    "fields": ("mfa_status_display", "mfa_reset_button"),
+                    "description": _(
+                        "Use this section to reset a user's authenticator setup. "
+                        "A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+                    ),
+                },
+            ))
 
         return tuple(cleaned_fieldsets)
 
@@ -148,6 +172,86 @@ class UserAdmin(DefaultUserAdmin):
         return "Blocked"
 
     main_site_access.short_description = "Main Site Access"
+
+
+    def mfa_status_display(self, obj):
+        status = mfa_status_label(obj)
+        if status == "Configured":
+            return format_html('<span style="color:#0a7a2f;font-weight:600;">{}</span>', status)
+        if status == "Setup pending":
+            return format_html('<span style="color:#a15c00;font-weight:600;">{}</span>', status)
+        return format_html('<span style="color:#8a1f11;font-weight:600;">{}</span>', status)
+
+    mfa_status_display.short_description = "MFA Status"
+
+    def mfa_reset_button(self, obj):
+        if not obj or not obj.pk:
+            return "-"
+        url = reverse("admin:kb_user_reset_mfa", args=[quote(obj.pk)])
+        return format_html(
+            '<a class="button" href="{}">Reset MFA</a><p class="help">'
+            'Resets this user\'s authenticator and requires a fresh QR setup. '
+            'The new authenticator key is private and is not displayed to admins.</p>',
+            url,
+        )
+
+    mfa_reset_button.short_description = "MFA Reset"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "<path:user_id>/reset-mfa/",
+                self.admin_site.admin_view(self.reset_user_mfa_view),
+                name="kb_user_reset_mfa",
+            ),
+        ]
+        return custom_urls + urls
+
+    def reset_user_mfa_view(self, request, user_id):
+        user = self.get_object(request, user_id)
+        if user is None:
+            raise Http404("User does not exist.")
+
+        opts = self.model._meta
+        user_change_url = reverse(
+            f"admin:{opts.app_label}_{opts.model_name}_change",
+            args=[quote(user.pk)],
+        )
+
+        if request.method == "POST":
+            admin_reset_user_mfa(user)
+            self.message_user(
+                request,
+                _(
+                    "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+                ) % {"username": user.get_username()},
+                level=messages.SUCCESS,
+            )
+            return HttpResponseRedirect(user_change_url)
+
+        context = {
+            **self.admin_site.each_context(request),
+            "opts": opts,
+            "title": _("Reset MFA for %(username)s") % {"username": user.get_username()},
+            "user_obj": user,
+            "mfa_status": mfa_status_label(user),
+            "user_change_url": user_change_url,
+        }
+        return TemplateResponse(request, "admin/kb/reset_mfa_confirm.html", context)
+
+    @admin.action(description="Reset MFA for selected users")
+    def reset_mfa_for_selected_users(self, request, queryset):
+        count = 0
+        for user in queryset:
+            admin_reset_user_mfa(user)
+            count += 1
+        self.message_user(
+            request,
+            _("MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in.")
+            % {"count": count},
+            level=messages.SUCCESS,
+        )
 
     @admin.action(description="Allow selected users to access main site")
     def allow_main_site_access(self, request, queryset):
@@ -221,6 +325,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 class UserMFADeviceAdmin(admin.ModelAdmin):
     list_display = (
         "user",
+        "user_account_type",
         "confirmed",
         "confirmed_at",
         "last_verified_at",
@@ -229,7 +334,58 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
     )
     list_filter = ("confirmed", "confirmed_at", "last_verified_at", "reset_at")
     search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
-    readonly_fields = ("secret", "created_at", "confirmed_at", "last_verified_at", "reset_at")
+    readonly_fields = ("secret", "created_at", "confirmed_at", "last_verified_at", "reset_at", "reset_button")
+    actions = ("reset_selected_mfa_devices", "mark_selected_devices_setup_pending")
+    fields = ("user", "confirmed", "reset_button", "secret", "created_at", "confirmed_at", "last_verified_at", "reset_at")
+
+    def user_account_type(self, obj):
+        profile = getattr(obj.user, "kb_profile", None)
+        if not profile:
+            return "-"
+        return profile.get_account_type_display()
+
+    user_account_type.short_description = "Account Type"
+
+    def reset_button(self, obj):
+        if not obj or not obj.user_id:
+            return "-"
+        url = reverse("admin:kb_user_reset_mfa", args=[quote(obj.user_id)])
+        return format_html(
+            "<a class=\"button\" href=\"{}\">Reset this user&#x27;s MFA</a><p class=\"help\">"
+            'A reset generates a fresh private authenticator key and forces setup again.</p>',
+            url,
+        )
+
+    reset_button.short_description = "MFA Reset"
+
+    @admin.action(description="Reset selected MFA devices")
+    def reset_selected_mfa_devices(self, request, queryset):
+        count = 0
+        for device in queryset.select_related("user"):
+            admin_reset_user_mfa(device.user)
+            count += 1
+        self.message_user(
+            request,
+            _("MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in.")
+            % {"count": count},
+            level=messages.SUCCESS,
+        )
+
+    @admin.action(description="Mark selected MFA devices as setup pending")
+    def mark_selected_devices_setup_pending(self, request, queryset):
+        count = 0
+        for device in queryset:
+            device.confirmed = False
+            device.confirmed_at = None
+            device.last_verified_at = None
+            device.reset_at = timezone.now()
+            device.save(update_fields=["confirmed", "confirmed_at", "last_verified_at", "reset_at"])
+            count += 1
+        self.message_user(
+            request,
+            _("%(count)d MFA device(s) marked as setup pending.") % {"count": count},
+            level=messages.SUCCESS,
+        )
 
 
 @admin.register(SuggestedArticle)

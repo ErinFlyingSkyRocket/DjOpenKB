@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="content-main">
+  <h1>{{ title }}</h1>
+
+  <div class="module aligned">
+    <p>
+      {% blocktrans with username=user_obj.get_username %}
+      You are about to reset MFA for user <strong>{{ username }}</strong>.
+      {% endblocktrans %}
+    </p>
+
+    <p>
+      {% trans "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB." %}
+    </p>
+
+    <ul>
+      <li>{% trans "Current MFA status" %}: <strong>{{ mfa_status }}</strong></li>
+      <li>{% trans "Existing authenticated sessions for this user will be invalidated." %}</li>
+      <li>{% trans "The next login will require authenticator setup before access is granted." %}</li>
+    </ul>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% trans 'Reset MFA now' %}">
+      <a class="button cancel-link" href="{{ user_change_url }}">{% trans "Cancel" %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

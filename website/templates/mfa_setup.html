@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>{% trans "Set up authenticator" %}</title>
+    <title>{% trans "Set up MFA" %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -20,21 +20,20 @@
 <div class="container-fluid">
     <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 70px">
         <div class="panel panel-default">
-            <div class="panel-heading"><strong>{% trans "Set up authenticator" %}</strong></div>
+            <div class="panel-heading"><strong>{% trans "Set up MFA" %}</strong></div>
             <div class="panel-body">
                 <div class="alert alert-warning">
-                    <strong>{% trans "MFA setup is required." %}</strong><br>
-                    {% trans "Your password was accepted, but you are not fully signed in until authenticator setup is completed. Changing the URL or using browser navigation will return you here." %}
+                    {% trans "MFA setup is required to continue." %}
                 </div>
-
-                <p class="text-muted">{% trans "Scan the QR code with Microsoft Authenticator, Google Authenticator, or another TOTP app." %}</p>
 
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
                 {% endfor %}
 
+                <p class="text-muted">{% trans "Scan the QR code with your authenticator app, then enter the MFA/OTP code." %}</p>
+
                 <div class="text-center" style="margin: 18px 0;">
-                    <img src="{{ qr_code_data_uri }}" alt="{% trans 'Authenticator QR code' %}" style="max-width: 240px; width: 100%; height: auto; border: 1px solid #e5eaee; padding: 8px; background: #fff;">
+                    <img src="{{ qr_code_data_uri }}" alt="{% trans 'MFA QR code' %}" style="max-width: 240px; width: 100%; height: auto; border: 1px solid #e5eaee; padding: 8px; background: #fff;">
                 </div>
 
                 <p class="help-block" style="word-break: break-all;">
@@ -45,18 +44,18 @@
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ next }}">
                     <div class="form-group">
-                        <label for="id_code">{% trans "6-digit authenticator code" %}</label>
-                        <input id="id_code" name="code" class="form-control" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required autofocus>
+                        <label for="id_code">{% trans "MFA/OTP code" %}</label>
+                        <input id="id_code" name="code" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required autofocus>
                     </div>
                     <button class="btn btn-primary btn-block" type="submit">
-                        <i class="fa fa-check"></i> {% trans "Verify and continue" %}
+                        <i class="fa fa-check"></i> {% trans "Verify" %}
                     </button>
                 </form>
 
                 <form method="post" action="{% url 'logout' %}" style="margin-top: 12px;">
                     {% csrf_token %}
                     <button class="btn btn-default btn-block" type="submit">
-                        <i class="fa fa-sign-out"></i> {% trans "Cancel and sign out" %}
+                        <i class="fa fa-sign-out"></i> {% trans "Sign out" %}
                     </button>
                 </form>
             </div>

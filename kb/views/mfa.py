@@ -8,7 +8,6 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
@@ -17,6 +16,7 @@ from ..mfa import (
     clear_mfa_verified,
     complete_pending_mfa_login,
     get_or_create_mfa_device,
+    reset_mfa_device_for_user,
     get_pending_mfa_user,
     get_totp_issuer,
     mfa_is_verified,
@@ -168,13 +168,7 @@ def reset_mfa(request):
         messages.info(request, _("MFA reset is available for your DjOpenKB account."))
         return redirect("profile")
 
-    device = get_or_create_mfa_device(user)
-    device.secret = pyotp.random_base32()
-    device.confirmed = False
-    device.confirmed_at = None
-    device.last_verified_at = None
-    device.reset_at = timezone.now()
-    device.save(update_fields=["secret", "confirmed", "confirmed_at", "last_verified_at", "reset_at"])
+    reset_mfa_device_for_user(user)
 
     # MFA is a login criterion. After reset, the old authenticated session is no
     # longer allowed. Convert it to a pending-MFA session and force setup now.

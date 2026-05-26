@@ -1,7 +1,9 @@
 import pyotp
 from django.conf import settings
 from django.contrib.auth import get_user_model, login as auth_login
+from django.contrib.sessions.models import Session
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 
 from .models import UserMFADevice
@@ -51,8 +53,11 @@ def get_mfa_completion_backend(user=None):
     return (
         _configured_backend_contains("EmailOrUsernameModelBackend")
         or _configured_backend_contains("ModelBackend")
-        or (list(getattr(settings, "AUTHENTICATION_BACKENDS", []))[-1]
-            if getattr(settings, "AUTHENTICATION_BACKENDS", []) else None)
+        or (
+            list(getattr(settings, "AUTHENTICATION_BACKENDS", []))[-1]
+            if getattr(settings, "AUTHENTICATION_BACKENDS", [])
+            else None
+        )
     )
 
 
@@ -94,6 +99,69 @@ def get_or_create_mfa_device(user):
         device.secret = pyotp.random_base32()
         device.save(update_fields=["secret"])
     return device
+
+
+def mfa_status_label(user):
+    device = getattr(user, "kb_mfa_device", None)
+    if not user_requires_mfa(user):
+        return "Not required"
+    if not device:
+        return "Not set up"
+    if device.confirmed:
+        return "Configured"
+    return "Setup pending"
+
+
+def reset_mfa_device_for_user(user):
+    """Generate a fresh private TOTP secret and require setup again.
+
+    The new secret is not shown to admins. The user must sign in again and scan
+    their own QR code on the MFA setup page.
+    """
+    device = get_or_create_mfa_device(user)
+    now = timezone.now()
+    device.secret = pyotp.random_base32()
+    device.confirmed = False
+    device.confirmed_at = None
+    device.last_verified_at = None
+    device.reset_at = now
+    device.save(
+        update_fields=[
+            "secret",
+            "confirmed",
+            "confirmed_at",
+            "last_verified_at",
+            "reset_at",
+        ]
+    )
+    return device
+
+
+def clear_user_auth_sessions(user):
+    """Delete active sessions for a user after admin/user MFA reset.
+
+    This prevents an already logged-in browser session from continuing after the
+    MFA secret has been replaced.
+    """
+    deleted = 0
+    user_id = str(user.pk)
+    for session in Session.objects.filter(expire_date__gte=timezone.now()):
+        data = session.get_decoded()
+        if (
+            str(data.get("_auth_user_id")) == user_id
+            or str(data.get(PRE_MFA_USER_ID_SESSION_KEY)) == user_id
+            or str(data.get(MFA_USER_SESSION_KEY)) == user_id
+        ):
+            session.delete()
+            deleted += 1
+    return deleted
+
+
+def admin_reset_user_mfa(user):
+    """Reset a user's MFA from Django admin and invalidate existing sessions."""
+    device = reset_mfa_device_for_user(user)
+    sessions_deleted = clear_user_auth_sessions(user)
+    return device, sessions_deleted
 
 
 def mfa_is_verified(request):
