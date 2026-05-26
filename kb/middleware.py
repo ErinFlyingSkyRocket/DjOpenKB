@@ -56,6 +56,9 @@ def _mark_session_started(request):
 def _apply_session_cookie_expiry(request, timeout_days):
     if timeout_days > 0:
         request.session.set_expiry(timeout_days * 24 * 60 * 60)
+    else:
+        # 0 means browser-session only: the cookie expires when the browser closes.
+        request.session.set_expiry(0)
 
 
 def clear_session_started_at(request):
@@ -69,6 +72,7 @@ class SessionTimeoutMiddleware:
     The timeout is stored in Site settings so admins can configure how long a
     signed-in session remains valid. The default is 30 days. MFA is treated as
     part of login completion, so pending-MFA sessions are also expired.
+    A value of 0 means browser-session only, not an indefinite persistent login.
     """
 
     def __init__(self, get_response):

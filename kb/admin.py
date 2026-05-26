@@ -677,7 +677,7 @@ class SiteSettingAdmin(admin.ModelAdmin):
             "fields": ("auth_activity_log_retention_days", "session_timeout_days"),
             "description": (
                 "Controls authentication/MFA log retention and user session lifetime. "
-                "The default session timeout is 30 days. Set session timeout to 0 only if sessions should not expire by age."
+                "The default session timeout is 30 days. Set session timeout to 0 to expire the session when the browser closes."
             ),
         }),
     )

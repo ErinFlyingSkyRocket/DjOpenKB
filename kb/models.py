@@ -484,7 +484,7 @@ class SiteSetting(models.Model):
         verbose_name="User session timeout (days)",
         help_text=(
             "Authenticated user sessions expire after this many days from sign-in. "
-            "After expiry, users are signed out and must log in again. Use 0 to keep sessions until browser/session expiry."
+            "After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
         ),
     )
 
