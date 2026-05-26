@@ -749,3 +749,437 @@ msgstr "Nome utente o e-mail locale"
 #: website/templates/login.html
 msgid "Sign in with local account"
 msgstr "Accedi con account locale"
+
+# Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
+#: auto-generated
+msgid "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d MFA device(s) marked as setup pending."
+
+#: auto-generated
+msgid "%(count)s result(s) found from OpenKB files."
+msgstr "%(count)s result(s) found from OpenKB files."
+
+#: auto-generated
+msgid "An article with the title â%(title)sâ already exists. Please use a different title."
+msgstr "An article with the title â%(title)sâ already exists. Please use a different title."
+
+#: auto-generated
+msgid "An article with this title already exists. Please use a different title."
+msgstr "An article with this title already exists. Please use a different title."
+
+#: auto-generated
+msgid "Approval / review"
+msgstr "Approval / review"
+
+#: auto-generated
+msgid "Article image"
+msgstr "Article image"
+
+#: auto-generated
+msgid "Article pagination"
+msgstr "Article pagination"
+
+#: auto-generated
+msgid "Article published successfully."
+msgstr "Article published successfully."
+
+#: auto-generated
+msgid "Article title and body must be at least 5 characters."
+msgstr "Article title and body must be at least 5 characters."
+
+#: auto-generated
+msgid "Ask for related articles when you want source links."
+msgstr "Ask for related articles when you want source links."
+
+#: auto-generated
+msgid "Ask one question at a time."
+msgstr "Ask one question at a time."
+
+#: auto-generated
+msgid "Ask questions using general keywords or article topics."
+msgstr "Ask questions using general keywords or article topics."
+
+#: auto-generated
+msgid "Authenticator setup completed successfully."
+msgstr "Authenticator setup completed successfully."
+
+#: auto-generated
+msgid "Bottom article pagination"
+msgstr "Bottom article pagination"
+
+#: auto-generated
+msgid "Close"
+msgstr "Close"
+
+#: auto-generated
+msgid "Complete MFA before accessing the Django admin site."
+msgstr "Complete MFA before accessing the Django admin site."
+
+#: auto-generated
+msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+
+#: auto-generated
+msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+
+#: auto-generated
+msgid "Current MFA status"
+msgstr "Stato MFA attuale"
+
+#: auto-generated
+msgid "Current pending failed comments"
+msgstr "Current pending failed comments"
+
+#: auto-generated
+msgid "Enabled"
+msgstr "Abilitato"
+
+#: auto-generated
+msgid "Enter MFA/OTP code"
+msgstr "Inserisci codice MFA/OTP"
+
+#: auto-generated
+msgid "Existing authenticated sessions for this user will be invalidated."
+msgstr "Existing authenticated sessions for this user will be invalidated."
+
+#: auto-generated
+msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+
+#: auto-generated
+msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+
+#: auto-generated
+msgid "Hi, I am OpenKB AI."
+msgstr "Hi, I am OpenKB AI."
+
+#: auto-generated
+msgid "I can help you find articles and answer questions from the wiki."
+msgstr "I can help you find articles and answer questions from the wiki."
+
+#: auto-generated
+msgid "Image removed from this article draft."
+msgstr "Image removed from this article draft."
+
+#: auto-generated
+msgid "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Image removed from this draft. Save the article to delete it from storage."
+
+#: auto-generated
+msgid "Image upload failed."
+msgstr "Image upload failed."
+
+#: auto-generated
+msgid "Image upload failed. Check Django terminal logs."
+msgstr "Image upload failed. Check Django terminal logs."
+
+#: auto-generated
+msgid "Image uploaded and inserted into the article."
+msgstr "Image uploaded and inserted into the article."
+
+#: auto-generated
+msgid "Invalid authenticator code. Please try again."
+msgstr "Invalid authenticator code. Please try again."
+
+#: auto-generated
+msgid "LDAP admin"
+msgstr "LDAP admin"
+
+#: auto-generated
+msgid "LDAP user"
+msgstr "LDAP user"
+
+#: auto-generated
+msgid "Last verified"
+msgstr "Ultima verifica"
+
+#: auto-generated
+msgid "Local accounts require authenticator verification after password sign-in."
+msgstr "Local accounts require authenticator verification after password sign-in."
+
+#: auto-generated
+msgid "MFA QR code"
+msgstr "Codice QR MFA"
+
+#: auto-generated
+msgid "MFA reset by admin"
+msgstr "MFA reimpostata dall’amministratore"
+
+#: auto-generated
+msgid "MFA reset by user"
+msgstr "MFA reimpostata dall’utente"
+
+#: auto-generated
+msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+
+#: auto-generated
+msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+
+#: auto-generated
+msgid "MFA reset is available for your DjOpenKB account."
+msgstr "MFA reset is available for your DjOpenKB account."
+
+#: auto-generated
+msgid "MFA setup failure"
+msgstr "Configurazione MFA non riuscita"
+
+#: auto-generated
+msgid "MFA setup is required to continue."
+msgstr "La configurazione MFA è necessaria per continuare."
+
+#: auto-generated
+msgid "MFA setup success"
+msgstr "Configurazione MFA riuscita"
+
+#: auto-generated
+msgid "MFA verification"
+msgstr "Verifica MFA"
+
+#: auto-generated
+msgid "MFA verification successful."
+msgstr "MFA verification successful."
+
+#: auto-generated
+msgid "MFA verify failure"
+msgstr "Verifica MFA non riuscita"
+
+#: auto-generated
+msgid "MFA verify success"
+msgstr "Verifica MFA riuscita"
+
+#: auto-generated
+msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+
+#: auto-generated
+msgid "MFA/OTP code"
+msgstr "Codice MFA/OTP"
+
+#: auto-generated
+msgid "Managed by NextLabs AD"
+msgstr "Managed by NextLabs AD"
+
+#: auto-generated
+msgid "Manual setup key"
+msgstr "Chiave di configurazione manuale"
+
+#: auto-generated
+msgid "Minimise OpenKB AI"
+msgstr "Minimise OpenKB AI"
+
+#: auto-generated
+msgid "Multi-factor authentication"
+msgstr "Autenticazione a più fattori"
+
+#: auto-generated
+msgid "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "No OpenKB articles yet. Add a solution from Suggest."
+
+#: auto-generated
+msgid "No matching OpenKB articles found."
+msgstr "No matching OpenKB articles found."
+
+#: auto-generated
+msgid "No related articles yet."
+msgstr "No related articles yet."
+
+#: auto-generated
+msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+
+#: auto-generated
+msgid "Open OpenKB AI chat"
+msgstr "Open OpenKB AI chat"
+
+#: auto-generated
+msgid "OpenKB AI is thinking..."
+msgstr "OpenKB AI is thinking..."
+
+#: auto-generated
+msgid "Page %(current)s of %(total)s"
+msgstr "Page %(current)s of %(total)s"
+
+#: auto-generated
+msgid "Password login failure"
+msgstr "Accesso con password non riuscito"
+
+#: auto-generated
+msgid "Password login success"
+msgstr "Accesso con password riuscito"
+
+#: auto-generated
+msgid "Password syncs with your company password."
+msgstr "Password syncs with your company password."
+
+#: auto-generated
+msgid "Pending MFA created"
+msgstr "MFA in sospeso creato"
+
+#: auto-generated
+msgid "Pending article pages"
+msgstr "Pending article pages"
+
+#: auto-generated
+msgid "Pending failed comments history"
+msgstr "Pending failed comments history"
+
+#: auto-generated
+msgid "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+
+#: auto-generated
+msgid "Please enter your MFA/OTP code to continue."
+msgstr "Inserisci il codice MFA/OTP per continuare."
+
+#: auto-generated
+msgid "Please sign in before setting up MFA."
+msgstr "Please sign in before setting up MFA."
+
+#: auto-generated
+msgid "Please sign in before verifying MFA."
+msgstr "Please sign in before verifying MFA."
+
+#: auto-generated
+msgid "Please type a question first."
+msgstr "Please type a question first."
+
+#: auto-generated
+msgid "Powered by"
+msgstr "Powered by"
+
+#: auto-generated
+msgid "Powered by openKB"
+msgstr "Powered by openKB"
+
+#: auto-generated
+msgid "Publish article"
+msgstr "Publish article"
+
+#: auto-generated
+msgid "Ready"
+msgstr "Ready"
+
+#: auto-generated
+msgid "Recommended articles"
+msgstr "Recommended articles"
+
+#: auto-generated
+msgid "Remove image from article"
+msgstr "Remove image from article"
+
+#: auto-generated
+msgid "Request failed. Check Django terminal logs."
+msgstr "Request failed. Check Django terminal logs."
+
+#: auto-generated
+msgid "Reset MFA"
+msgstr "Reimposta MFA"
+
+#: auto-generated
+msgid "Reset MFA for %(username)s"
+msgstr "Reset MFA for %(username)s"
+
+#: auto-generated
+msgid "Reset MFA now"
+msgstr "Reimposta MFA ora"
+
+#: auto-generated
+msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+
+#: auto-generated
+msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
+msgstr "Scansiona il codice QR con l'app di autenticazione, quindi inserisci il codice MFA/OTP."
+
+#: auto-generated
+msgid "Search"
+msgstr "Search"
+
+#: auto-generated
+msgid "Set up MFA"
+msgstr "Configura MFA"
+
+#: auto-generated
+msgid "Set up authenticator"
+msgstr "Set up authenticator"
+
+#: auto-generated
+msgid "Setup required"
+msgstr "Configurazione richiesta"
+
+#: auto-generated
+msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+
+#: auto-generated
+msgid "Sign out"
+msgstr "Esci"
+
+#: auto-generated
+msgid "Something went wrong."
+msgstr "Something went wrong."
+
+#: auto-generated
+msgid "The next login will require authenticator setup before access is granted."
+msgstr "The next login will require authenticator setup before access is granted."
+
+#: auto-generated
+msgid "This email address is managed by your domain account and cannot be changed here."
+msgstr "This email address is managed by your domain account and cannot be changed here."
+
+#: auto-generated
+msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+
+#: auto-generated
+msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+
+#: auto-generated
+msgid "Top article pagination"
+msgstr "Top article pagination"
+
+#: auto-generated
+msgid "Use this section to reset a user's authenticator setup. "
+msgstr "Use this section to reset a user's authenticator setup. "
+
+#: auto-generated
+msgid "User"
+msgstr "User"
+
+#: auto-generated
+msgid "Verify"
+msgstr "Verifica"
+
+#: auto-generated
+msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+
+#: auto-generated
+msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+
+#: auto-generated
+msgid "Your vote has been removed."
+msgstr "Your vote has been removed."
+
+#: auto-generated
+msgid "article"
+msgstr "article"
+
+#: auto-generated
+msgid "matching"
+msgstr "matching"
+
+#: auto-generated
+msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+
+#: auto-generated
+msgid "openKB powered knowledge repository"
+msgstr "openKB powered knowledge repository"
+
