@@ -196,30 +196,18 @@ def update_profile(request):
         )
         return response
 
+    if profile_action == "username":
+        messages.error(request, _("Username changes are managed by administrators."))
+        return redirect("profile")
+
     # For Django local accounts, require the current password before changing
-    # username/email. LDAP users normally do not have a local usable password,
-    # so LDAP-managed fields are protected by backend rules instead.
+    # self-service editable account fields. Username changes are intentionally
+    # blocked here and must be handled in the Django admin site.
     if user.has_usable_password():
         current_password = request.POST.get("current_password", "")
         if not user.check_password(current_password):
             messages.error(request, _("Confirm password is incorrect."))
             return redirect("profile")
-
-    if profile_action == "username":
-        username = request.POST.get("username", "").strip()
-        if not username:
-            messages.error(request, _("Username cannot be empty."))
-            return redirect("profile")
-
-        username_exists = User.objects.exclude(pk=user.pk).filter(username__iexact=username).exists()
-        if username_exists:
-            messages.error(request, _("That username is already used by another account."))
-            return redirect("profile")
-
-        user.username = username
-        user.save(update_fields=["username"])
-        messages.success(request, _("Username updated successfully."))
-        return redirect("profile")
 
     if profile_action == "email":
         if user_is_ldap_managed:

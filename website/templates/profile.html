@@ -111,30 +111,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Username" %}:</span>
                                 <span class="profile-account-value">{{ user.username }}</span>
-                                {% if not user_is_ldap_managed %}
-                                <button class="btn btn-xs btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox" aria-expanded="false" aria-controls="editUsernameBox">
-                                    Edit
-                                </button>
-
-                                <div class="collapse profile-account-edit" id="editUsernameBox">
-                                    <form method="post" action="{% url 'update_profile' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="profile_action" value="username">
-                                        <div class="form-group">
-                                            <label>{% trans "New username" %}</label>
-                                            <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
-                                        </div>
-                                        {% if can_confirm_profile_changes %}
-                                            <div class="form-group">
-                                                <label>{% trans "Confirm password" %}</label>
-                                                <input type="password" name="current_password" class="form-control" required>
-                                            </div>
-                                        {% endif %}
-                                        <button class="btn btn-primary" type="submit">{% trans "Save username" %}</button>
-                                        <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editUsernameBox">{% trans "Cancel" %}</button>
-                                    </form>
-                                </div>
-                                {% endif %}
+                                <span class="profile-readonly-note">{% trans "Username changes are managed by administrators." %}</span>
                             </div>
 
                             <div class="profile-account-row">
