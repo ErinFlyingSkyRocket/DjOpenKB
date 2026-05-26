@@ -673,12 +673,11 @@ class SiteSettingAdmin(admin.ModelAdmin):
                 "Clean stray upload files. Use 0 to show files immediately."
             ),
         }),
-        ("Authentication activity log retention", {
-            "fields": ("auth_activity_log_retention_days",),
+        ("Authentication and session settings", {
+            "fields": ("auth_activity_log_retention_days", "session_timeout_days"),
             "description": (
-                "Controls how long authentication and MFA monitoring logs should be kept. "
-                "Set to 0 to keep logs indefinitely. Deletion is performed only by the cleanup command/scheduler; "
-                "the log table itself remains read-only in Django admin."
+                "Controls authentication/MFA log retention and user session lifetime. "
+                "The default session timeout is 30 days. Set session timeout to 0 only if sessions should not expire by age."
             ),
         }),
     )

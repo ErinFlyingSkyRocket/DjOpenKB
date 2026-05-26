@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.shortcuts import redirect
 from django.urls import NoReverseMatch, reverse
 from django.utils import translation
@@ -8,13 +10,98 @@ from django.utils.translation import gettext as _
 
 from .mfa import (
     begin_pending_mfa_login,
+    clear_mfa_verified,
+    clear_pending_mfa_login,
     get_pending_mfa_user,
     get_or_create_mfa_device,
     mfa_is_verified,
     pending_mfa_target_name,
     user_requires_mfa,
 )
-from .models import UserProfile
+from .models import SiteSetting, UserProfile
+
+
+
+
+SESSION_STARTED_AT_KEY = "djopenkb_session_started_at"
+
+
+def _get_session_timeout_days():
+    try:
+        return max(int(SiteSetting.load().session_timeout_days), 0)
+    except Exception:
+        return 30
+
+
+def _get_session_started_at(request):
+    raw_value = request.session.get(SESSION_STARTED_AT_KEY)
+    if not raw_value:
+        return None
+
+    started_at = parse_datetime(raw_value)
+    if started_at is None:
+        return None
+    if timezone.is_naive(started_at):
+        started_at = timezone.make_aware(started_at, timezone.get_current_timezone())
+    return started_at
+
+
+def _mark_session_started(request):
+    now = timezone.now()
+    request.session[SESSION_STARTED_AT_KEY] = now.isoformat()
+    request.session.modified = True
+    return now
+
+
+def _apply_session_cookie_expiry(request, timeout_days):
+    if timeout_days > 0:
+        request.session.set_expiry(timeout_days * 24 * 60 * 60)
+
+
+def clear_session_started_at(request):
+    request.session.pop(SESSION_STARTED_AT_KEY, None)
+    request.session.modified = True
+
+
+class SessionTimeoutMiddleware:
+    """Expire authenticated and pending-MFA sessions by admin-defined age.
+
+    The timeout is stored in Site settings so admins can configure how long a
+    signed-in session remains valid. The default is 30 days. MFA is treated as
+    part of login completion, so pending-MFA sessions are also expired.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def _session_subject_exists(self, request):
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated:
+            return True
+        return bool(get_pending_mfa_user(request))
+
+    def __call__(self, request):
+        if self._session_subject_exists(request):
+            timeout_days = _get_session_timeout_days()
+
+            if timeout_days > 0:
+                started_at = _get_session_started_at(request)
+                if started_at is None:
+                    started_at = _mark_session_started(request)
+
+                expires_at = started_at + timezone.timedelta(days=timeout_days)
+                if timezone.now() >= expires_at:
+                    clear_pending_mfa_login(request)
+                    clear_mfa_verified(request)
+                    clear_session_started_at(request)
+                    logout(request)
+                    messages.warning(request, _("Your session has expired. Please sign in again."))
+                    response = redirect("login")
+                    return set_strict_no_cache_headers(response)
+
+            _apply_session_cookie_expiry(request, timeout_days)
+
+        return self.get_response(request)
 
 
 class UserProfileLanguageMiddleware:

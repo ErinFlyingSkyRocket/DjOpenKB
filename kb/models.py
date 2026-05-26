@@ -472,11 +472,19 @@ class SiteSetting(models.Model):
         ),
     )
     auth_activity_log_retention_days = models.PositiveIntegerField(
-        default=90,
+        default=30,
         verbose_name="Authentication activity log retention (days)",
         help_text=(
             "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. "
             "Use 0 to keep authentication activity logs indefinitely."
+        ),
+    )
+    session_timeout_days = models.PositiveIntegerField(
+        default=30,
+        verbose_name="User session timeout (days)",
+        help_text=(
+            "Authenticated user sessions expire after this many days from sign-in. "
+            "After expiry, users are signed out and must log in again. Use 0 to keep sessions until browser/session expiry."
         ),
     )
 
