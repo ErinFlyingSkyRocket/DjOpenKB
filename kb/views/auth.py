@@ -1,4 +1,5 @@
 from .services import *
+from ..auth_monitoring import log_auth_event
 from ..mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
@@ -32,11 +33,43 @@ class OpenKBLoginView(LoginView):
 
         return super().dispatch(request, *args, **kwargs)
 
+    def form_invalid(self, form):
+        if not getattr(self.request, "_skip_auth_failure_log", False):
+            log_auth_event(
+                self.request,
+                event_type="password_failure",
+                success=False,
+                username=(self.request.POST.get("username") or "").strip(),
+                login_mode=(self.request.POST.get("login_mode") or "").strip().lower(),
+                details={"reason": "invalid_credentials"},
+            )
+        return super().form_invalid(form)
+
     def form_valid(self, form):
         user = form.get_user()
+        login_mode = (self.request.POST.get("login_mode") or "").strip().lower()
         if not user_can_access_main_site(user):
+            log_auth_event(
+                self.request,
+                event_type="password_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                login_mode=login_mode,
+                details={"reason": "main_site_access_blocked"},
+            )
             logout(self.request)
+            self.request._skip_auth_failure_log = True
             return self.form_invalid(form)
+
+        log_auth_event(
+            self.request,
+            event_type="password_success",
+            success=True,
+            user=user,
+            username=user.get_username(),
+            login_mode=login_mode,
+        )
 
         if user_requires_mfa(user):
             # MFA is part of login completion. Do not create the real
@@ -50,6 +83,15 @@ class OpenKBLoginView(LoginView):
                 user,
                 next_url=self.get_success_url(),
                 backend=getattr(user, "backend", None),
+            )
+            log_auth_event(
+                self.request,
+                event_type="pending_mfa",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                login_mode=login_mode,
+                details={"device_confirmed": bool(device.confirmed)},
             )
             if device.confirmed:
                 return redirect("mfa_verify")
@@ -65,6 +107,10 @@ class OpenKBLogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         from kb.middleware import set_strict_no_cache_headers
         from kb.mfa import clear_mfa_verified, clear_pending_mfa_login
+
+        logout_user = request.user if getattr(request, "user", None) and request.user.is_authenticated else None
+        if logout_user:
+            log_auth_event(request, event_type="logout", success=True, user=logout_user, username=logout_user.get_username())
 
         clear_mfa_verified(request)
         clear_pending_mfa_login(request)

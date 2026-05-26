@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
@@ -19,6 +20,111 @@ def _requested_login_mode(request):
         return ""
     return (request.POST.get("login_mode") or "").strip().lower()
 
+
+
+
+def _candidate_local_usernames_for_ldap(login_value):
+    """Return possible Django usernames for an LDAP login value.
+
+    django-auth-ldap may receive values such as:
+    - bob
+    - bob@example.local
+    - DOMAIN\bob
+
+    The project stores AD lab users using their sAMAccountName, so this helper
+    lets us detect whether a local Django account already owns the same
+    username before we allow an LDAP login to be mapped to it.
+    """
+    value = (login_value or "").strip()
+    if not value:
+        return []
+
+    if "\\" in value:
+        _prefix, value = value.split("\\", 1)
+        value = value.strip()
+
+    candidates = []
+    if value:
+        candidates.append(value)
+
+    if "@" in value:
+        local_part = value.split("@", 1)[0].strip()
+        if local_part:
+            candidates.append(local_part)
+
+    seen = set()
+    unique = []
+    for candidate in candidates:
+        key = candidate.casefold()
+        if key not in seen:
+            seen.add(key)
+            unique.append(candidate)
+    return unique
+
+
+def _is_local_account_collision(user):
+    """Return True when an existing Django user is a local account.
+
+    LDAP users are allowed to log back into their own LDAP-created account.
+    Local users/admins are not allowed to be silently reused by LDAP logins.
+    """
+    try:
+        profile = user.kb_profile
+    except UserProfile.DoesNotExist:
+        profile = None
+
+    if profile and profile.account_type in {
+        UserProfile.AccountType.LDAP_USER,
+        UserProfile.AccountType.LDAP_ADMIN,
+    }:
+        return False
+
+    # A local fallback password is a strong signal this is a local Django
+    # account and must not be merged with an LDAP identity of the same name.
+    if user.has_usable_password():
+        return True
+
+    if profile and profile.account_type in {
+        UserProfile.AccountType.USER,
+        UserProfile.AccountType.ADMIN,
+    }:
+        return True
+
+    return bool(user.is_staff or user.is_superuser)
+
+
+def _find_local_account_collision(login_value):
+    UserModel = get_user_model()
+    for candidate in _candidate_local_usernames_for_ldap(login_value):
+        try:
+            user = UserModel.objects.get(username__iexact=candidate)
+        except UserModel.DoesNotExist:
+            continue
+        except UserModel.MultipleObjectsReturned:
+            # Should not normally happen because username is unique, but reject
+            # safely if data is inconsistent.
+            return candidate
+
+        if _is_local_account_collision(user):
+            return user.get_username()
+    return ""
+
+
+def _notify_ldap_username_conflict(request, username):
+    """Show a clear warning only after LDAP credentials have succeeded."""
+    message = (
+        "This domain account uses a username that already exists as a local "
+        "DjOpenKB account. The account was not linked for safety. Please "
+        "contact an administrator."
+    )
+    if request is not None:
+        request._ldap_username_conflict = username
+        try:
+            messages.warning(request, message)
+        except Exception:
+            # Authentication backends should never break login rendering just
+            # because the messages framework is unavailable.
+            pass
 
 class NextLabsLDAPBackend(LDAPBackend):
     """Active Directory / LDAP backend.
@@ -91,6 +197,8 @@ class NextLabsLDAPBackend(LDAPBackend):
             logger.warning("LDAP login rejected: domain not allowed. mode=%s input=%r normalized=%r", login_mode, username, ldap_username)
             return None
 
+        local_conflict_username = _find_local_account_collision(ldap_username)
+
         logger.info("LDAP login attempt started. mode=%s input=%r normalized=%r", login_mode, username, ldap_username)
 
         try:
@@ -106,6 +214,17 @@ class NextLabsLDAPBackend(LDAPBackend):
 
         if user is None:
             logger.warning("LDAP login failed: django-auth-ldap returned no user. input=%r normalized=%r", username, ldap_username)
+            return None
+
+        if local_conflict_username and user.get_username().casefold() == local_conflict_username.casefold():
+            _notify_ldap_username_conflict(request, local_conflict_username)
+            logger.warning(
+                "LDAP login blocked after successful LDAP authentication due to local username conflict. "
+                "input=%r normalized=%r django_user=%r",
+                username,
+                ldap_username,
+                user.get_username(),
+            )
             return None
 
         logger.info("LDAP login succeeded for username=%r django_user=%r", ldap_username, user.get_username())

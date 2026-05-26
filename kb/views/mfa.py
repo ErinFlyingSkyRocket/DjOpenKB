@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
+from ..auth_monitoring import log_auth_event
 from ..mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
@@ -112,10 +113,25 @@ def mfa_setup(request):
     if request.method == "POST":
         if verify_totp_code(device, request.POST.get("code")):
             device.mark_confirmed()
+            log_auth_event(
+                request,
+                event_type="mfa_setup_success",
+                success=True,
+                user=user,
+                username=user.get_username(),
+            )
             next_url = _finish_mfa(request, user)
             messages.success(request, _("Authenticator setup completed successfully."))
             return redirect(next_url)
 
+        log_auth_event(
+            request,
+            event_type="mfa_setup_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={"reason": "invalid_totp"},
+        )
         messages.error(request, _("Invalid authenticator code. Please try again."))
 
     return render(
@@ -149,10 +165,25 @@ def mfa_verify(request):
     if request.method == "POST":
         if verify_totp_code(device, request.POST.get("code")):
             device.mark_verified()
+            log_auth_event(
+                request,
+                event_type="mfa_verify_success",
+                success=True,
+                user=user,
+                username=user.get_username(),
+            )
             next_url = _finish_mfa(request, user)
             messages.success(request, _("MFA verification successful."))
             return redirect(next_url)
 
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={"reason": "invalid_totp"},
+        )
         messages.error(request, _("Invalid authenticator code. Please try again."))
 
     return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
@@ -169,6 +200,13 @@ def reset_mfa(request):
         return redirect("profile")
 
     reset_mfa_device_for_user(user)
+    log_auth_event(
+        request,
+        event_type="mfa_reset_self",
+        success=True,
+        user=user,
+        username=user.get_username(),
+    )
 
     # MFA is a login criterion. After reset, the old authenticated session is no
     # longer allowed. Convert it to a pending-MFA session and force setup now.

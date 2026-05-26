@@ -147,6 +147,58 @@ class UserMFADevice(models.Model):
         self.save(update_fields=["last_verified_at"])
 
 
+class AuthActivityLog(models.Model):
+    """Security/audit events for login and MFA monitoring.
+
+    This is used by admins to spot repeated failed password attempts, repeated
+    MFA/OTP failures, and MFA reset activity from the Django admin site.
+    """
+
+    class EventType(models.TextChoices):
+        PASSWORD_SUCCESS = "password_success", _("Password login success")
+        PASSWORD_FAILURE = "password_failure", _("Password login failure")
+        PENDING_MFA = "pending_mfa", _("Pending MFA created")
+        MFA_SETUP_SUCCESS = "mfa_setup_success", _("MFA setup success")
+        MFA_SETUP_FAILURE = "mfa_setup_failure", _("MFA setup failure")
+        MFA_VERIFY_SUCCESS = "mfa_verify_success", _("MFA verify success")
+        MFA_VERIFY_FAILURE = "mfa_verify_failure", _("MFA verify failure")
+        MFA_RESET_SELF = "mfa_reset_self", _("MFA reset by user")
+        MFA_RESET_ADMIN = "mfa_reset_admin", _("MFA reset by admin")
+        LOGOUT = "logout", _("Logout")
+
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    event_type = models.CharField(max_length=40, choices=EventType.choices, db_index=True)
+    success = models.BooleanField(default=False, db_index=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="auth_activity_logs",
+    )
+    username = models.CharField(max_length=255, blank=True, db_index=True)
+    login_mode = models.CharField(max_length=30, blank=True, db_index=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True, db_index=True)
+    user_agent = models.TextField(blank=True)
+    path = models.CharField(max_length=500, blank=True)
+    request_method = models.CharField(max_length=10, blank=True)
+    details = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Authentication activity log"
+        verbose_name_plural = "Authentication activity logs"
+        indexes = [
+            models.Index(fields=["-created_at", "event_type"]),
+            models.Index(fields=["ip_address", "-created_at"]),
+            models.Index(fields=["username", "-created_at"]),
+        ]
+
+    def __str__(self):
+        user_label = self.username or (self.user.get_username() if self.user_id else "unknown")
+        return f"{self.get_event_type_display()} - {user_label} - {self.created_at:%Y-%m-%d %H:%M:%S}"
+
+
 class SuggestedArticle(models.Model):
     """User-submitted OpenKB article metadata.
 
@@ -417,6 +469,14 @@ class SiteSetting(models.Model):
         help_text=(
             "Files newer than this many minutes are ignored by the stray upload cleanup tool. "
             "Set to 0 to detect/delete stray uploads immediately."
+        ),
+    )
+    auth_activity_log_retention_days = models.PositiveIntegerField(
+        default=90,
+        verbose_name="Authentication activity log retention (days)",
+        help_text=(
+            "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. "
+            "Use 0 to keep authentication activity logs indefinitely."
         ),
     )
 

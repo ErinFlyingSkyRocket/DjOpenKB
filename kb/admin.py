@@ -9,7 +9,8 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from .models import ArticleVote, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .models import ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, slugify_title, write_article_files
 
@@ -220,7 +221,15 @@ class UserAdmin(DefaultUserAdmin):
         )
 
         if request.method == "POST":
-            admin_reset_user_mfa(user)
+            _device, sessions_deleted = admin_reset_user_mfa(user)
+            log_auth_event(
+                request,
+                event_type="mfa_reset_admin",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={"actor": request.user.get_username(), "sessions_deleted": sessions_deleted},
+            )
             self.message_user(
                 request,
                 _(
@@ -244,7 +253,15 @@ class UserAdmin(DefaultUserAdmin):
     def reset_mfa_for_selected_users(self, request, queryset):
         count = 0
         for user in queryset:
-            admin_reset_user_mfa(user)
+            _device, sessions_deleted = admin_reset_user_mfa(user)
+            log_auth_event(
+                request,
+                event_type="mfa_reset_admin",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={"actor": request.user.get_username(), "sessions_deleted": sessions_deleted, "source": "bulk_user_action"},
+            )
             count += 1
         self.message_user(
             request,
@@ -362,7 +379,15 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
     def reset_selected_mfa_devices(self, request, queryset):
         count = 0
         for device in queryset.select_related("user"):
-            admin_reset_user_mfa(device.user)
+            _device, sessions_deleted = admin_reset_user_mfa(device.user)
+            log_auth_event(
+                request,
+                event_type="mfa_reset_admin",
+                success=True,
+                user=device.user,
+                username=device.user.get_username(),
+                details={"actor": request.user.get_username(), "sessions_deleted": sessions_deleted, "source": "bulk_device_action"},
+            )
             count += 1
         self.message_user(
             request,
@@ -380,12 +405,74 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
             device.last_verified_at = None
             device.reset_at = timezone.now()
             device.save(update_fields=["confirmed", "confirmed_at", "last_verified_at", "reset_at"])
+            log_auth_event(
+                request,
+                event_type="mfa_reset_admin",
+                success=True,
+                user=device.user,
+                username=device.user.get_username(),
+                details={"actor": request.user.get_username(), "source": "mark_setup_pending"},
+            )
             count += 1
         self.message_user(
             request,
             _("%(count)d MFA device(s) marked as setup pending.") % {"count": count},
             level=messages.SUCCESS,
         )
+
+
+@admin.register(AuthActivityLog)
+class AuthActivityLogAdmin(admin.ModelAdmin):
+    """Read-only authentication/MFA monitoring log.
+
+    Use this to spot repeated failed password attempts, repeated failed MFA/OTP
+    attempts, MFA reset activity, and suspicious IP/user-agent patterns.
+    """
+
+    list_display = (
+        "created_at",
+        "event_type",
+        "success",
+        "username",
+        "user",
+        "login_mode",
+        "ip_address",
+        "short_user_agent",
+    )
+    list_filter = ("event_type", "success", "login_mode", "created_at")
+    search_fields = ("username", "user__username", "user__email", "ip_address", "user_agent", "path")
+    readonly_fields = (
+        "created_at",
+        "event_type",
+        "success",
+        "user",
+        "username",
+        "login_mode",
+        "ip_address",
+        "user_agent",
+        "path",
+        "request_method",
+        "details",
+    )
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        # Authentication activity logs are append-only from the admin UI.
+        # Retention/deletion is controlled through Site settings and the cleanup command.
+        return False
+
+    def short_user_agent(self, obj):
+        value = obj.user_agent or "-"
+        return value[:80] + ("..." if len(value) > 80 else "")
+
+    short_user_agent.short_description = "User agent"
 
 
 @admin.register(SuggestedArticle)
@@ -584,6 +671,14 @@ class SiteSettingAdmin(admin.ModelAdmin):
             "description": (
                 "Controls the minimum age used by My Profile → Admin tools → "
                 "Clean stray upload files. Use 0 to show files immediately."
+            ),
+        }),
+        ("Authentication activity log retention", {
+            "fields": ("auth_activity_log_retention_days",),
+            "description": (
+                "Controls how long authentication and MFA monitoring logs should be kept. "
+                "Set to 0 to keep logs indefinitely. Deletion is performed only by the cleanup command/scheduler; "
+                "the log table itself remains read-only in Django admin."
             ),
         }),
     )
