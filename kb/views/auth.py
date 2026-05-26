@@ -6,6 +6,7 @@ from ..mfa import (
     clear_pending_mfa_login,
     get_or_create_mfa_device,
     user_requires_mfa,
+    verify_totp_code,
 )
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, LogoutView
@@ -158,6 +159,45 @@ def set_site_language(request):
     return response
 
 
+def _verify_profile_mfa_code(request, user):
+    """Require a fresh MFA/OTP code before sensitive profile changes.
+
+    This is only used by the normal website profile page. It does not affect
+    Django admin, where administrators manage users through the admin site.
+    """
+    if not user_requires_mfa(user):
+        return True
+
+    device = getattr(user, "kb_mfa_device", None)
+    if not device or not device.confirmed:
+        messages.error(request, _("Set up MFA before changing sensitive account details."))
+        return False
+
+    code = request.POST.get("mfa_code", "")
+    if not verify_totp_code(device, code):
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={"reason": "invalid_profile_change_totp"},
+        )
+        messages.error(request, _("MFA/OTP code is incorrect."))
+        return False
+
+    device.mark_verified()
+    log_auth_event(
+        request,
+        event_type="mfa_verify_success",
+        success=True,
+        user=user,
+        username=user.get_username(),
+        details={"reason": "profile_sensitive_change_confirmed"},
+    )
+    return True
+
+
 def profile(request):
     return render(request, "profile.html", get_profile_account_context(request.user))
 
@@ -166,7 +206,6 @@ def update_profile(request):
     if request.method != "POST":
         return redirect("profile")
 
-    User = get_user_model()
     user = request.user
     user_is_ldap_managed = is_ldap_managed_user(user)
     profile_action = request.POST.get("profile_action", "").strip()
@@ -200,18 +239,18 @@ def update_profile(request):
         messages.error(request, _("Username changes are managed by administrators."))
         return redirect("profile")
 
-    # For Django local accounts, require the current password before changing
-    # self-service editable account fields. Username changes are intentionally
-    # blocked here and must be handled in the Django admin site.
-    if user.has_usable_password():
-        current_password = request.POST.get("current_password", "")
-        if not user.check_password(current_password):
-            messages.error(request, _("Confirm password is incorrect."))
-            return redirect("profile")
-
     if profile_action == "email":
         if user_is_ldap_managed:
             messages.error(request, _("This email address is managed by your domain account and cannot be changed here."))
+            return redirect("profile")
+
+        if user.has_usable_password():
+            current_password = request.POST.get("current_password", "")
+            if not user.check_password(current_password):
+                messages.error(request, _("Confirm password is incorrect."))
+                return redirect("profile")
+
+        if not _verify_profile_mfa_code(request, user):
             return redirect("profile")
 
         email = request.POST.get("email", "").strip()
@@ -255,6 +294,9 @@ def change_password(request):
         validate_password(new_password1, user=user)
     except ValidationError as error:
         messages.error(request, " ".join(error.messages))
+        return redirect("profile")
+
+    if not _verify_profile_mfa_code(request, user):
         return redirect("profile")
 
     user.set_password(new_password1)
