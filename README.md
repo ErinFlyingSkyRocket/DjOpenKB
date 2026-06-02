@@ -12,7 +12,7 @@ The application is designed for an internal knowledge repository where users can
 - **Article browsing and search** for Markdown-based knowledge content.
 - **User article suggestion workflow** with draft, pending review, approved, and pending-failed states.
 - **Admin review tools** for approving, editing, returning, or rejecting suggested articles with feedback.
-- **NextLabs AD/LDAP login** as the main domain authentication flow.
+- **AD/LDAP login** as the main domain authentication flow.
 - **Local Django login fallback** for local administrator or fallback accounts.
 - **MFA enforcement** using authenticator-app TOTP codes as part of the login completion flow.
 - **Vault secret management** for Django, PostgreSQL, LDAP bind password, and AI provider API keys.
