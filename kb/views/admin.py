@@ -1,6 +1,7 @@
 from .services import *
 
 
+@admin_tools_required
 def clean_stray_upload_files(request):
     min_age_minutes = get_stray_upload_cleanup_min_age_minutes()
     stray_files = find_stray_uploaded_files(min_age_minutes=min_age_minutes)
@@ -52,11 +53,13 @@ def clean_stray_upload_files(request):
     })
 
 
+@admin_tools_required
 def admin_bulk_articles(request):
     """Admin page for importing/exporting article bundles."""
     return render(request, "admin_bulk_articles.html")
 
 
+@admin_tools_required
 def export_articles_zip(request):
     """Export all Django-managed articles plus referenced uploaded files as a zip."""
     manifest = build_bulk_export_payload()
@@ -103,6 +106,7 @@ def export_articles_zip(request):
     return response
 
 
+@admin_tools_required
 def import_articles_zip(request):
     """Import articles from a zip and assign ownership to the current admin user."""
     if request.method != "POST":
@@ -148,6 +152,7 @@ def import_articles_zip(request):
     return redirect("admin_bulk_articles")
 
 
+@admin_tools_required
 def manage_pending_articles(request):
     search_query = request.GET.get("q", "").strip()
 
