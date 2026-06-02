@@ -272,7 +272,9 @@
 <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
 <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
 <div id="notify_message"></div>
-{% include "_footer.html" %}
+
+<footer class="footer"><div class="container"><p class="text-muted text-center">{% trans "Powered by" %} <a href="https://www.nextlabs.com/" target="_blank">NextLabs IT</a></p></div></footer>
+
 <script>
     const openkbAiForm = document.getElementById("openkbAiForm");
     const openkbAiQuestion = document.getElementById("openkbAiQuestion");
