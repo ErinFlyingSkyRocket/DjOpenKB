@@ -198,10 +198,12 @@ def _verify_profile_mfa_code(request, user):
     return True
 
 
+@main_site_login_required
 def profile(request):
     return render(request, "profile.html", get_profile_account_context(request.user))
 
 
+@main_site_login_required
 def update_profile(request):
     if request.method != "POST":
         return redirect("profile")
@@ -263,6 +265,7 @@ def update_profile(request):
     return redirect("profile")
 
 
+@main_site_login_required
 def change_password(request):
     if request.method != "POST":
         return redirect("profile")

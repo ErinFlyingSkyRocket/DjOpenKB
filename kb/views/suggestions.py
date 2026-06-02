@@ -2,6 +2,7 @@ from .services import *
 from django.utils.translation import gettext as _
 
 
+@main_site_login_required
 def suggest(request):
     init_openkb_storage()
     is_admin = user_is_site_admin(request.user)
@@ -77,6 +78,7 @@ def suggest(request):
     return redirect("edit_my_suggestions")
 
 
+@main_site_login_required
 def edit_my_suggestions(request):
     search_query = request.GET.get("q", "").strip()
 
@@ -109,6 +111,7 @@ def edit_my_suggestions(request):
     })
 
 
+@main_site_login_required
 def edit_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
@@ -238,6 +241,7 @@ def edit_suggestion(request, article_id):
     return redirect(return_url)
 
 
+@main_site_login_required
 def delete_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
@@ -256,6 +260,7 @@ def delete_suggestion(request, article_id):
     return render(request, "suggest_delete.html", {"article": article, "return_url": return_url})
 
 
+@main_site_login_required
 def upload_article_image(request):
     """Upload a small pasted image for use inside Markdown articles.
 
@@ -299,6 +304,7 @@ def upload_article_image(request):
     })
 
 
+@main_site_login_required
 def delete_article_image(request):
     """Delete a pasted image that was uploaded during the current editing session.
 

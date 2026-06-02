@@ -89,6 +89,7 @@ def wiki_detail(request, wiki_path):
     raise Http404("Wiki page not found")
 
 
+@main_site_login_required
 def vote_article(request, article_id):
     """Save one helpful/unhelpful vote per logged-in user per article."""
     article = get_object_or_404(
