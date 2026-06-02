@@ -5,12 +5,13 @@ import pyotp
 import qrcode
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
+
+from .services import main_site_login_required
 
 from ..auth_monitoring import log_auth_event
 from ..mfa import (
@@ -190,12 +191,9 @@ def mfa_verify(request):
     return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
 
 
-@login_required
+@main_site_login_required
 @require_POST
 def reset_mfa(request):
-    if request.method != "POST":
-        return redirect("profile")
-
     user = request.user
     if not user_requires_mfa(user):
         messages.info(request, _("MFA reset is available for your DjOpenKB account."))

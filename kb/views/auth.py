@@ -121,6 +121,7 @@ class OpenKBLogoutView(LogoutView):
         return response
 
 
+@require_POST
 def set_site_language(request):
     """Set the active UI language from the navbar dropdown.
 
