@@ -107,6 +107,7 @@ def export_articles_zip(request):
 
 
 @admin_tools_required
+@require_POST
 def import_articles_zip(request):
     """Import articles from a zip and assign ownership to the current admin user."""
     if request.method != "POST":

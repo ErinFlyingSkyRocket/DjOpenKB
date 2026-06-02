@@ -204,6 +204,7 @@ def profile(request):
 
 
 @main_site_login_required
+@require_POST
 def update_profile(request):
     if request.method != "POST":
         return redirect("profile")
@@ -266,6 +267,7 @@ def update_profile(request):
 
 
 @main_site_login_required
+@require_POST
 def change_password(request):
     if request.method != "POST":
         return redirect("profile")

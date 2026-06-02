@@ -90,6 +90,7 @@ def wiki_detail(request, wiki_path):
 
 
 @main_site_login_required
+@require_POST
 def vote_article(request, article_id):
     """Save one helpful/unhelpful vote per logged-in user per article."""
     article = get_object_or_404(

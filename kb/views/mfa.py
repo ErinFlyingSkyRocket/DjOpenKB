@@ -10,6 +10,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from ..auth_monitoring import log_auth_event
 from ..mfa import (
@@ -190,6 +191,7 @@ def mfa_verify(request):
 
 
 @login_required
+@require_POST
 def reset_mfa(request):
     if request.method != "POST":
         return redirect("profile")

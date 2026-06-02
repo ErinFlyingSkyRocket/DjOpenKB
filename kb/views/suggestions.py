@@ -261,6 +261,7 @@ def delete_suggestion(request, article_id):
 
 
 @main_site_login_required
+@require_POST
 def upload_article_image(request):
     """Upload a small pasted image for use inside Markdown articles.
 
@@ -305,6 +306,7 @@ def upload_article_image(request):
 
 
 @main_site_login_required
+@require_POST
 def delete_article_image(request):
     """Delete a pasted image that was uploaded during the current editing session.
 

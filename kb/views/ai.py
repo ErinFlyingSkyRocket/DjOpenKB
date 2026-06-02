@@ -24,6 +24,7 @@ def _article_recommendation_response(question, related_articles=None, status=200
     )
 
 
+@require_POST
 def ask_openkb_ai(request):
     """Answer OpenKB AI questions and always allow public article recommendations.
 
