@@ -11,12 +11,27 @@ def clean_stray_upload_files(request):
     total_size_bytes = sum(item["size_bytes"] for item in stray_files)
 
     if request.method == "POST":
+        selected_filenames = {
+            safe_uploaded_filename(filename)
+            for filename in request.POST.getlist("selected_files")
+        }
+        selected_filenames.discard("")
+
+        if not selected_filenames:
+            messages.warning(request, "No stray upload files were selected for deletion.")
+            return redirect("clean_stray_upload_files")
+
         deleted_count = 0
         deleted_size_bytes = 0
+        skipped_count = 0
         errors = []
 
         # Re-scan on POST so the cleanup uses the latest file/article state.
+        # Only delete files the admin explicitly selected with the checkboxes.
         for item in stray_files:
+            if item["filename"] not in selected_filenames:
+                continue
+
             file_path = item["path"]
             upload_dir = get_openkb_uploads_dir().resolve()
             file_path = file_path.resolve()
@@ -25,6 +40,7 @@ def clean_stray_upload_files(request):
                 file_path.relative_to(upload_dir)
             except ValueError:
                 errors.append(f"Skipped invalid path: {item['filename']}")
+                skipped_count += 1
                 continue
 
             try:
@@ -32,16 +48,24 @@ def clean_stray_upload_files(request):
                     deleted_size_bytes += file_path.stat().st_size
                     file_path.unlink()
                     deleted_count += 1
+                else:
+                    skipped_count += 1
             except OSError as error:
                 errors.append(f"Could not delete {item['filename']}: {error}")
+                skipped_count += 1
+
+        missing_count = max(len(selected_filenames) - deleted_count - skipped_count - len(errors), 0)
 
         if deleted_count:
             messages.success(
                 request,
-                f"Cleaned up {deleted_count} stray upload file(s), freeing {round(deleted_size_bytes / 1024, 1)} KB."
+                f"Cleaned up {deleted_count} selected stray upload file(s), freeing {round(deleted_size_bytes / 1024, 1)} KB."
             )
         else:
-            messages.info(request, "No stray upload files were deleted.")
+            messages.info(request, "No selected stray upload files were deleted.")
+
+        if skipped_count or missing_count:
+            messages.info(request, "Some selected files were skipped because they were no longer available or no longer matched the stray file scan.")
 
         for error in errors[:5]:
             messages.error(request, error)

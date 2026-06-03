@@ -29,6 +29,8 @@
         }
         .cleanup-actions { margin-top: 14px; }
         .cleanup-actions .btn { margin-right: 6px; margin-bottom: 6px; }
+        .cleanup-check { width: 36px; text-align: center; vertical-align: middle !important; }
+        .cleanup-check input[type=checkbox] { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -66,50 +68,62 @@
                         <p>
                             {% trans "These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed." %}
                         </p>
-                        <form method="post" onsubmit="return confirm('{% trans 'Delete all listed stray upload files? This cannot be undone.' %}');">
+                        <form method="post" onsubmit="return confirm('{% trans 'Delete the selected stray upload files? This cannot be undone.' %}');">
                             {% csrf_token %}
                             <div class="cleanup-actions">
                                 <button class="btn btn-danger" type="submit">
-                                    <i class="fa fa-trash"></i> {% if stray_count == 1 %}{% blocktrans with count=stray_count %}Delete {{ count }} stray file{% endblocktrans %}{% else %}{% blocktrans with count=stray_count %}Delete {{ count }} stray files{% endblocktrans %}{% endif %}
+                                    <i class="fa fa-trash"></i> {% trans "Delete selected stray files" %}
+                                </button>
+                                <button class="btn btn-default" type="button" onclick="$('.cleanup-file-checkbox').prop('checked', true);">
+                                    {% trans "Select all" %}
+                                </button>
+                                <button class="btn btn-default" type="button" onclick="$('.cleanup-file-checkbox').prop('checked', false); $('#cleanup-select-all').prop('checked', false);">
+                                    {% trans "Unselect all" %}
                                 </button>
                                 <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Back to profile" %}</a>
                             </div>
-                        </form>
-                    </div>
 
-                    <div class="cleanup-table-wrap">
-                        <table class="table table-striped table-condensed table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>{% trans "Preview / Open" %}</th>
-                                    <th>{% trans "Filename" %}</th>
-                                    <th>{% trans "Type" %}</th>
-                                    <th>{% trans "Size" %}</th>
-                                    <th>{% trans "Last modified" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for file in stray_files %}
-                                    <tr>
-                                        <td>
-                                            {% if file.is_previewable_image %}
-                                                <a href="{{ file.url }}" target="_blank" rel="noopener">
-                                                    <img class="cleanup-thumb" src="{{ file.url }}" alt="{{ file.filename }}">
-                                                </a>
-                                            {% else %}
-                                                <a class="btn btn-xs btn-default" href="{{ file.url }}" target="_blank" rel="noopener">
-                                                    <i class="fa fa-file"></i> {% trans "Open" %}
-                                                </a>
-                                            {% endif %}
-                                        </td>
-                                        <td><code>{{ file.filename }}</code></td>
-                                        <td>{{ file.extension|upper }}</td>
-                                        <td>{{ file.size_kb }} KB</td>
-                                        <td>{{ file.modified_at|date:"Y-m-d H:i" }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                            <div class="cleanup-table-wrap">
+                                <table class="table table-striped table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="cleanup-check">
+                                                <input id="cleanup-select-all" type="checkbox" checked aria-label="{% trans 'Select all stray files' %}" onclick="$('.cleanup-file-checkbox').prop('checked', this.checked);">
+                                            </th>
+                                            <th>{% trans "Preview / Open" %}</th>
+                                            <th>{% trans "Filename" %}</th>
+                                            <th>{% trans "Type" %}</th>
+                                            <th>{% trans "Size" %}</th>
+                                            <th>{% trans "Last modified" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for file in stray_files %}
+                                            <tr>
+                                                <td class="cleanup-check">
+                                                    <input class="cleanup-file-checkbox" type="checkbox" name="selected_files" value="{{ file.filename }}" checked aria-label="{% blocktrans with filename=file.filename %}Select {{ filename }} for deletion{% endblocktrans %}">
+                                                </td>
+                                                <td>
+                                                    {% if file.is_previewable_image %}
+                                                        <a href="{{ file.url }}" target="_blank" rel="noopener">
+                                                            <img class="cleanup-thumb" src="{{ file.url }}" alt="{{ file.filename }}">
+                                                        </a>
+                                                    {% else %}
+                                                        <a class="btn btn-xs btn-default" href="{{ file.url }}" target="_blank" rel="noopener">
+                                                            <i class="fa fa-file"></i> {% trans "Open" %}
+                                                        </a>
+                                                    {% endif %}
+                                                </td>
+                                                <td><code>{{ file.filename }}</code></td>
+                                                <td>{{ file.extension|upper }}</td>
+                                                <td>{{ file.size_kb }} KB</td>
+                                                <td>{{ file.modified_at|date:"Y-m-d H:i" }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
                     </div>
                 </div>
             {% else %}
