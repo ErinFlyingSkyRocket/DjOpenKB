@@ -34,7 +34,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
+from ..models import ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
 from ..mfa import user_requires_mfa
 
 
@@ -420,6 +420,35 @@ def get_stray_upload_cleanup_min_age_minutes():
     return max(value, 0)
 
 
+
+def get_article_image_upload_log(filename):
+    """Return the upload audit row for a generated article image filename."""
+    filename = safe_uploaded_filename(filename)
+    if not filename:
+        return None
+
+    try:
+        return ArticleImageUploadLog.objects.select_related("uploaded_by", "deleted_by").filter(filename=filename).first()
+    except Exception:
+        logger.exception("Unable to read article image upload log for %s", filename)
+        return None
+
+
+def mark_article_image_deleted(filename, actor=None, reason=""):
+    """Best-effort audit update when an uploaded article image is deleted."""
+    filename = safe_uploaded_filename(filename)
+    if not filename:
+        return
+
+    try:
+        ArticleImageUploadLog.objects.filter(filename=filename, deleted_at__isnull=True).update(
+            deleted_at=timezone.now(),
+            deleted_by=actor if getattr(actor, "pk", None) else None,
+            delete_reason=reason or "",
+        )
+    except Exception:
+        logger.exception("Unable to mark article image upload log as deleted for %s", filename)
+
 def find_stray_uploaded_files(min_age_minutes=1440):
     """Return uploaded files that are not referenced anywhere.
 
@@ -455,6 +484,18 @@ def find_stray_uploaded_files(min_age_minutes=1440):
         extension = file_path.suffix.lower().lstrip(".") or "(no extension)"
         is_previewable_image = file_path.suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 
+        upload_log = get_article_image_upload_log(filename)
+        uploader_display = ""
+        uploader_email = ""
+        uploader_account_type = ""
+        uploaded_at = None
+
+        if upload_log:
+            uploader_display = upload_log.uploader_display
+            uploader_email = upload_log.uploader_email_snapshot
+            uploader_account_type = upload_log.uploader_account_type_snapshot
+            uploaded_at = upload_log.uploaded_at
+
         stray_files.append({
             "filename": filename,
             "url": article_image_url(filename),
@@ -464,6 +505,11 @@ def find_stray_uploaded_files(min_age_minutes=1440):
             "size_kb": round(stat.st_size / 1024, 1),
             "modified_at": datetime.fromtimestamp(stat.st_mtime),
             "path": file_path,
+            "upload_log": upload_log,
+            "uploader_display": uploader_display,
+            "uploader_email": uploader_email,
+            "uploader_account_type": uploader_account_type,
+            "uploaded_at": uploaded_at,
         })
     stray_files.sort(key=lambda item: item["modified_at"], reverse=True)
     return stray_files

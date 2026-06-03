@@ -4,8 +4,8 @@ from pathlib import Path
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from kb.models import SiteSetting
-from kb.views import find_stray_uploaded_files, get_openkb_uploads_dir
+from kb.models import ArticleImageUploadLog, SiteSetting
+from kb.views import find_stray_uploaded_files, get_openkb_uploads_dir, mark_article_image_deleted
 
 
 logger = logging.getLogger(__name__)
@@ -94,6 +94,10 @@ class Command(BaseCommand):
                 if file_path.exists() and file_path.is_file():
                     size = file_path.stat().st_size
                     file_path.unlink()
+                    mark_article_image_deleted(
+                        item["filename"],
+                        reason=ArticleImageUploadLog.DeleteReason.AUTO_CLEANUP,
+                    )
                     deleted_count += 1
                     deleted_size_bytes += size
             except OSError as error:

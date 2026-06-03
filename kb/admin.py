@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from .models import ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .models import ArticleImageUploadLog, ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, slugify_title, write_article_files
@@ -690,3 +690,47 @@ class SiteSettingAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Prevent accidental removal of the settings row.
         return False
+
+
+@admin.register(ArticleImageUploadLog)
+class ArticleImageUploadLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "filename",
+        "uploader_display",
+        "uploader_email_snapshot",
+        "size_kb",
+        "uploaded_at",
+        "deleted_at",
+        "delete_reason",
+    )
+    list_filter = ("delete_reason", "uploaded_at", "deleted_at")
+    search_fields = (
+        "filename",
+        "original_name",
+        "uploader_username_snapshot",
+        "uploader_email_snapshot",
+    )
+    readonly_fields = (
+        "filename",
+        "original_name",
+        "content_type",
+        "size_bytes",
+        "uploaded_by",
+        "uploader_username_snapshot",
+        "uploader_email_snapshot",
+        "uploader_account_type_snapshot",
+        "upload_user_agent",
+        "uploaded_at",
+        "deleted_at",
+        "deleted_by",
+        "delete_reason",
+    )
+    ordering = ("-uploaded_at",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def size_kb(self, obj):
+        return round((obj.size_bytes or 0) / 1024, 1)
+
+    size_kb.short_description = "Size (KB)"

@@ -460,6 +460,99 @@ class ArticleVote(models.Model):
         return f"{self.article.title} - {self.user} - {label}"
 
 
+class ArticleImageUploadLog(models.Model):
+    """Audit record for images uploaded through the article editor.
+
+    The uploaded file may be saved into an article later, deleted by the user,
+    or removed by stray-file cleanup. Keeping a separate audit record lets
+    admins see who originally uploaded a stray file even if it is not currently
+    linked to any article.
+    """
+
+    class DeleteReason(models.TextChoices):
+        USER_REMOVED = "user_removed", _("Removed by uploader from editor")
+        ADMIN_CLEANUP = "admin_cleanup", _("Deleted by admin stray-file cleanup")
+        AUTO_CLEANUP = "auto_cleanup", _("Deleted by automatic stray-file cleanup")
+
+    filename = models.CharField(max_length=255, unique=True, db_index=True)
+    original_name = models.CharField(max_length=255, blank=True)
+    content_type = models.CharField(max_length=100, blank=True)
+    size_bytes = models.PositiveIntegerField(default=0)
+
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="uploaded_article_images",
+    )
+    uploader_username_snapshot = models.CharField(max_length=150, blank=True, db_index=True)
+    uploader_email_snapshot = models.EmailField(blank=True)
+    uploader_account_type_snapshot = models.CharField(max_length=50, blank=True)
+    upload_ip_address = models.GenericIPAddressField(null=True, blank=True)
+    upload_user_agent = models.TextField(blank=True)
+    uploaded_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="deleted_article_images",
+    )
+    delete_reason = models.CharField(max_length=30, choices=DeleteReason.choices, blank=True)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+        verbose_name = "Article image upload log"
+        verbose_name_plural = "Article image upload logs"
+        indexes = [
+            models.Index(fields=["filename"]),
+            models.Index(fields=["uploader_username_snapshot", "-uploaded_at"]),
+            models.Index(fields=["-uploaded_at"]),
+        ]
+
+    def __str__(self):
+        uploader = self.uploader_username_snapshot or "unknown user"
+        return f"{self.filename} uploaded by {uploader}"
+
+    @property
+    def uploader_display(self):
+        if self.uploaded_by:
+            full_name = self.uploaded_by.get_full_name().strip()
+            if full_name:
+                return f"{full_name} ({self.uploaded_by.get_username()})"
+            return self.uploaded_by.get_username()
+        return self.uploader_username_snapshot or ""
+
+    def snapshot_uploader(self):
+        if not self.uploaded_by:
+            return
+
+        self.uploader_username_snapshot = self.uploaded_by.get_username()
+        self.uploader_email_snapshot = self.uploaded_by.email or ""
+
+        profile = getattr(self.uploaded_by, "kb_profile", None)
+        if profile:
+            self.uploader_account_type_snapshot = profile.get_account_type_display()
+        elif self.uploaded_by.is_superuser or self.uploaded_by.is_staff:
+            self.uploader_account_type_snapshot = "Admin"
+        else:
+            self.uploader_account_type_snapshot = ""
+
+    def save(self, *args, **kwargs):
+        if self.uploaded_by:
+            self.snapshot_uploader()
+        super().save(*args, **kwargs)
+
+    def mark_deleted(self, actor=None, reason=""):
+        self.deleted_at = timezone.now()
+        self.deleted_by = actor if getattr(actor, "pk", None) else None
+        self.delete_reason = reason or ""
+        self.save(update_fields=["deleted_at", "deleted_by", "delete_reason"])
+
+
 class SiteSetting(models.Model):
     """Singleton-style site settings editable from Django Admin."""
 

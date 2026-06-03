@@ -47,6 +47,11 @@ def clean_stray_upload_files(request):
                 if file_path.exists() and file_path.is_file():
                     deleted_size_bytes += file_path.stat().st_size
                     file_path.unlink()
+                    mark_article_image_deleted(
+                        item["filename"],
+                        actor=request.user,
+                        reason=ArticleImageUploadLog.DeleteReason.ADMIN_CLEANUP,
+                    )
                     deleted_count += 1
                 else:
                     skipped_count += 1

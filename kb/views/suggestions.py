@@ -291,6 +291,15 @@ def upload_article_image(request):
         for chunk in uploaded_file.chunks():
             destination.write(chunk)
 
+    ArticleImageUploadLog.objects.create(
+        filename=filename,
+        original_name=(uploaded_file.name or "")[:255],
+        content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
+        size_bytes=getattr(uploaded_file, "size", 0) or 0,
+        uploaded_by=request.user,
+        upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
+    )
+
     pending_uploads = request.session.get("pending_article_uploads", [])
     if filename not in pending_uploads:
         pending_uploads.append(filename)
@@ -334,6 +343,11 @@ def delete_article_image(request):
 
     if file_path.exists() and file_path.is_file():
         file_path.unlink()
+        mark_article_image_deleted(
+            filename,
+            actor=request.user,
+            reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+        )
 
     request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
     request.session.modified = True
