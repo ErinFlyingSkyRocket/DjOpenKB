@@ -109,6 +109,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="panel-heading">{% trans "Account summary" %}</div>
                         <div class="panel-body">
                             <div class="profile-account-row">
+                                <span class="profile-account-label">{% trans "Name" %}:</span>
+                                <span class="profile-account-value">
+                                    {% with full_name=user.get_full_name %}
+                                        {% if full_name %}{{ full_name }}{% else %}<span class="profile-muted">{% trans "No name set" %}</span>{% endif %}
+                                    {% endwith %}
+                                </span>
+                            </div>
+
+                            <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Username" %}:</span>
                                 <span class="profile-account-value">{{ user.username }}</span>
                                 <span class="profile-readonly-note">{% trans "Username changes are managed by administrators." %}</span>
