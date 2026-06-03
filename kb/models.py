@@ -464,10 +464,11 @@ class SiteSetting(models.Model):
     """Singleton-style site settings editable from Django Admin."""
 
     stray_upload_cleanup_min_age_minutes = models.PositiveIntegerField(
-        default=30,
+        default=1440,
         verbose_name="Stray upload cleanup minimum age (minutes)",
         help_text=(
             "Files newer than this many minutes are ignored by the stray upload cleanup tool. "
+            "Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. "
             "Set to 0 to detect/delete stray uploads immediately."
         ),
     )

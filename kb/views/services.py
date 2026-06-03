@@ -410,17 +410,17 @@ def get_stray_upload_cleanup_min_age_minutes():
     try:
         value = SiteSetting.load().stray_upload_cleanup_min_age_minutes
     except Exception:
-        value = 30
+        value = 1440
 
     try:
         value = int(value)
     except (TypeError, ValueError):
-        value = 30
+        value = 1440
 
     return max(value, 0)
 
 
-def find_stray_uploaded_files(min_age_minutes=30):
+def find_stray_uploaded_files(min_age_minutes=1440):
     """Return uploaded files that are not referenced anywhere.
 
     The minimum age protects someone who is currently editing an article: a
