@@ -324,3 +324,17 @@ body.show_footer {
     background-color: transparent;
     outline: none;
 }
+
+/* DjOpenKB sticky footer layout width guard
+   Keeps the sticky footer behaviour without shrinking/centering full-width pages. */
+body > .container-fluid,
+body > .container {
+    width: 100%;
+    max-width: none;
+    flex: 0 0 auto;
+}
+
+body > .footer.openkb-site-footer,
+body > .openkb-site-footer {
+    width: 100%;
+}
