@@ -3,7 +3,10 @@ from .services import *
 
 @admin_tools_required
 def clean_stray_upload_files(request):
-    min_age_minutes = get_stray_upload_cleanup_min_age_minutes()
+    # Manual admin cleanup should show/delete stray files immediately.
+    # The configured SiteSetting threshold is kept for the automatic cleanup command/scheduler.
+    min_age_minutes = 0
+    automatic_min_age_minutes = get_stray_upload_cleanup_min_age_minutes()
     stray_files = find_stray_uploaded_files(min_age_minutes=min_age_minutes)
     total_size_bytes = sum(item["size_bytes"] for item in stray_files)
 
@@ -50,6 +53,7 @@ def clean_stray_upload_files(request):
         "stray_count": len(stray_files),
         "total_size_kb": round(total_size_bytes / 1024, 1),
         "min_age_minutes": min_age_minutes,
+        "automatic_min_age_minutes": automatic_min_age_minutes,
     })
 
 
