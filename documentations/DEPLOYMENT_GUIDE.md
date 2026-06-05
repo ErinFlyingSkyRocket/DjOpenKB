@@ -262,7 +262,7 @@ DJANGO_SECRET_KEY=generated-random-value
 POSTGRES_PASSWORD=generated-random-value
 
 GEMINI_API_KEY=your-gemini-api-key
-LLM_API_KEY=your-gemini-api-key
+LLM_API_KEY=your-llm-provider-api-key
 
 LDAP_BIND_PASSWORD="your-ad-service-account-password"
 LDAP_PLACEHOLDER_PASSWORD=generated-random-value
@@ -478,7 +478,189 @@ Run the OpenKB init command.
 sudo docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 ```
 
-Sync published Django articles into OpenKB data.
+During OpenKB init, it may prompt for AI/provider configuration. The exact prompt wording can vary depending on the OpenKB version, but the important fields are normally the provider/type, model name, API key, and optional base URL.
+
+Use one of the following examples depending on the provider you want.
+
+### Option A: Google Gemini
+
+Use this if you are using Gemini API.
+
+```text
+AI provider / AI type / LLM provider: gemini
+Model: gemini/gemini-2.5-flash
+API key: same value as GEMINI_API_KEY in Vault
+Base URL / API URL: leave blank/default
+Embedding provider: leave default if prompted
+```
+
+Relevant `.env` values:
+
+```env
+OPENKB_AI_PROVIDER=openkb-cli
+OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
+LITELLM_DROP_PARAMS=true
+```
+
+Relevant Vault bootstrap values:
+
+```env
+GEMINI_API_KEY=your-gemini-api-key
+LLM_API_KEY=your-gemini-api-key
+```
+
+### Option B: OpenAI
+
+Use this if you are using an OpenAI API key.
+
+```text
+AI provider / AI type / LLM provider: openai
+Model: gpt-4o-mini
+API key: your OpenAI API key
+Base URL / API URL: leave blank/default
+Embedding provider: leave default if prompted
+```
+
+Example model values:
+
+```text
+gpt-4o-mini
+gpt-4.1-mini
+gpt-4.1
+```
+
+Vault bootstrap:
+
+```env
+LLM_API_KEY=your-openai-api-key
+```
+
+If the OpenKB prompt expects a provider-prefixed LiteLLM model, use:
+
+```text
+openai/gpt-4o-mini
+```
+
+### Option C: Anthropic Claude
+
+Use this if you are using an Anthropic/Claude API key.
+
+```text
+AI provider / AI type / LLM provider: anthropic
+Model: claude-3-5-haiku-latest
+API key: your Anthropic API key
+Base URL / API URL: leave blank/default
+Embedding provider: leave default if prompted
+```
+
+Other possible model value examples:
+
+```text
+claude-3-5-sonnet-latest
+claude-3-7-sonnet-latest
+```
+
+Vault bootstrap:
+
+```env
+LLM_API_KEY=your-anthropic-api-key
+```
+
+If the OpenKB prompt expects a provider-prefixed LiteLLM model, use:
+
+```text
+anthropic/claude-3-5-haiku-latest
+```
+
+### Option D: Azure OpenAI
+
+Use this if your organisation uses Azure OpenAI.
+
+```text
+AI provider / AI type / LLM provider: azure
+Model: your Azure OpenAI deployment name
+API key: your Azure OpenAI key
+Base URL / API URL: your Azure OpenAI endpoint
+API version: use the version configured for your Azure OpenAI resource
+Embedding provider: leave default if prompted
+```
+
+Vault bootstrap:
+
+```env
+LLM_API_KEY=your-azure-openai-key
+```
+
+For Azure, the model/deployment field may need the Azure deployment name instead of the public model name.
+
+### Option E: Ollama or local model
+
+Use this if OpenKB is configured to call a local Ollama server.
+
+```text
+AI provider / AI type / LLM provider: ollama
+Model: llama3.1
+API key: leave blank if not required
+Base URL / API URL: http://host.docker.internal:11434 or the reachable Ollama URL
+Embedding provider: leave default if prompted
+```
+
+If Ollama runs on another Linux host, use that host IP instead of `host.docker.internal`.
+
+Example model values:
+
+```text
+llama3.1
+mistral
+qwen2.5
+```
+
+### Option F: Other LiteLLM-compatible providers
+
+If OpenKB supports LiteLLM-style provider strings in your installed version, use the provider/model pattern required by that provider.
+
+Common pattern:
+
+```text
+provider/model-name
+```
+
+Examples:
+
+```text
+groq/llama-3.1-8b-instant
+mistral/mistral-small-latest
+openrouter/openai/gpt-4o-mini
+cohere/command-r
+```
+
+Use the API key belonging to that provider in:
+
+```env
+LLM_API_KEY=your-provider-api-key
+```
+
+### General OpenKB init guidance
+
+If the prompt asks for a LiteLLM-style model value, enter the full provider/model string, for example:
+
+```text
+gemini/gemini-2.5-flash
+openai/gpt-4o-mini
+anthropic/claude-3-5-haiku-latest
+```
+
+If it asks whether to drop unsupported parameters, choose yes/true if available, matching:
+
+```env
+LITELLM_DROP_PARAMS=true
+```
+
+If it asks to confirm or overwrite an existing OpenKB config during first setup, confirm yes.
+
+If this is an existing deployment with working AI config, do not overwrite unless you intend to reconfigure it.
+
+After init completes, sync published Django articles into OpenKB data.
 
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
@@ -706,3 +888,5 @@ Run:
 sudo docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
+
+If the init command prompts again, use the provider section above and enter the provider/model/API key matching the LLM service you want to use.
