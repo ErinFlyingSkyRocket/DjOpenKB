@@ -376,8 +376,51 @@ if LDAP_ENABLED:
         raise ImproperlyConfigured(
             "LDAP_ENABLED=true but LDAP_SERVER_URI is not configured. "
             "Set LDAP_SERVER_URI in .env, or store LDAP_SERVER_URI in Vault. "
-            "Example: ldap://ad.example.local:389 or ldaps://ad.example.local:636"
+            "Example: ldaps://dc01.openkb.local:636"
         )
+
+    LDAP_START_TLS = config_value("LDAP_START_TLS", "false").lower() == "true"
+    LDAP_ALLOW_INSECURE = config_value("LDAP_ALLOW_INSECURE", "false").lower() == "true"
+
+    # Production safety guard: require encrypted LDAP unless explicitly waived.
+    # Preferred AD setup is LDAPS on 636 with a Domain Controller certificate.
+    if (
+        not DEBUG
+        and not LDAP_ALLOW_INSECURE
+        and AUTH_LDAP_SERVER_URI.lower().startswith("ldap://")
+        and not LDAP_START_TLS
+    ):
+        raise ImproperlyConfigured(
+            "LDAP_ENABLED=true with DJANGO_DEBUG=false must use encrypted LDAP. "
+            "Set LDAP_SERVER_URI=ldaps://<dc-hostname>:636, or enable LDAP_START_TLS=true, "
+            "or explicitly set LDAP_ALLOW_INSECURE=true only for a temporary lab exception."
+        )
+
+    # Optional StartTLS support for ldap:// servers. For Active Directory LDAPS,
+    # prefer LDAP_SERVER_URI=ldaps://dc01.openkb.local:636 and LDAP_START_TLS=false.
+    AUTH_LDAP_START_TLS = LDAP_START_TLS
+
+    LDAP_CA_CERT_FILE = config_value("LDAP_CA_CERT_FILE", "").strip()
+    LDAP_TLS_REQUIRE_CERT = config_value("LDAP_TLS_REQUIRE_CERT", "demand").strip().lower()
+    LDAP_TLS_REQUIRE_CERT_MAP = {
+        "never": ldap.OPT_X_TLS_NEVER,
+        "allow": ldap.OPT_X_TLS_ALLOW,
+        "try": ldap.OPT_X_TLS_TRY,
+        "demand": ldap.OPT_X_TLS_DEMAND,
+        "hard": ldap.OPT_X_TLS_HARD,
+    }
+    if LDAP_TLS_REQUIRE_CERT not in LDAP_TLS_REQUIRE_CERT_MAP:
+        raise ImproperlyConfigured(
+            "LDAP_TLS_REQUIRE_CERT must be one of: never, allow, try, demand, hard."
+        )
+
+    # Configure python-ldap TLS globally before django-auth-ldap opens connections.
+    # The Django container should only mount the issuing CA certificate, not the
+    # Domain Controller private key.
+    if LDAP_CA_CERT_FILE:
+        ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, LDAP_CA_CERT_FILE)
+    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, LDAP_TLS_REQUIRE_CERT_MAP[LDAP_TLS_REQUIRE_CERT])
+    ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
 
     # Use a low-privilege AD service account for searching users.
     # Example:
@@ -414,7 +457,10 @@ if LDAP_ENABLED:
         ldap.OPT_REFERRALS: 0,
         ldap.OPT_NETWORK_TIMEOUT: int(config_value("LDAP_NETWORK_TIMEOUT", "5")),
         ldap.OPT_TIMEOUT: int(config_value("LDAP_OPERATION_TIMEOUT", "5")),
+        ldap.OPT_X_TLS_REQUIRE_CERT: LDAP_TLS_REQUIRE_CERT_MAP[LDAP_TLS_REQUIRE_CERT],
     }
+    if LDAP_CA_CERT_FILE:
+        AUTH_LDAP_CONNECTION_OPTIONS[ldap.OPT_X_TLS_CACERTFILE] = LDAP_CA_CERT_FILE
 
     AUTH_LDAP_CACHE_TIMEOUT = int(config_value("LDAP_CACHE_TIMEOUT", "3600"))
 
