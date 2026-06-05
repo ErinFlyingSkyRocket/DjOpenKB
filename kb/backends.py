@@ -62,6 +62,32 @@ def _candidate_local_usernames_for_ldap(login_value):
     return unique
 
 
+def canonical_django_username_for_ldap(login_value):
+    """Return the single Django username used for an AD/LDAP identity.
+
+    This prevents duplicate Django users for the same AD account. For example,
+    these AD login inputs all map to the same local Django username:
+    - alice
+    - alice@openkb.local
+    - OPENKB\alice
+
+    The LDAP search still receives the original normalized LDAP login value.
+    Only the Django account username is canonicalized.
+    """
+    value = (login_value or "").strip()
+    if not value:
+        return ""
+
+    if "\\" in value:
+        _prefix, value = value.split("\\", 1)
+        value = value.strip()
+
+    if "@" in value:
+        value = value.split("@", 1)[0].strip()
+
+    return value.lower()
+
+
 def _is_local_account_collision(user):
     """Return True when an existing Django user is a local account.
 
@@ -177,6 +203,23 @@ class NextLabsLDAPBackend(LDAPBackend):
         domain = login_value.rsplit("@", 1)[1]
         return domain in allowed_domains
 
+    def ldap_to_django_username(self, username):
+        """Map every AD login format to one Django username.
+
+        django-auth-ldap uses this hook when locating/creating the Django User.
+        Without it, signing in as ``alice`` and ``alice@openkb.local`` creates
+        two separate Django accounts.
+        """
+        return canonical_django_username_for_ldap(username) or super().ldap_to_django_username(username)
+
+    def django_to_ldap_username(self, username):
+        """Do not rewrite Django usernames back to UPNs for LDAP search.
+
+        The configured LDAP filter already searches sAMAccountName, UPN and mail,
+        so ``alice`` can still authenticate directly against AD.
+        """
+        return (username or "").strip()
+
     def authenticate(self, request, username=None, password=None, **kwargs):
         if _requested_login_mode(request) not in {"", "ad", "ldap"}:
             return None
@@ -197,9 +240,16 @@ class NextLabsLDAPBackend(LDAPBackend):
             logger.warning("LDAP login rejected: domain not allowed. mode=%s input=%r normalized=%r", login_mode, username, ldap_username)
             return None
 
-        local_conflict_username = _find_local_account_collision(ldap_username)
+        canonical_username = canonical_django_username_for_ldap(ldap_username)
+        local_conflict_username = _find_local_account_collision(canonical_username or ldap_username)
 
-        logger.info("LDAP login attempt started. mode=%s input=%r normalized=%r", login_mode, username, ldap_username)
+        logger.info(
+            "LDAP login attempt started. mode=%s input=%r normalized=%r canonical_django=%r",
+            login_mode,
+            username,
+            ldap_username,
+            canonical_username,
+        )
 
         try:
             user = super().authenticate(
