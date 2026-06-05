@@ -279,203 +279,53 @@ Important notes:
 
 ---
 
-## 7. Generate the local Nginx HTTPS certificate
+## 7. Initialise OpenKB AI data locally on the Linux host
 
-Make the certificate script executable.
+OpenKB data must be initialized in the **local project folder** because Docker mounts the local `openkb-data/` directory into the web container.
 
-```bash
-chmod +x nginx/certs/generate-localhost-cert.sh
-```
-
-Run the script.
-
-```bash
-./nginx/certs/generate-localhost-cert.sh
-```
-
-Nginx expects the certificate files at these paths inside the container:
+Do **not** initialize OpenKB only inside Docker for first setup. Initialize it locally at:
 
 ```text
-/etc/nginx/certs/localhost.crt
-/etc/nginx/certs/localhost.key
+/opt/DjOpenKB/openkb-data
 ```
 
-The Docker Compose mount maps that to these paths on the Linux host:
-
-```text
-nginx/certs/localhost.crt
-nginx/certs/localhost.key
-```
-
-Check that the files exist.
+Move to the project root.
 
 ```bash
-ls -l nginx/certs/localhost.crt nginx/certs/localhost.key
+cd /opt/DjOpenKB
 ```
 
-Set permissions.
+Create a local Python virtual environment just for OpenKB initialization.
 
 ```bash
-chmod 644 nginx/certs/localhost.crt
-chmod 600 nginx/certs/localhost.key
+python3 -m venv .openkb-venv
+source .openkb-venv/bin/activate
+python -m pip install --upgrade pip
 ```
 
-This is a self-signed certificate for local/intranet testing. The browser may show a warning.
-
----
-
-## 8. Add the LDAPS CA certificate if using AD
-
-If LDAPS is enabled, export the AD CS Root CA certificate from Windows Server as Base-64 encoded X.509.
-
-Place the exported CA certificate here:
-
-```text
-ldap-certs/ad-ca.crt
-```
-
-Check that the file exists.
+Install OpenKB from the bundled `OpenKB-main` folder.
 
 ```bash
-ls -l ldap-certs/ad-ca.crt
+pip install -e OpenKB-main
 ```
 
-If the Linux server or Docker container cannot resolve the AD hostname, make sure this field is set in `.env`:
-
-```env
-LDAP_DC_IP=192.168.81.128
-```
-
-Replace the IP address with the actual Windows Server 2022 Domain Controller IP.
-
----
-
-## 9. Start the Docker stack
-
-Start and build all containers.
+If editable install fails, install its requirements and use `PYTHONPATH`.
 
 ```bash
-sudo docker compose up -d --build
+pip install -r OpenKB-main/requirements.txt
 ```
 
-Check container status.
+Create the local OpenKB data folder.
 
 ```bash
-sudo docker compose ps
+mkdir -p openkb-data
+cd openkb-data
 ```
 
-Check Vault init logs.
+Run OpenKB init locally.
 
 ```bash
-sudo docker compose logs -f vault-init
-```
-
-Check web logs.
-
-```bash
-sudo docker compose logs -f web
-```
-
-Check Nginx logs.
-
-```bash
-sudo docker compose logs -f nginx
-```
-
-If everything is successful, the `web`, `db`, `vault`, `cleanup-scheduler`, and `nginx` services should be running.
-
----
-
-## 10. Fix Vault init failure during fresh testing
-
-If `vault-init` fails, check the Vault bootstrap file with line numbers.
-
-```bash
-nl -ba vault/bootstrap/djopenkb.env
-```
-
-The file should use valid `KEY=VALUE` lines.
-
-Examples:
-
-```env
-DJANGO_SECRET_KEY=randomvalue
-POSTGRES_PASSWORD=randomvalue
-LDAP_BIND_PASSWORD="password-with-symbols"
-```
-
-Do not put spaces around `=`.
-
-Correct:
-
-```env
-DJANGO_SECRET_KEY=randomvalue
-```
-
-Wrong:
-
-```env
-DJANGO_SECRET_KEY = randomvalue
-```
-
-For a fresh failed deployment only, reset Vault state and start again.
-
-```bash
-sudo docker compose down
-sudo rm -rf vault/file vault/keys
-mkdir -p vault/file vault/keys
-chmod 700 vault/keys
-sudo docker compose up -d --build
-```
-
-Do not reset Vault on a real deployment unless you understand that it removes local Vault state.
-
----
-
-## 11. Run Django setup commands
-
-Run migrations.
-
-```bash
-sudo docker compose exec web python manage.py migrate
-```
-
-Collect static files.
-
-```bash
-sudo docker compose exec web python manage.py collectstatic --noinput
-```
-
-Create the first local Django admin account.
-
-```bash
-sudo docker compose exec web python manage.py createsuperuser
-```
-
-Run the Django deployment check.
-
-```bash
-sudo docker compose exec web python manage.py check --deploy
-```
-
-The admin account can access:
-
-```text
-https://<linux-server-ip>:8080/admin/
-```
-
-Most user, article, permission, and log management can be handled through the Django Admin site.
-
----
-
-## 12. Initialise OpenKB AI data
-
-The OpenKB AI chatbot requires OpenKB data initialization. If this is skipped, the chatbot may return errors or fail to find article data.
-
-Run the OpenKB init command.
-
-```bash
-sudo docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
+PYTHONPATH=../OpenKB-main python -m openkb.cli init
 ```
 
 During OpenKB init, it may prompt for AI/provider configuration. The exact prompt wording can vary depending on the OpenKB version, but the important fields are normally the provider/type, model name, API key, and optional base URL.
@@ -660,7 +510,213 @@ If it asks to confirm or overwrite an existing OpenKB config during first setup,
 
 If this is an existing deployment with working AI config, do not overwrite unless you intend to reconfigure it.
 
-After init completes, sync published Django articles into OpenKB data.
+After OpenKB init completes, return to the project root and deactivate the local virtual environment.
+
+```bash
+cd /opt/DjOpenKB
+deactivate
+```
+
+Confirm the local OpenKB data folder now exists.
+
+```bash
+ls -la openkb-data
+```
+
+---
+
+## 8. Generate the local Nginx HTTPS certificate
+
+Make the certificate script executable.
+
+```bash
+chmod +x nginx/certs/generate-localhost-cert.sh
+```
+
+Run the script.
+
+```bash
+./nginx/certs/generate-localhost-cert.sh
+```
+
+Nginx expects the certificate files at these paths inside the container:
+
+```text
+/etc/nginx/certs/localhost.crt
+/etc/nginx/certs/localhost.key
+```
+
+The Docker Compose mount maps that to these paths on the Linux host:
+
+```text
+nginx/certs/localhost.crt
+nginx/certs/localhost.key
+```
+
+Check that the files exist.
+
+```bash
+ls -l nginx/certs/localhost.crt nginx/certs/localhost.key
+```
+
+Set permissions.
+
+```bash
+chmod 644 nginx/certs/localhost.crt
+chmod 600 nginx/certs/localhost.key
+```
+
+This is a self-signed certificate for local/intranet testing. The browser may show a warning.
+
+---
+
+## 9. Add the LDAPS CA certificate if using AD
+
+If LDAPS is enabled, export the AD CS Root CA certificate from Windows Server as Base-64 encoded X.509.
+
+Place the exported CA certificate here:
+
+```text
+ldap-certs/ad-ca.crt
+```
+
+Check that the file exists.
+
+```bash
+ls -l ldap-certs/ad-ca.crt
+```
+
+If the Linux server or Docker container cannot resolve the AD hostname, make sure this field is set in `.env`:
+
+```env
+LDAP_DC_IP=192.168.81.128
+```
+
+Replace the IP address with the actual Windows Server 2022 Domain Controller IP.
+
+---
+
+## 10. Start the Docker stack
+
+Start and build all containers.
+
+```bash
+sudo docker compose up -d --build
+```
+
+Check container status.
+
+```bash
+sudo docker compose ps
+```
+
+Check Vault init logs.
+
+```bash
+sudo docker compose logs -f vault-init
+```
+
+Check web logs.
+
+```bash
+sudo docker compose logs -f web
+```
+
+Check Nginx logs.
+
+```bash
+sudo docker compose logs -f nginx
+```
+
+If everything is successful, the `web`, `db`, `vault`, `cleanup-scheduler`, and `nginx` services should be running.
+
+---
+
+## 11. Fix Vault init failure during fresh testing
+
+If `vault-init` fails, check the Vault bootstrap file with line numbers.
+
+```bash
+nl -ba vault/bootstrap/djopenkb.env
+```
+
+The file should use valid `KEY=VALUE` lines.
+
+Examples:
+
+```env
+DJANGO_SECRET_KEY=randomvalue
+POSTGRES_PASSWORD=randomvalue
+LDAP_BIND_PASSWORD="password-with-symbols"
+```
+
+Do not put spaces around `=`.
+
+Correct:
+
+```env
+DJANGO_SECRET_KEY=randomvalue
+```
+
+Wrong:
+
+```env
+DJANGO_SECRET_KEY = randomvalue
+```
+
+For a fresh failed deployment only, reset Vault state and start again.
+
+```bash
+sudo docker compose down
+sudo rm -rf vault/file vault/keys
+mkdir -p vault/file vault/keys
+chmod 700 vault/keys
+sudo docker compose up -d --build
+```
+
+Do not reset Vault on a real deployment unless you understand that it removes local Vault state.
+
+---
+
+## 12. Run Django setup commands
+
+Run migrations.
+
+```bash
+sudo docker compose exec web python manage.py migrate
+```
+
+Collect static files.
+
+```bash
+sudo docker compose exec web python manage.py collectstatic --noinput
+```
+
+Create the first local Django admin account.
+
+```bash
+sudo docker compose exec web python manage.py createsuperuser
+```
+
+Run the Django deployment check.
+
+```bash
+sudo docker compose exec web python manage.py check --deploy
+```
+
+The admin account can access:
+
+```text
+https://<linux-server-ip>:8080/admin/
+```
+
+Most user, article, permission, and log management can be handled through the Django Admin site.
+
+---
+
+## 13. Sync Django articles into OpenKB
+
+After Docker is running and database migrations are complete, sync published Django articles into the local OpenKB data folder.
 
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
@@ -668,9 +724,19 @@ sudo docker compose exec web python manage.py sync_openkb_ai
 
 If many articles are added or changed later, run the sync command again.
 
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai
+```
+
+Check that the container can see the locally initialized OpenKB data folder.
+
+```bash
+sudo docker compose exec web ls -la /app/openkb-data
+```
+
 ---
 
-## 13. Test LDAPS connection
+## 14. Test LDAPS connection
 
 If LDAPS is enabled, test from inside the web container.
 
@@ -694,7 +760,7 @@ documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
 
 ---
 
-## 14. Access the website
+## 15. Access the website
 
 Open the website using the Linux server IP address.
 
@@ -712,7 +778,7 @@ If using the self-signed certificate, accept the browser warning for the lab/int
 
 ---
 
-## 15. Normal operation commands
+## 16. Normal operation commands
 
 Start services.
 
@@ -755,7 +821,7 @@ sudo docker compose ps
 
 ---
 
-## 16. Pull latest updates later
+## 17. Pull latest updates later
 
 Move into the project folder.
 
@@ -773,6 +839,14 @@ Pull latest updates.
 
 ```bash
 git pull
+```
+
+If `OpenKB-main` or AI integration logic changed, update the local OpenKB virtual environment.
+
+```bash
+source .openkb-venv/bin/activate
+pip install -e OpenKB-main
+deactivate
 ```
 
 Rebuild and restart containers.
@@ -807,7 +881,7 @@ sudo docker compose exec web python manage.py check --deploy
 
 ---
 
-## 17. Files not to share
+## 18. Files not to share
 
 Do not commit or share these files/folders:
 
@@ -824,7 +898,7 @@ The public repository should only contain examples, scripts, and safe default co
 
 ---
 
-## 18. Troubleshooting quick notes
+## 19. Troubleshooting quick notes
 
 ### Docker permission denied
 
@@ -846,6 +920,25 @@ Install Python alias support:
 
 ```bash
 sudo apt install -y python-is-python3
+```
+
+### OpenKB data folder not found
+
+Initialize OpenKB locally on the Linux host:
+
+```bash
+cd /opt/DjOpenKB
+python3 -m venv .openkb-venv
+source .openkb-venv/bin/activate
+python -m pip install --upgrade pip
+pip install -e OpenKB-main
+mkdir -p openkb-data
+cd openkb-data
+PYTHONPATH=../OpenKB-main python -m openkb.cli init
+cd /opt/DjOpenKB
+deactivate
+sudo docker compose restart web cleanup-scheduler
+sudo docker compose exec web python manage.py sync_openkb_ai
 ```
 
 ### Nginx certificate file not found
@@ -882,11 +975,17 @@ If the database already exists, changing `POSTGRES_PASSWORD` in Vault alone is n
 
 ### OpenKB chatbot errors
 
-Run:
+First confirm OpenKB was initialized locally:
 
 ```bash
-sudo docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
+ls -la /opt/DjOpenKB/openkb-data
+sudo docker compose exec web ls -la /app/openkb-data
+```
+
+Then sync Django articles:
+
+```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
 
-If the init command prompts again, use the provider section above and enter the provider/model/API key matching the LLM service you want to use.
+If OpenKB init prompts again, use the provider section above and enter the provider/model/API key matching the LLM service you want to use.
