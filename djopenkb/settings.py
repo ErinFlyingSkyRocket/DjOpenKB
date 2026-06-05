@@ -155,12 +155,18 @@ OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = int(os.getenv("OPENKB_AI_RATE_LIMIT_BLOCK_S
 # Django security / basics
 # ---------------------------------------------------------------------
 
-SECRET_KEY = secret_value(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-ja^jbb-_fb0tvu71u+&4-=e_-i52*wes=$hzm8xdj_0kx22nbj",
-)
-
 DEBUG = config_value("DJANGO_DEBUG", "false").lower() == "true"
+
+# Django secret key must come from env/file/Vault. Do not keep an insecure
+# fallback in source code because it can accidentally be used in deployment.
+# In this project, DJANGO_SECRET_KEY should be stored in Vault via
+# vault/bootstrap/djopenkb.env during first-time Vault seeding.
+SECRET_KEY = secret_value("DJANGO_SECRET_KEY", "")
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY is not configured. Set it in Vault, an environment "
+        "variable, or DJANGO_SECRET_KEY_FILE before starting Django."
+    )
 
 ALLOWED_HOSTS = [
     "localhost",
