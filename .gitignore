@@ -44,9 +44,9 @@ vault/keys/*
 vault/logs/*
 !vault/logs/.gitkeep
 
-# PostgreSQL persistent runtime data - keep folder only
-postgres-data/*
-!postgres-data/.gitkeep
+# PostgreSQL persistent runtime data
+# Do not track postgres-data at all. Docker/Postgres can create it locally.
+postgres-data/
 
 # OpenKB local/generated knowledge content - keep folders only
 openkb-data/*
