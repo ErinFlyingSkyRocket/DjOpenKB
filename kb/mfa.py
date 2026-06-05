@@ -272,7 +272,7 @@ def complete_pending_mfa_login(request, user):
         auth_login(request, user)
 
     mark_mfa_verified(request, user)
-    request.session[PRE_MFA_NEXT_SESSION_KEY] = next_url
+    request.session.pop(PRE_MFA_NEXT_SESSION_KEY, None)
     request.session.modified = True
     return next_url
 

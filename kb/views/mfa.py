@@ -54,8 +54,8 @@ def _safe_next_url(request):
     # middleware-added next=/admin/login/?next=/admin/ override it.
     if get_pending_mfa_user(request):
         candidates = [
-            (request.POST.get("next") or "").strip(),
             (pending_mfa_next_url(request) or "").strip(),
+            (request.POST.get("next") or "").strip(),
             (request.GET.get("next") or "").strip(),
         ]
     else:

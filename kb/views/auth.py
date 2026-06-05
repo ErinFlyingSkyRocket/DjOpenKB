@@ -5,12 +5,15 @@ from ..mfa import (
     clear_mfa_verified,
     clear_pending_mfa_login,
     get_or_create_mfa_device,
+    mfa_is_verified,
     user_requires_mfa,
     verify_totp_code,
 )
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse
 from django.utils.translation import gettext as _
+from urllib.parse import urlencode
 
 
 class OpenKBLoginView(LoginView):
@@ -24,11 +27,23 @@ class OpenKBLoginView(LoginView):
                 return redirect("home")
 
             if user_requires_mfa(request.user):
-                clear_mfa_verified(request)
-                device = get_or_create_mfa_device(request.user)
+                if mfa_is_verified(request):
+                    return redirect(self.get_success_url())
+
+                user = request.user
+                device = get_or_create_mfa_device(user)
+                next_url = self.get_success_url()
+                backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
+                logout(request)
+                begin_pending_mfa_login(
+                    request,
+                    user,
+                    next_url=next_url,
+                    backend=backend,
+                )
                 if device.confirmed:
-                    return redirect("mfa_verify")
-                return redirect("mfa_setup")
+                    return redirect(f"{reverse('mfa_verify')}?{urlencode({'next': next_url})}")
+                return redirect(f"{reverse('mfa_setup')}?{urlencode({'next': next_url})}")
 
             return redirect(self.get_success_url())
 
