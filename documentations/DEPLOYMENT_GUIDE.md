@@ -2,6 +2,8 @@
 
 This guide explains how to deploy DjOpenKB on a Linux server using Docker Compose.
 
+DjOpenKB integrates with VectifyAI OpenKB for the AI knowledge base. OpenKB must be initialized locally in the `openkb-data/` folder before the Django AI sync command is run.
+
 The project can be deployed for a local/internal network without buying a public domain name. Users can access it through the Linux server IP address, for example:
 
 ```text
@@ -279,11 +281,11 @@ Important notes:
 
 ---
 
-## 7. Initialise OpenKB AI data locally on the Linux host
+## 7. Initialise OpenKB data locally
 
-OpenKB data must be initialized in the **local project folder** because Docker mounts the local `openkb-data/` directory into the web container.
+OpenKB must be initialized in the local project folder because Docker mounts the local `openkb-data/` folder into the Django container.
 
-Do **not** initialize OpenKB only inside Docker for first setup. Initialize it locally at:
+Initialize OpenKB locally at:
 
 ```text
 /opt/DjOpenKB/openkb-data
@@ -295,7 +297,7 @@ Move to the project root.
 cd /opt/DjOpenKB
 ```
 
-Create a local Python virtual environment just for OpenKB initialization.
+Create a local Python virtual environment for OpenKB.
 
 ```bash
 python3 -m venv .openkb-venv
@@ -303,19 +305,19 @@ source .openkb-venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
-Install OpenKB from the bundled `OpenKB-main` folder.
+Install OpenKB. For this project, the OpenKB source is already included under `OpenKB-main/`, so install from that local folder.
 
 ```bash
 pip install -e OpenKB-main
 ```
 
-If editable install fails, install its requirements and use `PYTHONPATH`.
+If preferred, the official VectifyAI OpenKB package can also be installed from PyPI.
 
 ```bash
-pip install -r OpenKB-main/requirements.txt
+pip install openkb
 ```
 
-Create the local OpenKB data folder.
+Create and enter the OpenKB data folder.
 
 ```bash
 mkdir -p openkb-data
@@ -325,202 +327,118 @@ cd openkb-data
 Run OpenKB init locally.
 
 ```bash
+openkb init
+```
+
+If the `openkb` command is not found, use the local Python module command instead.
+
+```bash
 PYTHONPATH=../OpenKB-main python -m openkb.cli init
 ```
 
-During OpenKB init, it may prompt for AI/provider configuration. The exact prompt wording can vary depending on the OpenKB version, but the important fields are normally the provider/type, model name, API key, and optional base URL.
-
-Use one of the following examples depending on the provider you want.
-
-### Option A: Google Gemini
-
-Use this if you are using Gemini API.
+OpenKB will ask for a model in LiteLLM format. When you see this prompt:
 
 ```text
-AI provider / AI type / LLM provider: gemini
-Model: gemini/gemini-2.5-flash
-API key: same value as GEMINI_API_KEY in Vault
-Base URL / API URL: leave blank/default
-Embedding provider: leave default if prompted
+Model (enter for default gpt-5.4-mini):
 ```
 
-Relevant `.env` values:
+type the model name you want to use.
 
-```env
-OPENKB_AI_PROVIDER=openkb-cli
-OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
-LITELLM_DROP_PARAMS=true
+### Common OpenKB model inputs
+
+| Provider | Example model input |
+|---|---|
+| OpenAI latest frontier | `gpt-5.5` |
+| OpenAI pro/high accuracy | `gpt-5.5-pro` |
+| OpenAI standard | `gpt-5.4` |
+| OpenAI mini/default-style | `gpt-5.4-mini` |
+| OpenAI lower cost | `gpt-5.4-nano` |
+| Gemini Flash | `gemini/gemini-2.5-flash` |
+| Gemini Pro | `gemini/gemini-2.5-pro` |
+| Anthropic Claude Haiku | `anthropic/claude-3-5-haiku-latest` |
+| Anthropic Claude Sonnet | `anthropic/claude-3-5-sonnet-latest` |
+| Anthropic Claude 4 style | `anthropic/claude-sonnet-4-6` |
+| Anthropic Claude Opus style | `anthropic/claude-opus-4-6` |
+| Ollama local model | `ollama/llama3.1` |
+| Mistral | `mistral/mistral-small-latest` |
+| Groq | `groq/llama-3.1-8b-instant` |
+| OpenRouter | `openrouter/openai/gpt-4o-mini` |
+| Cohere | `cohere/command-r` |
+
+For the current DjOpenKB Gemini setup, enter:
+
+```text
+gemini/gemini-2.5-flash
 ```
 
-Relevant Vault bootstrap values:
+If using OpenAI, OpenKB may accept OpenAI model names without the `openai/` prefix, for example:
+
+```text
+gpt-5.5
+gpt-5.4
+gpt-5.4-mini
+```
+
+For other providers, use the provider/model format, for example:
+
+```text
+anthropic/claude-3-5-sonnet-latest
+gemini/gemini-2.5-flash
+ollama/llama3.1
+```
+
+### API key values
+
+Use the matching API key for the provider selected during `openkb init`.
+
+For Gemini:
 
 ```env
 GEMINI_API_KEY=your-gemini-api-key
 LLM_API_KEY=your-gemini-api-key
 ```
 
-### Option B: OpenAI
-
-Use this if you are using an OpenAI API key.
-
-```text
-AI provider / AI type / LLM provider: openai
-Model: gpt-4o-mini
-API key: your OpenAI API key
-Base URL / API URL: leave blank/default
-Embedding provider: leave default if prompted
-```
-
-Example model values:
-
-```text
-gpt-4o-mini
-gpt-4.1-mini
-gpt-4.1
-```
-
-Vault bootstrap:
+For OpenAI:
 
 ```env
 LLM_API_KEY=your-openai-api-key
 ```
 
-If the OpenKB prompt expects a provider-prefixed LiteLLM model, use:
-
-```text
-openai/gpt-4o-mini
-```
-
-### Option C: Anthropic Claude
-
-Use this if you are using an Anthropic/Claude API key.
-
-```text
-AI provider / AI type / LLM provider: anthropic
-Model: claude-3-5-haiku-latest
-API key: your Anthropic API key
-Base URL / API URL: leave blank/default
-Embedding provider: leave default if prompted
-```
-
-Other possible model value examples:
-
-```text
-claude-3-5-sonnet-latest
-claude-3-7-sonnet-latest
-```
-
-Vault bootstrap:
+For Anthropic Claude:
 
 ```env
 LLM_API_KEY=your-anthropic-api-key
 ```
 
-If the OpenKB prompt expects a provider-prefixed LiteLLM model, use:
-
-```text
-anthropic/claude-3-5-haiku-latest
-```
-
-### Option D: Azure OpenAI
-
-Use this if your organisation uses Azure OpenAI.
-
-```text
-AI provider / AI type / LLM provider: azure
-Model: your Azure OpenAI deployment name
-API key: your Azure OpenAI key
-Base URL / API URL: your Azure OpenAI endpoint
-API version: use the version configured for your Azure OpenAI resource
-Embedding provider: leave default if prompted
-```
-
-Vault bootstrap:
-
-```env
-LLM_API_KEY=your-azure-openai-key
-```
-
-For Azure, the model/deployment field may need the Azure deployment name instead of the public model name.
-
-### Option E: Ollama or local model
-
-Use this if OpenKB is configured to call a local Ollama server.
-
-```text
-AI provider / AI type / LLM provider: ollama
-Model: llama3.1
-API key: leave blank if not required
-Base URL / API URL: http://host.docker.internal:11434 or the reachable Ollama URL
-Embedding provider: leave default if prompted
-```
-
-If Ollama runs on another Linux host, use that host IP instead of `host.docker.internal`.
-
-Example model values:
-
-```text
-llama3.1
-mistral
-qwen2.5
-```
-
-### Option F: Other LiteLLM-compatible providers
-
-If OpenKB supports LiteLLM-style provider strings in your installed version, use the provider/model pattern required by that provider.
-
-Common pattern:
-
-```text
-provider/model-name
-```
-
-Examples:
-
-```text
-groq/llama-3.1-8b-instant
-mistral/mistral-small-latest
-openrouter/openai/gpt-4o-mini
-cohere/command-r
-```
-
-Use the API key belonging to that provider in:
+For OpenRouter, Groq, Mistral, Cohere, or other providers:
 
 ```env
 LLM_API_KEY=your-provider-api-key
 ```
 
-### General OpenKB init guidance
+Some OpenKB versions may not show many prompts and may silently create the configuration files. That is acceptable.
 
-If the prompt asks for a LiteLLM-style model value, enter the full provider/model string, for example:
+Check that OpenKB created the local configuration.
 
-```text
-gemini/gemini-2.5-flash
-openai/gpt-4o-mini
-anthropic/claude-3-5-haiku-latest
+```bash
+ls -la
+ls -la .openkb
 ```
 
-If it asks whether to drop unsupported parameters, choose yes/true if available, matching:
+If `.openkb/` exists, OpenKB init has completed.
 
-```env
-LITELLM_DROP_PARAMS=true
-```
-
-If it asks to confirm or overwrite an existing OpenKB config during first setup, confirm yes.
-
-If this is an existing deployment with working AI config, do not overwrite unless you intend to reconfigure it.
-
-After OpenKB init completes, return to the project root and deactivate the local virtual environment.
+Return to the project root and deactivate the virtual environment.
 
 ```bash
 cd /opt/DjOpenKB
 deactivate
 ```
 
-Confirm the local OpenKB data folder now exists.
+Do not commit or share these generated OpenKB runtime files:
 
-```bash
-ls -la openkb-data
+```text
+openkb-data/.env
+openkb-data/.openkb/
 ```
 
 ---
@@ -732,6 +650,7 @@ Check that the container can see the locally initialized OpenKB data folder.
 
 ```bash
 sudo docker compose exec web ls -la /app/openkb-data
+sudo docker compose exec web ls -la /app/openkb-data/.openkb
 ```
 
 ---
@@ -841,7 +760,7 @@ Pull latest updates.
 git pull
 ```
 
-If `OpenKB-main` or AI integration logic changed, update the local OpenKB virtual environment.
+If OpenKB needs to be updated, update the local OpenKB virtual environment.
 
 ```bash
 source .openkb-venv/bin/activate
@@ -891,6 +810,7 @@ vault/bootstrap/djopenkb.env
 vault/keys/
 vault/file/
 openkb-data/.env
+openkb-data/.openkb/
 nginx/certs/localhost.key
 ```
 
@@ -922,6 +842,34 @@ Install Python alias support:
 sudo apt install -y python-is-python3
 ```
 
+### OpenKB command not found
+
+Activate the local OpenKB virtual environment:
+
+```bash
+cd /opt/DjOpenKB
+source .openkb-venv/bin/activate
+```
+
+Then check:
+
+```bash
+openkb --help
+```
+
+If still missing:
+
+```bash
+pip install -e OpenKB-main
+```
+
+Or use:
+
+```bash
+cd /opt/DjOpenKB/openkb-data
+PYTHONPATH=../OpenKB-main python -m openkb.cli init
+```
+
 ### OpenKB data folder not found
 
 Initialize OpenKB locally on the Linux host:
@@ -934,7 +882,7 @@ python -m pip install --upgrade pip
 pip install -e OpenKB-main
 mkdir -p openkb-data
 cd openkb-data
-PYTHONPATH=../OpenKB-main python -m openkb.cli init
+openkb init
 cd /opt/DjOpenKB
 deactivate
 sudo docker compose restart web cleanup-scheduler
@@ -979,7 +927,9 @@ First confirm OpenKB was initialized locally:
 
 ```bash
 ls -la /opt/DjOpenKB/openkb-data
+ls -la /opt/DjOpenKB/openkb-data/.openkb
 sudo docker compose exec web ls -la /app/openkb-data
+sudo docker compose exec web ls -la /app/openkb-data/.openkb
 ```
 
 Then sync Django articles:
@@ -987,5 +937,3 @@ Then sync Django articles:
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
-
-If OpenKB init prompts again, use the provider section above and enter the provider/model/API key matching the LLM service you want to use.
