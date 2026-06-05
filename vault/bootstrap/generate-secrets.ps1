@@ -1,101 +1,99 @@
-<#
-Generate secure local bootstrap secrets for DjOpenKB.
-
-This script creates or updates vault/bootstrap/djopenkb.env with:
-- DJANGO_SECRET_KEY
-- POSTGRES_PASSWORD
-
-It preserves any existing non-generated lines such as GEMINI_API_KEY or LDAP_BIND_PASSWORD.
-Run from the project root:
-    powershell -ExecutionPolicy Bypass -File vault/bootstrap/generate-secrets.ps1
-#>
-
 param(
     [string]$OutputFile = "vault/bootstrap/djopenkb.env",
-    [int]$DjangoKeyLength = 64,
-    [int]$PostgresPasswordLength = 32,
-    [switch]$Force
+    [string]$ExampleFile = "vault/bootstrap/djopenkb.env.example",
+    [int]$DjangoKeyLength = 72,
+    [int]$PostgresPasswordLength = 40,
+    [int]$PlaceholderPasswordLength = 40
 )
 
-Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function New-RandomSecret {
-    param(
-        [int]$Length,
-        [string]$Alphabet
-    )
+function New-Secret {
+    param([int]$Length)
 
-    $bytes = New-Object byte[] ($Length)
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    $bytes = New-Object byte[] $Length
     [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
 
-    $chars = New-Object char[] ($Length)
-    for ($i = 0; $i -lt $Length; $i++) {
-        $chars[$i] = $Alphabet[$bytes[$i] % $Alphabet.Length]
+    $result = New-Object System.Text.StringBuilder
+    foreach ($b in $bytes) {
+        [void]$result.Append($chars[$b % $chars.Length])
     }
-    return -join $chars
+    return $result.ToString()
 }
 
-function Set-Or-AppendEnvLine {
-    param(
-        [string[]]$Lines,
-        [string]$Key,
-        [string]$Value
-    )
+$dir = Split-Path $OutputFile -Parent
+if ($dir -and -not (Test-Path $dir)) {
+    New-Item -ItemType Directory -Force -Path $dir | Out-Null
+}
 
-    $pattern = "^\s*" + [regex]::Escape($Key) + "\s*="
-    $newLine = "$Key=`"$Value`""
-    $updated = $false
-    $result = foreach ($line in $Lines) {
-        if ($line -match $pattern) {
-            $updated = $true
-            $newLine
-        } else {
-            $line
+if (-not (Test-Path $OutputFile)) {
+    if (Test-Path $ExampleFile) {
+        Copy-Item $ExampleFile $OutputFile
+    } else {
+@"
+# ---------------------------------------------------------------------
+# DjOpenKB Vault bootstrap secrets
+# ---------------------------------------------------------------------
+# Generated locally. Do not commit or share this file.
+# After Vault is seeded and login works, delete this file from exported copies.
+
+DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
+POSTGRES_PASSWORD=replace-with-stable-postgres-password
+
+GEMINI_API_KEY=replace-with-gemini-api-key
+LLM_API_KEY=replace-with-gemini-api-key-or-llm-key
+LDAP_BIND_PASSWORD="replace-with-real-svc-djopenkb-password"
+LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
+"@ | Set-Content -Path $OutputFile -Encoding UTF8
+    }
+}
+
+$replacements = @{
+    "DJANGO_SECRET_KEY" = New-Secret $DjangoKeyLength
+    "POSTGRES_PASSWORD" = New-Secret $PostgresPasswordLength
+    "LDAP_PLACEHOLDER_PASSWORD" = New-Secret $PlaceholderPasswordLength
+}
+
+$lines = Get-Content $OutputFile
+$out = New-Object System.Collections.Generic.List[string]
+$found = @{
+    "DJANGO_SECRET_KEY" = $false
+    "POSTGRES_PASSWORD" = $false
+    "LDAP_PLACEHOLDER_PASSWORD" = $false
+}
+
+foreach ($line in $lines) {
+    $trimmed = $line.Trim()
+    $handled = $false
+
+    foreach ($key in $replacements.Keys) {
+        if ($trimmed.StartsWith("$key=")) {
+            $out.Add("$key=$($replacements[$key])")
+            $found[$key] = $true
+            $handled = $true
+            break
         }
     }
 
-    if (-not $updated) {
-        $result += $newLine
+    if (-not $handled) {
+        $out.Add($line)
     }
-    return $result
 }
 
-$projectRoot = (Resolve-Path ".").Path
-$outputPath = Join-Path $projectRoot $OutputFile
-$outputDir = Split-Path -Parent $outputPath
-
-if (-not (Test-Path $outputDir)) {
-    New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+if (-not $found["LDAP_PLACEHOLDER_PASSWORD"]) {
+    if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") {
+        $out.Add("")
+    }
+    $out.Add("# Only used if LDAP_PLACEHOLDER_ENABLED=true.")
+    $out.Add("LDAP_PLACEHOLDER_PASSWORD=$($replacements['LDAP_PLACEHOLDER_PASSWORD'])")
 }
 
-$djangoAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)"
-# Keep PostgreSQL password shell/env friendly: no spaces, quotes, backslashes, or dollar signs.
-$postgresAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-@#%+=:."
+$out | Set-Content -Path $OutputFile -Encoding UTF8
 
-$djangoSecretKey = New-RandomSecret -Length $DjangoKeyLength -Alphabet $djangoAlphabet
-$postgresPassword = New-RandomSecret -Length $PostgresPasswordLength -Alphabet $postgresAlphabet
-
-if ((Test-Path $outputPath) -and (-not $Force)) {
-    $lines = Get-Content $outputPath
-} else {
-    $lines = @(
-        "# ---------------------------------------------------------------------",
-        "# DjOpenKB Vault bootstrap secrets",
-        "# Generated locally. Do not commit or share this file.",
-        "# After Vault is seeded and login works, delete this file from exported copies.",
-        "# ---------------------------------------------------------------------",
-        "",
-        "# Required Django/PostgreSQL secrets"
-    )
-}
-
-$lines = Set-Or-AppendEnvLine -Lines $lines -Key "DJANGO_SECRET_KEY" -Value $djangoSecretKey
-$lines = Set-Or-AppendEnvLine -Lines $lines -Key "POSTGRES_PASSWORD" -Value $postgresPassword
-
-Set-Content -Path $outputPath -Value $lines -Encoding UTF8
-
-Write-Host "Generated secure secrets in: $OutputFile" -ForegroundColor Green
-Write-Host "Updated: DJANGO_SECRET_KEY and POSTGRES_PASSWORD" -ForegroundColor Green
-Write-Host "Keep this file private. Do not commit or submit it." -ForegroundColor Yellow
-Write-Host "If Vault was already seeded, update Vault or reseed it so the new values are used." -ForegroundColor Yellow
+Write-Host "Generated bootstrap secrets in: $OutputFile"
+Write-Host "Updated: DJANGO_SECRET_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD"
+Write-Host "Preserved: comments, GEMINI_API_KEY, LLM_API_KEY, LDAP_BIND_PASSWORD"
+Write-Host ""
+Write-Host "Next: edit GEMINI_API_KEY, LLM_API_KEY and LDAP_BIND_PASSWORD manually."
+Write-Host 'Recommended format if LDAP password has symbols: LDAP_BIND_PASSWORD="P@ssw0rd!"'

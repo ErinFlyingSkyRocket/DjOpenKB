@@ -168,17 +168,20 @@ if not SECRET_KEY:
         "variable, or DJANGO_SECRET_KEY_FILE before starting Django."
     )
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "web",
-    "nginx",
-]
+def _csv_config(name: str, default: str = "") -> list[str]:
+    """Read a comma-separated config value and return trimmed non-empty items."""
+    return [item.strip() for item in config_value(name, default).split(",") if item.strip()]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://localhost:8080",
-    "https://127.0.0.1:8080",
-]
+
+ALLOWED_HOSTS = _csv_config(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,web,nginx",
+)
+
+CSRF_TRUSTED_ORIGINS = _csv_config(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "https://localhost:8080,https://127.0.0.1:8080",
+)
 
 # Nginx terminates HTTPS and forwards requests to Django over the internal
 # Docker network. This tells Django to trust Nginx's HTTPS forwarding header.

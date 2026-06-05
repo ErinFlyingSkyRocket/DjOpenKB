@@ -1,363 +1,367 @@
 # DjOpenKB
 
-DjOpenKB is a Docker-based Django knowledge base platform that integrates article management, user-submitted knowledge workflows, Active Directory authentication, local fallback login, MFA enforcement, Vault-backed secret management, PostgreSQL persistence, Nginx HTTPS reverse proxying, and an integrated OpenKB AI/chatbox workflow.
+DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, user article suggestions, admin review, Active Directory login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, and an integrated OpenKB AI chatbot.
 
-The application is designed for an internal knowledge repository where users can browse articles, suggest new content, search existing knowledge, and use the OpenKB AI assistant after the knowledge base has been synced into the OpenKB data store.
+The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required. The website can be accessed through HTTPS using the Linux server IP address or localhost, while Active Directory can use an internal lab domain such as `openkb.local`.
 
 ---
 
 ## Main Features
 
-- **Knowledge base website** built with Django.
-- **Article browsing and search** for Markdown-based knowledge content.
-- **User article suggestion workflow** with draft, pending review, approved, and pending-failed states.
-- **Admin review tools** for approving, editing, returning, or rejecting suggested articles with feedback.
-- **AD/LDAP login** as the main domain authentication flow.
-- **Local Django login fallback** for local administrator or fallback accounts.
-- **MFA enforcement** using authenticator-app TOTP codes as part of the login completion flow.
-- **Vault secret management** for Django, PostgreSQL, LDAP bind password, and AI provider API keys.
-- **PostgreSQL persistence** using a bind-mounted `postgres-data/` runtime folder.
-- **Nginx HTTPS reverse proxy** for serving the website over TLS.
-- **Integrated OpenKB AI/chatbox** using the downloaded OpenKB source from VectifyAI/OpenKB.
-- **Multilingual interface support** through Django locale files.
-- **Cleanup scheduler** for removing stray uploaded files.
+- Internal IT wiki / knowledge base website.
+- Article browsing, searching, view tracking, voting, and trending articles.
+- User article suggestion workflow with admin approval.
+- Admin review area for pending articles and rejected/pending failed feedback.
+- Admin tools for import/export and cleaning stray upload files.
+- Local Django login support.
+- Active Directory login over LDAPS for domain users.
+- MFA support using authenticator-app one-time passwords.
+- Vault integration for sensitive secrets such as Django, database, LDAP, and AI credentials.
+- PostgreSQL database through Docker Compose.
+- Nginx HTTPS reverse proxy on port `8080`.
+- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`.
+- Markdown article rendering with sanitization.
+- Image upload restrictions for article content.
+- Multilingual UI support through Django translation files.
 
 ---
 
-## Documentation
-
-Use these documents together:
+## Main Documentation
 
 | File | Purpose |
 |---|---|
-| `README.md` | Project overview, features, folder structure, and dependency summary. |
-| `DEPLOYMENT_GUIDE.md` | Full first-time setup, normal startup, update, troubleshooting, Vault, AD/LDAP, MFA, and OpenKB commands. |
+| `README.md` | Overall project overview and folder structure. |
+| `documentations/DEPLOYMENT_GUIDE.md` | Linux server deployment, Git pull/update flow, Docker startup, Vault setup, Nginx certificate setup, and OpenKB initialization. |
+| `documentations/LDAP_LDAPS_SETUP.md` | Django LDAPS configuration, CA certificate placement, and LDAPS connection testing. |
+| `documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md` | Windows Server 2022 AD DS, AD CS, LDAPS certificate, and lab testing setup. |
 
 For deployment, start with:
 
-```bash
-cat DEPLOYMENT_GUIDE.md
+```text
+ documentations/DEPLOYMENT_GUIDE.md
 ```
 
 ---
 
-## Project Structure
+## Project Folder Structure
 
 ```text
 DjOpenKB/
-├── djopenkb/                    # Django project settings, URLs, ASGI/WSGI entry points
-├── kb/                          # Main Django app: articles, auth, MFA, admin tools, search, profiles
-├── website/templates/           # HTML templates for login, profile, articles, admin pages, MFA pages
-├── website/static/              # Static frontend assets used by the website
-├── locale/                      # Django translation files for supported languages
-├── docker/                      # Container helper scripts, including Postgres Vault entrypoint
-├── nginx/                       # Nginx reverse proxy config and HTTPS certificate files/scripts
-├── vault/                       # Vault configuration, bootstrap, scripts, file storage, and runtime keys
-├── openkb-data/                 # Local OpenKB workspace/data folder, generated/runtime content
-├── OpenKB-main/                 # Downloaded OpenKB source from https://github.com/VectifyAI/OpenKB
-├── postgres-data/               # PostgreSQL persistent runtime data
-├── staticfiles/                 # Collected static files generated by Django
-├── docker-compose.yml           # Main Docker Compose service definition
-├── Dockerfile                   # Django web container build file
-├── Dockerfile.postgres-vault    # PostgreSQL image that reads password from Vault
-├── requirements.txt             # Python package dependencies for the Django web container
+├── djopenkb/                    # Django project configuration
+├── kb/                          # Main Django application logic
+├── website/                     # Templates and static frontend files
+├── locale/                      # Django translation files
+├── documentations/              # Project setup and deployment guides
+├── docker/                      # Docker helper scripts
+├── nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
+├── vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
+├── ldap-certs/                  # AD/LDAPS CA certificate mounted into the web container
+├── OpenKB-main/                 # OpenKB source code used by the AI chatbot
+├── openkb-data/                 # OpenKB workspace and article data used by the AI chatbot
+├── postgres-data/               # PostgreSQL local persistent data folder
+├── staticfiles/                 # Django collected static files
+├── scripts/                     # Utility scripts such as LDAPS testing
 ├── manage.py                    # Django management command entry point
-└── DEPLOYMENT_GUIDE.md          # Setup, operation, troubleshooting, and maintenance commands
+├── Dockerfile                   # Django web container build file
+├── Dockerfile.postgres-vault    # PostgreSQL image with Vault password support
+├── docker-compose.yml           # Main Docker Compose stack
+├── .env                         # Local non-secret runtime configuration
+├── .env.example                 # Example runtime configuration
+└── requirements.txt             # Python dependencies
 ```
 
 ---
 
-## Core Folders
+## Folder Overview
 
 ### `djopenkb/`
 
-Contains the Django project configuration:
+Contains the main Django project configuration.
 
-- `settings.py` – application settings, installed apps, middleware, database, LDAP, Vault, static files, and security settings.
-- `urls.py` – root URL routing for the project.
-- `asgi.py` / `wsgi.py` – server entry points.
+This folder controls project-level settings such as installed apps, middleware, database configuration, session settings, security settings, static files, Vault integration, LDAP/LDAPS integration, and root URL routing.
+
+Main files:
+
+```text
+djopenkb/settings.py
+djopenkb/urls.py
+djopenkb/asgi.py
+djopenkb/wsgi.py
+```
+
+---
 
 ### `kb/`
 
-Main Django application folder. It contains:
+Contains the main Django app for the knowledge base.
 
-- article models and suggestion workflow logic
-- authentication backends for LDAP/local login
-- MFA helper logic and middleware
-- views for articles, search, profile, admin tools, review pages, and MFA pages
-- Django admin registration
-- management commands such as OpenKB sync and LDAP testing
+This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, and management commands.
 
-### `website/templates/`
+Important areas:
 
-HTML templates used by the site. Important pages include:
+```text
+kb/models.py                 # Database models for articles, votes, logs, MFA, and related data
+kb/forms.py                  # Django forms used by articles, profiles, MFA, and admin workflows
+kb/backends.py               # Authentication backend, including AD/LDAP login handling
+kb/admin.py                  # Django admin registration
+kb/urls.py                   # App-level URL routes
+kb/views/                    # Main page, article, admin, auth, MFA, AI, and service views
+kb/management/commands/      # Custom Django management commands
+kb/migrations/               # Database migrations
+kb/templatetags/             # Custom template filters/tags
+```
 
-- login page
-- profile page
-- article display and article editor pages
-- pending article review pages
-- MFA setup and verification pages
-- general layout templates
+General view grouping:
+
+```text
+kb/views/main.py             # Article listing, search, detail pages, voting, and normal browsing
+kb/views/suggestions.py      # User article suggestions, drafts, edits, and article image uploads
+kb/views/admin.py            # Admin-only article review and maintenance tools
+kb/views/auth.py             # Login/profile/account-related pages
+kb/views/mfa.py              # MFA setup, verification, and reset views
+kb/views/ai.py               # OpenKB AI chatbot endpoint
+kb/views/services.py         # Shared helper logic used by other views
+```
+
+---
+
+### `website/`
+
+Contains the frontend files used by the Django app.
+
+```text
+website/templates/           # HTML templates
+website/static/              # CSS, JavaScript, images, icons, and other static assets
+```
+
+The templates cover the base layout, login pages, article pages, profile pages, admin tools, MFA pages, and AI chat UI.
+
+---
 
 ### `locale/`
 
-Django translation files:
+Contains Django translation files for the multilingual interface.
+
+Each language has its own folder with `.po` and `.mo` files:
 
 ```text
 locale/<language>/LC_MESSAGES/django.po
 locale/<language>/LC_MESSAGES/django.mo
 ```
 
-Update `.po` files when adding/changing text, then compile messages when required.
+---
+
+### `documentations/`
+
+Contains the main documentation files for setup and testing.
+
+```text
+documentations/DEPLOYMENT_GUIDE.md
+documentations/LDAP_LDAPS_SETUP.md
+documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
+```
+
+Use the deployment guide for Linux server setup. Use the LDAPS guide and Windows Server guide when configuring Active Directory login.
 
 ---
 
-## Docker and Runtime Services
+### `nginx/`
 
-DjOpenKB runs through Docker Compose. Main services include:
+Contains the Nginx reverse proxy configuration.
 
-| Service | Purpose |
-|---|---|
-| `vault` | Stores application secrets. |
-| `vault-init` | Initializes/unseals/seeds Vault during setup or secret rotation. |
-| `vault-auto-unseal` | Auto-unseals Vault for local VM deployment. |
-| `db` | PostgreSQL database. Reads `POSTGRES_PASSWORD` from Vault. |
-| `web` | Django/Gunicorn application container. |
-| `nginx` | HTTPS reverse proxy in front of Django. |
-| `cleanup-scheduler` | Periodic stray upload cleanup task. |
+Nginx provides HTTPS access to the Django web container. The project uses port `8080` by default.
+
+Important paths:
+
+```text
+nginx/nginx.conf
+nginx/certs/
+```
+
+The `nginx/certs/` folder is used for local HTTPS certificates. Do not share private key files such as:
+
+```text
+nginx/certs/localhost.key
+```
 
 ---
 
-## Vault and Secret Management
+### `vault/`
 
-Secrets are not intended to live in the normal `.env` file. The normal `.env` should contain non-secret configuration, while `vault/bootstrap/djopenkb.env` is used only to seed Vault.
+Contains HashiCorp Vault configuration and local Vault runtime folders.
 
-Secrets stored in Vault include:
+Vault is used to store sensitive values such as Django secret key, PostgreSQL password, LDAP bind password, and AI API key.
 
-```text
-DJANGO_SECRET_KEY
-POSTGRES_PASSWORD
-LDAP_BIND_PASSWORD
-GEMINI_API_KEY
-LLM_API_KEY
-OPENAI_API_KEY, if using OpenAI
-```
-
-Runtime Vault folders:
+Important paths:
 
 ```text
-vault/bootstrap/       # Temporary bootstrap secret file location
-vault/file/            # Vault persistent data
-vault/keys/            # Vault unseal/app token material
-vault/logs/            # Vault logs
+vault/config/                # Vault configuration
+vault/bootstrap/             # First-time bootstrap secret file and helper scripts
+vault/keys/                  # Vault tokens and unseal keys, do not share
+vault/file/                  # Vault runtime data, do not share
+vault/logs/                  # Vault logs
+vault/scripts/               # Vault setup/helper scripts
 ```
 
-Important notes:
+The bootstrap file is only for first-time setup:
 
-- `vault/bootstrap/djopenkb.env` is temporary and should not be committed.
-- After Vault is seeded, remove `vault/bootstrap/djopenkb.env`.
-- Do not change `POSTGRES_PASSWORD` after PostgreSQL is already initialized unless you also update the password inside PostgreSQL.
-- Do not push real contents from `vault/file/`, `vault/keys/`, or `postgres-data/`.
+```text
+vault/bootstrap/djopenkb.env
+```
+
+After Vault is seeded, do not share this file.
 
 ---
 
-## Authentication and MFA
+### `ldap-certs/`
 
-DjOpenKB supports two login paths:
+Contains the exported CA certificate used by Django to verify the Windows Server LDAPS certificate.
 
-1. **AD/LDAP login** for domain users.
-2. **Local Django login** for local fallback accounts.
-
-MFA is treated as part of the login completion flow. A password-authenticated user is not considered fully logged in until MFA setup or MFA verification is completed.
-
-General MFA behavior:
+Expected file:
 
 ```text
-Username/password accepted
-→ MFA setup required if no authenticator exists
-→ MFA verification required if authenticator already exists
-→ only after valid TOTP code is the session fully authenticated
+ldap-certs/ad-ca.crt
 ```
 
-Users cannot access protected DjOpenKB pages until MFA is complete.
+This folder is mounted into the web container so Django can validate LDAPS properly.
 
 ---
 
-## OpenKB AI Integration
+### `OpenKB-main/`
 
-DjOpenKB integrates the OpenKB source downloaded from:
+Contains the OpenKB source code used by the AI chatbot integration.
 
-```text
-https://github.com/VectifyAI/OpenKB
+The Django project calls OpenKB from this folder when answering AI chat queries and working with article data.
+
+The `.env` setting normally points to this folder:
+
+```env
+OPENKB_BASE_DIR=OpenKB-main
 ```
 
-Key folders:
+---
 
-```text
-OpenKB-main/       # Downloaded OpenKB source code
-openkb-data/       # Local OpenKB workspace and generated knowledge-base data
+### `openkb-data/`
+
+Contains the OpenKB workspace used by the chatbot.
+
+This folder stores the OpenKB data/index workspace and article files used by the AI integration.
+
+Before using the chatbot, initialize OpenKB inside this folder:
+
+```bash
+docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 ```
 
-OpenKB must be initialized before syncing data into the AI workflow. During `openkb init`, select the AI provider/model that matches the deployment, such as Gemini, OpenAI, or another supported provider.
-
-After initialization, DjOpenKB articles can be synced into OpenKB using:
+Then sync published Django articles into OpenKB:
 
 ```bash
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
-Make sure the chosen provider's API key is stored in Vault through `vault/bootstrap/djopenkb.env` during first setup, or patched into Vault later.
+If OpenKB is not initialized, the chatbot may fail or not detect the article data correctly.
 
 ---
 
-## Runtime Folders Not to Commit
+### `postgres-data/`
 
-The following folders/files are required at runtime but should not be committed with real data:
+Stores PostgreSQL local persistent data when using a bind-mounted database folder.
+
+Do not delete this folder unless you intentionally want to reset the local database.
+
+---
+
+### `staticfiles/`
+
+Contains static files collected by Django using:
+
+```bash
+docker compose exec web python manage.py collectstatic --noinput
+```
+
+Nginx serves these collected static files.
+
+---
+
+### `scripts/`
+
+Contains utility scripts used for testing or maintenance.
+
+Example:
+
+```text
+scripts/test_ldaps.sh
+scripts/test_ldaps_tls.py
+```
+
+These scripts help confirm whether the Django container can resolve and connect to the LDAPS server.
+
+---
+
+## Quick Deployment Summary
+
+Full deployment steps are in:
+
+```text
+documentations/DEPLOYMENT_GUIDE.md
+```
+
+Basic flow:
+
+```bash
+git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
+cd DjOpenKB
+cp .env.example .env
+nano .env
+sh vault/bootstrap/generate-secrets.sh
+chmod +x nginx/certs/generate-localhost-cert.sh
+./nginx/certs/generate-localhost-cert.sh
+docker compose up -d --build
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py collectstatic --noinput
+docker compose exec web python manage.py createsuperuser
+docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
+docker compose exec web python manage.py sync_openkb_ai
+docker compose exec web python manage.py check --deploy
+```
+
+Access the website using:
+
+```text
+https://<server-ip>:8080
+```
+
+---
+
+## Updating Later
+
+For future updates:
+
+```bash
+cd /path/to/DjOpenKB
+git pull https://github.com/ErinFlyingSkyRocket/DjOpenKB.git main
+docker compose down
+docker compose up -d --build
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py collectstatic --noinput
+docker compose exec web python manage.py sync_openkb_ai
+docker compose exec web python manage.py check --deploy
+```
+
+---
+
+## Files Not to Share
+
+Do not commit or share these files/folders:
 
 ```text
 .env
 vault/bootstrap/djopenkb.env
-vault/file/
-vault/keys/
-vault/logs/
+vault/keys/*
+vault/file/*
+openkb-data/.env
+nginx/certs/localhost.key
 postgres-data/
-openkb-data/
-staticfiles/
 ```
 
-Use `.gitkeep` files to keep empty folder structure in GitHub while ignoring runtime contents.
-
----
-
-## Python Requirements
-
-The main Python dependencies are listed in `requirements.txt`.
-
-| Package | Purpose |
-|---|---|
-| `Django` | Main web framework. |
-| `gunicorn` | Production WSGI server for the Django app. |
-| `Markdown` | Markdown article rendering. |
-| `bleach` | HTML sanitization for rendered content. |
-| `Pillow` | Image handling for uploaded/static image processing. |
-| `python-dotenv` | Loading environment-style configuration. |
-| `django-auth-ldap` | AD/LDAP authentication integration. |
-| `psycopg[binary]` | PostgreSQL database driver. |
-| `pyotp` | TOTP authenticator-code generation and verification. |
-| `qrcode[pil]` | QR code generation for authenticator app setup. |
-
-Install/update dependencies by rebuilding the Docker web image:
-
-```bash
-docker compose up -d --build --force-recreate web nginx
-```
-
----
-
-## Quick Start
-
-Use the full deployment instructions in `DEPLOYMENT_GUIDE.md`.
-
-At a high level:
-
-```bash
-# Clone the repository
-git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
-cd DjOpenKB
-
-# Prepare runtime folders and config files
-mkdir -p vault/bootstrap vault/file vault/keys vault/logs postgres-data openkb-data/raw openkb-data/wiki
-cp .env.example .env
-cp vault/bootstrap/djopenkb.env.example vault/bootstrap/djopenkb.env
-
-# Edit deployment values and secrets
-nano .env
-nano vault/bootstrap/djopenkb.env
-
-# Start the stack
-docker compose up -d --build
-
-# Run migrations and create admin account
-docker compose exec web python manage.py migrate
-docker compose exec web python manage.py createsuperuser
-
-# Initialize and sync OpenKB AI workflow
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
-docker compose exec web python manage.py sync_openkb_ai
-
-# Remove plaintext bootstrap secrets after Vault is seeded
-rm -f vault/bootstrap/djopenkb.env
-```
-
-For normal future startup:
-
-```bash
-docker compose up -d
-```
-
----
-
-## Important Configuration Values
-
-Before deployment, update these values for the target environment.
-
-### `.env`
-
-```env
-DJANGO_DEBUG=false
-DJANGO_ALLOWED_HOSTS=<SERVER-IP-OR-DOMAIN>,localhost,127.0.0.1
-CSRF_TRUSTED_ORIGINS=https://<SERVER-IP-OR-DOMAIN>:8080,https://localhost:8080,https://127.0.0.1:8080
-
-LDAP_ENABLED=true
-LDAP_SERVER_URI=ldap://<AD-SERVER-IP>:389
-LDAP_BIND_DN=<SERVICE-ACCOUNT>@<AD-DOMAIN>
-LDAP_AD_DOMAIN=<AD-DOMAIN>
-LDAP_NETBIOS_DOMAIN=<NETBIOS-DOMAIN>
-LDAP_ALLOWED_EMAIL_DOMAINS=<AD-DOMAIN>
-LDAP_USER_SEARCH_BASE=DC=<DOMAIN-PART>,DC=<SUFFIX>
-
-OPENKB_BASE_DIR=OpenKB-main
-OPENKB_DATA_DIR=openkb-data
-OPENKB_AI_PROVIDER=openkb-cli
-OPENKB_GEMINI_MODEL=<OPENKB-MODEL-NAME>
-```
-
-### `vault/bootstrap/djopenkb.env`
-
-```env
-DJANGO_SECRET_KEY="<LONG-RANDOM-DJANGO-SECRET>"
-POSTGRES_PASSWORD="<STABLE-POSTGRES-PASSWORD>"
-LDAP_BIND_PASSWORD="<AD-SERVICE-ACCOUNT-PASSWORD>"
-GEMINI_API_KEY="<GEMINI-API-KEY-IF-USING-GEMINI>"
-LLM_API_KEY="<OPENKB-LITELLM-COMPATIBLE-KEY>"
-OPENAI_API_KEY="<OPENAI-API-KEY-IF-USING-OPENAI>"
-```
-
----
-
-## Maintenance
-
-Common commands:
-
-```bash
-# View all logs
-docker compose logs -f
-
-# View web logs only
-docker compose logs -f web
-
-# Restart web and nginx after template/settings changes
-docker compose up -d --build --force-recreate web nginx
-
-# Run migrations
-docker compose exec web python manage.py migrate
-
-# Re-sync OpenKB AI after content changes
-docker compose exec web python manage.py sync_openkb_ai
-```
-
-For full operations and troubleshooting commands, use:
-
-```bash
-cat DEPLOYMENT_GUIDE.md
-```
+These may contain secrets, tokens, private keys, or local runtime state.

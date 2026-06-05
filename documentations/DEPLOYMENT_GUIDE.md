@@ -1,646 +1,708 @@
 # DjOpenKB Deployment Guide
 
-This guide provides the command sequence for preparing, deploying, starting, updating, and troubleshooting DjOpenKB.
+This guide explains how to deploy DjOpenKB on a Linux server using Docker Compose.
 
-Replace placeholder values such as `<SERVER-IP-OR-DOMAIN>`, `<AD-SERVER-IP>`, `<AD-DOMAIN>`, `<NETBIOS-DOMAIN>`, `<SERVICE-ACCOUNT>`, `<POSTGRES_PASSWORD>`, and `<AI_API_KEY>` with your own deployment values.
+The project can be deployed for a local/internal network without buying a public domain name. Users can access it through the Linux server IP address, for example:
+
+```text
+https://<linux-server-ip>:8080
+```
 
 ---
 
-## 1. Important Values to Change Before Deployment
+## 1. Prepare the Linux server
 
-Before running the first deployment, review these files carefully.
+Log in to the Linux server using SSH or the local terminal.
 
-### `.env` — non-secret deployment configuration
+Update the package list.
 
-Use `.env` for server, Django, LDAP/AD, and OpenKB path settings. Do **not** store passwords or API keys here.
+```bash
+sudo apt update
+```
+
+Upgrade installed packages.
+
+```bash
+sudo apt upgrade -y
+```
+
+Install the required packages.
+
+```bash
+sudo apt install -y git curl ca-certificates openssl python3 python-is-python3 python3-venv nano unzip docker.io docker-compose-v2
+```
+
+Check Docker is installed.
+
+```bash
+docker --version
+docker compose version
+```
+
+If Docker gives a permission error, use `sudo docker compose`.
+
+```bash
+sudo docker compose version
+```
+
+Optional: allow your Linux user to run Docker without `sudo`.
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+You must log out and log back in before this takes effect. Until then, continue using:
+
+```bash
+sudo docker compose ...
+```
+
+---
+
+## 2. Create the deployment folder
+
+Create the `/opt` deployment folder if it does not already exist.
+
+```bash
+sudo mkdir -p /opt
+```
+
+Move into `/opt`.
+
+```bash
+cd /opt
+```
+
+If this is a fresh deployment, clone the project from GitHub.
+
+```bash
+sudo git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
+```
+
+Give your Linux user ownership of the project folder.
+
+```bash
+sudo chown -R $USER:$USER /opt/DjOpenKB
+```
+
+Move into the project folder.
+
+```bash
+cd /opt/DjOpenKB
+```
+
+Confirm you are in the correct folder.
+
+```bash
+pwd
+ls
+```
+
+You should see files such as:
+
+```text
+docker-compose.yml
+Dockerfile
+manage.py
+djopenkb/
+kb/
+nginx/
+vault/
+documentations/
+```
+
+---
+
+## 3. Pull latest code for an existing deployment
+
+If the project folder already exists, do not clone again. Move into the existing folder.
+
+```bash
+cd /opt/DjOpenKB
+```
+
+Check the current Git status.
+
+```bash
+git status
+```
+
+Pull the latest version.
+
+```bash
+git pull
+```
+
+If Git says there are local changes, review them before pulling. Do not overwrite local secrets such as `.env` or `vault/bootstrap/djopenkb.env`.
+
+---
+
+## 4. Create the `.env` file
+
+Copy the example `.env` file.
+
+```bash
+cp .env.example .env
+```
+
+Open it for editing.
+
+```bash
+nano .env
+```
+
+Set the main runtime values.
 
 ```env
-# Django / website access
 DJANGO_DEBUG=false
-DJANGO_ALLOWED_HOSTS=<SERVER-IP-OR-DOMAIN>,localhost,127.0.0.1
-CSRF_TRUSTED_ORIGINS=https://<SERVER-IP-OR-DOMAIN>:8080,https://localhost:8080,https://127.0.0.1:8080
 
-# Database connection inside Docker
 POSTGRES_DB=djopenkb
 POSTGRES_USER=djopenkb
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
-USE_SQLITE=false
 
-# Vault inside Docker
-VAULT_ADDR=http://vault:8200
-VAULT_SECRET_PATH=secret/djopenkb
-
-# AD / LDAP settings
-LDAP_ENABLED=true
-LDAP_SERVER_URI=ldap://<AD-SERVER-IP>:389
-LDAP_BIND_DN=<SERVICE-ACCOUNT>@<AD-DOMAIN>
-LDAP_AD_DOMAIN=<AD-DOMAIN>
-LDAP_NETBIOS_DOMAIN=<NETBIOS-DOMAIN>
-LDAP_USER_SEARCH_BASE=DC=<DOMAIN-PART-1>,DC=<DOMAIN-PART-2>
-LDAP_USER_FILTER=(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))
-LDAP_ALLOWED_EMAIL_DOMAINS=<AD-DOMAIN>
-
-# Integrated OpenKB paths
 OPENKB_BASE_DIR=OpenKB-main
 OPENKB_DATA_DIR=openkb-data
+OPENKB_AI_PROVIDER=openkb-cli
+OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
+LITELLM_DROP_PARAMS=true
+
+USE_SQLITE=false
+
+VAULT_KV_MOUNT=secret
+VAULT_SECRET_PATH=djopenkb
+VAULT_AUTO_UNSEAL_INTERVAL_SECONDS=15
 ```
 
-Example for a lab domain `openkb.local`:
+Set the allowed host values for the Linux server IP address.
+
+Replace `192.168.81.50` with the actual Linux server IP.
 
 ```env
-LDAP_SERVER_URI=ldap://<AD-SERVER-IP>:389
-LDAP_BIND_DN=svc_djopenkb@openkb.local
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,nginx,192.168.81.50
+DJANGO_CSRF_TRUSTED_ORIGINS=https://localhost:8080,https://127.0.0.1:8080,https://192.168.81.50:8080
+```
+
+Find your Linux server IP if needed.
+
+```bash
+hostname -I
+```
+
+---
+
+## 5. Configure LDAP or LDAPS in `.env`
+
+If Active Directory login is not needed, keep LDAP disabled.
+
+```env
+LDAP_ENABLED=false
+LDAP_PLACEHOLDER_ENABLED=false
+LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
+```
+
+If LDAPS is enabled, update the LDAP section based on the Windows Server 2022 AD setup.
+
+Example:
+
+```env
+LDAP_ENABLED=true
+LDAP_PLACEHOLDER_ENABLED=false
+LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
+
+LDAP_SERVER_URI=ldaps://WIN-VVCA4BIOSK7.openkb.local:636
+LDAP_START_TLS=false
+LDAP_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+LDAP_TLS_REQUIRE_CERT=demand
+LDAP_ALLOW_INSECURE=false
+
 LDAP_AD_DOMAIN=openkb.local
 LDAP_NETBIOS_DOMAIN=OPENKB
-LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
 LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local
+
+LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
+LDAP_USER_FILTER=(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))
+LDAP_BIND_DN=svc_djopenkb@openkb.local
+LDAP_DC_IP=192.168.81.128
 ```
 
-### `vault/bootstrap/djopenkb.env` — temporary secret seed file
+For full LDAPS setup, refer to:
 
-This file is used only for first-time Vault seeding or intentional secret rotation. Do **not** commit it to GitHub.
+```text
+documentations/LDAP_LDAPS_SETUP.md
+documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
+```
+
+---
+
+## 6. Generate Vault bootstrap secrets
+
+Make the secret generator executable.
+
+```bash
+chmod +x vault/bootstrap/generate-secrets.sh
+```
+
+Run it.
+
+```bash
+./vault/bootstrap/generate-secrets.sh
+```
+
+Open the generated Vault bootstrap file.
+
+```bash
+nano vault/bootstrap/djopenkb.env
+```
+
+Confirm it contains the required secrets.
 
 ```env
-DJANGO_SECRET_KEY="<LONG_RANDOM_DJANGO_SECRET_KEY>"
-POSTGRES_PASSWORD="<STABLE_POSTGRES_PASSWORD>"
+DJANGO_SECRET_KEY=generated-random-value
+POSTGRES_PASSWORD=generated-random-value
 
-# LDAP service account password
-LDAP_BIND_PASSWORD="<SERVICE_ACCOUNT_PASSWORD>"
+GEMINI_API_KEY=your-gemini-api-key
+LLM_API_KEY=your-gemini-api-key
 
-# AI provider key used by OpenKB / LiteLLM
-LLM_API_KEY="<AI_API_KEY>"
-
-# Optional provider-specific aliases if used by your deployment
-GEMINI_API_KEY="<GEMINI_API_KEY_IF_USING_GEMINI>"
-OPENAI_API_KEY="<OPENAI_API_KEY_IF_USING_OPENAI>"
-ANTHROPIC_API_KEY="<ANTHROPIC_API_KEY_IF_USING_ANTHROPIC>"
+LDAP_BIND_PASSWORD="your-ad-service-account-password"
+LDAP_PLACEHOLDER_PASSWORD=generated-random-value
 ```
 
-Important:
-
-- Keep `POSTGRES_PASSWORD` stable after PostgreSQL has been initialized.
-- If you change `POSTGRES_PASSWORD` in Vault after the database already exists, Django may fail to connect until the password is also changed inside PostgreSQL.
-- Use quotes around secret values, especially when the value contains special characters.
-- After Vault confirms the secret is seeded, remove `vault/bootstrap/djopenkb.env` from the server folder.
-
----
-
-## 2. Prerequisites Before First `docker compose up`
-
-Before starting the stack for the first time, make sure these are ready:
+Important notes:
 
 ```text
-1. Docker and Docker Compose plugin are installed.
-2. Runtime folders exist for Vault, PostgreSQL, OpenKB, and Nginx certificates.
-3. Nginx HTTPS certificate/key are generated before Nginx starts.
-4. `.env` contains deployment settings such as hostnames, AD server IP, AD domain, and OpenKB paths.
-5. `vault/bootstrap/djopenkb.env` contains real secrets such as Django secret key, Postgres password, LDAP bind password, and AI API keys.
-6. OpenKB source is already integrated locally under `OpenKB-main/`.
-7. OpenKB workspace folder exists under `openkb-data/`.
-```
-
-For a Docker deployment, you do **not** need a host `.venv` just to run OpenKB. OpenKB is already downloaded and integrated inside the project as `OpenKB-main/`. The recommended method is to run OpenKB commands inside the `web` container.
-
-Important OpenKB rule:
-
-```text
-OpenKB init must be completed before the integrated AI/chatbox can use OpenKB.
-```
-
-If OpenKB has not been initialized, the chatbox may warn that OpenKB must be initialized first. The fix is to run `openkb init` inside the `openkb-data` directory, then sync DjOpenKB articles into OpenKB.
-
-Standard first-time sequence:
-
-```text
-Generate Nginx HTTPS certificate/key
-→ prepare .env
-→ prepare vault/bootstrap/djopenkb.env
-→ docker compose up -d --build
-→ run migrations / create superuser
-→ run openkb init inside /app/openkb-data
-→ run sync_openkb_ai
-→ remove vault/bootstrap/djopenkb.env
+- Do not commit or share vault/bootstrap/djopenkb.env.
+- For a fresh setup, generate POSTGRES_PASSWORD before the first startup.
+- For an existing database, do not change POSTGRES_PASSWORD unless you also update it inside Postgres.
+- After Vault is seeded and login works, remove vault/bootstrap/djopenkb.env from exported/shared copies.
 ```
 
 ---
 
-## 3. OpenKB AI Initialization and Model Format
+## 7. Generate the local Nginx HTTPS certificate
 
-DjOpenKB integrates the downloaded OpenKB source from:
-
-```text
-https://github.com/VectifyAI/OpenKB
-```
-
-The integrated source is stored at:
-
-```text
-OpenKB-main/
-```
-
-The local OpenKB workspace/data folder is:
-
-```text
-openkb-data/
-```
-
-When OpenKB is initialized, it creates:
-
-```text
-openkb-data/.openkb/config.yaml
-```
-
-### Required OpenKB init command for Docker deployment
-
-Run this **after** `docker compose up -d --build`, because the `web` container must exist first:
+Make the certificate script executable.
 
 ```bash
-# Initialize OpenKB from inside the web container
-# This command must be run from /app/openkb-data so OpenKB creates openkb-data/.openkb/config.yaml
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
+chmod +x nginx/certs/generate-localhost-cert.sh
 ```
 
-During `openkb init`, select the AI provider/model that matches the API key stored in Vault.
-
-OpenKB uses LiteLLM-style model names:
-
-```text
-OpenAI:
-  gpt-5.4
-  gpt-5.4-mini
-  OpenAI models can usually omit the provider prefix.
-
-Gemini:
-  gemini/gemini-2.5-flash
-  gemini/gemini-3.1-pro-preview
-  Format: gemini/<model-name>
-
-Anthropic:
-  anthropic/claude-sonnet-4-6
-  anthropic/claude-opus-4-6
-  Format: anthropic/<model-name>
-
-Other LiteLLM-supported providers:
-  <provider>/<model-name>
-```
-
-Example `openkb-data/.openkb/config.yaml`:
-
-```yaml
-model: gemini/gemini-2.5-flash
-language: en
-pageindex_threshold: 20
-```
-
-### API key alignment
-
-The provider chosen during `openkb init` must match the API key stored in Vault.
-
-```text
-Gemini model selected:
-  vault/bootstrap/djopenkb.env should contain GEMINI_API_KEY and/or LLM_API_KEY
-
-OpenAI model selected:
-  vault/bootstrap/djopenkb.env should contain OPENAI_API_KEY and/or LLM_API_KEY
-
-Anthropic model selected:
-  vault/bootstrap/djopenkb.env should contain ANTHROPIC_API_KEY and/or LLM_API_KEY
-```
-
-Recommended approach:
-
-- Keep API keys in Vault through `vault/bootstrap/djopenkb.env` or `vault kv patch`.
-- Do not commit `openkb-data/.env` if OpenKB creates one.
-- If OpenKB prompts for an API key during init, only enter it if you understand it may be written into the OpenKB workspace. Otherwise, prefer storing the key in Vault and exposing it through the container environment.
-
-After OpenKB init, run:
+Run the script.
 
 ```bash
-# Sync DjOpenKB articles into OpenKB AI
-docker compose exec web python manage.py sync_openkb_ai
+./nginx/certs/generate-localhost-cert.sh
 ```
 
-If the chatbox still warns that OpenKB is not initialized, check:
+Nginx expects the certificate files at these paths inside the container:
+
+```text
+/etc/nginx/certs/localhost.crt
+/etc/nginx/certs/localhost.key
+```
+
+The Docker Compose mount maps that to these paths on the Linux host:
+
+```text
+nginx/certs/localhost.crt
+nginx/certs/localhost.key
+```
+
+Check that the files exist.
 
 ```bash
-# Confirm OpenKB config exists
-docker compose exec web sh -lc "ls -la /app/openkb-data/.openkb && cat /app/openkb-data/.openkb/config.yaml"
+ls -l nginx/certs/localhost.crt nginx/certs/localhost.key
+```
+
+Set permissions.
+
+```bash
+chmod 644 nginx/certs/localhost.crt
+chmod 600 nginx/certs/localhost.key
+```
+
+This is a self-signed certificate for local/intranet testing. The browser may show a warning.
+
+---
+
+## 8. Add the LDAPS CA certificate if using AD
+
+If LDAPS is enabled, export the AD CS Root CA certificate from Windows Server as Base-64 encoded X.509.
+
+Place the exported CA certificate here:
+
+```text
+ldap-certs/ad-ca.crt
+```
+
+Check that the file exists.
+
+```bash
+ls -l ldap-certs/ad-ca.crt
+```
+
+If the Linux server or Docker container cannot resolve the AD hostname, make sure this field is set in `.env`:
+
+```env
+LDAP_DC_IP=192.168.81.128
+```
+
+Replace the IP address with the actual Windows Server 2022 Domain Controller IP.
+
+---
+
+## 9. Start the Docker stack
+
+Start and build all containers.
+
+```bash
+sudo docker compose up -d --build
+```
+
+Check container status.
+
+```bash
+sudo docker compose ps
+```
+
+Check Vault init logs.
+
+```bash
+sudo docker compose logs -f vault-init
+```
+
+Check web logs.
+
+```bash
+sudo docker compose logs -f web
+```
+
+Check Nginx logs.
+
+```bash
+sudo docker compose logs -f nginx
+```
+
+If everything is successful, the `web`, `db`, `vault`, `cleanup-scheduler`, and `nginx` services should be running.
+
+---
+
+## 10. Fix Vault init failure during fresh testing
+
+If `vault-init` fails, check the Vault bootstrap file with line numbers.
+
+```bash
+nl -ba vault/bootstrap/djopenkb.env
+```
+
+The file should use valid `KEY=VALUE` lines.
+
+Examples:
+
+```env
+DJANGO_SECRET_KEY=randomvalue
+POSTGRES_PASSWORD=randomvalue
+LDAP_BIND_PASSWORD="password-with-symbols"
+```
+
+Do not put spaces around `=`.
+
+Correct:
+
+```env
+DJANGO_SECRET_KEY=randomvalue
+```
+
+Wrong:
+
+```env
+DJANGO_SECRET_KEY = randomvalue
+```
+
+For a fresh failed deployment only, reset Vault state and start again.
+
+```bash
+sudo docker compose down
+sudo rm -rf vault/file vault/keys
+mkdir -p vault/file vault/keys
+chmod 700 vault/keys
+sudo docker compose up -d --build
+```
+
+Do not reset Vault on a real deployment unless you understand that it removes local Vault state.
+
+---
+
+## 11. Run Django setup commands
+
+Run migrations.
+
+```bash
+sudo docker compose exec web python manage.py migrate
+```
+
+Collect static files.
+
+```bash
+sudo docker compose exec web python manage.py collectstatic --noinput
+```
+
+Create the first local Django admin account.
+
+```bash
+sudo docker compose exec web python manage.py createsuperuser
+```
+
+Run the Django deployment check.
+
+```bash
+sudo docker compose exec web python manage.py check --deploy
+```
+
+The admin account can access:
+
+```text
+https://<linux-server-ip>:8080/admin/
+```
+
+Most user, article, permission, and log management can be handled through the Django Admin site.
+
+---
+
+## 12. Initialise OpenKB AI data
+
+The OpenKB AI chatbot requires OpenKB data initialization. If this is skipped, the chatbot may return errors or fail to find article data.
+
+Run the OpenKB init command.
+
+```bash
+sudo docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
+```
+
+Sync published Django articles into OpenKB data.
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai
+```
+
+If many articles are added or changed later, run the sync command again.
+
+---
+
+## 13. Test LDAPS connection
+
+If LDAPS is enabled, test from inside the web container.
+
+```bash
+sudo docker compose exec web sh scripts/test_ldaps.sh
+```
+
+Expected successful output:
+
+```text
+TLS handshake OK
+LDAPS DNS + TLS certificate validation looks good.
+```
+
+If it fails, refer to:
+
+```text
+documentations/LDAP_LDAPS_SETUP.md
+documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
 ```
 
 ---
 
-## 4. First-Time Linux Server Setup
+## 14. Access the website
 
-Run these commands on the Linux server that will host DjOpenKB.
-
-```bash
-# Update package index before installing dependencies
-sudo apt update
-
-# Install Git, Docker, Docker Compose plugin, and OpenSSL for Nginx HTTPS cert generation
-sudo apt install -y git docker.io docker-compose-plugin openssl
-
-# Enable Docker to start automatically after server reboot
-sudo systemctl enable docker
-
-# Start Docker now
-sudo systemctl start docker
-
-# Optional: allow the current user to run Docker without sudo
-sudo usermod -aG docker $USER
-
-# Apply the Docker group change without logging out
-newgrp docker
-
-# Clone the DjOpenKB repository from GitHub
-git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
-
-# Enter the project directory
-cd DjOpenKB
-
-# Create required runtime folders for Vault, PostgreSQL, Nginx certs, and OpenKB data
-mkdir -p vault/bootstrap vault/file vault/keys vault/logs postgres-data openkb-data/raw openkb-data/wiki nginx/certs
-
-# Generate the local HTTPS certificate/key used by Nginx
-bash nginx/certs/generate-localhost-cert.sh
-
-# Copy the Vault bootstrap example file into the real bootstrap secret file
-cp vault/bootstrap/djopenkb.env.example vault/bootstrap/djopenkb.env
-
-# Edit Vault bootstrap secrets: Django secret key, Postgres password, LDAP password, and AI API keys
-nano vault/bootstrap/djopenkb.env
-
-# Edit deployment settings: allowed hosts, CSRF origins, AD server IP/domain, and OpenKB paths
-nano .env
-
-# Build and start all Docker services for the first time
-# This starts Vault, seeds secrets, starts PostgreSQL, Django web, Nginx, and the cleanup scheduler
-docker compose up -d --build
-
-# Check that containers are running or healthy
-docker compose ps
-
-# Run Django database migrations
-docker compose exec web python manage.py migrate
-
-# Create the first local Django administrator account
-docker compose exec web python manage.py createsuperuser
-
-# Initialize OpenKB inside the downloaded local OpenKB integration
-# This creates openkb-data/.openkb/config.yaml
-# Choose the AI provider/model when prompted
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
-
-# Sync DjOpenKB articles into the OpenKB AI data store
-docker compose exec web python manage.py sync_openkb_ai
-
-# Remove the plaintext Vault bootstrap file after Vault confirms the secret is seeded
-rm vault/bootstrap/djopenkb.env
-```
-
-Open the website:
+Open the website using the Linux server IP address.
 
 ```text
-https://<SERVER-IP-OR-DOMAIN>:8080
+https://<linux-server-ip>:8080
 ```
 
-For local testing:
+Example:
 
 ```text
-https://localhost:8080
-https://127.0.0.1:8080
+https://192.168.81.50:8080
 ```
 
-A self-signed certificate warning is expected unless you replace the certificate with one trusted by your environment.
+If using the self-signed certificate, accept the browser warning for the lab/internal environment.
 
 ---
 
-## 5. First-Time Windows Docker Desktop Setup
+## 15. Normal operation commands
 
-Use this only when deploying or testing from Windows with Docker Desktop.
+Start services.
 
-```powershell
-# Clone the DjOpenKB repository from GitHub
-git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
+```bash
+sudo docker compose up -d
+```
 
-# Enter the project directory
-cd DjOpenKB
+Stop services.
 
-# Create required runtime folders
-New-Item -ItemType Directory -Force vault\bootstrap, vault\file, vault\keys, vault\logs, postgres-data, openkb-data\raw, openkb-data\wiki, nginx\certs
+```bash
+sudo docker compose down
+```
 
-# Generate the local HTTPS certificate/key for Nginx
-powershell -ExecutionPolicy Bypass -File .\nginx\certs\generate-localhost-cert.ps1
+Restart web only.
 
-# Copy the Vault bootstrap example into the real bootstrap file
-Copy-Item vault\bootstrap\djopenkb.env.example vault\bootstrap\djopenkb.env
+```bash
+sudo docker compose restart web
+```
 
-# Edit Vault secrets
-notepad vault\bootstrap\djopenkb.env
+Restart Nginx only.
 
-# Edit main environment settings
-notepad .env
+```bash
+sudo docker compose restart nginx
+```
 
-# Start and build all Docker services
-docker compose up -d --build
+View logs.
 
-# Check container status
-docker compose ps
+```bash
+sudo docker compose logs -f web
+sudo docker compose logs -f nginx
+sudo docker compose logs -f db
+sudo docker compose logs -f vault
+```
 
-# Run Django migrations
-docker compose exec web python manage.py migrate
+Check status.
 
-# Create local Django administrator account
-docker compose exec web python manage.py createsuperuser
-
-# Initialize OpenKB inside /app/openkb-data before using the AI/chatbox
-# Choose the AI provider/model when prompted
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
-
-# Sync DjOpenKB articles into OpenKB AI
-docker compose exec web python manage.py sync_openkb_ai
-
-# Remove plaintext Vault bootstrap file after successful seeding
-Remove-Item .\vault\bootstrap\djopenkb.env
+```bash
+sudo docker compose ps
 ```
 
 ---
 
-## 6. OpenKB Reinitialization / Maintenance
+## 16. Pull latest updates later
 
-Use this when the chatbox warns that OpenKB is not initialized, or when `openkb-data/.openkb/config.yaml` is missing.
+Move into the project folder.
 
 ```bash
-# Initialize OpenKB workspace/config inside openkb-data
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
-
-# Confirm OpenKB config was created
-docker compose exec web sh -lc "ls -la /app/openkb-data/.openkb && cat /app/openkb-data/.openkb/config.yaml"
-
-# Sync DjOpenKB articles into OpenKB AI
-docker compose exec web python manage.py sync_openkb_ai
+cd /opt/DjOpenKB
 ```
 
-If you need to change OpenKB model/provider later:
+Check for local changes.
 
 ```bash
-# Edit OpenKB model configuration
-nano openkb-data/.openkb/config.yaml
-
-# Update the matching API key in Vault if needed
-docker compose exec vault vault login
-docker compose exec vault vault kv patch secret/djopenkb LLM_API_KEY="<NEW_API_KEY>"
-
-# Restart services that read Vault secrets
-docker compose restart web cleanup-scheduler
-
-# Re-sync articles into OpenKB AI
-docker compose exec web python manage.py sync_openkb_ai
+git status
 ```
 
-### Optional host `.venv` method
-
-Use this only if you intentionally want to run OpenKB directly on the Linux host instead of inside Docker.
+Pull latest updates.
 
 ```bash
-# Create and activate a local Python virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install project dependencies locally
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# Run OpenKB init from the host using the downloaded OpenKB source
-mkdir -p openkb-data
-cd openkb-data
-PYTHONPATH=../OpenKB-main python -m openkb.cli init
-cd ..
-
-# Deactivate the host virtual environment when finished
-deactivate
-```
-
----
-
-## 7. Normal Subsequent Startup
-
-Use this after first-time setup is already completed.
-
-```bash
-# Enter the project folder
-cd DjOpenKB
-
-# Start existing containers using existing Vault/Postgres/OpenKB data
-docker compose up -d
-
-# Check running container status
-docker compose ps
-```
-
-Do not recreate `vault/bootstrap/djopenkb.env` for normal startup. Vault should already contain the stored secrets.
-
----
-
-## 8. Normal Shutdown
-
-```bash
-# Stop containers while keeping persistent Vault/Postgres/OpenKB data
-docker compose down
-```
-
-Avoid this unless intentionally resetting everything:
-
-```bash
-# Dangerous: removes Docker-managed volumes and may reset persistent data
-docker compose down -v
-```
-
----
-
-## 9. Updating After Git Pull
-
-```bash
-# Enter the project folder
-cd DjOpenKB
-
-# Pull latest code from GitHub
 git pull
+```
 
-# Rebuild and recreate services that depend on updated code
-docker compose up -d --build --force-recreate web nginx cleanup-scheduler
+Rebuild and restart containers.
 
-# Run migrations after code updates
-docker compose exec web python manage.py migrate
+```bash
+sudo docker compose up -d --build
+```
 
-# Re-sync OpenKB AI if article handling or AI sync logic changed
-docker compose exec web python manage.py sync_openkb_ai
+Run migrations.
+
+```bash
+sudo docker compose exec web python manage.py migrate
+```
+
+Collect static files.
+
+```bash
+sudo docker compose exec web python manage.py collectstatic --noinput
+```
+
+Sync OpenKB articles if article/AI logic changed.
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai
+```
+
+Run the deploy check.
+
+```bash
+sudo docker compose exec web python manage.py check --deploy
 ```
 
 ---
 
-## 10. Restart Common Services
+## 17. Files not to share
 
-```bash
-# Restart only Django web container
-docker compose restart web
+Do not commit or share these files/folders:
 
-# Restart web and nginx after template/static/login-page changes
-docker compose restart web nginx
-
-# Rebuild web and nginx if Python/templates/settings changed
-docker compose up -d --build --force-recreate web nginx
-
-# Restart cleanup scheduler only
-docker compose restart cleanup-scheduler
+```text
+.env
+vault/bootstrap/djopenkb.env
+vault/keys/
+vault/file/
+openkb-data/.env
+nginx/certs/localhost.key
 ```
+
+The public repository should only contain examples, scripts, and safe default configuration.
 
 ---
 
-## 11. Vault Secret Management
+## 18. Troubleshooting quick notes
+
+### Docker permission denied
+
+Use:
 
 ```bash
-# Check Vault logs
-docker compose logs vault --tail=100
-
-# Re-run Vault init after intentionally updating vault/bootstrap/djopenkb.env
-docker compose up --force-recreate vault-init
-
-# Restart services that read secrets from Vault
-docker compose restart web cleanup-scheduler
-
-# Login to Vault CLI using root/admin token
-docker compose exec vault vault login
-
-# Patch LDAP bind password directly in Vault
-docker compose exec vault vault kv patch secret/djopenkb LDAP_BIND_PASSWORD="<NEW_LDAP_BIND_PASSWORD>"
-
-# Patch AI provider key directly in Vault
-docker compose exec vault vault kv patch secret/djopenkb LLM_API_KEY="<NEW_API_KEY>"
+sudo docker compose ...
 ```
 
-Do not change `POSTGRES_PASSWORD` in Vault after PostgreSQL has already been initialized unless you also update the password inside PostgreSQL.
-
----
-
-## 12. PostgreSQL Commands
+or add the user to the Docker group and log out/in:
 
 ```bash
-# View PostgreSQL logs
-docker compose logs db --tail=100
-
-# Open PostgreSQL shell
-docker compose exec db psql -U djopenkb -d djopenkb
-
-# Backup database to local file
-docker compose exec db pg_dump -U djopenkb djopenkb > backup_djopenkb.sql
-
-# Restore database from local file
-cat backup_djopenkb.sql | docker compose exec -T db psql -U djopenkb -d djopenkb
+sudo usermod -aG docker $USER
 ```
 
----
+### `python: not found`
 
-## 13. Django Commands
+Install Python alias support:
 
 ```bash
-# Run migrations
-docker compose exec web python manage.py migrate
-
-# Create local Django superuser
-docker compose exec web python manage.py createsuperuser
-
-# Open Django shell
-docker compose exec web python manage.py shell
-
-# Collect static files manually
-docker compose exec web python manage.py collectstatic --noinput
+sudo apt install -y python-is-python3
 ```
 
----
+### Nginx certificate file not found
 
-## 14. AD/LDAP Checks
+Nginx expects:
+
+```text
+nginx/certs/localhost.crt
+nginx/certs/localhost.key
+```
+
+Regenerate the certificate.
 
 ```bash
-# Test if web container can reach AD LDAP port
-docker compose exec web python -c "import socket; s=socket.socket(); s.settimeout(5); s.connect(('<AD-SERVER-IP>',389)); print('LDAP 389 reachable'); s.close()"
-
-# Print active LDAP settings from Django
-docker compose exec web python manage.py shell -c "from django.conf import settings; print(settings.AUTH_LDAP_SERVER_URI); print(settings.AUTH_LDAP_BIND_DN); print(bool(settings.AUTH_LDAP_BIND_PASSWORD)); print(settings.AUTH_LDAP_USER_SEARCH)"
-
-# Test LDAP bind and user search
-docker compose exec web python manage.py test_ldap_auth <username>
-
-# Test LDAP authentication with password prompt
-docker compose exec web python manage.py test_ldap_auth <username> --auth
+chmod +x nginx/certs/generate-localhost-cert.sh
+./nginx/certs/generate-localhost-cert.sh
+ls -l nginx/certs/localhost.crt nginx/certs/localhost.key
+sudo docker compose restart nginx
 ```
 
----
+### Vault init failed because of bootstrap syntax
 
-## 15. MFA Checks
+Check the bootstrap file.
 
 ```bash
-# Check whether MFA model/table exists through Django shell
-docker compose exec web python manage.py shell -c "from kb.models import UserMFADevice; print(UserMFADevice.objects.count())"
-
-# Run migrations if MFA table was newly added
-docker compose exec web python manage.py migrate
-
-# Open Django shell for MFA reset
-docker compose exec web python manage.py shell
+nl -ba vault/bootstrap/djopenkb.env
 ```
 
-Inside Django shell:
+Make sure values are valid `KEY=VALUE` lines.
 
-```python
-from django.contrib.auth import get_user_model
-from kb.models import UserMFADevice
+### Postgres password changed accidentally
 
-User = get_user_model()
-user = User.objects.get(username="<username>")
-UserMFADevice.objects.filter(user=user).delete()
-```
+If the database already exists, changing `POSTGRES_PASSWORD` in Vault alone is not enough. Either recover the old password from Vault or update the password inside Postgres.
 
----
+### OpenKB chatbot errors
 
-## 16. Logs and Troubleshooting
+Run:
 
 ```bash
-# View all service logs
-docker compose logs -f
-
-# View web logs only
-docker compose logs -f web
-
-# View nginx logs only
-docker compose logs -f nginx
-
-# View Vault init logs
-docker compose logs vault-init --tail=100
-
-# View container status
-docker compose ps
+sudo docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
+sudo docker compose exec web python manage.py sync_openkb_ai
 ```
-
----
-
-## 17. Dangerous Reset Commands
-
-Only use these when intentionally resetting local development data.
-
-```bash
-# Stop containers and remove Docker-managed volumes
-docker compose down -v
-
-# Delete local PostgreSQL bind-mounted data
-rm -rf postgres-data
-
-# Delete local Vault file storage and keys
-rm -rf vault/file vault/keys
-
-# Delete local OpenKB generated data
-rm -rf openkb-data/raw openkb-data/wiki openkb-data/.openkb
-```
-
-After using reset commands, recreate runtime folders and seed Vault again using `vault/bootstrap/djopenkb.env`.

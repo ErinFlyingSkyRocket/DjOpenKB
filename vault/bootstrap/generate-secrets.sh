@@ -4,77 +4,115 @@
 # Creates or updates vault/bootstrap/djopenkb.env with:
 # - DJANGO_SECRET_KEY
 # - POSTGRES_PASSWORD
+# - LDAP_PLACEHOLDER_PASSWORD
 #
-# It preserves existing non-generated lines such as GEMINI_API_KEY or LDAP_BIND_PASSWORD.
+# It preserves existing comments and manual lines such as:
+# - GEMINI_API_KEY
+# - LLM_API_KEY
+# - LDAP_BIND_PASSWORD
+#
 # Run from the project root:
-#     sh vault/bootstrap/generate-secrets.sh
+#     chmod +x vault/bootstrap/generate-secrets.sh
+#     ./vault/bootstrap/generate-secrets.sh
 
 set -eu
 
 OUTPUT_FILE="${OUTPUT_FILE:-vault/bootstrap/djopenkb.env}"
-DJANGO_KEY_LENGTH="${DJANGO_KEY_LENGTH:-64}"
-POSTGRES_PASSWORD_LENGTH="${POSTGRES_PASSWORD_LENGTH:-32}"
+EXAMPLE_FILE="${EXAMPLE_FILE:-vault/bootstrap/djopenkb.env.example}"
+DJANGO_KEY_LENGTH="${DJANGO_KEY_LENGTH:-72}"
+POSTGRES_PASSWORD_LENGTH="${POSTGRES_PASSWORD_LENGTH:-40}"
+PLACEHOLDER_PASSWORD_LENGTH="${PLACEHOLDER_PASSWORD_LENGTH:-40}"
 
-make_secret() {
-    length="$1"
-    alphabet="$2"
-    python - "$length" "$alphabet" <<'PY'
-import secrets
-import sys
-length = int(sys.argv[1])
-alphabet = sys.argv[2]
-print(''.join(secrets.choice(alphabet) for _ in range(length)))
-PY
-}
-
-set_or_append_env_line() {
-    file="$1"
-    key="$2"
-    value="$3"
-
-    if [ -f "$file" ] && grep -q "^[[:space:]]*$key[[:space:]]*=" "$file"; then
-        python - "$file" "$key" "$value" <<'PY'
-from pathlib import Path
-import re
-import sys
-path = Path(sys.argv[1])
-key = sys.argv[2]
-value = sys.argv[3]
-pattern = re.compile(rf'^\s*{re.escape(key)}\s*=')
-lines = path.read_text(encoding='utf-8').splitlines()
-new_lines = [f'{key}="{value}"' if pattern.match(line) else line for line in lines]
-path.write_text('\n'.join(new_lines) + '\n', encoding='utf-8')
-PY
-    else
-        printf '%s="%s"\n' "$key" "$value" >> "$file"
-    fi
-}
+PYTHON_BIN=""
+if command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN="python3"
+elif command -v python >/dev/null 2>&1; then
+    PYTHON_BIN="python"
+else
+    echo "ERROR: python3/python not found. Install python3 or python-is-python3 first." >&2
+    exit 1
+fi
 
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 if [ ! -f "$OUTPUT_FILE" ]; then
-    cat > "$OUTPUT_FILE" <<'HEADER'
+    if [ -f "$EXAMPLE_FILE" ]; then
+        cp "$EXAMPLE_FILE" "$OUTPUT_FILE"
+    else
+        cat > "$OUTPUT_FILE" <<'HEADER'
 # ---------------------------------------------------------------------
 # DjOpenKB Vault bootstrap secrets
+# ---------------------------------------------------------------------
 # Generated locally. Do not commit or share this file.
 # After Vault is seeded and login works, delete this file from exported copies.
-# ---------------------------------------------------------------------
 
-# Required Django/PostgreSQL secrets
+DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
+POSTGRES_PASSWORD=replace-with-stable-postgres-password
+
+GEMINI_API_KEY=replace-with-gemini-api-key
+LLM_API_KEY=replace-with-gemini-api-key-or-llm-key
+LDAP_BIND_PASSWORD="replace-with-real-svc-djopenkb-password"
+LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
 HEADER
+    fi
 fi
 
-DJANGO_ALPHABET='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)'
-# Keep PostgreSQL password shell/env friendly: no spaces, quotes, backslashes, or dollar signs.
-POSTGRES_ALPHABET='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-@#%+=:.'
+"$PYTHON_BIN" - "$OUTPUT_FILE" "$DJANGO_KEY_LENGTH" "$POSTGRES_PASSWORD_LENGTH" "$PLACEHOLDER_PASSWORD_LENGTH" <<'PY'
+import secrets
+import string
+import sys
+from pathlib import Path
 
-DJANGO_SECRET_KEY="$(make_secret "$DJANGO_KEY_LENGTH" "$DJANGO_ALPHABET")"
-POSTGRES_PASSWORD="$(make_secret "$POSTGRES_PASSWORD_LENGTH" "$POSTGRES_ALPHABET")"
+path = Path(sys.argv[1])
+django_len = int(sys.argv[2])
+postgres_len = int(sys.argv[3])
+placeholder_len = int(sys.argv[4])
 
-set_or_append_env_line "$OUTPUT_FILE" "DJANGO_SECRET_KEY" "$DJANGO_SECRET_KEY"
-set_or_append_env_line "$OUTPUT_FILE" "POSTGRES_PASSWORD" "$POSTGRES_PASSWORD"
+# Alphanumeric-only for generated values.
+# This avoids shell/env parsing problems while still being strong because values are long.
+alphabet = string.ascii_letters + string.digits
 
-printf 'Generated secure secrets in: %s\n' "$OUTPUT_FILE"
-printf 'Updated: DJANGO_SECRET_KEY and POSTGRES_PASSWORD\n'
-printf 'Keep this file private. Do not commit or submit it.\n'
-printf 'If Vault was already seeded, update Vault or reseed it so the new values are used.\n'
+def make_secret(length: int) -> str:
+    return "".join(secrets.choice(alphabet) for _ in range(length))
+
+replacements = {
+    "DJANGO_SECRET_KEY": make_secret(django_len),
+    "POSTGRES_PASSWORD": make_secret(postgres_len),
+    "LDAP_PLACEHOLDER_PASSWORD": make_secret(placeholder_len),
+}
+
+text = path.read_text(encoding="utf-8") if path.exists() else ""
+lines = text.splitlines()
+found = {key: False for key in replacements}
+out = []
+
+for line in lines:
+    stripped = line.strip()
+    replaced = False
+
+    for key, value in replacements.items():
+        if stripped.startswith(key + "="):
+            out.append(f"{key}={value}")
+            found[key] = True
+            replaced = True
+            break
+
+    if not replaced:
+        out.append(line)
+
+if not found["LDAP_PLACEHOLDER_PASSWORD"]:
+    if out and out[-1].strip():
+        out.append("")
+    out.append("# Only used if LDAP_PLACEHOLDER_ENABLED=true.")
+    out.append(f"LDAP_PLACEHOLDER_PASSWORD={replacements['LDAP_PLACEHOLDER_PASSWORD']}")
+
+path.write_text("\n".join(out) + "\n", encoding="utf-8")
+
+print(f"Generated bootstrap secrets in: {path}")
+print("Updated: DJANGO_SECRET_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD")
+print("Preserved: comments, GEMINI_API_KEY, LLM_API_KEY, LDAP_BIND_PASSWORD")
+print()
+print("Next: edit GEMINI_API_KEY, LLM_API_KEY and LDAP_BIND_PASSWORD manually.")
+print("Recommended format if LDAP password has symbols:")
+print('LDAP_BIND_PASSWORD="P@ssw0rd!"')
+PY

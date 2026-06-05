@@ -1,10 +1,14 @@
 @echo off
-REM generate-localhost-cert.bat
-REM Place this file inside: DjOpenKB\nginx\certs\
-REM It runs generate-localhost-cert.ps1 from the same folder.
+setlocal
 
-set SCRIPT_DIR=%~dp0
+REM Generate a local self-signed HTTPS certificate for DjOpenKB Nginx.
+REM Output files:
+REM   nginx\certs\localhost.crt
+REM   nginx\certs\localhost.key
+REM
+REM Run from the project root:
+REM   nginx\certs\generate-localhost-cert.bat
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%generate-localhost-cert.ps1"
+powershell -ExecutionPolicy Bypass -File "%~dp0generate-localhost-cert.ps1"
 
-pause
+endlocal

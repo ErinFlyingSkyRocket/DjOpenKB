@@ -1,75 +1,100 @@
-# generate-localhost-cert.ps1
-# Place this file inside: DjOpenKB\nginx\certs\
-# It generates:
-#   DjOpenKB\nginx\certs\localhost.crt
-#   DjOpenKB\nginx\certs\localhost.key
+param(
+    [int]$Days = 825
+)
 
 $ErrorActionPreference = "Stop"
 
-$CertsDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+# Generate a local self-signed HTTPS certificate for DjOpenKB Nginx.
+#
+# Output files:
+#   nginx/certs/localhost.crt
+#   nginx/certs/localhost.key
+#
+# These paths match nginx/nginx.conf:
+#   ssl_certificate     /etc/nginx/certs/localhost.crt;
+#   ssl_certificate_key /etc/nginx/certs/localhost.key;
+#
+# Run from the project root:
+#   powershell -ExecutionPolicy Bypass -File nginx/certs/generate-localhost-cert.ps1
+#
+# Or double-click/run:
+#   nginx\certs\generate-localhost-cert.bat
 
-$KeyPath = Join-Path $CertsDir "localhost.key"
-$CrtPath = Join-Path $CertsDir "localhost.crt"
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$CertFile = Join-Path $ScriptDir "localhost.crt"
+$KeyFile = Join-Path $ScriptDir "localhost.key"
+$OpenSslCnf = Join-Path $ScriptDir "localhost-openssl.cnf"
 
-New-Item -ItemType Directory -Force -Path $CertsDir | Out-Null
+Write-Host "Generating local self-signed HTTPS certificate..."
+Write-Host "Output folder: $ScriptDir"
 
-$OpenSslCandidates = @(
-    "C:\Program Files\Git\usr\bin\openssl.exe",
-    "C:\Program Files\OpenSSL-Win64\bin\openssl.exe",
-    "C:\Program Files\OpenSSL-Win32\bin\openssl.exe"
-)
-
-$OpenSslExe = $null
-
-foreach ($Candidate in $OpenSslCandidates) {
-    if (Test-Path $Candidate) {
-        $OpenSslExe = $Candidate
-        break
-    }
-}
-
-if (-not $OpenSslExe) {
-    $Command = Get-Command openssl.exe -ErrorAction SilentlyContinue
-    if ($Command) {
-        $OpenSslExe = $Command.Source
-    }
-}
-
-if (-not $OpenSslExe) {
+$openssl = Get-Command openssl -ErrorAction SilentlyContinue
+if (-not $openssl) {
     Write-Host ""
-    Write-Host "ERROR: OpenSSL was not found." -ForegroundColor Red
-    Write-Host "Install Git for Windows, then try again:"
-    Write-Host "https://git-scm.com/download/win"
-    Write-Host ""
-    pause
+    Write-Host "ERROR: OpenSSL was not found in PATH."
+    Write-Host "Install OpenSSL first, then reopen PowerShell and try again."
+    Write-Host "On Windows, Git Bash or OpenSSL for Windows usually provides openssl.exe."
     exit 1
 }
 
-Write-Host ""
-Write-Host "Using OpenSSL: $OpenSslExe"
-Write-Host "Generating localhost HTTPS certificate..."
-Write-Host ""
+@"
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
 
-& $OpenSslExe req -x509 -nodes -days 365 -newkey rsa:2048 `
-    -keyout $KeyPath `
-    -out $CrtPath `
-    -subj "/C=SG/ST=Singapore/L=Singapore/O=DjOpenKB/OU=Local/CN=localhost" `
-    -addext "subjectAltName=DNS:localhost,DNS:host.docker.internal,IP:127.0.0.1"
+[dn]
+C = SG
+ST = Singapore
+L = Singapore
+O = DjOpenKB Local
+OU = Development
+CN = localhost
 
-if ((Test-Path $KeyPath) -and (Test-Path $CrtPath)) {
+[v3_req]
+subjectAltName = @alt_names
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+basicConstraints = critical, CA:FALSE
+
+[alt_names]
+DNS.1 = localhost
+DNS.2 = nginx
+DNS.3 = djopenkb.local
+IP.1 = 127.0.0.1
+IP.2 = 0.0.0.0
+"@ | Set-Content -Path $OpenSslCnf -Encoding ASCII
+
+try {
+    & openssl req -x509 -nodes -days $Days `
+        -newkey rsa:2048 `
+        -keyout $KeyFile `
+        -out $CertFile `
+        -config $OpenSslCnf
+
+    if (-not (Test-Path $CertFile) -or -not (Test-Path $KeyFile)) {
+        throw "Certificate generation failed. Output files were not created."
+    }
+
     Write-Host ""
-    Write-Host "Certificate generated successfully!" -ForegroundColor Green
-    Write-Host "CRT: $CrtPath"
-    Write-Host "KEY: $KeyPath"
+    Write-Host "Certificate generated successfully:"
+    Write-Host "  $CertFile"
+    Write-Host "  $KeyFile"
     Write-Host ""
-    Write-Host "For Docker Compose, mount this folder into your nginx container:"
-    Write-Host "  ./nginx/certs:/etc/nginx/certs:ro"
+    Write-Host "These files match the Nginx container paths:"
+    Write-Host "  /etc/nginx/certs/localhost.crt"
+    Write-Host "  /etc/nginx/certs/localhost.key"
     Write-Host ""
-} else {
+    Write-Host "You can now run:"
+    Write-Host "  docker compose up -d --build"
     Write-Host ""
-    Write-Host "ERROR: Certificate generation failed." -ForegroundColor Red
-    Write-Host ""
-    exit 1
+    Write-Host "Then open:"
+    Write-Host "  https://localhost:8080"
 }
-
-pause
+finally {
+    if (Test-Path $OpenSslCnf) {
+        Remove-Item $OpenSslCnf -Force
+    }
+}
