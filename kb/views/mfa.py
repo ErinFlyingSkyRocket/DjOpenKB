@@ -30,25 +30,7 @@ from ..mfa import (
 )
 
 
-def _safe_next_url(request):
-    next_url = (
-        request.POST.get("next")
-        or request.GET.get("next")
-        or pending_mfa_next_url(request)
-        or ""
-    ).strip()
-    fallback = reverse("home")
-
-    if not next_url:
-        return fallback
-
-    if not url_has_allowed_host_and_scheme(
-        next_url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
-        return fallback
-
+def _blocked_next_paths():
     blocked = {
         reverse("mfa_setup"),
         reverse("mfa_verify"),
@@ -56,10 +38,51 @@ def _safe_next_url(request):
         reverse("login"),
         reverse("logout"),
     }
-    if next_url in blocked:
-        return fallback
+    try:
+        blocked.add(reverse("admin:login"))
+        blocked.add(reverse("admin:logout"))
+    except Exception:
+        blocked.update({"/admin/login/", "/admin/logout/"})
+    return blocked
 
-    return next_url
+
+def _safe_next_url(request):
+    fallback = reverse("home")
+
+    # For a password-authenticated pending-MFA login, trust the server-side
+    # destination saved when the password/LDAPS bind succeeded. Do not let a
+    # middleware-added next=/admin/login/?next=/admin/ override it.
+    if get_pending_mfa_user(request):
+        candidates = [
+            (request.POST.get("next") or "").strip(),
+            (pending_mfa_next_url(request) or "").strip(),
+            (request.GET.get("next") or "").strip(),
+        ]
+    else:
+        candidates = [
+            (request.POST.get("next") or "").strip(),
+            (request.GET.get("next") or "").strip(),
+            (pending_mfa_next_url(request) or "").strip(),
+        ]
+
+    blocked = _blocked_next_paths()
+    for next_url in candidates:
+        if not next_url:
+            continue
+
+        if not url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            continue
+
+        if next_url in blocked or any(next_url.startswith(f"{path}?") for path in blocked):
+            continue
+
+        return next_url
+
+    return fallback
 
 
 def _qr_data_uri(otpauth_uri):

@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.urls import NoReverseMatch, reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
+from urllib.parse import urlencode
 
 from .mfa import (
     begin_pending_mfa_login,
@@ -181,13 +182,20 @@ class LocalMFARequiredMiddleware:
         return any(path.startswith(prefix) for prefix in allowed_prefixes if prefix)
 
 
-    def _redirect_to_target(self, request, target_name):
+    def _redirect_to_target(self, request, target_name, next_url=None):
         target_path = reverse(target_name)
         path = request.path_info or request.path
+
+        # Use the real destination the user was trying to reach, not always the
+        # current request path. This matters for Django admin: after a direct
+        # /admin/login/?next=/admin/ login, the current path is the admin login
+        # page, but the correct post-MFA destination is /admin/.
+        destination = next_url or request.get_full_path()
+
         if path == target_path:
             response = redirect(target_name)
         else:
-            response = redirect(f"{target_path}?next={request.get_full_path()}")
+            response = redirect(f"{target_path}?{urlencode({'next': destination})}")
         return set_strict_no_cache_headers(response)
 
     def _gate_pending_mfa_login(self, request, path):
@@ -210,7 +218,7 @@ class LocalMFARequiredMiddleware:
                 request,
                 _("Complete MFA before continuing. You are not fully signed in until MFA is completed."),
             )
-            return self._redirect_to_target(request, target_name)
+            return self._redirect_to_target(request, target_name, next_url=request.get_full_path())
 
         return None
 
@@ -237,7 +245,7 @@ class LocalMFARequiredMiddleware:
                 request,
                 _("Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."),
             )
-            return self._redirect_to_target(request, target_name)
+            return self._redirect_to_target(request, target_name, next_url=request.get_full_path())
 
         return None
 
@@ -276,7 +284,7 @@ class LocalMFARequiredMiddleware:
             request,
             _("Complete MFA before accessing the Django admin site."),
         )
-        return self._redirect_to_target(request, target_name)
+        return self._redirect_to_target(request, target_name, next_url=next_url)
 
     def __call__(self, request):
         path = request.path_info or request.path
