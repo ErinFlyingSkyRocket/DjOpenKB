@@ -11,6 +11,11 @@
 # - LLM_API_KEY
 # - LDAP_BIND_PASSWORD
 #
+# IMPORTANT:
+# The current Vault bootstrap file is read as a shell-style env file.
+# To avoid Linux shell parsing errors, this script generates alphanumeric-only
+# values and the examples use no quotes.
+#
 # Run from the project root:
 #     chmod +x vault/bootstrap/generate-secrets.sh
 #     ./vault/bootstrap/generate-secrets.sh
@@ -45,13 +50,17 @@ if [ ! -f "$OUTPUT_FILE" ]; then
 # ---------------------------------------------------------------------
 # Generated locally. Do not commit or share this file.
 # After Vault is seeded and login works, delete this file from exported copies.
+#
+# Use no quotes.
+# Do not put spaces around "=".
+# Avoid spaces and shell special characters in values.
 
 DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
 POSTGRES_PASSWORD=replace-with-stable-postgres-password
 
 GEMINI_API_KEY=replace-with-gemini-api-key
 LLM_API_KEY=replace-with-gemini-api-key-or-llm-key
-LDAP_BIND_PASSWORD="replace-with-real-svc-djopenkb-password"
+LDAP_BIND_PASSWORD=replace-with-real-svc-djopenkb-password
 LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
 HEADER
     fi
@@ -68,8 +77,9 @@ django_len = int(sys.argv[2])
 postgres_len = int(sys.argv[3])
 placeholder_len = int(sys.argv[4])
 
-# Alphanumeric-only for generated values.
-# This avoids shell/env parsing problems while still being strong because values are long.
+# Alphanumeric-only generated values.
+# This avoids Linux shell/env parsing problems while still being strong
+# because the values are long and generated with secrets.
 alphabet = string.ascii_letters + string.digits
 
 def make_secret(length: int) -> str:
@@ -113,6 +123,7 @@ print("Updated: DJANGO_SECRET_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD"
 print("Preserved: comments, GEMINI_API_KEY, LLM_API_KEY, LDAP_BIND_PASSWORD")
 print()
 print("Next: edit GEMINI_API_KEY, LLM_API_KEY and LDAP_BIND_PASSWORD manually.")
-print("Recommended format if LDAP password has symbols:")
-print('LDAP_BIND_PASSWORD="P@ssw0rd!"')
+print("Use no quotes, no spaces around '=', and avoid spaces/shell symbols.")
+print("Good example: LDAP_BIND_PASSWORD=P@ssw0rd")
+print("Avoid: LDAP_BIND_PASSWORD=\"P@ssw0rd!\"")
 PY
