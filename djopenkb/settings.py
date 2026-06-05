@@ -160,7 +160,7 @@ SECRET_KEY = secret_value(
     "django-insecure-ja^jbb-_fb0tvu71u+&4-=e_-i52*wes=$hzm8xdj_0kx22nbj",
 )
 
-DEBUG = config_value("DJANGO_DEBUG", "true").lower() == "true"
+DEBUG = config_value("DJANGO_DEBUG", "false").lower() == "true"
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -174,7 +174,35 @@ CSRF_TRUSTED_ORIGINS = [
     "https://127.0.0.1:8080",
 ]
 
+# Nginx terminates HTTPS and forwards requests to Django over the internal
+# Docker network. This tells Django to trust Nginx's HTTPS forwarding header.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Browser/session security hardening.
+#
+# Keep these strict settings active only when DEBUG=false so local development
+# remains easy, while deployment gets secure cookies, HTTPS enforcement, HSTS,
+# anti-clickjacking, content-type sniffing protection, and safer referrers.
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = int(config_value("DJANGO_SECURE_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "same-origin"
+
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    LANGUAGE_COOKIE_SECURE = True
+
+    SESSION_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_HTTPONLY = True
+
+    SESSION_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SAMESITE = "Lax"
+
+# Deny framing by default to reduce clickjacking risk.
+X_FRAME_OPTIONS = "DENY"
 
 
 # ---------------------------------------------------------------------
