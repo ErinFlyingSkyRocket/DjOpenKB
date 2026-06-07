@@ -24,6 +24,49 @@
         .orphan-actions .btn { margin-bottom: 4px; }
         .orphan-bulk-panel { border: 1px solid #e5eaee; border-radius: 4px; padding: 12px; margin-bottom: 15px; background: #fbfcfd; }
         .orphan-checkbox { width: 28px; }
+        .orphan-message-stack {
+            position: fixed;
+            top: 82px;
+            right: 24px;
+            width: min(460px, calc(100vw - 48px));
+            z-index: 2000;
+        }
+        .orphan-message-alert {
+            border-radius: 4px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+            margin-bottom: 10px;
+            animation: orphanMessageSlideDown 0.22s ease-out;
+        }
+        .orphan-message-alert.alert-error {
+            color: #fff;
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+        .orphan-message-alert.alert-success {
+            color: #fff;
+            background-color: #18bc9c;
+            border-color: #18bc9c;
+        }
+        .orphan-message-alert.alert-warning {
+            color: #fff;
+            background-color: #f39c12;
+            border-color: #f39c12;
+        }
+        .orphan-message-alert.alert-info {
+            color: #fff;
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+        .orphan-message-alert .close {
+            color: #fff;
+            opacity: 0.85;
+            text-shadow: none;
+        }
+        @keyframes orphanMessageSlideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
 
         .orphan-user-lookup-wrap {
             position: relative;
@@ -111,9 +154,16 @@
     <div class="container-fluid">
         <div class="col-xs-12 admin-orphan-wrap">
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
-                {% endfor %}
+                <div class="orphan-message-stack" aria-live="polite" aria-atomic="true">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible orphan-message-alert" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="{% trans 'Close' %}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
 
             <h2>{% trans "Scan orphan articles" %}</h2>
@@ -365,6 +415,18 @@
                 if (!suggestionsBox.contains(event.target) && event.target !== assignLookup) {
                     closeSuggestions();
                 }
+            });
+
+
+            var messageAlerts = document.querySelectorAll('.orphan-message-alert.alert-success, .orphan-message-alert.alert-info');
+            messageAlerts.forEach(function (alertBox) {
+                window.setTimeout(function () {
+                    if (window.jQuery && jQuery.fn.alert) {
+                        jQuery(alertBox).alert('close');
+                    } else if (alertBox && alertBox.parentNode) {
+                        alertBox.parentNode.removeChild(alertBox);
+                    }
+                }, 4500);
             });
 
             var selectAll = document.getElementById('selectAllOrphans');
