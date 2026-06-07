@@ -1787,11 +1787,13 @@ def run_openkb_query(question):
 
     env = os.environ.copy()
 
-    if getattr(settings, "LLM_API_KEY", ""):
-        env["LLM_API_KEY"] = settings.LLM_API_KEY
-
-    if getattr(settings, "GEMINI_API_KEY", ""):
-        env["GEMINI_API_KEY"] = settings.GEMINI_API_KEY
+    ai_api_key = getattr(settings, "AI_API_KEY", "") or getattr(settings, "LLM_API_KEY", "")
+    if ai_api_key:
+        # DjOpenKB stores one general key in Vault, then exposes it using common
+        # provider variable names so OpenKB/LiteLLM integrations can read it.
+        env["AI_API_KEY"] = ai_api_key
+        env["LLM_API_KEY"] = ai_api_key
+        env["GEMINI_API_KEY"] = ai_api_key
 
     env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
     env["OPENKB_AI_MODEL"] = get_openkb_ai_model()

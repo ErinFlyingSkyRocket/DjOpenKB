@@ -263,8 +263,7 @@ Confirm it contains the required secrets.
 DJANGO_SECRET_KEY=generated-random-value
 POSTGRES_PASSWORD=generated-random-value
 
-GEMINI_API_KEY=your-gemini-api-key
-LLM_API_KEY=your-llm-provider-api-key
+AI_API_KEY=your-selected-ai-provider-api-key
 
 LDAP_BIND_PASSWORD="your-ad-service-account-password"
 LDAP_PLACEHOLDER_PASSWORD=generated-random-value
@@ -394,26 +393,21 @@ Use the matching API key for the provider selected during `openkb init`.
 For Gemini:
 
 ```env
-GEMINI_API_KEY=your-gemini-api-key
-LLM_API_KEY=your-gemini-api-key
 ```
 
 For OpenAI:
 
 ```env
-LLM_API_KEY=your-openai-api-key
 ```
 
 For Anthropic Claude:
 
 ```env
-LLM_API_KEY=your-anthropic-api-key
 ```
 
 For OpenRouter, Groq, Mistral, Cohere, or other providers:
 
 ```env
-LLM_API_KEY=your-provider-api-key
 ```
 
 Some OpenKB versions may not show many prompts and may silently create the configuration files. That is acceptable.
