@@ -1,6 +1,6 @@
 # DjOpenKB
 
-DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, user article suggestions, admin review, Active Directory login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, and an integrated OpenKB AI chatbot.
+DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, user article suggestions, admin review, Active Directory / LDAPS login, local Django login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, activity logging, and an integrated OpenKB AI chatbot.
 
 The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required. The website can be accessed through HTTPS using the Linux server IP address or localhost, while Active Directory can use an internal lab domain such as `openkb.local`.
 
@@ -11,11 +11,15 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Internal IT wiki / knowledge base website.
 - Article browsing, searching, view tracking, voting, and trending articles.
 - User article suggestion workflow with admin approval.
-- Admin review area for pending articles and rejected/pending failed feedback.
-- Admin tools for import/export and cleaning stray upload files.
+- Draft, pending approval, pending failed, and published article states.
+- Admin review area for pending articles and rejected / pending failed feedback.
+- Admin tools for import/export, stray upload cleanup, orphan article management, and site settings.
 - Local Django login support.
 - Active Directory login over LDAPS for domain users.
+- Clear separation between local users and AD users.
 - MFA support using authenticator-app one-time passwords.
+- Authentication and activity logging for important user, article, admin, AI, and maintenance actions.
+- Configurable log retention and admin log display settings.
 - Vault integration for sensitive secrets such as Django, database, LDAP, and AI credentials.
 - PostgreSQL database through Docker Compose.
 - Nginx HTTPS reverse proxy on port `8080`.
@@ -23,6 +27,40 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Markdown article rendering with sanitization.
 - Image upload restrictions for article content.
 - Multilingual UI support through Django translation files.
+- Docker cleanup scheduler for routine cleanup tasks.
+
+---
+
+## User Types and Rights
+
+| User type | Authentication source | Main purpose | Article browsing | Vote on articles | Suggest articles | Edit own drafts / pending failed | Change own email/password | Admin tools | Django Admin access |
+|---|---|---|---|---|---|---|---|---|---|
+| Anonymous visitor | None | Read-only public access if allowed by deployment | Published articles only | No | No | No | No | No | No |
+| Local user | Django local account | Normal internal contributor | Published articles | Yes, after login | Yes | Yes | Yes, with MFA/OTP | No | No |
+| Local admin | Django local account | Main-site administrator | All relevant article workflow views | Yes | Yes | Yes | Yes, with MFA/OTP | Yes | Only if staff/superuser/Django Admin permission is granted |
+| AD user | Active Directory / LDAPS | Domain-authenticated contributor | Published articles | Yes, after login | Yes | Yes | No; AD-managed values are blocked in Django | No | No |
+| AD admin / LDAP admin | Active Directory / LDAPS | Domain-authenticated administrator | All relevant article workflow views | Yes | Yes | Yes | No; AD-managed values are blocked in Django | Yes | Only if staff/superuser/Django Admin permission is granted |
+
+Local and AD users are separated by account source metadata, not by email domain. This means a local user can use an email address such as `alice@openkb.local` without being incorrectly treated as an AD user.
+
+---
+
+## Security Overview
+
+| Area | Security controls |
+|---|---|
+| Authentication | Local login, AD/LDAPS login, MFA, session timeout, authentication logging |
+| User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
+| MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
+| Authorization | Admin-only tools, article owner checks, approval workflow, and restricted admin routes |
+| Articles | Draft/pending/pending failed/published workflow, duplicate title prevention, admin approval, and orphan article management |
+| Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
+| Markdown | Sanitized rendered HTML to reduce XSS risk |
+| AI chatbot | Rate limiting, prompt length limits, safer error handling, and activity logging |
+| Logging | Separate authentication logs and general activity logs |
+| Secrets | Vault-backed Django/database/LDAP/AI secrets |
+| Network | Nginx HTTPS reverse proxy and configurable trusted hosts/origins |
+| Operations | Cleanup commands, cleanup scheduler, deployment checks, and backup guidance |
 
 ---
 
@@ -30,15 +68,16 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 
 | File | Purpose |
 |---|---|
-| `README.md` | Overall project overview and folder structure. |
-| `documentations/DEPLOYMENT_GUIDE.md` | Linux server deployment, Git pull/update flow, Docker startup, Vault setup, Nginx certificate setup, and OpenKB initialization. |
+| `README.md` | Overall project overview, folder structure, feature summary, security summary, and operational notes. |
+| `documentations/DEPLOYMENT_GUIDE.md` | Linux server deployment, Git pull/update flow, Docker startup, Vault setup, Nginx certificate setup, OpenKB initialization, and troubleshooting. |
+| `documentations/FULL_FEATURE_DOCUMENTATION.md` | Full feature documentation, user rights, workflow details, security controls, and logging details. |
 | `documentations/LDAP_LDAPS_SETUP.md` | Django LDAPS configuration, CA certificate placement, and LDAPS connection testing. |
 | `documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md` | Windows Server 2022 AD DS, AD CS, LDAPS certificate, and lab testing setup. |
 
 For deployment, start with:
 
 ```text
- documentations/DEPLOYMENT_GUIDE.md
+documentations/DEPLOYMENT_GUIDE.md
 ```
 
 ---
@@ -51,7 +90,7 @@ DjOpenKB/
 ├── kb/                          # Main Django application logic
 ├── website/                     # Templates and static frontend files
 ├── locale/                      # Django translation files
-├── documentations/              # Project setup and deployment guides
+├── documentations/              # Project setup, deployment, and feature guides
 ├── docker/                      # Docker helper scripts
 ├── nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
 ├── vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
@@ -60,7 +99,7 @@ DjOpenKB/
 ├── openkb-data/                 # OpenKB workspace and article data used by the AI chatbot
 ├── postgres-data/               # PostgreSQL local persistent data folder
 ├── staticfiles/                 # Django collected static files
-├── scripts/                     # Utility scripts such as LDAPS testing
+├── scripts/                     # Utility and testing scripts
 ├── manage.py                    # Django management command entry point
 ├── Dockerfile                   # Django web container build file
 ├── Dockerfile.postgres-vault    # PostgreSQL image with Vault password support
@@ -95,15 +134,15 @@ djopenkb/wsgi.py
 
 Contains the main Django app for the knowledge base.
 
-This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, and management commands.
+This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, activity logging, and management commands.
 
 Important areas:
 
 ```text
-kb/models.py                 # Database models for articles, votes, logs, MFA, and related data
+kb/models.py                 # Database models for articles, votes, logs, MFA, site settings, and related data
 kb/forms.py                  # Django forms used by articles, profiles, MFA, and admin workflows
 kb/backends.py               # Authentication backend, including AD/LDAP login handling
-kb/admin.py                  # Django admin registration
+kb/admin.py                  # Django admin registration and admin display settings
 kb/urls.py                   # App-level URL routes
 kb/views/                    # Main page, article, admin, auth, MFA, AI, and service views
 kb/management/commands/      # Custom Django management commands
@@ -131,10 +170,11 @@ Contains the frontend files used by the Django app.
 
 ```text
 website/templates/           # HTML templates
+website/templates/admin/     # Django Admin template overrides
 website/static/              # CSS, JavaScript, images, icons, and other static assets
 ```
 
-The templates cover the base layout, login pages, article pages, profile pages, admin tools, MFA pages, and AI chat UI.
+The templates cover the base layout, login pages, article pages, profile pages, admin tools, MFA pages, AI chat UI, and Django Admin display improvements.
 
 ---
 
@@ -149,14 +189,21 @@ locale/<language>/LC_MESSAGES/django.po
 locale/<language>/LC_MESSAGES/django.mo
 ```
 
+After editing `.po` files, compile the `.mo` files:
+
+```bash
+docker compose exec web python manage.py compilemessages
+```
+
 ---
 
 ### `documentations/`
 
-Contains the main documentation files for setup and testing.
+Contains the main documentation files for setup, testing, and feature explanation.
 
 ```text
 documentations/DEPLOYMENT_GUIDE.md
+documentations/FULL_FEATURE_DOCUMENTATION.md
 documentations/LDAP_LDAPS_SETUP.md
 documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
 ```
@@ -292,9 +339,10 @@ Example:
 ```text
 scripts/test_ldaps.sh
 scripts/test_ldaps_tls.py
+scripts/sync_locales.py
 ```
 
-These scripts help confirm whether the Django container can resolve and connect to the LDAPS server.
+These scripts help confirm whether the Django container can resolve and connect to the LDAPS server, or help keep translation files synchronized after new UI strings are added.
 
 ---
 
@@ -348,6 +396,85 @@ docker compose exec web python manage.py sync_openkb_ai
 docker compose exec web python manage.py check --deploy
 ```
 
+If local files block `git pull`, check first:
+
+```bash
+git status
+```
+
+Then either commit your changes, stash them, or restore unwanted local changes before pulling.
+
+---
+
+## Useful Maintenance Commands
+
+Check container status:
+
+```bash
+docker compose ps
+```
+
+View logs:
+
+```bash
+docker compose logs --tail=100 web
+docker compose logs --tail=100 nginx
+docker compose logs --tail=100 vault
+docker compose logs --tail=100 cleanup-scheduler
+```
+
+Run Django checks:
+
+```bash
+docker compose exec web python manage.py check
+docker compose exec web python manage.py check --deploy
+```
+
+Sync OpenKB AI article data:
+
+```bash
+docker compose exec web python manage.py sync_openkb_ai
+```
+
+Clean activity logs:
+
+```bash
+docker compose exec web python manage.py cleanup_activity_logs --dry-run
+docker compose exec web python manage.py cleanup_activity_logs
+```
+
+Compile translations after editing `.po` files:
+
+```bash
+docker compose exec web python manage.py compilemessages
+```
+
+---
+
+## Backup and Restore Notes
+
+For a real intranet or production-style deployment, back up these areas regularly:
+
+```text
+PostgreSQL database
+Vault data and recovery material
+openkb-data/
+article uploaded images
+generated OpenKB Markdown files
+.env and deployment configuration, stored securely
+```
+
+Do not only back up the source code. The running system also depends on local database state, Vault state, uploaded files, and OpenKB data.
+
+Recommended operational practice:
+
+```text
+1. Create backups regularly.
+2. Store backups securely.
+3. Test restore steps before relying on them.
+4. Do not store Vault keys, private keys, or database backups in public Git repositories.
+```
+
 ---
 
 ## Files Not to Share
@@ -364,4 +491,21 @@ nginx/certs/localhost.key
 postgres-data/
 ```
 
-These may contain secrets, tokens, private keys, or local runtime state.
+These may contain secrets, tokens, private keys, database content, or local runtime state.
+
+---
+
+## Final Security Reminder
+
+Before deploying outside a local lab, confirm:
+
+```text
+DEBUG=False
+ALLOWED_HOSTS is set correctly
+CSRF_TRUSTED_ORIGINS is set correctly
+HTTPS is working through Nginx
+LDAPS certificate validation is working
+Vault is initialized and sealed/unsealed correctly
+Django check --deploy has been reviewed
+Backups and restore steps are documented
+```

@@ -697,82 +697,102 @@ If using the self-signed certificate, accept the browser warning for the lab/int
 
 ---
 
-## 16. Normal operation commands
+## 16. Normal Docker Compose operation commands
 
-Start services.
+This section is useful after the first deployment is completed.
+
+### Check service status
+
+```bash
+sudo docker compose ps
+```
+
+### Start services
 
 ```bash
 sudo docker compose up -d
 ```
 
-Stop services.
+### Start and rebuild services
+
+Use this after code, dependency, Dockerfile, or Docker Compose changes.
+
+```bash
+sudo docker compose up -d --build
+```
+
+### Stop services without deleting data
 
 ```bash
 sudo docker compose down
 ```
 
-Restart web only.
+This stops containers but keeps normal bind-mounted project data such as PostgreSQL data, Vault data, uploaded files, and OpenKB data.
+
+### Restart only the Django web container
+
+Use this after small Python/template/config changes that do not require a rebuild.
 
 ```bash
 sudo docker compose restart web
 ```
 
-Restart Nginx only.
+### Restart Nginx only
+
+Use this after changing Nginx configuration or certificates.
 
 ```bash
 sudo docker compose restart nginx
 ```
 
-View logs.
+### Restart the cleanup scheduler only
+
+Use this after changing scheduled cleanup scripts or maintenance commands.
+
+```bash
+sudo docker compose restart cleanup-scheduler
+```
+
+### Restart multiple services
+
+```bash
+sudo docker compose restart web nginx cleanup-scheduler
+```
+
+### View logs
+
+Follow live logs.
 
 ```bash
 sudo docker compose logs -f web
 sudo docker compose logs -f nginx
 sudo docker compose logs -f db
 sudo docker compose logs -f vault
+sudo docker compose logs -f cleanup-scheduler
 ```
 
-Check status.
+Show only recent logs.
 
 ```bash
-sudo docker compose ps
+sudo docker compose logs --tail=100 web
+sudo docker compose logs --tail=100 nginx
+sudo docker compose logs --tail=100 vault
+sudo docker compose logs --tail=100 cleanup-scheduler
 ```
 
----
-
-## 17. Pull latest updates later
-
-Move into the project folder.
+### Open a shell inside the web container
 
 ```bash
-cd /opt/DjOpenKB
+sudo docker compose exec web sh
 ```
 
-Check for local changes.
+Exit the shell with:
 
 ```bash
-git status
+exit
 ```
 
-Pull latest updates.
-
-```bash
-git pull
-```
-
-If OpenKB needs to be updated, update the local OpenKB virtual environment.
-
-```bash
-source .openkb-venv/bin/activate
-pip install -e OpenKB-main
-deactivate
-```
-
-Rebuild and restart containers.
-
-```bash
-sudo docker compose up -d --build
-```
+### Run common Django commands
 
 Run migrations.
 
@@ -786,16 +806,205 @@ Collect static files.
 sudo docker compose exec web python manage.py collectstatic --noinput
 ```
 
-Sync OpenKB articles if article/AI logic changed.
+Check Django configuration.
+
+```bash
+sudo docker compose exec web python manage.py check
+sudo docker compose exec web python manage.py check --deploy
+```
+
+Create a Django superuser.
+
+```bash
+sudo docker compose exec web python manage.py createsuperuser
+```
+
+Sync published Django articles into OpenKB AI data.
 
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
 
-Run the deploy check.
+Compile translations after `.po` file changes.
 
 ```bash
+sudo docker compose exec web python manage.py compilemessages
+```
+
+Clean general activity logs.
+
+```bash
+sudo docker compose exec web python manage.py cleanup_activity_logs --dry-run
+sudo docker compose exec web python manage.py cleanup_activity_logs
+```
+
+### Important warning about deleting volumes
+
+Do not run this on a real deployment unless you intentionally want to delete Docker-managed volumes.
+
+```bash
+sudo docker compose down -v
+```
+
+For this project, local bind-mounted folders such as `postgres-data/`, `vault/file/`, `vault/keys/`, `openkb-data/`, and uploaded files should also be protected. Do not delete them unless you are intentionally resetting the environment.
+
+---
+
+## 17. Pull latest updates later
+
+Use this section when the code has been updated on GitHub and the Linux instance should follow the latest version.
+
+### 17.1 Move into the project folder
+
+```bash
+cd /opt/DjOpenKB
+```
+
+Confirm the current branch.
+
+```bash
+git branch --show-current
+```
+
+The normal branch should be:
+
+```text
+main
+```
+
+Check for local changes.
+
+```bash
+git status
+```
+
+### 17.2 Pull the latest code safely
+
+For the normal case where there are no local code changes:
+
+```bash
+git pull --ff-only origin main
+```
+
+If this works, continue to the restart/update steps below.
+
+### 17.3 If Git pull is blocked by local changes
+
+If Git says local changes would be overwritten, review the changed files first.
+
+```bash
+git status
+```
+
+Show what changed.
+
+```bash
+git diff
+```
+
+If the changes are not needed and you want the instance to follow GitHub exactly, restore only the affected tracked files.
+
+Example:
+
+```bash
+git restore nginx/certs/generate-localhost-cert.sh
+git restore vault/bootstrap/generate-secrets.sh
+```
+
+Then pull again.
+
+```bash
+git pull --ff-only origin main
+```
+
+If there are untracked development folders such as `.openkb-venv/`, they usually do not block tracked file updates. Keep them unless you are sure they are no longer needed.
+
+Do not blindly delete these important local files or folders:
+
+```text
+.env
+vault/bootstrap/djopenkb.env
+vault/keys/
+vault/file/
+openkb-data/
+postgres-data/
+nginx/certs/localhost.key
+```
+
+### 17.4 Quick restart after small code changes
+
+For small Python/template changes where dependencies and Dockerfile did not change:
+
+```bash
+sudo docker compose restart web
+```
+
+Then check:
+
+```bash
+sudo docker compose exec web python manage.py check
+sudo docker compose logs --tail=100 web
+```
+
+### 17.5 Normal update after pulling new code
+
+This is the recommended general update flow after `git pull`.
+
+```bash
+sudo docker compose up -d --build
+sudo docker compose exec web python manage.py migrate
+sudo docker compose exec web python manage.py collectstatic --noinput
+sudo docker compose exec web python manage.py compilemessages
+sudo docker compose exec web python manage.py sync_openkb_ai
 sudo docker compose exec web python manage.py check --deploy
+sudo docker compose ps
+```
+
+### 17.6 When to use each update command
+
+| Situation | Recommended command |
+|---|---|
+| Only template or small Python view changes | `sudo docker compose restart web` |
+| Python dependencies changed in `requirements.txt` | `sudo docker compose up -d --build` |
+| Dockerfile or Docker Compose changed | `sudo docker compose up -d --build` |
+| Database model or migration changed | `sudo docker compose exec web python manage.py migrate` |
+| Static files changed | `sudo docker compose exec web python manage.py collectstatic --noinput` |
+| Translation `.po` files changed | `sudo docker compose exec web python manage.py compilemessages` |
+| OpenKB article sync logic changed | `sudo docker compose exec web python manage.py sync_openkb_ai` |
+| Nginx config or certificate changed | `sudo docker compose restart nginx` |
+| Cleanup scheduler script changed | `sudo docker compose restart cleanup-scheduler` |
+
+### 17.7 Update OpenKB local virtual environment if needed
+
+If OpenKB source code or OpenKB dependencies changed, update the local OpenKB virtual environment.
+
+```bash
+cd /opt/DjOpenKB
+source .openkb-venv/bin/activate
+pip install -e OpenKB-main
+deactivate
+```
+
+Then restart the web container and sync articles.
+
+```bash
+sudo docker compose restart web
+sudo docker compose exec web python manage.py sync_openkb_ai
+```
+
+### 17.8 Confirm the update is healthy
+
+```bash
+sudo docker compose ps
+sudo docker compose exec web python manage.py check
+sudo docker compose logs --tail=100 web
+sudo docker compose logs --tail=100 nginx
+```
+
+Open the website again:
+
+```text
+https://<linux-server-ip>:8080
 ```
 
 ---
