@@ -23,6 +23,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             user=instance,
             defaults={
                 "account_type": account_type,
+                "auth_source": UserProfile.AuthSource.LOCAL,
                 "can_access_main_site": True,
                 "preferred_language": "en",
             },

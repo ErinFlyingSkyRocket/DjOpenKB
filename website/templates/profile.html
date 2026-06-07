@@ -167,6 +167,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             </div>
 
                             <div class="profile-account-row">
+                                <span class="profile-account-label">{% trans "Account source" %}:</span>
+                                <span class="profile-account-value">
+                                    {{ auth_source_display }}
+                                </span>
+                            </div>
+
+                            <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Language" %}:</span>
                                 <form class="form-inline" method="post" action="{% url 'update_profile' %}" style="display: inline-block;">
                                     {% csrf_token %}
@@ -185,7 +192,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <span class="profile-account-label">{% trans "Multi-factor authentication" %}:</span>
                                 <span class="profile-account-value">
                                     {% if user_is_ldap_managed %}
-                                        {% trans "Managed by NextLabs AD" %}
+                                        {% trans "Managed by authenticator app" %}
                                     {% elif mfa_enabled %}
                                         {% trans "Enabled" %}
                                     {% else %}

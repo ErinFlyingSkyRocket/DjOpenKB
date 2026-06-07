@@ -23,8 +23,8 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
     extra = 0
     fields = (
-        "auth_source",
         "account_type",
+        "auth_source",
         "can_access_main_site",
         "preferred_language",
         "notes",
@@ -52,8 +52,8 @@ class UserAdmin(DefaultUserAdmin):
         "is_active",
         "is_staff",
         "is_superuser",
-        "main_site_auth_source",
         "main_site_account_type",
+        "main_site_auth_source",
         "main_site_access",
         "mfa_status_display",
     )
@@ -61,8 +61,8 @@ class UserAdmin(DefaultUserAdmin):
         "is_active",
         "is_staff",
         "is_superuser",
-        "kb_profile__auth_source",
         "kb_profile__account_type",
+        "kb_profile__auth_source",
         "kb_profile__can_access_main_site",
         "kb_mfa_device__confirmed",
     )
@@ -85,7 +85,7 @@ class UserAdmin(DefaultUserAdmin):
     def _is_domain_user(self, obj):
         """Return True when this Django user is managed by AD/LDAP."""
         profile = getattr(obj, "kb_profile", None)
-        return bool(profile and profile.is_ldap_type)
+        return bool(profile and getattr(profile, "is_ad_managed", False))
 
     def domain_password_status(self, obj):
         return "Domain password is managed in Active Directory and cannot be changed from Django admin."
@@ -156,14 +156,6 @@ class UserAdmin(DefaultUserAdmin):
                 profile.account_type = UserProfile.AccountType.ADMIN
                 profile.save(update_fields=["account_type", "updated_at"])
 
-    def main_site_auth_source(self, obj):
-        profile = getattr(obj, "kb_profile", None)
-        if not profile:
-            return "-"
-        return profile.get_auth_source_display()
-
-    main_site_auth_source.short_description = "Source"
-
     def main_site_account_type(self, obj):
         profile = getattr(obj, "kb_profile", None)
         if not profile:
@@ -171,6 +163,14 @@ class UserAdmin(DefaultUserAdmin):
         return profile.get_account_type_display()
 
     main_site_account_type.short_description = "Account Type"
+
+    def main_site_auth_source(self, obj):
+        profile = getattr(obj, "kb_profile", None)
+        if not profile:
+            return "-"
+        return profile.get_auth_source_display()
+
+    main_site_auth_source.short_description = "Source"
 
     def main_site_access(self, obj):
         profile = getattr(obj, "kb_profile", None)
@@ -316,7 +316,7 @@ class UserAdmin(DefaultUserAdmin):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.LDAP_USER
-            profile.auth_source = UserProfile.AuthSource.ACTIVE_DIRECTORY
+            profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
 
     @admin.action(description="Set selected users as LDAP admin")
@@ -324,7 +324,7 @@ class UserAdmin(DefaultUserAdmin):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.LDAP_ADMIN
-            profile.auth_source = UserProfile.AuthSource.ACTIVE_DIRECTORY
+            profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
 
 
@@ -333,6 +333,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = (
         "user",
         "account_type",
+        "auth_source",
         "can_access_main_site",
         "preferred_language",
         "created_at",
@@ -340,6 +341,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     )
     list_filter = (
         "account_type",
+        "auth_source",
         "can_access_main_site",
         "preferred_language",
         "created_at",
@@ -351,6 +353,17 @@ class UserProfileAdmin(admin.ModelAdmin):
         "user__first_name",
         "user__last_name",
     )
+    fields = (
+        "user",
+        "account_type",
+        "auth_source",
+        "can_access_main_site",
+        "preferred_language",
+        "notes",
+        "created_at",
+        "updated_at",
+    )
+    readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(UserMFADevice)

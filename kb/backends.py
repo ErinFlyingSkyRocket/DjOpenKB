@@ -99,7 +99,13 @@ def _is_local_account_collision(user):
     except UserProfile.DoesNotExist:
         profile = None
 
-    if profile and profile.is_ldap_type:
+    if profile and getattr(profile, "auth_source", None) == UserProfile.AuthSource.AD:
+        return False
+
+    if profile and profile.account_type in {
+        UserProfile.AccountType.LDAP_USER,
+        UserProfile.AccountType.LDAP_ADMIN,
+    }:
         return False
 
     # A local fallback password is a strong signal this is a local Django
@@ -277,15 +283,15 @@ class NextLabsLDAPBackend(LDAPBackend):
         logger.info("LDAP login succeeded for username=%r django_user=%r", ldap_username, user.get_username())
 
         profile, _ = UserProfile.objects.get_or_create(user=user)
-        profile_update_fields = []
+        update_profile_fields = []
         if profile.account_type == UserProfile.AccountType.USER:
             profile.account_type = UserProfile.AccountType.LDAP_USER
-            profile_update_fields.append("account_type")
-        if profile.auth_source != UserProfile.AuthSource.ACTIVE_DIRECTORY:
-            profile.auth_source = UserProfile.AuthSource.ACTIVE_DIRECTORY
-            profile_update_fields.append("auth_source")
-        if profile_update_fields:
-            profile.save(update_fields=sorted(set(profile_update_fields + ["updated_at"])))
+            update_profile_fields.append("account_type")
+        if profile.auth_source != UserProfile.AuthSource.AD:
+            profile.auth_source = UserProfile.AuthSource.AD
+            update_profile_fields.append("auth_source")
+        if update_profile_fields:
+            profile.save(update_fields=update_profile_fields + ["updated_at"])
 
         # AD-managed users should not have a local fallback password.
         user_update_fields = []
@@ -415,7 +421,7 @@ class PlaceholderLDAPBackend(ModelBackend):
                 user=user,
                 defaults={
                     "account_type": UserProfile.AccountType.LDAP_USER,
-                    "auth_source": UserProfile.AuthSource.ACTIVE_DIRECTORY,
+                    "auth_source": UserProfile.AuthSource.AD,
                     "can_access_main_site": True,
                 },
             )
@@ -423,14 +429,8 @@ class PlaceholderLDAPBackend(ModelBackend):
             return None
 
         profile, _ = UserProfile.objects.get_or_create(user=user)
-        if profile.auth_source != UserProfile.AuthSource.ACTIVE_DIRECTORY:
-            profile.auth_source = UserProfile.AuthSource.ACTIVE_DIRECTORY
-            profile.save(update_fields=["auth_source", "updated_at"])
 
-        if profile.account_type not in {
-            UserProfile.AccountType.LDAP_USER,
-            UserProfile.AccountType.LDAP_ADMIN,
-        }:
+        if profile.auth_source != UserProfile.AuthSource.AD:
             return None
 
         if not profile.can_access_main_site:

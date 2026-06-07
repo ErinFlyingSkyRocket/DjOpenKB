@@ -1389,14 +1389,21 @@ def get_openkb_wiki_articles(sort_by_views=False):
 
 
 def is_ldap_managed_user(user):
-    """Return True only when the stored profile marks this as an AD account.
+    """Return True only when the account is explicitly marked as AD-managed.
 
-    Do not infer AD status from email domain. A local Django user may have a
-    company-style email such as alice@openkb.local and must still be allowed to
-    use local password management.
+    Do not infer AD ownership from the username or email domain. A local Django
+    user may legitimately use an email such as alice@openkb.local and should
+    still be allowed to change their local password.
     """
     profile = getattr(user, "kb_profile", None)
-    return bool(profile and profile.is_ldap_type)
+    if not profile:
+        return False
+
+    if hasattr(profile, "AuthSource"):
+        return profile.auth_source == profile.AuthSource.AD
+
+    # Compatibility fallback for older databases/code during deployment.
+    return bool(getattr(profile, "is_ldap_type", False))
 
 
 def get_user_profile(user):
@@ -1404,21 +1411,6 @@ def get_user_profile(user):
         return None
 
     profile, created = UserProfile.objects.get_or_create(user=user)
-
-    # Keep legacy role values consistent with the explicit source column.
-    # The source column decides Local vs AD. The account_type field remains for
-    # role/backward-compatibility, so it is aligned to Local User/Admin or AD User/Admin.
-    role_is_admin = profile.account_type in {
-        UserProfile.AccountType.ADMIN,
-        UserProfile.AccountType.LDAP_ADMIN,
-    }
-    if profile.auth_source == UserProfile.AuthSource.ACTIVE_DIRECTORY:
-        desired_account_type = UserProfile.AccountType.LDAP_ADMIN if role_is_admin else UserProfile.AccountType.LDAP_USER
-    else:
-        desired_account_type = UserProfile.AccountType.ADMIN if role_is_admin else UserProfile.AccountType.USER
-    if profile.account_type != desired_account_type:
-        profile.account_type = desired_account_type
-        profile.save(update_fields=["account_type", "updated_at"])
 
     # Keep existing superuser/staff accounts visible as Admin unless already LDAP admin.
     if (user.is_superuser or user.is_staff) and profile.account_type not in {
@@ -1454,16 +1446,19 @@ def main_site_login_required(view_func):
 def get_account_type_display(user):
     profile = get_user_profile(user)
     if not profile:
-        return ""
+        return "Guest"
 
-    if profile.is_ldap_type:
-        if profile.is_admin_type:
-            return "AD Admin"
-        return "AD User"
-
-    if profile.is_admin_type:
+    if profile.account_type == UserProfile.AccountType.LDAP_USER:
+        return "Domain User"
+    if profile.account_type == UserProfile.AccountType.LDAP_ADMIN:
+        return "Domain Admin"
+    if profile.account_type == UserProfile.AccountType.USER:
+        return "Local User"
+    if profile.account_type == UserProfile.AccountType.ADMIN:
         return "Local Admin"
-    return "Local User"
+
+    return profile.get_account_type_display()
+
 
 def format_profile_display_name(user):
     full_name = user.get_full_name().strip()
@@ -1686,8 +1681,7 @@ def get_profile_account_context(user):
         "profile_display_name": format_profile_display_name(user),
         "user_is_ldap_managed": user_is_ldap_managed,
         "account_type_display": get_account_type_display(user),
-        "auth_source_display": profile.get_auth_source_display(),
-        "is_local_account": not user_is_ldap_managed,
+        "auth_source_display": profile.get_auth_source_display() if hasattr(profile, "get_auth_source_display") else "Local user",
         "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
         "can_confirm_profile_changes": user.has_usable_password(),
         "can_use_admin_tools": user_can_use_admin_tools(user),
