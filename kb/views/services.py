@@ -1811,21 +1811,11 @@ def run_openkb_query(question):
 
     ai_api_key = getattr(settings, "AI_API_KEY", "")
     if ai_api_key:
-        # DjOpenKB stores one general AI key in Vault. At runtime we expose the
-        # same selected-provider key through common LiteLLM/provider variable
-        # names so OpenKB can work with Gemini, OpenAI, Claude, OpenRouter,
-        # Groq, Mistral, Cohere, or compatible providers without asking the
-        # admin to enter duplicate keys.
+        # Admin enters one general key in Vault. At runtime only, expose it to
+        # common provider env names because OpenKB/LiteLLM expects those names.
         env["AI_API_KEY"] = ai_api_key
         env["LLM_API_KEY"] = ai_api_key
         env["GEMINI_API_KEY"] = ai_api_key
-        env["GOOGLE_API_KEY"] = ai_api_key
-        env["OPENAI_API_KEY"] = ai_api_key
-        env["ANTHROPIC_API_KEY"] = ai_api_key
-        env["OPENROUTER_API_KEY"] = ai_api_key
-        env["GROQ_API_KEY"] = ai_api_key
-        env["MISTRAL_API_KEY"] = ai_api_key
-        env["COHERE_API_KEY"] = ai_api_key
 
     env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
     env["OPENKB_AI_MODEL"] = get_openkb_ai_model()

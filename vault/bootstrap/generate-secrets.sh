@@ -64,7 +64,7 @@ HEADER
     fi
 fi
 
-"$PYTHON_BIN" - "$OUTPUT_FILE" "$DJANGO_KEY_LENGTH" "$POSTGRES_PASSWORD_LENGTH" "$PLACEHOLDER_PASSWORD_LENGTH" <<'PYCODE'
+"$PYTHON_BIN" - "$OUTPUT_FILE" "$DJANGO_KEY_LENGTH" "$POSTGRES_PASSWORD_LENGTH" "$PLACEHOLDER_PASSWORD_LENGTH" <<'PY'
 import secrets
 import string
 import sys
@@ -75,6 +75,9 @@ django_len = int(sys.argv[2])
 postgres_len = int(sys.argv[3])
 placeholder_len = int(sys.argv[4])
 
+# Alphanumeric-only generated values.
+# This avoids Linux shell/env parsing problems while still being strong
+# because the values are long and generated with secrets.
 alphabet = string.ascii_letters + string.digits
 
 def make_secret(length: int) -> str:
@@ -86,55 +89,49 @@ replacements = {
     "LDAP_PLACEHOLDER_PASSWORD": make_secret(placeholder_len),
 }
 
-legacy_key_names = {"GEMINI_API_KEY", "LLM_API_KEY"}
-legacy_value = ""
-
 text = path.read_text(encoding="utf-8") if path.exists() else ""
 lines = text.splitlines()
 found = {key: False for key in replacements}
-found_ai_key = False
 out = []
 
 for line in lines:
     stripped = line.strip()
-    if not stripped or stripped.startswith("#"):
-        out.append(line)
-        continue
-
-    key, sep, value = stripped.partition("=")
-    if sep and key in legacy_key_names:
-        candidate = value.strip()
-        if candidate and "replace-with" not in candidate.lower() and not legacy_value:
-            legacy_value = candidate
-        continue
-
-    if stripped.startswith("AI_API_KEY="):
-        found_ai_key = True
-        out.append(line)
-        continue
-
     replaced = False
-    for name, secret_value in replacements.items():
-        if stripped.startswith(name + "="):
-            out.append(f"{name}={secret_value}")
-            found[name] = True
+
+    for key, value in replacements.items():
+        if stripped.startswith(key + "="):
+            out.append(f"{key}={value}")
+            found[key] = True
             replaced = True
             break
 
     if not replaced:
         out.append(line)
 
-if not found_ai_key:
-    if out and out[-1].strip():
-        out.append("")
-    out.append("# OpenKB AI provider key. Use the key for the provider selected by OPENKB_AI_MODEL.")
-    out.append(f"AI_API_KEY={legacy_value or 'replace-with-selected-ai-provider-api-key'}")
-
 if not found["LDAP_PLACEHOLDER_PASSWORD"]:
     if out and out[-1].strip():
         out.append("")
     out.append("# Only used if LDAP_PLACEHOLDER_ENABLED=true.")
     out.append(f"LDAP_PLACEHOLDER_PASSWORD={replacements['LDAP_PLACEHOLDER_PASSWORD']}")
+
+# Remove old duplicate AI key names if this file came from an older version.
+# If AI_API_KEY is missing, preserve the first old non-placeholder value as AI_API_KEY.
+old_ai = None
+new_lines = []
+for line in out:
+    stripped = line.strip()
+    if stripped.startswith(("GEMINI_API_KEY=", "LLM_API_KEY=")):
+        value = stripped.split("=", 1)[1].strip()
+        if value and "replace-with" not in value and old_ai is None:
+            old_ai = value
+        continue
+    new_lines.append(line)
+out = new_lines
+if old_ai and not any(line.strip().startswith("AI_API_KEY=") for line in out):
+    if out and out[-1].strip():
+        out.append("")
+    out.append("# OpenKB AI provider key.")
+    out.append(f"AI_API_KEY={old_ai}")
 
 path.write_text("\n".join(out) + "\n", encoding="utf-8")
 
@@ -146,4 +143,4 @@ print("Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually.")
 print("Use no quotes, no spaces around '=', and avoid spaces/shell symbols.")
 print("Good example: LDAP_BIND_PASSWORD=P@ssw0rd")
 print("Avoid: LDAP_BIND_PASSWORD=\"P@ssw0rd!\"")
-PYCODE
+PY

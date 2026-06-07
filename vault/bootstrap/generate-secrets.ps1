@@ -65,32 +65,11 @@ $found = @{
     "POSTGRES_PASSWORD" = $false
     "LDAP_PLACEHOLDER_PASSWORD" = $false
 }
-$foundAiKey = $false
-$legacyValue = ""
 
 foreach ($line in $lines) {
     $trimmed = $line.Trim()
-
-    if ($trimmed -eq "" -or $trimmed.StartsWith("#")) {
-        $out.Add($line)
-        continue
-    }
-
-    if ($trimmed.StartsWith("GEMINI_API_KEY=") -or $trimmed.StartsWith("LLM_API_KEY=")) {
-        $candidate = ($trimmed -split "=", 2)[1].Trim()
-        if ($candidate -and -not $candidate.ToLower().Contains("replace-with") -and -not $legacyValue) {
-            $legacyValue = $candidate
-        }
-        continue
-    }
-
-    if ($trimmed.StartsWith("AI_API_KEY=")) {
-        $foundAiKey = $true
-        $out.Add($line)
-        continue
-    }
-
     $handled = $false
+
     foreach ($key in $replacements.Keys) {
         if ($trimmed.StartsWith("$key=")) {
             $out.Add("$key=$($replacements[$key])")
@@ -105,24 +84,39 @@ foreach ($line in $lines) {
     }
 }
 
-if (-not $foundAiKey) {
-    if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") {
-        $out.Add("")
-    }
-    $out.Add("# OpenKB AI provider key. Use the key for the provider selected by OPENKB_AI_MODEL.")
-    if ($legacyValue) {
-        $out.Add("AI_API_KEY=$legacyValue")
-    } else {
-        $out.Add("AI_API_KEY=replace-with-selected-ai-provider-api-key")
-    }
-}
-
 if (-not $found["LDAP_PLACEHOLDER_PASSWORD"]) {
     if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") {
         $out.Add("")
     }
     $out.Add("# Only used if LDAP_PLACEHOLDER_ENABLED=true.")
     $out.Add("LDAP_PLACEHOLDER_PASSWORD=$($replacements['LDAP_PLACEHOLDER_PASSWORD'])")
+}
+
+
+# Remove old duplicate AI key names if this file came from an older version.
+# If AI_API_KEY is missing, preserve the first old non-placeholder value as AI_API_KEY.
+$oldAi = $null
+$newOut = New-Object System.Collections.Generic.List[string]
+foreach ($line in $out) {
+    $trimmed = $line.Trim()
+    if ($trimmed.StartsWith("GEMINI_API_KEY=") -or $trimmed.StartsWith("LLM_API_KEY=")) {
+        $value = $trimmed.Split("=", 2)[1].Trim()
+        if ($value -and $value -notlike "*replace-with*" -and -not $oldAi) {
+            $oldAi = $value
+        }
+        continue
+    }
+    $newOut.Add($line)
+}
+$out = $newOut
+$hasAi = $false
+foreach ($line in $out) {
+    if ($line.Trim().StartsWith("AI_API_KEY=")) { $hasAi = $true; break }
+}
+if ($oldAi -and -not $hasAi) {
+    if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") { $out.Add("") }
+    $out.Add("# OpenKB AI provider key.")
+    $out.Add("AI_API_KEY=$oldAi")
 }
 
 $out | Set-Content -Path $OutputFile -Encoding UTF8

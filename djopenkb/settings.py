@@ -435,7 +435,14 @@ if LDAP_ENABLED:
     if LDAP_CA_CERT_FILE:
         ldap.set_option(ldap.OPT_X_TLS_CACERTFILE, LDAP_CA_CERT_FILE)
     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, LDAP_TLS_REQUIRE_CERT_MAP[LDAP_TLS_REQUIRE_CERT])
-    ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+
+    # Some python-ldap/OpenLDAP builds raise ValueError for OPT_X_TLS_NEWCTX
+    # during Django settings import. This option is only a TLS context refresh;
+    # failing it should not prevent the web container from starting.
+    try:
+        ldap.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+    except (AttributeError, ValueError, ldap.LDAPError):
+        pass
 
     # Use a low-privilege AD service account for searching users.
     # Example:
