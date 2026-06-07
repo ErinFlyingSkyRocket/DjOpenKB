@@ -257,6 +257,11 @@ def manage_orphan_articles(request):
 
     if request.method == "POST":
         action = request.POST.get("action", "").strip()
+
+        if action not in {"assign", "delete"}:
+            messages.error(request, _("Please use the Assign selected or Delete selected button."))
+            return redirect("manage_orphan_articles")
+
         selected_ids = request.POST.getlist("selected_articles")
         selected_articles = list(
             SuggestedArticle.objects.select_related("owner").filter(
