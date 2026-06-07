@@ -95,14 +95,20 @@ def ask_openkb_ai(request):
             "show_related_articles": False,
         }, status=500)
 
-    # Do not handle greetings or test messages with a fake local chatbot reply.
-    # They continue into the real OpenKB/Gemini flow. If the provider is down,
-    # the fallback below will not recommend random articles because
-    # find_related_openkb_articles() filters those simple chat probes out.
+    # Do not send greetings/status checks into OpenKB. The OpenKB CLI keeps
+    # internal runtime logs, and generic prompts can cause the model to talk
+    # about those logs instead of published articles.
+    if is_openkb_small_talk_request(question):
+        return JsonResponse({
+            "answer": build_openkb_small_talk_answer(question),
+            "related_articles": [],
+            "show_related_articles": False,
+        })
 
-    # If the user is explicitly asking for article/source recommendations,
-    # do not wait for Gemini/OpenKB CLI. Return local published links quickly.
-    if is_openkb_article_recommendation_request(question):
+    # If the user is asking for article/source/latest recommendations, answer
+    # directly from the published Django article database. This avoids exposing
+    # OpenKB internal runtime data and keeps the response predictable.
+    if is_openkb_article_recommendation_request(question) or is_openkb_latest_article_request(question):
         return _article_recommendation_response(question)
 
     try:
@@ -132,7 +138,10 @@ def ask_openkb_ai(request):
         answer = clean_openkb_ai_answer(raw_answer)
 
         if not answer:
-            answer = build_openkb_article_recommendation_answer(question, related_articles) if related_articles else "OpenKB AI returned an empty response."
+            if related_articles:
+                answer = build_openkb_article_recommendation_answer(question, related_articles)
+            else:
+                answer = "I can only answer from published knowledge-base articles. Please ask about an article topic or request relevant articles."
 
         # Even if OpenKB says it has no answer, still show matching local links.
         # This avoids hiding useful articles when the external provider is vague.

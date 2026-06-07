@@ -1746,6 +1746,27 @@ def get_openkb_ai_model():
     return (model or "gemini/gemini-2.5-flash").strip()
 
 
+def scrub_openkb_runtime_log_files():
+    """Remove OpenKB runtime logs from the AI-readable wiki folder.
+
+    The OpenKB CLI keeps a wiki/log.md audit file for CLI operations. Because
+    OpenKB's query agent reads from the wiki folder, that runtime log can leak
+    internal timestamps or previous query details into chatbot answers. DjOpenKB
+    already has Django ActivityLog/AuthActivityLog for auditing, so the chat
+    knowledge base should not include OpenKB's internal runtime log.
+    """
+    runtime_files = [
+        settings.OPENKB_WIKI_DIR / "log.md",
+    ]
+
+    for path in runtime_files:
+        try:
+            if path.exists():
+                path.unlink()
+        except OSError:
+            logger.warning("Could not remove OpenKB runtime log file %s", path)
+
+
 def ensure_openkb_config_model():
     """Keep OpenKB's local config.yaml model aligned with Django settings.
 
@@ -1784,6 +1805,7 @@ def run_openkb_query(question):
     init_openkb_storage()
     ensure_openkb_config_model()
     ensure_openkb_ai_synced()
+    scrub_openkb_runtime_log_files()
 
     env = os.environ.copy()
 
@@ -1819,19 +1841,24 @@ def run_openkb_query(question):
         ")"
     )
 
-    result = subprocess.run(
-        [sys.executable, "-c", command, question, str(settings.OPENKB_DATA_DIR)],
-        cwd=str(settings.BASE_DIR),
-        env=env,
-        capture_output=True,
-        text=True,
-        timeout=180,
-    )
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", command, question, str(settings.OPENKB_DATA_DIR)],
+            cwd=str(settings.BASE_DIR),
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
 
-    if result.returncode != 0:
-        raise RuntimeError(result.stderr or result.stdout or "openkb query failed")
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr or result.stdout or "openkb query failed")
 
-    return result.stdout.strip()
+        return result.stdout.strip()
+    finally:
+        # OpenKB may append the current query to wiki/log.md after execution.
+        # Remove it again so the next user query cannot read internal log data.
+        scrub_openkb_runtime_log_files()
 
 
 OPENKB_AI_SMALL_TALK_PATTERNS = [
@@ -1894,6 +1921,9 @@ OPENKB_AI_ARTICLE_INTENT_TERMS = [
     "relevant article", "relevant articles",
     "anything about", "any article", "any articles",
     "is there any article", "is there any articles",
+    "latest article", "latest articles",
+    "newest article", "newest articles",
+    "anything new", "what is new", "what's new",
 ]
 
 
@@ -1907,6 +1937,19 @@ def is_openkb_article_recommendation_request(question):
     """
     prompt = (question or "").lower()
     return any(term in prompt for term in OPENKB_AI_ARTICLE_INTENT_TERMS)
+
+
+def is_openkb_latest_article_request(question):
+    """Return True when the user asks for latest/newest published articles."""
+    prompt = re.sub(r"\s+", " ", (question or "").strip().lower())
+    latest_terms = [
+        "latest article", "latest articles",
+        "newest article", "newest articles",
+        "anything new", "what is new", "what's new",
+        "any new article", "any new articles",
+        "new article", "new articles",
+    ]
+    return any(term in prompt for term in latest_terms)
 
 
 def normalize_openkb_article_query(question):
@@ -1964,6 +2007,16 @@ def find_related_openkb_articles(question, limit=5, minimum_score=None):
     # articles when the external provider is unavailable.
     if is_openkb_small_talk_request(question):
         return []
+
+    if is_openkb_latest_article_request(question):
+        latest_articles = []
+        for item in get_openkb_wiki_articles(sort_by_views=False)[:limit]:
+            latest_articles.append({
+                "title": item.get("title", "Untitled"),
+                "url": item.get("url") or "#",
+                "snippet": item.get("date") or "",
+            })
+        return latest_articles
 
     article_query = normalize_openkb_article_query(question)
     query_words = tokenize_search_query(article_query)
@@ -2133,6 +2186,17 @@ def check_openkb_ai_rate_limit(request):
 def clean_openkb_ai_answer(answer):
     """Hide internal OpenKB/source-path details before showing AI output."""
     cleaned = remove_openkb_internal_metadata(answer)
+
+    internal_log_patterns = [
+        r"(?i)last\s+operation\s+logged",
+        r"(?i)operation\s+logged",
+        r"(?i)wiki/log\.md",
+        r"(?i)\blog\.md\b",
+        r"(?i)openkb\s+log",
+        r"(?i)previous\s+quer(?:y|ies)",
+    ]
+    if any(re.search(pattern, cleaned or "") for pattern in internal_log_patterns):
+        return ""
 
     # Remove internal source path bullets/lines that OpenKB may echo from summaries.
     cleaned = re.sub(

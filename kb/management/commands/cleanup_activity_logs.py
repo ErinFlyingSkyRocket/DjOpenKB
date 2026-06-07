@@ -21,6 +21,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Show how many logs would be deleted without deleting them.",
         )
+        parser.add_argument(
+            "--noinput",
+            action="store_true",
+            help="Accepted for scheduler compatibility. This command does not prompt.",
+        )
 
     def handle(self, *args, **options):
         days = options["days"]
