@@ -1,12 +1,12 @@
 # DjOpenKB Full Feature Documentation
 
-This document summarises the implemented features, security controls, deployment-related components, and operational behaviours of DjOpenKB. It is intended to give engineers and reviewers a clear overview of what the system provides and how the main surfaces are protected.
+This document summarises the implemented features, security controls, deployment-related components, role permissions, logging coverage, and operational behaviours of DjOpenKB. It is intended to give engineers, reviewers, and future administrators a clear overview of what the system provides and how the main surfaces are protected.
 
 ## 1. Project Purpose
 
-DjOpenKB is a Django-based internal knowledge base website integrated with OpenKB AI. It allows users to browse, search, vote on, and suggest wiki articles while admins review and publish content. The platform is designed for controlled local server or intranet-style deployment using Docker Compose, PostgreSQL, Nginx HTTPS, HashiCorp Vault, and optional Windows Active Directory authentication over LDAPS.
+DjOpenKB is a Django-based internal knowledge base website integrated with OpenKB AI. It allows users to browse, search, vote on, and suggest wiki articles while administrators review and publish content. The platform is designed for a controlled local server or intranet-style deployment using Docker Compose, PostgreSQL, Nginx HTTPS, HashiCorp Vault, and optional Windows Active Directory authentication over LDAPS.
 
-The project focuses on secure article management, controlled user contribution, local/offline UI translation, MFA-protected account actions, audit logging, upload validation, and AI-assisted article search.
+The project focuses on secure article management, controlled user contribution, local/offline UI translation, MFA-protected account actions, audit logging, upload validation, OpenKB-compatible article synchronisation, and AI-assisted article search.
 
 ## 2. Main Runtime Services
 
@@ -14,25 +14,52 @@ The Docker Compose stack contains the following main services:
 
 | Service | Purpose |
 |---|---|
-| `web` | Django application served by Gunicorn. Handles the website, article workflow, authentication, MFA, OpenKB AI endpoint, and admin tools. |
+| `web` | Django application served by Gunicorn. Handles the website, article workflow, authentication, MFA, OpenKB AI endpoint, logging, and admin tools. |
 | `nginx` | Reverse proxy that serves HTTPS on port `8080`, forwards requests to Django, and serves collected static files. |
 | `db` | PostgreSQL database used by Django. The database password is loaded from Vault. |
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, PostgreSQL password, Gemini API key, and LDAP bind password. |
 | `vault-init` | First-time Vault initialisation and secret seeding helper. |
 | `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment. |
-| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup and authentication log retention cleanup. |
+| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general activity log cleanup. |
 
-## 3. Authentication and Account Management
+## 3. User Types and Rights Matrix
 
-### 3.1 Local Django Accounts
+DjOpenKB separates users by authentication source and permission level. This prevents local users from being incorrectly treated as AD users just because they use an AD-style email address.
 
-Local Django accounts use Django's built-in authentication framework. Local user passwords are stored using Django password hashing. By default, Django uses PBKDF2 password hashing unless explicitly changed in settings. Plaintext local passwords are not stored in the database.
+| User type | Authentication source | Main purpose | Article browsing | Vote on articles | Suggest articles | Edit own drafts/pending failed | Change own email/password | Admin tools | Django admin access |
+|---|---|---|---|---|---|---|---|---|---|
+| Anonymous visitor | None | Read-only public access if allowed by deployment | Published articles only | No | No | No | No | No | No |
+| Local user | Django local account | Normal internal contributor | Published articles | Yes, after login | Yes | Yes | Yes, with MFA/OTP | No | No |
+| Local admin | Django local account | Main-site administrator | All relevant article workflow views | Yes | Yes | Yes | Yes, with MFA/OTP | Yes | Only if staff/superuser/Django admin permission is granted |
+| AD user | Active Directory / LDAPS | Domain-authenticated contributor | Published articles | Yes, after login | Yes | Yes | No; AD-managed values are blocked in Django | No | No |
+| AD admin / LDAP admin | Active Directory / LDAPS | Domain-authenticated administrator | All relevant article workflow views | Yes | Yes | Yes | No; AD-managed values are blocked in Django | Yes | Only if staff/superuser/Django admin permission is granted |
+
+### 3.1 User Account Separation
+
+The `UserProfile` model stores account metadata, including the account source. This avoids unsafe email-domain guessing. A local user can use an email such as `alice@openkb.local` and still remain a local user if their profile says the account source is local.
+
+| Account source | Password owner | Email owner | Profile password change | Profile email change |
+|---|---|---|---|---|
+| Local | Django | Django/local admin | Allowed with fresh MFA/OTP | Allowed with fresh MFA/OTP |
+| Active Directory | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
+
+### 3.2 Role Enforcement
+
+Main-site admin tools require explicit admin checks. A normal `staff` flag alone is not treated as sufficient for main-site admin tools unless the user also has the correct main-site admin profile or superuser permissions.
+
+Non-admin users receive a 404 response for protected main-site admin tools to reduce route discovery usefulness.
+
+## 4. Authentication and Account Management
+
+### 4.1 Local Django Accounts
+
+Local Django accounts use Django's built-in authentication framework. Local user passwords are stored using Django password hashing. Plaintext local passwords are not stored in the database.
 
 Local accounts can be managed through Django admin and the main website profile page. The normal user profile page does not allow users to change their own username. Username changes are controlled by administrators through Django admin.
 
-### 3.2 Active Directory / LDAP Accounts
+### 4.2 Active Directory / LDAP Accounts
 
-The project supports Windows Active Directory sign-in through `django-auth-ldap`. In the current secure configuration, AD authentication uses LDAPS:
+The project supports Windows Active Directory sign-in through `django-auth-ldap`. In the secure configuration, AD authentication uses LDAPS:
 
 ```env
 LDAP_SERVER_URI=ldaps://WIN-VVCA4BIOSK7.openkb.local:636
@@ -44,13 +71,23 @@ The Django container validates the Domain Controller certificate using the expor
 
 AD passwords are managed by Active Directory and are not changed inside Django. Django admin displays domain-managed users separately and prevents domain password changes through Django admin.
 
-### 3.3 LDAP Username Handling
+### 4.3 LDAP Username Handling
 
 LDAP usernames are normalised so common AD login formats map to the same Django account. This prevents the same AD user from being created as multiple Django accounts just because different login formats were used.
 
-### 3.4 Account Types
+Common examples include:
 
-The `UserProfile` model extends Django users with main-site account metadata:
+```text
+alice
+OPENKB\alice
+alice@openkb.local
+```
+
+These should map to the intended single Django-side AD user identity.
+
+### 4.4 Account Types
+
+The profile layer tracks the main account type:
 
 | Account type | Purpose |
 |---|---|
@@ -61,21 +98,21 @@ The `UserProfile` model extends Django users with main-site account metadata:
 
 Admins can also allow or block a user's main-site access through Django admin.
 
-## 4. Multi-Factor Authentication
+## 5. Multi-Factor Authentication
 
-### 4.1 MFA Requirement
+### 5.1 MFA Requirement
 
 The platform uses TOTP authenticator MFA through `pyotp`. MFA is enforced as part of the login flow for both local and LDAP users.
 
 After the username/password or AD password is accepted, the user is placed into a pending-MFA state. The real authenticated Django session is only completed after the user sets up or verifies MFA.
 
-### 4.2 MFA Setup
+### 5.2 MFA Setup
 
 When a user first signs in and does not have a confirmed MFA device, the system generates a private TOTP secret and displays a QR code. The user scans the QR code using an authenticator app and confirms setup with a valid OTP code.
 
 The MFA secret is tied to the individual Django user through the `UserMFADevice` model.
 
-### 4.3 MFA Reset
+### 5.3 MFA Reset
 
 MFA can be reset by the user or by an administrator. When MFA is reset:
 
@@ -85,7 +122,7 @@ MFA can be reset by the user or by an administrator. When MFA is reset:
 - The user must scan a new QR code and complete MFA setup again.
 - The new secret is not shown to administrators as a reusable plaintext value.
 
-### 4.4 Sensitive Profile Changes Require MFA
+### 5.4 Sensitive Profile Changes Require MFA
 
 Sensitive profile actions require a fresh MFA/OTP code. For example:
 
@@ -94,9 +131,9 @@ Sensitive profile actions require a fresh MFA/OTP code. For example:
 
 Domain-managed email/password values are controlled by Active Directory and are blocked from normal website editing.
 
-## 5. Session and Cookie Security
+## 6. Session and Cookie Security
 
-### 5.1 Session Timeout
+### 6.1 Session Timeout
 
 Authenticated sessions are controlled by a site setting:
 
@@ -106,7 +143,7 @@ session_timeout_days = 30 by default
 
 If the timeout expires, the user is logged out and must sign in again. A value of `0` makes the browser session expire when the browser closes.
 
-### 5.2 Secure Cookies
+### 6.2 Secure Cookies
 
 When `DJANGO_DEBUG=false`, the project enables secure deployment cookie settings:
 
@@ -120,11 +157,11 @@ When `DJANGO_DEBUG=false`, the project enables secure deployment cookie settings
 
 This means session and CSRF cookies are protected for HTTPS deployment.
 
-### 5.3 Cache Control After Logout/MFA
+### 6.3 Cache Control After Logout/MFA
 
 Authentication and MFA pages use strict no-cache headers to reduce the chance of browser back/forward cache showing stale authenticated pages after logout or MFA reset.
 
-## 6. CSRF and Request Protection
+## 7. CSRF and Request Protection
 
 Django CSRF middleware is enabled. Normal forms use CSRF tokens, and the OpenKB AI POST endpoint is called from the frontend with a CSRF token.
 
@@ -134,10 +171,11 @@ Important protections include:
 - POST-only endpoints for state-changing actions.
 - Safe redirect validation using Django's `url_has_allowed_host_and_scheme`.
 - Secure CSRF cookie settings when debug is off.
+- `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` are passed into Docker Compose for safer deployment configuration.
 
-## 7. Article Management
+## 8. Article Management
 
-### 7.1 Suggested Article Workflow
+### 8.1 Suggested Article Workflow
 
 Users can suggest articles through the website. Suggested articles are stored in the database and mirrored into the OpenKB data folder when needed.
 
@@ -150,15 +188,15 @@ Article states include:
 | `Pending failed` | Returned by admin with review comments. |
 | `Published` | Approved and visible in the public article list. |
 
-Normal users cannot self-approve articles. Admins can review and publish articles through the admin workflow.
+Normal users cannot self-approve articles. Admins can review and publish articles through the admin workflow. Admin-created or admin-published content can bypass normal user approval flow where appropriate.
 
-### 7.2 Admin Review Notes and History
+### 8.2 Admin Review Notes and History
 
 When an article is returned as pending failed, admins can enter review notes. The current review note is shown to the article owner when the article is in draft or pending failed status.
 
 Review notes are also stored in history, so previous feedback rounds are preserved for audit and review tracking.
 
-### 7.3 Duplicate Article Title Protection
+### 8.3 Duplicate Article Title Protection
 
 Article titles are checked using normalised comparison:
 
@@ -176,25 +214,42 @@ password reset guide
 
 from being created as separate articles.
 
-### 7.4 Article File Sync
+### 8.4 Article File Sync
 
 Published/suggested article content is written to OpenKB-compatible Markdown files under the OpenKB data structure. Internal generated metadata is removed from public display, search snippets, and AI output so users do not see sync markers.
 
-## 8. Article Browsing, Search, Views, and Trending
+## 9. Orphan Article Management
 
-### 8.1 Article Listing and Search
+Admins have access to an orphan article management tool for articles that have no active owner, no owner, or a deleted/inactive owner.
+
+The tool supports:
+
+- Scanning for orphan articles.
+- Searching orphan articles.
+- Viewing article details before action.
+- Selecting one or multiple orphan articles.
+- Assigning selected articles to an active user.
+- Deleting selected orphan articles.
+- Confirmation before assign/delete actions.
+- Safe error handling for wrong usernames, missing selection, invalid target users, stale article IDs, and unexpected failures.
+
+The assign-user field supports typing/searching by username or email so the admin does not need to scroll through a very large user list.
+
+## 10. Article Browsing, Search, Views, and Trending
+
+### 10.1 Article Listing and Search
 
 The main website allows users to browse and search published articles. Draft, pending, and failed articles are not publicly visible unless the current user owns the article or has admin permission.
 
-### 8.2 View Counts
+### 10.2 View Counts
 
 Each article stores a `view_count`. Views are tracked per user session to avoid simply refreshing the same article repeatedly to increase the count.
 
-### 8.3 Trending Articles
+### 10.3 Trending Articles
 
 Trending articles are based on higher view counts. This allows commonly accessed articles to appear more prominently.
 
-### 8.4 Voting
+### 10.4 Voting
 
 Signed-in users can vote on published articles:
 
@@ -203,11 +258,11 @@ Signed-in users can vote on published articles:
 - One vote per user per article.
 - Users can change or remove their vote.
 
-Helpful counts are visible to users. Admins can review vote details through Django admin.
+Helpful counts are visible to users. Admins can review vote details through Django admin and through activity logging.
 
-## 9. Upload and Image Security
+## 11. Upload and Image Security
 
-### 9.1 Allowed Image Types
+### 11.1 Allowed Image Types
 
 Article image uploads are restricted to:
 
@@ -219,7 +274,7 @@ Article image uploads are restricted to:
 .webp
 ```
 
-### 9.2 Upload Size Limit
+### 11.2 Upload Size Limit
 
 Uploaded article images are limited to:
 
@@ -227,35 +282,49 @@ Uploaded article images are limited to:
 2 MB maximum per image
 ```
 
-### 9.3 Pillow Image Verification
+### 11.3 Pillow Image Verification
 
 The project does not trust the browser-provided MIME type alone. Uploaded files are opened and verified using Pillow. This helps reject non-image files renamed with an image extension.
 
-### 9.4 Pixel Limit
+### 11.4 Pixel Limit
 
 The image validation also checks image dimensions and rejects images above the configured pixel limit. This helps reduce the risk of oversized image processing abuse.
 
-### 9.5 Server-Generated Filenames
+### 11.5 Server-Generated Filenames
 
 Uploaded images are stored using generated filenames containing a timestamp and random component. The original filename is not used directly as the storage path.
 
-### 9.6 Path Traversal Protection
+### 11.6 Path Traversal Protection
 
 Uploaded and imported filenames are normalised. Path traversal patterns such as `../` are rejected or reduced to safe filename-only values.
 
-### 9.7 Protected Image Serving
+### 11.7 Protected Image Serving
 
 The project does not expose the whole OpenKB uploads folder as a raw static directory. Images are served through a Django view that checks filenames and article visibility rules.
 
-## 10. Stray Upload File Cleanup
+### 11.8 Upload Audit Log
 
-### 10.1 Manual Cleanup
+Article image uploads are logged in `ArticleImageUploadLog`. The log records details such as:
+
+- Generated filename.
+- Original filename.
+- Content type.
+- Size.
+- Uploader snapshot.
+- Upload time.
+- Upload IP address.
+- User agent.
+- Deletion reason when deleted.
+
+## 12. Stray Upload File Cleanup
+
+### 12.1 Manual Cleanup
 
 Admins have access to a clean stray upload files tool. It finds uploaded files that are no longer referenced by any article or Markdown file.
 
 The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept.
 
-### 10.2 Automatic Cleanup
+### 12.2 Automatic Cleanup
 
 The `cleanup-scheduler` Docker service runs scheduled cleanup commands. By default, the cleanup interval is 24 hours:
 
@@ -271,21 +340,7 @@ stray_upload_cleanup_min_age_minutes = 1440
 
 This prevents newly uploaded images from being deleted while a user is still drafting an article.
 
-### 10.3 Upload Audit Log
-
-Article image uploads are logged in `ArticleImageUploadLog`. The log records details such as:
-
-- Generated filename.
-- Original filename.
-- Content type.
-- Size.
-- Uploader snapshot.
-- Upload time.
-- Upload IP address.
-- User agent.
-- Deletion reason when deleted.
-
-## 11. Markdown and XSS Protection
+## 13. Markdown and XSS Protection
 
 Article Markdown is converted into HTML using `markdown`, then sanitised using `bleach` before display.
 
@@ -293,9 +348,9 @@ This protects article pages from unsafe HTML and script injection. Only approved
 
 The article display template can safely render the sanitised HTML because the input has already passed through the controlled Markdown and Bleach pipeline.
 
-## 12. OpenKB AI Integration
+## 14. OpenKB AI Integration
 
-### 12.1 OpenKB CLI Integration
+### 14.1 OpenKB CLI Integration
 
 The project integrates with OpenKB through the local `OpenKB-main` folder and the `openkb-data` data folder.
 
@@ -313,7 +368,7 @@ docker compose exec web python manage.py sync_openkb_ai
 
 If OpenKB is not initialised, the chatbot may return errors because the expected OpenKB data structure is missing.
 
-### 12.2 AI Provider
+### 14.2 AI Provider
 
 The AI provider is configured through environment settings:
 
@@ -324,7 +379,7 @@ OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
 
 The Gemini API key is stored in Vault, not directly in source code.
 
-### 12.3 AI Endpoint Safety Limits
+### 14.3 AI Endpoint Safety Limits
 
 The Ask OpenKB AI endpoint includes limits such as:
 
@@ -333,6 +388,7 @@ The Ask OpenKB AI endpoint includes limits such as:
 - Temporary blocking after too many requests.
 - Timeout handling for OpenKB CLI calls.
 - Error sanitisation before returning messages to users.
+- Prompt preview redaction before storing in activity logs.
 
 Current defaults in settings:
 
@@ -343,33 +399,35 @@ OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = 60
 OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = 300
 ```
 
-### 12.4 Related Article Recommendations
+### 14.4 Related Article Recommendations
 
 The AI endpoint can recommend relevant published articles from the local database. Related article logic avoids showing random articles for simple greetings or unrelated filler messages.
 
 Only published articles are used for public AI recommendations.
 
-### 12.5 Output Cleanup
+### 14.5 Output Cleanup
 
 OpenKB internal metadata and generated sync markers are removed before display. This prevents implementation details such as generated article metadata from leaking into article snippets or AI responses.
 
-## 13. Internationalisation and Local Translation
+## 15. Internationalisation and Local Translation
 
 The UI uses Django's local translation system through `.po` and `.mo` locale files. Translation is local/offline and does not call an external AI translator.
 
 Supported language choices are configured in `settings.py` and exposed through the language selector. Anonymous users store language preference in a cookie. Logged-in users also save the preference in their user profile.
 
+The locale files have been updated across all supported languages so extracted UI strings have translations and compiled `.mo` files. This includes newer admin-tool labels, orphan article workflow messages, MFA text, activity logging labels, and profile/account-source messages.
+
 This design keeps UI translation independent from the AI chatbot and avoids sending translation content to external AI services.
 
-## 14. Admin Tools and Access Control
+## 16. Admin Tools and Access Control
 
-### 14.1 Admin Tool Restriction
+### 16.1 Admin Tool Restriction
 
 Admin tools are protected by explicit admin checks. Staff status alone is not enough for main-site admin tools. A user must be a superuser or have an admin-type `UserProfile`.
 
 Non-admin users receive 404 responses for admin-only main-site tools to reduce route discovery usefulness.
 
-### 14.2 Main Admin Tools
+### 16.2 Main Admin Tools
 
 Admin tools include:
 
@@ -377,15 +435,27 @@ Admin tools include:
 - Bulk import/export articles.
 - Manage pending articles.
 - Review suggested articles.
-- View audit records through Django admin.
+- Scan and manage orphan articles.
+- View authentication activity logs through Django admin.
+- View general activity logs through Django admin.
+- View upload audit records through Django admin.
 
-### 14.3 Article Import/Export
+### 16.3 Article Import/Export
 
 Bulk import/export supports article content and referenced upload files. Zip member names are normalised to avoid unsafe paths. Duplicate article titles are detected during import.
 
-## 15. Logging and Monitoring
+### 16.4 Django Admin Usability
 
-### 15.1 Authentication Activity Logs
+Django admin pages scroll normally in the browser. For log-heavy pages:
+
+- Log list pages use pagination.
+- Activity log and authentication log admin pages can show up to 500 rows per page.
+- Wide admin tables support horizontal scrolling to avoid squeezing columns.
+- `list_max_show_all` is limited to reduce accidental extremely large admin page loads.
+
+## 17. Logging and Monitoring
+
+### 17.1 Authentication Activity Logs
 
 Authentication and MFA events are logged in `AuthActivityLog`. The log captures:
 
@@ -401,13 +471,43 @@ Authentication and MFA events are logged in `AuthActivityLog`. The log captures:
 
 These logs help admins review suspicious login patterns, repeated failures, MFA resets, and unusual source IPs.
 
-### 15.2 Read-Only Admin Log View
+Examples of authentication events:
 
-`AuthActivityLog` is read-only in Django admin. Admin users can search and filter logs, but cannot manually add, change, or delete them from the admin interface.
+| Event category | Examples |
+|---|---|
+| Password login | Success, failure, invalid local credentials, invalid AD credentials |
+| MFA | Setup success/failure, verify success/failure, pending MFA created |
+| Session/security | Logout, session invalidation, forced MFA reset |
+| Admin MFA management | Admin reset for selected user/device |
 
-Retention/deletion is controlled through the configured cleanup command instead of manual editing.
+### 17.2 General Activity Logs
 
-### 15.3 Log Retention
+General site and content actions are logged in `ActivityLog`. This is separate from authentication logs so admins can review content and usage behaviour without mixing it with login/MFA activity.
+
+Examples of logged activity include:
+
+| Area | Example activity |
+|---|---|
+| Articles | Article created, updated, submitted, approved, published, returned as pending failed, deleted |
+| Views | Article viewed once per browser session |
+| Votes | Vote up, vote down, vote changed, vote removed |
+| Uploads | Image uploaded, image deleted, stray upload cleanup |
+| AI | OpenKB AI question metadata, rate limit events, redacted prompt preview |
+| Imports/exports | Bulk article import, bulk article export |
+| Admin tools | Orphan article assigned, orphan article deleted, pending article admin action |
+| Django admin | Admin article save/delete/bulk actions where applicable |
+
+### 17.3 Log IP Handling
+
+IP logging prefers trusted reverse proxy headers such as `X-Real-IP` from Nginx instead of blindly trusting the first value from `X-Forwarded-For`. This improves accuracy for internal deployments behind the configured reverse proxy.
+
+### 17.4 Read-Only Admin Log Views
+
+`AuthActivityLog` and general `ActivityLog` are intended to be read-only in Django admin. Admin users can search and filter logs, but should not manually add or edit them from the admin interface.
+
+Retention/deletion is controlled through cleanup commands instead of manual editing.
+
+### 17.5 Log Retention
 
 Authentication activity log retention is controlled by site setting:
 
@@ -415,9 +515,27 @@ Authentication activity log retention is controlled by site setting:
 auth_activity_log_retention_days = 30 by default
 ```
 
-The scheduled cleanup service runs the cleanup command automatically.
+General activity log retention is controlled by site setting:
 
-## 16. Secrets Management with Vault
+```text
+activity_log_retention_days = 30 by default
+```
+
+A value of `0` keeps logs forever. If the value is set to `30`, cleanup deletes only logs older than 30 days. If the value is increased later, future cleanup follows the new value, but logs that were already deleted cannot be restored.
+
+### 17.6 Log Cleanup
+
+The scheduled cleanup service can run log cleanup automatically. Cleanup commands can also be run manually:
+
+```bash
+docker compose exec web python manage.py cleanup_auth_activity_logs --dry-run
+docker compose exec web python manage.py cleanup_auth_activity_logs --noinput
+
+docker compose exec web python manage.py cleanup_activity_logs --dry-run
+docker compose exec web python manage.py cleanup_activity_logs
+```
+
+## 18. Secrets Management with Vault
 
 HashiCorp Vault is used to store sensitive runtime values, including:
 
@@ -430,7 +548,7 @@ The `.env` file should contain non-secret runtime configuration only. Passwords 
 
 Vault encrypts stored secrets at rest and gives the application access through the configured Vault token file. The project does not rely on hardcoded production secrets in source code.
 
-## 17. LDAPS Security
+## 19. LDAPS Security
 
 The project supports Active Directory authentication over LDAPS on port 636. LDAPS protects LDAP bind credentials in transit using TLS.
 
@@ -444,7 +562,7 @@ In the current lab configuration, LDAPS testing confirmed:
 
 The encryption strength depends on the TLS cipher negotiated by the server and client. The important implementation point is that the project validates the server certificate and does not send LDAP bind credentials over plaintext LDAP in secure mode.
 
-## 18. HTTPS and Nginx Security Headers
+## 20. HTTPS and Nginx Security Headers
 
 Nginx serves the application over HTTPS on port `8080`. The project includes security headers such as:
 
@@ -457,24 +575,24 @@ Nginx serves the application over HTTPS on port `8080`. The project includes sec
 
 The local lab deployment can use a locally generated Nginx certificate. For a real public deployment, a trusted certificate should be used.
 
-## 19. Robot.txt and Sitemap Decision
+## 21. Robots.txt and Sitemap Decision
 
 The project is intended for local server, lab, or internal intranet deployment. It does not require public search engine indexing.
 
 Because of this, `robots.txt` and sitemap generation are not a core requirement. Access control is handled by Django views and authentication checks rather than relying on crawler instructions.
 
-## 20. Dependency Pinning
+## 22. Dependency Pinning
 
 The project pins exact Python package versions in `requirements.txt` to reduce unexpected breakage from upstream updates.
 
-Current pinned versions:
+Current pinned versions include:
 
 ```text
 Django==6.0.5
 gunicorn==26.0.0
 Markdown==3.10
 bleach==6.3.0
-Pillow==12.0.0
+Pillow==12.2.0
 python-dotenv==1.2.1
 django-auth-ldap==5.2.0
 psycopg[binary]==3.3.2
@@ -484,40 +602,44 @@ qrcode[pil]==8.2
 
 This helps ensure the same behaviour across developer machines and deployment servers.
 
-## 21. Database and Storage
+## 23. Database and Storage
 
-### 21.1 PostgreSQL
+### 23.1 PostgreSQL
 
 PostgreSQL is the default database. The database credentials are provided through Docker Compose and Vault.
 
-### 21.2 SQLite Fallback
+### 23.2 SQLite Fallback
 
 `USE_SQLITE=true` exists only as a local fallback for quick testing outside the normal Docker/PostgreSQL deployment. The intended deployment uses PostgreSQL.
 
-### 21.3 Article Storage
+### 23.3 Article Storage
 
 Article metadata is stored in PostgreSQL. Article Markdown content is also mirrored into OpenKB-compatible folders so OpenKB can index and use it.
 
-## 22. Main Security Controls Summary
+## 24. Main Security Controls Summary
 
 | Area | Implemented control |
 |---|---|
 | Password storage | Django password hashing for local users. AD passwords managed by Active Directory. |
+| Account source separation | Local and AD users are separated by stored profile metadata, not email domain guessing. |
 | MFA | TOTP MFA required after password/AD authentication. |
-| Sensitive profile changes | Fresh MFA/OTP required for sensitive local profile changes. |
+| Sensitive profile changes | Fresh MFA/OTP required for sensitive local profile changes. AD-managed values are blocked locally. |
 | Sessions | Configurable session timeout and secure cookie settings. |
 | CSRF | Django CSRF middleware and token-protected POST forms/endpoints. |
 | XSS | Markdown rendered then sanitised with Bleach. |
 | Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames. |
 | Access control | Article visibility checks, admin-only tools, 404 for non-admin admin-tool access. |
+| Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow. |
 | Secrets | Runtime secrets stored in Vault instead of source code. |
 | LDAP | LDAPS with certificate validation for AD integration. |
 | HTTPS | Nginx HTTPS and security headers. |
-| Logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
-| AI endpoint | Prompt length limit, rate limiting, timeout handling, output cleanup, local related article fallback. |
+| Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
+| Activity logs | Article, vote, upload, AI, import/export, and admin-tool activity logging with retention cleanup. |
+| Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
+| AI endpoint | Prompt length limit, rate limiting, timeout handling, output cleanup, redacted activity previews. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
 
-## 23. Files That Should Not Be Shared
+## 25. Files That Should Not Be Shared
 
 The following files/folders may contain secrets, tokens, generated keys, or local runtime data and should not be included in public repositories or submission packages:
 
@@ -533,11 +655,12 @@ postgres-data/*
 
 The `.gitignore` should continue to exclude these sensitive/generated files.
 
-## 24. Useful Verification Commands
+## 26. Useful Verification Commands
 
-Run Django deployment checks:
+Run Django checks:
 
 ```bash
+docker compose exec web python manage.py check
 docker compose exec web python manage.py check --deploy
 ```
 
@@ -559,15 +682,35 @@ Sync articles to OpenKB AI:
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
-Run automatic cleanup manually:
+Run cleanup manually:
 
 ```bash
 docker compose exec web python manage.py cleanup_stray_upload_files --noinput
+docker compose exec web python manage.py cleanup_auth_activity_logs --dry-run
 docker compose exec web python manage.py cleanup_auth_activity_logs --noinput
+docker compose exec web python manage.py cleanup_activity_logs --dry-run
+docker compose exec web python manage.py cleanup_activity_logs
 ```
 
-## 25. Final Notes
+Build and restart after dependency or Docker Compose changes:
 
-DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, article review workflow, and OpenKB AI integration.
+```bash
+docker compose build web cleanup-scheduler
+docker compose up -d
+```
 
-For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, and debug mode remains off.
+## 27. Operational Notes for Administrators
+
+- Keep `DJANGO_DEBUG=false` for deployment.
+- Keep Vault secrets out of shared packages.
+- Use LDAPS with certificate validation for AD.
+- Use the activity logs and authentication logs to review suspicious behaviour.
+- Keep log retention at 30 days unless longer investigation history is needed.
+- Use `--dry-run` before cleanup commands when validating behaviour.
+- Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
+
+## 28. Final Notes
+
+DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, article review workflow, orphan article management, role separation between local and AD users, and OpenKB AI integration.
+
+For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, and cleanup/log retention settings are reviewed by administrators.
