@@ -24,6 +24,86 @@
         .orphan-actions .btn { margin-bottom: 4px; }
         .orphan-bulk-panel { border: 1px solid #e5eaee; border-radius: 4px; padding: 12px; margin-bottom: 15px; background: #fbfcfd; }
         .orphan-checkbox { width: 28px; }
+
+        .orphan-user-lookup-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .orphan-user-lookup {
+            width: 100%;
+            height: 46px;
+            padding-right: 40px;
+            background: #fff;
+            border: 1px solid #cfd8df;
+            border-radius: 4px;
+            box-shadow: none;
+        }
+        .orphan-user-lookup:focus {
+            border-color: #2c7be5;
+            box-shadow: 0 0 0 2px rgba(44, 123, 229, 0.12);
+        }
+        .orphan-user-lookup-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            pointer-events: none;
+        }
+        .orphan-user-suggestions {
+            display: none;
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #cfd8df;
+            border-radius: 4px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            max-height: 260px;
+            overflow-y: auto;
+            z-index: 1050;
+        }
+        .orphan-user-suggestions.is-open {
+            display: block;
+        }
+        .orphan-user-suggestion {
+            display: block;
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #eef2f5;
+            background: #fff;
+            text-align: left;
+            padding: 10px 12px;
+            cursor: pointer;
+        }
+        .orphan-user-suggestion:last-child {
+            border-bottom: 0;
+        }
+        .orphan-user-suggestion:hover,
+        .orphan-user-suggestion.is-active {
+            background: #f5f9fc;
+        }
+        .orphan-user-suggestion-primary {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .orphan-user-suggestion-secondary {
+            display: block;
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        .orphan-user-empty {
+            display: none;
+            padding: 10px 12px;
+            color: #7f8c8d;
+            background: #fff;
+        }
+        .orphan-user-empty.is-open {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -99,23 +179,40 @@
                         <div class="row">
                             <div class="col-sm-5">
                                 <label for="target_user_lookup">{% trans "Assign selected articles to" %}</label>
-                                <input
-                                    type="text"
-                                    id="target_user_lookup"
-                                    name="target_user_lookup"
-                                    class="form-control"
-                                    list="activeUserList"
-                                    autocomplete="off"
-                                    placeholder="{% trans 'Type username or email' %}"
-                                >
-                                <datalist id="activeUserList">
-                                    {% for user in active_users %}
-                                        <option value="{{ user.get_username }}">{% if user.email %}{{ user.email }}{% else %}{{ user.get_username }}{% endif %}</option>
-                                        {% if user.email %}
-                                            <option value="{{ user.email }}">{{ user.get_username }}</option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </datalist>
+                                <div class="orphan-user-lookup-wrap">
+                                    <input
+                                        type="text"
+                                        id="target_user_lookup"
+                                        name="target_user_lookup"
+                                        class="form-control orphan-user-lookup"
+                                        autocomplete="off"
+                                        placeholder="{% trans 'Type username or email' %}"
+                                        aria-autocomplete="list"
+                                        aria-expanded="false"
+                                        aria-controls="targetUserSuggestions"
+                                    >
+                                    <span class="orphan-user-lookup-icon"><i class="fa fa-chevron-down"></i></span>
+                                    <div id="targetUserSuggestions" class="orphan-user-suggestions" role="listbox">
+                                        {% for user in active_users %}
+                                            <button
+                                                type="button"
+                                                class="orphan-user-suggestion"
+                                                data-username="{{ user.get_username|escape }}"
+                                                data-email="{{ user.email|default:''|escape }}"
+                                                data-search="{{ user.get_username|lower }} {{ user.email|default:''|lower }}"
+                                                role="option"
+                                            >
+                                                <span class="orphan-user-suggestion-primary">{{ user.get_username }}</span>
+                                                {% if user.email %}
+                                                    <span class="orphan-user-suggestion-secondary">{{ user.email }}</span>
+                                                {% endif %}
+                                            </button>
+                                        {% endfor %}
+                                        <div id="targetUserSuggestionsEmpty" class="orphan-user-empty">
+                                            {% trans "No matching active user found." %}
+                                        </div>
+                                    </div>
+                                </div>
                                 <small class="orphan-muted">{% trans "Enter an active local or AD username/email, then tick articles and click Assign selected." %}</small>
                             </div>
                             <div class="col-sm-7" style="padding-top: 25px;">
@@ -187,20 +284,96 @@
     <script>
         (function () {
             var assignLookup = document.getElementById('target_user_lookup');
+            var suggestionsBox = document.getElementById('targetUserSuggestions');
+            var emptyState = document.getElementById('targetUserSuggestionsEmpty');
+            var suggestionItems = Array.prototype.slice.call(document.querySelectorAll('.orphan-user-suggestion'));
+
+            function openSuggestions() {
+                if (!suggestionsBox) { return; }
+                suggestionsBox.classList.add('is-open');
+                if (assignLookup) {
+                    assignLookup.setAttribute('aria-expanded', 'true');
+                }
+            }
+
+            function closeSuggestions() {
+                if (!suggestionsBox) { return; }
+                suggestionsBox.classList.remove('is-open');
+                if (assignLookup) {
+                    assignLookup.setAttribute('aria-expanded', 'false');
+                }
+            }
+
+            function filterSuggestions() {
+                if (!assignLookup || !suggestionsBox) { return; }
+                var query = (assignLookup.value || '').toLowerCase().trim();
+                var visibleCount = 0;
+
+                suggestionItems.forEach(function (item) {
+                    var haystack = item.getAttribute('data-search') || '';
+                    var matches = !query || haystack.indexOf(query) !== -1;
+                    item.style.display = matches ? 'block' : 'none';
+                    item.classList.remove('is-active');
+                    if (matches) {
+                        visibleCount += 1;
+                    }
+                });
+
+                if (emptyState) {
+                    emptyState.classList.toggle('is-open', visibleCount === 0);
+                }
+
+                if (visibleCount > 0 || query) {
+                    openSuggestions();
+                } else {
+                    closeSuggestions();
+                }
+            }
+
             if (assignLookup) {
+                assignLookup.addEventListener('focus', function () {
+                    filterSuggestions();
+                });
+
+                assignLookup.addEventListener('input', function () {
+                    filterSuggestions();
+                });
+
                 assignLookup.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
                         event.preventDefault();
                     }
+                    if (event.key === 'Escape') {
+                        closeSuggestions();
+                    }
                 });
             }
 
-            var selectAll = document.getElementById('selectAllOrphans');
-            if (!selectAll) { return; }
-            selectAll.addEventListener('change', function () {
-                var boxes = document.querySelectorAll('.orphan-row-checkbox');
-                boxes.forEach(function (box) { box.checked = selectAll.checked; });
+            suggestionItems.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    var username = item.getAttribute('data-username') || '';
+                    if (assignLookup) {
+                        assignLookup.value = username;
+                        assignLookup.focus();
+                    }
+                    closeSuggestions();
+                });
             });
+
+            document.addEventListener('click', function (event) {
+                if (!suggestionsBox || !assignLookup) { return; }
+                if (!suggestionsBox.contains(event.target) && event.target !== assignLookup) {
+                    closeSuggestions();
+                }
+            });
+
+            var selectAll = document.getElementById('selectAllOrphans');
+            if (selectAll) {
+                selectAll.addEventListener('change', function () {
+                    var boxes = document.querySelectorAll('.orphan-row-checkbox');
+                    boxes.forEach(function (box) { box.checked = selectAll.checked; });
+                });
+            }
         })();
     </script>
 </body>
