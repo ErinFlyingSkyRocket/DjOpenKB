@@ -484,8 +484,8 @@ class AuthActivityLogAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-    list_per_page = 50
-    list_max_show_all = 200
+    list_per_page = 500
+    list_max_show_all = 1000
 
     def has_add_permission(self, request):
         return False
@@ -546,8 +546,8 @@ class ActivityLogAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-    list_per_page = 50
-    list_max_show_all = 200
+    list_per_page = 500
+    list_max_show_all = 1000
 
     def has_add_permission(self, request):
         return False
