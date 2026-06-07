@@ -324,4 +324,4 @@ def change_password(request):
     user.save(update_fields=["password"])
     update_session_auth_hash(request, user)
     messages.success(request, "Password changed successfully.")
-    return redirect("edit_my_suggestions")
+    return redirect("profile")

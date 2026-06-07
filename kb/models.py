@@ -30,6 +30,10 @@ class UserProfile(models.Model):
         LDAP_USER = "ldap_user", _("LDAP user")
         LDAP_ADMIN = "ldap_admin", _("LDAP admin")
 
+    class AuthSource(models.TextChoices):
+        LOCAL = "local", _("Local user")
+        ACTIVE_DIRECTORY = "ad", _("Active Directory user")
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -40,6 +44,13 @@ class UserProfile(models.Model):
         choices=AccountType.choices,
         default=AccountType.USER,
         help_text="Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
+    )
+    auth_source = models.CharField(
+        max_length=20,
+        choices=AuthSource.choices,
+        default=AuthSource.LOCAL,
+        db_index=True,
+        help_text="Controls whether the user's password/email is managed locally or by Active Directory.",
     )
     can_access_main_site = models.BooleanField(
         default=True,
@@ -60,7 +71,7 @@ class UserProfile(models.Model):
         verbose_name_plural = "Main Site User Profiles"
 
     def __str__(self):
-        return f"{self.user.username} ({self.get_account_type_display()})"
+        return f"{self.user.username} ({self.get_auth_source_display()} / {self.get_account_type_display()})"
 
     @property
     def is_admin_type(self):
@@ -71,10 +82,13 @@ class UserProfile(models.Model):
 
     @property
     def is_ldap_type(self):
-        return self.account_type in {
-            self.AccountType.LDAP_USER,
-            self.AccountType.LDAP_ADMIN,
-        }
+        return (
+            self.auth_source == self.AuthSource.ACTIVE_DIRECTORY
+            or self.account_type in {
+                self.AccountType.LDAP_USER,
+                self.AccountType.LDAP_ADMIN,
+            }
+        )
 
     def save(self, *args, **kwargs):
         """Keep Django admin permission flags aligned with the selected type.
@@ -86,6 +100,23 @@ class UserProfile(models.Model):
         super().save(*args, **kwargs)
 
         update_fields = []
+
+        # Keep the legacy account_type field aligned with the explicit
+        # auth_source column. auth_source is the source of truth for whether an
+        # account is local or AD-managed; account_type still stores the role
+        # variant used by older code/admin filters.
+        role_is_admin = self.account_type in {
+            self.AccountType.ADMIN,
+            self.AccountType.LDAP_ADMIN,
+        }
+        if self.auth_source == self.AuthSource.ACTIVE_DIRECTORY:
+            desired_account_type = self.AccountType.LDAP_ADMIN if role_is_admin else self.AccountType.LDAP_USER
+        else:
+            desired_account_type = self.AccountType.ADMIN if role_is_admin else self.AccountType.USER
+
+        if self.account_type != desired_account_type:
+            self.account_type = desired_account_type
+            type(self).objects.filter(pk=self.pk).update(account_type=desired_account_type, updated_at=timezone.now())
 
         if self.account_type == self.AccountType.ADMIN:
             if not self.user.is_staff:
