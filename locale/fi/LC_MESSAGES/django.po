@@ -77,7 +77,7 @@ msgid "Import zip"
 msgstr "Tuo zip"
 
 msgid "Back to profile"
-msgstr "Takaisin profiiliin"
+msgstr "Back to profile"
 
 msgid "Supported zip format"
 msgstr "Tuettu zip-muoto"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "Julkaisupäivä"
 
 msgid "Last updated"
-msgstr "Viimeksi päivitetty"
+msgstr "Last updated"
 
 msgid "Share article"
 msgstr "Jaa artikkeli"
@@ -188,7 +188,7 @@ msgid "Search my suggestions"
 msgstr "Hae ehdotuksistani"
 
 msgid "Clear search"
-msgstr "Tyhjennä haku"
+msgstr "Clear search"
 
 msgid "Next"
 msgstr "Seuraava"
@@ -197,16 +197,16 @@ msgid "Last"
 msgstr "Viimeinen"
 
 msgid "Article title"
-msgstr "Artikkelin otsikko"
+msgstr "Article title"
 
 msgid "Status"
-msgstr "Tila"
+msgstr "Status"
 
 msgid "Created"
 msgstr "Luotu"
 
 msgid "Actions"
-msgstr "Toiminnot"
+msgstr "Actions"
 
 msgid "Delete"
 msgstr "Poista"
@@ -275,7 +275,7 @@ msgid "Save username"
 msgstr "Tallenna käyttäjänimi"
 
 msgid "Cancel"
-msgstr "Peruuta"
+msgstr "Cancel"
 
 msgid "Email"
 msgstr "Sähköposti"
@@ -1183,3 +1183,158 @@ msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki 
 msgid "openKB powered knowledge repository"
 msgstr "openKB powered knowledge repository"
 
+#: orphan article admin tool
+msgid "Scan orphan articles"
+msgstr "Scan orphan articles"
+
+#: orphan article admin tool
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+
+#: orphan article admin tool
+msgid "orphan articles"
+msgstr "orphan articles"
+
+#: orphan article admin tool
+msgid "Search orphan articles"
+msgstr "Search orphan articles"
+
+#: orphan article admin tool
+msgid "All statuses"
+msgstr "All statuses"
+
+#: orphan article admin tool
+msgid "Orphan article pages"
+msgstr "Orphan article pages"
+
+#: orphan article admin tool
+msgid "Assign selected articles to"
+msgstr "Assign selected articles to"
+
+#: orphan article admin tool
+msgid "Type username or email"
+msgstr "Type username or email"
+
+#: orphan article admin tool
+msgid "No matching active user found."
+msgstr "No matching active user found."
+
+#: orphan article admin tool
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Enter an active local or AD username/email, then tick articles and click Assign selected."
+
+#: orphan article admin tool
+msgid "Assign selected"
+msgstr "Assign selected"
+
+#: orphan article admin tool
+msgid "Delete selected"
+msgstr "Delete selected"
+
+#: orphan article admin tool
+msgid "You will be asked to confirm before changes are applied."
+msgstr "You will be asked to confirm before changes are applied."
+
+#: orphan article admin tool
+msgid "Previous owner"
+msgstr "Previous owner"
+
+#: orphan article admin tool
+msgid "Inactive"
+msgstr "Inactive"
+
+#: orphan article admin tool
+msgid "No owner"
+msgstr "No owner"
+
+#: orphan article admin tool
+msgid "No orphan articles match your search."
+msgstr "No orphan articles match your search."
+
+#: orphan article admin tool
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "No orphan articles were found. All articles currently have an active owner."
+
+#: orphan article admin tool
+msgid "Confirm orphan article action"
+msgstr "Confirm orphan article action"
+
+#: orphan article admin tool
+msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+
+#: orphan article admin tool
+msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+
+#: orphan article admin tool
+msgid "Yes, assign articles"
+msgstr "Yes, assign articles"
+
+#: orphan article admin tool
+msgid "Yes, delete articles"
+msgstr "Yes, delete articles"
+
+#: orphan article admin tool
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Please use the Assign selected or Delete selected button."
+
+#: orphan article admin tool
+msgid "Please select at least one orphan article first."
+msgstr "Please select at least one orphan article first."
+
+#: orphan article admin tool
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+
+#: orphan article admin tool
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Some selected articles were skipped because they are no longer orphan articles."
+
+#: orphan article admin tool
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "The selected target user was missing. Please choose the user again."
+
+#: orphan article admin tool
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "The selected target user is invalid or inactive. Please choose an active user."
+
+#: orphan article admin tool
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Please enter a username or email to assign the selected articles to."
+
+#: orphan article admin tool
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
+
+#: orphan article admin tool
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
+
+#: orphan article admin tool
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+
+#: orphan article admin tool
+msgid "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+
+#: orphan article admin tool
+msgid "Deleted %(count)s orphan article(s)."
+msgstr "Deleted %(count)s orphan article(s)."
+
+#: orphan article admin tool
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Some selected articles could not be deleted: %(titles)s"
+
+#: orphan article admin tool
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "No orphan articles were deleted. Please refresh and try again."
+
+#: orphan article admin tool
+msgid "Invalid orphan article action."
+msgstr "Invalid orphan article action."
+
+#: orphan article admin tool
+msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."

@@ -1173,7 +1173,7 @@ msgstr "article"
 
 #: auto-generated
 msgid "matching"
-msgstr "matching"
+msgstr "匹配"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
@@ -1183,3 +1183,158 @@ msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki 
 msgid "openKB powered knowledge repository"
 msgstr "openKB powered knowledge repository"
 
+#: orphan article admin tool
+msgid "Scan orphan articles"
+msgstr "扫描孤立文章"
+
+#: orphan article admin tool
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "查找没有所有者或所有者已停用/删除的文章，然后将它们分配给活跃用户或删除它们。"
+
+#: orphan article admin tool
+msgid "orphan articles"
+msgstr "孤立文章"
+
+#: orphan article admin tool
+msgid "Search orphan articles"
+msgstr "搜索孤立文章"
+
+#: orphan article admin tool
+msgid "All statuses"
+msgstr "所有状态"
+
+#: orphan article admin tool
+msgid "Orphan article pages"
+msgstr "孤立文章页面"
+
+#: orphan article admin tool
+msgid "Assign selected articles to"
+msgstr "将选中文章分配给"
+
+#: orphan article admin tool
+msgid "Type username or email"
+msgstr "输入用户名或电子邮件"
+
+#: orphan article admin tool
+msgid "No matching active user found."
+msgstr "未找到匹配的活跃用户。"
+
+#: orphan article admin tool
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "输入活跃的本地或 AD 用户名/电子邮件，然后勾选文章并点击分配选中项。"
+
+#: orphan article admin tool
+msgid "Assign selected"
+msgstr "分配选中项"
+
+#: orphan article admin tool
+msgid "Delete selected"
+msgstr "删除选中项"
+
+#: orphan article admin tool
+msgid "You will be asked to confirm before changes are applied."
+msgstr "应用更改前会要求你确认。"
+
+#: orphan article admin tool
+msgid "Previous owner"
+msgstr "之前的所有者"
+
+#: orphan article admin tool
+msgid "Inactive"
+msgstr "已停用"
+
+#: orphan article admin tool
+msgid "No owner"
+msgstr "无所有者"
+
+#: orphan article admin tool
+msgid "No orphan articles match your search."
+msgstr "没有孤立文章符合你的搜索。"
+
+#: orphan article admin tool
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "未找到孤立文章。当前所有文章都有活跃所有者。"
+
+#: orphan article admin tool
+msgid "Confirm orphan article action"
+msgstr "确认孤立文章操作"
+
+#: orphan article admin tool
+msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "确定要将 %(article_count)s 篇文章分配给 %(username)s 吗？"
+
+#: orphan article admin tool
+msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "确定要永久删除 %(article_count)s 篇选中的孤立文章吗？这也会移除其生成的 OpenKB Markdown 文件。"
+
+#: orphan article admin tool
+msgid "Yes, assign articles"
+msgstr "是，分配文章"
+
+#: orphan article admin tool
+msgid "Yes, delete articles"
+msgstr "是，删除文章"
+
+#: orphan article admin tool
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "请使用“分配选中项”或“删除选中项”按钮。"
+
+#: orphan article admin tool
+msgid "Please select at least one orphan article first."
+msgstr "请先选择至少一篇孤立文章。"
+
+#: orphan article admin tool
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "选中的文章不再是孤立文章或已不存在。请刷新后重试。"
+
+#: orphan article admin tool
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "部分选中文章已跳过，因为它们不再是孤立文章。"
+
+#: orphan article admin tool
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "缺少选中的目标用户。请重新选择用户。"
+
+#: orphan article admin tool
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "选中的目标用户无效或未激活。请选择活跃用户。"
+
+#: orphan article admin tool
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "请输入要分配给的用户名或电子邮件。"
+
+#: orphan article admin tool
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "未找到“%(user)s”的活跃用户。请输入有效的用户名或电子邮件。"
+
+#: orphan article admin tool
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "有多个活跃用户匹配“%(user)s”。请改用准确用户名。"
+
+#: orphan article admin tool
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "无法安全分配文章。未应用任何分配。请检查日志后重试。"
+
+#: orphan article admin tool
+msgid "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "已将 %(count)s 篇孤立文章分配给 %(user)s。"
+
+#: orphan article admin tool
+msgid "Deleted %(count)s orphan article(s)."
+msgstr "已删除 %(count)s 篇孤立文章。"
+
+#: orphan article admin tool
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "部分选中文章无法删除：%(titles)s"
+
+#: orphan article admin tool
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "未删除任何孤立文章。请刷新后重试。"
+
+#: orphan article admin tool
+msgid "Invalid orphan article action."
+msgstr "无效的孤立文章操作。"
+
+#: orphan article admin tool
+msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "处理孤立文章操作时出错。未应用任何更改。请检查你的选择后重试。"
