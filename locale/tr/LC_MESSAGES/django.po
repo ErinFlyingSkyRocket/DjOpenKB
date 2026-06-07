@@ -74,10 +74,10 @@ msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
 msgstr "Maksimum yükleme boyutu: 100 MB. Maksimum sıkıştırılmamış boyut: 200 MB."
 
 msgid "Import zip"
-msgstr "Zip içe aktar"
+msgstr "zip içe aktar"
 
 msgid "Back to profile"
-msgstr "Back to profile"
+msgstr "Profile geri dön"
 
 msgid "Supported zip format"
 msgstr "Desteklenen zip biçimi"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "Yayınlanma tarihi"
 
 msgid "Last updated"
-msgstr "Last updated"
+msgstr "Son güncelleme"
 
 msgid "Share article"
 msgstr "Makaleyi paylaş"
@@ -188,7 +188,7 @@ msgid "Search my suggestions"
 msgstr "Önerilerimi ara"
 
 msgid "Clear search"
-msgstr "Clear search"
+msgstr "Aramayı temizle"
 
 msgid "Next"
 msgstr "Sonraki"
@@ -197,16 +197,16 @@ msgid "Last"
 msgstr "Son"
 
 msgid "Article title"
-msgstr "Article title"
+msgstr "Makale başlığı"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Durum"
 
 msgid "Created"
 msgstr "Oluşturuldu"
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "İşlemler"
 
 msgid "Delete"
 msgstr "Sil"
@@ -236,7 +236,7 @@ msgid "Date"
 msgstr "Tarih"
 
 msgid "Login"
-msgstr "Giriş"
+msgstr "Oturum aç"
 
 msgid "Please sign in"
 msgstr "Lütfen giriş yapın"
@@ -251,7 +251,7 @@ msgid "email address"
 msgstr "e-posta adresi"
 
 msgid "Password"
-msgstr "Şifre"
+msgstr "Parola"
 
 msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
 msgstr "Hesap ayrıntılarınızı yönetin. Önerilen makalelerinizi yönetmek için Makale > Düzenle'yi kullanın."
@@ -275,7 +275,7 @@ msgid "Save username"
 msgstr "Kullanıcı adını kaydet"
 
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "İptal"
 
 msgid "Email"
 msgstr "E-posta"
@@ -505,7 +505,7 @@ msgstr "%(matching)s eşleşme / %(total)s toplam"
 
 #, python-format
 msgid "%(count)s total"
-msgstr "%(count)s toplam"
+msgstr "Toplam %(count)s"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "İnceleme yorumları geçmişi"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Kullanılmayan yüklemeleri hemen göstermek için 0 dakika kullanın."
+msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Gereksiz yüklemeleri hemen göstermek için 0 dakika kullanın."
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Kullanılmayan yüklemeleri hemen göstermek için 0 dakika kullanın."
+msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Gereksiz yüklemeleri hemen göstermek için 0 dakika kullanın."
 
 msgid "stray upload file found"
 msgstr "kullanılmayan yükleme dosyası bulundu"
@@ -720,44 +720,44 @@ msgstr "Yerel oturum açmayı yalnızca Django yöneticisi veya acil durum hesap
 
 #: website/templates/login.html
 msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
-msgstr "Please sign in using your NextLabs AD email account to access the knowledge repository."
+msgstr "Bilgi deposuna erişmek için NextLabs AD e-posta hesabınızla oturum açın."
 
 #: website/templates/login.html
 msgid "Example:"
-msgstr "Example:"
+msgstr "Örnek:"
 
 #: website/templates/login.html
 msgid "or"
-msgstr "or"
+msgstr "veya"
 
 #: website/templates/login.html
 msgid "Back to NextLabs AD sign-in"
-msgstr "Back to NextLabs AD sign-in"
+msgstr "NextLabs AD oturum açma sayfasına dön"
 
 #: website/templates/login.html
 msgid "Local account sign-in"
-msgstr "Local account sign-in"
+msgstr "Yerel hesapla oturum aç"
 
 #: website/templates/login.html
 msgid "Sign in with your local DjOpenKB account."
-msgstr "Sign in with your local DjOpenKB account."
+msgstr "Yerel DjOpenKB hesabınızla oturum açın."
 
 #: website/templates/login.html
 msgid "Local username or email"
-msgstr "Local username or email"
+msgstr "Yerel kullanıcı adı veya e-posta"
 
 #: website/templates/login.html
 msgid "Sign in with local account"
-msgstr "Sign in with local account"
+msgstr "Yerel hesapla oturum aç"
 
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d MFA cihazı kurulum bekliyor olarak işaretlendi."
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "OpenKB dosyalarında %(count)s sonuç bulundu."
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,63 +765,63 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "Bu başlığa sahip bir makale zaten var. Lütfen farklı bir başlık kullanın."
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "Onay / inceleme"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "Makale görseli"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "Makale sayfalama"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "Makale başarıyla yayımlandı."
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "Makale başlığı ve içeriği en az 5 karakter olmalıdır."
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "Kaynak bağlantıları istediğinizde ilgili makaleleri sorun."
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "Bir seferde bir soru sorun."
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "Genel anahtar kelimeler veya makale konuları kullanarak soru sorun."
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Authenticator setup completed successfully."
+msgstr "Kimlik doğrulayıcı kurulumu başarıyla tamamlandı."
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "Alt makale sayfalama"
 
 #: auto-generated
 msgid "Close"
-msgstr "Close"
+msgstr "Kapat"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Complete MFA before accessing the Django admin site."
+msgstr "Django yönetim sitesine erişmeden önce MFA’yı tamamlayın."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "Devam etmeden önce MFA’yı tamamlayın. MFA tamamlanana kadar tam olarak oturum açmış sayılmazsınız."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "Devam etmeden önce MFA’yı tamamlayın. MFA tamamlanana kadar DjOpenKB’ye erişemezsiniz."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "Geçerli MFA durumu"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Current pending failed comments"
+msgstr "Geçerli reddedilme yorumları"
 
 #: auto-generated
 msgid "Enabled"
@@ -841,55 +841,55 @@ msgstr "MFA/OTP kodunu girin"
 
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
-msgstr "Existing authenticated sessions for this user will be invalidated."
+msgstr "Bu kullanıcının mevcut kimliği doğrulanmış oturumları geçersiz kılınacak."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Gereksiz yüklemeleri hemen göstermek için 0 dakika kullanın."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Gereksiz yüklemeleri hemen göstermek için 0 dakika kullanın."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "Merhaba, ben OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Wiki’den makaleler bulmanıza ve soruları yanıtlamanıza yardımcı olabilirim."
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "Görsel bu makale taslağından kaldırıldı."
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Görsel bu taslaktan kaldırıldı. Depolamadan silmek için makaleyi kaydedin."
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "Görsel yükleme başarısız oldu."
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "Görsel yükleme başarısız oldu. Django terminal günlüklerini kontrol edin."
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "Görsel yüklendi ve makaleye eklendi."
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Invalid authenticator code. Please try again."
+msgstr "Kimlik doğrulayıcı kodu geçersiz. Lütfen tekrar deneyin."
 
 #: auto-generated
 msgid "LDAP admin"
-msgstr "LDAP admin"
+msgstr "LDAP yöneticisi"
 
 #: auto-generated
 msgid "LDAP user"
-msgstr "LDAP user"
+msgstr "LDAP kullanıcısı"
 
 #: auto-generated
 msgid "Last verified"
@@ -897,7 +897,7 @@ msgstr "Son doğrulama"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Local accounts require authenticator verification after password sign-in."
+msgstr "Yerel hesaplar, parola ile oturum açtıktan sonra kimlik doğrulayıcı doğrulaması gerektirir."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -905,27 +905,27 @@ msgstr "MFA QR kodu"
 
 #: auto-generated
 msgid "MFA reset by admin"
-msgstr "MFA reset by admin"
+msgstr "MFA yönetici tarafından sıfırlandı"
 
 #: auto-generated
 msgid "MFA reset by user"
-msgstr "MFA reset by user"
+msgstr "MFA kullanıcı tarafından sıfırlandı"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "Seçili %(count)d cihaz için MFA sıfırlandı. Kullanıcılar bir sonraki oturum açışlarında yeni bir kimlik doğrulayıcı ayarlamalıdır."
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "Seçili %(count)d kullanıcı için MFA sıfırlandı. Bir sonraki oturum açışlarında yeni bir kimlik doğrulayıcı ayarlamalıdırlar."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
-msgstr "MFA reset is available for your DjOpenKB account."
+msgstr "DjOpenKB hesabınız için MFA sıfırlama kullanılabilir."
 
 #: auto-generated
 msgid "MFA setup failure"
-msgstr "MFA setup failure"
+msgstr "MFA kurulumu başarısız"
 
 #: auto-generated
 msgid "MFA setup is required to continue."
@@ -933,7 +933,7 @@ msgstr "Devam etmek için MFA kurulumu gereklidir."
 
 #: auto-generated
 msgid "MFA setup success"
-msgstr "MFA setup success"
+msgstr "MFA kurulumu başarılı"
 
 #: auto-generated
 msgid "MFA verification"
@@ -941,19 +941,19 @@ msgstr "MFA doğrulaması"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA verification successful."
+msgstr "MFA doğrulaması başarılı."
 
 #: auto-generated
 msgid "MFA verify failure"
-msgstr "MFA verify failure"
+msgstr "MFA doğrulaması başarısız"
 
 #: auto-generated
 msgid "MFA verify success"
-msgstr "MFA verify success"
+msgstr "MFA doğrulaması başarılı"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "%(username)s için MFA sıfırlandı. Kullanıcı bir sonraki oturum açışında yeni bir kimlik doğrulayıcı ayarlamalıdır."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "Manuel kurulum anahtarı"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "OpenKB AI’yı küçült"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,59 +977,59 @@ msgstr "Çok faktörlü kimlik doğrulama"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "Henüz OpenKB makalesi yok. Öner bölümünden bir çözüm ekleyin."
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "Eşleşen OpenKB makalesi bulunamadı."
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "Henüz ilgili makale yok."
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Yalnızca PNG, JPG, GIF veya WEBP görsellerine izin verilir."
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "OpenKB AI sohbetini aç"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI düşünüyor..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "Sayfa %(current)s / %(total)s"
 
 #: auto-generated
 msgid "Password login failure"
-msgstr "Password login failure"
+msgstr "Parola ile oturum açma başarısız"
 
 #: auto-generated
 msgid "Password login success"
-msgstr "Password login success"
+msgstr "Parola ile oturum açma başarılı"
 
 #: auto-generated
 msgid "Password syncs with your company password."
-msgstr "Password syncs with your company password."
+msgstr "Parola şirket parolanızla eşitlenir."
 
 #: auto-generated
 msgid "Pending MFA created"
-msgstr "Pending MFA created"
+msgstr "Bekleyen MFA oluşturuldu"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "Bekleyen makale sayfaları"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Pending failed comments history"
+msgstr "Reddedilme yorumları geçmişi"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Bu makaleyi reddedildi olarak işaretlemeden önce reddedilme yorumlarını girin."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1037,43 +1037,43 @@ msgstr "Devam etmek için MFA/OTP kodunuzu girin."
 
 #: auto-generated
 msgid "Please sign in before setting up MFA."
-msgstr "Please sign in before setting up MFA."
+msgstr "MFA kurmadan önce oturum açın."
 
 #: auto-generated
 msgid "Please sign in before verifying MFA."
-msgstr "Please sign in before verifying MFA."
+msgstr "MFA doğrulamadan önce oturum açın."
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "Önce bir soru yazın."
 
 #: auto-generated
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "Destekleyen"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "openKB tarafından desteklenir"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "Makaleyi yayımla"
 
 #: auto-generated
 msgid "Ready"
-msgstr "Ready"
+msgstr "Hazır"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "Önerilen makaleler"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "Görseli makaleden kaldır"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "İstek başarısız oldu. Django terminal günlüklerini kontrol edin."
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1081,7 +1081,7 @@ msgstr "MFA'yı sıfırla"
 
 #: auto-generated
 msgid "Reset MFA for %(username)s"
-msgstr "Reset MFA for %(username)s"
+msgstr "%(username)s için MFA sıfırla"
 
 #: auto-generated
 msgid "Reset MFA now"
@@ -1089,7 +1089,7 @@ msgstr "MFA'yı şimdi sıfırla"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "MFA’yı sıfırlamak, devam etmeden önce hemen yeni bir kimlik doğrulayıcı kodu ayarlamanızı gerektirir. Devam edilsin mi?"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1097,7 +1097,7 @@ msgstr "Kimlik doğrulama uygulamanızla QR kodunu tarayın, ardından MFA/OTP k
 
 #: auto-generated
 msgid "Search"
-msgstr "Search"
+msgstr "Ara"
 
 #: auto-generated
 msgid "Set up MFA"
@@ -1105,7 +1105,7 @@ msgstr "MFA'yı ayarla"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "Kimlik doğrulayıcıyı kur"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "Kurulum gerekli"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "%(count)s makalenin %(start)s-%(end)s arası gösteriliyor"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "Çıkış yap"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Bir şeyler ters gitti."
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "The next login will require authenticator setup before access is granted."
+msgstr "Bir sonraki oturum açmada erişim verilmeden önce kimlik doğrulayıcı kurulumu gerekecek."
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "Bu e-posta adresi alan hesabınız tarafından yönetilir ve burada değiştirilemez."
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "Bu görsel zaten bu taslağa yüklendi. Önce X önizleme düğmesini kullanarak kaldırın."
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "Bu, kullanıcı için tamamen yeni bir özel kimlik doğrulayıcı sırrı oluşturur. Anahtar yöneticilere gösterilmez ve paylaşılmamalıdır. Kullanıcı DjOpenKB’yi kullanmaya devam etmeden önce tekrar oturum açmalı ve kendi yeni QR kodunu taramalıdır."
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "Üst makale sayfalama"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1149,7 +1149,7 @@ msgstr "Use this section to reset a user's authenticator setup. "
 
 #: auto-generated
 msgid "User"
-msgstr "User"
+msgstr "Kullanıcı"
 
 #: auto-generated
 msgid "Verify"
@@ -1157,184 +1157,292 @@ msgstr "Doğrula"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "<strong>%(username)s</strong> kullanıcısı için MFA’yı sıfırlamak üzeresiniz."
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "MFA’nız sıfırlandı. DjOpenKB’yi kullanmaya devam etmek için kimlik doğrulayıcı kurulumunu tamamlayın."
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "Oyunuz kaldırıldı."
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "makale"
 
 #: auto-generated
 msgid "matching"
-msgstr "matching"
+msgstr "eşleşen"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB, güçlü lunr aramasına sahip Node.js Markdown tabanlı açık kaynaklı bir bilgi tabanı/FAQ/Wiki uygulamasıdır"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "openKB destekli bilgi deposu"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Scan orphan articles"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "Hesap kaynağı"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Active Directory kullanıcısı"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "orphan articles"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Search orphan articles"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
-msgstr "All statuses"
+msgstr "Tüm durumlar"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Orphan article pages"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "‘%(title)s’ başlıklı bir makale zaten var. Lütfen farklı bir başlık kullanın."
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Assign selected articles to"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Type username or email"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "No matching active user found."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Enter an active local or AD username/email, then tick articles and click Assign selected."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Assign selected"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Delete selected"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "You will be asked to confirm before changes are applied."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Previous owner"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Inactive"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "No owner"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "No orphan articles match your search."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "No orphan articles were found. All articles currently have an active owner."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Confirm orphan article action"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
-msgstr "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "%(article_count)s makaleyi %(username)s kullanıcısına atamak istediğinizden emin misiniz?"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "Seçili %(article_count)s sahipsiz makaleyi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem oluşturulan OpenKB Markdown dosyalarını da kaldırır."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "Seçilenleri ata"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "Seçilen makaleleri şuna ata"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "Kimlik doğrulayıcı MFA/OTP kodu"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "Sahipsiz makale işlemini onayla"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "Seçilenleri sil"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "Seçili gereksiz dosyaları sil"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "Seçili gereksiz yükleme dosyaları silinsin mi? Bu işlem geri alınamaz."
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "Yönetici gereksiz dosya temizliği ile silindi"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "Otomatik gereksiz dosya temizliği ile silindi"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Etkin bir yerel veya AD kullanıcı adı/e-posta girin, makaleleri işaretleyin ve Seçilenleri ata’ya tıklayın."
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Sahibi olmayan veya sahibi pasif/silinmiş makaleleri bulun, sonra etkin bir kullanıcıya atayın veya silin."
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "Pasif"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "Yerel kullanıcı"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "MFA/OTP kodu yanlış."
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "Kimlik doğrulayıcı uygulaması tarafından yönetilir"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "Ad"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "Eşleşen etkin kullanıcı bulunamadı."
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "Ad ayarlanmamış"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "Aramanızla eşleşen sahipsiz makale yok."
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "Sahipsiz makale bulunamadı. Tüm makalelerin şu anda etkin bir sahibi var."
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "Sahip yok"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "Sahipsiz makale sayfaları"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "Önceki sahip"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "Yükleyen tarafından düzenleyiciden kaldırıldı"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "Sahipsiz makaleleri tara"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "Sahipsiz makalelerde ara"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "Silmek için %(filename)s seç"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "Tümünü seç"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "Tüm gereksiz dosyaları seç"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "Hassas hesap ayrıntılarını değiştirmeden önce MFA kurun."
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "Bu dosyalar kullanılmıyor gibi görünüyor. Yükleyen bilgilerini kontrol edin ve yalnızca artık gerekli olmayan dosyaları silin."
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "Kullanıcı adı veya e-posta yazın"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "Tüm seçimleri kaldır"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "Yüklenme zamanı"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "Yükleyen"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "Kullanıcı adı değişiklikleri yöneticiler tarafından yönetilir."
+
+#: synced from current templates/views
+msgid "View"
+msgstr "Görüntüle"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
-msgstr "Yes, assign articles"
+msgstr "Evet, makaleleri ata"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
-msgstr "Yes, delete articles"
+msgstr "Evet, makaleleri sil"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Please use the Assign selected or Delete selected button."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "Değişiklikler uygulanmadan önce onaylamanız istenecek."
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Please select at least one orphan article first."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "Oturumunuzun süresi doldu. Lütfen tekrar oturum açın."
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "sahipsiz makaleler"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Some selected articles were skipped because they are no longer orphan articles."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "The selected target user was missing. Please choose the user again."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "The selected target user is invalid or inactive. Please choose an active user."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Please enter a username or email to assign the selected articles to."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
-msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "%(count)s sahipsiz makale %(user)s kullanıcısına atandı."
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
-msgstr "Deleted %(count)s orphan article(s)."
+msgstr "%(count)s sahipsiz makale silindi."
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Some selected articles could not be deleted: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Etkin sahibi olmayan makaleleri bulun, sonra onaydan sonra bir kullanıcıya atayın veya silin."
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "No orphan articles were deleted. Please refresh and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
-msgstr "Invalid orphan article action."
+msgstr "Geçersiz sahipsiz makale işlemi."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "'%(user)s' ile birden fazla etkin kullanıcı eşleşti. Lütfen tam kullanıcı adını kullanın."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "'%(user)s' için etkin kullanıcı bulunamadı. Lütfen geçerli bir kullanıcı adı veya e-posta girin."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "Hiçbir sahipsiz makale silinmedi. Lütfen yenileyip tekrar deneyin."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Seçilen makaleleri atamak için kullanıcı adı veya e-posta girin."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Önce en az bir sahipsiz makale seçin."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Lütfen Seçilenleri ata veya Seçilenleri sil düğmesini kullanın."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Seçilen bazı makaleler silinemedi: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Seçilen bazı makaleler artık sahipsiz olmadığı için atlandı."
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "Sahipsiz makale işlemi işlenirken bir hata oluştu. Hiçbir değişiklik uygulanmadı. Seçiminizi kontrol edip tekrar deneyin."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "Makaleler güvenli şekilde atanamadı. Hiçbir atama uygulanmadı. Lütfen günlükleri kontrol edip tekrar deneyin."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "Seçilen makaleler artık sahipsiz değil veya mevcut değil. Lütfen yenileyip tekrar deneyin."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "Seçilen hedef kullanıcı geçersiz veya pasif. Lütfen etkin bir kullanıcı seçin."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "Seçilen hedef kullanıcı eksik. Lütfen kullanıcıyı tekrar seçin."

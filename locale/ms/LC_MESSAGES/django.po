@@ -23,10 +23,10 @@ msgid "New"
 msgstr "Baharu"
 
 msgid "Edit"
-msgstr "Edit"
+msgstr "Sunting"
 
 msgid "Admin"
-msgstr "Admin"
+msgstr "Pentadbir"
 
 msgid "Logged in as"
 msgstr "Log masuk sebagai"
@@ -74,7 +74,7 @@ msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
 msgstr "Saiz muat naik maksimum: 100 MB. Saiz maksimum selepas dinyahmampat: 200 MB."
 
 msgid "Import zip"
-msgstr "Import zip"
+msgstr "Import fail zip"
 
 msgid "Back to profile"
 msgstr "Kembali ke profil"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "Tarikh diterbitkan"
 
 msgid "Last updated"
-msgstr "Kemas kini terakhir"
+msgstr "Terakhir dikemas kini"
 
 msgid "Share article"
 msgstr "Kongsi artikel"
@@ -200,7 +200,7 @@ msgid "Article title"
 msgstr "Tajuk artikel"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Status artikel"
 
 msgid "Created"
 msgstr "Dicipta"
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "Sejarah komen semakan"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Site settings. Gunakan 0 minit untuk memaparkan muat naik tidak digunakan dengan segera."
+msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Site settings. Gunakan 0 minit untuk memaparkan muat naik tidak digunakan dengan segera."
+msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
 
 msgid "stray upload file found"
 msgstr "fail muat naik tidak digunakan ditemui"
@@ -753,11 +753,11 @@ msgstr "Log masuk dengan akaun setempat"
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d peranti MFA ditandakan sebagai menunggu persediaan."
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "%(count)s keputusan ditemui daripada fail OpenKB."
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,47 +765,47 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "Artikel dengan tajuk ini sudah wujud. Sila gunakan tajuk lain."
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "Kelulusan / semakan"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "Imej artikel"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "Penomboran halaman artikel"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "Artikel berjaya diterbitkan."
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "Tajuk dan kandungan artikel mesti sekurang-kurangnya 5 aksara."
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "Minta artikel berkaitan jika anda mahukan pautan sumber."
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "Tanya satu soalan pada satu masa."
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "Tanya soalan menggunakan kata kunci umum atau topik artikel."
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Authenticator setup completed successfully."
+msgstr "Persediaan aplikasi pengesah berjaya diselesaikan."
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "Penomboran bawah artikel"
 
 #: auto-generated
 msgid "Close"
@@ -813,15 +813,15 @@ msgstr "Tutup"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Complete MFA before accessing the Django admin site."
+msgstr "Lengkapkan MFA sebelum mengakses laman pentadbir Django."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "Lengkapkan MFA sebelum meneruskan. Anda belum log masuk sepenuhnya sehingga MFA selesai."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "Lengkapkan MFA sebelum meneruskan. Anda tidak boleh mengakses DjOpenKB sehingga MFA selesai."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "Status MFA semasa"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Current pending failed comments"
+msgstr "Komen kegagalan semakan semasa"
 
 #: auto-generated
 msgid "Enabled"
@@ -841,55 +841,55 @@ msgstr "Masukkan kod MFA/OTP"
 
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
-msgstr "Existing authenticated sessions for this user will be invalidated."
+msgstr "Sesi disahkan yang sedia ada untuk pengguna ini akan dibatalkan."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "Hai, saya OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Saya boleh membantu anda mencari artikel dan menjawab soalan daripada wiki."
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "Imej dibuang daripada draf artikel ini."
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Imej dibuang daripada draf ini. Simpan artikel untuk memadamkannya daripada storan."
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "Muat naik imej gagal."
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "Muat naik imej gagal. Semak log terminal Django."
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "Imej dimuat naik dan dimasukkan ke dalam artikel."
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Invalid authenticator code. Please try again."
+msgstr "Kod pengesah tidak sah. Sila cuba lagi."
 
 #: auto-generated
 msgid "LDAP admin"
-msgstr "LDAP admin"
+msgstr "Pentadbir LDAP"
 
 #: auto-generated
 msgid "LDAP user"
-msgstr "LDAP user"
+msgstr "Pengguna LDAP"
 
 #: auto-generated
 msgid "Last verified"
@@ -897,7 +897,7 @@ msgstr "Kali terakhir disahkan"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Local accounts require authenticator verification after password sign-in."
+msgstr "Akaun tempatan memerlukan pengesahan aplikasi pengesah selepas log masuk kata laluan."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -905,27 +905,27 @@ msgstr "Kod QR MFA"
 
 #: auto-generated
 msgid "MFA reset by admin"
-msgstr "MFA reset by admin"
+msgstr "MFA ditetapkan semula oleh pentadbir"
 
 #: auto-generated
 msgid "MFA reset by user"
-msgstr "MFA reset by user"
+msgstr "MFA ditetapkan semula oleh pengguna"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "MFA ditetapkan semula untuk %(count)d peranti dipilih. Pengguna mesti menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "MFA ditetapkan semula untuk %(count)d pengguna dipilih. Mereka mesti menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
-msgstr "MFA reset is available for your DjOpenKB account."
+msgstr "Tetapan semula MFA tersedia untuk akaun DjOpenKB anda."
 
 #: auto-generated
 msgid "MFA setup failure"
-msgstr "MFA setup failure"
+msgstr "Persediaan MFA gagal"
 
 #: auto-generated
 msgid "MFA setup is required to continue."
@@ -933,7 +933,7 @@ msgstr "Persediaan MFA diperlukan untuk meneruskan."
 
 #: auto-generated
 msgid "MFA setup success"
-msgstr "MFA setup success"
+msgstr "Persediaan MFA berjaya"
 
 #: auto-generated
 msgid "MFA verification"
@@ -941,19 +941,19 @@ msgstr "Pengesahan MFA"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA verification successful."
+msgstr "Pengesahan MFA berjaya."
 
 #: auto-generated
 msgid "MFA verify failure"
-msgstr "MFA verify failure"
+msgstr "Pengesahan MFA gagal"
 
 #: auto-generated
 msgid "MFA verify success"
-msgstr "MFA verify success"
+msgstr "Pengesahan MFA berjaya"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "MFA telah ditetapkan semula untuk %(username)s. Pengguna mesti menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "Kunci persediaan manual"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "Minimumkan OpenKB AI"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,59 +977,59 @@ msgstr "Pengesahan berbilang faktor"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "Belum ada artikel OpenKB. Tambah penyelesaian daripada Cadang."
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "Tiada artikel OpenKB yang sepadan ditemui."
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "Belum ada artikel berkaitan."
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Hanya imej PNG, JPG, GIF atau WEBP dibenarkan."
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "Buka sembang OpenKB AI"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI sedang berfikir..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "Halaman %(current)s daripada %(total)s"
 
 #: auto-generated
 msgid "Password login failure"
-msgstr "Password login failure"
+msgstr "Log masuk kata laluan gagal"
 
 #: auto-generated
 msgid "Password login success"
-msgstr "Password login success"
+msgstr "Log masuk kata laluan berjaya"
 
 #: auto-generated
 msgid "Password syncs with your company password."
-msgstr "Password syncs with your company password."
+msgstr "Kata laluan disegerakkan dengan kata laluan syarikat anda."
 
 #: auto-generated
 msgid "Pending MFA created"
-msgstr "Pending MFA created"
+msgstr "MFA tertunda dibuat"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "Halaman artikel tertunda"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Pending failed comments history"
+msgstr "Sejarah komen kegagalan semakan"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Sila masukkan komen kegagalan semakan sebelum menandakan artikel ini sebagai gagal semakan."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1037,43 +1037,43 @@ msgstr "Sila masukkan kod MFA/OTP anda untuk meneruskan."
 
 #: auto-generated
 msgid "Please sign in before setting up MFA."
-msgstr "Please sign in before setting up MFA."
+msgstr "Sila log masuk sebelum menyediakan MFA."
 
 #: auto-generated
 msgid "Please sign in before verifying MFA."
-msgstr "Please sign in before verifying MFA."
+msgstr "Sila log masuk sebelum mengesahkan MFA."
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "Sila taip soalan dahulu."
 
 #: auto-generated
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "Dikuasakan oleh"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "Dikuasakan oleh openKB"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "Terbitkan artikel"
 
 #: auto-generated
 msgid "Ready"
-msgstr "Ready"
+msgstr "Sedia"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "Artikel disyorkan"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "Buang imej daripada artikel"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "Permintaan gagal. Semak log terminal Django."
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1081,7 +1081,7 @@ msgstr "Tetapkan semula MFA"
 
 #: auto-generated
 msgid "Reset MFA for %(username)s"
-msgstr "Reset MFA for %(username)s"
+msgstr "Tetapkan semula MFA untuk %(username)s"
 
 #: auto-generated
 msgid "Reset MFA now"
@@ -1089,7 +1089,7 @@ msgstr "Tetapkan semula MFA sekarang"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "Menetapkan semula MFA akan terus memerlukan anda menyediakan kod pengesah baharu sebelum meneruskan. Teruskan?"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1105,7 +1105,7 @@ msgstr "Sediakan MFA"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "Sediakan aplikasi pengesah"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "Persediaan diperlukan"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "Memaparkan %(start)s-%(end)s daripada %(count)s artikel"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "Log keluar"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Sesuatu telah berlaku."
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "The next login will require authenticator setup before access is granted."
+msgstr "Log masuk seterusnya memerlukan persediaan aplikasi pengesah sebelum akses diberikan."
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "Alamat e-mel ini diuruskan oleh akaun domain anda dan tidak boleh ditukar di sini."
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "Imej ini sudah dimuat naik dalam draf ini. Gunakan butang pratonton X untuk membuangnya dahulu."
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "Ini akan menjana rahsia aplikasi pengesah peribadi yang baharu untuk pengguna. Kunci tidak dipaparkan kepada pentadbir dan tidak boleh dikongsi. Pengguna mesti log masuk semula dan mengimbas kod QR baharu mereka sendiri sebelum boleh terus menggunakan DjOpenKB."
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "Penomboran atas artikel"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1149,7 +1149,7 @@ msgstr "Use this section to reset a user's authenticator setup. "
 
 #: auto-generated
 msgid "User"
-msgstr "User"
+msgstr "Pengguna"
 
 #: auto-generated
 msgid "Verify"
@@ -1157,19 +1157,19 @@ msgstr "Sahkan"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "Anda akan menetapkan semula MFA untuk pengguna <strong>%(username)s</strong>."
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "MFA anda telah ditetapkan semula. Lengkapkan persediaan aplikasi pengesah sekarang untuk terus menggunakan DjOpenKB."
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "Undian anda telah dibuang."
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "artikel"
 
 #: auto-generated
 msgid "matching"
@@ -1177,164 +1177,272 @@ msgstr "sepadan"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB ialah aplikasi pengetahuan/FAQ/Wiki sumber terbuka berasaskan Node.js Markdown dengan carian lunr yang berkuasa"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "Repositori pengetahuan dikuasakan oleh openKB"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Imbas artikel yatim"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "Sumber akaun"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Cari artikel tanpa pemilik atau pemilik yang tidak aktif/dipadam, kemudian tetapkan kepada pengguna aktif atau padamkannya."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Pengguna Active Directory"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "artikel yatim"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Cari artikel yatim"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
 msgstr "Semua status"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Halaman artikel yatim"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "Artikel dengan tajuk ‘%(title)s’ sudah wujud. Sila gunakan tajuk lain."
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Tetapkan artikel dipilih kepada"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Taip nama pengguna atau e-mel"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "Tiada pengguna aktif yang sepadan ditemui."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Masukkan nama pengguna/e-mel tempatan atau AD yang aktif, kemudian tandakan artikel dan klik Tetapkan dipilih."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Tetapkan dipilih"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Padam dipilih"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "Anda akan diminta mengesahkan sebelum perubahan digunakan."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Pemilik terdahulu"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Tidak aktif"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "Tiada pemilik"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "Tiada artikel yatim sepadan dengan carian anda."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "Tiada artikel yatim ditemui. Semua artikel kini mempunyai pemilik aktif."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Sahkan tindakan artikel yatim"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
 msgstr "Adakah anda pasti mahu menetapkan %(article_count)s artikel kepada %(username)s?"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
 msgstr "Adakah anda pasti mahu memadam kekal %(article_count)s artikel yatim yang dipilih? Ini juga akan membuang fail Markdown OpenKB yang dijana."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "Tetapkan dipilih"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "Tetapkan artikel dipilih kepada"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "Kod MFA/OTP aplikasi pengesah"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "Sahkan tindakan artikel yatim"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "Padam dipilih"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "Padam fail terbiar dipilih"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "Padam fail muat naik terbiar yang dipilih? Tindakan ini tidak boleh dibuat asal."
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "Dipadam oleh pembersihan fail terbiar admin"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "Dipadam oleh pembersihan fail terbiar automatik"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Masukkan nama pengguna/e-mel tempatan atau AD yang aktif, kemudian tandakan artikel dan klik Tetapkan dipilih."
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Cari artikel tanpa pemilik atau pemilik tidak aktif/dipadam, kemudian tetapkan kepada pengguna aktif atau padamkannya."
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "Tidak aktif"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "Pengguna tempatan"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "Kod MFA/OTP tidak betul."
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "Diurus oleh aplikasi pengesah"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "Nama"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "Tiada pengguna aktif yang sepadan ditemui."
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "Tiada nama ditetapkan"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "Tiada artikel yatim sepadan dengan carian anda."
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "Tiada artikel yatim ditemui. Semua artikel kini mempunyai pemilik aktif."
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "Tiada pemilik"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "Halaman artikel yatim"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "Pemilik terdahulu"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "Dibuang oleh pemuat naik daripada editor"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "Imbas artikel yatim"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "Cari artikel yatim"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "Pilih %(filename)s untuk dipadam"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "Pilih semua"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "Pilih semua fail terbiar"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "Sediakan MFA sebelum menukar butiran akaun sensitif."
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "Fail ini kelihatan tidak digunakan. Semak butiran pemuat naik, kemudian padam hanya fail yang tidak lagi diperlukan."
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "Taip nama pengguna atau e-mel"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "Nyahpilih semua"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "Dimuat naik pada"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "Dimuat naik oleh"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "Perubahan nama pengguna diuruskan oleh pentadbir."
+
+#: synced from current templates/views
+msgid "View"
+msgstr "Lihat"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
 msgstr "Ya, tetapkan artikel"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
 msgstr "Ya, padam artikel"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Sila gunakan butang Tetapkan dipilih atau Padam dipilih."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "Anda akan diminta mengesahkan sebelum perubahan digunakan."
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Sila pilih sekurang-kurangnya satu artikel yatim dahulu."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "Sesi anda telah tamat. Sila log masuk semula."
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak lagi wujud. Sila muat semula dan cuba lagi."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "artikel yatim"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Beberapa artikel yang dipilih dilangkau kerana bukan lagi artikel yatim."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "Pengguna sasaran yang dipilih tiada. Sila pilih pengguna semula."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "Pengguna sasaran yang dipilih tidak sah atau tidak aktif. Sila pilih pengguna aktif."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Sila masukkan nama pengguna atau e-mel untuk menetapkan artikel yang dipilih."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "Tiada pengguna aktif ditemui untuk '%(user)s'. Sila masukkan nama pengguna atau e-mel yang sah."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "Lebih daripada satu pengguna aktif sepadan dengan '%(user)s'. Sila gunakan nama pengguna yang tepat."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "Artikel tidak dapat ditetapkan dengan selamat. Tiada penetapan digunakan. Sila semak log dan cuba lagi."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "Telah menetapkan %(count)s artikel yatim kepada %(user)s."
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
 msgstr "Telah memadam %(count)s artikel yatim."
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Beberapa artikel yang dipilih tidak dapat dipadam: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Cari artikel tanpa pemilik aktif, kemudian tetapkan kepada pengguna atau padam selepas pengesahan."
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "Tiada artikel yatim dipadam. Sila muat semula dan cuba lagi."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
 msgstr "Tindakan artikel yatim tidak sah."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "Lebih daripada satu pengguna aktif sepadan dengan '%(user)s'. Sila gunakan nama pengguna yang tepat."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "Tiada pengguna aktif ditemui untuk '%(user)s'. Sila masukkan nama pengguna atau e-mel yang sah."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "Tiada artikel yatim dipadam. Sila muat semula dan cuba lagi."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Sila masukkan nama pengguna atau e-mel untuk menetapkan artikel yang dipilih."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Sila pilih sekurang-kurangnya satu artikel yatim dahulu."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Sila gunakan butang Tetapkan dipilih atau Padam dipilih."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Beberapa artikel yang dipilih tidak dapat dipadam: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Beberapa artikel yang dipilih dilangkau kerana bukan lagi artikel yatim."
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
 msgstr "Sesuatu ralat berlaku semasa memproses tindakan artikel yatim. Tiada perubahan digunakan. Sila semak pilihan anda dan cuba lagi."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "Artikel tidak dapat ditetapkan dengan selamat. Tiada penetapan digunakan. Sila semak log dan cuba lagi."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak lagi wujud. Sila muat semula dan cuba lagi."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "Pengguna sasaran yang dipilih tidak sah atau tidak aktif. Sila pilih pengguna aktif."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "Pengguna sasaran yang dipilih tiada. Sila pilih pengguna semula."

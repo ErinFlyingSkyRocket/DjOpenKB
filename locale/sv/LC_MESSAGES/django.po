@@ -26,7 +26,7 @@ msgid "Edit"
 msgstr "Redigera"
 
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administratör"
 
 msgid "Logged in as"
 msgstr "Inloggad som"
@@ -77,7 +77,7 @@ msgid "Import zip"
 msgstr "Importera zip"
 
 msgid "Back to profile"
-msgstr "Back to profile"
+msgstr "Tillbaka till profil"
 
 msgid "Supported zip format"
 msgstr "Stött zip-format"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "Publiceringsdatum"
 
 msgid "Last updated"
-msgstr "Last updated"
+msgstr "Senast uppdaterad"
 
 msgid "Share article"
 msgstr "Dela artikel"
@@ -152,7 +152,7 @@ msgid "Author"
 msgstr "Författare"
 
 msgid "Permalink"
-msgstr "Permalänk"
+msgstr "Permanent länk"
 
 msgid "Edit article"
 msgstr "Redigera artikel"
@@ -188,7 +188,7 @@ msgid "Search my suggestions"
 msgstr "Sök i mina förslag"
 
 msgid "Clear search"
-msgstr "Clear search"
+msgstr "Rensa sökning"
 
 msgid "Next"
 msgstr "Nästa"
@@ -197,16 +197,16 @@ msgid "Last"
 msgstr "Sista"
 
 msgid "Article title"
-msgstr "Article title"
+msgstr "Artikeltitel"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Statusläge"
 
 msgid "Created"
 msgstr "Skapad"
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "Åtgärder"
 
 msgid "Delete"
 msgstr "Ta bort"
@@ -275,10 +275,10 @@ msgid "Save username"
 msgstr "Spara användarnamn"
 
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Avbryt"
 
 msgid "Email"
-msgstr "E-post"
+msgstr "E-postadress"
 
 msgid "No email set"
 msgstr "Ingen e-post angiven"
@@ -470,7 +470,7 @@ msgid "Clean stray files"
 msgstr "Rensa överblivna filer"
 
 msgid "Import / Export"
-msgstr "Importera / Exportera"
+msgstr "Import / export"
 
 msgid "Open"
 msgstr "Öppna"
@@ -505,7 +505,7 @@ msgstr "%(matching)s matchande / %(total)s totalt"
 
 #, python-format
 msgid "%(count)s total"
-msgstr "%(count)s totalt"
+msgstr "Totalt %(count)s"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
@@ -536,10 +536,10 @@ msgid "Thumbs down"
 msgstr "Tummen ner"
 
 msgid "Likes"
-msgstr "Gilla"
+msgstr "Gilla-markeringar"
 
 msgid "Dislikes"
-msgstr "Ogilla"
+msgstr "Ogillanden"
 
 msgid "Sign in to make your opinion count."
 msgstr "Logga in för att din åsikt ska räknas."
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "Historik för granskningskommentarer"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Filer nyare än %(minutes)s minut ignoreras. Ändra värdet i Django Admin → Site settings. Använd 0 minuter för att visa oanvända uppladdningar direkt."
+msgstr "Filer nyare än %(minutes)s minut ignoreras. Ändra detta värde i Django Admin → Site settings. Använd 0 minuter för att visa överblivna uppladdningar direkt."
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Filer nyare än %(minutes)s minuter ignoreras. Ändra värdet i Django Admin → Site settings. Använd 0 minuter för att visa oanvända uppladdningar direkt."
+msgstr "Filer nyare än %(minutes)s minuter ignoreras. Ändra detta värde i Django Admin → Site settings. Använd 0 minuter för att visa överblivna uppladdningar direkt."
 
 msgid "stray upload file found"
 msgstr "oanvänd uppladdad fil hittades"
@@ -753,11 +753,11 @@ msgstr "Logga in med lokalt konto"
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d MFA-enhet(er) markerade som väntande på konfiguration."
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "%(count)s resultat hittades i OpenKB-filer."
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,63 +765,63 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "En artikel med den här titeln finns redan. Använd en annan titel."
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "Godkännande / granskning"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "Artikelbild"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "Artikelpaginering"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "Artikeln publicerades."
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "Artikelns titel och innehåll måste vara minst 5 tecken."
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "Be om relaterade artiklar när du vill ha källänkar."
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "Ställ en fråga i taget."
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "Ställ frågor med allmänna nyckelord eller artikelämnen."
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Autentiseringsappen har konfigurerats."
+msgstr "Authenticator-konfigurationen slutfördes."
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "Nedre artikelpaginering"
 
 #: auto-generated
 msgid "Close"
-msgstr "Close"
+msgstr "Stäng"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Slutför MFA innan du öppnar Django-adminsidan."
+msgstr "Slutför MFA innan du öppnar Django-administrationssidan."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Slutför MFA innan du fortsätter. Du är inte helt inloggad förrän MFA är slutförd."
+msgstr "Slutför MFA innan du fortsätter. Du är inte helt inloggad förrän MFA är slutfört."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Slutför MFA innan du fortsätter. Du kan inte komma åt DjOpenKB förrän MFA är slutförd."
+msgstr "Slutför MFA innan du fortsätter. Du kan inte komma åt DjOpenKB förrän MFA är slutfört."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "Aktuell MFA-status"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Aktuella kommentarer för väntande misslyckande"
+msgstr "Aktuella avvisningskommentarer"
 
 #: auto-generated
 msgid "Enabled"
@@ -845,43 +845,43 @@ msgstr "Befintliga autentiserade sessioner för den här användaren ogiltigför
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Filer nyare än %(minutes)s minut ignoreras. Ändra detta värde i Django Admin → Site settings. Använd 0 minuter för att visa överblivna uppladdningar direkt."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Filer nyare än %(minutes)s minuter ignoreras. Ändra detta värde i Django Admin → Site settings. Använd 0 minuter för att visa överblivna uppladdningar direkt."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "Hej, jag är OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Jag kan hjälpa dig att hitta artiklar och svara på frågor från wikin."
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "Bilden togs bort från detta artikelutkast."
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Bilden togs bort från detta utkast. Spara artikeln för att ta bort den från lagringen."
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "Bilduppladdning misslyckades."
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "Bilduppladdning misslyckades. Kontrollera Django-terminalens loggar."
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "Bilden laddades upp och infogades i artikeln."
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Ogiltig autentiseringskod. Försök igen."
+msgstr "Ogiltig authenticator-kod. Försök igen."
 
 #: auto-generated
 msgid "LDAP admin"
@@ -897,7 +897,7 @@ msgstr "Senast verifierad"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Lokala konton kräver autentiseringsverifiering efter lösenordsinloggning."
+msgstr "Lokala konton kräver verifiering med authenticator efter lösenordsinloggning."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -913,11 +913,11 @@ msgstr "MFA återställd av användare"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "MFA återställdes för %(count)d valda enhet(er). Användare måste konfigurera en ny authenticator vid nästa inloggning."
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "MFA återställdes för %(count)d valda användare. De måste konfigurera en ny authenticator vid nästa inloggning."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
@@ -933,7 +933,7 @@ msgstr "MFA-konfiguration krävs för att fortsätta."
 
 #: auto-generated
 msgid "MFA setup success"
-msgstr "MFA-konfiguration lyckades"
+msgstr "MFA-konfiguration slutförd"
 
 #: auto-generated
 msgid "MFA verification"
@@ -941,7 +941,7 @@ msgstr "MFA-verifiering"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA-verifiering lyckades."
+msgstr "MFA-verifiering slutförd."
 
 #: auto-generated
 msgid "MFA verify failure"
@@ -949,11 +949,11 @@ msgstr "MFA-verifiering misslyckades"
 
 #: auto-generated
 msgid "MFA verify success"
-msgstr "MFA-verifiering lyckades"
+msgstr "MFA-verifiering slutförd"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "MFA återställdes för %(username)s. Användaren måste konfigurera en ny authenticator vid nästa inloggning."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "Manuell konfigurationsnyckel"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "Minimera OpenKB AI"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,31 +977,31 @@ msgstr "Flerfaktorsautentisering"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "Det finns inga OpenKB-artiklar ännu. Lägg till en lösning via Föreslå."
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "Inga matchande OpenKB-artiklar hittades."
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "Inga relaterade artiklar ännu."
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Endast PNG-, JPG-, GIF- eller WEBP-bilder är tillåtna."
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "Öppna OpenKB AI-chatt"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI tänker..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "Sida %(current)s av %(total)s"
 
 #: auto-generated
 msgid "Password login failure"
@@ -1009,7 +1009,7 @@ msgstr "Lösenordsinloggning misslyckades"
 
 #: auto-generated
 msgid "Password login success"
-msgstr "Lösenordsinloggning lyckades"
+msgstr "Lösenordsinloggning slutförd"
 
 #: auto-generated
 msgid "Password syncs with your company password."
@@ -1021,15 +1021,15 @@ msgstr "Väntande MFA skapad"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "Sidor med väntande artiklar"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Historik för kommentarer om väntande misslyckande"
+msgstr "Historik för avvisningskommentarer"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Ange avvisningskommentarer innan du markerar artikeln som avvisad."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1045,7 +1045,7 @@ msgstr "Logga in innan du verifierar MFA."
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "Skriv en fråga först."
 
 #: auto-generated
 msgid "Powered by"
@@ -1053,11 +1053,11 @@ msgstr "Drivs av"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "Drivs av openKB"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "Publicera artikel"
 
 #: auto-generated
 msgid "Ready"
@@ -1065,15 +1065,15 @@ msgstr "Klar"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "Rekommenderade artiklar"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "Ta bort bild från artikel"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "Begäran misslyckades. Kontrollera Django-terminalens loggar."
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1089,7 +1089,7 @@ msgstr "Återställ MFA nu"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Om du återställer MFA måste du omedelbart konfigurera en ny autentiseringskod innan du fortsätter. Fortsätta?"
+msgstr "Återställning av MFA kräver omedelbart att du konfigurerar en ny authenticator-kod innan du fortsätter. Fortsätta?"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1097,7 +1097,7 @@ msgstr "Skanna QR-koden med din autentiseringsapp och ange sedan MFA/OTP-koden."
 
 #: auto-generated
 msgid "Search"
-msgstr "Search"
+msgstr "Sök"
 
 #: auto-generated
 msgid "Set up MFA"
@@ -1105,7 +1105,7 @@ msgstr "Konfigurera MFA"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "Konfigurera authenticator"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "Konfiguration krävs"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "Visar %(start)s-%(end)s av %(count)s artikel/artiklar"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "Logga ut"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Något gick fel."
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "Nästa inloggning kräver konfiguration av autentiseringsappen innan åtkomst ges."
+msgstr "Nästa inloggning kräver konfigurering av authenticator innan åtkomst beviljas."
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "Denna e-postadress hanteras av ditt domänkonto och kan inte ändras här."
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "Denna bild är redan uppladdad i detta utkast. Använd först X-knappen i förhandsvisningen för att ta bort den."
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "Detta genererar en helt ny privat autentiseringshemlighet för användaren. Nyckeln visas inte för administratörer och ska inte delas. Användaren måste logga in igen och skanna sin nya QR-kod innan de kan fortsätta använda DjOpenKB."
+msgstr "Detta genererar en helt ny privat authenticator-hemlighet för användaren. Nyckeln visas inte för administratörer och bör inte delas. Användaren måste logga in igen och skanna sin egen nya QR-kod innan de kan fortsätta använda DjOpenKB."
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "Övre artikelpaginering"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1157,184 +1157,292 @@ msgstr "Verifiera"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "Du håller på att återställa MFA för användaren <strong>%(username)s</strong>."
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Din MFA har återställts. Slutför konfigurationen av autentiseringsappen för att fortsätta använda DjOpenKB."
+msgstr "Din MFA har återställts. Slutför authenticator-konfigurationen för att fortsätta använda DjOpenKB."
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "Din röst har tagits bort."
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "artikel"
 
 #: auto-generated
 msgid "matching"
-msgstr "matching"
+msgstr "matchande"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB är en öppen källkodsbaserad Node.js Markdown-kunskapsbas/FAQ/Wiki-app med kraftfull lunr-sökning"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "Kunskapsarkiv drivet av openKB"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Scan orphan articles"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "Kontokälla"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Active Directory-användare"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "orphan articles"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Search orphan articles"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
-msgstr "All statuses"
+msgstr "Alla statusar"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Orphan article pages"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "En artikel med titeln ”%(title)s” finns redan. Använd en annan titel."
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Assign selected articles to"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Type username or email"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "No matching active user found."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Enter an active local or AD username/email, then tick articles and click Assign selected."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Assign selected"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Delete selected"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "You will be asked to confirm before changes are applied."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Previous owner"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Inactive"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "No owner"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "No orphan articles match your search."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "No orphan articles were found. All articles currently have an active owner."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Confirm orphan article action"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
-msgstr "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "Är du säker på att du vill tilldela %(article_count)s artikel/artiklar till %(username)s?"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "Är du säker på att du vill ta bort %(article_count)s valda föräldralösa artikel/artiklar permanent? Detta tar även bort deras genererade OpenKB Markdown-filer."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "Tilldela valda"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "Tilldela valda artiklar till"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "Authenticator MFA/OTP-kod"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "Bekräfta åtgärd för föräldralös artikel"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "Ta bort valda"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "Ta bort valda överblivna filer"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "Ta bort de valda överblivna uppladdningsfilerna? Detta kan inte ångras."
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "Borttagen av administratörens rensning av överblivna filer"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "Borttagen av automatisk rensning av överblivna filer"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Ange ett aktivt lokalt eller AD-användarnamn/e-post, markera artiklarna och klicka på Tilldela valda."
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Hitta artiklar utan ägare eller med en inaktiv/borttagen ägare och tilldela dem sedan till en aktiv användare eller ta bort dem."
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "Lokal användare"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "MFA/OTP-koden är felaktig."
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "Hanteras av authenticator-app"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "Namn"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "Ingen matchande aktiv användare hittades."
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "Inget namn angivet"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "Inga föräldralösa artiklar matchar din sökning."
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "Inga föräldralösa artiklar hittades. Alla artiklar har för närvarande en aktiv ägare."
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "Ingen ägare"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "Sidor med föräldralösa artiklar"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "Tidigare ägare"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "Borttagen från redigeraren av uppladdaren"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "Skanna föräldralösa artiklar"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "Sök föräldralösa artiklar"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "Välj %(filename)s för borttagning"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "Välj alla"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "Välj alla överblivna filer"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "Konfigurera MFA innan du ändrar känsliga kontouppgifter."
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "Dessa filer verkar vara oanvända. Kontrollera uppladdarens uppgifter och ta endast bort filer som inte längre behövs."
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "Ange användarnamn eller e-post"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "Avmarkera alla"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "Uppladdad"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "Uppladdad av"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "Ändringar av användarnamn hanteras av administratörer."
+
+#: synced from current templates/views
+msgid "View"
+msgstr "Visa"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
-msgstr "Yes, assign articles"
+msgstr "Ja, tilldela artiklar"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
-msgstr "Yes, delete articles"
+msgstr "Ja, ta bort artiklar"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Please use the Assign selected or Delete selected button."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "Du kommer att bli ombedd att bekräfta innan ändringarna tillämpas."
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Please select at least one orphan article first."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "Din session har gått ut. Logga in igen."
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "föräldralösa artiklar"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Some selected articles were skipped because they are no longer orphan articles."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "The selected target user was missing. Please choose the user again."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "The selected target user is invalid or inactive. Please choose an active user."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Please enter a username or email to assign the selected articles to."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
-msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "Tilldelade %(count)s föräldralösa artikel/artiklar till %(user)s."
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
-msgstr "Deleted %(count)s orphan article(s)."
+msgstr "Tog bort %(count)s föräldralösa artikel/artiklar."
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Some selected articles could not be deleted: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Hitta artiklar utan aktiv ägare och tilldela dem sedan till en användare eller ta bort dem efter bekräftelse."
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "No orphan articles were deleted. Please refresh and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
-msgstr "Invalid orphan article action."
+msgstr "Ogiltig åtgärd för föräldralös artikel."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "Mer än en aktiv användare matchade '%(user)s'. Använd exakt användarnamn."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "Ingen aktiv användare hittades för '%(user)s'. Ange ett giltigt användarnamn eller e-post."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "Inga föräldralösa artiklar togs bort. Uppdatera och försök igen."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Ange ett användarnamn eller e-post att tilldela de valda artiklarna till."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Välj först minst en föräldralös artikel."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Använd knappen Tilldela valda eller Ta bort valda."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Vissa valda artiklar kunde inte tas bort: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Vissa valda artiklar hoppades över eftersom de inte längre är föräldralösa."
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "Något gick fel vid hantering av åtgärden för föräldralösa artiklar. Inga ändringar tillämpades. Kontrollera ditt val och försök igen."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "Artiklarna kunde inte tilldelas säkert. Ingen tilldelning tillämpades. Kontrollera loggarna och försök igen."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "De valda artiklarna är inte längre föräldralösa eller finns inte längre. Uppdatera och försök igen."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "Den valda målanvändaren är ogiltig eller inaktiv. Välj en aktiv användare."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "Den valda målanvändaren saknades. Välj användaren igen."

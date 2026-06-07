@@ -74,10 +74,10 @@ msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
 msgstr "Максимальный размер загрузки: 100 МБ. Максимальный распакованный размер: 200 МБ."
 
 msgid "Import zip"
-msgstr "Импортировать zip"
+msgstr "Импорт zip"
 
 msgid "Back to profile"
-msgstr "Back to profile"
+msgstr "Вернуться к профилю"
 
 msgid "Supported zip format"
 msgstr "Поддерживаемый формат zip"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "Дата публикации"
 
 msgid "Last updated"
-msgstr "Last updated"
+msgstr "Последнее обновление"
 
 msgid "Share article"
 msgstr "Поделиться статьей"
@@ -188,7 +188,7 @@ msgid "Search my suggestions"
 msgstr "Искать мои предложения"
 
 msgid "Clear search"
-msgstr "Clear search"
+msgstr "Очистить поиск"
 
 msgid "Next"
 msgstr "Следующая"
@@ -197,16 +197,16 @@ msgid "Last"
 msgstr "Последняя"
 
 msgid "Article title"
-msgstr "Article title"
+msgstr "Заголовок статьи"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Статус"
 
 msgid "Created"
 msgstr "Создано"
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "Действия"
 
 msgid "Delete"
 msgstr "Удалить"
@@ -236,7 +236,7 @@ msgid "Date"
 msgstr "Дата"
 
 msgid "Login"
-msgstr "Войти"
+msgstr "Вход"
 
 msgid "Please sign in"
 msgstr "Пожалуйста, войдите"
@@ -275,10 +275,10 @@ msgid "Save username"
 msgstr "Сохранить имя пользователя"
 
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Отмена"
 
 msgid "Email"
-msgstr "Электронная почта"
+msgstr "Эл. почта"
 
 msgid "No email set"
 msgstr "Электронная почта не указана"
@@ -470,7 +470,7 @@ msgid "Clean stray files"
 msgstr "Очистить лишние файлы"
 
 msgid "Import / Export"
-msgstr "Импорт / Экспорт"
+msgstr "Импорт / экспорт"
 
 msgid "Open"
 msgstr "Открыть"
@@ -536,10 +536,10 @@ msgid "Thumbs down"
 msgstr "Не нравится"
 
 msgid "Likes"
-msgstr "Нравится"
+msgstr "Лайки"
 
 msgid "Dislikes"
-msgstr "Не нравится"
+msgstr "Дизлайки"
 
 msgid "Sign in to make your opinion count."
 msgstr "Войдите, чтобы ваше мнение было учтено."
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "История комментариев проверки"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Файлы новее %(minutes)s минуты игнорируются. Измените это значение в Django Admin → Site settings. Используйте 0 минут, чтобы сразу показать неиспользуемые загрузки."
+msgstr "Файлы новее %(minutes)s минуты игнорируются. Измените это значение в Django Admin → Site settings. Укажите 0 минут, чтобы сразу показывать лишние загрузки."
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Файлы новее %(minutes)s минут игнорируются. Измените это значение в Django Admin → Site settings. Используйте 0 минут, чтобы сразу показать неиспользуемые загрузки."
+msgstr "Файлы новее %(minutes)s минут игнорируются. Измените это значение в Django Admin → Site settings. Укажите 0 минут, чтобы сразу показывать лишние загрузки."
 
 msgid "stray upload file found"
 msgstr "найден неиспользуемый загруженный файл"
@@ -753,11 +753,11 @@ msgstr "Войти с локальной учетной записью"
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d MFA-устройств отмечено как ожидающие настройки."
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "В файлах OpenKB найдено %(count)s результатов."
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,63 +765,63 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "Статья с таким заголовком уже существует. Используйте другой заголовок."
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "Утверждение / проверка"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "Изображение статьи"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "Пагинация статей"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "Статья успешно опубликована."
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "Заголовок и текст статьи должны содержать не менее 5 символов."
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "Запрашивайте связанные статьи, если нужны ссылки на источники."
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "Задавайте по одному вопросу за раз."
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "Задавайте вопросы, используя общие ключевые слова или темы статей."
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Authenticator setup completed successfully."
+msgstr "Настройка аутентификатора успешно завершена."
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "Нижняя пагинация статей"
 
 #: auto-generated
 msgid "Close"
-msgstr "Close"
+msgstr "Закрыть"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Complete MFA before accessing the Django admin site."
+msgstr "Завершите MFA перед доступом к административному сайту Django."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "Завершите MFA перед продолжением. Пока MFA не завершена, вход выполнен не полностью."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "Завершите MFA перед продолжением. Вы не сможете получить доступ к DjOpenKB, пока MFA не завершена."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "Текущий статус MFA"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Current pending failed comments"
+msgstr "Текущие комментарии отказа"
 
 #: auto-generated
 msgid "Enabled"
@@ -841,55 +841,55 @@ msgstr "Введите код MFA/OTP"
 
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
-msgstr "Existing authenticated sessions for this user will be invalidated."
+msgstr "Существующие аутентифицированные сеансы этого пользователя будут аннулированы."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Файлы новее %(minutes)s минуты игнорируются. Измените это значение в Django Admin → Site settings. Укажите 0 минут, чтобы сразу показывать лишние загрузки."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Файлы новее %(minutes)s минут игнорируются. Измените это значение в Django Admin → Site settings. Укажите 0 минут, чтобы сразу показывать лишние загрузки."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "Здравствуйте, я OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Я могу помочь найти статьи и ответить на вопросы по wiki."
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "Изображение удалено из черновика этой статьи."
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Изображение удалено из этого черновика. Сохраните статью, чтобы удалить его из хранилища."
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "Не удалось загрузить изображение."
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "Не удалось загрузить изображение. Проверьте журналы терминала Django."
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "Изображение загружено и вставлено в статью."
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Invalid authenticator code. Please try again."
+msgstr "Недействительный код аутентификатора. Повторите попытку."
 
 #: auto-generated
 msgid "LDAP admin"
-msgstr "LDAP admin"
+msgstr "Администратор LDAP"
 
 #: auto-generated
 msgid "LDAP user"
-msgstr "LDAP user"
+msgstr "Пользователь LDAP"
 
 #: auto-generated
 msgid "Last verified"
@@ -897,7 +897,7 @@ msgstr "Последняя проверка"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Local accounts require authenticator verification after password sign-in."
+msgstr "Локальные учетные записи требуют проверки через аутентификатор после входа по паролю."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -913,15 +913,15 @@ msgstr "MFA сброшена пользователем"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "MFA сброшена для %(count)d выбранных устройств. Пользователи должны настроить новый аутентификатор при следующем входе."
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "MFA сброшена для %(count)d выбранных пользователей. Они должны настроить новый аутентификатор при следующем входе."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
-msgstr "MFA reset is available for your DjOpenKB account."
+msgstr "Для вашей учетной записи DjOpenKB доступен сброс MFA."
 
 #: auto-generated
 msgid "MFA setup failure"
@@ -941,7 +941,7 @@ msgstr "Проверка MFA"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA verification successful."
+msgstr "Проверка MFA успешно выполнена."
 
 #: auto-generated
 msgid "MFA verify failure"
@@ -953,7 +953,7 @@ msgstr "Проверка MFA успешна"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "MFA для %(username)s сброшена. Пользователь должен настроить новый аутентификатор при следующем входе."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "Ключ ручной настройки"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "Свернуть OpenKB AI"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,31 +977,31 @@ msgstr "Многофакторная аутентификация"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "Статей OpenKB пока нет. Добавьте решение через «Предложить»."
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "Подходящие статьи OpenKB не найдены."
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "Связанных статей пока нет."
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Разрешены только изображения PNG, JPG, GIF или WEBP."
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "Открыть чат OpenKB AI"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI думает..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "Страница %(current)s из %(total)s"
 
 #: auto-generated
 msgid "Password login failure"
@@ -1013,23 +1013,23 @@ msgstr "Вход по паролю успешен"
 
 #: auto-generated
 msgid "Password syncs with your company password."
-msgstr "Password syncs with your company password."
+msgstr "Пароль синхронизируется с корпоративным паролем."
 
 #: auto-generated
 msgid "Pending MFA created"
-msgstr "Создано ожидание MFA"
+msgstr "Ожидающая MFA создана"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "Страницы ожидающих статей"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Pending failed comments history"
+msgstr "История комментариев отказа"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Введите комментарии отказа перед тем, как отметить статью как не прошедшую проверку."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1037,43 +1037,43 @@ msgstr "Введите код MFA/OTP, чтобы продолжить."
 
 #: auto-generated
 msgid "Please sign in before setting up MFA."
-msgstr "Please sign in before setting up MFA."
+msgstr "Войдите перед настройкой MFA."
 
 #: auto-generated
 msgid "Please sign in before verifying MFA."
-msgstr "Please sign in before verifying MFA."
+msgstr "Войдите перед проверкой MFA."
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "Сначала введите вопрос."
 
 #: auto-generated
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "На базе"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "На базе openKB"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "Опубликовать статью"
 
 #: auto-generated
 msgid "Ready"
-msgstr "Ready"
+msgstr "Готово"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "Рекомендуемые статьи"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "Удалить изображение из статьи"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "Запрос не выполнен. Проверьте журналы терминала Django."
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1081,7 +1081,7 @@ msgstr "Сбросить MFA"
 
 #: auto-generated
 msgid "Reset MFA for %(username)s"
-msgstr "Reset MFA for %(username)s"
+msgstr "Сбросить MFA для %(username)s"
 
 #: auto-generated
 msgid "Reset MFA now"
@@ -1089,7 +1089,7 @@ msgstr "Сбросить MFA сейчас"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "Сброс MFA сразу потребует настройки нового кода аутентификатора перед продолжением. Продолжить?"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1097,7 +1097,7 @@ msgstr "Отсканируйте QR-код приложением-аутенти
 
 #: auto-generated
 msgid "Search"
-msgstr "Search"
+msgstr "Поиск"
 
 #: auto-generated
 msgid "Set up MFA"
@@ -1105,7 +1105,7 @@ msgstr "Настроить MFA"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "Настроить аутентификатор"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "Требуется настройка"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "Показано %(start)s-%(end)s из %(count)s статей"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "Выйти"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Что-то пошло не так."
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "The next login will require authenticator setup before access is granted."
+msgstr "При следующем входе потребуется настройка аутентификатора перед предоставлением доступа."
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "Этот адрес эл. почты управляется доменной учетной записью и не может быть изменен здесь."
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "Это изображение уже загружено в этот черновик. Сначала удалите его кнопкой X в предпросмотре."
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "Будет создан новый частный секрет аутентификатора для пользователя. Ключ не показывается администраторам и не должен передаваться. Пользователь должен снова войти и отсканировать свой новый QR-код, прежде чем продолжить использовать DjOpenKB."
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "Верхняя пагинация статей"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1149,7 +1149,7 @@ msgstr "Use this section to reset a user's authenticator setup. "
 
 #: auto-generated
 msgid "User"
-msgstr "User"
+msgstr "Пользователь"
 
 #: auto-generated
 msgid "Verify"
@@ -1157,184 +1157,292 @@ msgstr "Проверить"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "Вы собираетесь сбросить MFA для пользователя <strong>%(username)s</strong>."
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "Ваша MFA была сброшена. Завершите настройку аутентификатора, чтобы продолжить использовать DjOpenKB."
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "Ваш голос удален."
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "статья"
 
 #: auto-generated
 msgid "matching"
-msgstr "matching"
+msgstr "соответствует"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB — это приложение базы знаний/FAQ/Wiki с открытым исходным кодом на базе Node.js и Markdown с мощным поиском lunr"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "Репозиторий знаний на базе openKB"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Scan orphan articles"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "Источник учетной записи"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Пользователь Active Directory"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "orphan articles"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Search orphan articles"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
-msgstr "All statuses"
+msgstr "Все статусы"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Orphan article pages"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "Статья с заголовком «%(title)s» уже существует. Используйте другой заголовок."
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Assign selected articles to"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Type username or email"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "No matching active user found."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Enter an active local or AD username/email, then tick articles and click Assign selected."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Assign selected"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Delete selected"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "You will be asked to confirm before changes are applied."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Previous owner"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Inactive"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "No owner"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "No orphan articles match your search."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "No orphan articles were found. All articles currently have an active owner."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Confirm orphan article action"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
-msgstr "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "Вы уверены, что хотите назначить %(article_count)s статей пользователю %(username)s?"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "Вы уверены, что хотите навсегда удалить %(article_count)s выбранных осиротевших статей? Это также удалит созданные для них Markdown-файлы OpenKB."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "Назначить выбранные"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "Назначить выбранные статьи пользователю"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "Код MFA/OTP из приложения-аутентификатора"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "Подтвердить действие с осиротевшими статьями"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "Удалить выбранные"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "Удалить выбранные лишние файлы"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "Удалить выбранные лишние загруженные файлы? Это действие нельзя отменить."
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "Удалено администратором при очистке лишних файлов"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "Удалено автоматической очисткой лишних файлов"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Введите активное локальное или AD имя пользователя/эл. почту, отметьте статьи и нажмите «Назначить выбранные»."
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Найдите статьи без владельца или с неактивным/удаленным владельцем, затем назначьте их активному пользователю или удалите."
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "Неактивен"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "Локальный пользователь"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "Код MFA/OTP неверен."
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "Управляется приложением-аутентификатором"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "Имя"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "Подходящий активный пользователь не найден."
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "Имя не задано"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "Нет осиротевших статей, соответствующих поиску."
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "Осиротевшие статьи не найдены. У всех статей сейчас есть активный владелец."
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "Нет владельца"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "Страницы осиротевших статей"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "Предыдущий владелец"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "Удалено загрузившим пользователем из редактора"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "Сканировать осиротевшие статьи"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "Искать осиротевшие статьи"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "Выбрать %(filename)s для удаления"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "Выбрать все"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "Выбрать все лишние файлы"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "Настройте MFA перед изменением важных данных учетной записи."
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "Похоже, эти файлы не используются. Проверьте сведения о загрузившем пользователе и удаляйте только ненужные файлы."
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "Введите имя пользователя или эл. почту"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "Снять выбор со всех"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "Загружено"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "Загрузил"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "Изменения имени пользователя управляются администраторами."
+
+#: synced from current templates/views
+msgid "View"
+msgstr "Просмотр"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
-msgstr "Yes, assign articles"
+msgstr "Да, назначить статьи"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
-msgstr "Yes, delete articles"
+msgstr "Да, удалить статьи"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Please use the Assign selected or Delete selected button."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "Перед применением изменений потребуется подтверждение."
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Please select at least one orphan article first."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "Срок действия сеанса истек. Войдите снова."
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "осиротевшие статьи"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Some selected articles were skipped because they are no longer orphan articles."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "The selected target user was missing. Please choose the user again."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "The selected target user is invalid or inactive. Please choose an active user."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Please enter a username or email to assign the selected articles to."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
-msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "%(count)s осиротевших статей назначено пользователю %(user)s."
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
-msgstr "Deleted %(count)s orphan article(s)."
+msgstr "Удалено %(count)s осиротевших статей."
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Some selected articles could not be deleted: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Найдите статьи без активного владельца, затем назначьте их пользователю или удалите после подтверждения."
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "No orphan articles were deleted. Please refresh and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
-msgstr "Invalid orphan article action."
+msgstr "Недопустимое действие с осиротевшей статьей."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "Найдено несколько активных пользователей для '%(user)s'. Используйте точное имя пользователя."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "Активный пользователь для '%(user)s' не найден. Введите действительное имя пользователя или эл. почту."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "Осиротевшие статьи не были удалены. Обновите страницу и повторите попытку."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Введите имя пользователя или эл. почту, которому нужно назначить выбранные статьи."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Сначала выберите хотя бы одну осиротевшую статью."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Используйте кнопку «Назначить выбранные» или «Удалить выбранные»."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Некоторые выбранные статьи не удалось удалить: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Некоторые выбранные статьи пропущены, потому что они больше не являются осиротевшими."
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "При обработке действия с осиротевшими статьями произошла ошибка. Изменения не применены. Проверьте выбор и повторите попытку."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "Статьи не удалось безопасно назначить. Назначение не применено. Проверьте журналы и повторите попытку."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "Выбранные статьи больше не являются осиротевшими или больше не существуют. Обновите страницу и повторите попытку."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "Выбранный целевой пользователь недействителен или неактивен. Выберите активного пользователя."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "Выбранный целевой пользователь отсутствует. Выберите пользователя снова."

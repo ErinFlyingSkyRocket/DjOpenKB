@@ -74,10 +74,10 @@ msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
 msgstr "最大アップロードサイズ: 100 MB。最大展開サイズ: 200 MB。"
 
 msgid "Import zip"
-msgstr "zipをインポート"
+msgstr "zip をインポート"
 
 msgid "Back to profile"
-msgstr "Back to profile"
+msgstr "プロフィールに戻る"
 
 msgid "Supported zip format"
 msgstr "対応zip形式"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "公開日"
 
 msgid "Last updated"
-msgstr "Last updated"
+msgstr "最終更新"
 
 msgid "Share article"
 msgstr "記事を共有"
@@ -188,7 +188,7 @@ msgid "Search my suggestions"
 msgstr "自分の提案を検索"
 
 msgid "Clear search"
-msgstr "Clear search"
+msgstr "検索をクリア"
 
 msgid "Next"
 msgstr "次へ"
@@ -197,16 +197,16 @@ msgid "Last"
 msgstr "最後"
 
 msgid "Article title"
-msgstr "Article title"
+msgstr "記事タイトル"
 
 msgid "Status"
-msgstr "Status"
+msgstr "ステータス"
 
 msgid "Created"
 msgstr "作成日"
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "操作"
 
 msgid "Delete"
 msgstr "削除"
@@ -275,7 +275,7 @@ msgid "Save username"
 msgstr "ユーザー名を保存"
 
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "キャンセル"
 
 msgid "Email"
 msgstr "メール"
@@ -505,7 +505,7 @@ msgstr "%(matching)s 件一致 / 全 %(total)s 件"
 
 #, python-format
 msgid "%(count)s total"
-msgstr "全 %(count)s 件"
+msgstr "合計 %(count)s 件"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "レビューコメント履歴"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s 分以内のファイルは無視されます。この値は Django Admin → Site settings で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
+msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s 分以内のファイルは無視されます。この値は Django Admin → Site settings で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
+msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
 
 msgid "stray upload file found"
 msgstr "件の未使用アップロードファイルが見つかりました"
@@ -753,11 +753,11 @@ msgstr "ローカルアカウントでサインイン"
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d 件の MFA デバイスを設定待ちとしてマークしました。"
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "OpenKB ファイルから %(count)s 件の結果が見つかりました。"
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,63 +765,63 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "このタイトルの記事は既に存在します。別のタイトルを使用してください。"
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "承認 / レビュー"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "記事画像"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "記事ページ送り"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "記事を公開しました。"
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "記事タイトルと本文は少なくとも 5 文字必要です。"
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "出典リンクが必要な場合は、関連記事を尋ねてください。"
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "一度に 1 つずつ質問してください。"
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "一般的なキーワードまたは記事トピックで質問してください。"
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Authenticator setup completed successfully."
+msgstr "認証アプリの設定が完了しました。"
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "下部の記事ページ送り"
 
 #: auto-generated
 msgid "Close"
-msgstr "Close"
+msgstr "閉じる"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Complete MFA before accessing the Django admin site."
+msgstr "Django 管理サイトにアクセスする前に MFA を完了してください。"
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "続行する前に MFA を完了してください。MFA が完了するまで完全にはサインインしていません。"
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "続行する前に MFA を完了してください。MFA が完了するまで DjOpenKB にアクセスできません。"
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "現在の MFA 状態"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Current pending failed comments"
+msgstr "現在の却下コメント"
 
 #: auto-generated
 msgid "Enabled"
@@ -841,55 +841,55 @@ msgstr "MFA/OTP コードを入力"
 
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
-msgstr "Existing authenticated sessions for this user will be invalidated."
+msgstr "このユーザーの既存の認証済みセッションは無効化されます。"
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "こんにちは、OpenKB AI です。"
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Wiki から記事を探したり、質問に答えたりできます。"
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "この記事の下書きから画像を削除しました。"
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "この下書きから画像を削除しました。ストレージから削除するには記事を保存してください。"
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "画像のアップロードに失敗しました。"
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "画像のアップロードに失敗しました。Django ターミナルログを確認してください。"
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "画像をアップロードし、記事に挿入しました。"
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Invalid authenticator code. Please try again."
+msgstr "認証コードが無効です。もう一度お試しください。"
 
 #: auto-generated
 msgid "LDAP admin"
-msgstr "LDAP admin"
+msgstr "LDAP 管理者"
 
 #: auto-generated
 msgid "LDAP user"
-msgstr "LDAP user"
+msgstr "LDAP ユーザー"
 
 #: auto-generated
 msgid "Last verified"
@@ -897,7 +897,7 @@ msgstr "最終確認"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Local accounts require authenticator verification after password sign-in."
+msgstr "ローカルアカウントでは、パスワードサインイン後に認証アプリの確認が必要です。"
 
 #: auto-generated
 msgid "MFA QR code"
@@ -913,15 +913,15 @@ msgstr "ユーザーによる MFA リセット"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "選択した %(count)d 件のデバイスの MFA をリセットしました。ユーザーは次回サインイン時に新しい認証アプリを設定する必要があります。"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "選択した %(count)d 人のユーザーの MFA をリセットしました。次回サインイン時に新しい認証アプリを設定する必要があります。"
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
-msgstr "MFA reset is available for your DjOpenKB account."
+msgstr "DjOpenKB アカウントで MFA リセットを利用できます。"
 
 #: auto-generated
 msgid "MFA setup failure"
@@ -941,7 +941,7 @@ msgstr "MFA 確認"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA verification successful."
+msgstr "MFA 確認に成功しました。"
 
 #: auto-generated
 msgid "MFA verify failure"
@@ -953,7 +953,7 @@ msgstr "MFA 確認成功"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "%(username)s の MFA をリセットしました。ユーザーは次回サインイン時に新しい認証アプリを設定する必要があります。"
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "手動設定キー"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "OpenKB AI を最小化"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,31 +977,31 @@ msgstr "多要素認証"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "OpenKB 記事はまだありません。「提案」から解決策を追加してください。"
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "一致する OpenKB 記事は見つかりませんでした。"
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "関連記事はまだありません。"
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "PNG、JPG、GIF、WEBP 画像のみ許可されています。"
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "OpenKB AI チャットを開く"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI が考えています..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "%(total)s ページ中 %(current)s ページ"
 
 #: auto-generated
 msgid "Password login failure"
@@ -1013,23 +1013,23 @@ msgstr "パスワードログイン成功"
 
 #: auto-generated
 msgid "Password syncs with your company password."
-msgstr "Password syncs with your company password."
+msgstr "パスワードは会社のパスワードと同期されます。"
 
 #: auto-generated
 msgid "Pending MFA created"
-msgstr "保留中の MFA を作成"
+msgstr "保留中の MFA を作成しました"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "保留中の記事ページ"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Pending failed comments history"
+msgstr "却下コメント履歴"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "この記事を却下としてマークする前に、却下コメントを入力してください。"
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1037,43 +1037,43 @@ msgstr "続行するには MFA/OTP コードを入力してください。"
 
 #: auto-generated
 msgid "Please sign in before setting up MFA."
-msgstr "Please sign in before setting up MFA."
+msgstr "MFA を設定する前にサインインしてください。"
 
 #: auto-generated
 msgid "Please sign in before verifying MFA."
-msgstr "Please sign in before verifying MFA."
+msgstr "MFA を確認する前にサインインしてください。"
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "まず質問を入力してください。"
 
 #: auto-generated
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "提供元"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "openKB により提供"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "記事を公開"
 
 #: auto-generated
 msgid "Ready"
-msgstr "Ready"
+msgstr "準備完了"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "おすすめ記事"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "記事から画像を削除"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "リクエストに失敗しました。Django ターミナルログを確認してください。"
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1081,7 +1081,7 @@ msgstr "MFA をリセット"
 
 #: auto-generated
 msgid "Reset MFA for %(username)s"
-msgstr "Reset MFA for %(username)s"
+msgstr "%(username)s の MFA をリセット"
 
 #: auto-generated
 msgid "Reset MFA now"
@@ -1089,7 +1089,7 @@ msgstr "今すぐ MFA をリセット"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "MFA をリセットすると、続行前に新しい認証コードの設定が必要になります。続行しますか？"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1097,7 +1097,7 @@ msgstr "認証アプリで QR コードをスキャンし、MFA/OTP コードを
 
 #: auto-generated
 msgid "Search"
-msgstr "Search"
+msgstr "検索"
 
 #: auto-generated
 msgid "Set up MFA"
@@ -1105,7 +1105,7 @@ msgstr "MFA を設定"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "認証アプリを設定"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "設定が必要"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "%(count)s 件中 %(start)s-%(end)s 件を表示"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "サインアウト"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "問題が発生しました。"
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "The next login will require authenticator setup before access is granted."
+msgstr "次回ログイン時は、アクセス許可前に認証アプリの設定が必要です。"
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "このメールアドレスはドメインアカウントで管理されているため、ここでは変更できません。"
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "この画像は既にこの下書きにアップロードされています。まずプレビューの X ボタンで削除してください。"
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "これにより、ユーザー用の新しいプライベート認証シークレットが生成されます。キーは管理者には表示されず、共有してはいけません。ユーザーは再度サインインし、自分の新しい QR コードをスキャンしてから DjOpenKB を続行できます。"
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "上部の記事ページ送り"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1149,7 +1149,7 @@ msgstr "Use this section to reset a user's authenticator setup. "
 
 #: auto-generated
 msgid "User"
-msgstr "User"
+msgstr "ユーザー"
 
 #: auto-generated
 msgid "Verify"
@@ -1157,184 +1157,292 @@ msgstr "確認"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "ユーザー <strong>%(username)s</strong> の MFA をリセットしようとしています。"
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "MFA がリセットされました。DjOpenKB の利用を続けるには認証アプリの設定を完了してください。"
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "投票を取り消しました。"
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "記事"
 
 #: auto-generated
 msgid "matching"
-msgstr "matching"
+msgstr "一致"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB は Node.js と Markdown ベースのオープンソース知識ベース/FAQ/Wiki アプリで、強力な lunr 検索を備えています"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "openKB による知識リポジトリ"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Scan orphan articles"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "アカウント元"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Active Directory ユーザー"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "orphan articles"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Search orphan articles"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
-msgstr "All statuses"
+msgstr "すべてのステータス"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Orphan article pages"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "「%(title)s」というタイトルの記事は既に存在します。別のタイトルを使用してください。"
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Assign selected articles to"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Type username or email"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "No matching active user found."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Enter an active local or AD username/email, then tick articles and click Assign selected."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Assign selected"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Delete selected"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "You will be asked to confirm before changes are applied."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Previous owner"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Inactive"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "No owner"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "No orphan articles match your search."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "No orphan articles were found. All articles currently have an active owner."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Confirm orphan article action"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
-msgstr "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "%(article_count)s 件の記事を %(username)s に割り当てますか？"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "選択した %(article_count)s 件の孤立記事を完全に削除しますか？生成された OpenKB Markdown ファイルも削除されます。"
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "選択項目を割り当て"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "選択した記事の割り当て先"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "認証アプリ MFA/OTP コード"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "孤立記事の操作を確認"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "選択項目を削除"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "選択した未使用ファイルを削除"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "選択した未使用アップロードファイルを削除しますか？この操作は元に戻せません。"
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "管理者の未使用ファイル整理により削除"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "自動未使用ファイル整理により削除"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "有効なローカルまたは AD のユーザー名/メールを入力し、記事にチェックを入れて「選択項目を割り当て」をクリックしてください。"
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "所有者がいない、または所有者が無効/削除済みの記事を探し、有効なユーザーへ割り当てるか削除します。"
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "無効"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "ローカルユーザー"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "MFA/OTP コードが正しくありません。"
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "認証アプリで管理"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "名前"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "一致する有効なユーザーは見つかりませんでした。"
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "名前未設定"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "検索に一致する孤立記事はありません。"
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "孤立記事は見つかりませんでした。現在すべての記事に有効な所有者があります。"
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "所有者なし"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "孤立記事ページ"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "以前の所有者"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "アップロード者がエディターから削除"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "孤立記事をスキャン"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "孤立記事を検索"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "削除する %(filename)s を選択"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "すべて選択"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "すべての未使用ファイルを選択"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "重要なアカウント情報を変更する前に MFA を設定してください。"
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "これらのファイルは未使用のようです。アップロード者の詳細を確認し、不要なファイルのみ削除してください。"
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "ユーザー名またはメールを入力"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "すべて選択解除"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "アップロード日時"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "アップロード者"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "ユーザー名の変更は管理者が管理します。"
+
+#: synced from current templates/views
+msgid "View"
+msgstr "表示"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
-msgstr "Yes, assign articles"
+msgstr "はい、記事を割り当てる"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
-msgstr "Yes, delete articles"
+msgstr "はい、記事を削除する"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Please use the Assign selected or Delete selected button."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "変更を適用する前に確認が求められます。"
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Please select at least one orphan article first."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "セッションの有効期限が切れました。もう一度サインインしてください。"
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "孤立記事"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Some selected articles were skipped because they are no longer orphan articles."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "The selected target user was missing. Please choose the user again."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "The selected target user is invalid or inactive. Please choose an active user."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Please enter a username or email to assign the selected articles to."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
-msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "%(count)s 件の孤立記事を %(user)s に割り当てました。"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
-msgstr "Deleted %(count)s orphan article(s)."
+msgstr "%(count)s 件の孤立記事を削除しました。"
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Some selected articles could not be deleted: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "有効な所有者がいない記事を探し、確認後にユーザーへ割り当てるか削除します。"
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "No orphan articles were deleted. Please refresh and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
-msgstr "Invalid orphan article action."
+msgstr "孤立記事の操作が無効です。"
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "「%(user)s」に一致する有効なユーザーが複数見つかりました。正確なユーザー名を使用してください。"
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "「%(user)s」に該当する有効なユーザーが見つかりません。正しいユーザー名またはメールを入力してください。"
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "孤立記事は削除されませんでした。更新してもう一度お試しください。"
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "選択した記事の割り当て先となるユーザー名またはメールを入力してください。"
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "まず少なくとも 1 件の孤立記事を選択してください。"
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "「選択項目を割り当て」または「選択項目を削除」ボタンを使用してください。"
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "一部の選択記事を削除できませんでした: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "一部の選択記事は孤立記事ではなくなったためスキップされました。"
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "孤立記事の操作中にエラーが発生しました。変更は適用されていません。選択内容を確認してもう一度お試しください。"
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "記事を安全に割り当てられませんでした。割り当ては適用されていません。ログを確認してもう一度お試しください。"
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "選択した記事は孤立記事ではなくなったか、存在しません。更新してもう一度お試しください。"
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "選択した対象ユーザーは無効または非アクティブです。有効なユーザーを選択してください。"
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "選択した対象ユーザーが見つかりません。もう一度ユーザーを選択してください。"

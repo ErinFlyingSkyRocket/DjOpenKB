@@ -26,7 +26,7 @@ msgid "Edit"
 msgstr "Bearbeiten"
 
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administrator"
 
 msgid "Logged in as"
 msgstr "Angemeldet als"
@@ -152,7 +152,7 @@ msgid "Author"
 msgstr "Autor"
 
 msgid "Permalink"
-msgstr "Permalink"
+msgstr "Dauerlink"
 
 msgid "Edit article"
 msgstr "Artikel bearbeiten"
@@ -200,7 +200,7 @@ msgid "Article title"
 msgstr "Artikeltitel"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Statusangabe"
 
 msgid "Created"
 msgstr "Erstellt"
@@ -470,7 +470,7 @@ msgid "Clean stray files"
 msgstr "Verwaiste Dateien bereinigen"
 
 msgid "Import / Export"
-msgstr "Import / Export"
+msgstr "Importieren / Exportieren"
 
 msgid "Open"
 msgstr "Öffnen"
@@ -536,10 +536,10 @@ msgid "Thumbs down"
 msgstr "Daumen runter"
 
 msgid "Likes"
-msgstr "Likes"
+msgstr "Gefällt mir"
 
 msgid "Dislikes"
-msgstr "Dislikes"
+msgstr "Gefällt mir nicht"
 
 msgid "Sign in to make your opinion count."
 msgstr "Melden Sie sich an, damit Ihre Meinung zählt."
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "Verlauf der Prüfkommentare"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Dateien, die neuer als %(minutes)s Minute sind, werden ignoriert. Ändern Sie diesen Wert in Django Admin → Site settings. Verwenden Sie 0 Minuten, um verwaiste Uploads sofort anzuzeigen."
+msgstr "Dateien, die neuer als %(minutes)s Minute sind, werden ignoriert. Ändern Sie diesen Wert in Django Admin → Site-Einstellungen. Verwenden Sie 0 Minuten, um verwaiste Uploads sofort anzuzeigen."
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Dateien, die neuer als %(minutes)s Minuten sind, werden ignoriert. Ändern Sie diesen Wert in Django Admin → Site settings. Verwenden Sie 0 Minuten, um verwaiste Uploads sofort anzuzeigen."
+msgstr "Dateien, die neuer als %(minutes)s Minuten sind, werden ignoriert. Ändern Sie diesen Wert in Django Admin → Site-Einstellungen. Verwenden Sie 0 Minuten, um verwaiste Uploads sofort anzuzeigen."
 
 msgid "stray upload file found"
 msgstr "verwaiste Upload-Datei gefunden"
@@ -753,11 +753,11 @@ msgstr "Mit lokalem Konto anmelden"
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "%(count)d MFA-Gerät(e) als ausstehende Einrichtung markiert."
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "%(count)s Ergebnis(se) in OpenKB-Dateien gefunden."
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,47 +765,47 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "Ein Artikel mit diesem Titel existiert bereits. Bitte verwenden Sie einen anderen Titel."
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "Genehmigung / Prüfung"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "Artikelbild"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "Artikelpaginierung"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "Artikel erfolgreich veröffentlicht."
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "Artikeltitel und Inhalt müssen mindestens 5 Zeichen lang sein."
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "Fragen Sie nach verwandten Artikeln, wenn Sie Quelllinks möchten."
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "Stellen Sie jeweils eine Frage."
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "Stellen Sie Fragen mit allgemeinen Stichwörtern oder Artikelthemen."
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Authenticator setup completed successfully."
+msgstr "Authenticator-Einrichtung erfolgreich abgeschlossen."
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "Untere Artikelpaginierung"
 
 #: auto-generated
 msgid "Close"
@@ -813,15 +813,15 @@ msgstr "Schließen"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Complete MFA before accessing the Django admin site."
+msgstr "Schließen Sie MFA ab, bevor Sie die Django-Adminseite aufrufen."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "Schließen Sie MFA ab, bevor Sie fortfahren. Sie sind erst vollständig angemeldet, wenn MFA abgeschlossen ist."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "Schließen Sie MFA ab, bevor Sie fortfahren. Sie können DjOpenKB erst nach Abschluss von MFA verwenden."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "Aktueller MFA-Status"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Current pending failed comments"
+msgstr "Aktuelle Kommentare zu fehlgeschlagener Prüfung"
 
 #: auto-generated
 msgid "Enabled"
@@ -841,55 +841,55 @@ msgstr "MFA/OTP-Code eingeben"
 
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
-msgstr "Existing authenticated sessions for this user will be invalidated."
+msgstr "Bestehende authentifizierte Sitzungen dieses Benutzers werden ungültig gemacht."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Dateien, die neuer als %(minutes)s Minute sind, werden ignoriert. Ändern Sie diesen Wert in Django Admin → Site-Einstellungen. Verwenden Sie 0 Minuten, um verwaiste Uploads sofort anzuzeigen."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Dateien, die neuer als %(minutes)s Minuten sind, werden ignoriert. Ändern Sie diesen Wert in Django Admin → Site-Einstellungen. Verwenden Sie 0 Minuten, um verwaiste Uploads sofort anzuzeigen."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "Hallo, ich bin OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Ich kann Ihnen helfen, Artikel zu finden und Fragen aus dem Wiki zu beantworten."
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "Bild aus diesem Artikelentwurf entfernt."
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Bild aus diesem Entwurf entfernt. Speichern Sie den Artikel, um es aus dem Speicher zu löschen."
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "Bild-Upload fehlgeschlagen."
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "Bild-Upload fehlgeschlagen. Prüfen Sie die Django-Terminalprotokolle."
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "Bild hochgeladen und in den Artikel eingefügt."
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Invalid authenticator code. Please try again."
+msgstr "Ungültiger Authenticator-Code. Bitte versuchen Sie es erneut."
 
 #: auto-generated
 msgid "LDAP admin"
-msgstr "LDAP admin"
+msgstr "LDAP-Admin"
 
 #: auto-generated
 msgid "LDAP user"
-msgstr "LDAP user"
+msgstr "LDAP-Benutzer"
 
 #: auto-generated
 msgid "Last verified"
@@ -897,7 +897,7 @@ msgstr "Zuletzt überprüft"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Local accounts require authenticator verification after password sign-in."
+msgstr "Lokale Konten erfordern nach der Passwortanmeldung eine Authenticator-Verifizierung."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -905,7 +905,7 @@ msgstr "MFA-QR-Code"
 
 #: auto-generated
 msgid "MFA reset by admin"
-msgstr "MFA durch Administrator zurückgesetzt"
+msgstr "MFA durch Admin zurückgesetzt"
 
 #: auto-generated
 msgid "MFA reset by user"
@@ -913,15 +913,15 @@ msgstr "MFA durch Benutzer zurückgesetzt"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "MFA für %(count)d ausgewählte Geräte zurückgesetzt. Benutzer müssen bei der nächsten Anmeldung einen neuen Authenticator einrichten."
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "MFA für %(count)d ausgewählte Benutzer zurückgesetzt. Sie müssen bei der nächsten Anmeldung einen neuen Authenticator einrichten."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
-msgstr "MFA reset is available for your DjOpenKB account."
+msgstr "MFA-Zurücksetzung ist für Ihr DjOpenKB-Konto verfügbar."
 
 #: auto-generated
 msgid "MFA setup failure"
@@ -941,19 +941,19 @@ msgstr "MFA-Überprüfung"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA verification successful."
+msgstr "MFA-Verifizierung erfolgreich."
 
 #: auto-generated
 msgid "MFA verify failure"
-msgstr "MFA-Überprüfung fehlgeschlagen"
+msgstr "MFA-Verifizierung fehlgeschlagen"
 
 #: auto-generated
 msgid "MFA verify success"
-msgstr "MFA-Überprüfung erfolgreich"
+msgstr "MFA-Verifizierung erfolgreich"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "MFA wurde für %(username)s zurückgesetzt. Der Benutzer muss bei der nächsten Anmeldung einen neuen Authenticator einrichten."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "Manueller Einrichtungsschlüssel"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "OpenKB AI minimieren"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,31 +977,31 @@ msgstr "Multi-Faktor-Authentifizierung"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "Noch keine OpenKB-Artikel. Fügen Sie unter „Vorschlagen“ eine Lösung hinzu."
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "Keine passenden OpenKB-Artikel gefunden."
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "Noch keine verwandten Artikel."
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Nur PNG-, JPG-, GIF- oder WEBP-Bilder sind erlaubt."
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "OpenKB-AI-Chat öffnen"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI denkt nach..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "Seite %(current)s von %(total)s"
 
 #: auto-generated
 msgid "Password login failure"
@@ -1013,7 +1013,7 @@ msgstr "Passwortanmeldung erfolgreich"
 
 #: auto-generated
 msgid "Password syncs with your company password."
-msgstr "Password syncs with your company password."
+msgstr "Das Passwort wird mit Ihrem Firmenpasswort synchronisiert."
 
 #: auto-generated
 msgid "Pending MFA created"
@@ -1021,15 +1021,15 @@ msgstr "Ausstehende MFA erstellt"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "Seiten ausstehender Artikel"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Pending failed comments history"
+msgstr "Verlauf der Kommentare zu fehlgeschlagener Prüfung"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Bitte geben Sie Kommentare ein, bevor Sie diesen Artikel als fehlgeschlagen markieren."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1037,43 +1037,43 @@ msgstr "Bitte geben Sie Ihren MFA/OTP-Code ein, um fortzufahren."
 
 #: auto-generated
 msgid "Please sign in before setting up MFA."
-msgstr "Please sign in before setting up MFA."
+msgstr "Bitte melden Sie sich an, bevor Sie MFA einrichten."
 
 #: auto-generated
 msgid "Please sign in before verifying MFA."
-msgstr "Please sign in before verifying MFA."
+msgstr "Bitte melden Sie sich an, bevor Sie MFA verifizieren."
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "Bitte geben Sie zuerst eine Frage ein."
 
 #: auto-generated
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "Bereitgestellt von"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "Bereitgestellt von openKB"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "Artikel veröffentlichen"
 
 #: auto-generated
 msgid "Ready"
-msgstr "Ready"
+msgstr "Bereit"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "Empfohlene Artikel"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "Bild aus Artikel entfernen"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "Anfrage fehlgeschlagen. Prüfen Sie die Django-Terminalprotokolle."
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1081,7 +1081,7 @@ msgstr "MFA zurücksetzen"
 
 #: auto-generated
 msgid "Reset MFA for %(username)s"
-msgstr "Reset MFA for %(username)s"
+msgstr "MFA für %(username)s zurücksetzen"
 
 #: auto-generated
 msgid "Reset MFA now"
@@ -1089,7 +1089,7 @@ msgstr "MFA jetzt zurücksetzen"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "Das Zurücksetzen von MFA erfordert sofort die Einrichtung eines neuen Authenticator-Codes, bevor Sie fortfahren können. Fortfahren?"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1105,7 +1105,7 @@ msgstr "MFA einrichten"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "Authenticator einrichten"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "Einrichtung erforderlich"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "Anzeige %(start)s-%(end)s von %(count)s Artikel(n)"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "Abmelden"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Etwas ist schiefgelaufen."
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "The next login will require authenticator setup before access is granted."
+msgstr "Bei der nächsten Anmeldung muss ein Authenticator eingerichtet werden, bevor Zugriff gewährt wird."
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "Diese E-Mail-Adresse wird von Ihrem Domänenkonto verwaltet und kann hier nicht geändert werden."
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "Dieses Bild wurde bereits in diesen Entwurf hochgeladen. Verwenden Sie zuerst die X-Vorschau-Schaltfläche, um es zu entfernen."
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "Dadurch wird ein neues privates Authenticator-Geheimnis für den Benutzer erzeugt. Der Schlüssel wird Administratoren nicht angezeigt und sollte nicht geteilt werden. Der Benutzer muss sich erneut anmelden und seinen eigenen neuen QR-Code scannen, bevor er DjOpenKB weiter verwenden kann."
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "Obere Artikelpaginierung"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1149,7 +1149,7 @@ msgstr "Use this section to reset a user's authenticator setup. "
 
 #: auto-generated
 msgid "User"
-msgstr "User"
+msgstr "Benutzer"
 
 #: auto-generated
 msgid "Verify"
@@ -1157,19 +1157,19 @@ msgstr "Überprüfen"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "Sie sind dabei, MFA für Benutzer <strong>%(username)s</strong> zurückzusetzen."
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "Ihre MFA wurde zurückgesetzt. Schließen Sie die Authenticator-Einrichtung ab, um DjOpenKB weiter zu verwenden."
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "Ihre Stimme wurde entfernt."
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "Artikel"
 
 #: auto-generated
 msgid "matching"
@@ -1177,164 +1177,272 @@ msgstr "übereinstimmend"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB ist eine Open-Source-Wissensdatenbank/FAQ/Wiki-App auf Basis von Node.js und Markdown mit leistungsstarker lunr-Suche"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "Wissensdatenbank auf Basis von openKB"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Verwaiste Artikel scannen"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "Kontoquelle"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Artikel ohne Besitzer oder mit inaktivem/gelöschtem Besitzer finden und einem aktiven Benutzer zuweisen oder löschen."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Active-Directory-Benutzer"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "verwaiste Artikel"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Verwaiste Artikel suchen"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
 msgstr "Alle Status"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Seiten verwaister Artikel"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "Ein Artikel mit dem Titel „%(title)s“ existiert bereits. Bitte verwenden Sie einen anderen Titel."
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Ausgewählte Artikel zuweisen an"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Benutzername oder E-Mail eingeben"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "Kein passender aktiver Benutzer gefunden."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Geben Sie einen aktiven lokalen oder AD-Benutzernamen/eine E-Mail ein, markieren Sie Artikel und klicken Sie auf Ausgewählte zuweisen."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Ausgewählte zuweisen"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Ausgewählte löschen"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "Sie werden vor dem Anwenden der Änderungen zur Bestätigung aufgefordert."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Vorheriger Besitzer"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Inaktiv"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "Kein Besitzer"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "Keine verwaisten Artikel entsprechen Ihrer Suche."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "Keine verwaisten Artikel gefunden. Alle Artikel haben derzeit einen aktiven Besitzer."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Aktion für verwaiste Artikel bestätigen"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
 msgstr "Möchten Sie wirklich %(article_count)s Artikel %(username)s zuweisen?"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Möchten Sie wirklich %(article_count)s ausgewählte verwaiste Artikel dauerhaft löschen? Dadurch werden auch die generierten OpenKB-Markdown-Dateien entfernt."
+msgstr "Möchten Sie wirklich %(article_count)s ausgewählte verwaiste Artikel dauerhaft löschen? Dadurch werden auch die erzeugten OpenKB-Markdown-Dateien entfernt."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "Ausgewählte zuweisen"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "Ausgewählte Artikel zuweisen an"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "Authenticator-MFA/OTP-Code"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "Aktion für verwaiste Artikel bestätigen"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "Ausgewählte löschen"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "Ausgewählte verwaiste Dateien löschen"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "Ausgewählte verwaiste Upload-Dateien löschen? Dies kann nicht rückgängig gemacht werden."
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "Durch Admin-Bereinigung verwaister Dateien gelöscht"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "Durch automatische Bereinigung verwaister Dateien gelöscht"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Geben Sie einen aktiven lokalen oder AD-Benutzernamen/eine E-Mail ein, markieren Sie Artikel und klicken Sie auf „Ausgewählte zuweisen“."
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Suchen Sie Artikel ohne Besitzer oder mit inaktivem/gelöschtem Besitzer und weisen Sie sie einem aktiven Benutzer zu oder löschen Sie sie."
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "Lokaler Benutzer"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "MFA/OTP-Code ist falsch."
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "Von Authenticator-App verwaltet"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "Anzeigename"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "Kein passender aktiver Benutzer gefunden."
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "Kein Name festgelegt"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "Keine verwaisten Artikel entsprechen Ihrer Suche."
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "Keine verwaisten Artikel gefunden. Alle Artikel haben derzeit einen aktiven Besitzer."
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "Kein Besitzer"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "Seiten verwaister Artikel"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "Vorheriger Besitzer"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "Vom Uploader aus dem Editor entfernt"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "Verwaiste Artikel scannen"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "Verwaiste Artikel suchen"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "%(filename)s zum Löschen auswählen"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "Alle auswählen"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "Alle verwaisten Dateien auswählen"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "Richten Sie MFA ein, bevor Sie sensible Kontodaten ändern."
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "Diese Dateien scheinen unbenutzt zu sein. Prüfen Sie die Uploader-Details und löschen Sie nur Dateien, die nicht mehr benötigt werden."
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "Benutzername oder E-Mail eingeben"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "Alle abwählen"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "Hochgeladen am"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "Hochgeladen von"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "Änderungen des Benutzernamens werden von Administratoren verwaltet."
+
+#: synced from current templates/views
+msgid "View"
+msgstr "Ansehen"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
 msgstr "Ja, Artikel zuweisen"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
 msgstr "Ja, Artikel löschen"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Bitte verwenden Sie die Schaltfläche Ausgewählte zuweisen oder Ausgewählte löschen."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "Sie werden vor dem Anwenden der Änderungen zur Bestätigung aufgefordert."
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Bitte wählen Sie zuerst mindestens einen verwaisten Artikel aus."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "Die ausgewählten Artikel sind keine verwaisten Artikel mehr oder existieren nicht mehr. Bitte aktualisieren und erneut versuchen."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "verwaiste Artikel"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Einige ausgewählte Artikel wurden übersprungen, da sie keine verwaisten Artikel mehr sind."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "Der ausgewählte Zielbenutzer fehlt. Bitte wählen Sie den Benutzer erneut aus."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "Der ausgewählte Zielbenutzer ist ungültig oder inaktiv. Bitte wählen Sie einen aktiven Benutzer."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Bitte geben Sie einen Benutzernamen oder eine E-Mail ein, dem die ausgewählten Artikel zugewiesen werden sollen."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "Für '%(user)s' wurde kein aktiver Benutzer gefunden. Bitte geben Sie einen gültigen Benutzernamen oder eine gültige E-Mail ein."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "Mehr als ein aktiver Benutzer stimmt mit '%(user)s' überein. Bitte verwenden Sie den genauen Benutzernamen."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "Die Artikel konnten nicht sicher zugewiesen werden. Es wurde keine Zuweisung angewendet. Bitte prüfen Sie die Protokolle und versuchen Sie es erneut."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "%(count)s verwaiste Artikel wurden %(user)s zugewiesen."
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
 msgstr "%(count)s verwaiste Artikel gelöscht."
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Einige ausgewählte Artikel konnten nicht gelöscht werden: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Suchen Sie Artikel ohne aktiven Besitzer und weisen Sie sie einem Benutzer zu oder löschen Sie sie nach Bestätigung."
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "Es wurden keine verwaisten Artikel gelöscht. Bitte aktualisieren und erneut versuchen."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
 msgstr "Ungültige Aktion für verwaiste Artikel."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "Mehr als ein aktiver Benutzer stimmt mit '%(user)s' überein. Bitte verwenden Sie den genauen Benutzernamen."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "Für '%(user)s' wurde kein aktiver Benutzer gefunden. Bitte geben Sie einen gültigen Benutzernamen oder eine gültige E-Mail ein."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "Keine verwaisten Artikel wurden gelöscht. Bitte aktualisieren und erneut versuchen."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Bitte geben Sie einen Benutzernamen oder eine E-Mail ein, dem die ausgewählten Artikel zugewiesen werden sollen."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Bitte wählen Sie zuerst mindestens einen verwaisten Artikel aus."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Bitte verwenden Sie die Schaltfläche „Ausgewählte zuweisen“ oder „Ausgewählte löschen“."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Einige ausgewählte Artikel konnten nicht gelöscht werden: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Einige ausgewählte Artikel wurden übersprungen, da sie keine verwaisten Artikel mehr sind."
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Beim Verarbeiten der Aktion ist ein Fehler aufgetreten. Es wurden keine Änderungen angewendet. Bitte prüfen Sie Ihre Auswahl und versuchen Sie es erneut."
+msgstr "Beim Verarbeiten der Aktion für verwaiste Artikel ist ein Fehler aufgetreten. Es wurden keine Änderungen angewendet. Bitte prüfen Sie Ihre Auswahl und versuchen Sie es erneut."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "Die Artikel konnten nicht sicher zugewiesen werden. Es wurde keine Zuweisung angewendet. Bitte prüfen Sie die Protokolle und versuchen Sie es erneut."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "Die ausgewählten Artikel sind keine verwaisten Artikel mehr oder existieren nicht mehr. Bitte aktualisieren und erneut versuchen."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "Der ausgewählte Zielbenutzer ist ungültig oder inaktiv. Bitte wählen Sie einen aktiven Benutzer."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "Der ausgewählte Zielbenutzer fehlt. Bitte wählen Sie den Benutzer erneut aus."

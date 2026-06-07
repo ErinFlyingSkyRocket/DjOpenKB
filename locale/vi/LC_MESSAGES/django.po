@@ -26,7 +26,7 @@ msgid "Edit"
 msgstr "Sửa"
 
 msgid "Admin"
-msgstr "Quản trị"
+msgstr "Quản trị viên"
 
 msgid "Logged in as"
 msgstr "Đã đăng nhập với"
@@ -77,7 +77,7 @@ msgid "Import zip"
 msgstr "Nhập zip"
 
 msgid "Back to profile"
-msgstr "Back to profile"
+msgstr "Quay lại hồ sơ"
 
 msgid "Supported zip format"
 msgstr "Định dạng zip được hỗ trợ"
@@ -143,7 +143,7 @@ msgid "Published date"
 msgstr "Ngày xuất bản"
 
 msgid "Last updated"
-msgstr "Last updated"
+msgstr "Cập nhật lần cuối"
 
 msgid "Share article"
 msgstr "Chia sẻ bài viết"
@@ -188,7 +188,7 @@ msgid "Search my suggestions"
 msgstr "Tìm kiếm đề xuất của tôi"
 
 msgid "Clear search"
-msgstr "Clear search"
+msgstr "Xóa tìm kiếm"
 
 msgid "Next"
 msgstr "Tiếp"
@@ -197,16 +197,16 @@ msgid "Last"
 msgstr "Cuối"
 
 msgid "Article title"
-msgstr "Article title"
+msgstr "Tiêu đề bài viết"
 
 msgid "Status"
-msgstr "Status"
+msgstr "Trạng thái"
 
 msgid "Created"
 msgstr "Đã tạo"
 
 msgid "Actions"
-msgstr "Actions"
+msgstr "Thao tác"
 
 msgid "Delete"
 msgstr "Xóa"
@@ -275,10 +275,10 @@ msgid "Save username"
 msgstr "Lưu tên người dùng"
 
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Hủy"
 
 msgid "Email"
-msgstr "Email"
+msgstr "Địa chỉ email"
 
 msgid "No email set"
 msgstr "Chưa đặt email"
@@ -505,7 +505,7 @@ msgstr "%(matching)s khớp / tổng %(total)s"
 
 #, python-format
 msgid "%(count)s total"
-msgstr "tổng %(count)s"
+msgstr "Tổng cộng %(count)s"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
@@ -536,10 +536,10 @@ msgid "Thumbs down"
 msgstr "Không thích"
 
 msgid "Likes"
-msgstr "Lượt thích"
+msgstr "Thích"
 
 msgid "Dislikes"
-msgstr "Lượt không thích"
+msgstr "Không thích"
 
 msgid "Sign in to make your opinion count."
 msgstr "Đăng nhập để ý kiến của bạn được tính."
@@ -659,10 +659,10 @@ msgid "Review comments history"
 msgstr "Lịch sử bình luận đánh giá"
 
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Site settings. Dùng 0 phút để hiển thị ngay các tệp tải lên không dùng."
+msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Site settings. Dùng 0 phút để hiển thị ngay các tệp tải lên không dùng."
+msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
 
 msgid "stray upload file found"
 msgstr "tệp tải lên không dùng được tìm thấy"
@@ -753,11 +753,11 @@ msgstr "Đăng nhập bằng tài khoản cục bộ"
 # Automatically added DjOpenKB translations for latest MFA/auth/admin/OpenKB text.
 #: auto-generated
 msgid "%(count)d MFA device(s) marked as setup pending."
-msgstr "%(count)d MFA device(s) marked as setup pending."
+msgstr "Đã đánh dấu %(count)d thiết bị MFA là đang chờ thiết lập."
 
 #: auto-generated
 msgid "%(count)s result(s) found from OpenKB files."
-msgstr "%(count)s result(s) found from OpenKB files."
+msgstr "Tìm thấy %(count)s kết quả từ các tệp OpenKB."
 
 #: auto-generated
 msgid "An article with the title â%(title)sâ already exists. Please use a different title."
@@ -765,63 +765,63 @@ msgstr "An article with the title â%(title)sâ already exists. Please u
 
 #: auto-generated
 msgid "An article with this title already exists. Please use a different title."
-msgstr "An article with this title already exists. Please use a different title."
+msgstr "Bài viết có tiêu đề này đã tồn tại. Vui lòng dùng tiêu đề khác."
 
 #: auto-generated
 msgid "Approval / review"
-msgstr "Approval / review"
+msgstr "Phê duyệt / xem xét"
 
 #: auto-generated
 msgid "Article image"
-msgstr "Article image"
+msgstr "Hình ảnh bài viết"
 
 #: auto-generated
 msgid "Article pagination"
-msgstr "Article pagination"
+msgstr "Phân trang bài viết"
 
 #: auto-generated
 msgid "Article published successfully."
-msgstr "Article published successfully."
+msgstr "Bài viết đã được xuất bản thành công."
 
 #: auto-generated
 msgid "Article title and body must be at least 5 characters."
-msgstr "Article title and body must be at least 5 characters."
+msgstr "Tiêu đề và nội dung bài viết phải có ít nhất 5 ký tự."
 
 #: auto-generated
 msgid "Ask for related articles when you want source links."
-msgstr "Ask for related articles when you want source links."
+msgstr "Hỏi bài viết liên quan khi bạn muốn liên kết nguồn."
 
 #: auto-generated
 msgid "Ask one question at a time."
-msgstr "Ask one question at a time."
+msgstr "Mỗi lần chỉ hỏi một câu."
 
 #: auto-generated
 msgid "Ask questions using general keywords or article topics."
-msgstr "Ask questions using general keywords or article topics."
+msgstr "Hỏi bằng từ khóa chung hoặc chủ đề bài viết."
 
 #: auto-generated
 msgid "Authenticator setup completed successfully."
-msgstr "Authenticator setup completed successfully."
+msgstr "Thiết lập ứng dụng xác thực đã hoàn tất thành công."
 
 #: auto-generated
 msgid "Bottom article pagination"
-msgstr "Bottom article pagination"
+msgstr "Phân trang bài viết phía dưới"
 
 #: auto-generated
 msgid "Close"
-msgstr "Close"
+msgstr "Đóng"
 
 #: auto-generated
 msgid "Complete MFA before accessing the Django admin site."
-msgstr "Complete MFA before accessing the Django admin site."
+msgstr "Hoàn tất MFA trước khi truy cập trang quản trị Django."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Complete MFA before continuing. You are not fully signed in until MFA is completed."
+msgstr "Hoàn tất MFA trước khi tiếp tục. Bạn chưa đăng nhập hoàn toàn cho đến khi MFA hoàn tất."
 
 #: auto-generated
 msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
+msgstr "Hoàn tất MFA trước khi tiếp tục. Bạn không thể truy cập DjOpenKB cho đến khi MFA hoàn tất."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -829,7 +829,7 @@ msgstr "Trạng thái MFA hiện tại"
 
 #: auto-generated
 msgid "Current pending failed comments"
-msgstr "Current pending failed comments"
+msgstr "Nhận xét từ chối hiện tại"
 
 #: auto-generated
 msgid "Enabled"
@@ -841,55 +841,55 @@ msgstr "Nhập mã MFA/OTP"
 
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
-msgstr "Existing authenticated sessions for this user will be invalidated."
+msgstr "Các phiên đã xác thực hiện có của người dùng này sẽ bị vô hiệu hóa."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
 
 #: auto-generated
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
-msgstr "Hi, I am OpenKB AI."
+msgstr "Xin chào, tôi là OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "I can help you find articles and answer questions from the wiki."
+msgstr "Tôi có thể giúp bạn tìm bài viết và trả lời câu hỏi từ wiki."
 
 #: auto-generated
 msgid "Image removed from this article draft."
-msgstr "Image removed from this article draft."
+msgstr "Đã xóa hình ảnh khỏi bản nháp bài viết này."
 
 #: auto-generated
 msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Image removed from this draft. Save the article to delete it from storage."
+msgstr "Đã xóa hình ảnh khỏi bản nháp này. Lưu bài viết để xóa khỏi bộ nhớ."
 
 #: auto-generated
 msgid "Image upload failed."
-msgstr "Image upload failed."
+msgstr "Tải hình ảnh lên thất bại."
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "Image upload failed. Check Django terminal logs."
+msgstr "Tải hình ảnh lên thất bại. Kiểm tra log terminal Django."
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
-msgstr "Image uploaded and inserted into the article."
+msgstr "Hình ảnh đã được tải lên và chèn vào bài viết."
 
 #: auto-generated
 msgid "Invalid authenticator code. Please try again."
-msgstr "Invalid authenticator code. Please try again."
+msgstr "Mã xác thực không hợp lệ. Vui lòng thử lại."
 
 #: auto-generated
 msgid "LDAP admin"
-msgstr "LDAP admin"
+msgstr "Quản trị viên LDAP"
 
 #: auto-generated
 msgid "LDAP user"
-msgstr "LDAP user"
+msgstr "Người dùng LDAP"
 
 #: auto-generated
 msgid "Last verified"
@@ -897,7 +897,7 @@ msgstr "Xác minh lần cuối"
 
 #: auto-generated
 msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Local accounts require authenticator verification after password sign-in."
+msgstr "Tài khoản local yêu cầu xác minh bằng ứng dụng xác thực sau khi đăng nhập bằng mật khẩu."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -905,27 +905,27 @@ msgstr "Mã QR MFA"
 
 #: auto-generated
 msgid "MFA reset by admin"
-msgstr "MFA reset by admin"
+msgstr "MFA được đặt lại bởi quản trị viên"
 
 #: auto-generated
 msgid "MFA reset by user"
-msgstr "MFA reset by user"
+msgstr "MFA được đặt lại bởi người dùng"
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
+msgstr "Đã đặt lại MFA cho %(count)d thiết bị đã chọn. Người dùng phải thiết lập ứng dụng xác thực mới ở lần đăng nhập tiếp theo."
 
 #: auto-generated
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
+msgstr "Đã đặt lại MFA cho %(count)d người dùng đã chọn. Họ phải thiết lập ứng dụng xác thực mới ở lần đăng nhập tiếp theo."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
-msgstr "MFA reset is available for your DjOpenKB account."
+msgstr "Tài khoản DjOpenKB của bạn có thể đặt lại MFA."
 
 #: auto-generated
 msgid "MFA setup failure"
-msgstr "MFA setup failure"
+msgstr "Thiết lập MFA thất bại"
 
 #: auto-generated
 msgid "MFA setup is required to continue."
@@ -933,7 +933,7 @@ msgstr "Cần thiết lập MFA để tiếp tục."
 
 #: auto-generated
 msgid "MFA setup success"
-msgstr "MFA setup success"
+msgstr "Thiết lập MFA thành công"
 
 #: auto-generated
 msgid "MFA verification"
@@ -941,19 +941,19 @@ msgstr "Xác minh MFA"
 
 #: auto-generated
 msgid "MFA verification successful."
-msgstr "MFA verification successful."
+msgstr "Xác minh MFA thành công."
 
 #: auto-generated
 msgid "MFA verify failure"
-msgstr "MFA verify failure"
+msgstr "Xác minh MFA thất bại"
 
 #: auto-generated
 msgid "MFA verify success"
-msgstr "MFA verify success"
+msgstr "Xác minh MFA thành công"
 
 #: auto-generated
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
+msgstr "MFA của %(username)s đã được đặt lại. Người dùng phải thiết lập ứng dụng xác thực mới ở lần đăng nhập tiếp theo."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -969,7 +969,7 @@ msgstr "Khóa thiết lập thủ công"
 
 #: auto-generated
 msgid "Minimise OpenKB AI"
-msgstr "Minimise OpenKB AI"
+msgstr "Thu nhỏ OpenKB AI"
 
 #: auto-generated
 msgid "Multi-factor authentication"
@@ -977,59 +977,59 @@ msgstr "Xác thực đa yếu tố"
 
 #: auto-generated
 msgid "No OpenKB articles yet. Add a solution from Suggest."
-msgstr "No OpenKB articles yet. Add a solution from Suggest."
+msgstr "Chưa có bài viết OpenKB. Thêm giải pháp từ mục Đề xuất."
 
 #: auto-generated
 msgid "No matching OpenKB articles found."
-msgstr "No matching OpenKB articles found."
+msgstr "Không tìm thấy bài viết OpenKB phù hợp."
 
 #: auto-generated
 msgid "No related articles yet."
-msgstr "No related articles yet."
+msgstr "Chưa có bài viết liên quan."
 
 #: auto-generated
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
-msgstr "Only PNG, JPG, GIF, or WEBP images are allowed."
+msgstr "Chỉ cho phép hình ảnh PNG, JPG, GIF hoặc WEBP."
 
 #: auto-generated
 msgid "Open OpenKB AI chat"
-msgstr "Open OpenKB AI chat"
+msgstr "Mở trò chuyện OpenKB AI"
 
 #: auto-generated
 msgid "OpenKB AI is thinking..."
-msgstr "OpenKB AI is thinking..."
+msgstr "OpenKB AI đang suy nghĩ..."
 
 #: auto-generated
 msgid "Page %(current)s of %(total)s"
-msgstr "Page %(current)s of %(total)s"
+msgstr "Trang %(current)s trên %(total)s"
 
 #: auto-generated
 msgid "Password login failure"
-msgstr "Password login failure"
+msgstr "Đăng nhập bằng mật khẩu thất bại"
 
 #: auto-generated
 msgid "Password login success"
-msgstr "Password login success"
+msgstr "Đăng nhập bằng mật khẩu thành công"
 
 #: auto-generated
 msgid "Password syncs with your company password."
-msgstr "Password syncs with your company password."
+msgstr "Mật khẩu đồng bộ với mật khẩu công ty của bạn."
 
 #: auto-generated
 msgid "Pending MFA created"
-msgstr "Pending MFA created"
+msgstr "Đã tạo MFA đang chờ"
 
 #: auto-generated
 msgid "Pending article pages"
-msgstr "Pending article pages"
+msgstr "Trang bài viết đang chờ"
 
 #: auto-generated
 msgid "Pending failed comments history"
-msgstr "Pending failed comments history"
+msgstr "Lịch sử nhận xét từ chối"
 
 #: auto-generated
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Please enter Pending failed comments before marking this article as Pending failed."
+msgstr "Vui lòng nhập nhận xét từ chối trước khi đánh dấu bài viết này là không đạt."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1037,43 +1037,43 @@ msgstr "Vui lòng nhập mã MFA/OTP để tiếp tục."
 
 #: auto-generated
 msgid "Please sign in before setting up MFA."
-msgstr "Please sign in before setting up MFA."
+msgstr "Vui lòng đăng nhập trước khi thiết lập MFA."
 
 #: auto-generated
 msgid "Please sign in before verifying MFA."
-msgstr "Please sign in before verifying MFA."
+msgstr "Vui lòng đăng nhập trước khi xác minh MFA."
 
 #: auto-generated
 msgid "Please type a question first."
-msgstr "Please type a question first."
+msgstr "Vui lòng nhập câu hỏi trước."
 
 #: auto-generated
 msgid "Powered by"
-msgstr "Powered by"
+msgstr "Được cung cấp bởi"
 
 #: auto-generated
 msgid "Powered by openKB"
-msgstr "Powered by openKB"
+msgstr "Được cung cấp bởi openKB"
 
 #: auto-generated
 msgid "Publish article"
-msgstr "Publish article"
+msgstr "Xuất bản bài viết"
 
 #: auto-generated
 msgid "Ready"
-msgstr "Ready"
+msgstr "Sẵn sàng"
 
 #: auto-generated
 msgid "Recommended articles"
-msgstr "Recommended articles"
+msgstr "Bài viết được đề xuất"
 
 #: auto-generated
 msgid "Remove image from article"
-msgstr "Remove image from article"
+msgstr "Xóa hình ảnh khỏi bài viết"
 
 #: auto-generated
 msgid "Request failed. Check Django terminal logs."
-msgstr "Request failed. Check Django terminal logs."
+msgstr "Yêu cầu thất bại. Kiểm tra log terminal Django."
 
 #: auto-generated
 msgid "Reset MFA"
@@ -1081,7 +1081,7 @@ msgstr "Đặt lại MFA"
 
 #: auto-generated
 msgid "Reset MFA for %(username)s"
-msgstr "Reset MFA for %(username)s"
+msgstr "Đặt lại MFA cho %(username)s"
 
 #: auto-generated
 msgid "Reset MFA now"
@@ -1089,7 +1089,7 @@ msgstr "Đặt lại MFA ngay"
 
 #: auto-generated
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
+msgstr "Đặt lại MFA sẽ yêu cầu bạn thiết lập mã xác thực mới ngay trước khi tiếp tục. Tiếp tục?"
 
 #: auto-generated
 msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
@@ -1097,7 +1097,7 @@ msgstr "Quét mã QR bằng ứng dụng xác thực, sau đó nhập mã MFA/OT
 
 #: auto-generated
 msgid "Search"
-msgstr "Search"
+msgstr "Tìm kiếm"
 
 #: auto-generated
 msgid "Set up MFA"
@@ -1105,7 +1105,7 @@ msgstr "Thiết lập MFA"
 
 #: auto-generated
 msgid "Set up authenticator"
-msgstr "Set up authenticator"
+msgstr "Thiết lập ứng dụng xác thực"
 
 #: auto-generated
 msgid "Setup required"
@@ -1113,7 +1113,7 @@ msgstr "Cần thiết lập"
 
 #: auto-generated
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
-msgstr "Showing %(start)s-%(end)s of %(count)s article(s)"
+msgstr "Hiển thị %(start)s-%(end)s trong %(count)s bài viết"
 
 #: auto-generated
 msgid "Sign out"
@@ -1121,27 +1121,27 @@ msgstr "Đăng xuất"
 
 #: auto-generated
 msgid "Something went wrong."
-msgstr "Something went wrong."
+msgstr "Đã xảy ra lỗi."
 
 #: auto-generated
 msgid "The next login will require authenticator setup before access is granted."
-msgstr "The next login will require authenticator setup before access is granted."
+msgstr "Lần đăng nhập tiếp theo sẽ yêu cầu thiết lập ứng dụng xác thực trước khi được cấp quyền truy cập."
 
 #: auto-generated
 msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "This email address is managed by your domain account and cannot be changed here."
+msgstr "Địa chỉ email này được quản lý bởi tài khoản miền của bạn và không thể thay đổi ở đây."
 
 #: auto-generated
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "This image is already uploaded in this draft. Use the X preview button to remove it first."
+msgstr "Hình ảnh này đã được tải lên trong bản nháp này. Hãy dùng nút X ở phần xem trước để xóa trước."
 
 #: auto-generated
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
+msgstr "Thao tác này sẽ tạo một bí mật xác thực riêng mới cho người dùng. Khóa không hiển thị cho quản trị viên và không nên chia sẻ. Người dùng phải đăng nhập lại và quét mã QR mới của riêng mình trước khi tiếp tục dùng DjOpenKB."
 
 #: auto-generated
 msgid "Top article pagination"
-msgstr "Top article pagination"
+msgstr "Phân trang bài viết phía trên"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
@@ -1149,7 +1149,7 @@ msgstr "Use this section to reset a user's authenticator setup. "
 
 #: auto-generated
 msgid "User"
-msgstr "User"
+msgstr "Người dùng"
 
 #: auto-generated
 msgid "Verify"
@@ -1157,184 +1157,292 @@ msgstr "Xác minh"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "You are about to reset MFA for user <strong>%(username)s</strong>."
+msgstr "Bạn sắp đặt lại MFA cho người dùng <strong>%(username)s</strong>."
 
 #: auto-generated
 msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
+msgstr "MFA của bạn đã được đặt lại. Hoàn tất thiết lập ứng dụng xác thực để tiếp tục dùng DjOpenKB."
 
 #: auto-generated
 msgid "Your vote has been removed."
-msgstr "Your vote has been removed."
+msgstr "Phiếu bình chọn của bạn đã được xóa."
 
 #: auto-generated
 msgid "article"
-msgstr "article"
+msgstr "bài viết"
 
 #: auto-generated
 msgid "matching"
-msgstr "matching"
+msgstr "khớp"
 
 #: auto-generated
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
+msgstr "openKB là ứng dụng cơ sở tri thức/FAQ/Wiki mã nguồn mở dựa trên Node.js Markdown với tìm kiếm lunr mạnh mẽ"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
-msgstr "openKB powered knowledge repository"
+msgstr "Kho tri thức được hỗ trợ bởi openKB"
 
-#: orphan article admin tool
-msgid "Scan orphan articles"
-msgstr "Scan orphan articles"
+#: synced from current templates/views
+msgid "Account source"
+msgstr "Nguồn tài khoản"
 
-#: orphan article admin tool
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+#: synced from current templates/views
+msgid "Active Directory user"
+msgstr "Người dùng Active Directory"
 
-#: orphan article admin tool
-msgid "orphan articles"
-msgstr "orphan articles"
-
-#: orphan article admin tool
-msgid "Search orphan articles"
-msgstr "Search orphan articles"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "All statuses"
-msgstr "All statuses"
+msgstr "Tất cả trạng thái"
 
-#: orphan article admin tool
-msgid "Orphan article pages"
-msgstr "Orphan article pages"
+#: synced from current templates/views
+msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgstr "Bài viết có tiêu đề ‘%(title)s’ đã tồn tại. Vui lòng dùng tiêu đề khác."
 
-#: orphan article admin tool
-msgid "Assign selected articles to"
-msgstr "Assign selected articles to"
-
-#: orphan article admin tool
-msgid "Type username or email"
-msgstr "Type username or email"
-
-#: orphan article admin tool
-msgid "No matching active user found."
-msgstr "No matching active user found."
-
-#: orphan article admin tool
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Enter an active local or AD username/email, then tick articles and click Assign selected."
-
-#: orphan article admin tool
-msgid "Assign selected"
-msgstr "Assign selected"
-
-#: orphan article admin tool
-msgid "Delete selected"
-msgstr "Delete selected"
-
-#: orphan article admin tool
-msgid "You will be asked to confirm before changes are applied."
-msgstr "You will be asked to confirm before changes are applied."
-
-#: orphan article admin tool
-msgid "Previous owner"
-msgstr "Previous owner"
-
-#: orphan article admin tool
-msgid "Inactive"
-msgstr "Inactive"
-
-#: orphan article admin tool
-msgid "No owner"
-msgstr "No owner"
-
-#: orphan article admin tool
-msgid "No orphan articles match your search."
-msgstr "No orphan articles match your search."
-
-#: orphan article admin tool
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "No orphan articles were found. All articles currently have an active owner."
-
-#: orphan article admin tool
-msgid "Confirm orphan article action"
-msgstr "Confirm orphan article action"
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
-msgstr "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr "Bạn có chắc muốn gán %(article_count)s bài viết cho %(username)s không?"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
+msgstr "Bạn có chắc muốn xóa vĩnh viễn %(article_count)s bài viết mồ côi đã chọn không? Thao tác này cũng sẽ xóa các tệp OpenKB Markdown đã tạo."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "Assign selected"
+msgstr "Gán mục đã chọn"
+
+#: synced from current templates/views
+msgid "Assign selected articles to"
+msgstr "Gán bài viết đã chọn cho"
+
+#: synced from current templates/views
+msgid "Authenticator MFA/OTP code"
+msgstr "Mã MFA/OTP từ ứng dụng xác thực"
+
+#: synced from current templates/views
+msgid "Confirm orphan article action"
+msgstr "Xác nhận thao tác bài viết mồ côi"
+
+#: synced from current templates/views
+msgid "Delete selected"
+msgstr "Xóa mục đã chọn"
+
+#: synced from current templates/views
+msgid "Delete selected stray files"
+msgstr "Xóa các tệp thừa đã chọn"
+
+#: synced from current templates/views
+msgid "Delete the selected stray upload files? This cannot be undone."
+msgstr "Xóa các tệp tải lên thừa đã chọn? Thao tác này không thể hoàn tác."
+
+#: synced from current templates/views
+msgid "Deleted by admin stray-file cleanup"
+msgstr "Đã xóa bởi dọn dẹp tệp thừa của quản trị viên"
+
+#: synced from current templates/views
+msgid "Deleted by automatic stray-file cleanup"
+msgstr "Đã xóa bởi dọn dẹp tệp thừa tự động"
+
+#: synced from current templates/views
+msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
+msgstr "Nhập tên người dùng/email local hoặc AD đang hoạt động, chọn bài viết rồi bấm Gán mục đã chọn."
+
+#: synced from current templates/views
+msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
+msgstr "Tìm bài viết không có chủ sở hữu hoặc có chủ sở hữu không hoạt động/đã xóa, rồi gán cho người dùng hoạt động hoặc xóa."
+
+#: synced from current templates/views
+msgid "Inactive"
+msgstr "Không hoạt động"
+
+#: synced from current templates/views
+msgid "Local user"
+msgstr "Người dùng local"
+
+#: synced from current templates/views
+msgid "MFA/OTP code is incorrect."
+msgstr "Mã MFA/OTP không đúng."
+
+#: synced from current templates/views
+msgid "Managed by authenticator app"
+msgstr "Được quản lý bởi ứng dụng xác thực"
+
+#: synced from current templates/views
+msgid "Name"
+msgstr "Tên"
+
+#: synced from current templates/views
+msgid "No matching active user found."
+msgstr "Không tìm thấy người dùng hoạt động phù hợp."
+
+#: synced from current templates/views
+msgid "No name set"
+msgstr "Chưa đặt tên"
+
+#: synced from current templates/views
+msgid "No orphan articles match your search."
+msgstr "Không có bài viết mồ côi nào khớp với tìm kiếm."
+
+#: synced from current templates/views
+msgid "No orphan articles were found. All articles currently have an active owner."
+msgstr "Không tìm thấy bài viết mồ côi. Tất cả bài viết hiện có chủ sở hữu hoạt động."
+
+#: synced from current templates/views
+msgid "No owner"
+msgstr "Không có chủ sở hữu"
+
+#: synced from current templates/views
+msgid "Orphan article pages"
+msgstr "Trang bài viết mồ côi"
+
+#: synced from current templates/views
+msgid "Previous owner"
+msgstr "Chủ sở hữu trước"
+
+#: synced from current templates/views
+msgid "Removed by uploader from editor"
+msgstr "Được người tải lên xóa khỏi trình chỉnh sửa"
+
+#: synced from current templates/views
+msgid "Scan orphan articles"
+msgstr "Quét bài viết mồ côi"
+
+#: synced from current templates/views
+msgid "Search orphan articles"
+msgstr "Tìm kiếm bài viết mồ côi"
+
+#: synced from current templates/views
+msgid "Select %(filename)s for deletion"
+msgstr "Chọn %(filename)s để xóa"
+
+#: synced from current templates/views
+msgid "Select all"
+msgstr "Chọn tất cả"
+
+#: synced from current templates/views
+msgid "Select all stray files"
+msgstr "Chọn tất cả tệp thừa"
+
+#: synced from current templates/views
+msgid "Set up MFA before changing sensitive account details."
+msgstr "Thiết lập MFA trước khi thay đổi chi tiết tài khoản nhạy cảm."
+
+#: synced from current templates/views
+msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
+msgstr "Các tệp này có vẻ không được sử dụng. Kiểm tra thông tin người tải lên, rồi chỉ xóa những tệp không còn cần thiết."
+
+#: synced from current templates/views
+msgid "Type username or email"
+msgstr "Nhập tên người dùng hoặc email"
+
+#: synced from current templates/views
+msgid "Unselect all"
+msgstr "Bỏ chọn tất cả"
+
+#: synced from current templates/views
+msgid "Uploaded at"
+msgstr "Tải lên lúc"
+
+#: synced from current templates/views
+msgid "Uploaded by"
+msgstr "Tải lên bởi"
+
+#: synced from current templates/views
+msgid "Username changes are managed by administrators."
+msgstr "Thay đổi tên người dùng do quản trị viên quản lý."
+
+#: synced from current templates/views
+msgid "View"
+msgstr "Xem"
+
+#: synced from current templates/views
 msgid "Yes, assign articles"
-msgstr "Yes, assign articles"
+msgstr "Có, gán bài viết"
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Yes, delete articles"
-msgstr "Yes, delete articles"
+msgstr "Có, xóa bài viết"
 
-#: orphan article admin tool
-msgid "Please use the Assign selected or Delete selected button."
-msgstr "Please use the Assign selected or Delete selected button."
+#: synced from current templates/views
+msgid "You will be asked to confirm before changes are applied."
+msgstr "Bạn sẽ được yêu cầu xác nhận trước khi áp dụng thay đổi."
 
-#: orphan article admin tool
-msgid "Please select at least one orphan article first."
-msgstr "Please select at least one orphan article first."
+#: synced from current templates/views
+msgid "Your session has expired. Please sign in again."
+msgstr "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại."
 
-#: orphan article admin tool
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+#: synced from current templates/views
+msgid "orphan articles"
+msgstr "bài viết mồ côi"
 
-#: orphan article admin tool
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Some selected articles were skipped because they are no longer orphan articles."
+#: synced from current templates/views
+msgid "..."
+msgstr "..."
 
-#: orphan article admin tool
-msgid "The selected target user was missing. Please choose the user again."
-msgstr "The selected target user was missing. Please choose the user again."
-
-#: orphan article admin tool
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "The selected target user is invalid or inactive. Please choose an active user."
-
-#: orphan article admin tool
-msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Please enter a username or email to assign the selected articles to."
-
-#: orphan article admin tool
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
-
-#: orphan article admin tool
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
-
-#: orphan article admin tool
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
-msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "Đã gán %(count)s bài viết mồ côi cho %(user)s."
 
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Deleted %(count)s orphan article(s)."
-msgstr "Deleted %(count)s orphan article(s)."
+msgstr "Đã xóa %(count)s bài viết mồ côi."
 
-#: orphan article admin tool
-msgid "Some selected articles could not be deleted: %(titles)s"
-msgstr "Some selected articles could not be deleted: %(titles)s"
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Tìm bài viết không có chủ sở hữu đang hoạt động, rồi gán cho người dùng hoặc xóa sau khi xác nhận."
 
-#: orphan article admin tool
-msgid "No orphan articles were deleted. Please refresh and try again."
-msgstr "No orphan articles were deleted. Please refresh and try again."
-
-#: orphan article admin tool
+#: synced from current templates/views
 msgid "Invalid orphan article action."
-msgstr "Invalid orphan article action."
+msgstr "Thao tác bài viết mồ côi không hợp lệ."
 
-#: orphan article admin tool
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "Có nhiều hơn một người dùng hoạt động khớp với '%(user)s'. Vui lòng dùng đúng tên người dùng."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "Không tìm thấy người dùng hoạt động cho '%(user)s'. Vui lòng nhập tên người dùng hoặc email hợp lệ."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "Chưa có bài viết mồ côi nào bị xóa. Vui lòng làm mới và thử lại."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Vui lòng nhập tên người dùng hoặc email để gán các bài viết đã chọn."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Vui lòng chọn ít nhất một bài viết mồ côi trước."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Vui lòng dùng nút Gán mục đã chọn hoặc Xóa mục đã chọn."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Không thể xóa một số bài viết đã chọn: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Một số bài viết đã chọn bị bỏ qua vì không còn là bài viết mồ côi."
+
+#: synced from current templates/views
 msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "Đã xảy ra lỗi khi xử lý thao tác bài viết mồ côi. Không có thay đổi nào được áp dụng. Vui lòng kiểm tra lựa chọn và thử lại."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "Không thể gán bài viết một cách an toàn. Không có gán nào được áp dụng. Vui lòng kiểm tra log và thử lại."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "Các bài viết đã chọn không còn là bài viết mồ côi hoặc không còn tồn tại. Vui lòng làm mới và thử lại."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "Người dùng đích đã chọn không hợp lệ hoặc không hoạt động. Vui lòng chọn người dùng hoạt động."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "Thiếu người dùng đích đã chọn. Vui lòng chọn lại người dùng."
