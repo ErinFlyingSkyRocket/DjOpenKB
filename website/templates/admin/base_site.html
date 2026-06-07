@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /*
+    DjOpenKB admin usability:
+    - Browser vertical scrolling already works by default.
+    - Wide log tables now get a horizontal scrollbar instead of squeezing columns.
+    - Filters/paginator remain easier to use on long Activity Log pages.
+  */
+  #content {
+    max-width: none;
+  }
+
+  .change-list #content-main {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .change-list #result_list {
+    min-width: 1100px;
+  }
+
+  .change-list .actions,
+  .change-list .paginator {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--body-bg);
+  }
+
+  @media (max-width: 1024px) {
+    .change-list #result_list {
+      min-width: 980px;
+    }
+  }
+</style>
+{% endblock %}

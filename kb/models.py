@@ -670,7 +670,7 @@ class SiteSetting(models.Model):
         ),
     )
     activity_log_retention_days = models.PositiveIntegerField(
-        default=90,
+        default=30,
         verbose_name="General activity log retention (days)",
         help_text=(
             "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. "

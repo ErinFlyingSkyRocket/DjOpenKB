@@ -484,6 +484,8 @@ class AuthActivityLogAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
+    list_per_page = 50
+    list_max_show_all = 200
 
     def has_add_permission(self, request):
         return False
@@ -544,6 +546,8 @@ class ActivityLogAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
+    list_per_page = 50
+    list_max_show_all = 200
 
     def has_add_permission(self, request):
         return False
@@ -808,8 +812,9 @@ class SiteSettingAdmin(admin.ModelAdmin):
         ("Authentication and session settings", {
             "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "session_timeout_days"),
             "description": (
-                "Controls authentication/MFA log retention and user session lifetime. "
-                "The default session timeout is 30 days. Set session timeout to 0 to expire the session when the browser closes."
+                "Controls authentication/MFA and general activity log retention. "
+                "Default log retention is 30 days. The default session timeout is 30 days. "
+                "Set session timeout to 0 to expire the session when the browser closes."
             ),
         }),
     )
