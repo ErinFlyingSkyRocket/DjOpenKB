@@ -30,6 +30,7 @@ from .admin import (
     export_articles_zip,
     import_articles_zip,
     manage_pending_articles,
+    manage_orphan_articles,
 )
 from .ai import ask_openkb_ai
 from .mfa import mfa_setup, mfa_verify, reset_mfa
@@ -58,6 +59,7 @@ __all__ = [
     "export_articles_zip",
     "import_articles_zip",
     "manage_pending_articles",
+    "manage_orphan_articles",
     "ask_openkb_ai",
     "mfa_setup",
     "mfa_verify",
