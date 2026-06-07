@@ -1,7 +1,10 @@
+import logging
 from .services import *
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -228,9 +231,9 @@ def manage_pending_articles(request):
 @admin_tools_required
 def manage_orphan_articles(request):
     """Scan articles with no active owner and let admins assign or delete them safely."""
-    User = get_user_model()
-    search_query = request.GET.get("q", "").strip()
-    status_filter = request.GET.get("status", "").strip()
+    UserModel = get_user_model()
+    search_query = (request.GET.get("q") or "").strip()
+    status_filter = (request.GET.get("status") or "").strip()
 
     orphan_filter = Q(owner__isnull=True) | Q(owner__is_active=False)
     orphan_queryset = SuggestedArticle.objects.select_related("owner").filter(orphan_filter)
@@ -253,186 +256,175 @@ def manage_orphan_articles(request):
             | Q(owner__email__icontains=search_query)
         )
 
-    active_users = User.objects.filter(is_active=True).order_by("username")
+    active_users = UserModel.objects.filter(is_active=True).order_by("username")
 
     if request.method == "POST":
-        action = (request.POST.get("action") or "").strip().lower()
+        try:
+            action = (request.POST.get("action") or "").strip().lower()
 
-        if action not in {"assign", "delete"}:
-            messages.error(request, _("Please use the Assign selected or Delete selected button."))
-            return redirect("manage_orphan_articles")
+            if action not in {"assign", "delete"}:
+                messages.error(request, "Please use the Assign selected or Delete selected button.")
+                return redirect("manage_orphan_articles")
 
-        selected_ids = request.POST.getlist("selected_articles")
-        clean_selected_ids = []
-        for selected_id in selected_ids:
-            try:
-                clean_selected_ids.append(int(selected_id))
-            except (TypeError, ValueError):
-                continue
-
-        if not clean_selected_ids:
-            messages.warning(request, _("Please select at least one orphan article first."))
-            return redirect("manage_orphan_articles")
-
-        selected_articles = list(
-            SuggestedArticle.objects.select_related("owner").filter(
-                orphan_filter,
-                pk__in=clean_selected_ids,
-            ).order_by("title")
-        )
-
-        if not selected_articles:
-            messages.warning(
-                request,
-                _("The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."),
-            )
-            return redirect("manage_orphan_articles")
-
-        skipped_count = len(set(clean_selected_ids)) - len(selected_articles)
-        if skipped_count > 0:
-            messages.info(
-                request,
-                _("Some selected articles were skipped because they are no longer orphan articles."),
-            )
-
-        if action == "assign":
-            target_user_id = (request.POST.get("target_user") or "").strip()
-            target_user_value = (request.POST.get("target_user_lookup") or "").strip()
-
-            target_user = None
-
-            if request.POST.get("confirm") == "yes":
-                if not target_user_id:
-                    messages.error(request, _("The selected target user was missing. Please choose the user again."))
-                    return redirect("manage_orphan_articles")
-
+            selected_ids = request.POST.getlist("selected_articles")
+            clean_selected_ids = []
+            for selected_id in selected_ids:
                 try:
-                    target_user = active_users.get(pk=int(target_user_id))
-                except (TypeError, ValueError, User.DoesNotExist):
-                    messages.error(
-                        request,
-                        _("The selected target user is invalid or inactive. Please choose an active user."),
-                    )
-                    return redirect("manage_orphan_articles")
-            else:
-                if not target_user_value:
-                    messages.error(request, _("Please enter a username or email to assign the selected articles to."))
-                    return redirect("manage_orphan_articles")
+                    clean_selected_ids.append(int(selected_id))
+                except (TypeError, ValueError):
+                    continue
 
-                matching_users = active_users.filter(
-                    Q(username__iexact=target_user_value) | Q(email__iexact=target_user_value)
-                )
+            if not clean_selected_ids:
+                messages.warning(request, "Please select at least one orphan article first.")
+                return redirect("manage_orphan_articles")
 
-                match_count = matching_users.count()
-                if match_count == 0:
-                    messages.error(
-                        request,
-                        _("No active user was found for '%(user)s'. Please enter a valid username or email.") % {
-                            "user": target_user_value,
-                        },
-                    )
-                    return redirect("manage_orphan_articles")
+            selected_articles = list(
+                SuggestedArticle.objects.select_related("owner").filter(
+                    orphan_filter,
+                    pk__in=clean_selected_ids,
+                ).order_by("title")
+            )
 
-                if match_count > 1:
-                    messages.error(
-                        request,
-                        _("More than one active user matched '%(user)s'. Please use the exact username instead.") % {
-                            "user": target_user_value,
-                        },
-                    )
-                    return redirect("manage_orphan_articles")
-
-                target_user = matching_users.first()
-
-            target_user_label = target_user.get_username()
-            if target_user.email:
-                target_user_label = f"{target_user.get_username()} ({target_user.email})"
-
-            if request.POST.get("confirm") != "yes":
-                return render(request, "admin_orphan_articles_confirm.html", {
-                    "action": "assign",
-                    "articles": selected_articles,
-                    "target_user": target_user,
-                    "target_user_label": target_user_label,
-                    "return_url": reverse("manage_orphan_articles"),
-                })
-
-            assigned_count = 0
-            failed_titles = []
-
-            try:
-                with transaction.atomic():
-                    for article in selected_articles:
-                        article.owner = target_user
-                        article.save()
-                        write_article_files(article)
-                        assigned_count += 1
-            except Exception:
-                messages.error(
+            if not selected_articles:
+                messages.warning(
                     request,
-                    _("The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."),
+                    "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again.",
                 )
                 return redirect("manage_orphan_articles")
 
-            if assigned_count:
+            skipped_count = len(set(clean_selected_ids)) - len(selected_articles)
+            if skipped_count > 0:
+                messages.info(
+                    request,
+                    "Some selected articles were skipped because they are no longer orphan articles.",
+                )
+
+            if action == "assign":
+                target_user_id = (request.POST.get("target_user") or "").strip()
+                target_user_value = (request.POST.get("target_user_lookup") or "").strip()
+
+                target_user = None
+
+                if request.POST.get("confirm") == "yes":
+                    if not target_user_id:
+                        messages.error(request, "The selected target user was missing. Please choose the user again.")
+                        return redirect("manage_orphan_articles")
+
+                    try:
+                        target_user = active_users.get(pk=int(target_user_id))
+                    except (TypeError, ValueError, UserModel.DoesNotExist):
+                        messages.error(
+                            request,
+                            "The selected target user is invalid or inactive. Please choose an active user.",
+                        )
+                        return redirect("manage_orphan_articles")
+                else:
+                    if not target_user_value:
+                        messages.error(request, "Please enter a username or email to assign the selected articles to.")
+                        return redirect("manage_orphan_articles")
+
+                    matching_users = list(
+                        active_users.filter(
+                            Q(username__iexact=target_user_value) | Q(email__iexact=target_user_value)
+                        )[:2]
+                    )
+
+                    if len(matching_users) == 0:
+                        messages.error(
+                            request,
+                            f"No active user was found for '{target_user_value}'. Please enter a valid username or email.",
+                        )
+                        return redirect("manage_orphan_articles")
+
+                    if len(matching_users) > 1:
+                        messages.error(
+                            request,
+                            f"More than one active user matched '{target_user_value}'. Please use the exact username instead.",
+                        )
+                        return redirect("manage_orphan_articles")
+
+                    target_user = matching_users[0]
+
+                target_user_label = target_user.get_username()
+                if target_user.email:
+                    target_user_label = f"{target_user.get_username()} ({target_user.email})"
+
+                if request.POST.get("confirm") != "yes":
+                    return render(request, "admin_orphan_articles_confirm.html", {
+                        "action": "assign",
+                        "articles": selected_articles,
+                        "target_user": target_user,
+                        "target_user_label": target_user_label,
+                        "return_url": reverse("manage_orphan_articles"),
+                    })
+
+                try:
+                    with transaction.atomic():
+                        assigned_count = 0
+                        for article in selected_articles:
+                            article.owner = target_user
+                            article.save()
+                            write_article_files(article)
+                            assigned_count += 1
+                except Exception:
+                    logger.exception("Failed to assign orphan articles.")
+                    messages.error(
+                        request,
+                        "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again.",
+                    )
+                    return redirect("manage_orphan_articles")
+
                 messages.success(
                     request,
-                    _("Assigned %(count)s orphan article(s) to %(user)s.") % {
-                        "count": assigned_count,
-                        "user": target_user.get_username(),
-                    },
+                    f"Assigned {assigned_count} orphan article(s) to {target_user.get_username()}.",
                 )
-            else:
-                messages.warning(request, _("No orphan articles were assigned. Please refresh and try again."))
+                return redirect("manage_orphan_articles")
 
-            if failed_titles:
-                messages.error(
-                    request,
-                    _("Some articles could not be assigned: %(titles)s") % {
-                        "titles": ", ".join(failed_titles[:5]),
-                    },
-                )
+            if action == "delete":
+                if request.POST.get("confirm") != "yes":
+                    return render(request, "admin_orphan_articles_confirm.html", {
+                        "action": "delete",
+                        "articles": selected_articles,
+                        "return_url": reverse("manage_orphan_articles"),
+                    })
 
+                deleted_count = 0
+                failed_titles = []
+
+                for article in selected_articles:
+                    title = article.title
+                    try:
+                        delete_article_files(article)
+                        article.delete()
+                        deleted_count += 1
+                    except Exception:
+                        logger.exception("Failed to delete orphan article '%s'.", title)
+                        failed_titles.append(title)
+
+                if deleted_count:
+                    messages.success(request, f"Deleted {deleted_count} orphan article(s).")
+
+                if failed_titles:
+                    messages.error(
+                        request,
+                        "Some selected articles could not be deleted: " + ", ".join(failed_titles[:5]),
+                    )
+
+                if not deleted_count and not failed_titles:
+                    messages.warning(request, "No orphan articles were deleted. Please refresh and try again.")
+
+                return redirect("manage_orphan_articles")
+
+            messages.error(request, "Invalid orphan article action.")
             return redirect("manage_orphan_articles")
 
-        if action == "delete":
-            if request.POST.get("confirm") != "yes":
-                return render(request, "admin_orphan_articles_confirm.html", {
-                    "action": "delete",
-                    "articles": selected_articles,
-                    "return_url": reverse("manage_orphan_articles"),
-                })
-
-            deleted_count = 0
-            failed_titles = []
-
-            for article in selected_articles:
-                title = article.title
-                try:
-                    delete_article_files(article)
-                    article.delete()
-                    deleted_count += 1
-                except Exception:
-                    failed_titles.append(title)
-
-            if deleted_count:
-                messages.success(request, _("Deleted %(count)s orphan article(s).") % {"count": deleted_count})
-
-            if failed_titles:
-                messages.error(
-                    request,
-                    _("Some selected articles could not be deleted: %(titles)s") % {
-                        "titles": ", ".join(failed_titles[:5]),
-                    },
-                )
-
-            if not deleted_count and not failed_titles:
-                messages.warning(request, _("No orphan articles were deleted. Please refresh and try again."))
-
+        except Exception:
+            logger.exception("Unexpected error in orphan article admin tool.")
+            messages.error(
+                request,
+                "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again.",
+            )
             return redirect("manage_orphan_articles")
-
-        messages.error(request, _("Invalid orphan article action."))
-        return redirect("manage_orphan_articles")
 
     orphan_queryset = orphan_queryset.order_by("status", "-updated_at", "title")
     page_obj = paginate_articles(request, orphan_queryset, per_page=20)
