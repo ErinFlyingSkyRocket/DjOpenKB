@@ -18,6 +18,33 @@ from .views import delete_article_files, log_activity, slugify_title, write_arti
 User = get_user_model()
 
 
+
+def get_admin_log_rows_per_page():
+    """Return admin log row count from Site settings with safe bounds."""
+    try:
+        value = int(SiteSetting.load().admin_log_rows_per_page or 200)
+    except Exception:
+        return 200
+
+    if value < 25:
+        return 25
+    if value > 500:
+        return 500
+    return value
+
+
+class SiteSettingLogPaginationMixin:
+    """Use Site settings to control log rows per page in Django Admin."""
+
+    list_per_page = 200
+    list_max_show_all = 500
+
+    def changelist_view(self, request, extra_context=None):
+        rows_per_page = get_admin_log_rows_per_page()
+        self.list_per_page = rows_per_page
+        self.list_max_show_all = max(rows_per_page, 500)
+        return super().changelist_view(request, extra_context=extra_context)
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
@@ -450,7 +477,7 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
 
 
 @admin.register(AuthActivityLog)
-class AuthActivityLogAdmin(admin.ModelAdmin):
+class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     """Read-only authentication/MFA monitoring log.
 
     Use this to spot repeated failed password attempts, repeated failed MFA/OTP
@@ -484,8 +511,8 @@ class AuthActivityLogAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-    list_per_page = 500
-    list_max_show_all = 1000
+    list_per_page = 200
+    list_max_show_all = 500
 
     def has_add_permission(self, request):
         return False
@@ -506,7 +533,7 @@ class AuthActivityLogAdmin(admin.ModelAdmin):
 
 
 @admin.register(ActivityLog)
-class ActivityLogAdmin(admin.ModelAdmin):
+class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     """Read-only audit log for article, vote, AI, image, and admin-tool activity."""
 
     list_display = (
@@ -546,8 +573,8 @@ class ActivityLogAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
-    list_per_page = 500
-    list_max_show_all = 1000
+    list_per_page = 200
+    list_max_show_all = 500
 
     def has_add_permission(self, request):
         return False
@@ -810,10 +837,11 @@ class SiteSettingAdmin(admin.ModelAdmin):
             ),
         }),
         ("Authentication and session settings", {
-            "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "session_timeout_days"),
+            "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "admin_log_rows_per_page", "session_timeout_days"),
             "description": (
-                "Controls authentication/MFA and general activity log retention. "
-                "Default log retention is 30 days. The default session timeout is 30 days. "
+                "Controls authentication/MFA logs, general activity logs, admin log display rows, "
+                "and user session lifetime. Default log retention is 30 days. "
+                "Admin log tables show 200 rows per page by default. "
                 "Set session timeout to 0 to expire the session when the browser closes."
             ),
         }),
