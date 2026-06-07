@@ -1,4 +1,7 @@
 from .services import *
+from django.contrib.auth.models import User
+from django.db.models import Q
+
 
 
 @admin_tools_required
@@ -267,19 +270,41 @@ def manage_orphan_articles(request):
             return redirect("manage_orphan_articles")
 
         if action == "assign":
+            # First submit uses a typed username/email. The confirmation submit sends the user id back.
             target_user_id = request.POST.get("target_user", "").strip()
-            target_user = active_users.filter(pk=target_user_id).first()
+            target_user_value = (request.POST.get("target_user_lookup") or "").strip()
+
+            if request.POST.get("confirm") == "yes" and target_user_id:
+                target_user = active_users.filter(pk=target_user_id).first()
+            else:
+                target_user = None
+                if target_user_value:
+                    target_user = (
+                        active_users
+                        .filter(
+                            Q(username__iexact=target_user_value)
+                            | Q(email__iexact=target_user_value)
+                        )
+                        .first()
+                    )
 
             if not target_user:
-                messages.error(request, _("Please choose an active user to assign the selected articles to."))
+                messages.error(
+                    request,
+                    _("Please enter a valid active username or email to assign the selected articles to."),
+                )
                 return redirect("manage_orphan_articles")
+
+            target_user_label = target_user.get_username()
+            if target_user.email:
+                target_user_label = f"{target_user.get_username()} ({target_user.email})"
 
             if request.POST.get("confirm") != "yes":
                 return render(request, "admin_orphan_articles_confirm.html", {
                     "action": "assign",
                     "articles": selected_articles,
                     "target_user": target_user,
-                    "target_user_label": target_user.get_username(),
+                    "target_user_label": target_user_label,
                     "return_url": reverse("manage_orphan_articles"),
                 })
 

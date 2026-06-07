@@ -98,13 +98,25 @@
                     <div class="orphan-bulk-panel">
                         <div class="row">
                             <div class="col-sm-5">
-                                <label>{% trans "Assign selected articles to" %}</label>
-                                <select name="target_user" class="form-control">
-                                    <option value="">{% trans "Choose active user" %}</option>
+                                <label for="target_user_lookup">{% trans "Assign selected articles to" %}</label>
+                                <input
+                                    type="text"
+                                    id="target_user_lookup"
+                                    name="target_user_lookup"
+                                    class="form-control"
+                                    list="activeUserList"
+                                    autocomplete="off"
+                                    placeholder="{% trans 'Type username or email' %}"
+                                >
+                                <datalist id="activeUserList">
                                     {% for user in active_users %}
-                                        <option value="{{ user.id }}">{{ user.get_username }}{% if user.email %} — {{ user.email }}{% endif %}</option>
+                                        <option value="{{ user.get_username }}">{% if user.email %}{{ user.email }}{% else %}{{ user.get_username }}{% endif %}</option>
+                                        {% if user.email %}
+                                            <option value="{{ user.email }}">{{ user.get_username }}</option>
+                                        {% endif %}
                                     {% endfor %}
-                                </select>
+                                </datalist>
+                                <small class="orphan-muted">{% trans "Enter an active local or AD username/email." %}</small>
                             </div>
                             <div class="col-sm-7" style="padding-top: 25px;">
                                 <button type="submit" name="action" value="assign" class="btn btn-success">
