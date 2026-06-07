@@ -97,7 +97,7 @@ services:
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
       OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
-      OPENKB_GEMINI_MODEL: ${OPENKB_GEMINI_MODEL:-gemini/gemini-2.5-flash}
+      OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-gemini/gemini-2.5-flash}
       LITELLM_DROP_PARAMS: ${LITELLM_DROP_PARAMS:-true}
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
       POSTGRES_USER: ${POSTGRES_USER:-djopenkb}

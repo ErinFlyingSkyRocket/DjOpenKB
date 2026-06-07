@@ -166,7 +166,7 @@ POSTGRES_PORT=5432
 OPENKB_BASE_DIR=OpenKB-main
 OPENKB_DATA_DIR=openkb-data
 OPENKB_AI_PROVIDER=openkb-cli
-OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
+OPENKB_AI_MODEL=gemini/gemini-2.5-flash
 LITELLM_DROP_PARAMS=true
 
 USE_SQLITE=false

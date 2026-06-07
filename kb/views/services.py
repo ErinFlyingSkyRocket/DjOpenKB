@@ -1739,9 +1739,50 @@ def validate_profile_password_policy(password, user):
     return issues
 
 
+
+def get_openkb_ai_model():
+    """Return the configured OpenKB/LiteLLM model name."""
+    model = getattr(settings, "OPENKB_AI_MODEL", "gemini/gemini-2.5-flash")
+    return (model or "gemini/gemini-2.5-flash").strip()
+
+
+def ensure_openkb_config_model():
+    """Keep OpenKB's local config.yaml model aligned with Django settings.
+
+    OpenKB itself reads the model from openkb-data/.openkb/config.yaml.
+    This helper makes the general OPENKB_AI_MODEL setting actually control
+    the model used by OpenKB queries without requiring a manual config edit.
+    """
+    model = get_openkb_ai_model()
+    if not model:
+        return
+
+    config_path = settings.OPENKB_DATA_DIR / ".openkb" / "config.yaml"
+    if not config_path.exists():
+        return
+
+    try:
+        text = config_path.read_text(encoding="utf-8")
+    except OSError:
+        return
+
+    model_line = f"model: {model}"
+    if re.search(r"(?m)^model:\s*.*$", text):
+        new_text = re.sub(r"(?m)^model:\s*.*$", model_line, text, count=1)
+    else:
+        new_text = text.rstrip() + "\n" + model_line + "\n"
+
+    if new_text != text:
+        try:
+            config_path.write_text(new_text, encoding="utf-8")
+        except OSError:
+            return
+
+
 def run_openkb_query(question):
     """Call the local bundled OpenKB CLI against the synced Django OpenKB data."""
     init_openkb_storage()
+    ensure_openkb_config_model()
     ensure_openkb_ai_synced()
 
     env = os.environ.copy()
@@ -1752,8 +1793,8 @@ def run_openkb_query(question):
     if getattr(settings, "GEMINI_API_KEY", ""):
         env["GEMINI_API_KEY"] = settings.GEMINI_API_KEY
 
-    env["OPENKB_AI_PROVIDER"] = "openkb-cli"
-    env["OPENKB_GEMINI_MODEL"] = getattr(settings, "OPENKB_GEMINI_MODEL", "gemini/gemini-2.5-flash")
+    env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
+    env["OPENKB_AI_MODEL"] = get_openkb_ai_model()
     env["LITELLM_DROP_PARAMS"] = "true"
     env["DROP_PARAMS"] = "true"
     env["OPENKB_DIR"] = str(settings.OPENKB_DATA_DIR)

@@ -140,7 +140,14 @@ OPENKB_ARTICLES_DIR = OPENKB_CONTENT_DIR / "articles"
 OPENKB_AI_PROVIDER = config_value("OPENKB_AI_PROVIDER", "openkb-cli")
 GEMINI_API_KEY = secret_value("GEMINI_API_KEY", "")
 LLM_API_KEY = secret_value("LLM_API_KEY", "")
-OPENKB_GEMINI_MODEL = config_value("OPENKB_GEMINI_MODEL", "gemini/gemini-2.5-flash")
+
+# General LiteLLM/OpenKB model name.
+# Use OPENKB_AI_MODEL for all providers, for example:
+#   gemini/gemini-2.5-flash
+#   gpt-5.5
+#   anthropic/claude-3-5-sonnet-latest
+OPENKB_AI_MODEL = config_value("OPENKB_AI_MODEL", "gemini/gemini-2.5-flash").strip()
+
 LITELLM_DROP_PARAMS = config_value("LITELLM_DROP_PARAMS", "true")
 
 # Safety limits for the public Ask OpenKB AI endpoint.
