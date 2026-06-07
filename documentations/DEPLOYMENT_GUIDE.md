@@ -275,14 +275,26 @@ Important notes:
 - Do not commit or share vault/bootstrap/djopenkb.env.
 - For a fresh setup, generate POSTGRES_PASSWORD before the first startup.
 - For an existing database, do not change POSTGRES_PASSWORD unless you also update it inside Postgres.
+- Keep DJANGO_SECRET_KEY stable after deployment. Changing it can invalidate sessions and signed data.
+- Keep POSTGRES_PASSWORD stable after the database is created. If Vault and Postgres passwords no longer match, Django/Postgres access can fail.
+- Keep Vault data and keys safe. If Vault data/keys are lost, Django may not be able to read the stored database, LDAP, and AI secrets.
 - After Vault is seeded and login works, remove vault/bootstrap/djopenkb.env from exported/shared copies.
+```
+
+Recommended practice:
+
+```text
+Save the final generated DJANGO_SECRET_KEY and POSTGRES_PASSWORD securely in an offline password manager or protected administrator record.
+Do not regenerate these values on an existing deployment unless you intentionally rotate them and know the matching update steps.
 ```
 
 ---
 
 ## 7. Initialise OpenKB data locally
 
-OpenKB must be initialized in the local project folder because Docker mounts the local `openkb-data/` folder into the Django container.
+OpenKB must be initialized once in the local `openkb-data/` folder because Docker mounts this folder into the Django container.
+
+During first deployment, create a temporary local Python virtual environment only to run `openkb init`. After OpenKB has created `openkb-data/.openkb/`, the temporary virtual environment is no longer needed and can be removed.
 
 Initialize OpenKB locally at:
 
@@ -296,7 +308,7 @@ Move to the project root.
 cd /opt/DjOpenKB
 ```
 
-Create a local Python virtual environment for OpenKB.
+Create a temporary local Python virtual environment for OpenKB initialization.
 
 ```bash
 python3 -m venv .openkb-venv
@@ -341,78 +353,34 @@ OpenKB will ask for a model in LiteLLM format. When you see this prompt:
 Model (enter for default gpt-5.4-mini):
 ```
 
-type the model name you want to use.
+type the same model name configured in `.env` as `OPENKB_AI_MODEL`.
+
+For the current recommended setup, enter:
+
+```text
+gemini/gemini-2.5-flash
+```
 
 ### Common OpenKB model inputs
 
 | Provider | Example model input |
 |---|---|
-| OpenAI latest frontier | `gpt-5.5` |
-| OpenAI pro/high accuracy | `gpt-5.5-pro` |
-| OpenAI standard | `gpt-5.4` |
-| OpenAI mini/default-style | `gpt-5.4-mini` |
-| OpenAI lower cost | `gpt-5.4-nano` |
 | Gemini Flash | `gemini/gemini-2.5-flash` |
 | Gemini Pro | `gemini/gemini-2.5-pro` |
+| OpenAI latest frontier | `gpt-5.5` |
+| OpenAI standard | `gpt-5.4` |
+| OpenAI mini/default-style | `gpt-5.4-mini` |
 | Anthropic Claude Haiku | `anthropic/claude-3-5-haiku-latest` |
 | Anthropic Claude Sonnet | `anthropic/claude-3-5-sonnet-latest` |
-| Anthropic Claude 4 style | `anthropic/claude-sonnet-4-6` |
-| Anthropic Claude Opus style | `anthropic/claude-opus-4-6` |
-| Ollama local model | `ollama/llama3.1` |
-| Mistral | `mistral/mistral-small-latest` |
-| Groq | `groq/llama-3.1-8b-instant` |
 | OpenRouter | `openrouter/openai/gpt-4o-mini` |
+| Groq | `groq/llama-3.1-8b-instant` |
+| Mistral | `mistral/mistral-small-latest` |
 | Cohere | `cohere/command-r` |
-
-For the current DjOpenKB Gemini setup, enter:
-
-```text
-gemini/gemini-2.5-flash
-```
-
-If using OpenAI, OpenKB may accept OpenAI model names without the `openai/` prefix, for example:
-
-```text
-gpt-5.5
-gpt-5.4
-gpt-5.4-mini
-```
-
-For other providers, use the provider/model format, for example:
-
-```text
-anthropic/claude-3-5-sonnet-latest
-gemini/gemini-2.5-flash
-ollama/llama3.1
-```
-
-### API key values
-
-Use the matching API key for the provider selected during `openkb init`.
-
-For Gemini:
-
-```env
-```
-
-For OpenAI:
-
-```env
-```
-
-For Anthropic Claude:
-
-```env
-```
-
-For OpenRouter, Groq, Mistral, Cohere, or other providers:
-
-```env
-```
+| Ollama local model | `ollama/llama3.1` |
 
 Some OpenKB versions may not show many prompts and may silently create the configuration files. That is acceptable.
 
-Check that OpenKB created the local configuration.
+Check that OpenKB created the local runtime configuration.
 
 ```bash
 ls -la
@@ -428,12 +396,20 @@ cd /opt/DjOpenKB
 deactivate
 ```
 
-Do not commit or share these generated OpenKB runtime files:
+Because `.openkb-venv` is only used for OpenKB initialization, remove it after confirming `openkb-data/.openkb/` exists.
+
+```bash
+rm -rf .openkb-venv
+```
+
+Do not commit or share the generated OpenKB runtime configuration folder:
 
 ```text
-openkb-data/.env
 openkb-data/.openkb/
+.openkb-venv/
 ```
+
+The old `openkb-data/.env` file is not required for the current DjOpenKB setup because the AI model is configured through `.env` and the AI API key is stored in Vault as `AI_API_KEY`.
 
 ---
 
@@ -911,7 +887,7 @@ Then pull again.
 git pull --ff-only origin main
 ```
 
-If there are untracked development folders such as `.openkb-venv/`, they usually do not block tracked file updates. Keep them unless you are sure they are no longer needed.
+If `.openkb-venv/` appears as an untracked folder, it is only the temporary OpenKB initialization environment. After `openkb-data/.openkb/` exists, `.openkb-venv/` can be removed.
 
 Do not blindly delete these important local files or folders:
 
@@ -968,21 +944,29 @@ sudo docker compose ps
 | Nginx config or certificate changed | `sudo docker compose restart nginx` |
 | Cleanup scheduler script changed | `sudo docker compose restart cleanup-scheduler` |
 
-### 17.7 Update OpenKB local virtual environment if needed
+### 17.7 Re-initialise OpenKB if needed
 
-If OpenKB source code or OpenKB dependencies changed, update the local OpenKB virtual environment.
+Normally, you do not need to re-initialise OpenKB after every update.
+
+Only repeat the temporary OpenKB initialization steps if the `openkb-data/.openkb/` folder is missing or damaged.
 
 ```bash
 cd /opt/DjOpenKB
+python3 -m venv .openkb-venv
 source .openkb-venv/bin/activate
+python -m pip install --upgrade pip
 pip install -e OpenKB-main
+mkdir -p openkb-data
+cd openkb-data
+openkb init
+cd /opt/DjOpenKB
 deactivate
+rm -rf .openkb-venv
 ```
 
-Then restart the web container and sync articles.
+After code or article changes, usually only sync published Django articles:
 
 ```bash
-sudo docker compose restart web
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
 
@@ -1012,8 +996,8 @@ Do not commit or share these files/folders:
 vault/bootstrap/djopenkb.env
 vault/keys/
 vault/file/
-openkb-data/.env
 openkb-data/.openkb/
+.openkb-venv/
 nginx/certs/localhost.key
 ```
 
@@ -1047,7 +1031,7 @@ sudo apt install -y python-is-python3
 
 ### OpenKB command not found
 
-Activate the local OpenKB virtual environment:
+Create or activate the temporary OpenKB initialization virtual environment:
 
 ```bash
 cd /opt/DjOpenKB
@@ -1075,7 +1059,7 @@ PYTHONPATH=../OpenKB-main python -m openkb.cli init
 
 ### OpenKB data folder not found
 
-Initialize OpenKB locally on the Linux host:
+Initialize OpenKB locally on the Linux host using a temporary virtual environment:
 
 ```bash
 cd /opt/DjOpenKB
@@ -1088,6 +1072,7 @@ cd openkb-data
 openkb init
 cd /opt/DjOpenKB
 deactivate
+rm -rf .openkb-venv
 sudo docker compose restart web cleanup-scheduler
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
@@ -1122,7 +1107,17 @@ Make sure values are valid `KEY=VALUE` lines.
 
 ### Postgres password changed accidentally
 
-If the database already exists, changing `POSTGRES_PASSWORD` in Vault alone is not enough. Either recover the old password from Vault or update the password inside Postgres.
+If the database already exists, changing `POSTGRES_PASSWORD` in Vault alone is not enough. The password stored in Vault must match the real password inside PostgreSQL.
+
+Use the safest option first:
+
+```text
+1. Restore the original POSTGRES_PASSWORD value in vault/bootstrap/djopenkb.env.
+2. Re-seed Vault.
+3. Restart the web and database services.
+```
+
+Only change the PostgreSQL password inside the database if you intentionally want to rotate it.
 
 ### OpenKB chatbot errors
 
