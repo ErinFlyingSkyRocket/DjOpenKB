@@ -139,14 +139,6 @@ OPENKB_ARTICLES_DIR = OPENKB_CONTENT_DIR / "articles"
 # translation is intentionally NOT done by AI.
 OPENKB_AI_PROVIDER = config_value("OPENKB_AI_PROVIDER", "openkb-cli")
 AI_API_KEY = secret_value("AI_API_KEY", "")
-if not AI_API_KEY:
-    AI_API_KEY = secret_value("LLM_API_KEY", "")
-if not AI_API_KEY:
-    AI_API_KEY = secret_value("GEMINI_API_KEY", "")
-
-# Legacy aliases for older integrations. New deployments should use AI_API_KEY only.
-LLM_API_KEY = AI_API_KEY
-GEMINI_API_KEY = AI_API_KEY
 
 # General LiteLLM/OpenKB model name.
 # Use OPENKB_AI_MODEL for all providers, for example:

@@ -45,8 +45,7 @@ if (-not (Test-Path $OutputFile)) {
 DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
 POSTGRES_PASSWORD=replace-with-stable-postgres-password
 
-GEMINI_API_KEY=replace-with-gemini-api-key
-LLM_API_KEY=replace-with-gemini-api-key-or-llm-key
+AI_API_KEY=replace-with-selected-ai-provider-api-key
 LDAP_BIND_PASSWORD=replace-with-real-svc-djopenkb-password
 LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
 "@ | Set-Content -Path $OutputFile -Encoding UTF8
@@ -66,11 +65,32 @@ $found = @{
     "POSTGRES_PASSWORD" = $false
     "LDAP_PLACEHOLDER_PASSWORD" = $false
 }
+$foundAiKey = $false
+$legacyValue = ""
 
 foreach ($line in $lines) {
     $trimmed = $line.Trim()
-    $handled = $false
 
+    if ($trimmed -eq "" -or $trimmed.StartsWith("#")) {
+        $out.Add($line)
+        continue
+    }
+
+    if ($trimmed.StartsWith("GEMINI_API_KEY=") -or $trimmed.StartsWith("LLM_API_KEY=")) {
+        $candidate = ($trimmed -split "=", 2)[1].Trim()
+        if ($candidate -and -not $candidate.ToLower().Contains("replace-with") -and -not $legacyValue) {
+            $legacyValue = $candidate
+        }
+        continue
+    }
+
+    if ($trimmed.StartsWith("AI_API_KEY=")) {
+        $foundAiKey = $true
+        $out.Add($line)
+        continue
+    }
+
+    $handled = $false
     foreach ($key in $replacements.Keys) {
         if ($trimmed.StartsWith("$key=")) {
             $out.Add("$key=$($replacements[$key])")
@@ -82,6 +102,18 @@ foreach ($line in $lines) {
 
     if (-not $handled) {
         $out.Add($line)
+    }
+}
+
+if (-not $foundAiKey) {
+    if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") {
+        $out.Add("")
+    }
+    $out.Add("# OpenKB AI provider key. Use the key for the provider selected by OPENKB_AI_MODEL.")
+    if ($legacyValue) {
+        $out.Add("AI_API_KEY=$legacyValue")
+    } else {
+        $out.Add("AI_API_KEY=replace-with-selected-ai-provider-api-key")
     }
 }
 
@@ -97,9 +129,9 @@ $out | Set-Content -Path $OutputFile -Encoding UTF8
 
 Write-Host "Generated bootstrap secrets in: $OutputFile"
 Write-Host "Updated: DJANGO_SECRET_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD"
-Write-Host "Preserved: comments, GEMINI_API_KEY, LLM_API_KEY, LDAP_BIND_PASSWORD"
+Write-Host "Preserved: comments, AI_API_KEY, LDAP_BIND_PASSWORD"
 Write-Host ""
-Write-Host "Next: edit GEMINI_API_KEY, LLM_API_KEY and LDAP_BIND_PASSWORD manually."
+Write-Host "Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually."
 Write-Host "Use no quotes, no spaces around '=', and avoid spaces/shell symbols."
 Write-Host "Good example: LDAP_BIND_PASSWORD=P@ssw0rd"
 Write-Host "Avoid: LDAP_BIND_PASSWORD=`"P@ssw0rd!`""

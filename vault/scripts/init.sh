@@ -71,8 +71,7 @@ if [ -f "$BOOTSTRAP_FILE" ]; then
   vault kv put secret/djopenkb \
     DJANGO_SECRET_KEY="${DJANGO_SECRET_KEY:-}" \
     POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}" \
-    GEMINI_API_KEY="${GEMINI_API_KEY:-}" \
-    LLM_API_KEY="${LLM_API_KEY:-}" \
+    AI_API_KEY="${AI_API_KEY:-}" \
     LDAP_BIND_PASSWORD="${LDAP_BIND_PASSWORD:-}" \
     LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-}" >/dev/null
   log "Secret seeded. You may now remove vault/bootstrap/djopenkb.env."
