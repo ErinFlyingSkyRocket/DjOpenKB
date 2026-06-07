@@ -1374,3 +1374,71 @@ msgstr "Your session has expired. Please sign in again."
 #: synced from current templates/views
 msgid "orphan articles"
 msgstr "orphan articles"
+
+#: synced from current templates/views
+msgid "Assigned %(count)s orphan article(s) to %(user)s."
+msgstr "Assigned %(count)s orphan article(s) to %(user)s."
+
+#: synced from current templates/views
+msgid "Deleted %(count)s orphan article(s)."
+msgstr "Deleted %(count)s orphan article(s)."
+
+#: synced from current templates/views
+msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+msgstr "Find articles with no active owner, then assign them to a user or delete them after confirmation."
+
+#: synced from current templates/views
+msgid "Invalid orphan article action."
+msgstr "Invalid orphan article action."
+
+#: synced from current templates/views
+msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
+msgstr "More than one active user matched '%(user)s'. Please use the exact username instead."
+
+#: synced from current templates/views
+msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
+msgstr "No active user was found for '%(user)s'. Please enter a valid username or email."
+
+#: synced from current templates/views
+msgid "No orphan articles were deleted. Please refresh and try again."
+msgstr "No orphan articles were deleted. Please refresh and try again."
+
+#: synced from current templates/views
+msgid "Please enter a username or email to assign the selected articles to."
+msgstr "Please enter a username or email to assign the selected articles to."
+
+#: synced from current templates/views
+msgid "Please select at least one orphan article first."
+msgstr "Please select at least one orphan article first."
+
+#: synced from current templates/views
+msgid "Please use the Assign selected or Delete selected button."
+msgstr "Please use the Assign selected or Delete selected button."
+
+#: synced from current templates/views
+msgid "Some selected articles could not be deleted: %(titles)s"
+msgstr "Some selected articles could not be deleted: %(titles)s"
+
+#: synced from current templates/views
+msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgstr "Some selected articles were skipped because they are no longer orphan articles."
+
+#: synced from current templates/views
+msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+msgstr "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
+
+#: synced from current templates/views
+msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+msgstr "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
+
+#: synced from current templates/views
+msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+msgstr "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
+
+#: synced from current templates/views
+msgid "The selected target user is invalid or inactive. Please choose an active user."
+msgstr "The selected target user is invalid or inactive. Please choose an active user."
+
+#: synced from current templates/views
+msgid "The selected target user was missing. Please choose the user again."
+msgstr "The selected target user was missing. Please choose the user again."
