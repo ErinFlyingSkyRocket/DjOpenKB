@@ -298,6 +298,11 @@ def delete_uploaded_image_file(filename):
 
     if str(file_path).startswith(str(upload_dir)) and file_path.exists() and file_path.is_file():
         file_path.unlink()
+        mark_article_image_deleted(
+            filename,
+            actor=None,
+            reason=ArticleImageUploadLog.DeleteReason.AUTO_CLEANUP,
+        )
 
 
 def image_is_used_by_other_article(filename, current_article=None):
@@ -1974,10 +1979,24 @@ def build_openkb_article_recommendation_answer(question, related_articles):
 
 
 def get_client_ip(request):
-    """Return the best available client IP, respecting the nginx proxy header."""
+    """Return the best available client IP behind the trusted Nginx proxy.
+
+    Nginx sets X-Real-IP to the real client address. Prefer that header because
+    X-Forwarded-For can contain client-supplied spoofed entries when Nginx appends
+    to an existing header. This keeps rate limiting and activity logs more reliable.
+    """
+    real_ip = (request.META.get("HTTP_X_REAL_IP") or "").strip()
+    if real_ip:
+        return real_ip
+
     forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if forwarded_for:
-        return forwarded_for.split(",")[0].strip()
+        # Use the last non-empty address because Nginx's proxy_add_x_forwarded_for
+        # appends the immediate client address to the right-hand side.
+        parts = [part.strip() for part in forwarded_for.split(",") if part.strip()]
+        if parts:
+            return parts[-1]
+
     return request.META.get("REMOTE_ADDR", "unknown")
 
 

@@ -82,7 +82,7 @@ def ask_openkb_ai(request):
         ActivityLog.EventType.AI_QUESTION,
         details={
             "question_length": len(question),
-            "question_preview": question[:200],
+            "question_preview": redact_openkb_debug_text(question, max_chars=200),
             "identifier": get_openkb_ai_rate_identifier(request),
             "authenticated": request.user.is_authenticated,
         },

@@ -92,6 +92,8 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: djopenkb.settings
       DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,web,nginx}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-https://localhost:8080,https://127.0.0.1:8080}
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
       OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
@@ -169,6 +171,8 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: djopenkb.settings
       DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,web,nginx}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-https://localhost:8080,https://127.0.0.1:8080}
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
@@ -211,6 +215,7 @@ services:
       while true; do
         python manage.py cleanup_stray_upload_files --noinput;
         python manage.py cleanup_auth_activity_logs --noinput;
+        python manage.py cleanup_activity_logs --noinput;
         sleep $${CLEANUP_INTERVAL_SECONDS:-86400};
       done
       "

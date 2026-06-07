@@ -356,6 +356,7 @@ def upload_article_image(request):
         content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
         size_bytes=getattr(uploaded_file, "size", 0) or 0,
         uploaded_by=request.user,
+        upload_ip_address=get_client_ip(request),
         upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
     )
     log_activity(
