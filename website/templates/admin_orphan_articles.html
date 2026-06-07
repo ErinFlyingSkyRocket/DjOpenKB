@@ -1,0 +1,186 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Scan orphan articles" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <style>
+        .admin-orphan-wrap { max-width: 1200px; margin: 0 auto; float: none; }
+        .orphan-summary-card { border: 1px solid #e5eaee; border-radius: 4px; padding: 14px 16px; margin-bottom: 14px; background: #f8fafb; }
+        .orphan-summary-number { font-size: 26px; font-weight: 700; margin-right: 8px; }
+        .orphan-muted { color: #899aa6; }
+        .orphan-toolbar { margin: 12px 0 16px; }
+        .orphan-table-wrap { overflow-x: auto; }
+        .orphan-actions .btn { margin-bottom: 4px; }
+        .orphan-bulk-panel { border: 1px solid #e5eaee; border-radius: 4px; padding: 12px; margin-bottom: 15px; background: #fbfcfd; }
+        .orphan-checkbox { width: 28px; }
+    </style>
+</head>
+<body>
+    {% include "_navbar.html" %}
+    <div class="container-fluid">
+        <div class="col-xs-12 admin-orphan-wrap">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <h2>{% trans "Scan orphan articles" %}</h2>
+            <p class="orphan-muted">
+                {% trans "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them." %}
+            </p>
+
+            <div class="orphan-summary-card">
+                <span class="orphan-summary-number">{{ total_orphan_article_count }}</span>
+                <span>{% trans "orphan articles" %}</span>
+                {% if is_orphan_search %}
+                    <span class="orphan-muted">&middot; {{ orphan_result_count }} {% trans "matching" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="orphan-toolbar">
+                <form method="get" class="form-inline">
+                    <div class="form-group">
+                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search orphan articles' %}" value="{{ orphan_search_query|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <select name="status" class="form-control">
+                            <option value="">{% trans "All statuses" %}</option>
+                            {% for status_value, status_label in status_choices %}
+                                <option value="{{ status_value }}" {% if status_filter == status_value %}selected{% endif %}>{{ status_label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
+                    {% if is_orphan_search %}
+                        <a class="btn btn-default" href="{% url 'manage_orphan_articles' %}">{% trans "Clear search" %}</a>
+                    {% endif %}
+                    <a class="btn btn-default pull-right" href="{% url 'profile' %}"><i class="fa fa-arrow-left"></i> {% trans "Back to profile" %}</a>
+                </form>
+            </div>
+
+            {% if page_obj.paginator.num_pages > 1 %}
+                <nav aria-label="{% trans 'Orphan article pages' %}">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?page=1{% if orphan_search_query %}&q={{ orphan_search_query|urlencode }}{% endif %}{% if status_filter %}&status={{ status_filter|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
+                            <li><a href="?page={{ page_obj.previous_page_number }}{% if orphan_search_query %}&q={{ orphan_search_query|urlencode }}{% endif %}{% if status_filter %}&status={{ status_filter|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                            <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
+                        {% endif %}
+                        <li class="active"><span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span></li>
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}{% if orphan_search_query %}&q={{ orphan_search_query|urlencode }}{% endif %}{% if status_filter %}&status={{ status_filter|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
+                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if orphan_search_query %}&q={{ orphan_search_query|urlencode }}{% endif %}{% if status_filter %}&status={{ status_filter|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                            <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+            {% if articles %}
+                <form method="post" id="orphanBulkForm">
+                    {% csrf_token %}
+                    <div class="orphan-bulk-panel">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <label>{% trans "Assign selected articles to" %}</label>
+                                <select name="target_user" class="form-control">
+                                    <option value="">{% trans "Choose active user" %}</option>
+                                    {% for user in active_users %}
+                                        <option value="{{ user.id }}">{{ user.get_username }}{% if user.email %} — {{ user.email }}{% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-7" style="padding-top: 25px;">
+                                <button type="submit" name="action" value="assign" class="btn btn-success">
+                                    <i class="fa fa-user-plus"></i> {% trans "Assign selected" %}
+                                </button>
+                                <button type="submit" name="action" value="delete" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> {% trans "Delete selected" %}
+                                </button>
+                                <span class="orphan-muted">{% trans "You will be asked to confirm before changes are applied." %}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="orphan-table-wrap">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="orphan-checkbox"><input type="checkbox" id="selectAllOrphans"></th>
+                                    <th>{% trans "Article title" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Previous owner" %}</th>
+                                    <th>{% trans "Last updated" %}</th>
+                                    <th class="text-right">{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for article in articles %}
+                                    <tr>
+                                        <td><input type="checkbox" class="orphan-row-checkbox" name="selected_articles" value="{{ article.id }}"></td>
+                                        <td>
+                                            <strong>{{ article.title }}</strong><br>
+                                            <small class="orphan-muted">{{ article.filename }}</small>
+                                        </td>
+                                        <td>{{ article.get_status_display }}</td>
+                                        <td>
+                                            {% if article.owner %}
+                                                {{ article.owner.get_username }} <span class="label label-default">{% trans "Inactive" %}</span>
+                                                {% if article.owner.email %}<br><small class="orphan-muted">{{ article.owner.email }}</small>{% endif %}
+                                            {% else %}
+                                                {{ article.author_display }} <span class="label label-warning">{% trans "No owner" %}</span>
+                                                {% if article.author_email %}<br><small class="orphan-muted">{{ article.author_email }}</small>{% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
+                                        <td class="text-right orphan-actions">
+                                            <a class="btn btn-xs btn-default" href="{% url 'article_detail' article.id %}"><i class="fa fa-eye"></i> {% trans "View" %}</a>
+                                            <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}"><i class="fa fa-pencil"></i> {% trans "Edit" %}</a>
+                                            <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}"><i class="fa fa-trash"></i> {% trans "Delete" %}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            {% else %}
+                <div class="alert alert-success">
+                    {% if is_orphan_search %}
+                        {% trans "No orphan articles match your search." %}
+                    {% else %}
+                        {% trans "No orphan articles were found. All articles currently have an active owner." %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% include "_footer.html" %}
+    <script>
+        (function () {
+            var selectAll = document.getElementById('selectAllOrphans');
+            if (!selectAll) { return; }
+            selectAll.addEventListener('change', function () {
+                var boxes = document.querySelectorAll('.orphan-row-checkbox');
+                boxes.forEach(function (box) { box.checked = selectAll.checked; });
+            });
+        })();
+    </script>
+</body>
+</html>

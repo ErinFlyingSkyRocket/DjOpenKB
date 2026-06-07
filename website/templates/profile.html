@@ -274,6 +274,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <hr>
 
                             <div class="profile-admin-tools">
+                                <div><strong>{% trans "Scan orphan articles" %}</strong></div>
+                                <div class="profile-muted">{% trans "Find articles with no active owner, then assign them to a user or delete them after confirmation." %}</div>
+                                <a class="btn btn-warning editor_btn_action" href="{% url 'manage_orphan_articles' %}">
+                                    <i class="fa fa-user-times"></i> {% trans "Scan orphan articles" %}
+                                </a>
+                            </div>
+
+                            <hr>
+
+                            <div class="profile-admin-tools">
                                 <div><strong>{% trans "Manage pending articles" %}</strong></div>
                                 <div class="profile-muted">{% trans "Review user-submitted articles waiting for admin approval before they become public." %}</div>
                                 <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">

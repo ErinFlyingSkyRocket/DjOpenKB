@@ -1,0 +1,85 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Confirm orphan article action" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <style>
+        .confirm-wrap { max-width: 900px; margin: 0 auto; float: none; }
+        .confirm-muted { color: #899aa6; }
+    </style>
+</head>
+<body>
+    {% include "_navbar.html" %}
+    <div class="container-fluid">
+        <div class="col-xs-12 confirm-wrap">
+            <h2>{% trans "Confirm orphan article action" %}</h2>
+
+            {% if action == "assign" %}
+                <div class="alert alert-warning">
+                    {% blocktrans with username=target_user_label article_count=articles|length %}Are you sure you want to assign {{ article_count }} article(s) to {{ username }}?{% endblocktrans %}
+                </div>
+            {% elif action == "delete" %}
+                <div class="alert alert-danger">
+                    {% blocktrans with article_count=articles|length %}Are you sure you want to permanently delete {{ article_count }} selected orphan article(s)? This will also remove their generated OpenKB Markdown files.{% endblocktrans %}
+                </div>
+            {% endif %}
+
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans "Article title" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Previous owner" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                        <tr>
+                            <td>{{ article.title }}</td>
+                            <td>{{ article.get_status_display }}</td>
+                            <td>
+                                {% if article.owner %}
+                                    {{ article.owner.get_username }} <span class="label label-default">{% trans "Inactive" %}</span>
+                                {% else %}
+                                    {{ article.author_display }} <span class="label label-warning">{% trans "No owner" %}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <form method="post" action="{% url 'manage_orphan_articles' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="hidden" name="confirm" value="yes">
+                {% if action == "assign" %}
+                    <input type="hidden" name="target_user" value="{{ target_user.id }}">
+                {% endif %}
+                {% for article in articles %}
+                    <input type="hidden" name="selected_articles" value="{{ article.id }}">
+                {% endfor %}
+
+                {% if action == "assign" %}
+                    <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> {% trans "Yes, assign articles" %}</button>
+                {% elif action == "delete" %}
+                    <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {% trans "Yes, delete articles" %}</button>
+                {% endif %}
+                <a class="btn btn-default" href="{{ return_url }}"><i class="fa fa-times"></i> {% trans "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+    {% include "_footer.html" %}
+</body>
+</html>

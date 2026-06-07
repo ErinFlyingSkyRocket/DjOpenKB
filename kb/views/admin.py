@@ -220,3 +220,115 @@ def manage_pending_articles(request):
         "total_pending_article_count": total_pending_article_count,
         "is_pending_search": bool(search_query),
     })
+
+@admin_tools_required
+def manage_orphan_articles(request):
+    """Scan articles with no active owner and let admins assign or delete them."""
+    User = get_user_model()
+    search_query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+
+    orphan_queryset = SuggestedArticle.objects.select_related("owner").filter(
+        Q(owner__isnull=True) | Q(owner__is_active=False)
+    )
+    total_orphan_article_count = orphan_queryset.count()
+
+    if status_filter and status_filter in SuggestedArticle.Status.values:
+        orphan_queryset = orphan_queryset.filter(status=status_filter)
+
+    if search_query:
+        orphan_queryset = orphan_queryset.filter(
+            Q(title__icontains=search_query)
+            | Q(body__icontains=search_query)
+            | Q(keywords__icontains=search_query)
+            | Q(status__icontains=search_query)
+            | Q(filename__icontains=search_query)
+            | Q(author_username_snapshot__icontains=search_query)
+            | Q(author_name_snapshot__icontains=search_query)
+            | Q(author_email_snapshot__icontains=search_query)
+            | Q(owner__username__icontains=search_query)
+            | Q(owner__email__icontains=search_query)
+        )
+
+    active_users = User.objects.filter(is_active=True).order_by("username")
+
+    if request.method == "POST":
+        action = request.POST.get("action", "").strip()
+        selected_ids = request.POST.getlist("selected_articles")
+        selected_articles = list(
+            SuggestedArticle.objects.select_related("owner").filter(
+                Q(owner__isnull=True) | Q(owner__is_active=False),
+                pk__in=selected_ids,
+            ).order_by("title")
+        )
+
+        if not selected_articles:
+            messages.warning(request, _("No orphan articles were selected."))
+            return redirect("manage_orphan_articles")
+
+        if action == "assign":
+            target_user_id = request.POST.get("target_user", "").strip()
+            target_user = active_users.filter(pk=target_user_id).first()
+
+            if not target_user:
+                messages.error(request, _("Please choose an active user to assign the selected articles to."))
+                return redirect("manage_orphan_articles")
+
+            if request.POST.get("confirm") != "yes":
+                return render(request, "admin_orphan_articles_confirm.html", {
+                    "action": "assign",
+                    "articles": selected_articles,
+                    "target_user": target_user,
+                    "target_user_label": target_user.get_username(),
+                    "return_url": reverse("manage_orphan_articles"),
+                })
+
+            for article in selected_articles:
+                article.owner = target_user
+                article.save()
+                write_article_files(article)
+
+            messages.success(
+                request,
+                _("Assigned %(count)s orphan article(s) to %(user)s.") % {
+                    "count": len(selected_articles),
+                    "user": target_user.get_username(),
+                },
+            )
+            return redirect("manage_orphan_articles")
+
+        if action == "delete":
+            if request.POST.get("confirm") != "yes":
+                return render(request, "admin_orphan_articles_confirm.html", {
+                    "action": "delete",
+                    "articles": selected_articles,
+                    "return_url": reverse("manage_orphan_articles"),
+                })
+
+            deleted_count = 0
+            for article in selected_articles:
+                delete_article_files(article)
+                article.delete()
+                deleted_count += 1
+
+            messages.success(request, _("Deleted %(count)s orphan article(s).") % {"count": deleted_count})
+            return redirect("manage_orphan_articles")
+
+        messages.error(request, _("Invalid orphan article action."))
+        return redirect("manage_orphan_articles")
+
+    orphan_queryset = orphan_queryset.order_by("status", "-updated_at", "title")
+    page_obj = paginate_articles(request, orphan_queryset, per_page=20)
+
+    return render(request, "admin_orphan_articles.html", {
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "orphan_search_query": search_query,
+        "status_filter": status_filter,
+        "status_choices": SuggestedArticle.Status.choices,
+        "orphan_result_count": orphan_queryset.count(),
+        "total_orphan_article_count": total_orphan_article_count,
+        "is_orphan_search": bool(search_query or status_filter),
+        "active_users": active_users,
+    })
+
