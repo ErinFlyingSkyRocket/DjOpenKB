@@ -9,10 +9,10 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from .models import ArticleImageUploadLog, ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
-from .views import delete_article_files, slugify_title, write_article_files
+from .views import delete_article_files, log_activity, slugify_title, write_article_files
 
 
 User = get_user_model()
@@ -503,6 +503,64 @@ class AuthActivityLogAdmin(admin.ModelAdmin):
     short_user_agent.short_description = "User agent"
 
 
+@admin.register(ActivityLog)
+class ActivityLogAdmin(admin.ModelAdmin):
+    """Read-only audit log for article, vote, AI, image, and admin-tool activity."""
+
+    list_display = (
+        "created_at",
+        "event_type",
+        "username",
+        "user",
+        "article_title",
+        "article_status",
+        "ip_address",
+        "short_path",
+    )
+    list_filter = ("event_type", "article_status", "created_at")
+    search_fields = (
+        "username",
+        "user__username",
+        "user__email",
+        "article_title",
+        "article__title",
+        "ip_address",
+        "path",
+        "details",
+    )
+    readonly_fields = (
+        "created_at",
+        "event_type",
+        "user",
+        "username",
+        "article",
+        "article_title",
+        "article_status",
+        "ip_address",
+        "user_agent",
+        "path",
+        "request_method",
+        "details",
+    )
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def short_path(self, obj):
+        value = obj.path or "-"
+        return value[:80] + ("..." if len(value) > 80 else "")
+
+    short_path.short_description = "Path"
+
+
 @admin.register(SuggestedArticle)
 class SuggestedArticleAdmin(admin.ModelAdmin):
     list_display = (
@@ -591,6 +649,12 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             article.approved_at = timezone.now()
             article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"])
             write_article_files(article)
+            log_activity(
+                request,
+                ActivityLog.EventType.ARTICLE_APPROVED,
+                article=article,
+                details={"source": "django_admin_bulk_action", "action": "approve_selected_articles"},
+            )
 
     @admin.action(description="Mark selected articles as pending failed")
     def mark_selected_articles_pending_failed(self, request, queryset):
@@ -603,6 +667,12 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             article.add_review_note_history(article.review_notes, reviewer=request.user, action="pending_failed")
             article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"])
             write_article_files(article)
+            log_activity(
+                request,
+                ActivityLog.EventType.ARTICLE_REJECTED,
+                article=article,
+                details={"source": "django_admin_bulk_action", "action": "mark_selected_articles_pending_failed"},
+            )
 
 
 
@@ -662,13 +732,47 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
 
         super().save_model(request, obj, form, change)
         write_article_files(obj)
+        if change and previous_status and previous_status != obj.status:
+            if obj.status == SuggestedArticle.Status.PUBLISHED:
+                event_type = ActivityLog.EventType.ARTICLE_APPROVED
+            elif obj.status == SuggestedArticle.Status.FAILED:
+                event_type = ActivityLog.EventType.ARTICLE_REJECTED
+            else:
+                event_type = ActivityLog.EventType.ARTICLE_STATUS_CHANGED
+        elif change:
+            event_type = ActivityLog.EventType.ARTICLE_UPDATED
+        else:
+            event_type = ActivityLog.EventType.ARTICLE_CREATED
+        log_activity(
+            request,
+            event_type,
+            article=obj,
+            details={
+                "source": "django_admin_change_form",
+                "change": bool(change),
+                "previous_status": previous_status,
+                "new_status": obj.status,
+            },
+        )
 
     def delete_model(self, request, obj):
+        log_activity(
+            request,
+            ActivityLog.EventType.ARTICLE_DELETED,
+            article=obj,
+            details={"source": "django_admin_change_form", "action": "delete_model"},
+        )
         delete_article_files(obj)
         super().delete_model(request, obj)
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
+            log_activity(
+                request,
+                ActivityLog.EventType.ARTICLE_DELETED,
+                article=obj,
+                details={"source": "django_admin_bulk_delete", "action": "delete_queryset"},
+            )
             delete_article_files(obj)
         super().delete_queryset(request, queryset)
 
@@ -702,7 +806,7 @@ class SiteSettingAdmin(admin.ModelAdmin):
             ),
         }),
         ("Authentication and session settings", {
-            "fields": ("auth_activity_log_retention_days", "session_timeout_days"),
+            "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "session_timeout_days"),
             "description": (
                 "Controls authentication/MFA log retention and user session lifetime. "
                 "The default session timeout is 30 days. Set session timeout to 0 to expire the session when the browser closes."

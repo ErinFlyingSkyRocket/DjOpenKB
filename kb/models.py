@@ -567,6 +567,80 @@ class ArticleImageUploadLog(models.Model):
         self.save(update_fields=["deleted_at", "deleted_by", "delete_reason"])
 
 
+class ActivityLog(models.Model):
+    """General admin audit/activity log for non-authentication actions.
+
+    Authentication and MFA events stay in AuthActivityLog. This table tracks
+    article, vote, image, AI, and admin-tool activity so admins can review who
+    did what, from where, and when.
+    """
+
+    class EventType(models.TextChoices):
+        ARTICLE_CREATED = "article_created", "Article created"
+        ARTICLE_UPDATED = "article_updated", "Article updated"
+        ARTICLE_DELETED = "article_deleted", "Article deleted"
+        ARTICLE_STATUS_CHANGED = "article_status_changed", "Article status changed"
+        ARTICLE_SUBMITTED = "article_submitted", "Article submitted for approval"
+        ARTICLE_APPROVED = "article_approved", "Article approved/published"
+        ARTICLE_REJECTED = "article_rejected", "Article marked pending failed"
+        ARTICLE_ORPHAN_ASSIGNED = "article_orphan_assigned", "Orphan article assigned"
+        ARTICLE_ORPHAN_DELETED = "article_orphan_deleted", "Orphan article deleted"
+        ARTICLE_VIEWED = "article_viewed", "Article viewed"
+        VOTE_UP = "vote_up", "Article vote up"
+        VOTE_DOWN = "vote_down", "Article vote down"
+        VOTE_UPDATED = "vote_updated", "Article vote changed"
+        VOTE_REMOVED = "vote_removed", "Article vote removed"
+        IMAGE_UPLOADED = "image_uploaded", "Article image uploaded"
+        IMAGE_DELETED = "image_deleted", "Article image deleted"
+        AI_QUESTION = "ai_question", "OpenKB AI question"
+        AI_RATE_LIMITED = "ai_rate_limited", "OpenKB AI rate limited"
+        BULK_IMPORT = "bulk_import", "Bulk article import"
+        ADMIN_TOOL_ACTION = "admin_tool_action", "Admin tool action"
+
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    event_type = models.CharField(max_length=60, choices=EventType.choices, db_index=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="activity_logs",
+    )
+    username = models.CharField(max_length=255, blank=True, db_index=True)
+
+    article = models.ForeignKey(
+        SuggestedArticle,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="activity_logs",
+    )
+    article_title = models.CharField(max_length=255, blank=True, db_index=True)
+    article_status = models.CharField(max_length=40, blank=True, db_index=True)
+
+    ip_address = models.GenericIPAddressField(null=True, blank=True, db_index=True)
+    user_agent = models.TextField(blank=True)
+    path = models.CharField(max_length=500, blank=True)
+    request_method = models.CharField(max_length=10, blank=True)
+    details = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Activity log"
+        verbose_name_plural = "Activity logs"
+        indexes = [
+            models.Index(fields=["-created_at", "event_type"]),
+            models.Index(fields=["username", "-created_at"]),
+            models.Index(fields=["article_title", "-created_at"]),
+            models.Index(fields=["ip_address", "-created_at"]),
+        ]
+
+    def __str__(self):
+        actor = self.username or (self.user.get_username() if self.user_id else "anonymous")
+        target = f" - {self.article_title}" if self.article_title else ""
+        return f"{self.get_event_type_display()} - {actor}{target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
+
+
 class SiteSetting(models.Model):
     """Singleton-style site settings editable from Django Admin."""
 
@@ -593,6 +667,14 @@ class SiteSetting(models.Model):
         help_text=(
             "Authenticated user sessions expire after this many days from sign-in. "
             "After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+        ),
+    )
+    activity_log_retention_days = models.PositiveIntegerField(
+        default=90,
+        verbose_name="General activity log retention (days)",
+        help_text=(
+            "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. "
+            "Use 0 to keep general activity logs indefinitely."
         ),
     )
 

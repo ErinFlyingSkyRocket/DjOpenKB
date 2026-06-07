@@ -142,6 +142,16 @@ def export_articles_zip(request):
 
     buffer.seek(0)
     timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+    log_activity(
+        request,
+        ActivityLog.EventType.ADMIN_TOOL_ACTION,
+        details={
+            "tool": "bulk_export_articles",
+            "article_count": len(manifest.get("articles", [])),
+            "upload_count": len(manifest.get("uploads", [])),
+        },
+    )
+
     response = HttpResponse(buffer.getvalue(), content_type="application/zip")
     response["Content-Disposition"] = f'attachment; filename="djopenkb-export-{timestamp}.zip"'
     return response
@@ -190,6 +200,18 @@ def import_articles_zip(request):
 
     if len(errors) > 10:
         messages.error(request, f"{len(errors) - 10} more import error(s) were hidden.")
+
+    log_activity(
+        request,
+        ActivityLog.EventType.BULK_IMPORT,
+        details={
+            "filename": uploaded_zip.name,
+            "size_bytes": uploaded_zip.size,
+            "imported_count": imported_count,
+            "error_count": len(errors),
+            "owner": request.user.get_username(),
+        },
+    )
 
     return redirect("admin_bulk_articles")
 
@@ -379,6 +401,18 @@ def manage_orphan_articles(request):
                     )
                     return redirect("manage_orphan_articles")
 
+                log_activity(
+                    request,
+                    ActivityLog.EventType.ARTICLE_ORPHAN_ASSIGNED,
+                    details={
+                        "assigned_count": assigned_count,
+                        "target_user": target_user.get_username(),
+                        "target_user_id": target_user.pk,
+                        "article_ids": [article.pk for article in selected_articles],
+                        "article_titles": [article.title for article in selected_articles],
+                    },
+                )
+
                 messages.success(
                     request,
                     _("Assigned %(count)s orphan article(s) to %(user)s.") % {
@@ -410,6 +444,17 @@ def manage_orphan_articles(request):
                         failed_titles.append(title)
 
                 if deleted_count:
+                    log_activity(
+                        request,
+                        ActivityLog.EventType.ARTICLE_ORPHAN_DELETED,
+                        details={
+                            "deleted_count": deleted_count,
+                            "failed_count": len(failed_titles),
+                            "selected_article_ids": clean_selected_ids,
+                            "deleted_titles": [article.title for article in selected_articles if article.title not in failed_titles],
+                            "failed_titles": failed_titles[:10],
+                        },
+                    )
                     messages.success(request, _("Deleted %(count)s orphan article(s).") % {"count": deleted_count})
 
                 if failed_titles:

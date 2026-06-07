@@ -34,7 +34,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
+from ..models import ActivityLog, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
 from ..mfa import user_requires_mfa
 
 
@@ -1349,6 +1349,13 @@ def record_article_session_view(request, article):
     request.session[session_key] = viewed_ids[-1000:]
     request.session.modified = True
 
+    log_activity(
+        request,
+        ActivityLog.EventType.ARTICLE_VIEWED,
+        article=article,
+        details={"view_count_after": article.view_count},
+    )
+
 
 def get_openkb_wiki_articles(sort_by_views=False):
     """Return public article cards from published Django articles only.
@@ -1972,6 +1979,44 @@ def get_client_ip(request):
     if forwarded_for:
         return forwarded_for.split(",")[0].strip()
     return request.META.get("REMOTE_ADDR", "unknown")
+
+
+def log_activity(request, event_type, article=None, user=None, details=None):
+    """Write a general activity/audit event without breaking the user action.
+
+    This is intentionally best-effort: if logging fails, the article/vote/admin
+    workflow should still continue, while the exception is written to Django logs.
+    """
+    try:
+        actor = user
+        if actor is None and request is not None and getattr(request, "user", None) is not None:
+            actor = request.user if request.user.is_authenticated else None
+
+        username = ""
+        if actor is not None and getattr(actor, "is_authenticated", False):
+            username = actor.get_username() or getattr(actor, "email", "") or ""
+
+        article_title = ""
+        article_status = ""
+        if article is not None:
+            article_title = (getattr(article, "title", "") or "")[:255]
+            article_status = getattr(article, "status", "") or ""
+
+        ActivityLog.objects.create(
+            event_type=event_type,
+            user=actor if getattr(actor, "pk", None) else None,
+            username=username,
+            article=article if getattr(article, "pk", None) else None,
+            article_title=article_title,
+            article_status=article_status,
+            ip_address=get_client_ip(request) if request is not None else None,
+            user_agent=(request.META.get("HTTP_USER_AGENT", "") if request is not None else ""),
+            path=(request.get_full_path()[:500] if request is not None else ""),
+            request_method=(request.method[:10] if request is not None else ""),
+            details=details or {},
+        )
+    except Exception:
+        logger.exception("Failed to write activity log event_type=%s", event_type)
 
 
 def get_openkb_ai_rate_identifier(request):

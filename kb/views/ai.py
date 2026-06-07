@@ -38,6 +38,14 @@ def ask_openkb_ai(request):
 
     allowed, retry_after = check_openkb_ai_rate_limit(request)
     if not allowed:
+        log_activity(
+            request,
+            ActivityLog.EventType.AI_RATE_LIMITED,
+            details={
+                "identifier": get_openkb_ai_rate_identifier(request),
+                "retry_after_seconds": retry_after,
+            },
+        )
         return JsonResponse(
             {
                 "error": "Too many OpenKB AI questions. Please wait a few minutes before trying again.",
@@ -68,6 +76,17 @@ def ask_openkb_ai(request):
             },
             status=400,
         )
+
+    log_activity(
+        request,
+        ActivityLog.EventType.AI_QUESTION,
+        details={
+            "question_length": len(question),
+            "question_preview": question[:200],
+            "identifier": get_openkb_ai_rate_identifier(request),
+            "authenticated": request.user.is_authenticated,
+        },
+    )
 
     if not settings.OPENKB_DATA_DIR.exists():
         return JsonResponse({

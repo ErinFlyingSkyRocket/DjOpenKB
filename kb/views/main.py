@@ -114,17 +114,40 @@ def vote_article(request, article_id):
     ).first()
 
     if existing_vote and existing_vote.value == value:
+        removed_value = existing_vote.value
         existing_vote.delete()
+        log_activity(
+            request,
+            ActivityLog.EventType.VOTE_REMOVED,
+            article=article,
+            details={"removed_vote": "up" if removed_value == ArticleVote.VoteValue.UP else "down"},
+        )
         messages.success(request, _("Your vote has been removed."))
     elif existing_vote:
+        previous_value = existing_vote.value
         existing_vote.value = value
         existing_vote.save(update_fields=["value", "updated_at"])
+        log_activity(
+            request,
+            ActivityLog.EventType.VOTE_UPDATED,
+            article=article,
+            details={
+                "previous_vote": "up" if previous_value == ArticleVote.VoteValue.UP else "down",
+                "new_vote": "up" if value == ArticleVote.VoteValue.UP else "down",
+            },
+        )
         messages.success(request, _("Your vote has been updated."))
     else:
         ArticleVote.objects.create(
             article=article,
             user=request.user,
             value=value,
+        )
+        log_activity(
+            request,
+            ActivityLog.EventType.VOTE_UP if value == ArticleVote.VoteValue.UP else ActivityLog.EventType.VOTE_DOWN,
+            article=article,
+            details={"vote": "up" if value == ArticleVote.VoteValue.UP else "down"},
         )
         messages.success(request, _("Thank you. Your vote has been saved."))
 

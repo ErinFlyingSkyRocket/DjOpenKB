@@ -70,6 +70,25 @@ def suggest(request):
     clear_committed_pending_uploads(request, article.image_assets)
 
     if status == SuggestedArticle.Status.DRAFT:
+        activity_event = ActivityLog.EventType.ARTICLE_CREATED
+    elif status == SuggestedArticle.Status.PUBLISHED:
+        activity_event = ActivityLog.EventType.ARTICLE_APPROVED
+    else:
+        activity_event = ActivityLog.EventType.ARTICLE_SUBMITTED
+
+    log_activity(
+        request,
+        activity_event,
+        article=article,
+        details={
+            "action": "create",
+            "status": status,
+            "is_admin_direct_publish": bool(is_admin and status == SuggestedArticle.Status.PUBLISHED),
+            "image_count": len(article.image_assets or []),
+        },
+    )
+
+    if status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
     elif status == SuggestedArticle.Status.PUBLISHED:
         messages.success(request, _("Article published successfully."))
@@ -228,6 +247,32 @@ def edit_suggestion(request, article_id):
     sync_article_image_assets(article, old_assets=old_image_assets)
     clear_committed_pending_uploads(request, article.image_assets)
 
+    if previous_status != status:
+        if status == SuggestedArticle.Status.PUBLISHED:
+            activity_event = ActivityLog.EventType.ARTICLE_APPROVED
+        elif status == SuggestedArticle.Status.FAILED:
+            activity_event = ActivityLog.EventType.ARTICLE_REJECTED
+        elif status == SuggestedArticle.Status.PENDING:
+            activity_event = ActivityLog.EventType.ARTICLE_SUBMITTED
+        else:
+            activity_event = ActivityLog.EventType.ARTICLE_STATUS_CHANGED
+    else:
+        activity_event = ActivityLog.EventType.ARTICLE_UPDATED
+
+    log_activity(
+        request,
+        activity_event,
+        article=article,
+        details={
+            "action": "edit",
+            "previous_status": previous_status,
+            "new_status": status,
+            "is_admin_action": user_is_site_admin(request.user),
+            "image_count": len(article.image_assets or []),
+            "old_image_count": len(old_image_assets or []),
+        },
+    )
+
     if status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
     elif status == SuggestedArticle.Status.PENDING:
@@ -252,6 +297,20 @@ def delete_suggestion(request, article_id):
 
     if request.method == "POST":
         title = article.title
+        article_id_for_log = article.pk
+        article_status_for_log = article.status
+        log_activity(
+            request,
+            ActivityLog.EventType.ARTICLE_DELETED,
+            article=article,
+            details={
+                "action": "delete",
+                "article_id": article_id_for_log,
+                "title": title,
+                "status": article_status_for_log,
+                "is_admin_action": user_is_site_admin(request.user),
+            },
+        )
         delete_article_files(article)
         article.delete()
         messages.success(request, f"Article deleted: {title}")
@@ -291,13 +350,23 @@ def upload_article_image(request):
         for chunk in uploaded_file.chunks():
             destination.write(chunk)
 
-    ArticleImageUploadLog.objects.create(
+    image_log = ArticleImageUploadLog.objects.create(
         filename=filename,
         original_name=(uploaded_file.name or "")[:255],
         content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
         size_bytes=getattr(uploaded_file, "size", 0) or 0,
         uploaded_by=request.user,
         upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
+    )
+    log_activity(
+        request,
+        ActivityLog.EventType.IMAGE_UPLOADED,
+        details={
+            "filename": filename,
+            "original_name": image_log.original_name,
+            "content_type": image_log.content_type,
+            "size_bytes": image_log.size_bytes,
+        },
     )
 
     pending_uploads = request.session.get("pending_article_uploads", [])
@@ -347,6 +416,15 @@ def delete_article_image(request):
             filename,
             actor=request.user,
             reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+        )
+        log_activity(
+            request,
+            ActivityLog.EventType.IMAGE_DELETED,
+            details={
+                "filename": filename,
+                "reason": ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+                "source": "editor_preview",
+            },
         )
 
     request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
