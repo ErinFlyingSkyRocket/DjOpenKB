@@ -2151,21 +2151,24 @@ def check_openkb_ai_rate_limit(request):
     block_seconds = settings.OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS
 
     block_key = f"openkb_ai:block:{identifier}"
-    if cache.get(block_key):
+    blocked_until = cache.get(block_key)
+    if blocked_until:
+        retry_after = max(1, int(blocked_until) - now)
         logger.warning(
-            "OpenKB AI blocked request while temporary block is active: identifier=%s ip=%s user_id=%s",
+            "OpenKB AI blocked request while temporary block is active: identifier=%s ip=%s user_id=%s retry_after_seconds=%s",
             identifier,
             get_client_ip(request),
             request.user.pk if request.user.is_authenticated else "anonymous",
+            retry_after,
         )
-        return False, block_seconds
+        return False, retry_after
 
     attempts_key = f"openkb_ai:attempts:{identifier}"
     attempts = cache.get(attempts_key, [])
     attempts = [timestamp for timestamp in attempts if now - timestamp < window_seconds]
 
     if len(attempts) >= max_requests:
-        cache.set(block_key, True, block_seconds)
+        cache.set(block_key, now + block_seconds, block_seconds)
         cache.set(attempts_key, attempts, window_seconds)
         logger.warning(
             "OpenKB AI rate limit exceeded: identifier=%s ip=%s user_id=%s attempts=%s window_seconds=%s block_seconds=%s",

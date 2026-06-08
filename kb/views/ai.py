@@ -49,7 +49,7 @@ def ask_openkb_ai(request):
         )
         return JsonResponse(
             {
-                "error": "Too many OpenKB AI questions. Please wait a few minutes before trying again.",
+                "error": "Too many OpenKB AI questions. Please wait before trying again.",
                 "retry_after_seconds": retry_after,
                 "related_articles": [],
                 "show_related_articles": False,
