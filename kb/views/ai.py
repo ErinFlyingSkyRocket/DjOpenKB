@@ -9,29 +9,14 @@ def _openkb_ai_user_context(request):
     }
 
 
-def _article_recommendation_response(question, related_articles=None, status=200):
-    """Return a chat response based on local published articles only."""
-    if related_articles is None:
-        related_articles = find_related_openkb_articles(question, limit=5)
-
-    return JsonResponse(
-        {
-            "answer": build_openkb_article_recommendation_answer(question, related_articles),
-            "related_articles": related_articles,
-            "show_related_articles": bool(related_articles),
-        },
-        status=status,
-    )
-
-
 @require_POST
 def ask_openkb_ai(request):
-    """Answer OpenKB AI questions and always allow public article recommendations.
+    """Answer OpenKB AI questions through the real OpenKB/Gemini flow.
 
-    Article/link recommendation requests are served directly from the local
-    published-article database so they work for anonymous users and signed-in
-    users even when the external LLM provider is busy. General Q&A still tries
-    the real OpenKB/Gemini flow first, then falls back to local article links.
+    The chatbox should behave like an AI assistant first. It no longer short-circuits
+    prompts such as "articles about X" into a hardcoded local article-search answer.
+    Published article links are still attached when there are relevant matches, but
+    the main answer always comes from OpenKB AI whenever the provider is available.
     """
     if request.method != "POST":
         return JsonResponse({"error": "POST request required"}, status=405)
@@ -59,7 +44,14 @@ def ask_openkb_ai(request):
     question = request.POST.get("question", "").strip()
 
     if not question:
-        return JsonResponse({"error": "Please type a question first.", "related_articles": [], "show_related_articles": False}, status=400)
+        return JsonResponse(
+            {
+                "error": "Please type a question first.",
+                "related_articles": [],
+                "show_related_articles": False,
+            },
+            status=400,
+        )
 
     max_prompt_chars = settings.OPENKB_AI_MAX_PROMPT_CHARS
     if len(question) > max_prompt_chars:
@@ -95,25 +87,8 @@ def ask_openkb_ai(request):
             "show_related_articles": False,
         }, status=500)
 
-    # Do not send greetings/status checks into OpenKB. The OpenKB CLI keeps
-    # internal runtime logs, and generic prompts can cause the model to talk
-    # about those logs instead of published articles.
-    if is_openkb_small_talk_request(question):
-        return JsonResponse({
-            "answer": build_openkb_small_talk_answer(question),
-            "related_articles": [],
-            "show_related_articles": False,
-        })
-
-    # If the user is asking for article/source/latest recommendations, answer
-    # directly from the published Django article database. This avoids exposing
-    # OpenKB internal runtime data and keeps the response predictable.
-    if is_openkb_article_recommendation_request(question) or is_openkb_latest_article_request(question):
-        return _article_recommendation_response(question)
-
     try:
         raw_answer = run_openkb_query(question)
-
         related_articles = find_related_openkb_articles(question, limit=5)
 
         if openkb_ai_output_indicates_error(raw_answer):
@@ -127,8 +102,6 @@ def ask_openkb_ai(request):
                 len(raw_answer or ""),
                 redact_openkb_debug_text(raw_answer),
             )
-            if is_openkb_article_recommendation_request(question) and related_articles:
-                return _article_recommendation_response(question, related_articles=related_articles)
             return JsonResponse({
                 "error": clean_openkb_ai_error_message(raw_answer),
                 "related_articles": [],
@@ -138,25 +111,18 @@ def ask_openkb_ai(request):
         answer = clean_openkb_ai_answer(raw_answer)
 
         if not answer:
-            if related_articles:
-                answer = build_openkb_article_recommendation_answer(question, related_articles)
-            else:
-                answer = "I can only answer from published knowledge-base articles. Please ask about an article topic or request relevant articles."
-
-        # Even if OpenKB says it has no answer, still show matching local links.
-        # This avoids hiding useful articles when the external provider is vague.
-        show_related_articles = bool(related_articles)
+            answer = (
+                "OpenKB AI could not produce a clear answer for that question. "
+                "Please try rephrasing it or contact IT support if the issue persists."
+            )
 
         return JsonResponse({
             "answer": answer,
-            "related_articles": related_articles if show_related_articles else [],
-            "show_related_articles": show_related_articles,
+            "related_articles": related_articles if related_articles else [],
+            "show_related_articles": bool(related_articles),
         })
 
     except FileNotFoundError:
-        related_articles = find_related_openkb_articles(question, limit=5)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
             "error": "OpenKB CLI not found. Run: python -m pip install -e OpenKB-main",
             "related_articles": [],
@@ -169,11 +135,8 @@ def ask_openkb_ai(request):
             "OpenKB AI query timed out: identifier=%s ip=%s user_id=%s question_length=%s",
             ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
         )
-        related_articles = find_related_openkb_articles(question, limit=5)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
-            "error": "OpenKB AI query timed out. Try a shorter question or a more specific article keyword.",
+            "error": "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists.",
             "related_articles": [],
             "show_related_articles": False,
         }, status=500)
@@ -188,9 +151,6 @@ def ask_openkb_ai(request):
             len(question),
             redact_openkb_debug_text(error),
         )
-        related_articles = find_related_openkb_articles(question, limit=5)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
             "error": clean_openkb_ai_error_message(error),
             "related_articles": [],
