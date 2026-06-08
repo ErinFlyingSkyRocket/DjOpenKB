@@ -23,7 +23,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Vault integration for sensitive secrets such as Django, database, LDAP, and AI credentials.
 - PostgreSQL database through Docker Compose.
 - Nginx HTTPS reverse proxy on port `8080`.
-- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`.
+- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`, including prompt length limits, rate limiting, cooldown blocking, related article recommendations, and activity logging.
 - Markdown article rendering with sanitization.
 - Image upload restrictions for article content.
 - Multilingual UI support through Django translation files.
@@ -56,7 +56,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | Articles | Draft/pending/pending failed/published workflow, duplicate title prevention, admin approval, and orphan article management |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
-| AI chatbot | Rate limiting, prompt length limits, safer error handling, and activity logging |
+| AI chatbot | Prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, per-user limiting for logged-in users, per-IP limiting for anonymous users, safer error handling, related article recommendations, and activity logging |
 | Logging | Separate authentication logs and general activity logs |
 | Secrets | Vault-backed Django/database/LDAP/AI secrets |
 | Network | Nginx HTTPS reverse proxy and configurable trusted hosts/origins |
@@ -310,6 +310,40 @@ If OpenKB is not initialized, the chatbot may fail or not detect the article dat
 
 ---
 
+## OpenKB AI Chatbot Rate Limiting
+
+The AI chatbot is protected with rate limiting so users cannot continuously consume AI resources.
+
+Current default behaviour:
+
+```text
+Maximum questions: 5
+Time window: 60 seconds
+Cooldown after exceeding limit: 30 minutes
+```
+
+Rate limiting is based on the visitor type:
+
+| Visitor type | Rate-limit identity | Behaviour |
+|---|---|---|
+| Logged-in local user | Django user ID | The limit follows the authenticated local account. |
+| Logged-in AD / LDAP user | Django user ID | The limit follows the Django-side account created for the domain user. |
+| Anonymous visitor | IP address | The limit follows the detected client IP address. |
+
+This means refreshing the browser, opening a new tab, or using incognito mode does not bypass the limit for anonymous users unless the IP address changes. Logged-in users are limited by their own account ID, so a shared company network, VPN, Wi-Fi, or proxy IP does not accidentally block all authenticated staff.
+
+The related settings are:
+
+```text
+OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = 5
+OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = 60
+OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = 1800
+```
+
+The rate limit is intentionally not based on the browser session.
+
+---
+
 ### `postgres-data/`
 
 Stores PostgreSQL local persistent data when using a bind-mounted database folder.
@@ -508,4 +542,5 @@ LDAPS certificate validation is working
 Vault is initialized and sealed/unsealed correctly
 Django check --deploy has been reviewed
 Backups and restore steps are documented
+OpenKB AI rate limiting and activity logging are enabled
 ```

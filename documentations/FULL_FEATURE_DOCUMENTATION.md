@@ -379,7 +379,7 @@ OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
 
 The Gemini API key is stored in Vault, not directly in source code.
 
-### 14.3 AI Endpoint Safety Limits
+### 14.3 AI Endpoint Safety Limits and Rate Limiting
 
 The Ask OpenKB AI endpoint includes limits such as:
 
@@ -396,8 +396,24 @@ Current defaults in settings:
 OPENKB_AI_MAX_PROMPT_CHARS = 1000
 OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = 5
 OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = 60
-OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = 300
+OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = 1800
 ```
+
+This means each rate-limit identity can send up to 5 AI questions within 60 seconds. If the limit is exceeded, that identity is temporarily blocked from using the chatbot for 1800 seconds, which is 30 minutes.
+
+The rate-limit identity is selected based on authentication state:
+
+| Visitor type | Rate-limit identity | Behaviour |
+|---|---|---|
+| Logged-in local user | Django user ID | The limit follows the authenticated user account, even if the user refreshes the browser, opens another tab, or logs in again from the same browser. |
+| Logged-in AD / LDAP user | Django user ID | The limit follows the Django-side account created for the domain user. |
+| Anonymous visitor | IP address | The limit follows the detected client IP address. Incognito mode or a new browser session does not bypass the limit unless the client IP changes. |
+
+The rate limit is intentionally not based on the browser session. This prevents a user from bypassing the limit simply by refreshing the browser, opening another tab, or starting a new private browsing session.
+
+For a company intranet deployment, this design keeps anonymous chatbot access available while still providing basic abuse protection. Logged-in users are limited by their own user ID so that a shared office, VPN, Wi-Fi, or proxy IP address does not accidentally block all authenticated staff members.
+
+If the site is deployed behind Nginx or another reverse proxy, client IP detection should continue to use the trusted reverse proxy header configuration so anonymous IP-based rate limiting and activity logs remain accurate.
 
 ### 14.4 Related Article Recommendations
 
@@ -636,7 +652,7 @@ Article metadata is stored in PostgreSQL. Article Markdown content is also mirro
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
 | Activity logs | Article, vote, upload, AI, import/export, and admin-tool activity logging with retention cleanup. |
 | Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
-| AI endpoint | Prompt length limit, rate limiting, timeout handling, output cleanup, redacted activity previews. |
+| AI endpoint | Prompt length limit, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, user-ID based limiting for logged-in users, IP-based limiting for anonymous users, timeout handling, output cleanup, and redacted activity previews. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
 
 ## 25. Files That Should Not Be Shared
@@ -705,6 +721,7 @@ docker compose up -d
 - Keep Vault secrets out of shared packages.
 - Use LDAPS with certificate validation for AD.
 - Use the activity logs and authentication logs to review suspicious behaviour.
+- Keep the OpenKB AI rate limit enabled so one user or anonymous IP cannot continuously consume AI resources.
 - Keep log retention at 30 days unless longer investigation history is needed.
 - Use `--dry-run` before cleanup commands when validating behaviour.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
