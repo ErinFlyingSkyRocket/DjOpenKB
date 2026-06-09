@@ -1266,6 +1266,27 @@ def validate_profile_password_policy(password, user):
 
 
 
+def get_public_article_updated_at(article):
+    """Return the timestamp that should be shown on the public article page.
+
+    Hidden pending-update activity should not make the published article look
+    updated before an admin approves it. For published articles, prefer the
+    approval timestamp, then creation timestamp. For non-published owner/admin
+    preview, fall back to updated_at.
+    """
+    if article is None:
+        return None
+
+    approved_at = getattr(article, "approved_at", None)
+    created_at = getattr(article, "created_at", None)
+    updated_at = getattr(article, "updated_at", None)
+
+    if getattr(article, "status", None) == SuggestedArticle.Status.PUBLISHED:
+        return approved_at or created_at or updated_at
+
+    return updated_at or approved_at or created_at
+
+
 
 
 # Administrative cleanup: larger service groups live in smaller modules.
