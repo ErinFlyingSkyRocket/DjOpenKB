@@ -321,10 +321,19 @@ def image_is_used_by_other_article(filename, current_article=None):
     if current_article and current_article.pk:
         queryset = queryset.exclude(pk=current_article.pk)
 
-    for article in queryset.only("body", "image_assets"):
+    for article in queryset.only(
+        "body",
+        "image_assets",
+        "pending_update_body",
+        "pending_update_image_assets",
+    ):
         if filename in (article.image_assets or []):
             return True
         if filename in extract_article_image_filenames(article.body):
+            return True
+        if filename in (article.pending_update_image_assets or []):
+            return True
+        if filename in extract_article_image_filenames(article.pending_update_body):
             return True
     return False
 
@@ -398,11 +407,20 @@ def get_all_referenced_uploaded_files():
     """Return uploaded filenames still referenced by articles or Markdown files."""
     referenced = set()
 
-    # 1) Trust Django article records first. This covers draft/published articles
-    # and images tracked in image_assets.
-    for article in SuggestedArticle.objects.only("body", "image_assets"):
+    # 1) Trust Django article records first. This covers live article images and
+    # pending-update images that are waiting for admin review. Without the pending
+    # fields, the cleanup tool could wrongly classify a pending-update upload as
+    # stray before the admin has approved/rejected it.
+    for article in SuggestedArticle.objects.only(
+        "body",
+        "image_assets",
+        "pending_update_body",
+        "pending_update_image_assets",
+    ):
         referenced.update(article.image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.body))
+        referenced.update(article.pending_update_image_assets or [])
+        referenced.update(extract_uploaded_file_filenames_from_text(article.pending_update_body))
 
     # 2) Also scan all OpenKB wiki Markdown files. This protects manually added
     # Markdown files or files edited outside Django.
@@ -841,6 +859,23 @@ def format_user_for_markdown(user):
     if user.email:
         return user.email
     return user.get_username()
+
+
+def get_public_article_updated_at(article):
+    """Return the timestamp that represents the currently visible public content.
+
+    Submitting/rejecting a pending update changes the database row's updated_at,
+    but it must not make the public article look updated because the published
+    content is still the old version. Once an update is approved, updated_at is
+    correct again because the public content has changed.
+    """
+    if (
+        article.status == SuggestedArticle.Status.PUBLISHED
+        and article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
+        and article.approved_at
+    ):
+        return article.approved_at
+    return article.updated_at
 
 
 def build_article_markdown(article):
@@ -1329,7 +1364,12 @@ def delete_article_files(article):
         if str(file_path).startswith(str(root_dir)) and file_path.exists() and file_path.is_file():
             file_path.unlink()
 
-    for filename in (article.image_assets or extract_article_image_filenames(article.body)):
+    filenames_to_check = set(article.image_assets or [])
+    filenames_to_check.update(extract_article_image_filenames(article.body))
+    filenames_to_check.update(article.pending_update_image_assets or [])
+    filenames_to_check.update(extract_article_image_filenames(article.pending_update_body))
+
+    for filename in filenames_to_check:
         if not image_is_used_by_other_article(filename, current_article=article):
             delete_uploaded_image_file(filename)
 
@@ -1391,7 +1431,8 @@ def get_openkb_wiki_articles(sort_by_views=False):
     )
 
     for suggested in queryset:
-        modified_at = timezone.localtime(suggested.updated_at).strftime("%Y-%m-%d %H:%M")
+        public_updated_at = get_public_article_updated_at(suggested)
+        modified_at = timezone.localtime(public_updated_at).strftime("%Y-%m-%d %H:%M")
         articles.append({
             "title": suggested.title,
             "type": "Article",

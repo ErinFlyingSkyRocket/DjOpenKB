@@ -32,7 +32,7 @@ def article_detail(request, article_id):
         "type": "Article",
         "path": "",
         "published_at": article.approved_at or article.created_at,
-        "updated_at": article.updated_at,
+        "updated_at": get_public_article_updated_at(article),
         "author": article.author_display,
         "author_username": article.author_username,
         "author_email": article.author_email,

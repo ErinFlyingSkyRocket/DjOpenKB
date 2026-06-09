@@ -201,8 +201,16 @@ def edit_suggestion(request, article_id):
 
     if is_admin_action:
         status = request.POST.get("status", article.status).strip()
-        if status not in SuggestedArticle.Status.values:
-            status = article.status
+        admin_allowed_statuses = {
+            SuggestedArticle.Status.PENDING,
+            SuggestedArticle.Status.FAILED,
+            SuggestedArticle.Status.PUBLISHED,
+        }
+        if status not in admin_allowed_statuses:
+            # Admin review should not send articles back to Draft.
+            # Keep the article in the review queue unless the admin explicitly
+            # marks it as Pending failed or Published.
+            status = SuggestedArticle.Status.PENDING
     else:
         if article.status == SuggestedArticle.Status.PUBLISHED:
             # Published articles stay public. Normal user edits are stored as
@@ -320,7 +328,9 @@ def edit_suggestion(request, article_id):
             # resubmits. The actual admin rejection was already recorded.
             article.review_notes = ""
 
-        if is_admin_action and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
+        if is_admin_action and status == SuggestedArticle.Status.PUBLISHED:
+            # Admin save/publish changes the public version immediately, so refresh
+            # the public approval timestamp even when the article was already published.
             article.approved_by = request.user
             article.approved_at = timezone.now()
         elif status != SuggestedArticle.Status.PUBLISHED:
@@ -333,12 +343,14 @@ def edit_suggestion(request, article_id):
         sync_article_image_assets(article, old_assets=old_image_assets)
     clear_committed_pending_uploads(request, new_image_assets)
 
-    if previous_status != status:
-        if status == SuggestedArticle.Status.PUBLISHED:
+    effective_status = article.status
+
+    if previous_status != effective_status:
+        if effective_status == SuggestedArticle.Status.PUBLISHED:
             activity_event = ActivityLog.EventType.ARTICLE_APPROVED
-        elif status == SuggestedArticle.Status.FAILED:
+        elif effective_status == SuggestedArticle.Status.FAILED:
             activity_event = ActivityLog.EventType.ARTICLE_REJECTED
-        elif status == SuggestedArticle.Status.PENDING:
+        elif effective_status == SuggestedArticle.Status.PENDING:
             activity_event = ActivityLog.EventType.ARTICLE_SUBMITTED
         else:
             activity_event = ActivityLog.EventType.ARTICLE_STATUS_CHANGED
@@ -352,7 +364,8 @@ def edit_suggestion(request, article_id):
         details={
             "action": "edit",
             "previous_status": previous_status,
-            "new_status": status,
+            "requested_status": status,
+            "new_status": effective_status,
             "previous_update_status": previous_update_status,
             "is_admin_action": is_admin_action,
             "is_published_update_flow": is_published_update_flow,
