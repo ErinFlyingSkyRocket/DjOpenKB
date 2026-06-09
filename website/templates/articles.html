@@ -213,6 +213,52 @@
         .openkb-ai-related-title { font-weight: bold; font-size: 12px; margin-bottom: 6px; }
         .openkb-ai-related a { display: block; margin-bottom: 5px; }
         .openkb-ai-related-meta { color: #777; font-size: 11px; }
+
+
+        .openkb-search-suggestions {
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            top: 100%;
+            z-index: 1050;
+            margin-top: 6px;
+        }
+        .openkb-search-suggestions .list-group {
+            margin-bottom: 0;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.16);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .openkb-search-suggestions-heading {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e5e5e5;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .openkb-search-suggestions a.list-group-item {
+            text-align: left;
+        }
+        .openkb-search-suggestion-title {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+        .openkb-search-suggestion-excerpt {
+            display: block;
+            color: #777;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+        .openkb-search-suggestion-footer {
+            font-size: 12px;
+            color: #18bc9c;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -232,8 +278,8 @@
                         <button class="btn btn-default btn-lg" id="btn_search" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </span>
                 </div>
-                <div id="searchResult" class="hidden col-lg-12">
-                    <ul class="list-group searchResultList"></ul>
+                <div id="searchResult" class="hidden openkb-search-suggestions" data-suggestions-url="{% url 'search_article_suggestions' %}">
+                    <ul class="list-group searchResultList" role="listbox" aria-label="{% trans 'Possible search matches' %}"></ul>
                 </div>
             </div>
         </form>
@@ -448,6 +494,142 @@
     const openkbAiToggle = document.getElementById("openkbAiToggle");
     const openkbAiClose = document.getElementById("openkbAiClose");
     let openkbAiThinking = false;
+
+    const openkbSearchInput = document.getElementById("frm_search");
+    const openkbSearchDropdown = document.getElementById("searchResult");
+    const openkbSearchSuggestionList = openkbSearchDropdown ? openkbSearchDropdown.querySelector(".searchResultList") : null;
+    const openkbSearchSuggestionUrl = openkbSearchDropdown ? openkbSearchDropdown.dataset.suggestionsUrl : "";
+    let openkbSearchSuggestTimer = null;
+    let openkbSearchSuggestController = null;
+
+    function hideOpenKbSearchSuggestions() {
+        if (openkbSearchDropdown) {
+            openkbSearchDropdown.classList.add("hidden");
+        }
+    }
+
+    function showOpenKbSearchSuggestions() {
+        if (openkbSearchDropdown) {
+            openkbSearchDropdown.classList.remove("hidden");
+        }
+    }
+
+    function clearOpenKbSearchSuggestions() {
+        if (openkbSearchSuggestionList) {
+            openkbSearchSuggestionList.innerHTML = "";
+        }
+    }
+
+    function getSafeOpenKbArticleUrl(url) {
+        if (typeof url !== "string") { return "#"; }
+        if (!url.startsWith("/")) { return "#"; }
+        if (url.startsWith("//")) { return "#"; }
+        return url;
+    }
+
+    function appendOpenKbSuggestionItem(article) {
+        const link = document.createElement("a");
+        link.className = "list-group-item";
+        link.href = getSafeOpenKbArticleUrl(article.url);
+        link.setAttribute("role", "option");
+
+        const title = document.createElement("span");
+        title.className = "openkb-search-suggestion-title";
+        title.textContent = article.title || "{% trans 'Untitled article' %}";
+        link.appendChild(title);
+
+        if (article.excerpt) {
+            const excerpt = document.createElement("span");
+            excerpt.className = "openkb-search-suggestion-excerpt";
+            excerpt.textContent = article.excerpt;
+            link.appendChild(excerpt);
+        }
+
+        openkbSearchSuggestionList.appendChild(link);
+    }
+
+    function renderOpenKbSearchSuggestions(query, articles) {
+        clearOpenKbSearchSuggestions();
+
+        const heading = document.createElement("li");
+        heading.className = "openkb-search-suggestions-heading";
+        heading.textContent = "{% trans 'Possible matches' %}";
+        openkbSearchSuggestionList.appendChild(heading);
+
+        if (articles.length) {
+            articles.forEach(appendOpenKbSuggestionItem);
+        } else {
+            const empty = document.createElement("li");
+            empty.className = "list-group-item text-muted";
+            empty.textContent = "{% trans 'No possible matches found.' %}";
+            openkbSearchSuggestionList.appendChild(empty);
+        }
+
+        const searchAll = document.createElement("a");
+        searchAll.className = "list-group-item openkb-search-suggestion-footer";
+        searchAll.href = "{% url 'search' %}?q=" + encodeURIComponent(query);
+        searchAll.textContent = "{% trans 'Search all articles for' %} " + query;
+        openkbSearchSuggestionList.appendChild(searchAll);
+
+        showOpenKbSearchSuggestions();
+    }
+
+    async function loadOpenKbSearchSuggestions() {
+        if (!openkbSearchInput || !openkbSearchSuggestionList || !openkbSearchSuggestionUrl) { return; }
+
+        const query = openkbSearchInput.value.trim();
+        if (query.length < 2) {
+            clearOpenKbSearchSuggestions();
+            hideOpenKbSearchSuggestions();
+            return;
+        }
+
+        if (openkbSearchSuggestController) {
+            openkbSearchSuggestController.abort();
+        }
+        openkbSearchSuggestController = new AbortController();
+
+        try {
+            const response = await fetch(openkbSearchSuggestionUrl + "?q=" + encodeURIComponent(query), {
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                signal: openkbSearchSuggestController.signal
+            });
+            if (!response.ok) { return; }
+            const data = await response.json();
+            const results = Array.isArray(data.results) ? data.results.slice(0, 8) : [];
+            renderOpenKbSearchSuggestions(query, results);
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                hideOpenKbSearchSuggestions();
+            }
+        }
+    }
+
+    if (openkbSearchInput) {
+        openkbSearchInput.addEventListener("input", function() {
+            window.clearTimeout(openkbSearchSuggestTimer);
+            openkbSearchSuggestTimer = window.setTimeout(loadOpenKbSearchSuggestions, 180);
+        });
+
+        openkbSearchInput.addEventListener("focus", function() {
+            if (openkbSearchInput.value.trim().length >= 2) {
+                loadOpenKbSearchSuggestions();
+            }
+        });
+
+        openkbSearchInput.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                hideOpenKbSearchSuggestions();
+            }
+        });
+
+        document.addEventListener("click", function(event) {
+            if (!openkbSearchDropdown || !openkbSearchInput) { return; }
+            if (!openkbSearchDropdown.contains(event.target) && event.target !== openkbSearchInput) {
+                hideOpenKbSearchSuggestions();
+            }
+        });
+    }
 
     function getOpenKbAiTime() {
         return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

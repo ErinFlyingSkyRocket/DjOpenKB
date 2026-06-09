@@ -162,6 +162,40 @@ def vote_article(request, article_id):
     return redirect(next_url)
 
 
+
+def search_article_suggestions(request):
+    """Return a small list of possible article matches for the home search dropdown.
+
+    This is intentionally a selector/dropdown helper, not browser autocomplete:
+    it does not change the user's typed text and only exposes published articles.
+    """
+    init_openkb_storage()
+
+    query = (request.GET.get("q") or "").strip()[:80]
+    if len(query) < 2:
+        return JsonResponse({"results": []})
+
+    public_articles = get_openkb_wiki_articles(sort_by_views=False)
+    ranked_articles = rank_articles_for_query(public_articles, query)[:8]
+
+    results = []
+    query_words = tokenize_search_query(query)
+    for article in ranked_articles:
+        raw_markdown = article.get("raw_markdown") or ""
+        excerpt = article.get("search_excerpt") or build_search_excerpt(raw_markdown, query_words, max_length=110)
+        url = article.get("url") or "#"
+        if not isinstance(url, str) or not url.startswith("/") or url.startswith("//"):
+            url = "#"
+
+        results.append({
+            "title": article.get("title") or _("Untitled article"),
+            "url": url,
+            "excerpt": excerpt,
+            "views": int(article.get("views") or 0),
+        })
+
+    return JsonResponse({"results": results})
+
 def search_articles(request):
     """Search OpenKB articles with relevance ranking instead of plain substring order."""
     init_openkb_storage()

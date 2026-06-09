@@ -21,6 +21,7 @@ urlpatterns = [
     path("profile/admin/orphan-articles/", views.manage_orphan_articles, name="manage_orphan_articles"),
     path("profile/articles/<int:article_id>/edit/", views.edit_suggestion, name="edit_suggestion"),
     path("profile/articles/<int:article_id>/delete/", views.delete_suggestion, name="delete_suggestion"),
+    path("search/suggestions/", views.search_article_suggestions, name="search_article_suggestions"),
     path("search/", views.search_articles, name="search"),
     path("ask-openkb-ai/", views.ask_openkb_ai, name="ask_openkb_ai"),
     path("articles/<int:article_id>/", views.article_detail, name="article_detail"),
