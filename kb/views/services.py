@@ -137,11 +137,22 @@ def duplicate_title_error_message(title):
 
 
 def get_review_notes_history(article):
-    """Return review-note history newest first for templates."""
+    """Return admin review-note history newest first for templates.
+
+    User resubmission events only cleared the current comment and repeated the
+    same admin note in the history. Hide those entries so authors/admins only
+    see the actual admin review comments.
+    """
     history = article.review_notes_history or []
     if not isinstance(history, list):
         return []
-    return list(reversed(history))
+
+    hidden_actions = {"resubmitted", "update_resubmitted"}
+    visible_history = [
+        entry for entry in history
+        if not isinstance(entry, dict) or entry.get("action") not in hidden_actions
+    ]
+    return list(reversed(visible_history))
 
 
 def get_safe_return_url(request, fallback_view_name="edit_my_suggestions"):

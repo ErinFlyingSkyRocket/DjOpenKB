@@ -263,8 +263,9 @@ def edit_suggestion(request, article_id):
         article.update_status = SuggestedArticle.UpdateStatus.PENDING
         article.update_submitted_at = timezone.now()
         article.update_reviewed_at = None
-        if article.review_notes:
-            article.archive_current_review_note(actor=request.user, action="update_resubmitted")
+        # Do not archive the same rejection comment again when the author
+        # resubmits an update. The existing admin rejection entry is already
+        # stored in review_notes_history.
         article.review_notes = ""
         write_public_files = False
     elif is_admin_pending_update_review:
@@ -315,8 +316,8 @@ def edit_suggestion(request, article_id):
                     article.archive_current_review_note(actor=request.user, action=f"cleared_on_{status}")
                 article.review_notes = ""
         elif status == SuggestedArticle.Status.PENDING and previous_status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED}:
-            if article.review_notes:
-                article.archive_current_review_note(actor=request.user, action="resubmitted")
+            # Do not archive the same rejection comment again when the author
+            # resubmits. The actual admin rejection was already recorded.
             article.review_notes = ""
 
         if is_admin_action and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
