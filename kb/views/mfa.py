@@ -131,7 +131,8 @@ def mfa_setup(request):
 
     clear_mfa_verified(request)
 
-    totp = pyotp.TOTP(device.secret)
+    secret = device.get_secret()
+    totp = pyotp.TOTP(secret)
     label = user.email or user.get_username()
     otpauth_uri = totp.provisioning_uri(name=label, issuer_name=get_totp_issuer())
 
@@ -164,7 +165,7 @@ def mfa_setup(request):
         "mfa_setup.html",
         {
             "qr_code_data_uri": _qr_data_uri(otpauth_uri),
-            "manual_secret": device.secret,
+            "manual_secret": secret,
             "next": _safe_next_url(request),
             "mfa_user": user,
         },

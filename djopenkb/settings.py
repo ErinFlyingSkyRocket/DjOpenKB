@@ -352,6 +352,13 @@ LOGOUT_REDIRECT_URL = "/"
 # Site-level TOTP MFA. Enforced as a login criterion for local and LDAP/AD users.
 MFA_TOTP_ISSUER = config_value("MFA_TOTP_ISSUER", "DjOpenKB")
 
+# Application-level encryption key for recoverable sensitive database fields,
+# such as TOTP authenticator secrets. Prefer storing this in Vault as
+# DJANGO_FIELD_ENCRYPTION_KEY. If unset, Django falls back to DJANGO_SECRET_KEY
+# so existing deployments still start. Do not rotate this after users have MFA
+# devices unless you first re-encrypt the stored values.
+FIELD_ENCRYPTION_KEY = secret_value("DJANGO_FIELD_ENCRYPTION_KEY", SECRET_KEY)
+
 LDAP_ENABLED = config_value("LDAP_ENABLED", "false").lower() == "true"
 LDAP_PLACEHOLDER_ENABLED = config_value("LDAP_PLACEHOLDER_ENABLED", "false").lower() == "true"
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS = config_value("LDAP_PLACEHOLDER_AUTO_CREATE_USERS", "false").lower() == "true"

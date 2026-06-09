@@ -95,8 +95,8 @@ def get_or_create_mfa_device(user):
         user=user,
         defaults={"secret": pyotp.random_base32()},
     )
-    if not device.secret:
-        device.secret = pyotp.random_base32()
+    if not device.get_secret():
+        device.set_secret(pyotp.random_base32())
         device.save(update_fields=["secret"])
     return device
 
@@ -120,7 +120,7 @@ def reset_mfa_device_for_user(user):
     """
     device = get_or_create_mfa_device(user)
     now = timezone.now()
-    device.secret = pyotp.random_base32()
+    device.set_secret(pyotp.random_base32())
     device.confirmed = False
     device.confirmed_at = None
     device.last_verified_at = None
@@ -279,8 +279,12 @@ def complete_pending_mfa_login(request, user):
 
 def verify_totp_code(device, code):
     code = (code or "").strip().replace(" ", "")
-    if not code or not device or not device.secret:
+    if not code or not device:
         return False
 
-    totp = pyotp.TOTP(device.secret)
+    secret = device.get_secret()
+    if not secret:
+        return False
+
+    totp = pyotp.TOTP(secret)
     return bool(totp.verify(code, valid_window=1))

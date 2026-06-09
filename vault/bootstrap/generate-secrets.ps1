@@ -3,6 +3,7 @@ param(
     [string]$ExampleFile = "vault/bootstrap/djopenkb.env.example",
     [int]$DjangoKeyLength = 72,
     [int]$PostgresPasswordLength = 40,
+    [int]$FieldEncryptionKeyLength = 72,
     [int]$PlaceholderPasswordLength = 40
 )
 
@@ -43,6 +44,7 @@ if (-not (Test-Path $OutputFile)) {
 # Avoid spaces and shell special characters in values.
 
 DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
+DJANGO_FIELD_ENCRYPTION_KEY=replace-with-a-long-random-field-encryption-key
 POSTGRES_PASSWORD=replace-with-stable-postgres-password
 
 AI_API_KEY=replace-with-selected-ai-provider-api-key
@@ -55,6 +57,7 @@ LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
 $replacements = @{
     "DJANGO_SECRET_KEY" = New-Secret $DjangoKeyLength
     "POSTGRES_PASSWORD" = New-Secret $PostgresPasswordLength
+    "DJANGO_FIELD_ENCRYPTION_KEY" = New-Secret $FieldEncryptionKeyLength
     "LDAP_PLACEHOLDER_PASSWORD" = New-Secret $PlaceholderPasswordLength
 }
 
@@ -63,6 +66,7 @@ $out = New-Object System.Collections.Generic.List[string]
 $found = @{
     "DJANGO_SECRET_KEY" = $false
     "POSTGRES_PASSWORD" = $false
+    "DJANGO_FIELD_ENCRYPTION_KEY" = $false
     "LDAP_PLACEHOLDER_PASSWORD" = $false
 }
 
@@ -122,7 +126,7 @@ if ($oldAi -and -not $hasAi) {
 $out | Set-Content -Path $OutputFile -Encoding UTF8
 
 Write-Host "Generated bootstrap secrets in: $OutputFile"
-Write-Host "Updated: DJANGO_SECRET_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD"
+Write-Host "Updated: DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD"
 Write-Host "Preserved: comments, AI_API_KEY, LDAP_BIND_PASSWORD"
 Write-Host ""
 Write-Host "Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually."

@@ -406,9 +406,19 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
     )
     list_filter = ("confirmed", "confirmed_at", "last_verified_at", "reset_at")
     search_fields = ("user__username", "user__email", "user__first_name", "user__last_name")
-    readonly_fields = ("secret", "created_at", "confirmed_at", "last_verified_at", "reset_at", "reset_button")
+    readonly_fields = ("secret_protected_display", "created_at", "confirmed_at", "last_verified_at", "reset_at", "reset_button")
     actions = ("reset_selected_mfa_devices", "mark_selected_devices_setup_pending")
-    fields = ("user", "confirmed", "reset_button", "secret", "created_at", "confirmed_at", "last_verified_at", "reset_at")
+    fields = ("user", "confirmed", "reset_button", "secret_protected_display", "created_at", "confirmed_at", "last_verified_at", "reset_at")
+
+
+    def secret_protected_display(self, obj):
+        if not obj or not obj.secret:
+            return "Not set"
+        if obj.secret_is_encrypted:
+            return "Encrypted and hidden"
+        return "Legacy plaintext value detected; it will be encrypted on the next save/migration."
+
+    secret_protected_display.short_description = "Authenticator key"
 
     def user_account_type(self, obj):
         profile = getattr(obj.user, "kb_profile", None)

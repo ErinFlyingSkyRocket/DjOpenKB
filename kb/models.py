@@ -6,6 +6,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 import re
 
+from .crypto import decrypt_value, encrypt_value, is_encrypted_value
+
 
 def normalize_article_title(title):
     """Normalize article titles so duplicates are caught case-insensitively.
@@ -134,7 +136,9 @@ class UserMFADevice(models.Model):
         on_delete=models.CASCADE,
         related_name="kb_mfa_device",
     )
-    secret = models.CharField(max_length=64)
+    # Stored encrypted at rest. Use get_secret()/set_secret() instead of
+    # reading/writing this field directly.
+    secret = models.CharField(max_length=512)
     confirmed = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
     confirmed_at = models.DateTimeField(null=True, blank=True)
@@ -148,6 +152,21 @@ class UserMFADevice(models.Model):
     def __str__(self):
         status = "confirmed" if self.confirmed else "setup pending"
         return f"{self.user.username} MFA ({status})"
+
+    def get_secret(self):
+        return decrypt_value(self.secret)
+
+    def set_secret(self, raw_secret):
+        self.secret = encrypt_value(raw_secret)
+
+    @property
+    def secret_is_encrypted(self):
+        return is_encrypted_value(self.secret)
+
+    def save(self, *args, **kwargs):
+        if self.secret and not is_encrypted_value(self.secret):
+            self.secret = encrypt_value(self.secret)
+        super().save(*args, **kwargs)
 
     def mark_confirmed(self):
         now = timezone.now()

@@ -4,6 +4,7 @@
 # Creates or updates vault/bootstrap/djopenkb.env with:
 # - DJANGO_SECRET_KEY
 # - POSTGRES_PASSWORD
+# - DJANGO_FIELD_ENCRYPTION_KEY
 # - LDAP_PLACEHOLDER_PASSWORD
 #
 # It preserves existing comments and manual lines such as:
@@ -25,6 +26,7 @@ OUTPUT_FILE="${OUTPUT_FILE:-vault/bootstrap/djopenkb.env}"
 EXAMPLE_FILE="${EXAMPLE_FILE:-vault/bootstrap/djopenkb.env.example}"
 DJANGO_KEY_LENGTH="${DJANGO_KEY_LENGTH:-72}"
 POSTGRES_PASSWORD_LENGTH="${POSTGRES_PASSWORD_LENGTH:-40}"
+FIELD_ENCRYPTION_KEY_LENGTH="${FIELD_ENCRYPTION_KEY_LENGTH:-72}"
 PLACEHOLDER_PASSWORD_LENGTH="${PLACEHOLDER_PASSWORD_LENGTH:-40}"
 
 PYTHON_BIN=""
@@ -55,6 +57,7 @@ if [ ! -f "$OUTPUT_FILE" ]; then
 # Avoid spaces and shell special characters in values.
 
 DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
+DJANGO_FIELD_ENCRYPTION_KEY=replace-with-a-long-random-field-encryption-key
 POSTGRES_PASSWORD=replace-with-stable-postgres-password
 
 AI_API_KEY=replace-with-selected-ai-provider-api-key
@@ -64,7 +67,7 @@ HEADER
     fi
 fi
 
-"$PYTHON_BIN" - "$OUTPUT_FILE" "$DJANGO_KEY_LENGTH" "$POSTGRES_PASSWORD_LENGTH" "$PLACEHOLDER_PASSWORD_LENGTH" <<'PY'
+"$PYTHON_BIN" - "$OUTPUT_FILE" "$DJANGO_KEY_LENGTH" "$POSTGRES_PASSWORD_LENGTH" "$FIELD_ENCRYPTION_KEY_LENGTH" "$PLACEHOLDER_PASSWORD_LENGTH" <<'PY'
 import secrets
 import string
 import sys
@@ -73,7 +76,8 @@ from pathlib import Path
 path = Path(sys.argv[1])
 django_len = int(sys.argv[2])
 postgres_len = int(sys.argv[3])
-placeholder_len = int(sys.argv[4])
+field_key_len = int(sys.argv[4])
+placeholder_len = int(sys.argv[5])
 
 # Alphanumeric-only generated values.
 # This avoids Linux shell/env parsing problems while still being strong
@@ -86,6 +90,7 @@ def make_secret(length: int) -> str:
 replacements = {
     "DJANGO_SECRET_KEY": make_secret(django_len),
     "POSTGRES_PASSWORD": make_secret(postgres_len),
+    "DJANGO_FIELD_ENCRYPTION_KEY": make_secret(field_key_len),
     "LDAP_PLACEHOLDER_PASSWORD": make_secret(placeholder_len),
 }
 
@@ -136,7 +141,7 @@ if old_ai and not any(line.strip().startswith("AI_API_KEY=") for line in out):
 path.write_text("\n".join(out) + "\n", encoding="utf-8")
 
 print(f"Generated bootstrap secrets in: {path}")
-print("Updated: DJANGO_SECRET_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD")
+print("Updated: DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD")
 print("Preserved: comments, AI_API_KEY, LDAP_BIND_PASSWORD")
 print()
 print("Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually.")
