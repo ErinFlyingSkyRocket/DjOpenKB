@@ -416,7 +416,7 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
             return "Not set"
         if obj.secret_is_encrypted:
             return "Encrypted and hidden"
-        return "Legacy plaintext value detected; it will be encrypted on the next save/migration."
+        return "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 
     secret_protected_display.short_description = "Authenticator key"
 

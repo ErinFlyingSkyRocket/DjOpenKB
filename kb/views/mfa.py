@@ -94,7 +94,7 @@ def _qr_data_uri(otpauth_uri):
 
 
 def _mfa_subject_user(request):
-    """Return pending MFA user first, otherwise authenticated legacy user."""
+    """Return pending MFA user first, otherwise the authenticated user."""
     pending_user = get_pending_mfa_user(request)
     if pending_user:
         return pending_user

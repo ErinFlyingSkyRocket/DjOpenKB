@@ -7,13 +7,11 @@ saving them to the database.
 
 import base64
 import hashlib
-import logging
 from functools import lru_cache
 
 from cryptography.fernet import Fernet, InvalidToken
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
 
 ENCRYPTED_VALUE_PREFIX = "fernet$"
 
@@ -52,20 +50,17 @@ def encrypt_value(value: str) -> str:
 
 
 def decrypt_value(value: str) -> str:
-    """Decrypt an encrypted value; return legacy plaintext unchanged.
+    """Decrypt an encrypted database value.
 
-    Returning legacy plaintext keeps old MFA devices working until the migration
-    or the next save encrypts them.
+    Runtime plaintext fallback is intentionally not supported. All MFA secrets
+    should be encrypted by the setup flow or the one-time migration.
     """
     value = str(value or "")
-    if not value:
+    if not value or not is_encrypted_value(value):
         return ""
-    if not is_encrypted_value(value):
-        return value
 
     token = value[len(ENCRYPTED_VALUE_PREFIX):]
     try:
         return get_field_fernet().decrypt(token.encode("ascii")).decode("utf-8")
     except InvalidToken:
-        logger.error("Unable to decrypt an encrypted database field. The field encryption key may have changed.")
         return ""
