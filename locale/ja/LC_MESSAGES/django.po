@@ -1,8 +1,5 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
-""
+msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: ja\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "記事の一括インポート / エクスポート"
@@ -760,10 +757,6 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "OpenKB ファイルから %(count)s 件の結果が見つかりました。"
 
 #: auto-generated
-msgid "An article with the title â%(title)sâ already exists. Please use a different title."
-msgstr "An article with the title â%(title)sâ already exists. Please use a different title."
-
-#: auto-generated
 msgid "An article with this title already exists. Please use a different title."
 msgstr "このタイトルの記事は既に存在します。別のタイトルを使用してください。"
 
@@ -842,14 +835,6 @@ msgstr "MFA/OTP コードを入力"
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "このユーザーの既存の認証済みセッションは無効化されます。"
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
@@ -1145,7 +1130,7 @@ msgstr "上部の記事ページ送り"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Use this section to reset a user's authenticator setup. "
+msgstr "このセクションを使用して、ユーザーの認証アプリ設定をリセットします。"
 
 #: auto-generated
 msgid "User"
@@ -1446,3 +1431,203 @@ msgstr "選択した対象ユーザーは無効または非アクティブです
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
 msgstr "選択した対象ユーザーが見つかりません。もう一度ユーザーを選択してください。"
+
+#: synced from current templates/views
+msgid "Approve update"
+msgstr "更新を承認"
+
+#: synced from current templates/views
+msgid "Article update approved and published."
+msgstr "記事 更新 approved and published."
+
+#: synced from current templates/views
+msgid "Article update marked as pending failed. The current published version remains visible."
+msgstr "記事 更新 marked as pending failed. The current published version remains visible."
+
+#: synced from current templates/views
+msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "記事 更新 submitted for admin approval. The published version is still visible until the update is approved."
+
+#: synced from current templates/views
+msgid "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "この記事または更新を再送信する前に、ユーザーが修正すべき内容を説明してください。"
+
+#: synced from current templates/views
+msgid "Export split package"
+msgstr "分割パッケージをエクスポート"
+
+#: synced from current templates/views
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "manifest.json がない場合、インポーターは ZIP 内で見つかったすべての Markdown ファイルのインポートを試みます。分割パッケージの場合は、パッケージを展開し、各パート ZIP を 1 つずつインポートしてください。"
+
+#: synced from current templates/views
+msgid "Import failed: %(error)s"
+msgstr "インポートに失敗しました: %(error)s"
+
+#: synced from current templates/views
+msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "展開後のインポート ZIP が大きすぎます。未圧縮の最大許可サイズは 200 MB です。"
+
+#: synced from current templates/views
+msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "インポート ZIP が大きすぎます。最大許可サイズは 100 MB です。分割エクスポートの場合は、分割パッケージを展開してから各パート ZIP を順番にインポートしてください。"
+
+#: synced from current templates/views
+msgid "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "%(count)s 件の記事をインポートしました。所有者は %(username)s に設定されました。"
+
+#: synced from current templates/views
+msgid "Invalid zip file."
+msgstr "無効な ZIP ファイルです。"
+
+#: synced from current templates/views
+msgid "Large exports may download as a split package:"
+msgstr "大きなエクスポートは分割パッケージとしてダウンロードされる場合があります:"
+
+#: synced from current templates/views
+msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "最大アップロードサイズ: ZIP 1 個あたり 100 MB。最大未圧縮サイズ: 200 MB。分割エクスポートの場合は、先に分割パッケージを展開し、各パート ZIP を順番にインポートしてください。"
+
+#: synced from current templates/views
+msgid "No articles were imported."
+msgstr "インポートされた記事はありません。"
+
+#: synced from current templates/views
+msgid "No matching articles found."
+msgstr "一致する記事が見つかりません。"
+
+#: synced from current templates/views
+msgid "No pending article reviews match your search."
+msgstr "検索に一致する保留中の記事レビューはありません。"
+
+#: synced from current templates/views
+msgid "No pending update"
+msgstr "保留中の更新はありません"
+
+#: synced from current templates/views
+msgid "No stray upload files were selected for deletion."
+msgstr "削除する未使用アップロードファイルが選択されていません。"
+
+#: synced from current templates/views
+msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "通常のエクスポートは、内容が大きすぎる場合に自動的に分割パッケージになります。分割パッケージには parts/ フォルダー内にインポート可能なパート ZIP が含まれます。パッケージを展開し、各パート ZIP を順番にインポートしてください。"
+
+#: synced from current templates/views
+msgid "Only .zip import files are allowed."
+msgstr "インポートできるのは .zip ファイルのみです。"
+
+#: synced from current templates/views
+msgid "Pending update"
+msgstr "保留中の更新"
+
+#: synced from current templates/views
+msgid "Pending update body"
+msgstr "保留中の更新 - 本文"
+
+#: synced from current templates/views
+msgid "Pending update image assets"
+msgstr "保留中の更新 - 画像アセット"
+
+#: synced from current templates/views
+msgid "Pending update keywords"
+msgstr "保留中の更新 - キーワード"
+
+#: synced from current templates/views
+msgid "Pending update review"
+msgstr "保留中の更新 - レビュー"
+
+#: synced from current templates/views
+msgid "Pending update title"
+msgstr "保留中の更新 - タイトル"
+
+#: synced from current templates/views
+msgid "Pending updates can only be approved as Published or marked as Pending failed."
+msgstr "保留中の更新は、公開として承認するか、承認失敗としてマークすることのみできます。"
+
+#: synced from current templates/views
+msgid "Please choose a .zip file to import."
+msgstr "インポートする .zip ファイルを選択してください。"
+
+#: synced from current templates/views
+msgid "Please review the admin comments, update your changes, and submit again."
+msgstr "管理者コメントを確認し、変更を更新してから再送信してください。"
+
+#: synced from current templates/views
+msgid "Published version remains visible"
+msgstr "公開済みバージョンは引き続き表示されます"
+
+#: synced from current templates/views
+msgid "Published version remains visible until approval."
+msgstr "承認されるまで、公開済みバージョンは引き続き表示されます。"
+
+#: synced from current templates/views
+msgid "Reject update"
+msgstr "更新を却下"
+
+#: synced from current templates/views
+msgid "Review new articles and pending updates before they become publicly visible."
+msgstr "新しい記事と保留中の更新は、公開される前にレビューしてください。"
+
+#: synced from current templates/views
+msgid "Search results"
+msgstr "検索結果"
+
+#: synced from current templates/views
+msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "%(part_name)s をスキップしました: このパートは 100 MB を超えています。インポート前に再度展開して分割してください。"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "OpenKB に既に存在する重複タイトルをスキップしました: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title inside import zip: %(title)s"
+msgstr "インポート ZIP 内の重複タイトルをスキップしました: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped invalid path: %(filename)s"
+msgstr "無効なパスをスキップしました: %(filename)s"
+
+#: synced from current templates/views
+msgid "Submit update for approval"
+msgstr "更新を承認申請"
+
+#: synced from current templates/views
+msgid "There are no pending article reviews right now."
+msgstr "現在、保留中の記事レビューはありません。"
+
+#: synced from current templates/views
+msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
+msgstr "記事または更新が承認失敗としてマークされた場合、これらのコメントは記事の所有者に表示されます。"
+
+#: synced from current templates/views
+msgid "This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "この編集は管理者の承認待ちです。現在公開されているバージョンは引き続きユーザーに表示されます。"
+
+#: synced from current templates/views
+msgid "Untitled article"
+msgstr "無題の記事"
+
+#: synced from current templates/views
+msgid "Update approval status"
+msgstr "更新の承認ステータス"
+
+#: synced from current templates/views
+msgid "Update pending failed"
+msgstr "更新の承認失敗"
+
+#: synced from current templates/views
+msgid "Update reviewed at"
+msgstr "更新のレビュー日時"
+
+#: synced from current templates/views
+msgid "Update submitted at"
+msgstr "更新の送信日時"
+
+#: synced from current templates/views
+msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "および参照されているすべてのアップロードファイル。インポート後もデータベースと OpenKB ファイルの同期を保つため、保留中の更新データも含まれます。"
+
+#: synced from current templates/views
+msgid "pending article reviews"
+msgstr "保留中の記事レビュー"

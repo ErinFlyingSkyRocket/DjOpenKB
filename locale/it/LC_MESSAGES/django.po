@@ -1,8 +1,5 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
-""
+msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: it\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "Importazione / esportazione massiva degli articoli"
@@ -760,10 +757,6 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "%(count)s risultato/i trovati nei file OpenKB."
 
 #: auto-generated
-msgid "An article with the title â%(title)sâ already exists. Please use a different title."
-msgstr "An article with the title â%(title)sâ already exists. Please use a different title."
-
-#: auto-generated
 msgid "An article with this title already exists. Please use a different title."
 msgstr "Esiste già un articolo con questo titolo. Usa un titolo diverso."
 
@@ -842,14 +835,6 @@ msgstr "Inserisci codice MFA/OTP"
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "Le sessioni autenticate esistenti per questo utente saranno invalidate."
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "I file più recenti di %(minutes)s minuto vengono ignorati. Modifica questo valore in Django Admin → Impostazioni sito. Usa 0 minuti per mostrare subito i caricamenti inutilizzati."
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "I file più recenti di %(minutes)s minuti vengono ignorati. Modifica questo valore in Django Admin → Impostazioni sito. Usa 0 minuti per mostrare subito i caricamenti inutilizzati."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
@@ -1446,3 +1431,203 @@ msgstr "L’utente di destinazione selezionato non è valido o è inattivo. Sceg
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
 msgstr "L’utente di destinazione selezionato manca. Scegli di nuovo l’utente."
+
+#: synced from current templates/views
+msgid "Approve update"
+msgstr "Approva aggiornamento"
+
+#: synced from current templates/views
+msgid "Article update approved and published."
+msgstr "articolo aggiornamento approved and published."
+
+#: synced from current templates/views
+msgid "Article update marked as pending failed. The current published version remains visible."
+msgstr "articolo aggiornamento marked as pending failed. The current published version remains visible."
+
+#: synced from current templates/views
+msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "articolo aggiornamento submitted for admin approval. The published version is still visible until the update is approved."
+
+#: synced from current templates/views
+msgid "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "Explain what the user needs to fix before resubmitting this article or update."
+
+#: synced from current templates/views
+msgid "Export split package"
+msgstr "Esporta pacchetto diviso"
+
+#: synced from current templates/views
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+
+#: synced from current templates/views
+msgid "Import failed: %(error)s"
+msgstr "Import failed: %(error)s"
+
+#: synced from current templates/views
+msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+
+#: synced from current templates/views
+msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+
+#: synced from current templates/views
+msgid "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "Imported %(count)s article(s). Owner set to %(username)s."
+
+#: synced from current templates/views
+msgid "Invalid zip file."
+msgstr "Invalid zip file."
+
+#: synced from current templates/views
+msgid "Large exports may download as a split package:"
+msgstr "Large exports may download as a split package:"
+
+#: synced from current templates/views
+msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+
+#: synced from current templates/views
+msgid "No articles were imported."
+msgstr "No articles were imported."
+
+#: synced from current templates/views
+msgid "No matching articles found."
+msgstr "Nessun articolo corrispondente trovato."
+
+#: synced from current templates/views
+msgid "No pending article reviews match your search."
+msgstr "No pending article reviews match your search."
+
+#: synced from current templates/views
+msgid "No pending update"
+msgstr "Nessun aggiornamento in attesa"
+
+#: synced from current templates/views
+msgid "No stray upload files were selected for deletion."
+msgstr "No stray upload files were selected for deletion."
+
+#: synced from current templates/views
+msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+
+#: synced from current templates/views
+msgid "Only .zip import files are allowed."
+msgstr "Only .zip import files are allowed."
+
+#: synced from current templates/views
+msgid "Pending update"
+msgstr "Aggiornamento in attesa"
+
+#: synced from current templates/views
+msgid "Pending update body"
+msgstr "Aggiornamento in attesa - contenuto"
+
+#: synced from current templates/views
+msgid "Pending update image assets"
+msgstr "Aggiornamento in attesa - risorse immagine"
+
+#: synced from current templates/views
+msgid "Pending update keywords"
+msgstr "Aggiornamento in attesa - parole chiave"
+
+#: synced from current templates/views
+msgid "Pending update review"
+msgstr "Aggiornamento in attesa - revisione"
+
+#: synced from current templates/views
+msgid "Pending update title"
+msgstr "Aggiornamento in attesa - titolo"
+
+#: synced from current templates/views
+msgid "Pending updates can only be approved as Published or marked as Pending failed."
+msgstr "Gli aggiornamenti in sospeso possono solo essere approvati come pubblicati o contrassegnati come rifiutati."
+
+#: synced from current templates/views
+msgid "Please choose a .zip file to import."
+msgstr "Please choose a .zip file to import."
+
+#: synced from current templates/views
+msgid "Please review the admin comments, update your changes, and submit again."
+msgstr "Please review the admin comments, update your changes, and submit again."
+
+#: synced from current templates/views
+msgid "Published version remains visible"
+msgstr "La versione pubblicata rimane visibile"
+
+#: synced from current templates/views
+msgid "Published version remains visible until approval."
+msgstr "La versione pubblicata rimane visibile fino all’approvazione dell’aggiornamento."
+
+#: synced from current templates/views
+msgid "Reject update"
+msgstr "Rifiuta aggiornamento"
+
+#: synced from current templates/views
+msgid "Review new articles and pending updates before they become publicly visible."
+msgstr "Review new articles and pending updates before they become publicly visible."
+
+#: synced from current templates/views
+msgid "Search results"
+msgstr "Risultati di ricerca"
+
+#: synced from current templates/views
+msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+
+#: synced from current templates/views
+msgid "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "Skipped duplicate title already in OpenKB: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title inside import zip: %(title)s"
+msgstr "Skipped duplicate title inside import zip: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped invalid path: %(filename)s"
+msgstr "Skipped invalid path: %(filename)s"
+
+#: synced from current templates/views
+msgid "Submit update for approval"
+msgstr "Invia aggiornamento per l'approvazione"
+
+#: synced from current templates/views
+msgid "There are no pending article reviews right now."
+msgstr "There are no pending article reviews right now."
+
+#: synced from current templates/views
+msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
+msgstr "Questi commenti vengono mostrati al proprietario dell’articolo quando l’articolo o l’aggiornamento è contrassegnato come rifiutato."
+
+#: synced from current templates/views
+msgid "This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "Questa modifica è in attesa dell’approvazione dell’amministratore. La versione attualmente pubblicata rimane visibile agli utenti."
+
+#: synced from current templates/views
+msgid "Untitled article"
+msgstr "Articolo senza titolo"
+
+#: synced from current templates/views
+msgid "Update approval status"
+msgstr "Stato di approvazione dell’aggiornamento"
+
+#: synced from current templates/views
+msgid "Update pending failed"
+msgstr "Aggiornamento rifiutato"
+
+#: synced from current templates/views
+msgid "Update reviewed at"
+msgstr "Aggiornamento revisionato il"
+
+#: synced from current templates/views
+msgid "Update submitted at"
+msgstr "Aggiornamento inviato il"
+
+#: synced from current templates/views
+msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+
+#: synced from current templates/views
+msgid "pending article reviews"
+msgstr "revisioni di articoli in sospeso"

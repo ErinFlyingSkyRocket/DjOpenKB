@@ -392,7 +392,7 @@ def import_articles_from_zip(uploaded_zip, owner):
         # Hard safety limits for admin imports.
         total_uncompressed = sum(item.file_size for item in members)
         if total_uncompressed > BULK_IMPORT_MAX_UNCOMPRESSED_BYTES:
-            raise ValueError("Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB.")
+            raise ValueError(_("Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."))
 
         manifest_name = safe_names.get("manifest.json")
         manifest = None
@@ -412,7 +412,7 @@ def import_articles_from_zip(uploaded_zip, owner):
                 with archive.open(safe_names[part_name], "r") as part_file:
                     part_bytes = part_file.read(BULK_IMPORT_MAX_UPLOAD_BYTES + 1)
                 if len(part_bytes) > BULK_IMPORT_MAX_UPLOAD_BYTES:
-                    errors.append(f"Skipped {part_name}: part is larger than 100 MB. Extract and split it again before import.")
+                    errors.append(_("Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import.") % {"part_name": part_name})
                     continue
                 part_imported, part_errors = import_articles_from_zip(io.BytesIO(part_bytes), owner=owner)
                 imported_count += part_imported
@@ -496,13 +496,13 @@ def import_articles_from_zip(uploaded_zip, owner):
 
             normalized_title = normalize_article_title(title)
             if normalized_title in seen_import_titles:
-                errors.append(f"Skipped duplicate title inside import zip: {title}")
+                errors.append(_("Skipped duplicate title inside import zip: %(title)s") % {"title": title})
                 continue
             seen_import_titles.add(normalized_title)
 
             duplicate_article = find_duplicate_article_by_title(title)
             if duplicate_article:
-                errors.append(f"Skipped duplicate title already in OpenKB: {title}")
+                errors.append(_("Skipped duplicate title already in OpenKB: %(title)s") % {"title": title})
                 continue
 
             filename = make_unique_article_filename(title, item.get("filename") or "")

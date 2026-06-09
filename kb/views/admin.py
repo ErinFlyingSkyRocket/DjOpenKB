@@ -26,7 +26,7 @@ def clean_stray_upload_files(request):
         selected_filenames.discard("")
 
         if not selected_filenames:
-            messages.warning(request, "No stray upload files were selected for deletion.")
+            messages.warning(request, _("No stray upload files were selected for deletion."))
             return redirect("clean_stray_upload_files")
 
         deleted_count = 0
@@ -47,7 +47,7 @@ def clean_stray_upload_files(request):
             try:
                 file_path.relative_to(upload_dir)
             except ValueError:
-                errors.append(f"Skipped invalid path: {item['filename']}")
+                errors.append(_("Skipped invalid path: %(filename)s") % {"filename": item["filename"]})
                 skipped_count += 1
                 continue
 
@@ -141,33 +141,33 @@ def import_articles_zip(request):
 
     uploaded_zip = request.FILES.get("import_zip")
     if not uploaded_zip:
-        messages.error(request, "Please choose a .zip file to import.")
+        messages.error(request, _("Please choose a .zip file to import."))
         return redirect("admin_bulk_articles")
 
     if not uploaded_zip.name.lower().endswith(".zip"):
-        messages.error(request, "Only .zip import files are allowed.")
+        messages.error(request, _("Only .zip import files are allowed."))
         return redirect("admin_bulk_articles")
 
     if uploaded_zip.size > BULK_IMPORT_MAX_UPLOAD_BYTES:
-        messages.error(request, "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time.")
+        messages.error(request, _("Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."))
         return redirect("admin_bulk_articles")
 
     try:
         imported_count, errors = import_articles_from_zip(uploaded_zip, owner=request.user)
     except zipfile.BadZipFile:
-        messages.error(request, "Invalid zip file.")
+        messages.error(request, _("Invalid zip file."))
         return redirect("admin_bulk_articles")
     except ValueError as error:
         messages.error(request, str(error))
         return redirect("admin_bulk_articles")
     except Exception as error:
-        messages.error(request, f"Import failed: {error}")
+        messages.error(request, _("Import failed: %(error)s") % {"error": error})
         return redirect("admin_bulk_articles")
 
     if imported_count:
-        messages.success(request, f"Imported {imported_count} article(s). Owner set to {request.user.get_username()}.")
+        messages.success(request, _("Imported %(count)s article(s). Owner set to %(username)s.") % {"count": imported_count, "username": request.user.get_username()})
     else:
-        messages.warning(request, "No articles were imported.")
+        messages.warning(request, _("No articles were imported."))
 
     for error in errors[:10]:
         messages.error(request, error)

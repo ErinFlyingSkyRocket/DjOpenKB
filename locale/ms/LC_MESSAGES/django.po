@@ -1,8 +1,5 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: ms\n"
-""
+msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: ms\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "Import / eksport artikel secara pukal"
@@ -760,10 +757,6 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "%(count)s keputusan ditemui daripada fail OpenKB."
 
 #: auto-generated
-msgid "An article with the title â%(title)sâ already exists. Please use a different title."
-msgstr "An article with the title â%(title)sâ already exists. Please use a different title."
-
-#: auto-generated
 msgid "An article with this title already exists. Please use a different title."
 msgstr "Artikel dengan tajuk ini sudah wujud. Sila gunakan tajuk lain."
 
@@ -842,14 +835,6 @@ msgstr "Masukkan kod MFA/OTP"
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "Sesi disahkan yang sedia ada untuk pengguna ini akan dibatalkan."
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
@@ -1145,7 +1130,7 @@ msgstr "Penomboran atas artikel"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Use this section to reset a user's authenticator setup. "
+msgstr "Gunakan bahagian ini untuk menetapkan semula tetapan pengesah pengguna."
 
 #: auto-generated
 msgid "User"
@@ -1446,3 +1431,203 @@ msgstr "Pengguna sasaran yang dipilih tidak sah atau tidak aktif. Sila pilih pen
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
 msgstr "Pengguna sasaran yang dipilih tiada. Sila pilih pengguna semula."
+
+#: synced from current templates/views
+msgid "Approve update"
+msgstr "Luluskan kemas kini"
+
+#: synced from current templates/views
+msgid "Article update approved and published."
+msgstr "artikel kemas kini telah diluluskan dan diterbitkan."
+
+#: synced from current templates/views
+msgid "Article update marked as pending failed. The current published version remains visible."
+msgstr "artikel kemas kini ditandakan sebagai semakan gagal. Versi diterbitkan semasa kekal kelihatan."
+
+#: synced from current templates/views
+msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "artikel kemas kini dihantar untuk kelulusan pentadbir. Versi diterbitkan masih kelihatan sehingga kemas kini diluluskan."
+
+#: synced from current templates/views
+msgid "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "Terangkan perkara yang perlu dibetulkan oleh pengguna sebelum menghantar semula artikel atau kemas kini ini."
+
+#: synced from current templates/views
+msgid "Export split package"
+msgstr "Eksport pakej berpecah"
+
+#: synced from current templates/views
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "Jika manifest.json tiada, pengimport akan cuba mengimport semua fail Markdown dalam zip. Untuk pakej berpecah, ekstrak pakej dan import setiap zip bahagian satu demi satu."
+
+#: synced from current templates/views
+msgid "Import failed: %(error)s"
+msgstr "Import gagal: %(error)s"
+
+#: synced from current templates/views
+msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "Zip import terlalu besar selepas diekstrak. Saiz tidak termampat maksimum yang dibenarkan ialah 200 MB."
+
+#: synced from current templates/views
+msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "Zip import terlalu besar. Saiz maksimum yang dibenarkan ialah 100 MB. Untuk eksport berpecah, ekstrak pakej berpecah dan import setiap zip bahagian satu demi satu."
+
+#: synced from current templates/views
+msgid "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "%(count)s artikel telah diimport. Pemilik ditetapkan kepada %(username)s."
+
+#: synced from current templates/views
+msgid "Invalid zip file."
+msgstr "Fail zip tidak sah."
+
+#: synced from current templates/views
+msgid "Large exports may download as a split package:"
+msgstr "Eksport besar mungkin dimuat turun sebagai pakej berpecah:"
+
+#: synced from current templates/views
+msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "Saiz muat naik maksimum: 100 MB setiap zip. Saiz tidak termampat maksimum: 200 MB. Untuk eksport berpecah, ekstrak pakej berpecah dahulu, kemudian import setiap zip bahagian mengikut urutan."
+
+#: synced from current templates/views
+msgid "No articles were imported."
+msgstr "Tiada artikel diimport."
+
+#: synced from current templates/views
+msgid "No matching articles found."
+msgstr "Tiada artikel yang sepadan ditemui."
+
+#: synced from current templates/views
+msgid "No pending article reviews match your search."
+msgstr "Tiada semakan artikel tertunda yang sepadan dengan carian anda."
+
+#: synced from current templates/views
+msgid "No pending update"
+msgstr "Tiada kemas kini tertunda"
+
+#: synced from current templates/views
+msgid "No stray upload files were selected for deletion."
+msgstr "Tiada fail muat naik tidak digunakan dipilih untuk dipadam."
+
+#: synced from current templates/views
+msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "Eksport biasa akan menjadi pakej berpecah secara automatik jika kandungan terlalu besar. Pakej berpecah mengandungi zip bahagian yang boleh diimport dalam folder parts/; ekstrak pakej dan import setiap zip bahagian mengikut urutan."
+
+#: synced from current templates/views
+msgid "Only .zip import files are allowed."
+msgstr "Hanya fail import .zip dibenarkan."
+
+#: synced from current templates/views
+msgid "Pending update"
+msgstr "Kemas kini tertunda"
+
+#: synced from current templates/views
+msgid "Pending update body"
+msgstr "Kemas kini tertunda - kandungan"
+
+#: synced from current templates/views
+msgid "Pending update image assets"
+msgstr "Kemas kini tertunda - aset imej"
+
+#: synced from current templates/views
+msgid "Pending update keywords"
+msgstr "Kemas kini tertunda - kata kunci"
+
+#: synced from current templates/views
+msgid "Pending update review"
+msgstr "Kemas kini tertunda - semakan"
+
+#: synced from current templates/views
+msgid "Pending update title"
+msgstr "Kemas kini tertunda - tajuk"
+
+#: synced from current templates/views
+msgid "Pending updates can only be approved as Published or marked as Pending failed."
+msgstr "Kemas kini tertunda hanya boleh diluluskan sebagai Diterbitkan atau ditandakan sebagai Gagal kelulusan."
+
+#: synced from current templates/views
+msgid "Please choose a .zip file to import."
+msgstr "Sila pilih fail .zip untuk diimport."
+
+#: synced from current templates/views
+msgid "Please review the admin comments, update your changes, and submit again."
+msgstr "Sila semak komen pentadbir, kemas kini perubahan anda, dan hantar semula."
+
+#: synced from current templates/views
+msgid "Published version remains visible"
+msgstr "Versi yang telah diterbitkan masih kelihatan"
+
+#: synced from current templates/views
+msgid "Published version remains visible until approval."
+msgstr "Versi yang telah diterbitkan masih kelihatan sehingga kemas kini diluluskan."
+
+#: synced from current templates/views
+msgid "Reject update"
+msgstr "Tolak kemas kini"
+
+#: synced from current templates/views
+msgid "Review new articles and pending updates before they become publicly visible."
+msgstr "Semak artikel baharu dan kemas kini tertunda sebelum ia kelihatan kepada umum."
+
+#: synced from current templates/views
+msgid "Search results"
+msgstr "Keputusan carian"
+
+#: synced from current templates/views
+msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "Dilangkau %(part_name)s: bahagian ini lebih besar daripada 100 MB. Ekstrak dan pecahkan semula sebelum import."
+
+#: synced from current templates/views
+msgid "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "Dilangkau tajuk pendua yang sudah wujud dalam OpenKB: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title inside import zip: %(title)s"
+msgstr "Dilangkau tajuk pendua dalam zip import: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped invalid path: %(filename)s"
+msgstr "Dilangkau laluan tidak sah: %(filename)s"
+
+#: synced from current templates/views
+msgid "Submit update for approval"
+msgstr "Hantar kemas kini untuk kelulusan"
+
+#: synced from current templates/views
+msgid "There are no pending article reviews right now."
+msgstr "Tiada semakan artikel tertunda buat masa ini."
+
+#: synced from current templates/views
+msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
+msgstr "Komen ini ditunjukkan kepada pemilik artikel apabila artikel atau kemas kini ditandakan sebagai Gagal kelulusan."
+
+#: synced from current templates/views
+msgid "This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "Suntingan ini sedang menunggu kelulusan pentadbir. Versi semasa yang telah diterbitkan masih kelihatan kepada pengguna."
+
+#: synced from current templates/views
+msgid "Untitled article"
+msgstr "Artikel tanpa tajuk"
+
+#: synced from current templates/views
+msgid "Update approval status"
+msgstr "Status kelulusan kemas kini"
+
+#: synced from current templates/views
+msgid "Update pending failed"
+msgstr "Kemas kini gagal kelulusan"
+
+#: synced from current templates/views
+msgid "Update reviewed at"
+msgstr "Kemas kini disemak pada"
+
+#: synced from current templates/views
+msgid "Update submitted at"
+msgstr "Kemas kini dihantar pada"
+
+#: synced from current templates/views
+msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "dan semua fail muat naik yang dirujuk. Data kemas kini tertunda disertakan supaya pangkalan data dan fail OpenKB kekal selaras selepas import."
+
+#: synced from current templates/views
+msgid "pending article reviews"
+msgstr "semakan artikel tertunda"

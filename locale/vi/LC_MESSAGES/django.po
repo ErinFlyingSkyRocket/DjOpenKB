@@ -1,8 +1,5 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: vi\n"
-""
+msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: vi\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "Nhập / xuất hàng loạt bài viết"
@@ -760,10 +757,6 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "Tìm thấy %(count)s kết quả từ các tệp OpenKB."
 
 #: auto-generated
-msgid "An article with the title â%(title)sâ already exists. Please use a different title."
-msgstr "An article with the title â%(title)sâ already exists. Please use a different title."
-
-#: auto-generated
 msgid "An article with this title already exists. Please use a different title."
 msgstr "Bài viết có tiêu đề này đã tồn tại. Vui lòng dùng tiêu đề khác."
 
@@ -842,14 +835,6 @@ msgstr "Nhập mã MFA/OTP"
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "Các phiên đã xác thực hiện có của người dùng này sẽ bị vô hiệu hóa."
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
@@ -1446,3 +1431,203 @@ msgstr "Người dùng đích đã chọn không hợp lệ hoặc không hoạt
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
 msgstr "Thiếu người dùng đích đã chọn. Vui lòng chọn lại người dùng."
+
+#: synced from current templates/views
+msgid "Approve update"
+msgstr "Phê duyệt cập nhật"
+
+#: synced from current templates/views
+msgid "Article update approved and published."
+msgstr "bài viết cập nhật approved and published."
+
+#: synced from current templates/views
+msgid "Article update marked as pending failed. The current published version remains visible."
+msgstr "bài viết cập nhật marked as pending failed. The current published version remains visible."
+
+#: synced from current templates/views
+msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "bài viết cập nhật submitted for admin approval. The published version is still visible until the update is approved."
+
+#: synced from current templates/views
+msgid "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "Explain what the user needs to fix before resubmitting this article or update."
+
+#: synced from current templates/views
+msgid "Export split package"
+msgstr "Xuất gói chia phần"
+
+#: synced from current templates/views
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+
+#: synced from current templates/views
+msgid "Import failed: %(error)s"
+msgstr "Import failed: %(error)s"
+
+#: synced from current templates/views
+msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+
+#: synced from current templates/views
+msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+
+#: synced from current templates/views
+msgid "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "Imported %(count)s article(s). Owner set to %(username)s."
+
+#: synced from current templates/views
+msgid "Invalid zip file."
+msgstr "Invalid zip file."
+
+#: synced from current templates/views
+msgid "Large exports may download as a split package:"
+msgstr "Large exports may download as a split package:"
+
+#: synced from current templates/views
+msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+
+#: synced from current templates/views
+msgid "No articles were imported."
+msgstr "No articles were imported."
+
+#: synced from current templates/views
+msgid "No matching articles found."
+msgstr "Không tìm thấy bài viết phù hợp."
+
+#: synced from current templates/views
+msgid "No pending article reviews match your search."
+msgstr "No pending article reviews match your search."
+
+#: synced from current templates/views
+msgid "No pending update"
+msgstr "Không có cập nhật đang chờ"
+
+#: synced from current templates/views
+msgid "No stray upload files were selected for deletion."
+msgstr "No stray upload files were selected for deletion."
+
+#: synced from current templates/views
+msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+
+#: synced from current templates/views
+msgid "Only .zip import files are allowed."
+msgstr "Only .zip import files are allowed."
+
+#: synced from current templates/views
+msgid "Pending update"
+msgstr "Cập nhật đang chờ"
+
+#: synced from current templates/views
+msgid "Pending update body"
+msgstr "Cập nhật đang chờ - nội dung"
+
+#: synced from current templates/views
+msgid "Pending update image assets"
+msgstr "Cập nhật đang chờ - tài nguyên hình ảnh"
+
+#: synced from current templates/views
+msgid "Pending update keywords"
+msgstr "Cập nhật đang chờ - từ khóa"
+
+#: synced from current templates/views
+msgid "Pending update review"
+msgstr "Cập nhật đang chờ - duyệt"
+
+#: synced from current templates/views
+msgid "Pending update title"
+msgstr "Cập nhật đang chờ - tiêu đề"
+
+#: synced from current templates/views
+msgid "Pending updates can only be approved as Published or marked as Pending failed."
+msgstr "Bản cập nhật đang chờ chỉ có thể được phê duyệt là Đã xuất bản hoặc được đánh dấu là Bị từ chối."
+
+#: synced from current templates/views
+msgid "Please choose a .zip file to import."
+msgstr "Please choose a .zip file to import."
+
+#: synced from current templates/views
+msgid "Please review the admin comments, update your changes, and submit again."
+msgstr "Please review the admin comments, update your changes, and submit again."
+
+#: synced from current templates/views
+msgid "Published version remains visible"
+msgstr "Phiên bản đã xuất bản vẫn hiển thị"
+
+#: synced from current templates/views
+msgid "Published version remains visible until approval."
+msgstr "Phiên bản đã xuất bản vẫn hiển thị cho đến khi bản cập nhật được phê duyệt."
+
+#: synced from current templates/views
+msgid "Reject update"
+msgstr "Từ chối cập nhật"
+
+#: synced from current templates/views
+msgid "Review new articles and pending updates before they become publicly visible."
+msgstr "Review new articles and pending updates before they become publicly visible."
+
+#: synced from current templates/views
+msgid "Search results"
+msgstr "Kết quả tìm kiếm"
+
+#: synced from current templates/views
+msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+
+#: synced from current templates/views
+msgid "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "Skipped duplicate title already in OpenKB: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title inside import zip: %(title)s"
+msgstr "Skipped duplicate title inside import zip: %(title)s"
+
+#: synced from current templates/views
+msgid "Skipped invalid path: %(filename)s"
+msgstr "Skipped invalid path: %(filename)s"
+
+#: synced from current templates/views
+msgid "Submit update for approval"
+msgstr "Gửi cập nhật để phê duyệt"
+
+#: synced from current templates/views
+msgid "There are no pending article reviews right now."
+msgstr "There are no pending article reviews right now."
+
+#: synced from current templates/views
+msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
+msgstr "Các nhận xét này được hiển thị cho chủ sở hữu bài viết khi bài viết hoặc bản cập nhật bị đánh dấu là Bị từ chối."
+
+#: synced from current templates/views
+msgid "This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "Chỉnh sửa này đang chờ quản trị viên phê duyệt. Phiên bản hiện đang xuất bản vẫn hiển thị cho người dùng."
+
+#: synced from current templates/views
+msgid "Untitled article"
+msgstr "Bài viết chưa có tiêu đề"
+
+#: synced from current templates/views
+msgid "Update approval status"
+msgstr "Trạng thái phê duyệt bản cập nhật"
+
+#: synced from current templates/views
+msgid "Update pending failed"
+msgstr "Bản cập nhật bị từ chối"
+
+#: synced from current templates/views
+msgid "Update reviewed at"
+msgstr "Bản cập nhật được xem xét lúc"
+
+#: synced from current templates/views
+msgid "Update submitted at"
+msgstr "Bản cập nhật được gửi lúc"
+
+#: synced from current templates/views
+msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+
+#: synced from current templates/views
+msgid "pending article reviews"
+msgstr "bài viết đang chờ duyệt"

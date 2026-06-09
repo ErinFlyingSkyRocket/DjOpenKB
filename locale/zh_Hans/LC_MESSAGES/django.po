@@ -1,8 +1,5 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Language: zh-hans\n"
-""
+msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: zh-hans\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "文章批量导入 / 导出"
@@ -760,10 +757,6 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "从 OpenKB 文件中找到 %(count)s 个结果。"
 
 #: auto-generated
-msgid "An article with the title â%(title)sâ already exists. Please use a different title."
-msgstr "An article with the title â%(title)sâ already exists. Please use a different title."
-
-#: auto-generated
 msgid "An article with this title already exists. Please use a different title."
 msgstr "已有相同标题的文章。请使用其他标题。"
 
@@ -842,14 +835,6 @@ msgstr "输入 MFA/OTP 代码"
 #: auto-generated
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "该用户现有的已认证会话将失效。"
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "早于 %(minutes)s 分钟以内的文件会被忽略。可在 Django 管理后台 → 站点设置中更改此值。使用 0 分钟可立即显示无用上传文件。"
-
-#: auto-generated
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "早于 %(minutes)s 分钟以内的文件会被忽略。可在 Django 管理后台 → 站点设置中更改此值。使用 0 分钟可立即显示无用上传文件。"
 
 #: auto-generated
 msgid "Hi, I am OpenKB AI."
@@ -1446,3 +1431,203 @@ msgstr "选中的目标用户无效或未激活。请选择活跃用户。"
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
 msgstr "缺少选中的目标用户。请重新选择用户。"
+
+#: synced from current templates/views
+msgid "Approve update"
+msgstr "批准更新"
+
+#: synced from current templates/views
+msgid "Article update approved and published."
+msgstr "文章 更新 已批准并发布."
+
+#: synced from current templates/views
+msgid "Article update marked as pending failed. The current published version remains visible."
+msgstr "文章 更新 已标记为审核未通过. 当前已发布版本仍然可见。"
+
+#: synced from current templates/views
+msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "文章 更新 已提交给管理员审核. 已发布版本在更新获批前仍然可见。"
+
+#: synced from current templates/views
+msgid "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "说明用户在重新提交此文章或更新前需要修复的内容。"
+
+#: synced from current templates/views
+msgid "Export split package"
+msgstr "导出分卷包"
+
+#: synced from current templates/views
+msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "如果缺少 manifest.json，导入器会尝试导入 zip 中找到的所有 Markdown 文件。对于分卷包，请先解压该包，然后按顺序逐个导入每个 part zip。"
+
+#: synced from current templates/views
+msgid "Import failed: %(error)s"
+msgstr "导入失败：%(error)s"
+
+#: synced from current templates/views
+msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "导入 ZIP 解压后过大。最大允许的未压缩大小为 200 MB。"
+
+#: synced from current templates/views
+msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "导入 ZIP 文件过大。最大允许大小为 100 MB。对于分割导出，请先解压分割包，然后逐个导入每个分卷 ZIP。"
+
+#: synced from current templates/views
+msgid "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "已导入 %(count)s 篇文章。所有者设置为 %(username)s。"
+
+#: synced from current templates/views
+msgid "Invalid zip file."
+msgstr "无效的 ZIP 文件。"
+
+#: synced from current templates/views
+msgid "Large exports may download as a split package:"
+msgstr "大型导出可能会作为分卷包下载："
+
+#: synced from current templates/views
+msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "最大上传大小：每个 zip 100 MB。最大解压后大小：200 MB。对于分卷导出，请先解压分卷包，然后按顺序导入每个 part zip。"
+
+#: synced from current templates/views
+msgid "No articles were imported."
+msgstr "没有导入任何文章。"
+
+#: synced from current templates/views
+msgid "No matching articles found."
+msgstr "未找到匹配的文章。"
+
+#: synced from current templates/views
+msgid "No pending article reviews match your search."
+msgstr "没有符合搜索条件的待审核文章。"
+
+#: synced from current templates/views
+msgid "No pending update"
+msgstr "没有待审核更新"
+
+#: synced from current templates/views
+msgid "No stray upload files were selected for deletion."
+msgstr "未选择要删除的无用上传文件。"
+
+#: synced from current templates/views
+msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "如果内容过大，普通导出会自动变成分卷包。分卷包在 parts/ 文件夹下包含可导入的 part zip；请解压该包并按顺序导入每个 part zip。"
+
+#: synced from current templates/views
+msgid "Only .zip import files are allowed."
+msgstr "只允许导入 .zip 文件。"
+
+#: synced from current templates/views
+msgid "Pending update"
+msgstr "待审核更新"
+
+#: synced from current templates/views
+msgid "Pending update body"
+msgstr "待审核更新 - 正文"
+
+#: synced from current templates/views
+msgid "Pending update image assets"
+msgstr "待审核更新 - 图片资源"
+
+#: synced from current templates/views
+msgid "Pending update keywords"
+msgstr "待审核更新 - 关键词"
+
+#: synced from current templates/views
+msgid "Pending update review"
+msgstr "待审核更新 - 审核"
+
+#: synced from current templates/views
+msgid "Pending update title"
+msgstr "待审核更新 - 标题"
+
+#: synced from current templates/views
+msgid "Pending updates can only be approved as Published or marked as Pending failed."
+msgstr "待处理更新只能批准为已发布，或标记为更新审核未通过。"
+
+#: synced from current templates/views
+msgid "Please choose a .zip file to import."
+msgstr "请选择要导入的 .zip 文件。"
+
+#: synced from current templates/views
+msgid "Please review the admin comments, update your changes, and submit again."
+msgstr "请查看管理员评论，更新您的更改，然后再次提交。"
+
+#: synced from current templates/views
+msgid "Published version remains visible"
+msgstr "已发布版本仍然可见"
+
+#: synced from current templates/views
+msgid "Published version remains visible until approval."
+msgstr "在批准之前，已发布版本仍然可见。"
+
+#: synced from current templates/views
+msgid "Reject update"
+msgstr "拒绝更新"
+
+#: synced from current templates/views
+msgid "Review new articles and pending updates before they become publicly visible."
+msgstr "在公开可见前审核新文章和待审核更新。"
+
+#: synced from current templates/views
+msgid "Search results"
+msgstr "搜索结果"
+
+#: synced from current templates/views
+msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "已跳过 %(part_name)s：该分卷大于 100 MB。请重新解压并分割后再导入。"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "已跳过 OpenKB 中已存在的重复标题：%(title)s"
+
+#: synced from current templates/views
+msgid "Skipped duplicate title inside import zip: %(title)s"
+msgstr "已跳过导入 ZIP 内的重复标题：%(title)s"
+
+#: synced from current templates/views
+msgid "Skipped invalid path: %(filename)s"
+msgstr "已跳过无效路径：%(filename)s"
+
+#: synced from current templates/views
+msgid "Submit update for approval"
+msgstr "提交更新以供审核"
+
+#: synced from current templates/views
+msgid "There are no pending article reviews right now."
+msgstr "当前没有待审核文章。"
+
+#: synced from current templates/views
+msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
+msgstr "当文章或更新被标记为审核未通过时，这些备注会显示给文章所有者。"
+
+#: synced from current templates/views
+msgid "This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "此编辑正在等待管理员批准。当前已发布版本仍然对用户可见。"
+
+#: synced from current templates/views
+msgid "Untitled article"
+msgstr "未命名文章"
+
+#: synced from current templates/views
+msgid "Update approval status"
+msgstr "更新审批状态"
+
+#: synced from current templates/views
+msgid "Update pending failed"
+msgstr "更新审核未通过"
+
+#: synced from current templates/views
+msgid "Update reviewed at"
+msgstr "更新审核时间"
+
+#: synced from current templates/views
+msgid "Update submitted at"
+msgstr "更新提交时间"
+
+#: synced from current templates/views
+msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "以及所有引用的上传文件。包含待审核更新数据，以便导入后数据库和 OpenKB 文件保持同步。"
+
+#: synced from current templates/views
+msgid "pending article reviews"
+msgstr "待审核文章"
