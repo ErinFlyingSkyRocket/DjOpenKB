@@ -229,16 +229,6 @@
             border-radius: 6px;
             overflow: hidden;
         }
-        .openkb-search-suggestions-heading {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6c757d;
-            background: #f8f9fa;
-            padding: 8px 12px;
-            border-bottom: 1px solid #e5e5e5;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
         .openkb-search-suggestions a.list-group-item {
             text-align: left;
         }
@@ -246,18 +236,6 @@
             display: block;
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 3px;
-        }
-        .openkb-search-suggestion-excerpt {
-            display: block;
-            color: #777;
-            font-size: 12px;
-            line-height: 1.35;
-        }
-        .openkb-search-suggestion-footer {
-            font-size: 12px;
-            color: #18bc9c;
-            font-weight: 600;
         }
     </style>
 </head>
@@ -538,38 +516,20 @@
         title.textContent = article.title || "{% trans 'Untitled article' %}";
         link.appendChild(title);
 
-        if (article.excerpt) {
-            const excerpt = document.createElement("span");
-            excerpt.className = "openkb-search-suggestion-excerpt";
-            excerpt.textContent = article.excerpt;
-            link.appendChild(excerpt);
-        }
-
         openkbSearchSuggestionList.appendChild(link);
     }
 
     function renderOpenKbSearchSuggestions(query, articles) {
         clearOpenKbSearchSuggestions();
 
-        const heading = document.createElement("li");
-        heading.className = "openkb-search-suggestions-heading";
-        heading.textContent = "{% trans 'Possible matches' %}";
-        openkbSearchSuggestionList.appendChild(heading);
-
         if (articles.length) {
             articles.forEach(appendOpenKbSuggestionItem);
         } else {
             const empty = document.createElement("li");
             empty.className = "list-group-item text-muted";
-            empty.textContent = "{% trans 'No possible matches found.' %}";
+            empty.textContent = "{% trans 'No matching articles found.' %}";
             openkbSearchSuggestionList.appendChild(empty);
         }
-
-        const searchAll = document.createElement("a");
-        searchAll.className = "list-group-item openkb-search-suggestion-footer";
-        searchAll.href = "{% url 'search' %}?q=" + encodeURIComponent(query);
-        searchAll.textContent = "{% trans 'Search all articles for' %} " + query;
-        openkbSearchSuggestionList.appendChild(searchAll);
 
         showOpenKbSearchSuggestions();
     }

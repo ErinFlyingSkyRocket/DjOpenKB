@@ -164,11 +164,7 @@ def vote_article(request, article_id):
 
 
 def search_article_suggestions(request):
-    """Return a small list of possible article matches for the home search dropdown.
-
-    This is intentionally a selector/dropdown helper, not browser autocomplete:
-    it does not change the user's typed text and only exposes published articles.
-    """
+    """Return a title-only list of matching published articles for the search dropdown."""
     init_openkb_storage()
 
     query = (request.GET.get("q") or "").strip()[:80]
@@ -179,10 +175,7 @@ def search_article_suggestions(request):
     ranked_articles = rank_articles_for_query(public_articles, query)[:8]
 
     results = []
-    query_words = tokenize_search_query(query)
     for article in ranked_articles:
-        raw_markdown = article.get("raw_markdown") or ""
-        excerpt = article.get("search_excerpt") or build_search_excerpt(raw_markdown, query_words, max_length=110)
         url = article.get("url") or "#"
         if not isinstance(url, str) or not url.startswith("/") or url.startswith("//"):
             url = "#"
@@ -190,8 +183,6 @@ def search_article_suggestions(request):
         results.append({
             "title": article.get("title") or _("Untitled article"),
             "url": url,
-            "excerpt": excerpt,
-            "views": int(article.get("views") or 0),
         })
 
     return JsonResponse({"results": results})
