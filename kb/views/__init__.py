@@ -16,7 +16,7 @@ from .services import (
     write_article_files,
 )
 from .auth import OpenKBLoginView, OpenKBLogoutView, set_site_language, profile, update_profile, change_password
-from .main import home, article_detail, wiki_detail, vote_article, search_articles
+from .main import home, article_detail, wiki_detail, vote_article, search_articles, search_article_suggestions
 from .suggestions import (
     suggest,
     edit_my_suggestions,
@@ -49,6 +49,7 @@ __all__ = [
     "wiki_detail",
     "vote_article",
     "search_articles",
+    "search_article_suggestions",
     "suggest",
     "edit_my_suggestions",
     "edit_suggestion",
