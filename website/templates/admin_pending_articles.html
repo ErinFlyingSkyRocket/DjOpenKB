@@ -35,11 +35,11 @@
             {% endif %}
 
             <h2>{% trans "Manage pending articles" %}</h2>
-            <p class="pending-muted">{% trans "Review user-submitted articles before they become publicly visible." %}</p>
+            <p class="pending-muted">{% trans "Review new articles and pending updates before they become publicly visible." %}</p>
 
             <div class="pending-summary-card">
                 <span class="pending-summary-number">{{ total_pending_article_count }}</span>
-                <span>{% trans "pending articles" %}</span>
+                <span>{% trans "pending article reviews" %}</span>
                 {% if is_pending_search %}
                     <span class="pending-muted">&middot; {{ pending_result_count }} {% trans "matching" %}</span>
                 {% endif %}
@@ -97,7 +97,12 @@
                                 <tr>
                                     <td>
                                         <strong>{{ article.title }}</strong><br>
-                                        <span class="label label-warning">{% trans "Pending approval" %}</span>
+                                        {% if article.has_pending_update %}
+                                            <span class="label label-warning">{% trans "Pending update" %}</span>
+                                            <br><small class="pending-muted">{% trans "Published version remains visible until approval." %}</small>
+                                        {% else %}
+                                            <span class="label label-warning">{% trans "Pending approval" %}</span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {{ article.author_display }}
@@ -116,9 +121,9 @@
             {% else %}
                 <div class="alert alert-info">
                     {% if is_pending_search %}
-                        {% trans "No pending articles match your search." %}
+                        {% trans "No pending article reviews match your search." %}
                     {% else %}
-                        {% trans "There are no pending articles right now." %}
+                        {% trans "There are no pending article reviews right now." %}
                     {% endif %}
                 </div>
             {% endif %}

@@ -166,6 +166,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             {% if error %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
+            {% if has_pending_update %}
+                <div class="alert alert-warning">
+                    <strong>{% trans "Pending update" %}</strong> — {% trans "This edit is waiting for admin approval. The current published version is still visible to users." %}
+                </div>
+            {% elif has_failed_update %}
+                <div class="alert alert-danger">
+                    <strong>{% trans "Update pending failed" %}</strong> — {% trans "Please review the admin comments, update your changes, and submit again." %}
+                </div>
+            {% endif %}
             <div class="row">
                 <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
@@ -183,14 +192,23 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <label>{% trans "Status" %}</label><br/>
                                 {% if user|is_site_admin %}
                                     <select name="status" id="articleStatusSelect" class="form-control">
-                                        <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
-                                        <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
-                                        <option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Pending failed" %}</option>
-                                        <option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Published" %}</option>
+                                        {% if is_pending_update_review %}
+                                            <option value="published" selected>{% trans "Approve update" %}</option>
+                                            <option value="failed">{% trans "Reject update" %}</option>
+                                        {% else %}
+                                            <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
+                                            <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
+                                            <option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Pending failed" %}</option>
+                                            <option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Published" %}</option>
+                                        {% endif %}
                                     </select>
                                 {% else %}
                                     <p class="form-control-static">
-                                        {% if current_status == 'draft' %}
+                                        {% if has_pending_update %}
+                                            <span class="label label-warning">{% trans "Pending update" %}</span>
+                                        {% elif has_failed_update %}
+                                            <span class="label label-danger">{% trans "Update pending failed" %}</span>
+                                        {% elif current_status == 'draft' %}
                                             <span class="label label-default">{% trans "Draft" %}</span>
                                         {% elif current_status == 'pending' %}
                                             <span class="label label-warning">{% trans "Pending approval" %}</span>
@@ -208,7 +226,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% if user|is_site_admin %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
                             {% elif current_status == 'published' %}
-                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="save">{% trans "Save" %}</button>
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                             {% else %}
                                 <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
@@ -221,14 +239,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div id="adminReviewNotesGroup" class="admin-review-notes" {% if current_status != 'failed' %}style="display:none;"{% endif %}>
                                 <div class="form-group" style="margin-bottom:0;">
                                     <label for="reviewNotesInput">{% trans "Pending failed comments" %}</label>
-                                    <textarea id="reviewNotesInput" name="review_notes" class="form-control" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
-                                    <p class="text-muted" style="margin:6px 0 0;">{% trans "These comments are shown to the article owner while the article is Draft or Pending failed. They are hidden while the article is Pending approval." %}</p>
+                                    <textarea id="reviewNotesInput" name="review_notes" class="form-control" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
+                                    <p class="text-muted" style="margin:6px 0 0;">{% trans "These comments are shown to the article owner when the article or update is marked as Pending failed." %}</p>
                                 </div>
                             </div>
                         </div>
                     {% else %}
                         {% if review_notes_value %}
-                            {% if current_status == 'failed' or current_status == 'draft' %}
+                            {% if current_status == 'failed' or current_status == 'draft' or has_failed_update %}
                                 <div class="col-xs-12">
                                     <div class="pending-failed-comments-panel">
                                         <div class="pending-failed-comments-heading">

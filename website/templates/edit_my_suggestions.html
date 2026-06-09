@@ -208,7 +208,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        {% if article.status == 'published' %}
+                                                        {% if article.has_pending_update %}
+                                                            <span class="label label-warning">{% trans "Pending update" %}</span>
+                                                            <br><small class="text-muted">{% trans "Published version remains visible" %}</small>
+                                                        {% elif article.has_failed_update %}
+                                                            <span class="label label-danger">{% trans "Update pending failed" %}</span>
+                                                            <br><small class="text-muted">{% trans "Published version remains visible" %}</small>
+                                                        {% elif article.status == 'published' %}
                                                             <span class="label label-success">{% trans "Published" %}</span>
                                                         {% elif article.status == 'pending' %}
                                                             <span class="label label-warning">{% trans "Pending approval" %}</span>

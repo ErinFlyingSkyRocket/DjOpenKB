@@ -803,7 +803,11 @@ def import_articles_from_zip(uploaded_zip, owner):
     return imported_count, errors
 
 
-def get_article_image_cards(article):
+def get_article_image_cards(article, image_assets=None):
+    assets = image_assets
+    if assets is None:
+        assets = article.image_assets or extract_article_image_filenames(article.body)
+
     return [
         {
             "filename": filename,
@@ -811,7 +815,7 @@ def get_article_image_cards(article):
             "markdown": article_image_markdown(filename),
             "existing": True,
         }
-        for filename in (article.image_assets or extract_article_image_filenames(article.body))
+        for filename in (assets or [])
     ]
 
 

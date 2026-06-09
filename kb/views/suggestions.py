@@ -112,6 +112,10 @@ def edit_my_suggestions(request):
             | Q(status__icontains=search_query)
             | Q(review_notes__icontains=search_query)
             | Q(review_notes_history__icontains=search_query)
+            | Q(pending_update_title__icontains=search_query)
+            | Q(pending_update_body__icontains=search_query)
+            | Q(pending_update_keywords__icontains=search_query)
+            | Q(update_status__icontains=search_query)
             | Q(filename__icontains=search_query)
             | Q(wiki_path__icontains=search_query)
         )
@@ -140,17 +144,40 @@ def edit_suggestion(request, article_id):
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
     def render_edit_form(extra_context=None):
+        extra_context = extra_context or {}
+        pending_update_review = (
+            user_is_site_admin(request.user)
+            and article.status == SuggestedArticle.Status.PUBLISHED
+            and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+        )
+        use_pending_update_values = (
+            article.status == SuggestedArticle.Status.PUBLISHED
+            and article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
+            and bool(article.pending_update_body)
+        )
+
+        edit_title = article.pending_update_title if use_pending_update_values else article.title
+        edit_body = article.pending_update_body if use_pending_update_values else article.body
+        edit_keywords = article.pending_update_keywords if use_pending_update_values else article.keywords
+        edit_image_assets = article.pending_update_image_assets if use_pending_update_values else article.image_assets
+
         context = {
             "article": article,
-            "current_status": extra_context.get("current_status", article.status) if extra_context else article.status,
+            "current_status": extra_context.get("current_status", article.status),
             "review_notes_value": article.review_notes,
             "review_notes_history": get_review_notes_history(article),
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
-            "existing_images_json": json.dumps(get_article_image_cards(article)),
+            "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
             "return_url": return_url,
+            "title_value": edit_title,
+            "body_value": edit_body,
+            "keywords_value": edit_keywords,
+            "is_pending_update_review": pending_update_review,
+            "has_pending_update": article.has_pending_update,
+            "has_failed_update": article.has_failed_update,
+            "has_update_draft": article.has_update_draft,
         }
-        if extra_context:
-            context.update(extra_context)
+        context.update(extra_context)
         return render(request, "suggest_edit.html", context)
 
     if request.method == "GET":
@@ -162,14 +189,24 @@ def edit_suggestion(request, article_id):
     submit_action = request.POST.get("submit_action", "save").strip()
 
     previous_status = article.status
+    previous_update_status = article.update_status
 
-    if user_is_site_admin(request.user):
+    is_admin_action = user_is_site_admin(request.user)
+    is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
+    is_admin_pending_update_review = (
+        is_admin_action
+        and article.status == SuggestedArticle.Status.PUBLISHED
+        and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+    )
+
+    if is_admin_action:
         status = request.POST.get("status", article.status).strip()
         if status not in SuggestedArticle.Status.values:
             status = article.status
     else:
         if article.status == SuggestedArticle.Status.PUBLISHED:
-            # Once an article is approved, normal users cannot move it back to draft/pending.
+            # Published articles stay public. Normal user edits are stored as
+            # pending_update_* fields until an admin approves them.
             status = SuggestedArticle.Status.PUBLISHED
         elif submit_action == "draft":
             status = SuggestedArticle.Status.DRAFT
@@ -190,11 +227,11 @@ def edit_suggestion(request, article_id):
         "current_status": status,
         "review_notes_value": review_notes,
         "review_notes_history": get_review_notes_history(article),
-        "existing_images_json": json.dumps(get_article_image_cards(article)),
+        "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=extract_article_image_filenames(body))),
         "return_url": return_url,
     }
 
-    if user_is_site_admin(request.user) and status == SuggestedArticle.Status.FAILED and not review_notes:
+    if is_admin_action and status == SuggestedArticle.Status.FAILED and not review_notes:
         return render_edit_form({
             **error_context,
             "error": _("Please enter Pending failed comments before marking this article as Pending failed."),
@@ -215,37 +252,85 @@ def edit_suggestion(request, article_id):
         })
 
     old_image_assets = list(article.image_assets or extract_article_image_filenames(article.body))
-    article.title = title
-    article.body = body
-    article.keywords = keywords_raw
-    article.status = status
-    article.image_assets = extract_article_image_filenames(body)
+    new_image_assets = extract_article_image_filenames(body)
+    write_public_files = True
 
-    if user_is_site_admin(request.user):
-        if status == SuggestedArticle.Status.FAILED:
-            if review_notes != article.review_notes or previous_status != SuggestedArticle.Status.FAILED:
-                article.add_review_note_history(review_notes, reviewer=request.user, action="pending_failed")
-            article.review_notes = review_notes
-        elif status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.PUBLISHED}:
-            if article.review_notes:
-                article.archive_current_review_note(actor=request.user, action=f"cleared_on_{status}")
-            article.review_notes = ""
-    elif status == SuggestedArticle.Status.PENDING and previous_status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED}:
+    if is_published_update_flow:
+        article.pending_update_title = title
+        article.pending_update_body = body
+        article.pending_update_keywords = keywords_raw
+        article.pending_update_image_assets = new_image_assets
+        article.update_status = SuggestedArticle.UpdateStatus.PENDING
+        article.update_submitted_at = timezone.now()
+        article.update_reviewed_at = None
         if article.review_notes:
-            article.archive_current_review_note(actor=request.user, action="resubmitted")
+            article.archive_current_review_note(actor=request.user, action="update_resubmitted")
         article.review_notes = ""
+        write_public_files = False
+    elif is_admin_pending_update_review:
+        if status == SuggestedArticle.Status.PUBLISHED:
+            article.title = title
+            article.body = body
+            article.keywords = keywords_raw
+            article.image_assets = new_image_assets
+            article.clear_pending_update()
+            if article.review_notes:
+                article.archive_current_review_note(actor=request.user, action="update_approved")
+            article.review_notes = ""
+            article.approved_by = request.user
+            article.approved_at = timezone.now()
+        elif status == SuggestedArticle.Status.FAILED:
+            article.pending_update_title = title
+            article.pending_update_body = body
+            article.pending_update_keywords = keywords_raw
+            article.pending_update_image_assets = new_image_assets
+            article.update_status = SuggestedArticle.UpdateStatus.FAILED
+            article.update_reviewed_at = timezone.now()
+            if review_notes != article.review_notes or previous_update_status != SuggestedArticle.UpdateStatus.FAILED:
+                article.add_review_note_history(review_notes, reviewer=request.user, action="update_pending_failed")
+            article.review_notes = review_notes
+            write_public_files = False
+        else:
+            # Keep pending update reviews constrained to approve or reject so the
+            # already-published article is not accidentally hidden.
+            return render_edit_form({
+                **error_context,
+                "error": _("Pending updates can only be approved as Published or marked as Pending failed."),
+                "is_pending_update_review": True,
+            })
+    else:
+        article.title = title
+        article.body = body
+        article.keywords = keywords_raw
+        article.status = status
+        article.image_assets = new_image_assets
 
-    if user_is_site_admin(request.user) and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
-        article.approved_by = request.user
-        article.approved_at = timezone.now()
-    elif status != SuggestedArticle.Status.PUBLISHED:
-        article.approved_by = None
-        article.approved_at = None
+        if is_admin_action:
+            if status == SuggestedArticle.Status.FAILED:
+                if review_notes != article.review_notes or previous_status != SuggestedArticle.Status.FAILED:
+                    article.add_review_note_history(review_notes, reviewer=request.user, action="pending_failed")
+                article.review_notes = review_notes
+            elif status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.PUBLISHED}:
+                if article.review_notes:
+                    article.archive_current_review_note(actor=request.user, action=f"cleared_on_{status}")
+                article.review_notes = ""
+        elif status == SuggestedArticle.Status.PENDING and previous_status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED}:
+            if article.review_notes:
+                article.archive_current_review_note(actor=request.user, action="resubmitted")
+            article.review_notes = ""
+
+        if is_admin_action and status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
+            article.approved_by = request.user
+            article.approved_at = timezone.now()
+        elif status != SuggestedArticle.Status.PUBLISHED:
+            article.approved_by = None
+            article.approved_at = None
 
     article.save()
-    write_article_files(article)
-    sync_article_image_assets(article, old_assets=old_image_assets)
-    clear_committed_pending_uploads(request, article.image_assets)
+    if write_public_files:
+        write_article_files(article)
+        sync_article_image_assets(article, old_assets=old_image_assets)
+    clear_committed_pending_uploads(request, new_image_assets)
 
     if previous_status != status:
         if status == SuggestedArticle.Status.PUBLISHED:
@@ -267,13 +352,23 @@ def edit_suggestion(request, article_id):
             "action": "edit",
             "previous_status": previous_status,
             "new_status": status,
-            "is_admin_action": user_is_site_admin(request.user),
+            "previous_update_status": previous_update_status,
+            "is_admin_action": is_admin_action,
+            "is_published_update_flow": is_published_update_flow,
+            "is_admin_pending_update_review": is_admin_pending_update_review,
+            "update_status": article.update_status,
             "image_count": len(article.image_assets or []),
             "old_image_count": len(old_image_assets or []),
         },
     )
 
-    if status == SuggestedArticle.Status.DRAFT:
+    if is_published_update_flow:
+        messages.success(request, _("Article update submitted for admin approval. The published version is still visible until the update is approved."))
+    elif is_admin_pending_update_review and status == SuggestedArticle.Status.PUBLISHED:
+        messages.success(request, _("Article update approved and published."))
+    elif is_admin_pending_update_review and status == SuggestedArticle.Status.FAILED:
+        messages.success(request, _("Article update marked as pending failed. The current published version remains visible."))
+    elif status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
     elif status == SuggestedArticle.Status.PENDING:
         messages.success(request, _("Article submitted for admin approval."))
@@ -457,11 +552,18 @@ def serve_article_image(request, filename):
         raise Http404("Image not found")
 
     referenced_articles = SuggestedArticle.objects.filter(
-        Q(image_assets__contains=[filename]) | Q(body__icontains=f"/wiki/uploads/{filename}")
+        Q(image_assets__contains=[filename])
+        | Q(body__icontains=f"/wiki/uploads/{filename}")
+        | Q(pending_update_image_assets__contains=[filename])
+        | Q(pending_update_body__icontains=f"/wiki/uploads/{filename}")
     ).select_related("owner")
 
     has_reference = referenced_articles.exists()
-    is_public_image = referenced_articles.filter(status=SuggestedArticle.Status.PUBLISHED).exists()
+    is_public_image = SuggestedArticle.objects.filter(
+        status=SuggestedArticle.Status.PUBLISHED
+    ).filter(
+        Q(image_assets__contains=[filename]) | Q(body__icontains=f"/wiki/uploads/{filename}")
+    ).exists()
 
     if not is_public_image:
         allowed = False

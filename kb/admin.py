@@ -610,6 +610,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "author_username_snapshot",
         "author_email_snapshot",
         "status",
+        "update_status",
         "approved_by",
         "approved_at",
         "review_notes_preview",
@@ -621,7 +622,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    list_filter = ("status", "approved_by", "approved_at", "created_at", "updated_at")
+    list_filter = ("status", "update_status", "approved_by", "approved_at", "created_at", "updated_at")
     actions = ("approve_selected_articles", "mark_selected_articles_pending_failed")
     search_fields = (
         "title",
@@ -633,12 +634,17 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "author_email_snapshot",
         "review_notes",
         "review_notes_history",
+        "pending_update_title",
+        "pending_update_body",
+        "pending_update_keywords",
+        "update_status",
     )
     readonly_fields = (
         "filename",
         "raw_path",
         "wiki_path",
         "image_assets",
+        "pending_update_image_assets",
         "approved_by",
         "approved_at",
         "review_notes_preview",
@@ -659,6 +665,17 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         }),
         (_("Approval / review"), {
             "fields": ("approved_by", "approved_at", "review_notes", "review_notes_history"),
+        }),
+        (_("Pending update review"), {
+            "fields": (
+                "update_status",
+                "update_submitted_at",
+                "update_reviewed_at",
+                "pending_update_title",
+                "pending_update_body",
+                "pending_update_keywords",
+                "pending_update_image_assets",
+            ),
         }),
         ("OpenKB files", {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),

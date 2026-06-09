@@ -245,6 +245,11 @@ class SuggestedArticle(models.Model):
         FAILED = "failed", _("Pending failed")
         PUBLISHED = "published", _("Published")
 
+    class UpdateStatus(models.TextChoices):
+        NONE = "none", _("No pending update")
+        PENDING = "pending", _("Pending update")
+        FAILED = "failed", _("Update pending failed")
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -289,6 +294,46 @@ class SuggestedArticle(models.Model):
         blank=True,
         verbose_name=_("Pending failed comments history"),
         help_text="Historical review feedback entries from previous rejection/resubmission rounds.",
+    )
+    pending_update_title = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_("Pending update title"),
+        help_text="Edited title waiting for admin approval. The published title remains unchanged until approval.",
+    )
+    pending_update_body = models.TextField(
+        blank=True,
+        verbose_name=_("Pending update body"),
+        help_text="Edited Markdown body waiting for admin approval. The published body remains unchanged until approval.",
+    )
+    pending_update_keywords = models.CharField(
+        max_length=500,
+        blank=True,
+        verbose_name=_("Pending update keywords"),
+        help_text="Edited keywords waiting for admin approval.",
+    )
+    pending_update_image_assets = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name=_("Pending update image assets"),
+        help_text="Images referenced by the pending update draft.",
+    )
+    update_status = models.CharField(
+        max_length=20,
+        choices=UpdateStatus.choices,
+        default=UpdateStatus.NONE,
+        db_index=True,
+        verbose_name=_("Update approval status"),
+    )
+    update_submitted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Update submitted at"),
+    )
+    update_reviewed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Update reviewed at"),
     )
     view_count = models.PositiveIntegerField(
         default=0,
@@ -377,6 +422,30 @@ class SuggestedArticle(models.Model):
     @property
     def keyword_list(self):
         return [item.strip() for item in self.keywords.split(",") if item.strip()]
+
+    @property
+    def has_pending_update(self):
+        return self.status == self.Status.PUBLISHED and self.update_status == self.UpdateStatus.PENDING
+
+    @property
+    def has_failed_update(self):
+        return self.status == self.Status.PUBLISHED and self.update_status == self.UpdateStatus.FAILED
+
+    @property
+    def has_update_draft(self):
+        return self.status == self.Status.PUBLISHED and self.update_status in {
+            self.UpdateStatus.PENDING,
+            self.UpdateStatus.FAILED,
+        }
+
+    def clear_pending_update(self):
+        self.pending_update_title = ""
+        self.pending_update_body = ""
+        self.pending_update_keywords = ""
+        self.pending_update_image_assets = []
+        self.update_status = self.UpdateStatus.NONE
+        self.update_submitted_at = None
+        self.update_reviewed_at = timezone.now()
 
     def refresh_author_snapshot(self):
         """Store a copy of the current owner details on the article.

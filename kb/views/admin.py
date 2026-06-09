@@ -221,7 +221,8 @@ def manage_pending_articles(request):
     search_query = request.GET.get("q", "").strip()
 
     article_queryset = SuggestedArticle.objects.select_related("owner").filter(
-        status=SuggestedArticle.Status.PENDING
+        Q(status=SuggestedArticle.Status.PENDING)
+        | Q(update_status=SuggestedArticle.UpdateStatus.PENDING)
     )
     total_pending_article_count = article_queryset.count()
 
@@ -232,6 +233,10 @@ def manage_pending_articles(request):
             | Q(keywords__icontains=search_query)
             | Q(review_notes__icontains=search_query)
             | Q(review_notes_history__icontains=search_query)
+            | Q(pending_update_title__icontains=search_query)
+            | Q(pending_update_body__icontains=search_query)
+            | Q(pending_update_keywords__icontains=search_query)
+            | Q(update_status__icontains=search_query)
             | Q(filename__icontains=search_query)
             | Q(owner__username__icontains=search_query)
             | Q(owner__email__icontains=search_query)
