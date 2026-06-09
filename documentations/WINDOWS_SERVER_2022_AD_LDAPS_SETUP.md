@@ -218,66 +218,99 @@ If it connects, LDAPS is working on Windows.
 
 ## 7. Export the CA Certificate for Django
 
-Open:
+On Windows Server, export the CA certificate that signed the Domain Controller LDAPS certificate.
+
+Recommended method:
 
 ```text
-certlm.msc
+Start → Run → certlm.msc
+Trusted Root Certification Authorities → Certificates
+Right-click the AD CS Root CA certificate
+All Tasks → Export
 ```
 
-Find the Root CA certificate under:
+Export format:
 
 ```text
-Trusted Root Certification Authorities
-→ Certificates
+Base-64 encoded X.509 (.CER)
 ```
 
-Export:
+Save it as:
 
 ```text
-Right-click CA certificate
-→ All Tasks
-→ Export
-→ No, do not export private key
-→ Base-64 encoded X.509 (.CER)
-→ Save as ad-ca.cer
+ad-ca.cer
 ```
 
-Copy it to the DjOpenKB project and rename:
+Copy it to the Linux server project folder as:
 
 ```text
 ldap-certs/ad-ca.crt
 ```
 
-Do not export the private key.
+On the Linux server, confirm that the file is readable PEM text:
 
----
+```bash
+head -n 5 ldap-certs/ad-ca.crt
+```
 
+Expected:
+
+```text
+-----BEGIN CERTIFICATE-----
+...
+```
+
+If the file shows unreadable binary characters, it was exported as DER/binary. Convert it on the Linux server:
+
+```bash
+openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
+mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
+mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
+```
+
+Then verify:
+
+```bash
+openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
+```
+
+If Windows uses an Issuing/Intermediate CA, export both the Issuing CA and Root CA, convert each to PEM if needed, then combine them:
+
+```bash
+cat issuing-ca.crt root-ca.crt > ldap-certs/ad-ca.crt
+```
+
+The final `ldap-certs/ad-ca.crt` should contain one or more PEM certificate blocks.
 ## 8. Configure DjOpenKB `.env`
 
-Use the Domain Controller hostname:
+Use the Windows Server AD values in `.env`.
+
+Example:
 
 ```env
-LDAP_DC_IP=192.168.81.128
+LDAP_ENABLED=true
+LDAP_PLACEHOLDER_ENABLED=false
+LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
+
 LDAP_SERVER_URI=ldaps://WIN-VVCA4BIOSK7.openkb.local:636
 LDAP_START_TLS=false
 LDAP_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 LDAP_TLS_REQUIRE_CERT=demand
 LDAP_ALLOW_INSECURE=false
+
 LDAP_AD_DOMAIN=openkb.local
 LDAP_NETBIOS_DOMAIN=OPENKB
 LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local
+
 LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
+LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local))
 LDAP_BIND_DN=svc_djopenkb@openkb.local
+LDAP_EXTRA_HOSTNAME=WIN-VVCA4BIOSK7.openkb.local
+LDAP_EXTRA_SHORT_HOSTNAME=WIN-VVCA4BIOSK7
+LDAP_DC_IP=192.168.81.128
 ```
 
-Store the service account password in Vault:
-
-```env
-LDAP_BIND_PASSWORD="service-account-password"
-```
-
----
-
+If the organisation has a public email domain that differs from the AD UPN suffix, include both in `LDAP_ALLOWED_EMAIL_DOMAINS` and in the search filter. Users may still be told to log in with their short username, while Django checks the actual AD UPN/mail values internally.
 ## 9. Test from Docker
 
 Start DjOpenKB:
@@ -341,15 +374,52 @@ Check that AD CS is installed and the Domain Controller has a valid certificate.
 
 ### Certificate validation fails in Docker
 
-Check:
+Confirm the CA cert exists inside the container:
 
-```text
-ldap-certs/ad-ca.crt exists
-Docker Compose mounts ldap-certs correctly
-LDAP_SERVER_URI uses the hostname from the certificate
-CA certificate is Base-64 encoded X.509
+```bash
+docker compose exec web ls -l /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+docker compose exec web head -n 5 /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 ```
 
+Expected first line:
+
+```text
+-----BEGIN CERTIFICATE-----
+```
+
+If the file is binary/unreadable, convert it on the Linux server:
+
+```bash
+openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
+mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
+mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
+```
+
+Then test:
+
+```bash
+docker compose exec web openssl s_client \
+  -connect WIN-VVCA4BIOSK7.openkb.local:636 \
+  -servername WIN-VVCA4BIOSK7.openkb.local \
+  -CAfile /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+```
+
+Expected:
+
+```text
+Verify return code: 0 (ok)
+```
+
+If it says `unable to get local issuer certificate`, the certificate is readable but the chain is incomplete. Export the Root CA and any Issuing/Intermediate CA from Windows Server and combine them into `ldap-certs/ad-ca.crt`.
+
+Do not leave production/testing documentation with:
+
+```env
+LDAP_TLS_REQUIRE_CERT=never
+LDAP_ALLOW_INSECURE=true
+```
+
+Use those values only for temporary troubleshooting.
 ### Enterprise CA is unavailable
 
 Log in as:

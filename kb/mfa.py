@@ -22,7 +22,7 @@ LOCAL_MFA_USER_SESSION_KEY = MFA_USER_SESSION_KEY
 
 
 def get_totp_issuer():
-    return getattr(settings, "MFA_TOTP_ISSUER", "DjOpenKB")
+    return getattr(settings, "MFA_TOTP_ISSUER", "IT Wiki")
 
 
 def _configured_backend_contains(name_fragment):

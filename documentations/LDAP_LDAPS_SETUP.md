@@ -38,45 +38,58 @@ LDAP_ENABLED=true
 LDAP_PLACEHOLDER_ENABLED=false
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
 
-LDAP_DC_IP=192.168.81.128
-LDAP_SERVER_URI=ldaps://WIN-VVCA4BIOSK7.openkb.local:636
+LDAP_DC_IP=<AD_DC_IP>
+LDAP_SERVER_URI=ldaps://<DOMAIN_CONTROLLER_FQDN>:636
 LDAP_START_TLS=false
 LDAP_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 LDAP_TLS_REQUIRE_CERT=demand
 LDAP_ALLOW_INSECURE=false
 
+# Example AD domain values. Replace openkb.local/OPENKB with the real AD values.
 LDAP_AD_DOMAIN=openkb.local
 LDAP_NETBIOS_DOMAIN=OPENKB
-LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local
+LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local,company.com
 
+# For openkb.local, use DC=openkb,DC=local.
+# For example.corp.local, use DC=example,DC=corp,DC=local.
 LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
-LDAP_USER_FILTER=(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))
+LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local)(mail=%(user)s@company.com)(userPrincipalName=%(user)s@company.com))
 LDAP_BIND_DN=svc_djopenkb@openkb.local
+```
+
+Notes:
+
+```text
+- `openkb.local` is only a documentation example. Replace it with the real AD DNS domain.
+- Convert the AD DNS domain into the search base by splitting each part into `DC=` values. Example: `openkb.local` becomes `DC=openkb,DC=local`.
+- `LDAP_SERVER_URI` should use the Domain Controller hostname/FQDN, not the IP address.
+- `LDAP_EXTRA_HOSTNAME`, `LDAP_EXTRA_SHORT_HOSTNAME`, and `LDAP_DC_IP` are optional and only help Docker resolve the hostname when DNS is unavailable.
+- `LDAP_BIND_DN` must be the real AD service account login format that can bind/search, for example `svc_djopenkb@openkb.local`.
+- The public email domain and the AD UPN suffix may be different. Include both in LDAP_ALLOWED_EMAIL_DOMAINS if both are accepted for login.
 ```
 
 Store the service account password in Vault, not `.env`:
 
 ```env
-LDAP_BIND_PASSWORD="service-account-password"
+LDAP_BIND_PASSWORD=service-account-password
 ```
 
----
+If the password contains shell special characters, use single quotes in `vault/bootstrap/djopenkb.env`:
 
+```env
+LDAP_BIND_PASSWORD='P@ssw0rd!abc$123'
+```
+
+Avoid double quotes for passwords containing `$`, backticks, or backslashes because the bootstrap file is read by a Linux shell.
 ## 3. CA Certificate File
 
-Export the AD CS Root CA certificate from Windows Server as:
+Export the AD CS Root CA certificate from Windows Server. Recommended export format:
 
 ```text
 Base-64 encoded X.509 (.CER)
 ```
 
-Rename it to:
-
-```text
-ad-ca.crt
-```
-
-Place it here:
+Rename/copy it to:
 
 ```text
 ldap-certs/ad-ca.crt
@@ -88,8 +101,40 @@ Docker Compose mounts it into the web container as:
 /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 ```
 
----
+On the Linux server, check whether the certificate is readable PEM text:
 
+```bash
+head -n 5 ldap-certs/ad-ca.crt
+```
+
+Expected:
+
+```text
+-----BEGIN CERTIFICATE-----
+...
+```
+
+If the file displays unreadable binary characters, it is DER/binary format. Convert it on the Linux server:
+
+```bash
+openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
+mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
+mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
+```
+
+Verify the converted certificate:
+
+```bash
+openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
+```
+
+If the Domain Controller certificate is issued by an intermediate CA, place the full CA chain in the same PEM file:
+
+```bash
+cat issuing-ca.crt root-ca.crt > ldap-certs/ad-ca.crt
+```
+
+Do not use the Domain Controller server certificate as the CA file unless it is self-signed. The CA file should normally contain the Root CA and, if applicable, the Issuing/Intermediate CA.
 ## 4. Docker Compose Requirements
 
 The `web` service should include the CA cert mount:
@@ -210,13 +255,46 @@ Common causes:
 
 ```text
 Wrong CA certificate exported
-Certificate file is DER instead of Base-64 PEM format
-LDAP_SERVER_URI uses IP address instead of certificate hostname
-Domain Controller certificate does not contain the hostname
+Certificate file is DER/binary instead of Base-64 PEM format
+The CA chain is incomplete
+LDAP_SERVER_URI uses an IP address instead of the certificate hostname
+The Domain Controller certificate does not contain the hostname used by LDAP_SERVER_URI
 ```
 
-Use hostname format:
+Check the mounted file:
 
-```env
-LDAP_SERVER_URI=ldaps://WIN-VVCA4BIOSK7.openkb.local:636
+```bash
+docker compose exec web head -n 5 /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+docker compose exec web openssl x509 -in /etc/ssl/certs/djopenkb-ldap/ad-ca.crt -noout -subject -issuer -dates
 ```
+
+A readable PEM file starts with:
+
+```text
+-----BEGIN CERTIFICATE-----
+```
+
+If the file is DER/binary, convert it on the Linux server:
+
+```bash
+openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
+mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
+mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
+```
+
+Then test the LDAPS handshake:
+
+```bash
+docker compose exec web openssl s_client \
+  -connect <DOMAIN_CONTROLLER_FQDN>:636 \
+  -servername <DOMAIN_CONTROLLER_FQDN> \
+  -CAfile /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+```
+
+Expected:
+
+```text
+Verify return code: 0 (ok)
+```
+
+If it still says `unable to get local issuer certificate`, export the Root CA and any Issuing/Intermediate CA from Windows Server and combine them into `ldap-certs/ad-ca.crt`.

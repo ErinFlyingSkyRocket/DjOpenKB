@@ -14,7 +14,8 @@
 # IMPORTANT:
 # The current Vault bootstrap file is read as a shell-style env file.
 # To avoid Linux shell parsing errors, this script generates alphanumeric-only
-# values and the examples use no quotes.
+# values and keeps generated values unquoted. Manual passwords can be single
+# quoted if they contain shell special characters.
 #
 # Run from the project root:
 #     chmod +x vault/bootstrap/generate-secrets.sh
@@ -52,9 +53,9 @@ if [ ! -f "$OUTPUT_FILE" ]; then
 # Generated locally. Do not commit or share this file.
 # After Vault is seeded and login works, delete this file from exported copies.
 #
-# Use no quotes.
 # Do not put spaces around "=".
-# Avoid spaces and shell special characters in values.
+# Generated values are alphanumeric-only and should stay unquoted.
+# Manual passwords can use single quotes if they contain shell symbols.
 
 DJANGO_SECRET_KEY=replace-with-a-long-random-django-secret-key
 DJANGO_FIELD_ENCRYPTION_KEY=replace-with-a-long-random-field-encryption-key
@@ -145,7 +146,8 @@ print("Updated: DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, POSTGRES_PASSWOR
 print("Preserved: comments, AI_API_KEY, LDAP_BIND_PASSWORD")
 print()
 print("Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually.")
-print("Use no quotes, no spaces around '=', and avoid spaces/shell symbols.")
-print("Good example: LDAP_BIND_PASSWORD=P@ssw0rd")
-print("Avoid: LDAP_BIND_PASSWORD=\"P@ssw0rd!\"")
+print("Use no spaces around '='. Generated values are unquoted.")
+print("Good simple example: LDAP_BIND_PASSWORD=P@ssw0rd")
+print("If needed, use single quotes: LDAP_BIND_PASSWORD='P@ssw0rd!abc$123'")
+print("Avoid double quotes for values containing $, `, or \\ .")
 PY

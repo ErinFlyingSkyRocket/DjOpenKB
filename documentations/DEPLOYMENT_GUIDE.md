@@ -203,7 +203,7 @@ LDAP_PLACEHOLDER_ENABLED=false
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
 ```
 
-If LDAPS is enabled, update the LDAP section based on the Windows Server 2022 AD setup.
+If LDAPS is enabled, update the LDAP section based on the Windows Server / Active Directory setup.
 
 Example:
 
@@ -212,31 +212,46 @@ LDAP_ENABLED=true
 LDAP_PLACEHOLDER_ENABLED=false
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
 
-LDAP_SERVER_URI=ldaps://WIN-VVCA4BIOSK7.openkb.local:636
+LDAP_SERVER_URI=ldaps://<DOMAIN_CONTROLLER_FQDN>:636
 LDAP_START_TLS=false
 LDAP_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 LDAP_TLS_REQUIRE_CERT=demand
 LDAP_ALLOW_INSECURE=false
 
+# Example AD domain values. Replace these with your real AD details.
+# AD DNS domain / UPN suffix example: openkb.local
+# NetBIOS domain example: OPENKB
 LDAP_AD_DOMAIN=openkb.local
 LDAP_NETBIOS_DOMAIN=OPENKB
-LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local
+LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local,company.com
 
+# For openkb.local, use DC=openkb,DC=local.
+# For example.corp.local, use DC=example,DC=corp,DC=local.
 LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
-LDAP_USER_FILTER=(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))
+LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local)(mail=%(user)s@company.com)(userPrincipalName=%(user)s@company.com))
 LDAP_BIND_DN=svc_djopenkb@openkb.local
-LDAP_DC_IP=192.168.81.128
+LDAP_EXTRA_HOSTNAME=dc01.openkb.local
+LDAP_EXTRA_SHORT_HOSTNAME=dc01
+LDAP_DC_IP=<AD_DC_IP>
+```
+
+Notes:
+
+```text
+- `openkb.local` is only an example placeholder. Replace it with the organisation's real AD DNS domain, such as `corp.local` or `qapf1.qalab01.nextlabs.com`.
+- Convert an AD domain name to `LDAP_USER_SEARCH_BASE` by splitting the dots into `DC=` parts. Example: `openkb.local` becomes `DC=openkb,DC=local`.
+- `LDAP_BIND_DN` should use the actual AD service account UPN that can bind/search, for example `svc_djopenkb@openkb.local`.
+- `LDAP_ALLOWED_EMAIL_DOMAINS` can include both the public email domain and the AD UPN suffix.
+- `LDAP_EXTRA_HOSTNAME`, `LDAP_EXTRA_SHORT_HOSTNAME`, and `LDAP_DC_IP` are only needed when Docker/Linux cannot resolve the Domain Controller hostname.
+- Keep `LDAP_SERVER_URI` as the hostname/FQDN for LDAPS certificate validation.
 ```
 
 For full LDAPS setup, refer to:
 
 ```text
 documentations/LDAP_LDAPS_SETUP.md
-documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
+documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
 ```
-
----
-
 ## 6. Generate Vault bootstrap secrets
 
 Make the secret generator executable.
@@ -460,30 +475,68 @@ This is a self-signed certificate for local/intranet testing. The browser may sh
 
 ## 9. Add the LDAPS CA certificate if using AD
 
-If LDAPS is enabled, export the AD CS Root CA certificate from Windows Server as Base-64 encoded X.509.
+If LDAPS is enabled, the Windows Server / Active Directory CA certificate must be available to the Linux server and mounted into the Django `web` container.
 
-Place the exported CA certificate here:
+Recommended Windows export format:
+
+```text
+Base-64 encoded X.509 (.CER)
+```
+
+Rename or copy the exported certificate to:
 
 ```text
 ldap-certs/ad-ca.crt
 ```
 
-Check that the file exists.
+Check that the file exists on the Linux server:
 
 ```bash
 ls -l ldap-certs/ad-ca.crt
 ```
 
-If the Linux server or Docker container cannot resolve the AD hostname, make sure this field is set in `.env`:
+The file should be PEM/readable text. Check it with:
 
-```env
-LDAP_DC_IP=192.168.81.128
+```bash
+head -n 5 ldap-certs/ad-ca.crt
 ```
 
-Replace the IP address with the actual Windows Server 2022 Domain Controller IP.
+Expected:
 
----
+```text
+-----BEGIN CERTIFICATE-----
+...
+```
 
+If the file shows unreadable binary characters instead, it was exported as DER/binary. Convert it on the Linux server:
+
+```bash
+openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
+mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
+mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
+```
+
+Then verify it again:
+
+```bash
+openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
+```
+
+If certificate validation still fails with `unable to get local issuer certificate`, the file is readable but the CA chain is incomplete. Export the Root CA and any Issuing/Intermediate CA certificates from Windows Server, convert them to PEM if needed, then combine them:
+
+```bash
+cat issuing-ca.crt root-ca.crt > ldap-certs/ad-ca.crt
+```
+
+If the Linux server or Docker container cannot resolve the AD hostname, make sure these fields are set in `.env`:
+
+```env
+LDAP_EXTRA_HOSTNAME=<DOMAIN_CONTROLLER_FQDN>
+LDAP_EXTRA_SHORT_HOSTNAME=<DOMAIN_CONTROLLER_SHORT_HOSTNAME>
+LDAP_DC_IP=<AD_DC_IP>
+```
+
+Replace `<AD_DC_IP>` with the actual Windows Server Domain Controller IP. Keep `LDAP_SERVER_URI` as the Domain Controller hostname/FQDN, not the IP address, so LDAPS hostname validation can work correctly.
 ## 10. Start the Docker stack
 
 Start and build all containers.
@@ -629,6 +682,21 @@ sudo docker compose exec web ls -la /app/openkb-data/.openkb
 
 If LDAPS is enabled, test from inside the web container.
 
+First check the CA certificate mount:
+
+```bash
+sudo docker compose exec web ls -l /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+sudo docker compose exec web head -n 5 /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+```
+
+The first line should be:
+
+```text
+-----BEGIN CERTIFICATE-----
+```
+
+Then test LDAPS:
+
 ```bash
 sudo docker compose exec web sh scripts/test_ldaps.sh
 ```
@@ -640,15 +708,27 @@ TLS handshake OK
 LDAPS DNS + TLS certificate validation looks good.
 ```
 
+You can also test manually:
+
+```bash
+sudo docker compose exec web openssl s_client \
+  -connect <DOMAIN_CONTROLLER_FQDN>:636 \
+  -servername <DOMAIN_CONTROLLER_FQDN> \
+  -CAfile /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
+```
+
+Expected certificate result:
+
+```text
+Verify return code: 0 (ok)
+```
+
 If it fails, refer to:
 
 ```text
 documentations/LDAP_LDAPS_SETUP.md
-documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
+documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
 ```
-
----
-
 ## 15. Access the website
 
 Open the website using the Linux server IP address.
