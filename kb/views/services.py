@@ -321,19 +321,10 @@ def image_is_used_by_other_article(filename, current_article=None):
     if current_article and current_article.pk:
         queryset = queryset.exclude(pk=current_article.pk)
 
-    for article in queryset.only(
-        "body",
-        "image_assets",
-        "pending_update_body",
-        "pending_update_image_assets",
-    ):
+    for article in queryset.only("body", "image_assets"):
         if filename in (article.image_assets or []):
             return True
         if filename in extract_article_image_filenames(article.body):
-            return True
-        if filename in (article.pending_update_image_assets or []):
-            return True
-        if filename in extract_article_image_filenames(article.pending_update_body):
             return True
     return False
 
@@ -407,20 +398,11 @@ def get_all_referenced_uploaded_files():
     """Return uploaded filenames still referenced by articles or Markdown files."""
     referenced = set()
 
-    # 1) Trust Django article records first. This covers live article images and
-    # pending-update images that are waiting for admin review. Without the pending
-    # fields, the cleanup tool could wrongly classify a pending-update upload as
-    # stray before the admin has approved/rejected it.
-    for article in SuggestedArticle.objects.only(
-        "body",
-        "image_assets",
-        "pending_update_body",
-        "pending_update_image_assets",
-    ):
+    # 1) Trust Django article records first. This covers draft/published articles
+    # and images tracked in image_assets.
+    for article in SuggestedArticle.objects.only("body", "image_assets"):
         referenced.update(article.image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.body))
-        referenced.update(article.pending_update_image_assets or [])
-        referenced.update(extract_uploaded_file_filenames_from_text(article.pending_update_body))
 
     # 2) Also scan all OpenKB wiki Markdown files. This protects manually added
     # Markdown files or files edited outside Django.
@@ -631,16 +613,30 @@ def markdown_title_and_body(markdown_text, fallback_title="Imported article"):
     return title, body, keywords
 
 
-def build_bulk_export_payload():
-    """Build the JSON manifest and file list for article bulk export."""
-    articles = []
+BULK_EXPORT_PART_SIZE_BYTES = 95 * 1024 * 1024
+BULK_IMPORT_MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+BULK_IMPORT_MAX_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
+
+
+def build_bulk_export_payload(articles=None):
+    """Build the JSON manifest and file list for article bulk export.
+
+    The payload includes live article fields and any pending-update fields so an
+    export/import keeps Django DB state and OpenKB Markdown files in sync.
+    """
+    article_rows = []
     referenced_uploads = set()
 
-    for article in SuggestedArticle.objects.select_related("owner").order_by("created_at", "id"):
-        image_assets = sorted(set((article.image_assets or []) + extract_article_image_filenames(article.body)))
-        referenced_uploads.update(image_assets)
+    if articles is None:
+        articles = SuggestedArticle.objects.select_related("owner").order_by("created_at", "id")
 
-        articles.append({
+    for article in articles:
+        live_assets = sorted(set((article.image_assets or []) + extract_article_image_filenames(article.body)))
+        pending_assets = sorted(set((article.pending_update_image_assets or []) + extract_article_image_filenames(article.pending_update_body)))
+        referenced_uploads.update(live_assets)
+        referenced_uploads.update(pending_assets)
+
+        article_rows.append({
             "title": article.title,
             "body": article.body,
             "keywords": article.keywords,
@@ -648,9 +644,17 @@ def build_bulk_export_payload():
             "filename": article.filename,
             "raw_path": article.raw_path,
             "wiki_path": article.wiki_path,
-            "image_assets": image_assets,
+            "image_assets": live_assets,
+            "update_status": getattr(article, "update_status", SuggestedArticle.UpdateStatus.NONE),
+            "pending_update_title": getattr(article, "pending_update_title", "") or "",
+            "pending_update_body": getattr(article, "pending_update_body", "") or "",
+            "pending_update_keywords": getattr(article, "pending_update_keywords", "") or "",
+            "pending_update_image_assets": pending_assets,
+            "review_notes": getattr(article, "review_notes", "") or "",
+            "review_notes_history": getattr(article, "review_notes_history", []) or [],
             "created_at": article.created_at.isoformat() if article.created_at else "",
             "updated_at": article.updated_at.isoformat() if article.updated_at else "",
+            "published_at": article.published_at.isoformat() if getattr(article, "published_at", None) else "",
             "author_username": article.author_username,
             "author_email": article.author_email,
         })
@@ -658,10 +662,154 @@ def build_bulk_export_payload():
     return {
         "format": "djopenkb-bulk-export-v1",
         "exported_at": timezone.now().isoformat(),
-        "article_count": len(articles),
-        "articles": articles,
+        "article_count": len(article_rows),
+        "articles": article_rows,
         "uploads": sorted(referenced_uploads),
     }
+
+
+def _upload_file_size(filename):
+    filename = safe_uploaded_filename(filename)
+    if not filename:
+        return 0
+    upload_dir = get_openkb_uploads_dir().resolve()
+    file_path = (upload_dir / filename).resolve()
+    try:
+        file_path.relative_to(upload_dir)
+    except ValueError:
+        return 0
+    try:
+        return file_path.stat().st_size if file_path.exists() and file_path.is_file() else 0
+    except OSError:
+        return 0
+
+
+def _article_export_size_estimate(article):
+    live_assets = set((article.image_assets or []) + extract_article_image_filenames(article.body))
+    pending_assets = set((article.pending_update_image_assets or []) + extract_article_image_filenames(article.pending_update_body))
+    upload_size = sum(_upload_file_size(filename) for filename in live_assets | pending_assets)
+    markdown_size = len(build_article_markdown(article).encode("utf-8"))
+    pending_text_size = len((getattr(article, "pending_update_body", "") or "").encode("utf-8"))
+    # Add a little overhead for manifest JSON and zip metadata.
+    return upload_size + markdown_size + pending_text_size + 4096
+
+
+def split_articles_for_bulk_export(max_part_size_bytes=BULK_EXPORT_PART_SIZE_BYTES):
+    """Return article batches that should produce importable zip parts below the target size."""
+    batches = []
+    current_batch = []
+    current_size = 0
+
+    for article in SuggestedArticle.objects.select_related("owner").order_by("created_at", "id"):
+        article_size = _article_export_size_estimate(article)
+        if current_batch and current_size + article_size > max_part_size_bytes:
+            batches.append(current_batch)
+            current_batch = []
+            current_size = 0
+
+        current_batch.append(article)
+        current_size += article_size
+
+    if current_batch:
+        batches.append(current_batch)
+
+    return batches
+
+
+def build_single_bulk_export_zip(articles=None, part_number=None, part_count=None):
+    """Build one importable DjOpenKB export zip and return its bytes plus manifest."""
+    manifest = build_bulk_export_payload(articles=articles)
+    if part_number and part_count:
+        manifest["part_number"] = part_number
+        manifest["part_count"] = part_count
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("manifest.json", json.dumps(manifest, indent=2, ensure_ascii=False))
+        archive.writestr(
+            "README.txt",
+            (
+                "DjOpenKB bulk article export.\n"
+                "Import this zip from My Profile -> Admin tools -> Bulk import/export articles.\n"
+                "Articles are stored in manifest.json and articles/*.md.\n"
+                "Referenced uploaded files are stored in uploads/.\n"
+            ),
+        )
+
+        for article in manifest["articles"]:
+            article_filename = safe_uploaded_filename(article.get("filename")) or f"{slugify_title(article.get('title') or 'article')}.md"
+            archive.writestr(f"articles/{article_filename}", build_article_markdown(type("ArticleExport", (), article)))
+
+        upload_dir = get_openkb_uploads_dir().resolve()
+        exported_uploads = set()
+
+        for filename in manifest.get("uploads", []):
+            filename = safe_uploaded_filename(filename)
+            if not filename or filename in exported_uploads:
+                continue
+
+            file_path = (upload_dir / filename).resolve()
+            try:
+                file_path.relative_to(upload_dir)
+            except ValueError:
+                continue
+
+            if file_path.exists() and file_path.is_file():
+                archive.write(file_path, f"uploads/{filename}")
+                exported_uploads.add(filename)
+
+    buffer.seek(0)
+    return buffer.getvalue(), manifest
+
+
+def build_bulk_export_download(force_split=False, max_part_size_bytes=BULK_EXPORT_PART_SIZE_BYTES):
+    """Build either one importable zip or a package containing importable part zips.
+
+    If the export grows beyond the part size target, the returned outer zip contains
+    parts/djopenkb-export-partXXX-of-YYY.zip files. Each part can be imported
+    separately and stays below the import upload limit where possible.
+    """
+    batches = split_articles_for_bulk_export(max_part_size_bytes=max_part_size_bytes)
+    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
+
+    if not force_split and len(batches) <= 1:
+        data, manifest = build_single_bulk_export_zip()
+        return data, f"djopenkb-export-{timestamp}.zip", "application/zip", manifest, False
+
+    outer_manifest = {
+        "format": "djopenkb-bulk-export-split-v1",
+        "exported_at": timezone.now().isoformat(),
+        "part_count": len(batches),
+        "part_size_target_bytes": max_part_size_bytes,
+        "parts": [],
+    }
+
+    outer_buffer = io.BytesIO()
+    with zipfile.ZipFile(outer_buffer, "w", compression=zipfile.ZIP_DEFLATED) as outer:
+        part_count = len(batches)
+        for index, batch in enumerate(batches, start=1):
+            part_bytes, part_manifest = build_single_bulk_export_zip(batch, part_number=index, part_count=part_count)
+            part_filename = f"parts/djopenkb-export-{timestamp}-part{index:03d}-of-{part_count:03d}.zip"
+            outer.writestr(part_filename, part_bytes)
+            outer_manifest["parts"].append({
+                "filename": part_filename,
+                "size_bytes": len(part_bytes),
+                "article_count": part_manifest.get("article_count", 0),
+                "upload_count": len(part_manifest.get("uploads", [])),
+            })
+
+        outer.writestr("manifest.json", json.dumps(outer_manifest, indent=2, ensure_ascii=False))
+        outer.writestr(
+            "README.txt",
+            (
+                "DjOpenKB split bulk export package.\n\n"
+                "Extract this package first, then import each zip inside the parts/ folder.\n"
+                "Each part zip is a normal DjOpenKB import file. Import part001, then part002, and continue in order.\n"
+            ),
+        )
+
+    outer_buffer.seek(0)
+    return outer_buffer.getvalue(), f"djopenkb-export-{timestamp}-split-package.zip", "application/zip", outer_manifest, True
 
 
 def copy_imported_uploads_from_zip(zip_file, upload_member_names):
@@ -725,6 +873,9 @@ def import_articles_from_zip(uploaded_zip, owner):
     """Import articles and uploaded files from a DjOpenKB bulk export zip.
 
     All imported articles are assigned to the admin user performing the import.
+    Normal single-part export zips and extracted split-export part zips are both
+    supported. If an outer split package is uploaded, the importer will try to
+    import the nested part zips in order.
     """
     imported_count = 0
     errors = []
@@ -735,20 +886,40 @@ def import_articles_from_zip(uploaded_zip, owner):
 
         # Hard safety limits for admin imports.
         total_uncompressed = sum(item.file_size for item in members)
-        if total_uncompressed > 200 * 1024 * 1024:
+        if total_uncompressed > BULK_IMPORT_MAX_UNCOMPRESSED_BYTES:
             raise ValueError("Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB.")
-
-        upload_members = [
-            original_name for safe_name, original_name in safe_names.items()
-            if safe_name.startswith("uploads/")
-        ]
-        filename_map = copy_imported_uploads_from_zip(archive, upload_members)
 
         manifest_name = safe_names.get("manifest.json")
         manifest = None
         if manifest_name:
             with archive.open(manifest_name, "r") as manifest_file:
                 manifest = json.loads(manifest_file.read().decode("utf-8"))
+
+        if manifest and manifest.get("format") == "djopenkb-bulk-export-split-v1":
+            part_names = [
+                part.get("filename") for part in sorted(manifest.get("parts", []), key=lambda item: item.get("filename") or "")
+                if part.get("filename") in safe_names
+            ]
+            if not part_names:
+                raise ValueError("Split export package did not contain any importable part zip files.")
+
+            for part_name in part_names:
+                with archive.open(safe_names[part_name], "r") as part_file:
+                    part_bytes = part_file.read(BULK_IMPORT_MAX_UPLOAD_BYTES + 1)
+                if len(part_bytes) > BULK_IMPORT_MAX_UPLOAD_BYTES:
+                    errors.append(f"Skipped {part_name}: part is larger than 100 MB. Extract and split it again before import.")
+                    continue
+                part_imported, part_errors = import_articles_from_zip(io.BytesIO(part_bytes), owner=owner)
+                imported_count += part_imported
+                errors.extend([f"{part_name}: {error}" for error in part_errors])
+
+            return imported_count, errors
+
+        upload_members = [
+            original_name for safe_name, original_name in safe_names.items()
+            if safe_name.startswith("uploads/")
+        ]
+        filename_map = copy_imported_uploads_from_zip(archive, upload_members)
 
         article_payloads = []
 
@@ -760,6 +931,13 @@ def import_articles_from_zip(uploaded_zip, owner):
                     "keywords": item.get("keywords") or "",
                     "status": item.get("status") or SuggestedArticle.Status.PUBLISHED,
                     "filename": item.get("filename") or "",
+                    "update_status": item.get("update_status") or SuggestedArticle.UpdateStatus.NONE,
+                    "pending_update_title": item.get("pending_update_title") or "",
+                    "pending_update_body": item.get("pending_update_body") or "",
+                    "pending_update_keywords": item.get("pending_update_keywords") or "",
+                    "pending_update_image_assets": item.get("pending_update_image_assets") or [],
+                    "review_notes": item.get("review_notes") or "",
+                    "review_notes_history": item.get("review_notes_history") or [],
                 })
         else:
             markdown_names = [
@@ -794,9 +972,22 @@ def import_articles_from_zip(uploaded_zip, owner):
             body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
             keywords = (item.get("keywords") or "").strip()[:500]
             status = item.get("status") or SuggestedArticle.Status.PUBLISHED
+            update_status = item.get("update_status") or SuggestedArticle.UpdateStatus.NONE
+            pending_update_title = (item.get("pending_update_title") or "").strip()[:200]
+            pending_update_body = rewrite_uploaded_file_references(item.get("pending_update_body") or "", filename_map)
+            pending_update_keywords = (item.get("pending_update_keywords") or "").strip()[:500]
+            review_notes = (item.get("review_notes") or "").strip()
+            review_notes_history = item.get("review_notes_history") or []
+            imported_pending_assets = [
+                filename_map.get(safe_uploaded_filename(filename), safe_uploaded_filename(filename))
+                for filename in (item.get("pending_update_image_assets") or [])
+                if safe_uploaded_filename(filename)
+            ]
 
             if status not in dict(SuggestedArticle.Status.choices):
                 status = SuggestedArticle.Status.PUBLISHED
+            if update_status not in dict(SuggestedArticle.UpdateStatus.choices):
+                update_status = SuggestedArticle.UpdateStatus.NONE
 
             normalized_title = normalize_article_title(title)
             if normalized_title in seen_import_titles:
@@ -822,6 +1013,13 @@ def import_articles_from_zip(uploaded_zip, owner):
                     raw_path=f"raw/{filename}",
                     status=status,
                     image_assets=extract_article_image_filenames(body),
+                    update_status=update_status,
+                    pending_update_title=pending_update_title,
+                    pending_update_body=pending_update_body,
+                    pending_update_keywords=pending_update_keywords,
+                    pending_update_image_assets=sorted(set(imported_pending_assets + extract_article_image_filenames(pending_update_body))),
+                    review_notes=review_notes,
+                    review_notes_history=review_notes_history if isinstance(review_notes_history, list) else [],
                 )
                 write_article_files(article)
                 sync_article_image_assets(article, old_assets=[])
@@ -859,23 +1057,6 @@ def format_user_for_markdown(user):
     if user.email:
         return user.email
     return user.get_username()
-
-
-def get_public_article_updated_at(article):
-    """Return the timestamp that represents the currently visible public content.
-
-    Submitting/rejecting a pending update changes the database row's updated_at,
-    but it must not make the public article look updated because the published
-    content is still the old version. Once an update is approved, updated_at is
-    correct again because the public content has changed.
-    """
-    if (
-        article.status == SuggestedArticle.Status.PUBLISHED
-        and article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
-        and article.approved_at
-    ):
-        return article.approved_at
-    return article.updated_at
 
 
 def build_article_markdown(article):
@@ -1364,12 +1545,7 @@ def delete_article_files(article):
         if str(file_path).startswith(str(root_dir)) and file_path.exists() and file_path.is_file():
             file_path.unlink()
 
-    filenames_to_check = set(article.image_assets or [])
-    filenames_to_check.update(extract_article_image_filenames(article.body))
-    filenames_to_check.update(article.pending_update_image_assets or [])
-    filenames_to_check.update(extract_article_image_filenames(article.pending_update_body))
-
-    for filename in filenames_to_check:
+    for filename in (article.image_assets or extract_article_image_filenames(article.body)):
         if not image_is_used_by_other_article(filename, current_article=article):
             delete_uploaded_image_file(filename)
 
@@ -1431,8 +1607,7 @@ def get_openkb_wiki_articles(sort_by_views=False):
     )
 
     for suggested in queryset:
-        public_updated_at = get_public_article_updated_at(suggested)
-        modified_at = timezone.localtime(public_updated_at).strftime("%Y-%m-%d %H:%M")
+        modified_at = timezone.localtime(suggested.updated_at).strftime("%Y-%m-%d %H:%M")
         articles.append({
             "title": suggested.title,
             "type": "Article",

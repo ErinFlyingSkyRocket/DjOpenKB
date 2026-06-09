@@ -43,13 +43,19 @@
                 <div class="panel-body">
                     <p>
                         {% trans "Download a zip containing all Django-managed articles, their Markdown content, a" %} <code>manifest.json</code>,
-                        {% trans "and all referenced uploaded files." %}
+                        {% trans "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import." %}
                     </p>
                     <div class="bulk-actions">
                         <a class="btn btn-success" href="{% url 'export_articles_zip' %}">
                             <i class="fa fa-download"></i> {% trans "Export articles zip" %}
                         </a>
+                        <a class="btn btn-info" href="{% url 'export_articles_zip' %}?split=1">
+                            <i class="fa fa-files-o"></i> {% trans "Export split package" %}
+                        </a>
                     </div>
+                    <p class="help-block">
+                        {% trans "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order." %}
+                    </p>
                 </div>
             </div>
 
@@ -66,7 +72,7 @@
                         <div class="form-group">
                             <label>{% trans "Import zip file" %}</label>
                             <input type="file" name="import_zip" class="form-control" accept=".zip" required>
-                            <p class="help-block">{% trans "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB." %}</p>
+                            <p class="help-block">{% trans "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order." %}</p>
                         </div>
                         <button class="btn btn-warning" type="submit">
                             <i class="fa fa-upload"></i> {% trans "Import zip" %}
@@ -83,9 +89,15 @@
                     <pre class="bulk-code">manifest.json
 articles/example-article.md
 uploads/example-image.png
-uploads/example-file.pdf</pre>
+uploads/example-image.png</pre>
+                    <p>{% trans "Large exports may download as a split package:" %}</p>
+                    <pre class="bulk-code">manifest.json
+README.txt
+parts/djopenkb-export-part001-of-003.zip
+parts/djopenkb-export-part002-of-003.zip
+parts/djopenkb-export-part003-of-003.zip</pre>
                     <p class="bulk-muted">
-                        {% trans "If manifest.json is missing, the importer will try to import all Markdown files found in the zip." %}
+                        {% trans "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one." %}
                     </p>
                 </div>
             </div>

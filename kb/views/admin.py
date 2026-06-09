@@ -102,58 +102,33 @@ def admin_bulk_articles(request):
 
 @admin_tools_required
 def export_articles_zip(request):
-    """Export all Django-managed articles plus referenced uploaded files as a zip."""
-    manifest = build_bulk_export_payload()
+    """Export Django-managed articles and referenced uploads as one zip or split parts."""
+    force_split = request.GET.get("split") == "1"
+    data, filename, content_type, manifest, was_split = build_bulk_export_download(force_split=force_split)
 
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("manifest.json", json.dumps(manifest, indent=2, ensure_ascii=False))
-        archive.writestr(
-            "README.txt",
-            (
-                "DjOpenKB bulk article export.\n"
-                "Import this zip from My Profile -> Admin tools -> Bulk import/export articles.\n"
-                "Articles are stored in manifest.json and articles/*.md.\n"
-                "Referenced uploaded files are stored in uploads/.\n"
-            ),
-        )
+    if was_split:
+        article_count = sum(part.get("article_count", 0) for part in manifest.get("parts", []))
+        upload_count = sum(part.get("upload_count", 0) for part in manifest.get("parts", []))
+        part_count = manifest.get("part_count", 0)
+    else:
+        article_count = len(manifest.get("articles", []))
+        upload_count = len(manifest.get("uploads", []))
+        part_count = 1
 
-        for article in manifest["articles"]:
-            article_filename = safe_uploaded_filename(article.get("filename")) or f"{slugify_title(article.get('title') or 'article')}.md"
-            archive.writestr(f"articles/{article_filename}", build_article_markdown(type("ArticleExport", (), article)))
-
-        upload_dir = get_openkb_uploads_dir().resolve()
-        exported_uploads = set()
-
-        for filename in manifest.get("uploads", []):
-            filename = safe_uploaded_filename(filename)
-            if not filename or filename in exported_uploads:
-                continue
-
-            file_path = (upload_dir / filename).resolve()
-            try:
-                file_path.relative_to(upload_dir)
-            except ValueError:
-                continue
-
-            if file_path.exists() and file_path.is_file():
-                archive.write(file_path, f"uploads/{filename}")
-                exported_uploads.add(filename)
-
-    buffer.seek(0)
-    timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
     log_activity(
         request,
         ActivityLog.EventType.ADMIN_TOOL_ACTION,
         details={
             "tool": "bulk_export_articles",
-            "article_count": len(manifest.get("articles", [])),
-            "upload_count": len(manifest.get("uploads", [])),
+            "article_count": article_count,
+            "upload_count": upload_count,
+            "part_count": part_count,
+            "split_export": was_split,
         },
     )
 
-    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
-    response["Content-Disposition"] = f'attachment; filename="djopenkb-export-{timestamp}.zip"'
+    response = HttpResponse(data, content_type=content_type)
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
 
 
@@ -173,9 +148,8 @@ def import_articles_zip(request):
         messages.error(request, "Only .zip import files are allowed.")
         return redirect("admin_bulk_articles")
 
-    max_upload_size = 100 * 1024 * 1024
-    if uploaded_zip.size > max_upload_size:
-        messages.error(request, "Import zip is too large. Maximum allowed size is 100 MB.")
+    if uploaded_zip.size > BULK_IMPORT_MAX_UPLOAD_BYTES:
+        messages.error(request, "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time.")
         return redirect("admin_bulk_articles")
 
     try:
