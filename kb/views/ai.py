@@ -137,6 +137,10 @@ def ask_openkb_ai(request):
 
         answer = clean_openkb_ai_answer(raw_answer)
 
+        if answer_indicates_no_openkb_match(answer):
+            answer = "The knowledge base does not contain matching information about that topic."
+            related_articles = []
+
         if not answer:
             answer = (
                 "OpenKB AI could not produce a clear answer for that question. "

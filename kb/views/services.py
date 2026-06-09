@@ -2201,6 +2201,39 @@ def clean_openkb_ai_answer(answer):
     if any(re.search(pattern, cleaned or "") for pattern in internal_log_patterns):
         return ""
 
+    internal_detail_patterns = [
+        r"(?i)\bindex\.md\b",
+        r"(?i)\b[a-z0-9_\-/]+\.md\b",
+        r"(?i)\bsources/",
+        r"(?i)\bsummaries/",
+        r"(?i)\bconcepts/",
+        r"(?i)\bwiki/",
+        r"(?i)\bfull_text\b",
+        r"(?i)\bfrontmatter\b",
+        r"(?i)\bread_file\b",
+        r"(?i)\bget_page_content\b",
+        r"(?i)\bget_image\b",
+        r"(?i)i have read\b",
+        r"(?i)\bi read\b",
+        r"(?i)\bi checked\b",
+        r"(?i)the document titles or descriptions",
+        r"(?i)internal search",
+        r"(?i)internal retrieval",
+    ]
+
+    # If the model leaks internal retrieval/file details while saying there is no
+    # match, replace the whole answer with a safe user-facing message.
+    if any(re.search(pattern, cleaned or "") for pattern in internal_detail_patterns):
+        if answer_indicates_no_openkb_match(cleaned):
+            return "The knowledge base does not contain matching information about that topic."
+
+        cleaned = re.sub(r"`?index\.md`?", "the knowledge base", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"`?[a-z0-9_\-/]+\.md`?", "a knowledge-base article", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\b(?:sources|summaries|concepts|wiki)/[^\s`]+", "a knowledge-base source", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\bfull_text\b", "article content", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"\bfrontmatter\b", "article metadata", cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r"(?i)\b(?:read_file|get_page_content|get_image)\b", "knowledge-base lookup", cleaned)
+
     # Remove internal source path bullets/lines that OpenKB may echo from summaries.
     cleaned = re.sub(
         r"(?im)^\s*[-*]?\s*(?:\*\*)?full\s+article\s+path(?:\*\*)?\s*:?\s*`?[^\n`]+`?\s*$",
@@ -2213,20 +2246,24 @@ def clean_openkb_ai_answer(answer):
         cleaned,
     )
     cleaned = re.sub(
-        r"(?im)^\s*[-*]?\s*source\s*:?\s*`?(?:sources|summaries)/[^\n`]+`?\s*$",
+        r"(?im)^\s*[-*]?\s*source\s*:?\s*`?(?:sources|summaries|concepts|wiki)/[^\n`]+`?\s*$",
         "",
         cleaned,
     )
     cleaned = re.sub(
-        r"(?im)^\s*[-*]?\s*`?(?:sources|summaries)/[^\n`]+\.md`?\s*$",
+        r"(?im)^\s*[-*]?\s*`?(?:sources|summaries|concepts|wiki)/[^\n`]+\.md`?\s*$",
         "",
         cleaned,
     )
 
+    # Last safety net: if internal markers still remain in a no-result answer,
+    # do not display the original text to the user.
+    if any(re.search(pattern, cleaned or "") for pattern in internal_detail_patterns) and answer_indicates_no_openkb_match(cleaned):
+        return "The knowledge base does not contain matching information about that topic."
+
     # Collapse excess blank lines left by removed metadata.
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
     return cleaned
-
 
 def answer_indicates_no_openkb_match(answer):
     """Detect common no-result answers so we do not recommend random articles."""
@@ -2236,6 +2273,8 @@ def answer_indicates_no_openkb_match(answer):
         "could not find any information",
         "i couldn't find",
         "i could not find",
+        "cannot find any information",
+        "cannot find information",
         "no information",
         "not find information",
         "not found in the wiki",
@@ -2243,6 +2282,16 @@ def answer_indicates_no_openkb_match(answer):
         "no relevant",
         "no matching",
         "nothing about",
+        "does not contain matching information",
+        "does not contain information",
+        "there is no mention",
+        "no mention of",
+        "not contain matching",
+        "cannot locate",
+        "no article about",
+        "no articles about",
+        "no document about",
+        "no documents about",
     ]
     return any(phrase in lowered for phrase in no_match_phrases)
 

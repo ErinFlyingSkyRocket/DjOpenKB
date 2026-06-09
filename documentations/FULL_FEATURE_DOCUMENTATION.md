@@ -22,28 +22,41 @@ The Docker Compose stack contains the following main services:
 | `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment. |
 | `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general activity log cleanup. |
 
-## 3. User Types and Rights Matrix
+## 3. User Types and Permission Summary
 
-DjOpenKB separates users by authentication source and permission level. This prevents local users from being incorrectly treated as AD users just because they use an AD-style email address.
+DjOpenKB separates users by both authentication source and permission level. To keep the permission model clear, the main website roles can be grouped into three practical access levels: anonymous visitors, authenticated users, and main-site administrators. Local and Active Directory accounts may share similar website permissions, but their account management rules are different.
 
-| User type | Authentication source | Main purpose | Article browsing | Vote on articles | Suggest articles | Edit own drafts/pending failed | Change own email/password | Admin tools | Django admin access |
-|---|---|---|---|---|---|---|---|---|---|
-| Anonymous visitor | None | Read-only public access if allowed by deployment | Published articles only | No | No | No | No | No | No |
-| Local user | Django local account | Normal internal contributor | Published articles | Yes, after login | Yes | Yes | Yes, with MFA/OTP | No | No |
-| Local admin | Django local account | Main-site administrator | All relevant article workflow views | Yes | Yes | Yes | Yes, with MFA/OTP | Yes | Only if staff/superuser/Django admin permission is granted |
-| AD user | Active Directory / LDAPS | Domain-authenticated contributor | Published articles | Yes, after login | Yes | Yes | No; AD-managed values are blocked in Django | No | No |
-| AD admin / LDAP admin | Active Directory / LDAPS | Domain-authenticated administrator | All relevant article workflow views | Yes | Yes | Yes | No; AD-managed values are blocked in Django | Yes | Only if staff/superuser/Django admin permission is granted |
+### 3.1 Main Website Access Levels
 
-### 3.1 User Account Separation
+| Access level | Applies to | Main permissions | Restrictions |
+|---|---|---|---|
+| Anonymous visitor | Not signed in | Can browse published articles and use the OpenKB AI chatbot. | Cannot vote, suggest articles, edit content, access profile features, or use admin tools. |
+| Authenticated user | Local user or AD / LDAP user | Can browse published articles, vote on articles, suggest articles, and edit their own draft or pending failed articles. | Cannot approve/publish other users' articles or access admin tools. |
+| Main-site administrator | Local admin or AD / LDAP admin | Can access admin tools, review pending articles, publish/return suggested articles, manage orphan articles, run import/export, and perform maintenance actions. | Django admin access still requires the correct Django staff/superuser/admin permission. |
 
-The `UserProfile` model stores account metadata, including the account source. This avoids unsafe email-domain guessing. A local user can use an email such as `alice@openkb.local` and still remain a local user if their profile says the account source is local.
+### 3.2 Account Source Differences
+
+The `UserProfile` model stores the account source, so the system does not guess whether a user is local or AD-managed based on email domain alone. This prevents a local user with an email such as `alice@openkb.local` from being incorrectly treated as an AD account.
 
 | Account source | Password owner | Email owner | Profile password change | Profile email change |
 |---|---|---|---|---|
-| Local | Django | Django/local admin | Allowed with fresh MFA/OTP | Allowed with fresh MFA/OTP |
-| Active Directory | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
+| Local account | Django | Django/local admin | Allowed with fresh MFA/OTP | Allowed with fresh MFA/OTP |
+| Active Directory account | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
 
-### 3.2 Role Enforcement
+### 3.3 Account Types
+
+The profile layer tracks the main account type for permission and display purposes.
+
+| Account type | Source | Website role | Purpose |
+|---|---|---|---|
+| `User` | Local Django account | Authenticated user | Normal local website contributor. |
+| `Admin` | Local Django account | Main-site administrator | Local administrator with main-site admin privileges. |
+| `LDAP user` | Active Directory / LDAPS | Authenticated user | Domain-authenticated contributor. |
+| `LDAP admin` | Active Directory / LDAPS | Main-site administrator | Domain-authenticated administrator with main-site admin privileges. |
+
+Admins can also allow or block a user's main-site access through Django admin.
+
+### 3.4 Role Enforcement
 
 Main-site admin tools require explicit admin checks. A normal `staff` flag alone is not treated as sufficient for main-site admin tools unless the user also has the correct main-site admin profile or superuser permissions.
 
