@@ -613,6 +613,34 @@ def markdown_title_and_body(markdown_text, fallback_title="Imported article"):
     return title, body, keywords
 
 
+def normalize_import_keywords(value):
+    """Return a safe comma-separated keyword string for import/export.
+
+    Supports current exports, older hand-made JSON, and list-style tag fields.
+    """
+    if value is None:
+        return ""
+    if isinstance(value, (list, tuple, set)):
+        parts = [str(item).strip() for item in value if str(item).strip()]
+        value = ", ".join(parts)
+    else:
+        value = str(value).strip()
+    value = re.sub(r"\s+", " ", value)
+    return value[:500]
+
+
+def get_import_keyword_value(item, *names):
+    """Read keyword aliases from an import manifest item.
+
+    The canonical field is `keywords`, but this also accepts common aliases so
+    manually prepared imports do not lose keyword data.
+    """
+    for name in names:
+        if name in item and item.get(name) not in (None, ""):
+            return normalize_import_keywords(item.get(name))
+    return ""
+
+
 BULK_EXPORT_PART_SIZE_BYTES = 95 * 1024 * 1024
 BULK_IMPORT_MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 BULK_IMPORT_MAX_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
@@ -640,6 +668,8 @@ def build_bulk_export_payload(articles=None):
             "title": article.title,
             "body": article.body,
             "keywords": article.keywords,
+            "keyword_list": article.keyword_list,
+            "tags": article.keyword_list,
             "status": article.status,
             "filename": article.filename,
             "raw_path": article.raw_path,
@@ -649,6 +679,7 @@ def build_bulk_export_payload(articles=None):
             "pending_update_title": getattr(article, "pending_update_title", "") or "",
             "pending_update_body": getattr(article, "pending_update_body", "") or "",
             "pending_update_keywords": getattr(article, "pending_update_keywords", "") or "",
+            "pending_update_keyword_list": [item.strip() for item in (getattr(article, "pending_update_keywords", "") or "").split(",") if item.strip()],
             "pending_update_image_assets": pending_assets,
             "review_notes": getattr(article, "review_notes", "") or "",
             "review_notes_history": getattr(article, "review_notes_history", []) or [],
@@ -928,13 +959,13 @@ def import_articles_from_zip(uploaded_zip, owner):
                 article_payloads.append({
                     "title": item.get("title") or "Imported article",
                     "body": item.get("body") or "",
-                    "keywords": item.get("keywords") or "",
+                    "keywords": get_import_keyword_value(item, "keywords", "keyword", "keyword_list", "tags"),
                     "status": item.get("status") or SuggestedArticle.Status.PUBLISHED,
                     "filename": item.get("filename") or "",
                     "update_status": item.get("update_status") or SuggestedArticle.UpdateStatus.NONE,
                     "pending_update_title": item.get("pending_update_title") or "",
                     "pending_update_body": item.get("pending_update_body") or "",
-                    "pending_update_keywords": item.get("pending_update_keywords") or "",
+                    "pending_update_keywords": get_import_keyword_value(item, "pending_update_keywords", "pending_update_keyword", "pending_update_keyword_list", "pending_update_tags"),
                     "pending_update_image_assets": item.get("pending_update_image_assets") or [],
                     "review_notes": item.get("review_notes") or "",
                     "review_notes_history": item.get("review_notes_history") or [],
@@ -970,12 +1001,12 @@ def import_articles_from_zip(uploaded_zip, owner):
         for item in article_payloads:
             title = (item.get("title") or "Imported article").strip()[:200]
             body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
-            keywords = (item.get("keywords") or "").strip()[:500]
+            keywords = normalize_import_keywords(item.get("keywords"))
             status = item.get("status") or SuggestedArticle.Status.PUBLISHED
             update_status = item.get("update_status") or SuggestedArticle.UpdateStatus.NONE
             pending_update_title = (item.get("pending_update_title") or "").strip()[:200]
             pending_update_body = rewrite_uploaded_file_references(item.get("pending_update_body") or "", filename_map)
-            pending_update_keywords = (item.get("pending_update_keywords") or "").strip()[:500]
+            pending_update_keywords = normalize_import_keywords(item.get("pending_update_keywords"))
             review_notes = (item.get("review_notes") or "").strip()
             review_notes_history = item.get("review_notes_history") or []
             imported_pending_assets = [
@@ -1562,26 +1593,6 @@ def get_article_metadata_by_wiki_path(wiki_path):
         return None
 
 
-
-
-def get_public_article_updated_at(article):
-    """Return the timestamp that represents the visible public article version.
-
-    For published articles, normal-user edits can change article.updated_at while
-    the live public content is still unchanged and waiting for admin approval in
-    pending_update_* fields. In that case, the public page must continue showing
-    the last approved/public timestamp instead of the hidden pending-update save
-    time.
-    """
-    if not article:
-        return None
-
-    if article.status == SuggestedArticle.Status.PUBLISHED:
-        return article.approved_at or article.created_at or article.updated_at
-
-    return article.updated_at or article.created_at
-
-
 def record_article_session_view(request, article):
     """Increment an article view count once per browser session.
 
@@ -1890,7 +1901,6 @@ def get_contextual_related_articles(current_article, limit=5):
         return []
 
     current_path = current_article.get("path") or ""
-    current_suggested_id = current_article.get("suggested_id")
     current_keywords = " ".join(current_article.get("keywords") or [])
     current_title = current_article.get("title") or ""
     body_tokens = tokenize_search_query(strip_markdown_for_search(current_article.get("raw_markdown") or ""))
@@ -1900,7 +1910,7 @@ def get_contextual_related_articles(current_article, limit=5):
     candidates = [
         article
         for article in get_openkb_wiki_articles(sort_by_views=True)
-        if article.get("suggested_id") != current_suggested_id and article.get("path") != current_path
+        if article.get("path") != current_path
     ]
 
     scored = []
