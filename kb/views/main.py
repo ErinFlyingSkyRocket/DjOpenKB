@@ -1,4 +1,5 @@
 from .services import *
+from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
 
@@ -61,6 +62,7 @@ def article_detail(request, article_id):
         "raw_markdown": raw_markdown,
         "keywords": article.keyword_list,
         "author": article.author_display,
+        "suggested_id": article.pk,
     }
     featured_articles = get_contextual_related_articles(current_article_context, limit=5)
 

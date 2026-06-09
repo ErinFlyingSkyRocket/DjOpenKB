@@ -170,8 +170,9 @@
                         </a>
                     </div>
                 {% endif %}
-                <div id="searchResult" class="hidden openkb-search-suggestions" data-suggestions-url="{% url 'search_article_suggestions' %}">
-                    <ul class="list-group searchResultList" role="listbox" aria-label="{% trans 'Possible article matches' %}"></ul>
+                {% url 'search_article_suggestions' as search_suggestions_url %}
+                <div id="searchResult" class="hidden openkb-search-suggestions" data-suggestions-url="{{ search_suggestions_url|default:'/search/suggestions/' }}">
+                    <ul class="list-group searchResultList" role="listbox" aria-label="{% trans 'Search results' %}"></ul>
                 </div>
             </div>
         </form>
