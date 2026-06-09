@@ -12,8 +12,9 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Article browsing, searching, view tracking, voting, and trending articles.
 - User article suggestion workflow with admin approval.
 - Draft, pending approval, pending failed, and published article states.
-- Admin review area for pending articles and rejected / pending failed feedback.
-- Admin tools for import/export, stray upload cleanup, orphan article management, and site settings.
+- Published article update workflow where normal-user edits are held as pending updates while the current published version remains visible.
+- Admin review area for new pending articles, pending updates, rejected / pending failed feedback, and update rejection feedback.
+- Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, and site settings.
 - Local Django login support.
 - Active Directory login over LDAPS for domain users.
 - Clear separation between local users and AD users.
@@ -33,12 +34,12 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 
 ## User Types and Rights
 
-| User type | Authentication source | Main purpose | Article browsing | Vote on articles | Suggest articles | Edit own drafts / pending failed | Change own email/password | Admin tools | Django Admin access |
+| User type | Authentication source | Main purpose | Article browsing | Vote on articles | Suggest articles | Edit own drafts / pending failed / published updates | Change own email/password | Admin tools | Django Admin access |
 |---|---|---|---|---|---|---|---|---|---|
 | Anonymous visitor | None | Read-only public access if allowed by deployment | Published articles only | No | No | No | No | No | No |
-| Local user | Django local account | Normal internal contributor | Published articles | Yes, after login | Yes | Yes | Yes, with MFA/OTP | No | No |
+| Local user | Django local account | Normal internal contributor | Published articles | Yes, after login | Yes | Yes; published edits go to pending update for admin approval | Yes, with MFA/OTP | No | No |
 | Local admin | Django local account | Main-site administrator | All relevant article workflow views | Yes | Yes | Yes | Yes, with MFA/OTP | Yes | Only if staff/superuser/Django Admin permission is granted |
-| AD user | Active Directory / LDAPS | Domain-authenticated contributor | Published articles | Yes, after login | Yes | Yes | No; AD-managed values are blocked in Django | No | No |
+| AD user | Active Directory / LDAPS | Domain-authenticated contributor | Published articles | Yes, after login | Yes | Yes; published edits go to pending update for admin approval | No; AD-managed values are blocked in Django | No | No |
 | AD admin / LDAP admin | Active Directory / LDAPS | Domain-authenticated administrator | All relevant article workflow views | Yes | Yes | Yes | No; AD-managed values are blocked in Django | Yes | Only if staff/superuser/Django Admin permission is granted |
 
 Local and AD users are separated by account source metadata, not by email domain. This means a local user can use an email address such as `alice@openkb.local` without being incorrectly treated as an AD user.
@@ -53,7 +54,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
 | Authorization | Admin-only tools, article owner checks, approval workflow, and restricted admin routes |
-| Articles | Draft/pending/pending failed/published workflow, duplicate title prevention, admin approval, and orphan article management |
+| Articles | Draft/pending/pending failed/published workflow, pending-update review for published edits, duplicate title prevention, admin approval, and orphan article management |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
 | AI chatbot | Prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, per-user limiting for logged-in users, per-IP limiting for anonymous users, safer error handling, related article recommendations, and activity logging |
@@ -61,6 +62,48 @@ Local and AD users are separated by account source metadata, not by email domain
 | Secrets | Vault-backed Django/database/LDAP/AI secrets |
 | Network | Nginx HTTPS reverse proxy and configurable trusted hosts/origins |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, and backup guidance |
+
+---
+
+## Article Workflow Summary
+
+DjOpenKB keeps public article content stable while still allowing controlled user updates.
+
+```text
+Normal user creates a new article:
+Draft → Pending → Pending failed / Published
+
+Normal user edits an already published article:
+Published article remains visible
+Edited version is saved as a pending update
+Admin approves the update → pending update replaces the public article
+Admin rejects the update → public article stays unchanged and feedback is shown to the owner
+
+Admin-created or admin-edited article:
+Admin can publish directly when appropriate
+```
+
+Pending updates store the proposed title, body, keywords, and image references separately from the current public article. This means users can continue reading the approved version while the new version waits for review.
+
+## Bulk Import and Export Summary
+
+The admin bulk import/export tool is intended for article backup, migration, and controlled restore. Exported packages include article content, keywords, referenced images, pending-update data, and review-related metadata needed to restore the article workflow.
+
+```text
+Normal export:
+- Creates one article backup ZIP when the result is small enough.
+- Automatically creates a split package when the export becomes large.
+
+Split export:
+- Creates an outer ZIP package containing multiple importable part ZIP files.
+- Each part is targeted below the import upload limit.
+
+Import:
+- Import each ZIP part one by one if the export was split.
+- Each uploaded ZIP should be 100 MB or below.
+```
+
+Export does not remove or unpublish live articles. It only creates a downloadable backup copy for administrators.
 
 ---
 
@@ -159,7 +202,10 @@ kb/views/admin.py            # Admin-only article review and maintenance tools
 kb/views/auth.py             # Login/profile/account-related pages
 kb/views/mfa.py              # MFA setup, verification, and reset views
 kb/views/ai.py               # OpenKB AI chatbot endpoint
-kb/views/services.py         # Shared helper logic used by other views
+kb/views/services.py         # Shared helper logic and compatibility re-exports
+kb/views/services_bulk.py    # Bulk import/export, ZIP splitting, and restore helpers
+kb/views/services_search.py  # Search ranking, related articles, and suggestions
+kb/views/services_ai.py      # OpenKB AI helper logic, rate limiting, and AI recommendations
 ```
 
 ---
@@ -510,6 +556,13 @@ Recommended operational practice:
 ```
 
 ---
+
+
+### Bulk article export/import backup
+
+Use the admin **Bulk import/export articles** tool when you need an application-level article backup or migration package. The export includes article body content, titles, keywords, published status, pending-update data, review notes/history where applicable, and referenced image files.
+
+The import upload limit is 100 MB per ZIP file. Split exports are packaged so that each inner part ZIP can be imported one by one instead of uploading one very large file.
 
 ## Files Not to Share
 

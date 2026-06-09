@@ -203,13 +203,47 @@ Article states include:
 
 Normal users cannot self-approve articles. Admins can review and publish articles through the admin workflow. Admin-created or admin-published content can bypass normal user approval flow where appropriate.
 
-### 8.2 Admin Review Notes and History
+For a new normal-user article, the normal workflow is:
+
+```text
+Draft → Pending → Pending failed / Published
+```
+
+For an already published article edited by a normal user, the live article is not overwritten immediately. The proposed update is stored separately and sent for admin review.
+
+### 8.2 Published Article Update Review
+
+When a normal user edits an already published article, the current published version remains accessible to readers. The edited version is saved as a pending update instead of immediately replacing the live article.
+
+Pending update data is stored separately from the public article content, including:
+
+```text
+pending update title
+pending update body
+pending update keywords
+pending update image references
+pending update review status
+```
+
+The pending update workflow is:
+
+```text
+Published article remains visible
+Author submits edited version
+Edited version becomes Pending update
+Admin approves → pending update replaces the live published article
+Admin rejects → live published article remains unchanged and update feedback is shown to the author
+```
+
+This design prevents unapproved edits from replacing already approved knowledge-base content. It also allows users to continue accessing the last approved article while the update is waiting for review.
+
+### 8.3 Admin Review Notes and History
 
 When an article is returned as pending failed, admins can enter review notes. The current review note is shown to the article owner when the article is in draft or pending failed status.
 
 Review notes are also stored in history, so previous feedback rounds are preserved for audit and review tracking.
 
-### 8.3 Duplicate Article Title Protection
+### 8.4 Duplicate Article Title Protection
 
 Article titles are checked using normalised comparison:
 
@@ -227,9 +261,9 @@ password reset guide
 
 from being created as separate articles.
 
-### 8.4 Article File Sync
+### 8.5 Article File Sync
 
-Published/suggested article content is written to OpenKB-compatible Markdown files under the OpenKB data structure. Internal generated metadata is removed from public display, search snippets, and AI output so users do not see sync markers.
+Published article content is written to OpenKB-compatible Markdown files under the OpenKB data structure. Pending updates are not written as the public article version until an admin approves them. Internal generated metadata is removed from public display, search snippets, and AI output so users do not see sync markers.
 
 ## 9. Orphan Article Management
 
@@ -252,7 +286,9 @@ The assign-user field supports typing/searching by username or email so the admi
 
 ### 10.1 Article Listing and Search
 
-The main website allows users to browse and search published articles. Draft, pending, and failed articles are not publicly visible unless the current user owns the article or has admin permission.
+The main website allows users to browse and search published articles. Draft, pending, pending failed, and unapproved pending-update content are not publicly visible unless the current user owns the article or has admin permission.
+
+Search bars on the home and article pages can show a title-only dropdown of possible published article matches while the user types. The dropdown displays clickable article titles only, while the normal search button and Enter key still perform a full article search.
 
 ### 10.2 View Counts
 
@@ -335,7 +371,7 @@ Article image uploads are logged in `ArticleImageUploadLog`. The log records det
 
 Admins have access to a clean stray upload files tool. It finds uploaded files that are no longer referenced by any article or Markdown file.
 
-The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept.
+The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept. The cleanup logic checks both live article content and pending-update content so images used only by a pending update are not incorrectly treated as stray files.
 
 ### 12.2 Automatic Cleanup
 
@@ -472,6 +508,32 @@ Admin tools include:
 ### 16.3 Article Import/Export
 
 Bulk import/export supports article content and referenced upload files. Zip member names are normalised to avoid unsafe paths. Duplicate article titles are detected during import.
+
+The export package is an administrator backup/migration file. It includes the actual article data needed to restore the knowledge base, such as:
+
+```text
+article title
+article body / Markdown content
+keywords
+published status and workflow status
+pending update title/body/keywords when present
+review notes and review history when present
+referenced article image files
+metadata needed for OpenKB file sync
+```
+
+The export process supports both normal export and split export. If the export becomes large, the system can generate an outer split package containing multiple importable part ZIP files. Each inner part ZIP is intended to stay below the import upload limit.
+
+Current size behaviour:
+
+```text
+Target export part size: about 95 MB per part
+Import upload limit: 100 MB per ZIP file
+Import uncompressed safety limit: about 200 MB
+Article image upload limit: 2 MB per image
+```
+
+When restoring from a split export, the admin should extract the outer package first and import each part ZIP one at a time. Import restores article keywords as well as article body content, and published imports are synced back into the OpenKB-compatible Markdown files.
 
 ### 16.4 Django Admin Usability
 

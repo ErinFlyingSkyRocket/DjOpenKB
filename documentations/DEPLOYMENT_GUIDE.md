@@ -1067,6 +1067,75 @@ https://<linux-server-ip>:8080
 
 ---
 
+## 17.9 Article workflow and bulk import/export notes
+
+### Published article updates require approval
+
+Normal users can edit their own published articles, but the live published article is not overwritten immediately. The edited version is saved as a pending update and waits for admin review.
+
+```text
+Current published version: remains visible to readers
+Edited version: stored separately as pending update
+Admin approves: pending update replaces the published article
+Admin rejects: published article remains unchanged and feedback is shown to the author
+```
+
+Admins can review both new pending articles and pending updates from the **Manage Pending Articles** admin tool.
+
+### Bulk export/import purpose
+
+The **Bulk import/export articles** admin tool creates article backup or migration ZIP files. Exported ZIP files contain actual article content, not just article names. They can include:
+
+```text
+article titles
+article body / Markdown
+keywords
+article workflow status
+pending update content and pending update keywords
+review comments/history where applicable
+referenced image files
+OpenKB sync metadata
+```
+
+Exporting does not delete, move, or unpublish existing articles. It only downloads an administrator backup copy.
+
+### Export splitting and import limits
+
+The import upload limit is 100 MB per ZIP file. To keep exported files importable, split export targets about 95 MB per part.
+
+```text
+Recommended maximum import ZIP size: 100 MB
+Export split target: about 95 MB per part
+Uncompressed import safety limit: about 200 MB
+Article image upload limit: 2 MB per image
+```
+
+If a split export is downloaded, it is an outer package containing several inner part ZIP files, for example:
+
+```text
+djopenkb_articles_export_part_001.zip
+djopenkb_articles_export_part_002.zip
+djopenkb_articles_export_part_003.zip
+```
+
+To restore a split export:
+
+```text
+1. Extract the outer split package ZIP.
+2. Go to the admin Bulk import/export articles page.
+3. Import each inner part ZIP one by one.
+4. Confirm the imported published articles appear on the website.
+5. Run the OpenKB sync command if needed.
+```
+
+After a large import, run:
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai
+sudo docker compose exec web python manage.py check
+```
+
+
 ## 18. Files not to share
 
 Do not commit or share these files/folders:
@@ -1084,6 +1153,9 @@ nginx/certs/localhost.key
 The public repository should only contain examples, scripts, and safe default configuration.
 
 ---
+
+
+Bulk article export ZIP files should also be treated as sensitive because they can contain internal article content, keywords, pending updates, review notes, and uploaded images. Store them only in approved backup locations.
 
 ## 19. Troubleshooting quick notes
 
