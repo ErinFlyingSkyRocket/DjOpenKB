@@ -1562,6 +1562,26 @@ def get_article_metadata_by_wiki_path(wiki_path):
         return None
 
 
+
+
+def get_public_article_updated_at(article):
+    """Return the timestamp that represents the visible public article version.
+
+    For published articles, normal-user edits can change article.updated_at while
+    the live public content is still unchanged and waiting for admin approval in
+    pending_update_* fields. In that case, the public page must continue showing
+    the last approved/public timestamp instead of the hidden pending-update save
+    time.
+    """
+    if not article:
+        return None
+
+    if article.status == SuggestedArticle.Status.PUBLISHED:
+        return article.approved_at or article.created_at or article.updated_at
+
+    return article.updated_at or article.created_at
+
+
 def record_article_session_view(request, article):
     """Increment an article view count once per browser session.
 
@@ -1870,6 +1890,7 @@ def get_contextual_related_articles(current_article, limit=5):
         return []
 
     current_path = current_article.get("path") or ""
+    current_suggested_id = current_article.get("suggested_id")
     current_keywords = " ".join(current_article.get("keywords") or [])
     current_title = current_article.get("title") or ""
     body_tokens = tokenize_search_query(strip_markdown_for_search(current_article.get("raw_markdown") or ""))
@@ -1879,7 +1900,7 @@ def get_contextual_related_articles(current_article, limit=5):
     candidates = [
         article
         for article in get_openkb_wiki_articles(sort_by_views=True)
-        if article.get("path") != current_path
+        if article.get("suggested_id") != current_suggested_id and article.get("path") != current_path
     ]
 
     scored = []
