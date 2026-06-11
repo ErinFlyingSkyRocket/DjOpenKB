@@ -151,10 +151,18 @@ def edit_suggestion(request, article_id):
             and article.status == SuggestedArticle.Status.PUBLISHED
             and article.update_status == SuggestedArticle.UpdateStatus.PENDING
         )
+        has_saved_update_draft = (
+            article.status == SuggestedArticle.Status.PUBLISHED
+            and article.update_status == SuggestedArticle.UpdateStatus.NONE
+            and bool(article.pending_update_body)
+        )
         use_pending_update_values = (
             article.status == SuggestedArticle.Status.PUBLISHED
-            and article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
             and bool(article.pending_update_body)
+            and (
+                article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
+                or has_saved_update_draft
+            )
         )
 
         edit_title = article.pending_update_title if use_pending_update_values else article.title
@@ -180,6 +188,7 @@ def edit_suggestion(request, article_id):
             "has_pending_update": article.has_pending_update,
             "has_failed_update": article.has_failed_update,
             "has_update_draft": article.has_update_draft,
+            "has_saved_update_draft": has_saved_update_draft,
         }
         context.update(extra_context)
         return render(request, "suggest_edit.html", context)
@@ -301,19 +310,24 @@ def edit_suggestion(request, article_id):
         write_public_files = False
 
         if submit_action == "save_update_draft":
-            # Save the user's edited update progress without sending it back to
-            # the admin review queue. This is mainly for rejected published
-            # updates, where the author may need several editing sessions before
-            # resubmitting. Keep the admin feedback visible by not clearing
-            # review_notes and keep update_status as FAILED when applicable.
+            # Save the user's edited update progress without changing the public
+            # article and without forcing an immediate admin review.
+            #
+            # Existing rejected updates stay rejected so the admin feedback stays
+            # visible. Existing pending updates stay pending because they are
+            # already in the review queue. Brand-new published edits are saved
+            # as a private update draft by keeping update_status as NONE while
+            # storing the edited content in pending_update_* fields.
             if previous_update_status == SuggestedArticle.UpdateStatus.FAILED:
                 article.update_status = SuggestedArticle.UpdateStatus.FAILED
+                if not article.update_reviewed_at:
+                    article.update_reviewed_at = timezone.now()
             elif previous_update_status == SuggestedArticle.UpdateStatus.PENDING:
                 article.update_status = SuggestedArticle.UpdateStatus.PENDING
             else:
-                article.update_status = SuggestedArticle.UpdateStatus.FAILED
-            if not article.update_reviewed_at and article.update_status == SuggestedArticle.UpdateStatus.FAILED:
-                article.update_reviewed_at = timezone.now()
+                article.update_status = SuggestedArticle.UpdateStatus.NONE
+                article.update_submitted_at = None
+                article.update_reviewed_at = None
         else:
             article.update_status = SuggestedArticle.UpdateStatus.PENDING
             article.update_submitted_at = timezone.now()
@@ -423,7 +437,8 @@ def edit_suggestion(request, article_id):
     )
 
     if is_published_update_flow and submit_action == "save_update_draft":
-        messages.success(request, _("Update progress saved. The published version is still visible, and the update has not been resubmitted for approval yet."))
+        messages.success(request, _("Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."))
+        return redirect(f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}?next={quote(return_url, safe='')}")
     elif is_published_update_flow:
         messages.success(request, _("Article update submitted for admin approval. The published version is still visible until the update is approved."))
     elif is_admin_pending_update_review and status == SuggestedArticle.Status.PUBLISHED:

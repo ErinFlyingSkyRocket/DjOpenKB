@@ -158,15 +158,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
         .article-action-buttons {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 6px;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
         }
         .article-action-buttons .btn {
-            margin-left: 6px;
-            margin-bottom: 6px;
+            margin: 0;
             white-space: normal;
+            min-width: 190px;
         }
         .edit-page-back {
             margin: 12px 0 14px;
@@ -201,6 +200,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             {% elif has_failed_update %}
                 <div class="alert alert-danger">
                     <strong>{% trans "Update pending failed" %}</strong> — {% trans "Please review the admin comments, update your changes, and submit again." %}
+                </div>
+            {% elif has_saved_update_draft %}
+                <div class="alert alert-info">
+                    <strong>{% trans "Saved update draft" %}</strong> — {% trans "You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval." %}
                 </div>
             {% endif %}
             <div class="edit-page-back">
@@ -238,6 +241,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <span class="label label-warning">{% trans "Pending update" %}</span>
                                         {% elif has_failed_update %}
                                             <span class="label label-danger">{% trans "Update pending failed" %}</span>
+                                        {% elif has_saved_update_draft %}
+                                            <span class="label label-info">{% trans "Saved update draft" %}</span>
                                         {% elif current_status == 'draft' %}
                                             <span class="label label-default">{% trans "Draft" %}</span>
                                         {% elif current_status == 'pending' %}
@@ -265,10 +270,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% elif has_pending_update %}
                                     {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
-                                    <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Save pending update" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
+                                {% elif has_saved_update_draft %}
+                                    {% trans "Discard your saved update draft and reload the last published version?" as revert_confirm_text %}
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
+                                    <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                                 {% else %}
                                     {% trans "Discard your current edits and reload the last published version?" as revert_confirm_text %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                                 {% endif %}
                             {% else %}
