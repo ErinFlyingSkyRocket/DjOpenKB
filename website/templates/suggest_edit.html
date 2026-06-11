@@ -202,9 +202,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             {% if error %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
-            <div class="edit-page-back">
-                <a class="btn btn-default" href="{{ back_url }}"><i class="fa fa-arrow-left"></i> {% trans "Back" %}</a>
-            </div>
             <div class="row">
                 <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
@@ -378,9 +375,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             </div>
                         </div>
                     </footer>
-                    <div class="col-xs-12 edit-footer-actions">
-                        <a class="btn btn-default" href="{{ back_url }}"><i class="fa fa-arrow-left"></i> {% trans "Back" %}</a>
-                    </div>
                 </form>
             </div>
         </div>
