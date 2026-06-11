@@ -144,7 +144,12 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             font-weight: 700;
         }
         .review-notes-history-heading a { color: #31708f; text-decoration: none; display: block; }
-        .review-notes-history-body { padding: 0 12px 12px; }
+        .review-notes-history-body {
+            padding: 0 12px 12px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
         .review-note-history-item { border-top: 1px solid #d9edf7; padding: 10px 0; }
         .review-note-history-item:first-child { border-top: 0; }
         .review-note-history-meta { color: #777; font-size: 12px; margin-bottom: 5px; }
