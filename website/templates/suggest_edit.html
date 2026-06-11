@@ -156,6 +156,34 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             margin-bottom: 15px;
             border-radius: 4px;
         }
+        .article-action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+        }
+        .article-action-buttons .btn {
+            margin-left: 6px;
+            margin-bottom: 6px;
+            white-space: normal;
+        }
+        .edit-page-back {
+            margin: 12px 0 14px;
+        }
+        .edit-footer-actions {
+            margin-top: 12px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 767px) {
+            .article-action-buttons {
+                justify-content: flex-start;
+            }
+            .article-action-buttons .btn {
+                margin-left: 0;
+                margin-right: 6px;
+            }
+        }
     </style>
 </head>
 <body class="">
@@ -175,13 +203,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <strong>{% trans "Update pending failed" %}</strong> — {% trans "Please review the admin comments, update your changes, and submit again." %}
                 </div>
             {% endif %}
+            <div class="edit-page-back">
+                <a class="btn btn-default" href="{{ back_url }}"><i class="fa fa-arrow-left"></i> {% trans "Back" %}</a>
+            </div>
             <div class="row">
                 <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
                     <div id="header row">
-                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
                             <div class="form-group">
                                 <label for="preview">{% trans "Article title" %} *</label><br/>
                                 <input type="text" name="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" required/>
@@ -220,8 +251,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
+                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 text-right">
                             <label for="preview">&nbsp;</label><br/>
+                            <div class="article-action-buttons">
                             {% if user|is_site_admin %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
                             {% elif current_status == 'published' %}
@@ -235,12 +267,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Save pending update" %}</button>
                                 {% else %}
+                                    {% trans "Discard your current edits and reload the last published version?" as revert_confirm_text %}
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                                 {% endif %}
                             {% else %}
                                 <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
                             {% endif %}
+                            </div>
                         </div>
                     </div>
 
@@ -336,8 +371,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             </div>
                         </div>
                     </footer>
-                    <div class="col-xs-12">
-                        <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Cancel" %}</a>
+                    <div class="col-xs-12 edit-footer-actions">
+                        <a class="btn btn-default" href="{{ back_url }}"><i class="fa fa-arrow-left"></i> {% trans "Back" %}</a>
                     </div>
                 </form>
             </div>

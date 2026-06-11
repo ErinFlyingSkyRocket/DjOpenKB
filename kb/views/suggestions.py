@@ -162,6 +162,8 @@ def edit_suggestion(request, article_id):
         edit_keywords = article.pending_update_keywords if use_pending_update_values else article.keywords
         edit_image_assets = article.pending_update_image_assets if use_pending_update_values else article.image_assets
 
+        back_url = return_url or reverse("edit_my_suggestions")
+
         context = {
             "article": article,
             "current_status": extra_context.get("current_status", article.status),
@@ -170,6 +172,7 @@ def edit_suggestion(request, article_id):
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
             "return_url": return_url,
+            "back_url": back_url,
             "title_value": edit_title,
             "body_value": edit_body,
             "keywords_value": edit_keywords,
@@ -250,7 +253,7 @@ def edit_suggestion(request, article_id):
                 "is_published_update_flow": True,
             },
         )
-        messages.success(request, _("Pending update discarded. The editor has been reverted to the last published version."))
+        messages.success(request, _("Editor reverted to the last published version."))
         return redirect(f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}?next={quote(return_url, safe='')}")
 
     error_context = {
@@ -263,6 +266,7 @@ def edit_suggestion(request, article_id):
         "review_notes_history": get_review_notes_history(article),
         "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=extract_article_image_filenames(body))),
         "return_url": return_url,
+        "back_url": return_url or reverse("edit_my_suggestions"),
     }
 
     if is_admin_action and status == SuggestedArticle.Status.FAILED and not review_notes:
