@@ -268,14 +268,30 @@ def edit_suggestion(request, article_id):
         article.pending_update_body = body
         article.pending_update_keywords = keywords_raw
         article.pending_update_image_assets = new_image_assets
-        article.update_status = SuggestedArticle.UpdateStatus.PENDING
-        article.update_submitted_at = timezone.now()
-        article.update_reviewed_at = None
-        # Do not archive the same rejection comment again when the author
-        # resubmits an update. The existing admin rejection entry is already
-        # stored in review_notes_history.
-        article.review_notes = ""
         write_public_files = False
+
+        if submit_action == "save_update_draft":
+            # Save the user's edited update progress without sending it back to
+            # the admin review queue. This is mainly for rejected published
+            # updates, where the author may need several editing sessions before
+            # resubmitting. Keep the admin feedback visible by not clearing
+            # review_notes and keep update_status as FAILED when applicable.
+            if previous_update_status == SuggestedArticle.UpdateStatus.FAILED:
+                article.update_status = SuggestedArticle.UpdateStatus.FAILED
+            elif previous_update_status == SuggestedArticle.UpdateStatus.PENDING:
+                article.update_status = SuggestedArticle.UpdateStatus.PENDING
+            else:
+                article.update_status = SuggestedArticle.UpdateStatus.FAILED
+            if not article.update_reviewed_at and article.update_status == SuggestedArticle.UpdateStatus.FAILED:
+                article.update_reviewed_at = timezone.now()
+        else:
+            article.update_status = SuggestedArticle.UpdateStatus.PENDING
+            article.update_submitted_at = timezone.now()
+            article.update_reviewed_at = None
+            # Do not archive the same rejection comment again when the author
+            # resubmits an update. The existing admin rejection entry is already
+            # stored in review_notes_history.
+            article.review_notes = ""
     elif is_admin_pending_update_review:
         if status == SuggestedArticle.Status.PUBLISHED:
             article.title = title
@@ -376,7 +392,9 @@ def edit_suggestion(request, article_id):
         },
     )
 
-    if is_published_update_flow:
+    if is_published_update_flow and submit_action == "save_update_draft":
+        messages.success(request, _("Update progress saved. The published version is still visible, and the update has not been resubmitted for approval yet."))
+    elif is_published_update_flow:
         messages.success(request, _("Article update submitted for admin approval. The published version is still visible until the update is approved."))
     elif is_admin_pending_update_review and status == SuggestedArticle.Status.PUBLISHED:
         messages.success(request, _("Article update approved and published."))
