@@ -18,11 +18,7 @@
 </head>
 <body class="show_footer">
 <div class="container-fluid">
-    {% if show_global_back_button %}
-        <div class="mfa-safe-back-link" style="padding-top: 25px; padding-left: 15px;">
-            <a class="btn btn-default" href="{{ safe_back_url }}"><i class="fa fa-arrow-left"></i> {% trans "Back" %}</a>
-        </div>
-    {% endif %}
+    {% include "_page_back_button.html" %}
     <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 70px">
         <div class="panel panel-default">
             <div class="panel-heading"><strong>{% trans "Set up MFA" %}</strong></div>

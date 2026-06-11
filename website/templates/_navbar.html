@@ -11,11 +11,6 @@
             <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
         </div>
 
-        {% if show_global_back_button %}
-            <a class="btn btn-default navbar-btn openkb-navbar-back" href="{{ safe_back_url }}" style="margin-left: 8px;">
-                <i class="fa fa-arrow-left"></i> {% trans "Back" %}
-            </a>
-        {% endif %}
 
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
