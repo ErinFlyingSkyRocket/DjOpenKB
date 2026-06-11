@@ -1631,3 +1631,25 @@ msgstr "and all referenced uploaded files. Pending update data is included so th
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "bài viết đang chờ duyệt"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Giới hạn tải lên hình ảnh bài viết"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Số lượng hình ảnh tối đa được phép dán hoặc tải lên cho mỗi bài viết, bao gồm các phiên bản nháp, đang chờ duyệt, đã xuất bản và đang chờ cập nhật. Mặc định là 50. Đặt thành 0 để tắt tải lên hình ảnh bài viết."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Tính năng tải lên hình ảnh bài viết hiện đã bị quản trị viên tắt."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Bài viết này đã đạt giới hạn tải lên %(limit)s hình ảnh."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Bài viết này có %(count)s hình ảnh, nhưng tối đa được phép là %(limit)s hình ảnh. Vui lòng xóa bớt một số hình ảnh trước khi lưu."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Tối đa %(limit)s hình ảnh cho mỗi bài viết."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Bài viết này đã đạt giới hạn tải lên hình ảnh. Vui lòng xóa một hình ảnh trước khi tải lên hình ảnh khác."

@@ -1631,3 +1631,25 @@ msgstr "and all referenced uploaded files. Pending update data is included so th
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "بازبینی‌های مقالهٔ در انتظار"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "محدودیت بارگذاری تصویر مقاله"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "حداکثر تعداد تصویرهای چسبانده‌شده یا بارگذاری‌شده مجاز برای هر مقاله، شامل نسخه‌های پیش‌نویس، در انتظار، منتشرشده و به‌روزرسانی در انتظار. مقدار پیش‌فرض 50 است. برای غیرفعال کردن بارگذاری تصویر مقاله، آن را روی 0 تنظیم کنید."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "بارگذاری تصویر مقاله در حال حاضر توسط مدیر غیرفعال شده است."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "این مقاله به محدودیت بارگذاری %(limit)s تصویر رسیده است."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "این مقاله %(count)s تصویر دارد، اما حداکثر مجاز %(limit)s تصویر است. لطفاً قبل از ذخیره، چند تصویر را حذف کنید."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "حداکثر %(limit)s تصویر برای هر مقاله."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "این مقاله به محدودیت بارگذاری تصویر رسیده است. لطفاً قبل از بارگذاری تصویر دیگر، یک تصویر را حذف کنید."

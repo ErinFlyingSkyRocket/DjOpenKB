@@ -1631,3 +1631,25 @@ msgstr "and all referenced uploaded files. Pending update data is included so th
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "odottavat artikkelitarkistukset"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Artikkelikuvien latausraja"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Artikkelia kohti sallittujen liitettyjen tai ladattujen kuvien enimmäismäärä, mukaan lukien luonnos-, odottavat, julkaistut ja päivitystä odottavat versiot. Oletus on 50. Aseta arvoksi 0 poistaaksesi artikkelikuvien lataukset käytöstä."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Ylläpitäjä on tällä hetkellä poistanut artikkelikuvien lataukset käytöstä."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Tämä artikkeli on saavuttanut %(limit)s kuvan latausrajan."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Tässä artikkelissa on %(count)s kuvaa, mutta enintään %(limit)s kuvaa sallitaan. Poista joitakin kuvia ennen tallentamista."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Enintään %(limit)s kuvaa artikkelia kohti."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Tämä artikkeli on saavuttanut kuvien latausrajan. Poista kuva ennen uuden lataamista."

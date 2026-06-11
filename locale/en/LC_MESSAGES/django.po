@@ -1627,3 +1627,25 @@ msgstr "and all referenced uploaded files. Pending update data is included so th
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "pending article reviews"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Article image upload limit"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Article image uploads are currently disabled by the administrator."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "This article has reached the image upload limit of %(limit)s image(s)."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Maximum %(limit)s image(s) per article."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "This article has reached the image upload limit. Please remove an image before uploading another one."

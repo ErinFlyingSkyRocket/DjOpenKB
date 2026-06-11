@@ -1631,3 +1631,25 @@ msgstr "and all referenced uploaded files. Pending update data is included so th
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "openstaande artikelbeoordelingen"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Uploadlimiet voor artikelafbeeldingen"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Maximaal aantal geplakte of geüploade afbeeldingen dat per artikel is toegestaan, inclusief concept-, wachtende, gepubliceerde en wachtende-updateversies. Standaard is 50. Stel in op 0 om uploads van artikelafbeeldingen uit te schakelen."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Uploads van artikelafbeeldingen zijn momenteel uitgeschakeld door de beheerder."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Dit artikel heeft de uploadlimiet van %(limit)s afbeelding(en) bereikt."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Dit artikel bevat %(count)s afbeelding(en), maar het maximum is %(limit)s afbeelding(en). Verwijder enkele afbeeldingen voordat u opslaat."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Maximaal %(limit)s afbeelding(en) per artikel."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Dit artikel heeft de uploadlimiet voor afbeeldingen bereikt. Verwijder een afbeelding voordat u er nog een uploadt."

@@ -1631,3 +1631,25 @@ msgstr "および参照されているすべてのアップロードファイル
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "保留中の記事レビュー"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "記事画像アップロード上限"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "記事ごとに貼り付けまたはアップロードできる画像の最大数です。下書き、承認待ち、公開済み、更新承認待ちの各バージョンを含みます。既定値は50です。0に設定すると記事画像のアップロードを無効にします。"
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "記事画像のアップロードは現在、管理者によって無効化されています。"
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "この記事は画像アップロード上限の%(limit)s枚に達しました。"
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "この記事には%(count)s枚の画像がありますが、許可される最大数は%(limit)s枚です。保存する前に一部の画像を削除してください。"
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "記事ごとに最大%(limit)s枚の画像。"
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "この記事は画像アップロード上限に達しました。別の画像をアップロードする前に画像を1枚削除してください。"

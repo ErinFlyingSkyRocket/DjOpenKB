@@ -1631,3 +1631,25 @@ msgstr "以及所有引用的上传文件。包含待审核更新数据，以便
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "待审核文章"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "文章图片上传限制"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "每篇文章允许粘贴或上传的图片最大数量，包括草稿、待审核、已发布和待更新版本。默认值为 50。设置为 0 可禁用文章图片上传。"
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "管理员当前已禁用文章图片上传。"
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "本文已达到 %(limit)s 张图片的上传限制。"
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "本文包含 %(count)s 张图片，但最多只允许 %(limit)s 张。请先删除一些图片后再保存。"
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "每篇文章最多 %(limit)s 张图片。"
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "本文已达到图片上传限制。请先删除一张图片后再上传新图片。"

@@ -1631,3 +1631,25 @@ msgstr "and all referenced uploaded files. Pending update data is included so th
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "tinjauan artikel tertunda"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Batas unggah gambar artikel"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Jumlah maksimum gambar yang boleh ditempel atau diunggah per artikel, termasuk versi draf, tertunda, dipublikasikan, dan pembaruan tertunda. Defaultnya 50. Atur ke 0 untuk menonaktifkan unggahan gambar artikel."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Unggahan gambar artikel saat ini dinonaktifkan oleh administrator."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Artikel ini telah mencapai batas unggah %(limit)s gambar."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Artikel ini memiliki %(count)s gambar, tetapi maksimum yang diizinkan adalah %(limit)s gambar. Hapus beberapa gambar sebelum menyimpan."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Maksimum %(limit)s gambar per artikel."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Artikel ini telah mencapai batas unggah gambar. Hapus satu gambar sebelum mengunggah gambar lain."

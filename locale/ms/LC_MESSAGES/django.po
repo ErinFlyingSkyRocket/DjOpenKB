@@ -1631,3 +1631,25 @@ msgstr "dan semua fail muat naik yang dirujuk. Data kemas kini tertunda disertak
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "semakan artikel tertunda"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Had muat naik imej artikel"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Bilangan maksimum imej yang boleh ditampal atau dimuat naik bagi setiap artikel, termasuk versi draf, menunggu kelulusan, diterbitkan dan kemas kini tertunda. Lalai ialah 50. Tetapkan kepada 0 untuk menyahaktifkan muat naik imej artikel."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Muat naik imej artikel sedang dinyahaktifkan oleh pentadbir."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Artikel ini telah mencapai had muat naik sebanyak %(limit)s imej."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Artikel ini mempunyai %(count)s imej, tetapi maksimum yang dibenarkan ialah %(limit)s imej. Sila buang beberapa imej sebelum menyimpan."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Maksimum %(limit)s imej bagi setiap artikel."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Artikel ini telah mencapai had muat naik imej. Sila buang satu imej sebelum memuat naik imej lain."

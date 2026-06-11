@@ -1631,3 +1631,25 @@ msgstr "et tous les fichiers téléversés référencés. Les données de mise �
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "révisions d’articles en attente"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Limite de téléversement des images d’article"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Nombre maximal d’images collées ou téléversées autorisées par article, y compris les versions brouillon, en attente, publiées et en attente de mise à jour. La valeur par défaut est 50. Définissez 0 pour désactiver les téléversements d’images d’article."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Les téléversements d’images d’article sont actuellement désactivés par l’administrateur."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Cet article a atteint la limite de téléversement de %(limit)s image(s)."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Cet article contient %(count)s image(s), mais le maximum autorisé est de %(limit)s image(s). Veuillez supprimer certaines images avant d’enregistrer."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Maximum %(limit)s image(s) par article."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Cet article a atteint la limite de téléversement d’images. Veuillez supprimer une image avant d’en téléverser une autre."

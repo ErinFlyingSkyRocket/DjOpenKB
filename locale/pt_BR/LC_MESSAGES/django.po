@@ -1631,3 +1631,25 @@ msgstr "e todos os arquivos enviados referenciados. Dados de atualização pende
 #: synced from current templates/views
 msgid "pending article reviews"
 msgstr "revisões de artigos pendentes"
+
+# Article image upload limit strings
+msgid "Article image upload limit"
+msgstr "Limite de upload de imagens do artigo"
+
+msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Número máximo de imagens coladas ou enviadas permitidas por artigo, incluindo versões de rascunho, pendentes, publicadas e com atualização pendente. O padrão é 50. Defina como 0 para desativar uploads de imagens de artigos."
+
+msgid "Article image uploads are currently disabled by the administrator."
+msgstr "Os uploads de imagens de artigos estão atualmente desativados pelo administrador."
+
+msgid "This article has reached the image upload limit of %(limit)s image(s)."
+msgstr "Este artigo atingiu o limite de upload de %(limit)s imagem(ns)."
+
+msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
+msgstr "Este artigo tem %(count)s imagem(ns), mas o máximo permitido é %(limit)s imagem(ns). Remova algumas imagens antes de salvar."
+
+msgid "Maximum %(limit)s image(s) per article."
+msgstr "Máximo de %(limit)s imagem(ns) por artigo."
+
+msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
+msgstr "Este artigo atingiu o limite de upload de imagens. Remova uma imagem antes de enviar outra."
