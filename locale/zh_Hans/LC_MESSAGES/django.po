@@ -1653,3 +1653,56 @@ msgstr "每篇文章最多 %(limit)s 张图片。"
 
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "本文已达到图片上传限制。请先删除一张图片后再上传新图片。"
+
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Back"
+msgstr "返回"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Saved update draft"
+msgstr "已保存更新草稿"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Revert to last published version"
+msgstr "还原到上次发布版本"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Save update progress"
+msgstr "保存更新进度"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Submit update again"
+msgstr "再次提交更新"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard this pending update draft and revert the editor to the last published version?"
+msgstr "要放弃此待审核更新草稿，并将编辑器还原到上次发布版本吗？"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard your saved update draft and reload the last published version?"
+msgstr "要放弃已保存的更新草稿，并重新载入上次发布版本吗？"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard your current edits and reload the last published version?"
+msgstr "要放弃当前编辑内容，并重新载入上次发布版本吗？"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "更新待审核 — 此编辑正在等待管理员批准。当前已发布版本仍会对用户可见。"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
+msgstr "更新审核未通过 — 请查看管理员意见，修改后再次提交。"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
+msgstr "已保存更新草稿 — 你正在编辑此已发布文章的已保存更改。在你提交此更新以供审核之前，当前已发布版本仍会对用户可见。"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Editor reverted to the last published version."
+msgstr "编辑器已还原到上次发布版本。"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
+msgstr "更新进度已保存。已发布版本仍然可见，并且此更新尚未提交审核。"

@@ -1653,3 +1653,56 @@ msgstr "Maximal %(limit)s Bild(er) pro Artikel."
 
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Dieser Artikel hat das Bild-Upload-Limit erreicht. Bitte entfernen Sie ein Bild, bevor Sie ein weiteres hochladen."
+
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Back"
+msgstr "Zurück"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Saved update draft"
+msgstr "Aktualisierungsentwurf gespeichert"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Revert to last published version"
+msgstr "Zur letzten veröffentlichten Version zurückkehren"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Save update progress"
+msgstr "Aktualisierungsfortschritt speichern"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Submit update again"
+msgstr "Aktualisierung erneut einreichen"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard this pending update draft and revert the editor to the last published version?"
+msgstr "Diesen ausstehenden Aktualisierungsentwurf verwerfen und den Editor auf die letzte veröffentlichte Version zurücksetzen?"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard your saved update draft and reload the last published version?"
+msgstr "Gespeicherten Aktualisierungsentwurf verwerfen und die letzte veröffentlichte Version neu laden?"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard your current edits and reload the last published version?"
+msgstr "Aktuelle Änderungen verwerfen und die letzte veröffentlichte Version neu laden?"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "Aktualisierung ausstehend — Diese Bearbeitung wartet auf die Genehmigung durch einen Administrator. Die aktuell veröffentlichte Version ist für Benutzer weiterhin sichtbar."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
+msgstr "Aktualisierung abgelehnt — Bitte prüfen Sie die Admin-Kommentare, ändern Sie Ihre Bearbeitung und reichen Sie sie erneut ein."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
+msgstr "Aktualisierungsentwurf gespeichert — Sie bearbeiten derzeit gespeicherte Änderungen für diesen veröffentlichten Artikel. Die aktuelle veröffentlichte Version bleibt sichtbar, bis Sie diese Aktualisierung zur Genehmigung einreichen."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Editor reverted to the last published version."
+msgstr "Der Editor wurde auf die letzte veröffentlichte Version zurückgesetzt."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
+msgstr "Der Aktualisierungsfortschritt wurde gespeichert. Die veröffentlichte Version ist weiterhin sichtbar, und die Aktualisierung wurde noch nicht zur Genehmigung eingereicht."

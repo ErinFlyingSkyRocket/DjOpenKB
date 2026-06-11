@@ -1653,3 +1653,56 @@ msgstr "Maximaal %(limit)s afbeelding(en) per artikel."
 
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Dit artikel heeft de uploadlimiet voor afbeeldingen bereikt. Verwijder een afbeelding voordat u er nog een uploadt."
+
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Back"
+msgstr "Terug"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Saved update draft"
+msgstr "Updateconcept opgeslagen"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Revert to last published version"
+msgstr "Terugzetten naar de laatst gepubliceerde versie"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Save update progress"
+msgstr "Updatevoortgang opslaan"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Submit update again"
+msgstr "Update opnieuw indienen"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard this pending update draft and revert the editor to the last published version?"
+msgstr "Dit concept van een wachtende update verwijderen en de editor terugzetten naar de laatst gepubliceerde versie?"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard your saved update draft and reload the last published version?"
+msgstr "Je opgeslagen updateconcept verwijderen en de laatst gepubliceerde versie opnieuw laden?"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Discard your current edits and reload the last published version?"
+msgstr "Je huidige bewerkingen verwijderen en de laatst gepubliceerde versie opnieuw laden?"
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
+msgstr "Update in afwachting — Deze bewerking wacht op goedkeuring door een beheerder. De huidige gepubliceerde versie blijft zichtbaar voor gebruikers."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
+msgstr "Update afgewezen — Bekijk de opmerkingen van de beheerder, pas je wijzigingen aan en dien opnieuw in."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
+msgstr "Updateconcept opgeslagen — Je bewerkt opgeslagen wijzigingen voor dit gepubliceerde artikel. De huidige gepubliceerde versie blijft zichtbaar totdat je deze update ter goedkeuring indient."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Editor reverted to the last published version."
+msgstr "De editor is teruggezet naar de laatst gepubliceerde versie."
+
+# Added by DjOpenKB locale full cleanup patch
+msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
+msgstr "Updatevoortgang opgeslagen. De gepubliceerde versie blijft zichtbaar en de update is nog niet ter goedkeuring ingediend."
