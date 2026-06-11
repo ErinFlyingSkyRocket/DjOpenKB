@@ -380,9 +380,9 @@ def extract_article_image_filenames(markdown_text):
 def get_article_image_upload_limit():
     """Return the admin-configured maximum number of images per article."""
     try:
-        limit = int(getattr(SiteSetting.load(), "article_image_upload_limit", 100) or 0)
+        limit = int(getattr(SiteSetting.load(), "article_image_upload_limit", 50) or 0)
     except Exception:
-        limit = 100
+        limit = 50
     return max(limit, 0)
 
 

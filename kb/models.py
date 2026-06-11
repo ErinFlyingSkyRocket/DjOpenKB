@@ -742,11 +742,11 @@ class SiteSetting(models.Model):
         ),
     )
     article_image_upload_limit = models.PositiveIntegerField(
-        default=100,
+        default=50,
         verbose_name="Article image upload limit",
         help_text=(
             "Maximum number of pasted/uploaded images allowed per article, including draft, "
-            "pending, published, and pending-update versions. Default is 100. Set to 0 to disable article image uploads."
+            "pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
         ),
     )
     auth_activity_log_retention_days = models.PositiveIntegerField(
