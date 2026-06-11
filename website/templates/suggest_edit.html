@@ -353,7 +353,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group suggest-editor" id="editor-wrapper-suggest">
                                 <label for="editor">{% trans "Article body (Markdown)" %} *</label>
-                                <p class="text-muted" style="margin-bottom: 6px;">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %}</p>
+                                <p class="text-muted" style="margin-bottom: 6px;">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %} {% blocktrans with limit=article_image_upload_limit %}Maximum {{ limit }} image(s) per article.{% endblocktrans %}</p>
                                 <p>
                                     <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
                                     <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
@@ -417,6 +417,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     const deleteUrl = "{% url 'delete_article_image' %}";
     const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
     const csrfToken = "{{ csrf_token }}";
+    const articleImageUploadLimit = parseInt("{{ article_image_upload_limit|default:100 }}", 10) || 0;
     const uploadedImages = new Map();
     const uploadedHashes = new Map();
     const existingImagesElement = document.getElementById("existingArticleImages");
@@ -609,6 +610,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             showPasteMessage("{% trans 'Only PNG, JPG, GIF, or WEBP images are allowed.' %}", "danger");
             return;
         }
+        if (articleImageUploadLimit <= 0 || uploadedImages.size >= articleImageUploadLimit) {
+            showPasteMessage("{% blocktrans %}This article has reached the image upload limit. Please remove an image before uploading another one.{% endblocktrans %}", "danger");
+            return;
+        }
+
         const hash = await fileHash(file);
         if (uploadedHashes.has(hash)) {
             showPasteMessage("{% trans 'This image is already uploaded in this draft. Use the X preview button to remove it first.' %}", "warning");

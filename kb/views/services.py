@@ -377,6 +377,40 @@ def extract_article_image_filenames(markdown_text):
     return seen
 
 
+def get_article_image_upload_limit():
+    """Return the admin-configured maximum number of images per article."""
+    try:
+        limit = int(getattr(SiteSetting.load(), "article_image_upload_limit", 100) or 0)
+    except Exception:
+        limit = 100
+    return max(limit, 0)
+
+
+def article_image_limit_error_message(image_count=None, limit=None):
+    limit = get_article_image_upload_limit() if limit is None else max(int(limit), 0)
+    if limit <= 0:
+        return _("Article image uploads are currently disabled by the administrator.")
+    if image_count is None:
+        return _("This article has reached the image upload limit of %(limit)s image(s).") % {"limit": limit}
+    return _("This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving.") % {"count": image_count, "limit": limit}
+
+
+def validate_article_image_count(image_filenames):
+    """Enforce the admin-configured image count limit for an article version."""
+    limit = get_article_image_upload_limit()
+    unique_images = []
+    for filename in image_filenames or []:
+        safe_name = safe_uploaded_filename(filename)
+        if safe_name and safe_name not in unique_images:
+            unique_images.append(safe_name)
+
+    if limit <= 0 and unique_images:
+        raise ValidationError(article_image_limit_error_message(limit=limit))
+    if limit > 0 and len(unique_images) > limit:
+        raise ValidationError(article_image_limit_error_message(len(unique_images), limit))
+    return unique_images
+
+
 def article_image_markdown(filename):
     return f"![image](/wiki/uploads/{filename})"
 
@@ -401,15 +435,42 @@ def delete_uploaded_image_file(filename):
         )
 
 
+def article_references_uploaded_filename(article, filename, include_pending_update=True):
+    """Return True when an article references an uploaded image filename.
+
+    Both committed article fields and pending-update fields are checked by
+    default. This prevents the stray-upload cleaner from deleting images that
+    are only used by a saved/submitted update waiting for admin approval.
+    """
+    if not filename:
+        return False
+
+    if filename in (article.image_assets or []):
+        return True
+    if filename in extract_article_image_filenames(article.body):
+        return True
+
+    if include_pending_update:
+        if filename in (getattr(article, "pending_update_image_assets", None) or []):
+            return True
+        if filename in extract_article_image_filenames(getattr(article, "pending_update_body", "") or ""):
+            return True
+
+    return False
+
+
 def image_is_used_by_other_article(filename, current_article=None):
     queryset = SuggestedArticle.objects.all()
     if current_article and current_article.pk:
         queryset = queryset.exclude(pk=current_article.pk)
 
-    for article in queryset.only("body", "image_assets"):
-        if filename in (article.image_assets or []):
-            return True
-        if filename in extract_article_image_filenames(article.body):
+    for article in queryset.only(
+        "body",
+        "image_assets",
+        "pending_update_body",
+        "pending_update_image_assets",
+    ):
+        if article_references_uploaded_filename(article, filename):
             return True
     return False
 
@@ -421,8 +482,11 @@ def sync_article_image_assets(article, old_assets=None):
 
     stale_assets = old_assets - new_assets
     for filename in stale_assets:
-        if not image_is_used_by_other_article(filename, current_article=article):
-            delete_uploaded_image_file(filename)
+        # Do not delete an image if it is still referenced by this article's
+        # pending-update draft/review fields or by any other article.
+        if article_references_uploaded_filename(article, filename) or image_is_used_by_other_article(filename, current_article=article):
+            continue
+        delete_uploaded_image_file(filename)
 
     article.image_assets = sorted(new_assets)
     SuggestedArticle.objects.filter(pk=article.pk).update(image_assets=article.image_assets)
@@ -483,11 +547,18 @@ def get_all_referenced_uploaded_files():
     """Return uploaded filenames still referenced by articles or Markdown files."""
     referenced = set()
 
-    # 1) Trust Django article records first. This covers draft/published articles
-    # and images tracked in image_assets.
-    for article in SuggestedArticle.objects.only("body", "image_assets"):
+    # 1) Trust Django article records first. This covers draft/published articles,
+    # published-update drafts/reviews, and images tracked in image asset fields.
+    for article in SuggestedArticle.objects.only(
+        "body",
+        "image_assets",
+        "pending_update_body",
+        "pending_update_image_assets",
+    ):
         referenced.update(article.image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.body))
+        referenced.update(article.pending_update_image_assets or [])
+        referenced.update(extract_uploaded_file_filenames_from_text(article.pending_update_body))
 
     # 2) Also scan all OpenKB wiki Markdown files. This protects manually added
     # Markdown files or files edited outside Django.
@@ -1395,6 +1466,7 @@ from .services_bulk import (  # noqa: F401
     copy_imported_uploads_from_zip,
     import_articles_from_zip,
     get_article_image_cards,
+    get_article_image_cards_from_filenames,
 )
 from .services_search import (  # noqa: F401
     tokenize_search_query,

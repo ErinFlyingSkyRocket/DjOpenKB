@@ -11,6 +11,7 @@ def suggest(request):
     def render_suggest_form(extra_context=None):
         context = {
             "can_publish_directly": is_admin,
+            "article_image_upload_limit": get_article_image_upload_limit(),
         }
         if extra_context:
             context.update(extra_context)
@@ -52,6 +53,19 @@ def suggest(request):
             "keywords_value": keywords_raw,
         })
 
+    new_image_assets = extract_article_image_filenames(body)
+    try:
+        new_image_assets = validate_article_image_count(new_image_assets)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_suggest_form({
+            "error": message,
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "existing_images_json": json.dumps(get_article_image_cards_from_filenames(new_image_assets)),
+        })
+
     timestamp_slug = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
     filename = f"{timestamp_slug}-{slugify_title(title)}.md"
 
@@ -66,7 +80,7 @@ def suggest(request):
         status=status,
         approved_by=request.user if status == SuggestedArticle.Status.PUBLISHED else None,
         approved_at=timezone.now() if status == SuggestedArticle.Status.PUBLISHED else None,
-        image_assets=extract_article_image_filenames(body),
+        image_assets=new_image_assets,
     )
     write_article_files(article)
     sync_article_image_assets(article, old_assets=[])
@@ -180,6 +194,7 @@ def edit_suggestion(request, article_id):
             "review_notes_history": get_review_notes_history(article),
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
+            "article_image_upload_limit": get_article_image_upload_limit(),
             "return_url": return_url,
             "back_url": back_url,
             "title_value": edit_title,
@@ -272,6 +287,7 @@ def edit_suggestion(request, article_id):
         "review_notes_value": review_notes,
         "review_notes_history": get_review_notes_history(article),
         "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=extract_article_image_filenames(body))),
+        "article_image_upload_limit": get_article_image_upload_limit(),
         "return_url": return_url,
         "back_url": return_url or reverse("edit_my_suggestions"),
     }
@@ -298,6 +314,14 @@ def edit_suggestion(request, article_id):
 
     old_image_assets = list(article.image_assets or extract_article_image_filenames(article.body))
     new_image_assets = extract_article_image_filenames(body)
+    try:
+        new_image_assets = validate_article_image_count(new_image_assets)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_edit_form({
+            **error_context,
+            "error": message,
+        })
     write_public_files = True
 
     if is_published_update_flow:
@@ -502,6 +526,14 @@ def upload_article_image(request):
     if not uploaded_file:
         return JsonResponse({"error": "No image file received."}, status=400)
 
+    upload_limit = get_article_image_upload_limit()
+    pending_uploads = request.session.get("pending_article_uploads", [])
+    active_pending_uploads = list(dict.fromkeys(safe_uploaded_filename(item) for item in pending_uploads if safe_uploaded_filename(item)))
+    if upload_limit <= 0:
+        return JsonResponse({"error": article_image_limit_error_message(limit=upload_limit)}, status=403)
+    if len(active_pending_uploads) >= upload_limit:
+        return JsonResponse({"error": article_image_limit_error_message(limit=upload_limit)}, status=400)
+
     try:
         image_info = validate_article_image_upload(uploaded_file)
     except ValidationError as error:
@@ -539,10 +571,10 @@ def upload_article_image(request):
         },
     )
 
-    pending_uploads = request.session.get("pending_article_uploads", [])
+    pending_uploads = active_pending_uploads
     if filename not in pending_uploads:
         pending_uploads.append(filename)
-    request.session["pending_article_uploads"] = pending_uploads[-100:]
+    request.session["pending_article_uploads"] = pending_uploads[-upload_limit:]
     request.session.modified = True
 
     image_url = f"/wiki/uploads/{filename}"

@@ -741,6 +741,14 @@ class SiteSetting(models.Model):
             "Set to 0 to detect/delete stray uploads immediately."
         ),
     )
+    article_image_upload_limit = models.PositiveIntegerField(
+        default=100,
+        verbose_name="Article image upload limit",
+        help_text=(
+            "Maximum number of pasted/uploaded images allowed per article, including draft, "
+            "pending, published, and pending-update versions. Default is 100. Set to 0 to disable article image uploads."
+        ),
+    )
     auth_activity_log_retention_days = models.PositiveIntegerField(
         default=30,
         verbose_name="Authentication activity log retention (days)",

@@ -856,6 +856,13 @@ class ArticleVoteAdmin(admin.ModelAdmin):
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
     fieldsets = (
+        ("Article upload limits", {
+            "fields": ("article_image_upload_limit",),
+            "description": (
+                "Controls how many pasted/uploaded images each article may contain. "
+                "Default is 100. Set to 0 to disable article image uploads."
+            ),
+        }),
         ("Stray upload cleanup", {
             "fields": ("stray_upload_cleanup_min_age_minutes",),
             "description": (

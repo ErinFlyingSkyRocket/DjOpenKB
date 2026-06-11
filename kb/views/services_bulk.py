@@ -535,19 +535,24 @@ def import_articles_from_zip(uploaded_zip, owner):
     return imported_count, errors
 
 
-def get_article_image_cards(article, image_assets=None):
-    assets = image_assets
-    if assets is None:
-        assets = article.image_assets or extract_article_image_filenames(article.body)
-
+def get_article_image_cards_from_filenames(image_assets, existing=True):
     return [
         {
             "filename": filename,
             "url": article_image_url(filename),
             "markdown": article_image_markdown(filename),
-            "existing": True,
+            "existing": bool(existing),
         }
-        for filename in (assets or [])
+        for filename in (image_assets or [])
+        if safe_uploaded_filename(filename)
     ]
+
+
+def get_article_image_cards(article, image_assets=None):
+    assets = image_assets
+    if assets is None:
+        assets = article.image_assets or extract_article_image_filenames(article.body)
+
+    return get_article_image_cards_from_filenames(assets, existing=True)
 
 
