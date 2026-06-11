@@ -163,14 +163,19 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
         .article-action-buttons {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
             gap: 8px;
         }
         .article-action-buttons .btn {
             margin: 0;
             white-space: normal;
-            min-width: 190px;
+        }
+        .edit-status-actions {
+            clear: both;
+            margin-top: 2px;
+            margin-bottom: 18px;
         }
         .edit-page-back {
             margin: 12px 0 14px;
@@ -181,11 +186,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
         @media (max-width: 767px) {
             .article-action-buttons {
-                justify-content: flex-start;
+                align-items: stretch;
             }
             .article-action-buttons .btn {
-                margin-left: 0;
-                margin-right: 6px;
+                width: 100%;
             }
         }
     </style>
@@ -198,19 +202,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             {% if error %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
-            {% if has_pending_update %}
-                <div class="alert alert-warning">
-                    <strong>{% trans "Pending update" %}</strong> — {% trans "This edit is waiting for admin approval. The current published version is still visible to users." %}
-                </div>
-            {% elif has_failed_update %}
-                <div class="alert alert-danger">
-                    <strong>{% trans "Update pending failed" %}</strong> — {% trans "Please review the admin comments, update your changes, and submit again." %}
-                </div>
-            {% elif has_saved_update_draft %}
-                <div class="alert alert-info">
-                    <strong>{% trans "Saved update draft" %}</strong> — {% trans "You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval." %}
-                </div>
-            {% endif %}
             <div class="edit-page-back">
                 <a class="btn btn-default" href="{{ back_url }}"><i class="fa fa-arrow-left"></i> {% trans "Back" %}</a>
             </div>
@@ -220,13 +211,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
                     <div id="header row">
-                        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+                        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                             <div class="form-group">
                                 <label for="preview">{% trans "Article title" %} *</label><br/>
                                 <input type="text" name="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" required/>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                             <div class="form-group">
                                 <label>{% trans "Status" %}</label><br/>
                                 {% if user|is_site_admin %}
@@ -261,8 +252,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 text-right">
-                            <label for="preview">&nbsp;</label><br/>
+                        <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
                             {% if user|is_site_admin %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
@@ -394,8 +384,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             </div>
         </div>
     </div>
-    <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
-    <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
+    <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% empty %}{% if has_pending_update %}{% trans 'Pending update — This edit is waiting for admin approval. The current published version is still visible to users.' %}{% elif has_failed_update %}{% trans 'Update pending failed — Please review the admin comments, update your changes, and submit again.' %}{% elif has_saved_update_draft %}{% trans 'Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval.' %}{% endif %}{% endfor %}">
+    <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% empty %}{% if has_pending_update %}warning{% elif has_failed_update %}danger{% elif has_saved_update_draft %}info{% endif %}{% endfor %}">
     <input type="hidden" value="" id="app_context">
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
