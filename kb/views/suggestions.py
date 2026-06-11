@@ -215,14 +215,13 @@ def edit_suggestion(request, article_id):
     if is_admin_action:
         status = request.POST.get("status", article.status).strip()
         admin_allowed_statuses = {
+            SuggestedArticle.Status.DRAFT,
             SuggestedArticle.Status.PENDING,
             SuggestedArticle.Status.FAILED,
             SuggestedArticle.Status.PUBLISHED,
         }
         if status not in admin_allowed_statuses:
-            # Admin review should not send articles back to Draft.
-            # Keep the article in the review queue unless the admin explicitly
-            # marks it as Pending failed or Published.
+            # Keep invalid or tampered status values safe.
             status = SuggestedArticle.Status.PENDING
     else:
         if article.status == SuggestedArticle.Status.PUBLISHED:

@@ -226,7 +226,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <option value="published" selected>{% trans "Approve update" %}</option>
                                             <option value="failed">{% trans "Reject update" %}</option>
                                         {% else %}
-                                            <option value="pending" {% if current_status == 'pending' or current_status == 'draft' %}selected{% endif %}>{% trans "Pending" %}</option>
+                                            <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
+                                            <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
                                             <option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Pending failed" %}</option>
                                             <option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Published" %}</option>
                                         {% endif %}
