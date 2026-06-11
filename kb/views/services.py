@@ -189,8 +189,93 @@ def user_is_site_admin(user):
 
 
 def user_can_manage_article(user, article):
-    """Return True when a user can edit/delete an article they do not own."""
-    return bool(article and (article.owner == user or user_is_site_admin(user)))
+    """Return True when a user can edit/delete an article they own or administer."""
+    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+    return bool(article.owner_id == user.pk or user_is_site_admin(user))
+
+
+def user_owns_article(user, article):
+    """Return True only for the active authenticated owner of an article."""
+    return bool(
+        article
+        and getattr(user, "is_authenticated", False)
+        and user.is_active
+        and article.owner_id == user.pk
+    )
+
+
+def require_article_manager(user, article):
+    """Fail closed when the current user is not allowed to manage the article."""
+    if not user_can_manage_article(user, article):
+        raise Http404("Article not found")
+    return True
+
+
+def require_site_admin(user):
+    """Fail closed when the current user is not a trusted DjOpenKB admin."""
+    if not user_is_site_admin(user):
+        raise Http404("Page not found")
+    return True
+
+
+def allowed_article_edit_actions_for(user, article):
+    """Return the exact form actions allowed for this user/article state.
+
+    This protects the edit endpoint from forged POST actions. Templates hide
+    buttons, but the view must still enforce the server-side rule.
+    """
+    if not user_can_manage_article(user, article):
+        return set()
+
+    if user_is_site_admin(user):
+        # Admin article editing is controlled by the status dropdown and Save.
+        return {"save", ""}
+
+    if not user_owns_article(user, article):
+        return set()
+
+    if article.status == SuggestedArticle.Status.PUBLISHED:
+        # Owners cannot overwrite a published article directly. They may save a
+        # private update draft, submit it for approval, or discard it.
+        return {"save_update_draft", "submit_update", "revert_published"}
+
+    # Draft/failed articles can be kept as draft or submitted for approval.
+    return {"draft", "submit"}
+
+
+def validate_article_edit_action(user, article, submit_action):
+    """Raise 404 for tampered edit actions that the user/role cannot perform."""
+    submit_action = (submit_action or "save").strip()
+    if submit_action not in allowed_article_edit_actions_for(user, article):
+        raise Http404("Article action not allowed")
+    return submit_action
+
+
+def allowed_article_statuses_for_admin_edit(article):
+    """Return statuses an admin may set for the current article edit flow."""
+    if (
+        article.status == SuggestedArticle.Status.PUBLISHED
+        and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+    ):
+        # Reviewing a pending update should only approve or reject that update.
+        # It must not accidentally hide the already-published article.
+        return {SuggestedArticle.Status.PUBLISHED, SuggestedArticle.Status.FAILED}
+
+    return {
+        SuggestedArticle.Status.DRAFT,
+        SuggestedArticle.Status.PENDING,
+        SuggestedArticle.Status.FAILED,
+        SuggestedArticle.Status.PUBLISHED,
+    }
+
+
+def validate_admin_requested_article_status(article, requested_status):
+    """Raise 404 for forged/tampered admin status values."""
+    requested_status = (requested_status or article.status).strip()
+    if requested_status not in allowed_article_statuses_for_admin_edit(article):
+        raise Http404("Article status not allowed")
+    return requested_status
 
 
 def init_openkb_storage():

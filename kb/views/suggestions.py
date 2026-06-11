@@ -23,6 +23,8 @@ def suggest(request):
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
     submit_action = request.POST.get("submit_action", "submit").strip()
+    if submit_action not in {"draft", "submit"}:
+        raise Http404("Article action not allowed")
 
     if submit_action == "draft":
         status = SuggestedArticle.Status.DRAFT
@@ -139,8 +141,7 @@ def edit_my_suggestions(request):
 def edit_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
-    if not user_can_manage_article(request.user, article):
-        raise Http404("Article not found")
+    require_article_manager(request.user, article)
 
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
@@ -199,7 +200,11 @@ def edit_suggestion(request, article_id):
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
-    submit_action = request.POST.get("submit_action", "save").strip()
+    submit_action = validate_article_edit_action(
+        request.user,
+        article,
+        request.POST.get("submit_action", "save"),
+    )
 
     previous_status = article.status
     previous_update_status = article.update_status
@@ -213,16 +218,10 @@ def edit_suggestion(request, article_id):
     )
 
     if is_admin_action:
-        status = request.POST.get("status", article.status).strip()
-        admin_allowed_statuses = {
-            SuggestedArticle.Status.DRAFT,
-            SuggestedArticle.Status.PENDING,
-            SuggestedArticle.Status.FAILED,
-            SuggestedArticle.Status.PUBLISHED,
-        }
-        if status not in admin_allowed_statuses:
-            # Keep invalid or tampered status values safe.
-            status = SuggestedArticle.Status.PENDING
+        status = validate_admin_requested_article_status(
+            article,
+            request.POST.get("status", article.status),
+        )
     else:
         if article.status == SuggestedArticle.Status.PUBLISHED:
             # Published articles stay public. Normal user edits are stored as
@@ -461,8 +460,7 @@ def edit_suggestion(request, article_id):
 def delete_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
-    if not user_can_manage_article(request.user, article):
-        raise Http404("Article not found")
+    require_article_manager(request.user, article)
 
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
@@ -574,7 +572,7 @@ def delete_article_image(request):
         return JsonResponse({"error": "Invalid image filename."}, status=400)
 
     pending_uploads = request.session.get("pending_article_uploads", [])
-    if filename not in pending_uploads and not user_is_site_admin(request.user):
+    if filename not in pending_uploads:
         return JsonResponse({"error": "This image is not removable from this editing session."}, status=403)
 
     upload_dir = get_openkb_uploads_dir().resolve()
