@@ -1450,7 +1450,7 @@ msgstr "บทความ การอัปเดต submitted for admin appro
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "อธิบายสิ่งที่ผู้ใช้ต้องแก้ไขก่อนส่งบทความหรือการอัปเดตนี้อีกครั้ง"
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1482,7 +1482,7 @@ msgstr "Invalid zip file."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Large exports may download as a split package:"
+msgstr "การส่งออกขนาดใหญ่อาจดาวน์โหลดเป็นแพ็กเกจแบบแบ่งส่วน:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -1498,7 +1498,7 @@ msgstr "ไม่พบบทความที่ตรงกัน"
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "No pending article reviews match your search."
+msgstr "ไม่มีรายการตรวจสอบบทความที่รออนุมัติซึ่งตรงกับการค้นหาของคุณ"
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1510,7 +1510,7 @@ msgstr "No stray upload files were selected for deletion."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "การส่งออกแบบปกติจะกลายเป็นแพ็กเกจแบบแบ่งส่วนโดยอัตโนมัติหากเนื้อหามีขนาดใหญ่เกินไป แพ็กเกจแบบแบ่งส่วนมีไฟล์ ZIP ย่อยที่นำเข้าได้อยู่ในโฟลเดอร์ parts/ ให้แตกแพ็กเกจก่อน แล้วนำเข้าไฟล์ ZIP ย่อยแต่ละไฟล์ตามลำดับ"
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1566,7 +1566,7 @@ msgstr "ปฏิเสธการอัปเดต"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Review new articles and pending updates before they become publicly visible."
+msgstr "ตรวจสอบบทความใหม่และการอัปเดตที่รออนุมัติก่อนเผยแพร่ให้สาธารณะเห็น"
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1594,7 +1594,7 @@ msgstr "ส่งการอัปเดตเพื่ออนุมัติ
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "There are no pending article reviews right now."
+msgstr "ขณะนี้ไม่มีรายการตรวจสอบบทความที่รออนุมัติ"
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."

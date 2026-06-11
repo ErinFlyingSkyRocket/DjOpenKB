@@ -1450,7 +1450,7 @@ msgstr "artikel update submitted for admin approval. The published version is st
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "Leg uit wat de gebruiker moet aanpassen voordat dit artikel of deze update opnieuw wordt ingediend."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1482,7 +1482,7 @@ msgstr "Invalid zip file."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Large exports may download as a split package:"
+msgstr "Grote exports kunnen worden gedownload als een gesplitst pakket:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -1498,7 +1498,7 @@ msgstr "Geen overeenkomende artikelen gevonden."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "No pending article reviews match your search."
+msgstr "Er zijn geen wachtende artikelbeoordelingen die overeenkomen met je zoekopdracht."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1510,7 +1510,7 @@ msgstr "No stray upload files were selected for deletion."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "Een normale export wordt automatisch een gesplitst pakket als de inhoud te groot is. Gesplitste pakketten bevatten importeerbare deel-zipbestanden in de map parts/; pak het pakket uit en importeer elk deel-zipbestand op volgorde."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1566,7 +1566,7 @@ msgstr "Update afwijzen"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Review new articles and pending updates before they become publicly visible."
+msgstr "Beoordeel nieuwe artikelen en wachtende updates voordat ze openbaar zichtbaar worden."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1594,7 +1594,7 @@ msgstr "Update indienen ter goedkeuring"
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "There are no pending article reviews right now."
+msgstr "Er zijn momenteel geen wachtende artikelbeoordelingen."
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."

@@ -1450,7 +1450,7 @@ msgstr "artikel uppdatering submitted for admin approval. The published version 
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "Förklara vad användaren behöver åtgärda innan artikeln eller uppdateringen skickas in igen."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1482,7 +1482,7 @@ msgstr "Invalid zip file."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Large exports may download as a split package:"
+msgstr "Stora exporter kan laddas ned som ett delat paket:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -1498,7 +1498,7 @@ msgstr "Inga matchande artiklar hittades."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "No pending article reviews match your search."
+msgstr "Inga väntande artikelgranskningar matchar din sökning."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1510,7 +1510,7 @@ msgstr "No stray upload files were selected for deletion."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "En normal export blir automatiskt ett delat paket om innehållet är för stort. Delade paket innehåller importerbara del-zip-filer i mappen parts/; extrahera paketet och importera varje del-zip i ordning."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1566,7 +1566,7 @@ msgstr "Avvisa uppdatering"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Review new articles and pending updates before they become publicly visible."
+msgstr "Granska nya artiklar och väntande uppdateringar innan de blir offentligt synliga."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1594,7 +1594,7 @@ msgstr "Skicka uppdatering för godkännande"
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "There are no pending article reviews right now."
+msgstr "Det finns inga väntande artikelgranskningar just nu."
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."

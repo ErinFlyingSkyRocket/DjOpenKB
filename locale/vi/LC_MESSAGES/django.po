@@ -1450,7 +1450,7 @@ msgstr "bài viết cập nhật submitted for admin approval. The published ver
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "Giải thích những gì người dùng cần sửa trước khi gửi lại bài viết hoặc bản cập nhật này."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1482,7 +1482,7 @@ msgstr "Invalid zip file."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Large exports may download as a split package:"
+msgstr "Các bản xuất lớn có thể được tải xuống dưới dạng gói chia nhỏ:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -1498,7 +1498,7 @@ msgstr "Không tìm thấy bài viết phù hợp."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "No pending article reviews match your search."
+msgstr "Không có lượt duyệt bài viết đang chờ nào khớp với tìm kiếm của bạn."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1510,7 +1510,7 @@ msgstr "No stray upload files were selected for deletion."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "Bản xuất thông thường sẽ tự động trở thành gói chia nhỏ nếu nội dung quá lớn. Các gói chia nhỏ chứa các tệp ZIP phần có thể nhập trong thư mục parts/; hãy giải nén gói rồi nhập từng tệp ZIP phần theo đúng thứ tự."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1566,7 +1566,7 @@ msgstr "Từ chối cập nhật"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Review new articles and pending updates before they become publicly visible."
+msgstr "Duyệt các bài viết mới và bản cập nhật đang chờ trước khi chúng hiển thị công khai."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1594,7 +1594,7 @@ msgstr "Gửi cập nhật để phê duyệt"
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "There are no pending article reviews right now."
+msgstr "Hiện không có lượt duyệt bài viết nào đang chờ."
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."

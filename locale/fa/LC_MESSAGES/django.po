@@ -1450,7 +1450,7 @@ msgstr "مقاله به‌روزرسانی submitted for admin approval. The pub
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "توضیح دهید کاربر برای ارسال دوباره این مقاله یا به‌روزرسانی چه مواردی را باید اصلاح کند."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1482,7 +1482,7 @@ msgstr "Invalid zip file."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Large exports may download as a split package:"
+msgstr "خروجی‌های بزرگ ممکن است به‌صورت یک بسته تقسیم‌شده دانلود شوند:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -1498,7 +1498,7 @@ msgstr "مقاله مطابقی یافت نشد."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "No pending article reviews match your search."
+msgstr "هیچ بازبینی مقاله در انتظار با جست‌وجوی شما مطابقت ندارد."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1510,7 +1510,7 @@ msgstr "No stray upload files were selected for deletion."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "اگر محتوا بیش از حد بزرگ باشد، خروجی عادی به‌طور خودکار به یک بسته تقسیم‌شده تبدیل می‌شود. بسته‌های تقسیم‌شده شامل فایل‌های ZIP بخش قابل واردسازی در پوشه parts/ هستند؛ بسته را استخراج کنید و هر فایل ZIP بخش را به‌ترتیب وارد کنید."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1566,7 +1566,7 @@ msgstr "رد به‌روزرسانی"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Review new articles and pending updates before they become publicly visible."
+msgstr "مقاله‌های جدید و به‌روزرسانی‌های در انتظار را پیش از عمومی شدن بررسی کنید."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1594,7 +1594,7 @@ msgstr "ارسال به‌روزرسانی برای تأیید"
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "There are no pending article reviews right now."
+msgstr "در حال حاضر هیچ بازبینی مقاله در انتظاری وجود ندارد."
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."

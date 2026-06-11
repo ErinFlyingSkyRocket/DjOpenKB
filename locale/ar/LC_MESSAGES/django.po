@@ -1450,7 +1450,7 @@ msgstr "مقالة تحديث submitted for admin approval. The published versio
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Explain what the user needs to fix before resubmitting this article or update."
+msgstr "اشرح ما يحتاج المستخدم إلى إصلاحه قبل إعادة إرسال هذه المقالة أو التحديث."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1482,7 +1482,7 @@ msgstr "Invalid zip file."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Large exports may download as a split package:"
+msgstr "قد يتم تنزيل عمليات التصدير الكبيرة كحزمة مقسّمة:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -1498,7 +1498,7 @@ msgstr "لم يتم العثور على مقالات مطابقة."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "No pending article reviews match your search."
+msgstr "لا توجد مراجعات مقالات معلقة تطابق بحثك."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1510,7 +1510,7 @@ msgstr "No stray upload files were selected for deletion."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
+msgstr "يتحول التصدير العادي تلقائيًا إلى حزمة مقسّمة إذا كان المحتوى كبيرًا جدًا. تحتوي الحزم المقسّمة على ملفات ZIP جزئية قابلة للاستيراد داخل مجلد parts/؛ استخرج الحزمة ثم استورد كل ملف ZIP جزئي بالترتيب."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1566,7 +1566,7 @@ msgstr "رفض التحديث"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Review new articles and pending updates before they become publicly visible."
+msgstr "راجع المقالات الجديدة والتحديثات المعلقة قبل أن تصبح مرئية للعامة."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1594,7 +1594,7 @@ msgstr "إرسال التحديث للموافقة"
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "There are no pending article reviews right now."
+msgstr "لا توجد مراجعات مقالات معلقة حاليًا."
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
