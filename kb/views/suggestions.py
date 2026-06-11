@@ -1,5 +1,6 @@
 from .services import *
 from django.utils.translation import gettext as _
+from urllib.parse import quote
 
 
 @main_site_login_required
@@ -226,6 +227,31 @@ def edit_suggestion(request, article_id):
         review_notes = (request.POST.get("review_notes") or "").strip()
     else:
         review_notes = article.review_notes
+
+    if is_published_update_flow and submit_action == "revert_published":
+        # Discard the user's pending/rejected update draft and return the edit
+        # screen to the last approved public version. This does not modify the
+        # published article files because article.title/body/keywords are already
+        # the last approved content.
+        if article.review_notes:
+            article.archive_current_review_note(actor=request.user, action="update_reverted_to_published")
+        article.review_notes = ""
+        article.clear_pending_update()
+        article.save()
+
+        log_activity(
+            request,
+            ActivityLog.EventType.ARTICLE_UPDATED,
+            article=article,
+            details={
+                "action": "revert_pending_update_to_published",
+                "previous_status": previous_status,
+                "previous_update_status": previous_update_status,
+                "is_published_update_flow": True,
+            },
+        )
+        messages.success(request, _("Pending update discarded. The editor has been reverted to the last published version."))
+        return redirect(f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}?next={quote(return_url, safe='')}")
 
     error_context = {
         "title_value": title,
