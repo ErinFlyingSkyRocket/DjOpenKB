@@ -558,7 +558,7 @@ class ArticleVote(models.Model):
         verbose_name_plural = _("Article votes")
 
     def __str__(self):
-        label = str(_("Helpful")) if self.value == self.VoteValue.UP else str(_("Not helpful"))
+        label = "Helpful" if self.value == self.VoteValue.UP else "Not helpful"
         return f"{self.article.title} - {self.user} - {label}"
 
 
@@ -617,7 +617,7 @@ class ArticleImageUploadLog(models.Model):
 
     def __str__(self):
         uploader = self.uploader_username_snapshot or str(_("unknown user"))
-        return str(_("%(filename)s uploaded by %(uploader)s") % {"filename": self.filename, "uploader": uploader})
+        return f"{self.filename} uploaded by {uploader}"
 
     @property
     def uploader_display(self):
