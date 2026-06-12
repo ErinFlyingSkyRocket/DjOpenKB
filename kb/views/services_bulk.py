@@ -3,6 +3,8 @@
 This module is imported back by services.py so existing imports continue to work.
 """
 
+from django.utils.translation import gettext as _
+
 from .services import *  # noqa: F401,F403
 
 def make_unique_article_filename(title, original_filename=""):
