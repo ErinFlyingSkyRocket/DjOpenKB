@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.sessions.models import Session
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import constant_time_compare
 
 from .models import UserMFADevice
@@ -104,12 +105,12 @@ def get_or_create_mfa_device(user):
 def mfa_status_label(user):
     device = getattr(user, "kb_mfa_device", None)
     if not user_requires_mfa(user):
-        return "Not required"
+        return _("Not required")
     if not device:
-        return "Not set up"
+        return _("Not set up")
     if device.confirmed:
-        return "Configured"
-    return "Setup pending"
+        return _("Configured")
+    return _("Setup pending")
 
 
 def reset_mfa_device_for_user(user):

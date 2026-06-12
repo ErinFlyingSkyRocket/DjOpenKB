@@ -1327,8 +1327,6 @@ msgstr "Nyahpilih semua"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Dimuat naik pada"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Dimuat naik oleh"
 
@@ -1753,3 +1751,62 @@ msgstr "Peranti MFA pengguna"
 
 msgid "User MFA devices"
 msgstr "Peranti MFA pengguna"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Pengesahan dan kebenaran"
+
+msgid "Original name"
+msgstr "Nama asal"
+
+msgid "Content type"
+msgstr "Jenis kandungan"
+
+msgid "Size bytes"
+msgstr "Saiz bait"
+
+msgid "User agent"
+msgstr "Ejen pengguna"
+
+msgid "Path"
+msgstr "Laluan"
+
+msgid "Vote"
+msgstr "Undi"
+
+msgid "Configured"
+msgstr "Dikonfigurasi"
+
+msgid "Setup pending"
+msgstr "Menunggu persediaan"
+
+msgid "Not set up"
+msgstr "Belum disediakan"
+
+msgid "Not required"
+msgstr "Tidak diperlukan"
+
+msgid "Authentication source"
+msgstr "Sumber pengesahan"
+
+msgid "Can access main site"
+msgstr "Boleh mengakses laman utama"
+
+msgid "Preferred language"
+msgstr "Bahasa pilihan"
+
+msgid "Created at"
+msgstr "Dicipta pada"
+
+msgid "Updated at"
+msgstr "Dikemas kini pada"
+
+msgid "Deleted at"
+msgstr "Dipadam pada"
+
+msgid "Delete reason"
+msgstr "Sebab padam"
+
+msgid "Article status"
+msgstr "Status artikel"

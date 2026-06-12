@@ -1327,8 +1327,6 @@ msgstr "Alles deselecteren"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Geüpload op"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Geüpload door"
 
@@ -1753,3 +1751,62 @@ msgstr "MFA-apparaat van gebruiker"
 
 msgid "User MFA devices"
 msgstr "MFA-apparaten van gebruiker"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Authenticatie en autorisatie"
+
+msgid "Original name"
+msgstr "Oorspronkelijke naam"
+
+msgid "Content type"
+msgstr "Inhoudstype"
+
+msgid "Size bytes"
+msgstr "Grootte in bytes"
+
+msgid "User agent"
+msgstr "User-agent"
+
+msgid "Path"
+msgstr "Pad"
+
+msgid "Vote"
+msgstr "Stem"
+
+msgid "Configured"
+msgstr "Geconfigureerd"
+
+msgid "Setup pending"
+msgstr "Installatie in behandeling"
+
+msgid "Not set up"
+msgstr "Niet ingesteld"
+
+msgid "Not required"
+msgstr "Niet vereist"
+
+msgid "Authentication source"
+msgstr "Authenticatiebron"
+
+msgid "Can access main site"
+msgstr "Kan hoofdsite openen"
+
+msgid "Preferred language"
+msgstr "Voorkeurstaal"
+
+msgid "Created at"
+msgstr "Aangemaakt op"
+
+msgid "Updated at"
+msgstr "Bijgewerkt op"
+
+msgid "Deleted at"
+msgstr "Verwijderd op"
+
+msgid "Delete reason"
+msgstr "Verwijderreden"
+
+msgid "Article status"
+msgstr "Artikelstatus"

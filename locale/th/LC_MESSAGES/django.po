@@ -1753,3 +1753,62 @@ msgstr "อุปกรณ์ MFA ของผู้ใช้"
 
 msgid "User MFA devices"
 msgstr "อุปกรณ์ MFA ของผู้ใช้"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "การยืนยันตัวตนและการให้สิทธิ์"
+
+msgid "Original name"
+msgstr "ชื่อเดิม"
+
+msgid "Content type"
+msgstr "ประเภทเนื้อหา"
+
+msgid "Size bytes"
+msgstr "ขนาดเป็นไบต์"
+
+msgid "User agent"
+msgstr "ตัวแทนผู้ใช้"
+
+msgid "Path"
+msgstr "เส้นทาง"
+
+msgid "Vote"
+msgstr "โหวต"
+
+msgid "Configured"
+msgstr "กำหนดค่าแล้ว"
+
+msgid "Setup pending"
+msgstr "รอการตั้งค่า"
+
+msgid "Not set up"
+msgstr "ยังไม่ได้ตั้งค่า"
+
+msgid "Not required"
+msgstr "ไม่จำเป็น"
+
+msgid "Authentication source"
+msgstr "แหล่งที่มาของการยืนยันตัวตน"
+
+msgid "Can access main site"
+msgstr "เข้าถึงไซต์หลักได้"
+
+msgid "Preferred language"
+msgstr "ภาษาที่ต้องการ"
+
+msgid "Created at"
+msgstr "สร้างเมื่อ"
+
+msgid "Updated at"
+msgstr "อัปเดตเมื่อ"
+
+msgid "Deleted at"
+msgstr "ลบเมื่อ"
+
+msgid "Delete reason"
+msgstr "เหตุผลการลบ"
+
+msgid "Article status"
+msgstr "สถานะบทความ"

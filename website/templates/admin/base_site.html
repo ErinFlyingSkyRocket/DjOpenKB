@@ -36,7 +36,7 @@
   {% csrf_token %}
   <input type="hidden" name="next" value="{{ request.get_full_path }}">
   <label for="admin-language-select">{% trans "Language" %}</label>
-  <select id="admin-language-select" name="language_code">
+  <select id="admin-language-select" name="language">
     {% get_current_language as CURRENT_LANGUAGE %}
     {% get_available_languages as AVAILABLE_LANGUAGES %}
     {% for code, name in AVAILABLE_LANGUAGES %}

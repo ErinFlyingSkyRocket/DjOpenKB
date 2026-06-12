@@ -1327,8 +1327,6 @@ msgstr "Unselect all"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Uploaded at"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Uploaded by"
 
@@ -1750,3 +1748,62 @@ msgstr "User MFA device"
 
 msgid "User MFA devices"
 msgstr "User MFA devices"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Authentication and Authorization"
+
+msgid "Original name"
+msgstr "Original name"
+
+msgid "Content type"
+msgstr "Content type"
+
+msgid "Size bytes"
+msgstr "Size bytes"
+
+msgid "User agent"
+msgstr "User agent"
+
+msgid "Path"
+msgstr "Path"
+
+msgid "Vote"
+msgstr "Vote"
+
+msgid "Configured"
+msgstr "Configured"
+
+msgid "Setup pending"
+msgstr "Setup pending"
+
+msgid "Not set up"
+msgstr "Not set up"
+
+msgid "Not required"
+msgstr "Not required"
+
+msgid "Authentication source"
+msgstr "Authentication source"
+
+msgid "Can access main site"
+msgstr "Can access main site"
+
+msgid "Preferred language"
+msgstr "Preferred language"
+
+msgid "Created at"
+msgstr "Created at"
+
+msgid "Updated at"
+msgstr "Updated at"
+
+msgid "Deleted at"
+msgstr "Deleted at"
+
+msgid "Delete reason"
+msgstr "Delete reason"
+
+msgid "Article status"
+msgstr "Article status"

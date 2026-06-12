@@ -1753,3 +1753,62 @@ msgstr "사용자 MFA 장치"
 
 msgid "User MFA devices"
 msgstr "사용자 MFA 장치"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "인증 및 권한 부여"
+
+msgid "Original name"
+msgstr "원래 이름"
+
+msgid "Content type"
+msgstr "콘텐츠 유형"
+
+msgid "Size bytes"
+msgstr "크기(바이트)"
+
+msgid "User agent"
+msgstr "사용자 에이전트"
+
+msgid "Path"
+msgstr "경로"
+
+msgid "Vote"
+msgstr "투표"
+
+msgid "Configured"
+msgstr "구성됨"
+
+msgid "Setup pending"
+msgstr "설정 대기 중"
+
+msgid "Not set up"
+msgstr "설정되지 않음"
+
+msgid "Not required"
+msgstr "필요 없음"
+
+msgid "Authentication source"
+msgstr "인증 소스"
+
+msgid "Can access main site"
+msgstr "메인 사이트 접근 가능"
+
+msgid "Preferred language"
+msgstr "선호 언어"
+
+msgid "Created at"
+msgstr "생성일"
+
+msgid "Updated at"
+msgstr "업데이트일"
+
+msgid "Deleted at"
+msgstr "삭제일"
+
+msgid "Delete reason"
+msgstr "삭제 사유"
+
+msgid "Article status"
+msgstr "문서 상태"

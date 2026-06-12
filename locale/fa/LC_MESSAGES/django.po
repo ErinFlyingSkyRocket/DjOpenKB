@@ -1753,3 +1753,62 @@ msgstr "دستگاه MFA کاربر"
 
 msgid "User MFA devices"
 msgstr "دستگاه‌های MFA کاربر"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "احراز هویت و مجوزدهی"
+
+msgid "Original name"
+msgstr "نام اصلی"
+
+msgid "Content type"
+msgstr "نوع محتوا"
+
+msgid "Size bytes"
+msgstr "اندازه بر حسب بایت"
+
+msgid "User agent"
+msgstr "عامل کاربر"
+
+msgid "Path"
+msgstr "مسیر"
+
+msgid "Vote"
+msgstr "رأی"
+
+msgid "Configured"
+msgstr "پیکربندی شده"
+
+msgid "Setup pending"
+msgstr "در انتظار راه‌اندازی"
+
+msgid "Not set up"
+msgstr "راه‌اندازی نشده"
+
+msgid "Not required"
+msgstr "لازم نیست"
+
+msgid "Authentication source"
+msgstr "منبع احراز هویت"
+
+msgid "Can access main site"
+msgstr "می‌تواند به سایت اصلی دسترسی داشته باشد"
+
+msgid "Preferred language"
+msgstr "زبان ترجیحی"
+
+msgid "Created at"
+msgstr "ایجاد شده در"
+
+msgid "Updated at"
+msgstr "به‌روزرسانی شده در"
+
+msgid "Deleted at"
+msgstr "زمان حذف"
+
+msgid "Delete reason"
+msgstr "دلیل حذف"
+
+msgid "Article status"
+msgstr "وضعیت مقاله"

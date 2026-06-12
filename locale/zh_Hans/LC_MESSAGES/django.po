@@ -1753,3 +1753,62 @@ msgstr "用户 MFA 设备"
 
 msgid "User MFA devices"
 msgstr "用户 MFA 设备"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "认证和授权"
+
+msgid "Original name"
+msgstr "原始名称"
+
+msgid "Content type"
+msgstr "内容类型"
+
+msgid "Size bytes"
+msgstr "大小（字节）"
+
+msgid "User agent"
+msgstr "用户代理"
+
+msgid "Path"
+msgstr "路径"
+
+msgid "Vote"
+msgstr "投票"
+
+msgid "Configured"
+msgstr "已配置"
+
+msgid "Setup pending"
+msgstr "待设置"
+
+msgid "Not set up"
+msgstr "未设置"
+
+msgid "Not required"
+msgstr "不需要"
+
+msgid "Authentication source"
+msgstr "认证来源"
+
+msgid "Can access main site"
+msgstr "可访问主站"
+
+msgid "Preferred language"
+msgstr "首选语言"
+
+msgid "Created at"
+msgstr "创建时间"
+
+msgid "Updated at"
+msgstr "更新时间"
+
+msgid "Deleted at"
+msgstr "删除时间"
+
+msgid "Delete reason"
+msgstr "删除原因"
+
+msgid "Article status"
+msgstr "文章状态"

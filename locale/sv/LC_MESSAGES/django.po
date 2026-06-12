@@ -1327,8 +1327,6 @@ msgstr "Avmarkera alla"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Uppladdad"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Uppladdad av"
 
@@ -1753,3 +1751,62 @@ msgstr "Användarens MFA-enhet"
 
 msgid "User MFA devices"
 msgstr "Användarens MFA-enheter"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Autentisering och auktorisering"
+
+msgid "Original name"
+msgstr "Ursprungligt namn"
+
+msgid "Content type"
+msgstr "Innehållstyp"
+
+msgid "Size bytes"
+msgstr "Storlek i byte"
+
+msgid "User agent"
+msgstr "Användaragent"
+
+msgid "Path"
+msgstr "Sökväg"
+
+msgid "Vote"
+msgstr "Röst"
+
+msgid "Configured"
+msgstr "Konfigurerad"
+
+msgid "Setup pending"
+msgstr "Inställning väntar"
+
+msgid "Not set up"
+msgstr "Inte konfigurerad"
+
+msgid "Not required"
+msgstr "Krävs inte"
+
+msgid "Authentication source"
+msgstr "Autentiseringskälla"
+
+msgid "Can access main site"
+msgstr "Kan komma åt huvudsidan"
+
+msgid "Preferred language"
+msgstr "Föredraget språk"
+
+msgid "Created at"
+msgstr "Skapad"
+
+msgid "Updated at"
+msgstr "Uppdaterad"
+
+msgid "Deleted at"
+msgstr "Borttagen"
+
+msgid "Delete reason"
+msgstr "Borttagningsorsak"
+
+msgid "Article status"
+msgstr "Artikelstatus"

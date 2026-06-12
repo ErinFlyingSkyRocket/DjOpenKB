@@ -1327,8 +1327,6 @@ msgstr "Bỏ chọn tất cả"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Tải lên lúc"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Tải lên bởi"
 
@@ -1753,3 +1751,62 @@ msgstr "Thiết bị MFA của người dùng"
 
 msgid "User MFA devices"
 msgstr "Thiết bị MFA của người dùng"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Xác thực và phân quyền"
+
+msgid "Original name"
+msgstr "Tên gốc"
+
+msgid "Content type"
+msgstr "Loại nội dung"
+
+msgid "Size bytes"
+msgstr "Kích thước byte"
+
+msgid "User agent"
+msgstr "User agent"
+
+msgid "Path"
+msgstr "Đường dẫn"
+
+msgid "Vote"
+msgstr "Bình chọn"
+
+msgid "Configured"
+msgstr "Đã cấu hình"
+
+msgid "Setup pending"
+msgstr "Đang chờ thiết lập"
+
+msgid "Not set up"
+msgstr "Chưa thiết lập"
+
+msgid "Not required"
+msgstr "Không bắt buộc"
+
+msgid "Authentication source"
+msgstr "Nguồn xác thực"
+
+msgid "Can access main site"
+msgstr "Có thể truy cập trang chính"
+
+msgid "Preferred language"
+msgstr "Ngôn ngữ ưu tiên"
+
+msgid "Created at"
+msgstr "Được tạo lúc"
+
+msgid "Updated at"
+msgstr "Được cập nhật lúc"
+
+msgid "Deleted at"
+msgstr "Xóa lúc"
+
+msgid "Delete reason"
+msgstr "Lý do xóa"
+
+msgid "Article status"
+msgstr "Trạng thái bài viết"

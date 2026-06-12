@@ -1326,9 +1326,7 @@ msgstr "Fravælg alle"
 
 #: synced from current templates/views
 msgid "Uploaded at"
-msgstr "Uploadet den"
-
-#: synced from current templates/views
+msgstr "Uploadet"
 msgid "Uploaded by"
 msgstr "Uploadet af"
 
@@ -1753,3 +1751,62 @@ msgstr "Brugerens MFA-enhed"
 
 msgid "User MFA devices"
 msgstr "Brugerens MFA-enheder"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Godkendelse og autorisation"
+
+msgid "Original name"
+msgstr "Oprindeligt navn"
+
+msgid "Content type"
+msgstr "Indholdstype"
+
+msgid "Size bytes"
+msgstr "Størrelse i bytes"
+
+msgid "User agent"
+msgstr "Brugeragent"
+
+msgid "Path"
+msgstr "Sti"
+
+msgid "Vote"
+msgstr "Stemme"
+
+msgid "Configured"
+msgstr "Konfigureret"
+
+msgid "Setup pending"
+msgstr "Opsætning afventer"
+
+msgid "Not set up"
+msgstr "Ikke opsat"
+
+msgid "Not required"
+msgstr "Ikke påkrævet"
+
+msgid "Authentication source"
+msgstr "Godkendelseskilde"
+
+msgid "Can access main site"
+msgstr "Kan tilgå hovedsiden"
+
+msgid "Preferred language"
+msgstr "Foretrukket sprog"
+
+msgid "Created at"
+msgstr "Oprettet"
+
+msgid "Updated at"
+msgstr "Opdateret"
+
+msgid "Deleted at"
+msgstr "Slettet"
+
+msgid "Delete reason"
+msgstr "Sletningsårsag"
+
+msgid "Article status"
+msgstr "Artikelstatus"

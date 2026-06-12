@@ -1753,3 +1753,62 @@ msgstr "MFA-устройство пользователя"
 
 msgid "User MFA devices"
 msgstr "MFA-устройства пользователей"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Аутентификация и авторизация"
+
+msgid "Original name"
+msgstr "Исходное имя"
+
+msgid "Content type"
+msgstr "Тип содержимого"
+
+msgid "Size bytes"
+msgstr "Размер в байтах"
+
+msgid "User agent"
+msgstr "User-Agent"
+
+msgid "Path"
+msgstr "Путь"
+
+msgid "Vote"
+msgstr "Голос"
+
+msgid "Configured"
+msgstr "Настроено"
+
+msgid "Setup pending"
+msgstr "Ожидает настройки"
+
+msgid "Not set up"
+msgstr "Не настроено"
+
+msgid "Not required"
+msgstr "Не требуется"
+
+msgid "Authentication source"
+msgstr "Источник аутентификации"
+
+msgid "Can access main site"
+msgstr "Доступ к основному сайту"
+
+msgid "Preferred language"
+msgstr "Предпочитаемый язык"
+
+msgid "Created at"
+msgstr "Создано"
+
+msgid "Updated at"
+msgstr "Обновлено"
+
+msgid "Deleted at"
+msgstr "Удалено"
+
+msgid "Delete reason"
+msgstr "Причина удаления"
+
+msgid "Article status"
+msgstr "Статус статьи"

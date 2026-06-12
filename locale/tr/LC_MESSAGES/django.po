@@ -1327,8 +1327,6 @@ msgstr "Tüm seçimleri kaldır"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Yüklenme zamanı"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Yükleyen"
 
@@ -1753,3 +1751,62 @@ msgstr "Kullanıcı MFA cihazı"
 
 msgid "User MFA devices"
 msgstr "Kullanıcı MFA cihazları"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Kimlik doğrulama ve yetkilendirme"
+
+msgid "Original name"
+msgstr "Özgün ad"
+
+msgid "Content type"
+msgstr "İçerik türü"
+
+msgid "Size bytes"
+msgstr "Bayt boyutu"
+
+msgid "User agent"
+msgstr "Kullanıcı aracısı"
+
+msgid "Path"
+msgstr "Yol"
+
+msgid "Vote"
+msgstr "Oy"
+
+msgid "Configured"
+msgstr "Yapılandırıldı"
+
+msgid "Setup pending"
+msgstr "Kurulum bekliyor"
+
+msgid "Not set up"
+msgstr "Kurulmadı"
+
+msgid "Not required"
+msgstr "Gerekli değil"
+
+msgid "Authentication source"
+msgstr "Kimlik doğrulama kaynağı"
+
+msgid "Can access main site"
+msgstr "Ana siteye erişebilir"
+
+msgid "Preferred language"
+msgstr "Tercih edilen dil"
+
+msgid "Created at"
+msgstr "Oluşturulma zamanı"
+
+msgid "Updated at"
+msgstr "Güncellenme zamanı"
+
+msgid "Deleted at"
+msgstr "Silinme zamanı"
+
+msgid "Delete reason"
+msgstr "Silme nedeni"
+
+msgid "Article status"
+msgstr "Makale durumu"

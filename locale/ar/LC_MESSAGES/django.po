@@ -1753,3 +1753,62 @@ msgstr "جهاز MFA للمستخدم"
 
 msgid "User MFA devices"
 msgstr "أجهزة MFA للمستخدم"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "المصادقة والتفويض"
+
+msgid "Original name"
+msgstr "الاسم الأصلي"
+
+msgid "Content type"
+msgstr "نوع المحتوى"
+
+msgid "Size bytes"
+msgstr "الحجم بالبايت"
+
+msgid "User agent"
+msgstr "وكيل المستخدم"
+
+msgid "Path"
+msgstr "المسار"
+
+msgid "Vote"
+msgstr "تصويت"
+
+msgid "Configured"
+msgstr "مُكوّن"
+
+msgid "Setup pending"
+msgstr "الإعداد معلق"
+
+msgid "Not set up"
+msgstr "غير معدّ"
+
+msgid "Not required"
+msgstr "غير مطلوب"
+
+msgid "Authentication source"
+msgstr "مصدر المصادقة"
+
+msgid "Can access main site"
+msgstr "يمكنه الوصول إلى الموقع الرئيسي"
+
+msgid "Preferred language"
+msgstr "اللغة المفضلة"
+
+msgid "Created at"
+msgstr "تاريخ الإنشاء"
+
+msgid "Updated at"
+msgstr "تاريخ التحديث"
+
+msgid "Deleted at"
+msgstr "وقت الحذف"
+
+msgid "Delete reason"
+msgstr "سبب الحذف"
+
+msgid "Article status"
+msgstr "حالة المقالة"

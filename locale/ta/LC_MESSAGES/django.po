@@ -1753,3 +1753,62 @@ msgstr "பயனர் MFA சாதனம்"
 
 msgid "User MFA devices"
 msgstr "பயனர் MFA சாதனங்கள்"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "அங்கீகாரம் மற்றும் அனுமதி"
+
+msgid "Original name"
+msgstr "அசல் பெயர்"
+
+msgid "Content type"
+msgstr "உள்ளடக்க வகை"
+
+msgid "Size bytes"
+msgstr "அளவு (பைட்டுகள்)"
+
+msgid "User agent"
+msgstr "பயனர் முகவர்"
+
+msgid "Path"
+msgstr "பாதை"
+
+msgid "Vote"
+msgstr "வாக்கு"
+
+msgid "Configured"
+msgstr "கட்டமைக்கப்பட்டது"
+
+msgid "Setup pending"
+msgstr "அமைப்பு நிலுவையில் உள்ளது"
+
+msgid "Not set up"
+msgstr "அமைக்கப்படவில்லை"
+
+msgid "Not required"
+msgstr "தேவையில்லை"
+
+msgid "Authentication source"
+msgstr "அங்கீகார மூலம்"
+
+msgid "Can access main site"
+msgstr "முதன்மை தளத்தை அணுகலாம்"
+
+msgid "Preferred language"
+msgstr "விருப்ப மொழி"
+
+msgid "Created at"
+msgstr "உருவாக்கிய நேரம்"
+
+msgid "Updated at"
+msgstr "புதுப்பித்த நேரம்"
+
+msgid "Deleted at"
+msgstr "நீக்கிய நேரம்"
+
+msgid "Delete reason"
+msgstr "நீக்க காரணம்"
+
+msgid "Article status"
+msgstr "கட்டுரை நிலை"

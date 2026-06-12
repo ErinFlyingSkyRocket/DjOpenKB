@@ -1753,3 +1753,62 @@ msgstr "ユーザー MFA デバイス"
 
 msgid "User MFA devices"
 msgstr "ユーザー MFA デバイス"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "認証と認可"
+
+msgid "Original name"
+msgstr "元の名前"
+
+msgid "Content type"
+msgstr "コンテンツタイプ"
+
+msgid "Size bytes"
+msgstr "サイズ（バイト）"
+
+msgid "User agent"
+msgstr "ユーザーエージェント"
+
+msgid "Path"
+msgstr "パス"
+
+msgid "Vote"
+msgstr "投票"
+
+msgid "Configured"
+msgstr "設定済み"
+
+msgid "Setup pending"
+msgstr "設定待ち"
+
+msgid "Not set up"
+msgstr "未設定"
+
+msgid "Not required"
+msgstr "不要"
+
+msgid "Authentication source"
+msgstr "認証元"
+
+msgid "Can access main site"
+msgstr "メインサイトにアクセス可能"
+
+msgid "Preferred language"
+msgstr "優先言語"
+
+msgid "Created at"
+msgstr "作成日時"
+
+msgid "Updated at"
+msgstr "更新日時"
+
+msgid "Deleted at"
+msgstr "削除日時"
+
+msgid "Delete reason"
+msgstr "削除理由"
+
+msgid "Article status"
+msgstr "記事の状態"

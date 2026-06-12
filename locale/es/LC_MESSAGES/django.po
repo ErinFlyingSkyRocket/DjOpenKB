@@ -1327,8 +1327,6 @@ msgstr "Deseleccionar todo"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Subido el"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Subido por"
 
@@ -1753,3 +1751,62 @@ msgstr "Dispositivo MFA de usuario"
 
 msgid "User MFA devices"
 msgstr "Dispositivos MFA de usuario"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Autenticación y autorización"
+
+msgid "Original name"
+msgstr "Nombre original"
+
+msgid "Content type"
+msgstr "Tipo de contenido"
+
+msgid "Size bytes"
+msgstr "Tamaño en bytes"
+
+msgid "User agent"
+msgstr "Agente de usuario"
+
+msgid "Path"
+msgstr "Ruta"
+
+msgid "Vote"
+msgstr "Voto"
+
+msgid "Configured"
+msgstr "Configurado"
+
+msgid "Setup pending"
+msgstr "Configuración pendiente"
+
+msgid "Not set up"
+msgstr "No configurado"
+
+msgid "Not required"
+msgstr "No requerido"
+
+msgid "Authentication source"
+msgstr "Origen de autenticación"
+
+msgid "Can access main site"
+msgstr "Puede acceder al sitio principal"
+
+msgid "Preferred language"
+msgstr "Idioma preferido"
+
+msgid "Created at"
+msgstr "Creado el"
+
+msgid "Updated at"
+msgstr "Actualizado el"
+
+msgid "Deleted at"
+msgstr "Eliminado el"
+
+msgid "Delete reason"
+msgstr "Motivo de eliminación"
+
+msgid "Article status"
+msgstr "Estado del artículo"

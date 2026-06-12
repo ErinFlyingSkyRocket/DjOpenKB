@@ -1327,8 +1327,6 @@ msgstr "Poista kaikki valinnat"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Ladattu"
-
-#: synced from current templates/views
 msgid "Uploaded by"
 msgstr "Ladannut"
 
@@ -1753,3 +1751,62 @@ msgstr "Käyttäjän MFA-laite"
 
 msgid "User MFA devices"
 msgstr "Käyttäjän MFA-laitteet"
+
+# DjOpenKB admin field translation sync
+
+msgid "Authentication and Authorization"
+msgstr "Todennus ja valtuutus"
+
+msgid "Original name"
+msgstr "Alkuperäinen nimi"
+
+msgid "Content type"
+msgstr "Sisältötyyppi"
+
+msgid "Size bytes"
+msgstr "Koko tavuina"
+
+msgid "User agent"
+msgstr "Käyttäjäagentti"
+
+msgid "Path"
+msgstr "Polku"
+
+msgid "Vote"
+msgstr "Ääni"
+
+msgid "Configured"
+msgstr "Määritetty"
+
+msgid "Setup pending"
+msgstr "Määritys odottaa"
+
+msgid "Not set up"
+msgstr "Ei määritetty"
+
+msgid "Not required"
+msgstr "Ei vaadita"
+
+msgid "Authentication source"
+msgstr "Todennuslähde"
+
+msgid "Can access main site"
+msgstr "Voi käyttää pääsivustoa"
+
+msgid "Preferred language"
+msgstr "Ensisijainen kieli"
+
+msgid "Created at"
+msgstr "Luotu"
+
+msgid "Updated at"
+msgstr "Päivitetty"
+
+msgid "Deleted at"
+msgstr "Poistettu"
+
+msgid "Delete reason"
+msgstr "Poiston syy"
+
+msgid "Article status"
+msgstr "Artikkelin tila"
