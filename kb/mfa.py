@@ -105,12 +105,12 @@ def get_or_create_mfa_device(user):
 def mfa_status_label(user):
     device = getattr(user, "kb_mfa_device", None)
     if not user_requires_mfa(user):
-        return _("Not required")
+        return str(_("Not required"))
     if not device:
-        return _("Not set up")
+        return str(_("Not set up"))
     if device.confirmed:
-        return _("Configured")
-    return _("Setup pending")
+        return str(_("Configured"))
+    return str(_("Setup pending"))
 
 
 def reset_mfa_device_for_user(user):

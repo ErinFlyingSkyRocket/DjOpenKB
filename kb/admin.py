@@ -275,7 +275,7 @@ class UserAdmin(DefaultUserAdmin):
         return bool(profile and getattr(profile, "is_ad_managed", False))
 
     def domain_password_status(self, obj):
-        return _("Domain password is managed in Active Directory and cannot be changed from Django admin.")
+        return str(_("Domain password is managed in Active Directory and cannot be changed from Django admin."))
 
     domain_password_status.short_description = _("Password")
 
@@ -363,12 +363,12 @@ class UserAdmin(DefaultUserAdmin):
         profile = getattr(obj, "kb_profile", None)
 
         if not obj.is_active:
-            return _("Inactive")
+            return str(_("Inactive"))
 
         if profile and profile.can_access_main_site:
-            return _("Allowed")
+            return str(_("Allowed"))
 
-        return _("Blocked")
+        return str(_("Blocked"))
 
     main_site_access.short_description = _("Main Site Access")
 
@@ -577,10 +577,10 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
 
     def secret_protected_display(self, obj):
         if not obj or not obj.secret:
-            return _("Not set")
+            return str(_("Not set"))
         if obj.secret_is_encrypted:
-            return _("Encrypted and hidden")
-        return _("Not encrypted. Reset this user MFA device and ask the user to set up MFA again.")
+            return str(_("Encrypted and hidden"))
+        return str(_("Not encrypted. Reset this user MFA device and ask the user to set up MFA again."))
 
     secret_protected_display.short_description = _("Authenticator key")
 
@@ -1010,9 +1010,9 @@ class ArticleVoteAdmin(admin.ModelAdmin):
 
     def vote_label(self, obj):
         if obj.value == ArticleVote.VoteValue.UP:
-            return _("Like")
+            return str(_("Like"))
         if obj.value == ArticleVote.VoteValue.DOWN:
-            return _("Dislike")
+            return str(_("Dislike"))
         return obj.value
 
     vote_label.short_description = _("Vote")

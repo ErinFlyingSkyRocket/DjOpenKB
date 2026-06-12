@@ -489,14 +489,14 @@ class SuggestedArticle(models.Model):
         if self.author_username_snapshot:
             return self.author_username_snapshot
 
-        return _("Deleted user")
+        return str(_("Deleted user"))
 
     @property
     def author_username(self):
         if self.owner:
             return self.owner.get_username()
 
-        return self.author_username_snapshot or _("deleted-user")
+        return self.author_username_snapshot or str(_("deleted-user"))
 
     @property
     def author_email(self):
@@ -558,7 +558,7 @@ class ArticleVote(models.Model):
         verbose_name_plural = _("Article votes")
 
     def __str__(self):
-        label = "Helpful" if self.value == self.VoteValue.UP else "Not helpful"
+        label = str(_("Helpful")) if self.value == self.VoteValue.UP else str(_("Not helpful"))
         return f"{self.article.title} - {self.user} - {label}"
 
 
@@ -616,8 +616,8 @@ class ArticleImageUploadLog(models.Model):
         ]
 
     def __str__(self):
-        uploader = self.uploader_username_snapshot or _("unknown user")
-        return f"{self.filename} uploaded by {uploader}"
+        uploader = self.uploader_username_snapshot or str(_("unknown user"))
+        return str(_("%(filename)s uploaded by %(uploader)s") % {"filename": self.filename, "uploader": uploader})
 
     @property
     def uploader_display(self):
@@ -724,7 +724,7 @@ class ActivityLog(models.Model):
         ]
 
     def __str__(self):
-        actor = self.username or (self.user.get_username() if self.user_id else _("anonymous"))
+        actor = self.username or (self.user.get_username() if self.user_id else str(_("anonymous")))
         target = f" - {self.article_title}" if self.article_title else ""
         return f"{self.get_event_type_display()} - {actor}{target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
 
