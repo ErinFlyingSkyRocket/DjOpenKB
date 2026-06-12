@@ -465,7 +465,7 @@ class SuggestedArticle(models.Model):
         if profile:
             self.author_account_type_snapshot = profile.get_account_type_display()
         elif self.owner.is_superuser or self.owner.is_staff:
-            self.author_account_type_snapshot = str(_("Admin"))
+            self.author_account_type_snapshot = "Admin"
         else:
             self.author_account_type_snapshot = ""
 
@@ -513,7 +513,7 @@ class SuggestedArticle(models.Model):
                 return profile.get_account_type_display()
 
             if self.owner.is_superuser or self.owner.is_staff:
-                return _("Admin")
+                return "Admin"
 
         return self.author_account_type_snapshot or ""
 
@@ -558,7 +558,7 @@ class ArticleVote(models.Model):
         verbose_name_plural = _("Article votes")
 
     def __str__(self):
-        label = _("Helpful") if self.value == self.VoteValue.UP else _("Not helpful")
+        label = "Helpful" if self.value == self.VoteValue.UP else "Not helpful"
         return f"{self.article.title} - {self.user} - {label}"
 
 
@@ -617,7 +617,7 @@ class ArticleImageUploadLog(models.Model):
 
     def __str__(self):
         uploader = self.uploader_username_snapshot or _("unknown user")
-        return _("%(filename)s uploaded by %(uploader)s") % {"filename": self.filename, "uploader": uploader}
+        return f"{self.filename} uploaded by {uploader}"
 
     @property
     def uploader_display(self):
@@ -639,7 +639,7 @@ class ArticleImageUploadLog(models.Model):
         if profile:
             self.uploader_account_type_snapshot = profile.get_account_type_display()
         elif self.uploaded_by.is_superuser or self.uploaded_by.is_staff:
-            self.uploader_account_type_snapshot = str(_("Admin"))
+            self.uploader_account_type_snapshot = "Admin"
         else:
             self.uploader_account_type_snapshot = ""
 

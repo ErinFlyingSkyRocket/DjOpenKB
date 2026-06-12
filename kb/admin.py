@@ -18,110 +18,6 @@ from .views import delete_article_files, log_activity, slugify_title, write_arti
 User = get_user_model()
 
 
-# Runtime-only admin labels for custom DjOpenKB fields.
-# These make Django Admin field/column headings translatable without creating
-# schema migrations for display-only verbose_name changes.
-ADMIN_FIELD_LABELS = {
-    UserProfile: {
-        "account_type": _("Account type"),
-        "auth_source": _("Authentication source"),
-        "can_access_main_site": _("Can access main site"),
-        "preferred_language": _("Preferred language"),
-        "notes": _("Notes"),
-        "created_at": _("Created at"),
-        "updated_at": _("Updated at"),
-    },
-    UserMFADevice: {
-        "user": _("User"),
-        "secret": _("Secret"),
-        "confirmed": _("Confirmed"),
-        "created_at": _("Created at"),
-        "confirmed_at": _("Confirmed at"),
-        "last_verified_at": _("Last verified at"),
-        "reset_at": _("Reset at"),
-    },
-    AuthActivityLog: {
-        "created_at": _("Created at"),
-        "event_type": _("Event type"),
-        "success": _("Success"),
-        "user": _("User"),
-        "username": _("Username"),
-        "login_mode": _("Login mode"),
-        "ip_address": _("IP address"),
-        "user_agent": _("User agent"),
-        "path": _("Path"),
-        "request_method": _("Request method"),
-        "details": _("Details"),
-    },
-    SuggestedArticle: {
-        "owner": _("Owner"),
-        "author_username_snapshot": _("Author username snapshot"),
-        "author_name_snapshot": _("Author name snapshot"),
-        "author_email_snapshot": _("Author email snapshot"),
-        "author_account_type_snapshot": _("Author account type snapshot"),
-        "title": _("Title"),
-        "body": _("Body"),
-        "keywords": _("Keywords"),
-        "status": _("Status"),
-        "view_count": _("View count"),
-        "filename": _("Filename"),
-        "raw_path": _("Raw path"),
-        "wiki_path": _("Wiki path"),
-        "image_assets": _("Image assets"),
-        "created_at": _("Created at"),
-        "updated_at": _("Updated at"),
-    },
-    ArticleVote: {
-        "article": _("Article"),
-        "user": _("User"),
-        "value": _("Value"),
-        "created_at": _("Created at"),
-        "updated_at": _("Updated at"),
-    },
-    ArticleImageUploadLog: {
-        "filename": _("Filename"),
-        "original_name": _("Original name"),
-        "content_type": _("Content type"),
-        "size_bytes": _("Size bytes"),
-        "uploaded_by": _("Uploaded by"),
-        "uploader_username_snapshot": _("Uploader username snapshot"),
-        "uploader_email_snapshot": _("Uploader email snapshot"),
-        "uploader_account_type_snapshot": _("Uploader account type snapshot"),
-        "upload_ip_address": _("Upload IP address"),
-        "upload_user_agent": _("Upload user agent"),
-        "uploaded_at": _("Uploaded at"),
-        "deleted_at": _("Deleted at"),
-        "deleted_by": _("Deleted by"),
-        "delete_reason": _("Delete reason"),
-    },
-    ActivityLog: {
-        "created_at": _("Created at"),
-        "event_type": _("Event type"),
-        "user": _("User"),
-        "username": _("Username"),
-        "article": _("Article"),
-        "article_title": _("Article title"),
-        "article_status": _("Article status"),
-        "ip_address": _("IP address"),
-        "user_agent": _("User agent"),
-        "path": _("Path"),
-        "request_method": _("Request method"),
-        "details": _("Details"),
-    },
-}
-
-
-def apply_admin_field_labels():
-    for model, labels in ADMIN_FIELD_LABELS.items():
-        for field_name, label in labels.items():
-            try:
-                model._meta.get_field(field_name).verbose_name = label
-            except Exception:
-                continue
-
-
-apply_admin_field_labels()
-
 
 def get_admin_log_rows_per_page():
     """Return admin log row count from Site settings with safe bounds."""
@@ -319,10 +215,9 @@ class UserAdmin(DefaultUserAdmin):
 
     def mfa_status_display(self, obj):
         status = mfa_status_label(obj)
-        status_text = str(status)
-        if status_text == str(_("Configured")):
+        if status == "Configured":
             return format_html('<span style="color:#0a7a2f;font-weight:600;">{}</span>', status)
-        if status_text == str(_("Setup pending")):
+        if status == "Setup pending":
             return format_html('<span style="color:#a15c00;font-weight:600;">{}</span>', status)
         return format_html('<span style="color:#8a1f11;font-weight:600;">{}</span>', status)
 
