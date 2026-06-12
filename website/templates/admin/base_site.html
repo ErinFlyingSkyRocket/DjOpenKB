@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n language_choices %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -38,7 +38,7 @@
   <label for="admin-language-select">{% trans "Language" %}</label>
   <select id="admin-language-select" name="language">
     {% get_current_language as CURRENT_LANGUAGE %}
-    {% get_available_languages as AVAILABLE_LANGUAGES %}
+    {% raw_available_languages as AVAILABLE_LANGUAGES %}
     {% for code, name in AVAILABLE_LANGUAGES %}
       <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
     {% endfor %}
