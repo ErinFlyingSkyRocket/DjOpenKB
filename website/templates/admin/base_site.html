@@ -1,4 +1,7 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -30,10 +33,69 @@
     background: var(--body-bg);
   }
 
+  .djopenkb-admin-language {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .djopenkb-admin-language select {
+    max-width: 180px;
+    padding: 0.15rem 0.35rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--body-bg);
+    color: var(--body-fg);
+  }
+
+  .djopenkb-admin-language button {
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--button-bg);
+    color: var(--button-fg);
+    cursor: pointer;
+  }
+
+  .djopenkb-admin-language button:hover,
+  .djopenkb-admin-language button:focus {
+    background: var(--button-hover-bg);
+  }
+
   @media (max-width: 1024px) {
     .change-list #result_list {
       min-width: 980px;
     }
+
+    .djopenkb-admin-language {
+      display: flex;
+      margin: 0.5rem 0 0;
+    }
   }
 </style>
+{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}
+{% get_current_language as CURRENT_LANGUAGE %}
+{% get_available_languages as AVAILABLE_LANGUAGES %}
+<form class="djopenkb-admin-language" method="post" action="{% url 'set_site_language' %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <label for="admin-language-select">{% trans "Language" %}</label>
+  <select id="admin-language-select" name="language">
+    {% for code, name in AVAILABLE_LANGUAGES %}
+      <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">{% trans "Apply" %}</button>
+</form>
 {% endblock %}
