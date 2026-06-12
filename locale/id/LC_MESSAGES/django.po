@@ -1464,11 +1464,11 @@ msgstr "Impor gagal: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Zip impor terlalu besar setelah diekstrak. Ukuran tidak terkompresi maksimum yang diizinkan adalah 200 MB."
+msgstr "File zip impor terlalu besar setelah diekstrak. Ukuran maksimum tidak terkompresi yang diizinkan adalah 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Zip impor terlalu besar. Ukuran maksimum yang diizinkan adalah 100 MB. Untuk ekspor terbagi, ekstrak paket terbagi lalu impor setiap zip bagian satu per satu."
+msgstr "File zip impor terlalu besar. Ukuran maksimum yang diizinkan adalah 100 MB. Untuk ekspor terpisah, ekstrak paket terpisah lalu impor setiap file zip bagian satu per satu."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1572,15 +1572,15 @@ msgstr "Hasil pencarian"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Melewati %(part_name)s: bagian lebih besar dari 100 MB. Ekstrak dan bagi lagi sebelum impor."
+msgstr "%(part_name)s dilewati: bagian lebih besar dari 100 MB. Ekstrak dan pisahkan lagi sebelum impor."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Melewati judul duplikat yang sudah ada di OpenKB: %(title)s"
+msgstr "Judul duplikat yang sudah ada di OpenKB dilewati: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Melewati judul duplikat di dalam zip impor: %(title)s"
+msgstr "Judul duplikat di dalam zip impor dilewati: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -2016,3 +2016,59 @@ msgid "Upload user agent"
 msgstr "Agen pengguna unggahan"
 msgid "Deleted by"
 msgstr "Dihapus oleh"
+
+# DjOpenKB import result modal
+msgid "No articles were imported"
+msgstr "Tidak ada artikel yang diimpor"
+
+# DjOpenKB import result modal
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Hasil impor ditampilkan di sini agar tidak memenuhi halaman utama impor/ekspor."
+
+# DjOpenKB import result modal
+msgid "Import file"
+msgstr "File impor"
+
+# DjOpenKB import result modal
+msgid "File size"
+msgstr "Ukuran file"
+
+# DjOpenKB import result modal
+msgid "Owner"
+msgstr "Pemilik"
+
+# DjOpenKB import result modal
+msgid "Imported articles"
+msgstr "Artikel yang diimpor"
+
+# DjOpenKB import result modal
+msgid "Warnings / errors"
+msgstr "Peringatan / kesalahan"
+
+# DjOpenKB import result modal
+msgid "Import details"
+msgstr "Detail impor"
+
+# DjOpenKB import result modal
+msgid "Message"
+msgstr "Pesan"
+
+# DjOpenKB import result modal
+msgid "Import completed without warnings or errors."
+msgstr "Impor selesai tanpa peringatan atau kesalahan."
+
+# DjOpenKB import result modal
+msgid "View articles"
+msgstr "Lihat artikel"
+
+# DjOpenKB import result modal
+msgid "Import failed"
+msgstr "Impor gagal"
+
+# DjOpenKB import result modal
+msgid "Import completed with warnings"
+msgstr "Impor selesai dengan peringatan"
+
+# DjOpenKB import result modal
+msgid "Import completed"
+msgstr "Impor selesai"

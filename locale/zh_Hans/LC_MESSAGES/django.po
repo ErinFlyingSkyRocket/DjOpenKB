@@ -1466,11 +1466,11 @@ msgstr "导入失败：%(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "导入 ZIP 解压后过大。最大允许的未压缩大小为 200 MB。"
+msgstr "导入 zip 文件解压后过大。允许的最大未压缩大小为 200 MB。"
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "导入 ZIP 文件过大。最大允许大小为 100 MB。对于分割导出，请先解压分割包，然后逐个导入每个分卷 ZIP。"
+msgstr "导入 zip 文件过大。允许的最大大小为 100 MB。对于拆分导出，请先解压拆分包，然后按顺序逐个导入每个 part zip 文件。"
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1478,7 +1478,7 @@ msgstr "已导入 %(count)s 篇文章。所有者设置为 %(username)s。"
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "无效的 ZIP 文件。"
+msgstr "无效的 zip 文件。"
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
@@ -1574,7 +1574,7 @@ msgstr "搜索结果"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "已跳过 %(part_name)s：该分卷大于 100 MB。请重新解压并分割后再导入。"
+msgstr "已跳过 %(part_name)s：该部分大于 100 MB。请先解压并重新拆分后再导入。"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
@@ -1582,7 +1582,7 @@ msgstr "已跳过 OpenKB 中已存在的重复标题：%(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "已跳过导入 ZIP 内的重复标题：%(title)s"
+msgstr "已跳过导入 zip 内的重复标题：%(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -2149,3 +2149,54 @@ msgstr "上传用户代理"
 msgid "Deleted by"
 msgstr "删除者"
 
+# DjOpenKB import result modal
+msgid "No articles were imported"
+msgstr "未导入任何文章"
+
+# DjOpenKB import result modal
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "导入结果显示在此处，避免占用主导入/导出页面。"
+
+# DjOpenKB import result modal
+msgid "Import file"
+msgstr "导入文件"
+
+# DjOpenKB import result modal
+msgid "File size"
+msgstr "文件大小"
+
+# DjOpenKB import result modal
+msgid "Imported articles"
+msgstr "已导入文章"
+
+# DjOpenKB import result modal
+msgid "Warnings / errors"
+msgstr "警告 / 错误"
+
+# DjOpenKB import result modal
+msgid "Import details"
+msgstr "导入详情"
+
+# DjOpenKB import result modal
+msgid "Message"
+msgstr "消息"
+
+# DjOpenKB import result modal
+msgid "Import completed without warnings or errors."
+msgstr "导入已完成，没有警告或错误。"
+
+# DjOpenKB import result modal
+msgid "View articles"
+msgstr "查看文章"
+
+# DjOpenKB import result modal
+msgid "Import failed"
+msgstr "导入失败"
+
+# DjOpenKB import result modal
+msgid "Import completed with warnings"
+msgstr "导入完成，但有警告"
+
+# DjOpenKB import result modal
+msgid "Import completed"
+msgstr "导入完成"

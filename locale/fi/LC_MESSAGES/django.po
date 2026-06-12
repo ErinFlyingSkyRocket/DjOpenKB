@@ -1456,7 +1456,7 @@ msgstr "Vie jaettu paketti"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "Jos manifest.json puuttuu, tuoja yrittää tuoda kaikki zip-tiedostosta löytyvät Markdown-tiedostot. Jaetuissa paketeissa pura paketti ja tuo jokainen osa-zip yksi kerrallaan."
+msgstr "Jos manifest.json puuttuu, tuontityökalu yrittää tuoda kaikki ZIP-tiedostosta löytyvät Markdown-tiedostot. Jaetuissa paketeissa pura paketti ja tuo jokainen osa-ZIP yksi kerrallaan."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
@@ -1464,11 +1464,11 @@ msgstr "Tuonti epäonnistui: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Tuonti-zip on liian suuri purkamisen jälkeen. Suurin sallittu pakkaamaton koko on 200 MB."
+msgstr "Tuonti-ZIP on liian suuri purkamisen jälkeen. Suurin sallittu pakkaamaton koko on 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Tuonti-zip on liian suuri. Suurin sallittu koko on 100 MB. Jaetuissa vienneissä pura jaettu paketti ja tuo jokainen osa-zip erikseen."
+msgstr "Tuonti-ZIP on liian suuri. Suurin sallittu koko on 100 MB. Jaetuissa viennin paketeissa pura jaettu paketti ja tuo jokainen osa-ZIP yksi kerrallaan."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1476,15 +1476,15 @@ msgstr "Tuotiin %(count)s artikkeli(a). Omistajaksi asetettiin %(username)s."
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Virheellinen zip-tiedosto."
+msgstr "Virheellinen ZIP-tiedosto."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Suuret viennit voivat latautua jaettuna pakettina:"
+msgstr "Suuret viennit voidaan ladata jaettuna pakettina:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Suurin latauskoko: 100 MB per zip. Suurin pakkaamaton koko: 200 MB. Jaetuissa vienneissä pura ensin jaettu paketti ja tuo sitten osa-zipit järjestyksessä."
+msgstr "Suurin latauskoko: 100 MB per ZIP. Suurin pakkaamaton koko: 200 MB. Jaetuissa viennin paketeissa pura ensin jaettu paketti ja tuo sitten jokainen osa-ZIP järjestyksessä."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,7 +1508,7 @@ msgstr "Poistettavia käyttämättömiä lataustiedostoja ei valittu."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normaali vienti muuttuu automaattisesti jaetuksi paketiksi, jos sisältö on liian suuri. Jaetut paketit sisältävät tuotavia osa-zippejä parts/-kansiossa; pura paketti ja tuo osa-zipit järjestyksessä."
+msgstr "Tavallinen vienti muuttuu automaattisesti jaetuksi paketiksi, jos sisältö on liian suuri. Jaetut paketit sisältävät tuotavia osa-ZIP-tiedostoja parts/-kansiossa; pura paketti ja tuo jokainen osa-ZIP järjestyksessä."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1572,15 +1572,15 @@ msgstr "Hakutulokset"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Ohitettiin %(part_name)s: osa on yli 100 MB. Pura ja jaa se uudelleen ennen tuontia."
+msgstr "Ohitettiin %(part_name)s: osa on suurempi kuin 100 MB. Pura ja jaa se uudelleen ennen tuontia."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Ohitettiin OpenKB:ssä jo oleva kaksoisotsikko: %(title)s"
+msgstr "Ohitettiin OpenKB:ssä jo oleva päällekkäinen otsikko: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Ohitettiin tuonti-zipin sisäinen kaksoisotsikko: %(title)s"
+msgstr "Ohitettiin tuonti-ZIPissä oleva päällekkäinen otsikko: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -1624,7 +1624,7 @@ msgstr "Päivitys lähetetty"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "ja kaikki viitatut ladatut tiedostot. Odottavat päivitystiedot sisällytetään, jotta tietokanta ja OpenKB-tiedostot pysyvät synkronoituina tuonnin jälkeen."
+msgstr "ja kaikki viitatut ladatut tiedostot. Odottavan päivityksen tiedot sisällytetään, jotta tietokanta ja OpenKB-tiedostot pysyvät synkronoituina tuonnin jälkeen."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -2130,3 +2130,43 @@ msgstr "Latauksen User-Agent"
 
 msgid "Deleted by"
 msgstr "Poistaja"
+
+
+msgid "No articles were imported"
+msgstr "Yhtään artikkelia ei tuotu"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Tuonnin tulos näytetään tässä, jotta se ei peitä varsinaista tuonti-/vientisivua."
+
+msgid "Import file"
+msgstr "Tuontitiedosto"
+
+msgid "File size"
+msgstr "Tiedoston koko"
+
+msgid "Imported articles"
+msgstr "Tuodut artikkelit"
+
+msgid "Warnings / errors"
+msgstr "Varoitukset / virheet"
+
+msgid "Import details"
+msgstr "Tuonnin tiedot"
+
+msgid "Message"
+msgstr "Viesti"
+
+msgid "Import completed without warnings or errors."
+msgstr "Tuonti valmistui ilman varoituksia tai virheitä."
+
+msgid "View articles"
+msgstr "Näytä artikkelit"
+
+msgid "Import failed"
+msgstr "Tuonti epäonnistui"
+
+msgid "Import completed with warnings"
+msgstr "Tuonti valmistui varoituksin"
+
+msgid "Import completed"
+msgstr "Tuonti valmis"

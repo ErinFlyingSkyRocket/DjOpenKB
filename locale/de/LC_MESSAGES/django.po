@@ -1456,7 +1456,7 @@ msgstr "Geteiltes Paket exportieren"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "Wenn manifest.json fehlt, versucht der Importer, alle im ZIP gefundenen Markdown-Dateien zu importieren. Bei geteilten Paketen entpacken Sie das Paket und importieren jede Teil-ZIP einzeln."
+msgstr "Wenn manifest.json fehlt, versucht der Importer, alle in der ZIP-Datei gefundenen Markdown-Dateien zu importieren. Bei geteilten Paketen entpacken Sie das Paket und importieren jede Teil-ZIP-Datei einzeln."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
@@ -1464,11 +1464,11 @@ msgstr "Import fehlgeschlagen: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Die Import-ZIP ist nach dem Entpacken zu groß. Maximal erlaubt sind 200 MB unkomprimiert."
+msgstr "Die Import-ZIP-Datei ist nach dem Entpacken zu groß. Die maximal zulässige unkomprimierte Größe beträgt 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Die Import-ZIP ist zu groß. Maximal erlaubt sind 100 MB. Entpacken Sie bei geteilten Exporten zuerst das Paket und importieren Sie jede Teil-ZIP einzeln."
+msgstr "Die Import-ZIP-Datei ist zu groß. Die maximal zulässige Größe beträgt 100 MB. Bei geteilten Exporten entpacken Sie zuerst das geteilte Paket und importieren dann jede Teil-ZIP-Datei einzeln."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1484,7 +1484,7 @@ msgstr "Große Exporte können als geteiltes Paket heruntergeladen werden:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maximale Uploadgröße: 100 MB pro ZIP. Maximale unkomprimierte Größe: 200 MB. Entpacken Sie bei geteilten Exporten zuerst das Paket und importieren Sie die Teil-ZIPs der Reihe nach."
+msgstr "Maximale Upload-Größe: 100 MB pro ZIP-Datei. Maximale unkomprimierte Größe: 200 MB. Bei geteilten Exporten entpacken Sie zuerst das geteilte Paket und importieren dann jede Teil-ZIP-Datei der Reihe nach."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,11 +1508,11 @@ msgstr "Es wurden keine verwaisten Upload-Dateien zum Löschen ausgewählt."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Ein normaler Export wird automatisch zu einem geteilten Paket, wenn der Inhalt zu groß ist. Geteilte Pakete enthalten importierbare Teil-ZIPs im Ordner parts/; entpacken Sie das Paket und importieren Sie jede Teil-ZIP der Reihe nach."
+msgstr "Ein normaler Export wird automatisch zu einem geteilten Paket, wenn der Inhalt zu groß ist. Geteilte Pakete enthalten importierbare Teil-ZIP-Dateien im Ordner parts/; entpacken Sie das Paket und importieren Sie jede Teil-ZIP-Datei der Reihe nach."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
-msgstr "Nur .zip-Importdateien sind erlaubt."
+msgstr "Es sind nur .zip-Importdateien erlaubt."
 
 #: synced from current templates/views
 msgid "Pending update"
@@ -1572,15 +1572,15 @@ msgstr "Suchergebnisse"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "%(part_name)s übersprungen: Der Teil ist größer als 100 MB. Entpacken und teilen Sie ihn vor dem Import erneut."
+msgstr "%(part_name)s wurde übersprungen: Dieser Teil ist größer als 100 MB. Entpacken und teilen Sie ihn vor dem Import erneut."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Doppelter Titel bereits in OpenKB übersprungen: %(title)s"
+msgstr "In OpenKB bereits vorhandener doppelter Titel wurde übersprungen: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Doppelter Titel in der Import-ZIP übersprungen: %(title)s"
+msgstr "Doppelter Titel in der Import-ZIP-Datei wurde übersprungen: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -1624,7 +1624,7 @@ msgstr "Aktualisierung eingereicht am"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "und alle referenzierten hochgeladenen Dateien. Daten zu ausstehenden Aktualisierungen sind enthalten, damit Datenbank und OpenKB-Dateien nach dem Import synchron bleiben."
+msgstr "und alle referenzierten hochgeladenen Dateien. Ausstehende Aktualisierungsdaten werden eingeschlossen, damit Datenbank und OpenKB-Dateien nach dem Import synchron bleiben."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -2130,3 +2130,43 @@ msgstr "Upload-User-Agent"
 
 msgid "Deleted by"
 msgstr "Gelöscht von"
+
+
+msgid "No articles were imported"
+msgstr "Es wurden keine Artikel importiert"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Das Importergebnis wird hier angezeigt, damit es die Hauptseite für Import/Export nicht überdeckt."
+
+msgid "Import file"
+msgstr "Importdatei"
+
+msgid "File size"
+msgstr "Dateigröße"
+
+msgid "Imported articles"
+msgstr "Importierte Artikel"
+
+msgid "Warnings / errors"
+msgstr "Warnungen / Fehler"
+
+msgid "Import details"
+msgstr "Importdetails"
+
+msgid "Message"
+msgstr "Meldung"
+
+msgid "Import completed without warnings or errors."
+msgstr "Der Import wurde ohne Warnungen oder Fehler abgeschlossen."
+
+msgid "View articles"
+msgstr "Artikel anzeigen"
+
+msgid "Import failed"
+msgstr "Import fehlgeschlagen"
+
+msgid "Import completed with warnings"
+msgstr "Import mit Warnungen abgeschlossen"
+
+msgid "Import completed"
+msgstr "Import abgeschlossen"

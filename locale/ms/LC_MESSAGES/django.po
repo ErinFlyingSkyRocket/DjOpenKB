@@ -1464,11 +1464,11 @@ msgstr "Import gagal: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Zip import terlalu besar selepas diekstrak. Saiz tidak termampat maksimum yang dibenarkan ialah 200 MB."
+msgstr "Fail zip import terlalu besar selepas diekstrak. Saiz nyahmampat maksimum yang dibenarkan ialah 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Zip import terlalu besar. Saiz maksimum yang dibenarkan ialah 100 MB. Untuk eksport berpecah, ekstrak pakej berpecah dan import setiap zip bahagian satu demi satu."
+msgstr "Fail zip import terlalu besar. Saiz maksimum yang dibenarkan ialah 100 MB. Untuk eksport berpecah, ekstrak pakej berpecah dan import setiap fail zip bahagian satu demi satu."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1572,15 +1572,15 @@ msgstr "Keputusan carian"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Dilangkau %(part_name)s: bahagian ini lebih besar daripada 100 MB. Ekstrak dan pecahkan semula sebelum import."
+msgstr "%(part_name)s dilangkau: bahagian ini lebih besar daripada 100 MB. Ekstrak dan pecahkannya semula sebelum import."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Dilangkau tajuk pendua yang sudah wujud dalam OpenKB: %(title)s"
+msgstr "Tajuk pendua yang sudah wujud dalam OpenKB dilangkau: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Dilangkau tajuk pendua dalam zip import: %(title)s"
+msgstr "Tajuk pendua dalam zip import dilangkau: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -2016,3 +2016,59 @@ msgid "Upload user agent"
 msgstr "Ejen pengguna muat naik"
 msgid "Deleted by"
 msgstr "Dipadam oleh"
+
+# DjOpenKB import result modal
+msgid "No articles were imported"
+msgstr "Tiada artikel diimport"
+
+# DjOpenKB import result modal
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Keputusan import dipaparkan di sini supaya ia tidak memenuhi halaman utama import/eksport."
+
+# DjOpenKB import result modal
+msgid "Import file"
+msgstr "Fail import"
+
+# DjOpenKB import result modal
+msgid "File size"
+msgstr "Saiz fail"
+
+# DjOpenKB import result modal
+msgid "Owner"
+msgstr "Pemilik"
+
+# DjOpenKB import result modal
+msgid "Imported articles"
+msgstr "Artikel diimport"
+
+# DjOpenKB import result modal
+msgid "Warnings / errors"
+msgstr "Amaran / ralat"
+
+# DjOpenKB import result modal
+msgid "Import details"
+msgstr "Butiran import"
+
+# DjOpenKB import result modal
+msgid "Message"
+msgstr "Mesej"
+
+# DjOpenKB import result modal
+msgid "Import completed without warnings or errors."
+msgstr "Import selesai tanpa amaran atau ralat."
+
+# DjOpenKB import result modal
+msgid "View articles"
+msgstr "Lihat artikel"
+
+# DjOpenKB import result modal
+msgid "Import failed"
+msgstr "Import gagal"
+
+# DjOpenKB import result modal
+msgid "Import completed with warnings"
+msgstr "Import selesai dengan amaran"
+
+# DjOpenKB import result modal
+msgid "Import completed"
+msgstr "Import selesai"

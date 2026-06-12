@@ -2064,3 +2064,46 @@ msgstr "DjOpenKB administration"
 
 msgid "Django administration"
 msgstr "Django administration"
+
+
+msgid "No articles were imported"
+msgstr "No articles were imported"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "The import result is shown here so it does not take over the main import/export page."
+
+msgid "Import file"
+msgstr "Import file"
+
+msgid "File size"
+msgstr "File size"
+
+msgid "Owner"
+msgstr "Owner"
+
+msgid "Imported articles"
+msgstr "Imported articles"
+
+msgid "Warnings / errors"
+msgstr "Warnings / errors"
+
+msgid "Import details"
+msgstr "Import details"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Import completed without warnings or errors."
+msgstr "Import completed without warnings or errors."
+
+msgid "View articles"
+msgstr "View articles"
+
+msgid "Import failed"
+msgstr "Import failed"
+
+msgid "Import completed with warnings"
+msgstr "Import completed with warnings"
+
+msgid "Import completed"
+msgstr "Import completed"

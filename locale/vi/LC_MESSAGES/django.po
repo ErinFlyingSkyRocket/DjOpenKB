@@ -1464,11 +1464,11 @@ msgstr "Nhập thất bại: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Zip nhập quá lớn sau khi giải nén. Kích thước không nén tối đa được phép là 200 MB."
+msgstr "Tệp zip nhập quá lớn sau khi giải nén. Kích thước chưa nén tối đa cho phép là 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Zip nhập quá lớn. Kích thước tối đa được phép là 100 MB. Với bản xuất chia nhỏ, hãy giải nén gói và nhập từng zip phần một."
+msgstr "Tệp zip nhập quá lớn. Kích thước tối đa cho phép là 100 MB. Với bản xuất chia phần, hãy giải nén gói chia phần rồi nhập từng tệp zip phần một."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1580,7 +1580,7 @@ msgstr "Đã bỏ qua tiêu đề trùng lặp đã có trong OpenKB: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Đã bỏ qua tiêu đề trùng lặp bên trong zip nhập: %(title)s"
+msgstr "Đã bỏ qua tiêu đề trùng lặp trong zip nhập: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -2130,3 +2130,55 @@ msgstr "Tác nhân người dùng tải lên"
 
 msgid "Deleted by"
 msgstr "Được xóa bởi"
+
+# DjOpenKB import result modal
+msgid "No articles were imported"
+msgstr "Không có bài viết nào được nhập"
+
+# DjOpenKB import result modal
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Kết quả nhập được hiển thị tại đây để không chiếm trang nhập/xuất chính."
+
+# DjOpenKB import result modal
+msgid "Import file"
+msgstr "Tệp nhập"
+
+# DjOpenKB import result modal
+msgid "File size"
+msgstr "Kích thước tệp"
+
+# DjOpenKB import result modal
+msgid "Imported articles"
+msgstr "Bài viết đã nhập"
+
+# DjOpenKB import result modal
+msgid "Warnings / errors"
+msgstr "Cảnh báo / lỗi"
+
+# DjOpenKB import result modal
+msgid "Import details"
+msgstr "Chi tiết nhập"
+
+# DjOpenKB import result modal
+msgid "Message"
+msgstr "Thông báo"
+
+# DjOpenKB import result modal
+msgid "Import completed without warnings or errors."
+msgstr "Nhập hoàn tất mà không có cảnh báo hoặc lỗi."
+
+# DjOpenKB import result modal
+msgid "View articles"
+msgstr "Xem bài viết"
+
+# DjOpenKB import result modal
+msgid "Import failed"
+msgstr "Nhập thất bại"
+
+# DjOpenKB import result modal
+msgid "Import completed with warnings"
+msgstr "Nhập hoàn tất với cảnh báo"
+
+# DjOpenKB import result modal
+msgid "Import completed"
+msgstr "Nhập hoàn tất"

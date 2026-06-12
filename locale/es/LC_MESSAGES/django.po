@@ -1464,11 +1464,11 @@ msgstr "Error de importación: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "El ZIP de importación es demasiado grande después de extraerlo. El tamaño descomprimido máximo permitido es 200 MB."
+msgstr "El ZIP de importación es demasiado grande después de extraerlo. El tamaño máximo descomprimido permitido es 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "El ZIP de importación es demasiado grande. El tamaño máximo permitido es 100 MB. Para exportaciones divididas, extraiga el paquete dividido e importe cada ZIP de parte de uno en uno."
+msgstr "El ZIP de importación es demasiado grande. El tamaño máximo permitido es 100 MB. Para exportaciones divididas, extraiga primero el paquete dividido e importe cada ZIP de parte uno por uno."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1484,7 +1484,7 @@ msgstr "Las exportaciones grandes pueden descargarse como un paquete dividido:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Tamaño máximo de carga: 100 MB por ZIP. Tamaño máximo sin comprimir: 200 MB. Para exportaciones divididas, extraiga primero el paquete dividido y luego importe cada ZIP de parte en orden."
+msgstr "Tamaño máximo de carga: 100 MB por ZIP. Tamaño máximo descomprimido: 200 MB. Para exportaciones divididas, extraiga primero el paquete dividido y luego importe cada ZIP de parte en orden."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,7 +1508,7 @@ msgstr "No se seleccionaron archivos subidos no utilizados para eliminar."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "La exportación normal se convierte automáticamente en un paquete dividido si el contenido es demasiado grande. Los paquetes divididos contienen ZIP de partes importables en la carpeta parts/; extraiga el paquete e importe cada ZIP de parte en orden."
+msgstr "Una exportación normal se convierte automáticamente en un paquete dividido si el contenido es demasiado grande. Los paquetes divididos contienen ZIP de partes importables dentro de la carpeta parts/; extraiga el paquete e importe cada ZIP de parte en orden."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1544,7 +1544,7 @@ msgstr "Las actualizaciones pendientes solo pueden aprobarse como Publicadas o m
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
-msgstr "Elija un archivo .zip para importar."
+msgstr "Seleccione un archivo .zip para importar."
 
 #: synced from current templates/views
 msgid "Please review the admin comments, update your changes, and submit again."
@@ -1572,7 +1572,7 @@ msgstr "Resultados de búsqueda"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Se omitió %(part_name)s: la parte supera los 100 MB. Extráigala y divídala de nuevo antes de importar."
+msgstr "Se omitió %(part_name)s: la parte supera los 100 MB. Extráigala y divídala de nuevo antes de importarla."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
@@ -1624,7 +1624,7 @@ msgstr "Actualización enviada el"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "y todos los archivos subidos referenciados. Se incluyen los datos de actualización pendiente para que la base de datos y los archivos de OpenKB permanezcan sincronizados después de la importación."
+msgstr "y todos los archivos cargados referenciados. Se incluyen los datos de actualización pendiente para que la base de datos y los archivos de OpenKB permanezcan sincronizados después de la importación."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -2130,3 +2130,43 @@ msgstr "Agente de usuario de carga"
 
 msgid "Deleted by"
 msgstr "Eliminado por"
+
+
+msgid "No articles were imported"
+msgstr "No se importó ningún artículo"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "El resultado de la importación se muestra aquí para que no ocupe la página principal de importación/exportación."
+
+msgid "Import file"
+msgstr "Archivo de importación"
+
+msgid "File size"
+msgstr "Tamaño del archivo"
+
+msgid "Imported articles"
+msgstr "Artículos importados"
+
+msgid "Warnings / errors"
+msgstr "Advertencias / errores"
+
+msgid "Import details"
+msgstr "Detalles de la importación"
+
+msgid "Message"
+msgstr "Mensaje"
+
+msgid "Import completed without warnings or errors."
+msgstr "La importación se completó sin advertencias ni errores."
+
+msgid "View articles"
+msgstr "Ver artículos"
+
+msgid "Import failed"
+msgstr "Error de importación"
+
+msgid "Import completed with warnings"
+msgstr "Importación completada con advertencias"
+
+msgid "Import completed"
+msgstr "Importación completada"

@@ -1456,19 +1456,19 @@ msgstr "Bölünmüş paketi dışa aktar"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "manifest.json eksikse içe aktarıcı zip içinde bulunan tüm Markdown dosyalarını içe aktarmayı dener. Bölünmüş paketler için paketi çıkarın ve her parça zipini tek tek içe aktarın."
+msgstr "manifest.json eksikse içe aktarıcı ZIP içindeki tüm Markdown dosyalarını içe aktarmayı dener. Bölünmüş paketlerde paketi çıkarın ve her parça ZIP dosyasını tek tek içe aktarın."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
-msgstr "İçe aktarma başarısız: %(error)s"
+msgstr "İçe aktarma başarısız oldu: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "İçe aktarma zipi çıkarıldıktan sonra çok büyük. İzin verilen en yüksek sıkıştırılmamış boyut 200 MB."
+msgstr "İçe aktarma ZIP dosyası çıkarıldıktan sonra çok büyük. İzin verilen en büyük sıkıştırılmamış boyut 200 MB'dir."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "İçe aktarma zipi çok büyük. İzin verilen en yüksek boyut 100 MB. Bölünmüş dışa aktarımlar için paketi çıkarın ve her parça zipini tek tek içe aktarın."
+msgstr "İçe aktarma ZIP dosyası çok büyük. İzin verilen en büyük boyut 100 MB'dir. Bölünmüş dışa aktarmalar için bölünmüş paketi çıkarın ve her parça ZIP dosyasını tek tek içe aktarın."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1476,15 +1476,15 @@ msgstr "%(count)s makale içe aktarıldı. Sahip %(username)s olarak ayarlandı.
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Geçersiz zip dosyası."
+msgstr "Geçersiz ZIP dosyası."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Büyük dışa aktarımlar bölünmüş paket olarak indirilebilir:"
+msgstr "Büyük dışa aktarmalar bölünmüş paket olarak indirilebilir:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maksimum yükleme boyutu: zip başına 100 MB. Maksimum sıkıştırılmamış boyut: 200 MB. Bölünmüş dışa aktarımlar için önce paketi çıkarın, ardından her parça zipini sırayla içe aktarın."
+msgstr "En büyük yükleme boyutu: ZIP başına 100 MB. En büyük sıkıştırılmamış boyut: 200 MB. Bölünmüş dışa aktarmalarda önce bölünmüş paketi çıkarın, ardından her parça ZIP dosyasını sırayla içe aktarın."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,7 +1508,7 @@ msgstr "Silinmek üzere hiçbir gereksiz yükleme dosyası seçilmedi."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "İçerik çok büyükse normal dışa aktarım otomatik olarak bölünmüş pakete dönüşür. Bölünmüş paketler parts/ klasöründe içe aktarılabilir parça zipleri içerir; paketi çıkarın ve her parça zipini sırayla içe aktarın."
+msgstr "İçerik çok büyükse normal dışa aktarma otomatik olarak bölünmüş pakete dönüşür. Bölünmüş paketlerde parts/ klasörü altında içe aktarılabilir parça ZIP dosyaları bulunur; paketi çıkarın ve her parça ZIP dosyasını sırayla içe aktarın."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1544,7 +1544,7 @@ msgstr "Bekleyen güncellemeler yalnızca Yayınlandı olarak onaylanabilir veya
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
-msgstr "Lütfen içe aktarılacak bir .zip dosyası seçin."
+msgstr "İçe aktarmak için bir .zip dosyası seçin."
 
 #: synced from current templates/views
 msgid "Please review the admin comments, update your changes, and submit again."
@@ -1572,15 +1572,15 @@ msgstr "Arama sonuçları"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "%(part_name)s atlandı: parça 100 MB’den büyük. İçe aktarmadan önce çıkarıp yeniden bölün."
+msgstr "%(part_name)s atlandı: parça 100 MB'den büyük. İçe aktarmadan önce çıkarıp tekrar bölün."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "OpenKB içinde zaten bulunan yinelenen başlık atlandı: %(title)s"
+msgstr "OpenKB'de zaten bulunan yinelenen başlık atlandı: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "İçe aktarma zipindeki yinelenen başlık atlandı: %(title)s"
+msgstr "İçe aktarma ZIP dosyasındaki yinelenen başlık atlandı: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -1624,7 +1624,7 @@ msgstr "Güncelleme gönderilme zamanı"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "ve başvurulan tüm yüklenen dosyalar. Bekleyen güncelleme verileri, içe aktarmadan sonra veritabanı ve OpenKB dosyalarının senkron kalması için dahil edilir."
+msgstr "ve başvurulan tüm yüklenmiş dosyalar. İçe aktarmadan sonra veritabanı ile OpenKB dosyalarının senkron kalması için bekleyen güncelleme verileri dahil edilir."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -2130,3 +2130,43 @@ msgstr "Yükleme kullanıcı aracısı"
 
 msgid "Deleted by"
 msgstr "Silen"
+
+
+msgid "No articles were imported"
+msgstr "Hiçbir makale içe aktarılmadı"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "İçe aktarma sonucu, ana içe/dışa aktarma sayfasını kaplamaması için burada gösterilir."
+
+msgid "Import file"
+msgstr "İçe aktarma dosyası"
+
+msgid "File size"
+msgstr "Dosya boyutu"
+
+msgid "Imported articles"
+msgstr "İçe aktarılan makaleler"
+
+msgid "Warnings / errors"
+msgstr "Uyarılar / hatalar"
+
+msgid "Import details"
+msgstr "İçe aktarma ayrıntıları"
+
+msgid "Message"
+msgstr "Mesaj"
+
+msgid "Import completed without warnings or errors."
+msgstr "İçe aktarma uyarı veya hata olmadan tamamlandı."
+
+msgid "View articles"
+msgstr "Makaleleri görüntüle"
+
+msgid "Import failed"
+msgstr "İçe aktarma başarısız oldu"
+
+msgid "Import completed with warnings"
+msgstr "İçe aktarma uyarılarla tamamlandı"
+
+msgid "Import completed"
+msgstr "İçe aktarma tamamlandı"

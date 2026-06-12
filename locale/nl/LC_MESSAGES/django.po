@@ -1456,19 +1456,19 @@ msgstr "Gesplitst pakket exporteren"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "Als manifest.json ontbreekt, probeert de importfunctie alle Markdown-bestanden in het zipbestand te importeren. Voor gesplitste pakketten: pak het pakket uit en importeer elk deel-zipbestand één voor één."
+msgstr "Als manifest.json ontbreekt, probeert de importeur alle Markdown-bestanden in de ZIP te importeren. Pak bij gesplitste pakketten het pakket uit en importeer elke deel-ZIP één voor één."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
-msgstr "Importeren mislukt: %(error)s"
+msgstr "Import mislukt: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Het import-zipbestand is na uitpakken te groot. De maximaal toegestane ongecomprimeerde grootte is 200 MB."
+msgstr "Het import-ZIP-bestand is na het uitpakken te groot. De maximaal toegestane ongecomprimeerde grootte is 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Het import-zipbestand is te groot. De maximaal toegestane grootte is 100 MB. Voor gesplitste exports: pak het gesplitste pakket uit en importeer elk deel-zipbestand één voor één."
+msgstr "Het import-ZIP-bestand is te groot. De maximaal toegestane grootte is 100 MB. Pak bij gesplitste exports eerst het gesplitste pakket uit en importeer elke deel-ZIP één voor één."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1476,7 +1476,7 @@ msgstr "%(count)s artikel(en) geïmporteerd. Eigenaar ingesteld op %(username)s.
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Ongeldig zipbestand."
+msgstr "Ongeldig ZIP-bestand."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
@@ -1484,7 +1484,7 @@ msgstr "Grote exports kunnen worden gedownload als een gesplitst pakket:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maximale uploadgrootte: 100 MB per zip. Maximale ongecomprimeerde grootte: 200 MB. Voor gesplitste exports: pak eerst het gesplitste pakket uit en importeer daarna elk deel-zipbestand op volgorde."
+msgstr "Maximale uploadgrootte: 100 MB per ZIP. Maximale ongecomprimeerde grootte: 200 MB. Pak bij gesplitste exports eerst het gesplitste pakket uit en importeer daarna elke deel-ZIP in volgorde."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,7 +1508,7 @@ msgstr "Er zijn geen ongebruikte uploadbestanden geselecteerd voor verwijdering.
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Een normale export wordt automatisch een gesplitst pakket als de inhoud te groot is. Gesplitste pakketten bevatten importeerbare deel-zipbestanden in de map parts/; pak het pakket uit en importeer elk deel-zipbestand op volgorde."
+msgstr "Een normale export wordt automatisch een gesplitst pakket als de inhoud te groot is. Gesplitste pakketten bevatten importeerbare deel-ZIP-bestanden in de map parts/; pak het pakket uit en importeer elke deel-ZIP in volgorde."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1580,7 +1580,7 @@ msgstr "Dubbele titel die al in OpenKB bestaat overgeslagen: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Dubbele titel in import-zip overgeslagen: %(title)s"
+msgstr "Dubbele titel in import-ZIP overgeslagen: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -1624,7 +1624,7 @@ msgstr "Update ingediend op"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "en alle gekoppelde geüploade bestanden. Wachtende updategegevens zijn inbegrepen zodat de database en OpenKB-bestanden na import gesynchroniseerd blijven."
+msgstr "en alle gekoppelde geüploade bestanden. Gegevens van openstaande updates worden meegenomen zodat de database en OpenKB-bestanden na import gesynchroniseerd blijven."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -2130,3 +2130,43 @@ msgstr "Upload-useragent"
 
 msgid "Deleted by"
 msgstr "Verwijderd door"
+
+
+msgid "No articles were imported"
+msgstr "Er zijn geen artikelen geïmporteerd"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Het importresultaat wordt hier weergegeven zodat het de hoofdpagina voor import/export niet overneemt."
+
+msgid "Import file"
+msgstr "Importbestand"
+
+msgid "File size"
+msgstr "Bestandsgrootte"
+
+msgid "Imported articles"
+msgstr "Geïmporteerde artikelen"
+
+msgid "Warnings / errors"
+msgstr "Waarschuwingen / fouten"
+
+msgid "Import details"
+msgstr "Importdetails"
+
+msgid "Message"
+msgstr "Bericht"
+
+msgid "Import completed without warnings or errors."
+msgstr "De import is voltooid zonder waarschuwingen of fouten."
+
+msgid "View articles"
+msgstr "Artikelen bekijken"
+
+msgid "Import failed"
+msgstr "Import mislukt"
+
+msgid "Import completed with warnings"
+msgstr "Import voltooid met waarschuwingen"
+
+msgid "Import completed"
+msgstr "Import voltooid"

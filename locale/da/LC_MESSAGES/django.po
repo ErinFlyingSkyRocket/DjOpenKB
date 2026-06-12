@@ -1456,7 +1456,7 @@ msgstr "Eksportér opdelt pakke"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "Hvis manifest.json mangler, forsøger importfunktionen at importere alle Markdown-filer i zip-filen. For opdelte pakker skal pakken udpakkes, og hver del-zip importeres én efter én."
+msgstr "Hvis manifest.json mangler, forsøger importværktøjet at importere alle Markdown-filer, der findes i ZIP-filen. For opdelte pakker skal du udpakke pakken og importere hver del-ZIP én efter én."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
@@ -1464,11 +1464,11 @@ msgstr "Import mislykkedes: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Import-zippen er for stor efter udpakning. Maksimal tilladt udpakket størrelse er 200 MB."
+msgstr "Import-ZIP-filen er for stor efter udpakning. Den maksimalt tilladte ukomprimerede størrelse er 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Import-zippen er for stor. Maksimal tilladt størrelse er 100 MB. For opdelte eksporter skal du udpakke den opdelte pakke og importere hver del-zip én ad gangen."
+msgstr "Import-ZIP-filen er for stor. Den maksimalt tilladte størrelse er 100 MB. For opdelte eksporter skal du udpakke den opdelte pakke og importere hver del-ZIP én ad gangen."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1476,15 +1476,15 @@ msgstr "Importerede %(count)s artikel/artikler. Ejer sat til %(username)s."
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Ugyldig zip-fil."
+msgstr "Ugyldig ZIP-fil."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Store eksporter kan downloades som en opdelt pakke:"
+msgstr "Store eksporter kan blive downloadet som en opdelt pakke:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maksimal uploadstørrelse: 100 MB pr. zip. Maksimal udpakket størrelse: 200 MB. For opdelte eksporter skal du først udpakke den opdelte pakke og derefter importere hver del-zip i rækkefølge."
+msgstr "Maksimal uploadstørrelse: 100 MB pr. ZIP. Maksimal ukomprimeret størrelse: 200 MB. For opdelte eksporter skal du først udpakke den opdelte pakke og derefter importere hver del-ZIP i rækkefølge."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,7 +1508,7 @@ msgstr "Der blev ikke valgt nogen ubrugte uploadfiler til sletning."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Normal eksport bliver automatisk til en opdelt pakke, hvis indholdet er for stort. Opdelte pakker indeholder importerbare del-zipfiler i mappen parts/; udpak pakken og importér hver del-zip i rækkefølge."
+msgstr "En normal eksport bliver automatisk til en opdelt pakke, hvis indholdet er for stort. Opdelte pakker indeholder importérbare del-ZIP-filer under mappen parts/; udpak pakken, og importér hver del-ZIP i rækkefølge."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1544,7 +1544,7 @@ msgstr "Afventende opdateringer kan kun godkendes som publiceret eller markeres 
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
-msgstr "Vælg en .zip-fil til import."
+msgstr "Vælg en .zip-fil, der skal importeres."
 
 #: synced from current templates/views
 msgid "Please review the admin comments, update your changes, and submit again."
@@ -1580,7 +1580,7 @@ msgstr "Sprang dublettitel, der allerede findes i OpenKB, over: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Sprang dublettitel inde i import-zippen over: %(title)s"
+msgstr "Sprang dublettitel i import-ZIP over: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
@@ -1624,7 +1624,7 @@ msgstr "Opdatering indsendt den"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "og alle refererede uploadede filer. Afventende opdateringsdata er inkluderet, så databasen og OpenKB-filerne forbliver synkroniserede efter import."
+msgstr "og alle refererede uploadede filer. Afventende opdateringsdata medtages, så databasen og OpenKB-filerne forbliver synkroniserede efter import."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -2130,3 +2130,43 @@ msgstr "Upload-brugeragent"
 
 msgid "Deleted by"
 msgstr "Slettet af"
+
+
+msgid "No articles were imported"
+msgstr "Ingen artikler blev importeret"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Importresultatet vises her, så det ikke overtager hovedsiden for import/eksport."
+
+msgid "Import file"
+msgstr "Importfil"
+
+msgid "File size"
+msgstr "Filstørrelse"
+
+msgid "Imported articles"
+msgstr "Importerede artikler"
+
+msgid "Warnings / errors"
+msgstr "Advarsler / fejl"
+
+msgid "Import details"
+msgstr "Importdetaljer"
+
+msgid "Message"
+msgstr "Besked"
+
+msgid "Import completed without warnings or errors."
+msgstr "Importen blev fuldført uden advarsler eller fejl."
+
+msgid "View articles"
+msgstr "Vis artikler"
+
+msgid "Import failed"
+msgstr "Import mislykkedes"
+
+msgid "Import completed with warnings"
+msgstr "Import fuldført med advarsler"
+
+msgid "Import completed"
+msgstr "Import fuldført"

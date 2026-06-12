@@ -1456,7 +1456,7 @@ msgstr "Exporter un paquet fractionné"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "Si manifest.json est manquant, l’importateur essaiera d’importer tous les fichiers Markdown trouvés dans le ZIP. Pour les paquets fractionnés, extrayez le paquet puis importez chaque ZIP de partie un par un."
+msgstr "Si manifest.json est absent, l’outil d’importation tentera d’importer tous les fichiers Markdown trouvés dans le ZIP. Pour les paquets fractionnés, extrayez le paquet et importez chaque fichier ZIP de partie un par un."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
@@ -1464,11 +1464,11 @@ msgstr "Échec de l’importation : %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Le ZIP d’importation est trop volumineux après extraction. La taille non compressée maximale autorisée est de 200 MB."
+msgstr "Le fichier ZIP d’importation est trop volumineux après extraction. La taille maximale non compressée autorisée est de 200 Mo."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Le fichier ZIP d’importation est trop volumineux. La taille maximale autorisée est de 100 MB. Pour les exports fractionnés, extrayez le paquet fractionné puis importez chaque ZIP de partie un par un."
+msgstr "Le fichier ZIP d’importation est trop volumineux. La taille maximale autorisée est de 100 Mo. Pour les exportations fractionnées, extrayez le paquet fractionné puis importez chaque fichier ZIP de partie un par un."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
@@ -1480,11 +1480,11 @@ msgstr "Fichier ZIP non valide."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Les exports volumineux peuvent être téléchargés comme paquet fractionné :"
+msgstr "Les exportations volumineuses peuvent être téléchargées sous forme de paquet fractionné :"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Taille maximale de téléversement : 100 MB par ZIP. Taille maximale non compressée : 200 MB. Pour les exports fractionnés, extrayez d’abord le paquet fractionné, puis importez chaque ZIP de partie dans l’ordre."
+msgstr "Taille maximale de téléversement : 100 Mo par ZIP. Taille maximale non compressée : 200 Mo. Pour les exportations fractionnées, extrayez d’abord le paquet fractionné, puis importez chaque fichier ZIP de partie dans l’ordre."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1508,7 +1508,7 @@ msgstr "Aucun fichier téléversé inutilisé n’a été sélectionné pour sup
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "L’export normal devient automatiquement un paquet fractionné si le contenu est trop volumineux. Les paquets fractionnés contiennent des ZIP de parties importables dans le dossier parts/ ; extrayez le paquet et importez chaque ZIP de partie dans l’ordre."
+msgstr "Une exportation normale devient automatiquement un paquet fractionné si le contenu est trop volumineux. Les paquets fractionnés contiennent des fichiers ZIP de parties importables dans le dossier parts/ ; extrayez le paquet et importez chaque fichier ZIP de partie dans l’ordre."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1572,7 +1572,7 @@ msgstr "Résultats de recherche"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "%(part_name)s ignoré : cette partie dépasse 100 MB. Extrayez-la et fractionnez-la à nouveau avant l’importation."
+msgstr "%(part_name)s ignoré : cette partie dépasse 100 Mo. Extrayez-la et fractionnez-la de nouveau avant l’importation."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
@@ -2130,3 +2130,43 @@ msgstr "Agent utilisateur de téléversement"
 
 msgid "Deleted by"
 msgstr "Supprimé par"
+
+
+msgid "No articles were imported"
+msgstr "Aucun article n’a été importé"
+
+msgid "The import result is shown here so it does not take over the main import/export page."
+msgstr "Le résultat de l’importation s’affiche ici afin de ne pas encombrer la page principale d’importation/exportation."
+
+msgid "Import file"
+msgstr "Fichier d’importation"
+
+msgid "File size"
+msgstr "Taille du fichier"
+
+msgid "Imported articles"
+msgstr "Articles importés"
+
+msgid "Warnings / errors"
+msgstr "Avertissements / erreurs"
+
+msgid "Import details"
+msgstr "Détails de l’importation"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Import completed without warnings or errors."
+msgstr "L’importation s’est terminée sans avertissement ni erreur."
+
+msgid "View articles"
+msgstr "Voir les articles"
+
+msgid "Import failed"
+msgstr "Échec de l’importation"
+
+msgid "Import completed with warnings"
+msgstr "Importation terminée avec des avertissements"
+
+msgid "Import completed"
+msgstr "Importation terminée"
