@@ -789,9 +789,6 @@ class SiteSetting(models.Model):
         verbose_name_plural = _("Site settings")
 
     def __str__(self):
-        # __str__ must return a real Python str, not a lazy translation proxy.
-        # Returning gettext_lazy directly can cause a 500 error in Django Admin
-        # when the Site settings change page renders the object title.
         return str(_("Site settings"))
 
     def save(self, *args, **kwargs):

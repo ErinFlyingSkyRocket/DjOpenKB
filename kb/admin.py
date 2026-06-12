@@ -19,6 +19,166 @@ User = get_user_model()
 
 
 
+def _set_admin_model_label(model, singular, plural):
+    """Translate custom Django Admin model names at runtime without migrations."""
+    model._meta.verbose_name = _(singular)
+    model._meta.verbose_name_plural = _(plural)
+
+
+def _set_admin_field_label(model, field_name, label, help_text=None):
+    """Translate custom Django Admin field labels at runtime without migrations."""
+    try:
+        field = model._meta.get_field(field_name)
+    except Exception:
+        return
+    field.verbose_name = _(label)
+    if help_text is not None:
+        field.help_text = _(help_text)
+
+
+def _apply_admin_translation_labels():
+    """Keep admin labels translatable without altering database schema."""
+    _set_admin_model_label(UserProfile, "Main Site User Profile", "Main Site User Profiles")
+    _set_admin_model_label(UserMFADevice, "User MFA device", "User MFA devices")
+    _set_admin_model_label(AuthActivityLog, "Authentication activity log", "Authentication activity logs")
+    _set_admin_model_label(SuggestedArticle, "Suggested Article", "Suggested Articles")
+    _set_admin_model_label(ArticleVote, "Article vote", "Article votes")
+    _set_admin_model_label(SiteSetting, "Site setting", "Site settings")
+    _set_admin_model_label(ArticleImageUploadLog, "Article image upload log", "Article image upload logs")
+    _set_admin_model_label(ActivityLog, "Activity log", "Activity logs")
+
+    labels = {
+        UserProfile: {
+            "user": "User",
+            "account_type": "Account Type",
+            "auth_source": "Source",
+            "can_access_main_site": "Main Site Access",
+            "preferred_language": "Preferred language",
+            "notes": "Notes",
+            "created_at": "Created at",
+            "updated_at": "Updated at",
+        },
+        UserMFADevice: {
+            "user": "User",
+            "secret": "Authenticator key",
+            "confirmed": "Confirmed",
+            "created_at": "Created at",
+            "confirmed_at": "Confirmed at",
+            "last_verified_at": "Last verified at",
+            "reset_at": "Reset at",
+        },
+        AuthActivityLog: {
+            "created_at": "Created at",
+            "event_type": "Event type",
+            "success": "Success",
+            "user": "User",
+            "username": "Username",
+            "login_mode": "Login mode",
+            "ip_address": "IP address",
+            "user_agent": "User agent",
+            "path": "Path",
+            "request_method": "Request method",
+            "details": "Details",
+        },
+        ActivityLog: {
+            "created_at": "Created at",
+            "event_type": "Event type",
+            "user": "User",
+            "username": "Username",
+            "article": "Article",
+            "article_title": "Article title",
+            "article_status": "Article status",
+            "ip_address": "IP address",
+            "user_agent": "User agent",
+            "path": "Path",
+            "request_method": "Request method",
+            "details": "Details",
+        },
+        SuggestedArticle: {
+            "owner": "Owner",
+            "author_username_snapshot": "Author username snapshot",
+            "author_name_snapshot": "Author name snapshot",
+            "author_email_snapshot": "Author email snapshot",
+            "author_account_type_snapshot": "Author account type snapshot",
+            "title": "Article title",
+            "body": "Article body",
+            "keywords": "Keywords",
+            "status": "Status",
+            "approved_by": "Approved by",
+            "approved_at": "Approved at",
+            "review_notes": "Review notes",
+            "review_notes_history": "Review history",
+            "pending_update_title": "Pending update title",
+            "pending_update_body": "Pending update body",
+            "pending_update_keywords": "Pending update keywords",
+            "pending_update_image_assets": "Pending update image assets",
+            "update_status": "Update status",
+            "update_submitted_at": "Update submitted at",
+            "update_reviewed_at": "Update reviewed at",
+            "view_count": "View count",
+            "filename": "Filename",
+            "raw_path": "Raw path",
+            "wiki_path": "Wiki path",
+            "image_assets": "Image assets",
+            "created_at": "Created at",
+            "updated_at": "Updated at",
+        },
+        ArticleVote: {
+            "article": "Article",
+            "user": "User",
+            "value": "Vote",
+            "created_at": "Created at",
+            "updated_at": "Updated at",
+        },
+        ArticleImageUploadLog: {
+            "filename": "Filename",
+            "original_name": "Original name",
+            "content_type": "Content type",
+            "size_bytes": "Size bytes",
+            "uploaded_by": "Uploaded by",
+            "uploader_username_snapshot": "Uploader username snapshot",
+            "uploader_email_snapshot": "Uploader email snapshot",
+            "uploader_account_type_snapshot": "Uploader account type snapshot",
+            "upload_ip_address": "Upload IP address",
+            "upload_user_agent": "Upload user agent",
+            "uploaded_at": "Uploaded at",
+            "deleted_at": "Deleted at",
+            "deleted_by": "Deleted by",
+            "delete_reason": "Delete reason",
+        },
+        SiteSetting: {
+            "stray_upload_cleanup_min_age_minutes": "Stray upload cleanup minimum age (minutes)",
+            "article_image_upload_limit": "Article image upload limit",
+            "auth_activity_log_retention_days": "Authentication activity log retention (days)",
+            "session_timeout_days": "User session timeout (days)",
+            "activity_log_retention_days": "General activity log retention (days)",
+            "admin_log_rows_per_page": "Admin log rows per page",
+            "updated_at": "Updated at",
+        },
+    }
+
+    help_texts = {
+        (UserProfile, "account_type"): "Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
+        (UserProfile, "auth_source"): "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory.",
+        (UserProfile, "can_access_main_site"): "Untick this to block the user from accessing the main wiki site.",
+        (UserProfile, "preferred_language"): "Preferred language for the main wiki user interface.",
+        (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
+        (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
+        (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
+        (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
+        (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely.",
+        (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
+    }
+
+    for model, field_labels in labels.items():
+        for field_name, label in field_labels.items():
+            _set_admin_field_label(model, field_name, label, help_texts.get((model, field_name)))
+
+
+_apply_admin_translation_labels()
+
+
+
 def get_admin_log_rows_per_page():
     """Return admin log row count from Site settings with safe bounds."""
     try:
@@ -215,9 +375,10 @@ class UserAdmin(DefaultUserAdmin):
 
     def mfa_status_display(self, obj):
         status = mfa_status_label(obj)
-        if status == "Configured":
+        status_text = str(status)
+        if status_text == str(_("Configured")):
             return format_html('<span style="color:#0a7a2f;font-weight:600;">{}</span>', status)
-        if status == "Setup pending":
+        if status_text == str(_("Setup pending")):
             return format_html('<span style="color:#a15c00;font-weight:600;">{}</span>', status)
         return format_html('<span style="color:#8a1f11;font-weight:600;">{}</span>', status)
 
@@ -932,6 +1093,11 @@ class ArticleImageUploadLogAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def uploader_display(self, obj):
+        return obj.uploader_display or "-"
+
+    uploader_display.short_description = _("Uploader display")
 
     def size_kb(self, obj):
         return round((obj.size_bytes or 0) / 1024, 1)

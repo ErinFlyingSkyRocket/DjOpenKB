@@ -1812,3 +1812,340 @@ msgstr "删除原因"
 
 msgid "Article status"
 msgstr "文章状态"
+
+msgid "Account Type"
+msgstr "账户类型"
+
+msgid "Source"
+msgstr "来源"
+
+msgid "Main Site Access"
+msgstr "主站点访问权限"
+
+msgid "MFA Status"
+msgstr "MFA 状态"
+
+msgid "MFA Reset"
+msgstr "MFA 重置"
+
+msgid "Authenticator key"
+msgstr "身份验证器密钥"
+
+msgid "Review history"
+msgstr "审核历史"
+
+msgid "Uploader display"
+msgstr "上传者显示名称"
+
+msgid "Size (KB)"
+msgstr "大小 (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "域账户密码由 Active Directory 管理，不能从 Django 管理后台更改。"
+
+msgid "Blocked"
+msgstr "已阻止"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "未加密。请重置此用户的 MFA 设备，并要求用户重新设置 MFA。"
+
+msgid "Allowed"
+msgstr "已允许"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "重置此用户的身份验证器，并要求重新扫描二维码进行设置。新的身份验证器密钥属于私密信息，不会向管理员显示。"
+
+msgid "Reset MFA for selected users"
+msgstr "重置所选用户的 MFA"
+
+msgid "Allow selected users to access main site"
+msgstr "允许所选用户访问主站点"
+
+msgid "Block selected users from main site"
+msgstr "阻止所选用户访问主站点"
+
+msgid "Set selected users as User"
+msgstr "将所选用户设为普通用户"
+
+msgid "Set selected users as Admin"
+msgstr "将所选用户设为管理员"
+
+msgid "Set selected users as LDAP user"
+msgstr "将所选用户设为 LDAP 用户"
+
+msgid "Set selected users as LDAP admin"
+msgstr "将所选用户设为 LDAP 管理员"
+
+msgid "Not set"
+msgstr "未设置"
+
+msgid "Encrypted and hidden"
+msgstr "已加密并隐藏"
+
+msgid "Reset this user's MFA"
+msgstr "重置此用户的 MFA"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "重置会生成新的私密身份验证器密钥，并强制用户重新设置。"
+
+msgid "Reset selected MFA devices"
+msgstr "重置所选 MFA 设备"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "将所选 MFA 设备标记为待设置"
+
+msgid "OpenKB files"
+msgstr "OpenKB 文件"
+
+msgid "Article statistics"
+msgstr "文章统计"
+
+msgid "Author snapshot"
+msgstr "作者快照"
+
+msgid "Timestamps"
+msgstr "时间戳"
+
+msgid "Approve selected pending articles"
+msgstr "批准所选待审核文章"
+
+msgid "Mark selected articles as pending failed"
+msgstr "将所选文章标记为审核未通过"
+
+msgid "Like"
+msgstr "赞"
+
+msgid "Dislike"
+msgstr "踩"
+
+msgid "Article upload limits"
+msgstr "文章上传限制"
+
+msgid "Stray upload cleanup"
+msgstr "未使用上传文件清理"
+
+msgid "Authentication and session settings"
+msgstr "身份验证与会话设置"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "域用户密码由 Active Directory 管理。"
+
+msgid "User does not exist."
+msgstr "用户不存在。"
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "管理员已将其标记为审核未通过。请检查此文章并重新提交审核。"
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "控制每篇文章可包含的粘贴/上传图片数量。默认值为 50。设置为 0 可禁用文章图片上传。"
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "控制“我的资料 → 管理工具 → 清理未使用上传文件”使用的最小文件时间。设置为 0 可立即显示文件。"
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "控制身份验证/MFA 日志、一般活动日志、管理日志每页显示行数以及用户会话有效期。默认日志保留 30 天。管理日志表默认每页显示 200 行。将会话超时设置为 0 可在浏览器关闭时使会话过期。"
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "使用此部分重置用户的身份验证器设置。重置会生成新的私密身份验证器密钥，并强制用户在下次登录时扫描新的二维码。"
+
+msgid "Deleted user"
+msgstr "已删除用户"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "管理员/LDAP 管理员账户在启用员工状态后可以访问 Django 管理后台。"
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "控制密码是由 DjOpenKB 本地管理，还是由 Active Directory 外部管理。"
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "取消勾选可阻止用户访问主知识库站点。"
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "主知识库用户界面的首选语言。"
+
+msgid "deleted-user"
+msgstr "已删除用户"
+
+msgid "unknown user"
+msgstr "未知用户"
+
+msgid "Article created"
+msgstr "文章已创建"
+
+msgid "Article updated"
+msgstr "文章已更新"
+
+msgid "Article deleted"
+msgstr "文章已删除"
+
+msgid "Article status changed"
+msgstr "文章状态已更改"
+
+msgid "Article submitted for approval"
+msgstr "文章已提交审核"
+
+msgid "Article approved/published"
+msgstr "文章已批准/发布"
+
+msgid "Article marked pending failed"
+msgstr "文章已标记为审核未通过"
+
+msgid "Orphan article assigned"
+msgstr "孤立文章已分配"
+
+msgid "Orphan article deleted"
+msgstr "孤立文章已删除"
+
+msgid "Article viewed"
+msgstr "文章已查看"
+
+msgid "Article vote up"
+msgstr "文章点赞"
+
+msgid "Article vote down"
+msgstr "文章点踩"
+
+msgid "Article vote changed"
+msgstr "文章投票已更改"
+
+msgid "Article vote removed"
+msgstr "文章投票已移除"
+
+msgid "Article image uploaded"
+msgstr "文章图片已上传"
+
+msgid "Article image deleted"
+msgstr "文章图片已删除"
+
+msgid "OpenKB AI question"
+msgstr "OpenKB AI 问题"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI 已限流"
+
+msgid "Bulk article import"
+msgstr "批量文章导入"
+
+msgid "Admin tool action"
+msgstr "管理工具操作"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "未使用上传文件清理最小时间（分钟）"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "未使用上传文件清理工具会忽略比此分钟数更新的文件。默认值为 1440 分钟（24 小时），以避免删除用户正在撰写文章时使用的图片。设置为 0 可立即检测/删除未使用上传文件。"
+
+msgid "Authentication activity log retention (days)"
+msgstr "身份验证活动日志保留时间（天）"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "清理命令可以删除超过此天数的身份验证/MFA 监控日志。设置为 0 可永久保留身份验证活动日志。"
+
+msgid "User session timeout (days)"
+msgstr "用户会话超时（天）"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "已认证用户会话会在登录后经过此天数后过期。过期后，用户会被登出并必须重新登录。设置为 0 可在浏览器关闭时使会话过期。"
+
+msgid "General activity log retention (days)"
+msgstr "一般活动日志保留时间（天）"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "清理命令可以删除超过此天数的文章/投票/图片/管理工具活动日志。设置为 0 可永久保留一般活动日志。"
+
+msgid "Admin log rows per page"
+msgstr "管理日志每页行数"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Django 管理后台日志表每页显示的行数。建议范围：50 到 500。默认值为 200。"
+
+msgid "anonymous"
+msgstr "匿名"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "你即将重置用户 <strong>{{ username }}</strong> 的 MFA。"
+
+msgid "Notes"
+msgstr "备注"
+
+msgid "Confirmed"
+msgstr "已确认"
+
+msgid "Confirmed at"
+msgstr "确认时间"
+
+msgid "Last verified at"
+msgstr "最后验证时间"
+
+msgid "Reset at"
+msgstr "重置时间"
+
+msgid "Event type"
+msgstr "事件类型"
+
+msgid "Success"
+msgstr "成功"
+
+msgid "Login mode"
+msgstr "登录模式"
+
+msgid "IP address"
+msgstr "IP 地址"
+
+msgid "Request method"
+msgstr "请求方法"
+
+msgid "Details"
+msgstr "详情"
+
+msgid "Owner"
+msgstr "所有者"
+
+msgid "Author username snapshot"
+msgstr "作者用户名快照"
+
+msgid "Author name snapshot"
+msgstr "作者姓名快照"
+
+msgid "Author email snapshot"
+msgstr "作者邮箱快照"
+
+msgid "Author account type snapshot"
+msgstr "作者账户类型快照"
+
+msgid "Article body"
+msgstr "文章正文"
+
+msgid "Review notes"
+msgstr "审核备注"
+
+msgid "Raw path"
+msgstr "原始路径"
+
+msgid "Wiki path"
+msgstr "知识库路径"
+
+msgid "Image assets"
+msgstr "图片资源"
+
+msgid "Update status"
+msgstr "更新状态"
+
+msgid "Uploader username snapshot"
+msgstr "上传者用户名快照"
+
+msgid "Uploader email snapshot"
+msgstr "上传者邮箱快照"
+
+msgid "Uploader account type snapshot"
+msgstr "上传者账户类型快照"
+
+msgid "Upload IP address"
+msgstr "上传 IP 地址"
+
+msgid "Upload user agent"
+msgstr "上传用户代理"
+
+msgid "Deleted by"
+msgstr "删除者"
+
