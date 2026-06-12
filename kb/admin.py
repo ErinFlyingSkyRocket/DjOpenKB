@@ -1094,6 +1094,12 @@ class ArticleImageUploadLogAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     def uploader_display(self, obj):
         return obj.uploader_display or "-"
 

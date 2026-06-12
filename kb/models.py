@@ -180,7 +180,27 @@ class UserMFADevice(models.Model):
         self.save(update_fields=["last_verified_at"])
 
 
-class AuthActivityLog(models.Model):
+class AppendOnlyAuditLogMixin:
+    """Application-level guard for audit log rows.
+
+    Log records may be inserted, but existing records must not be edited or
+    manually deleted. Retention cleanup uses database-level protection so that
+    scheduled deletion of expired logs can still run according to Site settings.
+    """
+
+    immutable_update_message = _("Audit log records are append-only and cannot be edited.")
+    immutable_delete_message = _("Audit log records cannot be manually deleted. They are removed only by retention cleanup.")
+
+    def save(self, *args, **kwargs):
+        if self.pk and not self._state.adding:
+            raise ValidationError(self.immutable_update_message)
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        raise ValidationError(self.immutable_delete_message)
+
+
+class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
     """Security/audit events for login and MFA monitoring.
 
     This is used by admins to spot repeated failed password attempts, repeated
@@ -644,18 +664,23 @@ class ArticleImageUploadLog(models.Model):
             self.uploader_account_type_snapshot = ""
 
     def save(self, *args, **kwargs):
+        if self.pk and not self._state.adding:
+            raise ValidationError(_("Article image upload log records are append-only and cannot be edited."))
         if self.uploaded_by:
             self.snapshot_uploader()
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        raise ValidationError(_("Article image upload log records cannot be manually deleted."))
+
     def mark_deleted(self, actor=None, reason=""):
-        self.deleted_at = timezone.now()
-        self.deleted_by = actor if getattr(actor, "pk", None) else None
-        self.delete_reason = reason or ""
-        self.save(update_fields=["deleted_at", "deleted_by", "delete_reason"])
+        # Kept as a no-op compatibility method. This model is now append-only;
+        # image deletion events are recorded as separate ActivityLog rows instead
+        # of editing the original upload log row.
+        return None
 
 
-class ActivityLog(models.Model):
+class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
     """General admin audit/activity log for non-authentication actions.
 
     Authentication and MFA events stay in AuthActivityLog. This table tracks

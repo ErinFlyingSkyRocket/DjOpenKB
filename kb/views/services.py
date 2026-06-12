@@ -606,20 +606,42 @@ def get_article_image_upload_log(filename):
         return None
 
 
-def mark_article_image_deleted(filename, actor=None, reason=""):
-    """Best-effort audit update when an uploaded article image is deleted."""
+def mark_article_image_deleted(filename, actor=None, reason="", record_activity=True):
+    """Record image deletion without editing the original upload log.
+
+    ArticleImageUploadLog is append-only and records the upload event. Deletion
+    events are appended into ActivityLog instead of updating deleted_at/delete_reason
+    on the original upload row. Views that already call log_activity() can pass
+    record_activity=False to avoid duplicate ActivityLog rows.
+    """
     filename = safe_uploaded_filename(filename)
     if not filename:
         return
 
+    logger.info(
+        "Article image deletion noted without editing append-only upload log: filename=%s actor=%s reason=%s",
+        filename,
+        getattr(actor, "pk", None),
+        reason or "",
+    )
+
+    if not record_activity:
+        return
+
     try:
-        ArticleImageUploadLog.objects.filter(filename=filename, deleted_at__isnull=True).update(
-            deleted_at=timezone.now(),
-            deleted_by=actor if getattr(actor, "pk", None) else None,
-            delete_reason=reason or "",
+        actor_is_authenticated = bool(getattr(actor, "is_authenticated", False))
+        ActivityLog.objects.create(
+            event_type=ActivityLog.EventType.IMAGE_DELETED,
+            user=actor if actor_is_authenticated else None,
+            username=actor.get_username() if actor_is_authenticated else "",
+            details={
+                "filename": filename,
+                "reason": reason or "",
+                "source": "append_only_image_delete_marker",
+            },
         )
     except Exception:
-        logger.exception("Unable to mark article image upload log as deleted for %s", filename)
+        logger.exception("Unable to append image deletion ActivityLog for %s", filename)
 
 def find_stray_uploaded_files(min_age_minutes=1440):
     """Return uploaded files that are not referenced anywhere.

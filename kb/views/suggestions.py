@@ -618,6 +618,7 @@ def delete_article_image(request):
             filename,
             actor=request.user,
             reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+            record_activity=False,
         )
         log_activity(
             request,

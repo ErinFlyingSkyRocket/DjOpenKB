@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import connection, transaction
 from django.utils import timezone
 
 from kb.models import AuthActivityLog, SiteSetting
@@ -73,5 +74,9 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING("Cleanup cancelled."))
                 return
 
-        deleted, _detail = queryset.delete()
+        with transaction.atomic():
+            with connection.cursor() as cursor:
+                cursor.execute("SET LOCAL djopenkb.audit_retention_cleanup = 'on'")
+            deleted, _detail = queryset.delete()
+
         self.stdout.write(self.style.SUCCESS(f"Deleted {deleted} old authentication activity log row(s)."))
