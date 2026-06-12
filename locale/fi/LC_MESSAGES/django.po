@@ -1755,58 +1755,378 @@ msgstr "Käyttäjän MFA-laitteet"
 # DjOpenKB admin field translation sync
 
 msgid "Authentication and Authorization"
-msgstr "Todennus ja valtuutus"
-
+msgstr "Tunnistautuminen ja valtuutus"
 msgid "Original name"
 msgstr "Alkuperäinen nimi"
-
 msgid "Content type"
 msgstr "Sisältötyyppi"
-
 msgid "Size bytes"
 msgstr "Koko tavuina"
-
 msgid "User agent"
-msgstr "Käyttäjäagentti"
-
+msgstr "User-Agent"
 msgid "Path"
 msgstr "Polku"
-
 msgid "Vote"
 msgstr "Ääni"
-
 msgid "Configured"
 msgstr "Määritetty"
-
 msgid "Setup pending"
 msgstr "Määritys odottaa"
-
 msgid "Not set up"
 msgstr "Ei määritetty"
-
 msgid "Not required"
 msgstr "Ei vaadita"
-
 msgid "Authentication source"
-msgstr "Todennuslähde"
-
+msgstr "Tunnistautumisen lähde"
 msgid "Can access main site"
 msgstr "Voi käyttää pääsivustoa"
-
 msgid "Preferred language"
 msgstr "Ensisijainen kieli"
-
 msgid "Created at"
 msgstr "Luotu"
-
 msgid "Updated at"
 msgstr "Päivitetty"
-
 msgid "Deleted at"
 msgstr "Poistettu"
-
 msgid "Delete reason"
 msgstr "Poiston syy"
-
 msgid "Article status"
 msgstr "Artikkelin tila"
+
+# DjOpenKB admin i18n sync batch 6
+
+msgid "Account Type"
+msgstr "Tilin tyyppi"
+
+msgid "Source"
+msgstr "Lähde"
+
+msgid "Main Site Access"
+msgstr "Pääsivuston käyttöoikeus"
+
+msgid "MFA Status"
+msgstr "MFA-tila"
+
+msgid "MFA Reset"
+msgstr "MFA:n nollaus"
+
+msgid "Authenticator key"
+msgstr "Todennussovelluksen avain"
+
+msgid "Review history"
+msgstr "Tarkistushistoria"
+
+msgid "Uploader display"
+msgstr "Lataajan näyttönimi"
+
+msgid "Size (KB)"
+msgstr "Koko (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Toimialueen salasanaa hallitaan Active Directoryssä, eikä sitä voi muuttaa Django-ylläpidosta."
+
+msgid "Blocked"
+msgstr "Estetty"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Ei salattu. Nollaa tämän käyttäjän MFA-laite ja pyydä käyttäjää määrittämään MFA uudelleen."
+
+msgid "Allowed"
+msgstr "Sallittu"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Nollaa tämän käyttäjän todennussovelluksen ja vaatii uuden QR-määrityksen. Uusi todennusavain on yksityinen eikä sitä näytetä ylläpitäjille."
+
+msgid "Reset MFA for selected users"
+msgstr "Nollaa valittujen käyttäjien MFA"
+
+msgid "Allow selected users to access main site"
+msgstr "Salli valittujen käyttäjien käyttää pääsivustoa"
+
+msgid "Block selected users from main site"
+msgstr "Estä valittuja käyttäjiä käyttämästä pääsivustoa"
+
+msgid "Set selected users as User"
+msgstr "Aseta valitut käyttäjät käyttäjiksi"
+
+msgid "Set selected users as Admin"
+msgstr "Aseta valitut käyttäjät ylläpitäjiksi"
+
+msgid "Set selected users as LDAP user"
+msgstr "Aseta valitut käyttäjät LDAP-käyttäjiksi"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Aseta valitut käyttäjät LDAP-ylläpitäjiksi"
+
+msgid "Not set"
+msgstr "Ei asetettu"
+
+msgid "Encrypted and hidden"
+msgstr "Salattu ja piilotettu"
+
+msgid "Reset this user's MFA"
+msgstr "Nollaa tämän käyttäjän MFA"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Nollaus luo uuden yksityisen todennusavaimen ja pakottaa määrityksen uudelleen."
+
+msgid "Reset selected MFA devices"
+msgstr "Nollaa valitut MFA-laitteet"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Merkitse valitut MFA-laitteet määritystä odottaviksi"
+
+msgid "OpenKB files"
+msgstr "OpenKB-tiedostot"
+
+msgid "Article statistics"
+msgstr "Artikkelin tilastot"
+
+msgid "Author snapshot"
+msgstr "Tekijän tilannevedos"
+
+msgid "Timestamps"
+msgstr "Aikaleimat"
+
+msgid "Approve selected pending articles"
+msgstr "Hyväksy valitut odottavat artikkelit"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Merkitse valitut artikkelit epäonnistuneiksi odottaviksi"
+
+msgid "Like"
+msgstr "Tykkää"
+
+msgid "Dislike"
+msgstr "En tykkää"
+
+msgid "Article upload limits"
+msgstr "Artikkelien latausrajat"
+
+msgid "Stray upload cleanup"
+msgstr "Orpojen latausten siivous"
+
+msgid "Authentication and session settings"
+msgstr "Tunnistautumis- ja istuntoasetukset"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Toimialuekäyttäjien salasanoja hallitaan Active Directoryssä."
+
+msgid "User does not exist."
+msgstr "Käyttäjää ei ole olemassa."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Ylläpitäjä merkitsi tämän epäonnistuneeksi odottavaksi. Tarkista artikkeli ja lähetä se uudelleen hyväksyttäväksi."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Määrittää, kuinka monta liitettyä/lähetettyä kuvaa kukin artikkeli saa sisältää. Oletus on 50. Aseta arvoksi 0 poistaaksesi artikkelikuvien lataukset käytöstä."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Määrittää vähimmäisiän, jota käytetään kohdassa Oma profiili → Ylläpitotyökalut → Siivoa orvot lataustiedostot. Käytä arvoa 0 näyttääksesi tiedostot heti."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Hallitsee tunnistautumis-/MFA-lokeja, yleisiä toimintalokeja, ylläpitolokien rivimäärää ja käyttäjäistunnon kestoa. Lokien oletussäilytysaika on 30 päivää. Ylläpitolokien taulukot näyttävät oletuksena 200 riviä sivulla. Aseta istunnon aikakatkaisu arvoon 0, jotta istunto päättyy selaimen sulkeutuessa."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Käytä tätä osiota nollataksesi käyttäjän todennussovelluksen määrityksen. Nollaus luo uuden yksityisen todennussalaisuuden ja pakottaa käyttäjän skannaamaan uuden QR-koodin seuraavalla kirjautumisella."
+
+msgid "Deleted user"
+msgstr "Poistettu käyttäjä"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Ylläpitäjä-/LDAP-ylläpitäjätilit voivat käyttää Django-ylläpitoa, kun henkilöstötila on käytössä."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Määrittää, hallitaanko salasanaa paikallisesti DjOpenKB:ssä vai ulkoisesti Active Directoryssä."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Poista valinta estääksesi käyttäjää käyttämästä pääwiki-sivustoa."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Pääwikin käyttöliittymän ensisijainen kieli."
+
+msgid "deleted-user"
+msgstr "poistettu-käyttäjä"
+
+msgid "unknown user"
+msgstr "tuntematon käyttäjä"
+
+msgid "Article created"
+msgstr "Artikkeli luotu"
+
+msgid "Article updated"
+msgstr "Artikkeli päivitetty"
+
+msgid "Article deleted"
+msgstr "Artikkeli poistettu"
+
+msgid "Article status changed"
+msgstr "Artikkelin tila muutettu"
+
+msgid "Article submitted for approval"
+msgstr "Artikkeli lähetetty hyväksyttäväksi"
+
+msgid "Article approved/published"
+msgstr "Artikkeli hyväksytty/julkaistu"
+
+msgid "Article marked pending failed"
+msgstr "Artikkeli merkitty epäonnistuneeksi odottavaksi"
+
+msgid "Orphan article assigned"
+msgstr "Orpo artikkeli osoitettu"
+
+msgid "Orphan article deleted"
+msgstr "Orpo artikkeli poistettu"
+
+msgid "Article viewed"
+msgstr "Artikkeli katsottu"
+
+msgid "Article vote up"
+msgstr "Artikkelin plusääni"
+
+msgid "Article vote down"
+msgstr "Artikkelin miinusääni"
+
+msgid "Article vote changed"
+msgstr "Artikkelin ääni muutettu"
+
+msgid "Article vote removed"
+msgstr "Artikkelin ääni poistettu"
+
+msgid "Article image uploaded"
+msgstr "Artikkelin kuva ladattu"
+
+msgid "Article image deleted"
+msgstr "Artikkelin kuva poistettu"
+
+msgid "OpenKB AI question"
+msgstr "OpenKB AI -kysymys"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI rajoitettu nopeusrajoituksella"
+
+msgid "Bulk article import"
+msgstr "Artikkelien massatuonti"
+
+msgid "Admin tool action"
+msgstr "Ylläpitotyökalun toiminto"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Orpojen latausten siivouksen vähimmäisikä (minuuttia)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Tätä minuuttimäärää uudemmat tiedostot ohitetaan orpojen latausten siivoustyökalussa. Oletus on 1440 minuuttia (24 tuntia), jotta kuvia ei poisteta käyttäjien luonnostellessa artikkeleita. Aseta arvoon 0 havaitaksesi/poistaaksesi orvot lataukset heti."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Tunnistautumistoimintalokin säilytys (päivää)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Tunnistautumis-/MFA-valvontalokit, jotka ovat tätä päivämäärää vanhempia, voidaan poistaa siivouskomennolla. Käytä arvoa 0 säilyttääksesi tunnistautumistoimintalokit pysyvästi."
+
+msgid "User session timeout (days)"
+msgstr "Käyttäjäistunnon aikakatkaisu (päivää)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Tunnistautuneiden käyttäjien istunnot vanhenevat tämän monen päivän kuluttua kirjautumisesta. Vanhentumisen jälkeen käyttäjät kirjataan ulos ja heidän on kirjauduttava uudelleen. Aseta arvoon 0, jotta istunto vanhenee selaimen sulkeutuessa."
+
+msgid "General activity log retention (days)"
+msgstr "Yleisen toimintalokin säilytys (päivää)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Artikkeli-/ääni-/kuva-/ylläpitotyökalujen toimintalokit, jotka ovat tätä päivämäärää vanhempia, voidaan poistaa siivouskomennolla. Käytä arvoa 0 säilyttääksesi yleiset toimintalokit pysyvästi."
+
+msgid "Admin log rows per page"
+msgstr "Ylläpitolokin rivejä sivulla"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Rivien määrä, joka näytetään sivulla Django Admin -lokitaulukoissa. Suositeltu alue: 50–500. Oletus on 200."
+
+msgid "anonymous"
+msgstr "anonyymi"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "Olet nollaamassa käyttäjän <strong>{{ username }}</strong> MFA:n."
+
+msgid "Notes"
+msgstr "Muistiinpanot"
+
+msgid "Confirmed"
+msgstr "Vahvistettu"
+
+msgid "Confirmed at"
+msgstr "Vahvistettu"
+
+msgid "Last verified at"
+msgstr "Viimeksi vahvistettu"
+
+msgid "Reset at"
+msgstr "Nollattu"
+
+msgid "Event type"
+msgstr "Tapahtumatyyppi"
+
+msgid "Success"
+msgstr "Onnistui"
+
+msgid "Login mode"
+msgstr "Kirjautumistila"
+
+msgid "IP address"
+msgstr "IP-osoite"
+
+msgid "Request method"
+msgstr "Pyyntömenetelmä"
+
+msgid "Details"
+msgstr "Tiedot"
+
+msgid "Owner"
+msgstr "Omistaja"
+
+msgid "Author username snapshot"
+msgstr "Tekijän käyttäjänimen tilannevedos"
+
+msgid "Author name snapshot"
+msgstr "Tekijän nimen tilannevedos"
+
+msgid "Author email snapshot"
+msgstr "Tekijän sähköpostin tilannevedos"
+
+msgid "Author account type snapshot"
+msgstr "Tekijän tilityypin tilannevedos"
+
+msgid "Article body"
+msgstr "Artikkelin sisältö"
+
+msgid "Review notes"
+msgstr "Tarkistusmuistiinpanot"
+
+msgid "Raw path"
+msgstr "Raakapolku"
+
+msgid "Wiki path"
+msgstr "Wiki-polku"
+
+msgid "Image assets"
+msgstr "Kuvasisällöt"
+
+msgid "Update status"
+msgstr "Päivityksen tila"
+
+msgid "Uploader username snapshot"
+msgstr "Lataajan käyttäjänimen tilannevedos"
+
+msgid "Uploader email snapshot"
+msgstr "Lataajan sähköpostin tilannevedos"
+
+msgid "Uploader account type snapshot"
+msgstr "Lataajan tilityypin tilannevedos"
+
+msgid "Upload IP address"
+msgstr "Latauksen IP-osoite"
+
+msgid "Upload user agent"
+msgstr "Latauksen User-Agent"
+
+msgid "Deleted by"
+msgstr "Poistaja"

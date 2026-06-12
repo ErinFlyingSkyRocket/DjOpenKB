@@ -1807,3 +1807,260 @@ msgstr "Delete reason"
 
 msgid "Article status"
 msgstr "Article status"
+
+# DjOpenKB admin i18n sync batch 9 - English fallback
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "A reset generates a fresh private authenticator key and forces setup again."
+
+msgid "Account Type"
+msgstr "Account Type"
+
+msgid "Admin log rows per page"
+msgstr "Admin log rows per page"
+
+msgid "Admin tool action"
+msgstr "Admin tool action"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+
+msgid "Allow selected users to access main site"
+msgstr "Allow selected users to access main site"
+
+msgid "Allowed"
+msgstr "Allowed"
+
+msgid "Approve selected pending articles"
+msgstr "Approve selected pending articles"
+
+msgid "Article approved/published"
+msgstr "Article approved/published"
+
+msgid "Article created"
+msgstr "Article created"
+
+msgid "Article deleted"
+msgstr "Article deleted"
+
+msgid "Article image deleted"
+msgstr "Article image deleted"
+
+msgid "Article image uploaded"
+msgstr "Article image uploaded"
+
+msgid "Article marked pending failed"
+msgstr "Article marked pending failed"
+
+msgid "Article statistics"
+msgstr "Article statistics"
+
+msgid "Article status changed"
+msgstr "Article status changed"
+
+msgid "Article submitted for approval"
+msgstr "Article submitted for approval"
+
+msgid "Article updated"
+msgstr "Article updated"
+
+msgid "Article upload limits"
+msgstr "Article upload limits"
+
+msgid "Article viewed"
+msgstr "Article viewed"
+
+msgid "Article vote changed"
+msgstr "Article vote changed"
+
+msgid "Article vote down"
+msgstr "Article vote down"
+
+msgid "Article vote removed"
+msgstr "Article vote removed"
+
+msgid "Article vote up"
+msgstr "Article vote up"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Authentication activity log retention (days)"
+
+msgid "Authentication and session settings"
+msgstr "Authentication and session settings"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+
+msgid "Authenticator key"
+msgstr "Authenticator key"
+
+msgid "Author snapshot"
+msgstr "Author snapshot"
+
+msgid "Block selected users from main site"
+msgstr "Block selected users from main site"
+
+msgid "Blocked"
+msgstr "Blocked"
+
+msgid "Bulk article import"
+msgstr "Bulk article import"
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+
+msgid "Deleted user"
+msgstr "Deleted user"
+
+msgid "Dislike"
+msgstr "Dislike"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Domain password is managed in Active Directory and cannot be changed from Django admin."
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Domain user passwords are managed in Active Directory."
+
+msgid "Encrypted and hidden"
+msgstr "Encrypted and hidden"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+
+msgid "General activity log retention (days)"
+msgstr "General activity log retention (days)"
+
+msgid "Like"
+msgstr "Like"
+
+msgid "MFA Reset"
+msgstr "MFA Reset"
+
+msgid "MFA Status"
+msgstr "MFA Status"
+
+msgid "Main Site Access"
+msgstr "Main Site Access"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Mark selected MFA devices as setup pending"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Mark selected articles as pending failed"
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+
+msgid "Not set"
+msgstr "Not set"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+
+msgid "OpenKB AI question"
+msgstr "OpenKB AI question"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI rate limited"
+
+msgid "OpenKB files"
+msgstr "OpenKB files"
+
+msgid "Orphan article assigned"
+msgstr "Orphan article assigned"
+
+msgid "Orphan article deleted"
+msgstr "Orphan article deleted"
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Preferred language for the main wiki user interface."
+
+msgid "Reset MFA for selected users"
+msgstr "Reset MFA for selected users"
+
+msgid "Reset selected MFA devices"
+msgstr "Reset selected MFA devices"
+
+msgid "Reset this user's MFA"
+msgstr "Reset this user's MFA"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+
+msgid "Review history"
+msgstr "Review history"
+
+msgid "Set selected users as Admin"
+msgstr "Set selected users as Admin"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Set selected users as LDAP admin"
+
+msgid "Set selected users as LDAP user"
+msgstr "Set selected users as LDAP user"
+
+msgid "Set selected users as User"
+msgstr "Set selected users as User"
+
+msgid "Size (KB)"
+msgstr "Size (KB)"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Stray upload cleanup"
+msgstr "Stray upload cleanup"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Stray upload cleanup minimum age (minutes)"
+
+msgid "Timestamps"
+msgstr "Timestamps"
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Untick this to block the user from accessing the main wiki site."
+
+msgid "Use this section to reset a user's authenticator setup."
+msgstr "Use this section to reset a user's authenticator setup."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+
+msgid "User does not exist."
+msgstr "User does not exist."
+
+msgid "User session timeout (days)"
+msgstr "User session timeout (days)"
+
+msgid "anonymous"
+msgstr "anonymous"
+
+msgid "deleted-user"
+msgstr "deleted-user"
+
+msgid "unknown user"
+msgstr "unknown user"
+
+msgid "DjOpenKB administration"
+msgstr "DjOpenKB administration"
+
+msgid "Django administration"
+msgstr "Django administration"

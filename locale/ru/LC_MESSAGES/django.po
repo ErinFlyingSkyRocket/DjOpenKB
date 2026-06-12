@@ -1758,57 +1758,377 @@ msgstr "MFA-устройства пользователей"
 
 msgid "Authentication and Authorization"
 msgstr "Аутентификация и авторизация"
-
 msgid "Original name"
 msgstr "Исходное имя"
-
 msgid "Content type"
 msgstr "Тип содержимого"
-
 msgid "Size bytes"
 msgstr "Размер в байтах"
-
 msgid "User agent"
 msgstr "User-Agent"
-
 msgid "Path"
 msgstr "Путь"
-
 msgid "Vote"
 msgstr "Голос"
-
 msgid "Configured"
 msgstr "Настроено"
-
 msgid "Setup pending"
 msgstr "Ожидает настройки"
-
 msgid "Not set up"
 msgstr "Не настроено"
-
 msgid "Not required"
 msgstr "Не требуется"
-
 msgid "Authentication source"
 msgstr "Источник аутентификации"
-
 msgid "Can access main site"
-msgstr "Доступ к основному сайту"
-
+msgstr "Может получать доступ к основному сайту"
 msgid "Preferred language"
 msgstr "Предпочитаемый язык"
-
 msgid "Created at"
 msgstr "Создано"
-
 msgid "Updated at"
 msgstr "Обновлено"
-
 msgid "Deleted at"
 msgstr "Удалено"
-
 msgid "Delete reason"
 msgstr "Причина удаления"
-
 msgid "Article status"
 msgstr "Статус статьи"
+
+# DjOpenKB admin i18n sync batch 6
+
+msgid "Account Type"
+msgstr "Тип учётной записи"
+
+msgid "Source"
+msgstr "Источник"
+
+msgid "Main Site Access"
+msgstr "Доступ к основному сайту"
+
+msgid "MFA Status"
+msgstr "Статус MFA"
+
+msgid "MFA Reset"
+msgstr "Сброс MFA"
+
+msgid "Authenticator key"
+msgstr "Ключ аутентификатора"
+
+msgid "Review history"
+msgstr "История проверки"
+
+msgid "Uploader display"
+msgstr "Отображаемое имя загрузившего"
+
+msgid "Size (KB)"
+msgstr "Размер (КБ)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Пароль доменной учётной записи управляется в Active Directory и не может быть изменён через админ-панель Django."
+
+msgid "Blocked"
+msgstr "Заблокировано"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Не зашифровано. Сбросьте MFA-устройство этого пользователя и попросите пользователя настроить MFA заново."
+
+msgid "Allowed"
+msgstr "Разрешено"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Сбрасывает аутентификатор этого пользователя и требует новой настройки QR-кода. Новый ключ аутентификатора является приватным и не отображается администраторам."
+
+msgid "Reset MFA for selected users"
+msgstr "Сбросить MFA для выбранных пользователей"
+
+msgid "Allow selected users to access main site"
+msgstr "Разрешить выбранным пользователям доступ к основному сайту"
+
+msgid "Block selected users from main site"
+msgstr "Заблокировать выбранным пользователям доступ к основному сайту"
+
+msgid "Set selected users as User"
+msgstr "Назначить выбранных пользователей пользователями"
+
+msgid "Set selected users as Admin"
+msgstr "Назначить выбранных пользователей администраторами"
+
+msgid "Set selected users as LDAP user"
+msgstr "Назначить выбранных пользователей LDAP-пользователями"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Назначить выбранных пользователей LDAP-администраторами"
+
+msgid "Not set"
+msgstr "Не задано"
+
+msgid "Encrypted and hidden"
+msgstr "Зашифровано и скрыто"
+
+msgid "Reset this user's MFA"
+msgstr "Сбросить MFA этого пользователя"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Сброс создаёт новый приватный ключ аутентификатора и принудительно запускает настройку заново."
+
+msgid "Reset selected MFA devices"
+msgstr "Сбросить выбранные MFA-устройства"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Отметить выбранные MFA-устройства как ожидающие настройки"
+
+msgid "OpenKB files"
+msgstr "Файлы OpenKB"
+
+msgid "Article statistics"
+msgstr "Статистика статьи"
+
+msgid "Author snapshot"
+msgstr "Снимок данных автора"
+
+msgid "Timestamps"
+msgstr "Временные метки"
+
+msgid "Approve selected pending articles"
+msgstr "Утвердить выбранные ожидающие статьи"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Отметить выбранные статьи как не прошедшие проверку"
+
+msgid "Like"
+msgstr "Нравится"
+
+msgid "Dislike"
+msgstr "Не нравится"
+
+msgid "Article upload limits"
+msgstr "Лимиты загрузки статей"
+
+msgid "Stray upload cleanup"
+msgstr "Очистка лишних загрузок"
+
+msgid "Authentication and session settings"
+msgstr "Настройки аутентификации и сеансов"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Пароли доменных пользователей управляются в Active Directory."
+
+msgid "User does not exist."
+msgstr "Пользователь не существует."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Отмечено администратором как не прошедшее проверку. Проверьте эту статью и отправьте её на утверждение повторно."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Управляет количеством вставленных или загруженных изображений, которое может содержать каждая статья. По умолчанию: 50. Укажите 0, чтобы отключить загрузку изображений в статьи."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Управляет минимальным возрастом файлов для функции Мой профиль → Инструменты администратора → Очистить лишние загруженные файлы. Укажите 0, чтобы показывать файлы сразу."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Управляет журналами аутентификации/MFA, общими журналами активности, количеством строк в административных журналах и временем жизни сеанса пользователя. По умолчанию журналы хранятся 30 дней. Таблицы журналов администратора по умолчанию показывают 200 строк на странице. Укажите тайм-аут сеанса 0, чтобы сеанс завершался при закрытии браузера."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Используйте этот раздел для сброса настройки аутентификатора пользователя. Сброс создаёт новый приватный секрет аутентификатора и заставляет пользователя отсканировать новый QR-код при следующем входе."
+
+msgid "Deleted user"
+msgstr "Удалённый пользователь"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Учётные записи администратора/LDAP-администратора могут получать доступ к админ-панели Django, когда включён статус сотрудника."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Определяет, управляется ли пароль локально в DjOpenKB или внешне через Active Directory."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Снимите этот флажок, чтобы заблокировать пользователю доступ к основному wiki-сайту."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Предпочитаемый язык основного интерфейса wiki."
+
+msgid "deleted-user"
+msgstr "удалённый-пользователь"
+
+msgid "unknown user"
+msgstr "неизвестный пользователь"
+
+msgid "Article created"
+msgstr "Статья создана"
+
+msgid "Article updated"
+msgstr "Статья обновлена"
+
+msgid "Article deleted"
+msgstr "Статья удалена"
+
+msgid "Article status changed"
+msgstr "Статус статьи изменён"
+
+msgid "Article submitted for approval"
+msgstr "Статья отправлена на утверждение"
+
+msgid "Article approved/published"
+msgstr "Статья утверждена/опубликована"
+
+msgid "Article marked pending failed"
+msgstr "Статья отмечена как не прошедшая проверку"
+
+msgid "Orphan article assigned"
+msgstr "Статья без владельца назначена"
+
+msgid "Orphan article deleted"
+msgstr "Статья без владельца удалена"
+
+msgid "Article viewed"
+msgstr "Статья просмотрена"
+
+msgid "Article vote up"
+msgstr "Положительный голос за статью"
+
+msgid "Article vote down"
+msgstr "Отрицательный голос за статью"
+
+msgid "Article vote changed"
+msgstr "Голос за статью изменён"
+
+msgid "Article vote removed"
+msgstr "Голос за статью удалён"
+
+msgid "Article image uploaded"
+msgstr "Изображение статьи загружено"
+
+msgid "Article image deleted"
+msgstr "Изображение статьи удалено"
+
+msgid "OpenKB AI question"
+msgstr "Вопрос OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI ограничен по частоте запросов"
+
+msgid "Bulk article import"
+msgstr "Массовый импорт статей"
+
+msgid "Admin tool action"
+msgstr "Действие инструмента администратора"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Минимальный возраст для очистки лишних загрузок (минуты)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Файлы новее указанного количества минут игнорируются инструментом очистки лишних загрузок. Значение по умолчанию — 1440 минут (24 часа), чтобы избежать удаления изображений, пока пользователи готовят статьи. Укажите 0, чтобы сразу обнаруживать/удалять лишние загрузки."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Срок хранения журнала активности аутентификации (дни)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Журналы мониторинга аутентификации/MFA старше указанного количества дней могут быть удалены командой очистки. Укажите 0, чтобы хранить журналы активности аутентификации бессрочно."
+
+msgid "User session timeout (days)"
+msgstr "Тайм-аут сеанса пользователя (дни)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Сеансы аутентифицированных пользователей истекают через указанное количество дней после входа. После истечения пользователи выходят из системы и должны войти заново. Укажите 0, чтобы сеанс истекал при закрытии браузера."
+
+msgid "General activity log retention (days)"
+msgstr "Срок хранения общего журнала активности (дни)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Журналы активности статей/голосов/изображений/инструментов администратора старше указанного количества дней могут быть удалены командой очистки. Укажите 0, чтобы хранить общие журналы активности бессрочно."
+
+msgid "Admin log rows per page"
+msgstr "Строк журнала администратора на странице"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Количество строк, отображаемых на странице в таблицах журналов Django Admin. Рекомендуемый диапазон: от 50 до 500. По умолчанию: 200."
+
+msgid "anonymous"
+msgstr "анонимный"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "Вы собираетесь сбросить MFA для пользователя <strong>{{ username }}</strong>."
+
+msgid "Notes"
+msgstr "Примечания"
+
+msgid "Confirmed"
+msgstr "Подтверждено"
+
+msgid "Confirmed at"
+msgstr "Подтверждено в"
+
+msgid "Last verified at"
+msgstr "Последняя проверка"
+
+msgid "Reset at"
+msgstr "Сброшено в"
+
+msgid "Event type"
+msgstr "Тип события"
+
+msgid "Success"
+msgstr "Успешно"
+
+msgid "Login mode"
+msgstr "Режим входа"
+
+msgid "IP address"
+msgstr "IP-адрес"
+
+msgid "Request method"
+msgstr "Метод запроса"
+
+msgid "Details"
+msgstr "Подробности"
+
+msgid "Owner"
+msgstr "Владелец"
+
+msgid "Author username snapshot"
+msgstr "Снимок имени пользователя автора"
+
+msgid "Author name snapshot"
+msgstr "Снимок имени автора"
+
+msgid "Author email snapshot"
+msgstr "Снимок эл. почты автора"
+
+msgid "Author account type snapshot"
+msgstr "Снимок типа учётной записи автора"
+
+msgid "Article body"
+msgstr "Текст статьи"
+
+msgid "Review notes"
+msgstr "Заметки проверки"
+
+msgid "Raw path"
+msgstr "Исходный путь"
+
+msgid "Wiki path"
+msgstr "Путь wiki"
+
+msgid "Image assets"
+msgstr "Изображения"
+
+msgid "Update status"
+msgstr "Статус обновления"
+
+msgid "Uploader username snapshot"
+msgstr "Снимок имени пользователя загрузившего"
+
+msgid "Uploader email snapshot"
+msgstr "Снимок эл. почты загрузившего"
+
+msgid "Uploader account type snapshot"
+msgstr "Снимок типа учётной записи загрузившего"
+
+msgid "Upload IP address"
+msgstr "IP-адрес загрузки"
+
+msgid "Upload user agent"
+msgstr "User-Agent загрузки"
+
+msgid "Deleted by"
+msgstr "Удалено пользователем"

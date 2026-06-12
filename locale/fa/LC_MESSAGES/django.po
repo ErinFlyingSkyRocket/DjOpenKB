@@ -1758,57 +1758,377 @@ msgstr "دستگاه‌های MFA کاربر"
 
 msgid "Authentication and Authorization"
 msgstr "احراز هویت و مجوزدهی"
-
 msgid "Original name"
 msgstr "نام اصلی"
-
 msgid "Content type"
 msgstr "نوع محتوا"
-
 msgid "Size bytes"
 msgstr "اندازه بر حسب بایت"
-
 msgid "User agent"
 msgstr "عامل کاربر"
-
 msgid "Path"
 msgstr "مسیر"
-
 msgid "Vote"
 msgstr "رأی"
-
 msgid "Configured"
 msgstr "پیکربندی شده"
-
 msgid "Setup pending"
-msgstr "در انتظار راه‌اندازی"
-
+msgstr "راه‌اندازی در انتظار است"
 msgid "Not set up"
 msgstr "راه‌اندازی نشده"
-
 msgid "Not required"
 msgstr "لازم نیست"
-
 msgid "Authentication source"
 msgstr "منبع احراز هویت"
-
 msgid "Can access main site"
 msgstr "می‌تواند به سایت اصلی دسترسی داشته باشد"
-
 msgid "Preferred language"
 msgstr "زبان ترجیحی"
-
 msgid "Created at"
 msgstr "ایجاد شده در"
-
 msgid "Updated at"
 msgstr "به‌روزرسانی شده در"
-
 msgid "Deleted at"
-msgstr "زمان حذف"
-
+msgstr "حذف شده در"
 msgid "Delete reason"
 msgstr "دلیل حذف"
-
 msgid "Article status"
 msgstr "وضعیت مقاله"
+
+# DjOpenKB admin i18n sync batch 7
+
+msgid "Account Type"
+msgstr "نوع حساب"
+
+msgid "Source"
+msgstr "منبع"
+
+msgid "Main Site Access"
+msgstr "دسترسی به سایت اصلی"
+
+msgid "MFA Status"
+msgstr "وضعیت MFA"
+
+msgid "MFA Reset"
+msgstr "بازنشانی MFA"
+
+msgid "Authenticator key"
+msgstr "کلید برنامه احراز هویت"
+
+msgid "Review history"
+msgstr "تاریخچه بازبینی"
+
+msgid "Uploader display"
+msgstr "نام نمایشی بارگذار"
+
+msgid "Size (KB)"
+msgstr "اندازه (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "رمز عبور دامنه در Active Directory مدیریت می‌شود و از طریق مدیریت Django قابل تغییر نیست."
+
+msgid "Blocked"
+msgstr "مسدود شده"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "رمزگذاری نشده است. دستگاه MFA این کاربر را بازنشانی کنید و از کاربر بخواهید MFA را دوباره راه‌اندازی کند."
+
+msgid "Allowed"
+msgstr "مجاز"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "برنامه احراز هویت این کاربر را بازنشانی می‌کند و نیاز به راه‌اندازی QR جدید دارد. کلید جدید برنامه احراز هویت خصوصی است و به مدیران نمایش داده نمی‌شود."
+
+msgid "Reset MFA for selected users"
+msgstr "بازنشانی MFA برای کاربران انتخاب‌شده"
+
+msgid "Allow selected users to access main site"
+msgstr "اجازه دسترسی کاربران انتخاب‌شده به سایت اصلی"
+
+msgid "Block selected users from main site"
+msgstr "مسدود کردن دسترسی کاربران انتخاب‌شده به سایت اصلی"
+
+msgid "Set selected users as User"
+msgstr "تنظیم کاربران انتخاب‌شده به‌عنوان کاربر"
+
+msgid "Set selected users as Admin"
+msgstr "تنظیم کاربران انتخاب‌شده به‌عنوان مدیر"
+
+msgid "Set selected users as LDAP user"
+msgstr "تنظیم کاربران انتخاب‌شده به‌عنوان کاربر LDAP"
+
+msgid "Set selected users as LDAP admin"
+msgstr "تنظیم کاربران انتخاب‌شده به‌عنوان مدیر LDAP"
+
+msgid "Not set"
+msgstr "تنظیم نشده"
+
+msgid "Encrypted and hidden"
+msgstr "رمزگذاری و پنهان شده"
+
+msgid "Reset this user's MFA"
+msgstr "بازنشانی MFA این کاربر"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "بازنشانی یک کلید خصوصی جدید برای برنامه احراز هویت ایجاد می‌کند و راه‌اندازی دوباره را اجباری می‌کند."
+
+msgid "Reset selected MFA devices"
+msgstr "بازنشانی دستگاه‌های MFA انتخاب‌شده"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "علامت‌گذاری دستگاه‌های MFA انتخاب‌شده به‌عنوان در انتظار راه‌اندازی"
+
+msgid "OpenKB files"
+msgstr "فایل‌های OpenKB"
+
+msgid "Article statistics"
+msgstr "آمار مقاله"
+
+msgid "Author snapshot"
+msgstr "نمایه ذخیره‌شده نویسنده"
+
+msgid "Timestamps"
+msgstr "مهرهای زمانی"
+
+msgid "Approve selected pending articles"
+msgstr "تأیید مقاله‌های در انتظار انتخاب‌شده"
+
+msgid "Mark selected articles as pending failed"
+msgstr "علامت‌گذاری مقاله‌های انتخاب‌شده به‌عنوان ناموفق در انتظار"
+
+msgid "Like"
+msgstr "پسندیدن"
+
+msgid "Dislike"
+msgstr "نپسندیدن"
+
+msgid "Article upload limits"
+msgstr "محدودیت‌های بارگذاری مقاله"
+
+msgid "Stray upload cleanup"
+msgstr "پاک‌سازی بارگذاری‌های بی‌استفاده"
+
+msgid "Authentication and session settings"
+msgstr "تنظیمات احراز هویت و نشست"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "رمزهای عبور کاربران دامنه در Active Directory مدیریت می‌شوند."
+
+msgid "User does not exist."
+msgstr "کاربر وجود ندارد."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "توسط مدیر به‌عنوان ناموفق در انتظار علامت‌گذاری شد. لطفاً این مقاله را بازبینی کرده و دوباره برای تأیید ارسال کنید."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "تعداد تصویرهای چسبانده‌شده یا بارگذاری‌شده‌ای را که هر مقاله می‌تواند داشته باشد کنترل می‌کند. مقدار پیش‌فرض 50 است. برای غیرفعال کردن بارگذاری تصویر مقاله، آن را 0 تنظیم کنید."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "حداقل سن مورد استفاده در نمایه من ← ابزارهای مدیر ← پاک‌سازی فایل‌های بارگذاری‌شده بی‌استفاده را کنترل می‌کند. برای نمایش فوری فایل‌ها از 0 استفاده کنید."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "گزارش‌های احراز هویت/MFA، گزارش‌های عمومی فعالیت، تعداد ردیف‌های نمایش گزارش مدیر و طول عمر نشست کاربر را کنترل می‌کند. نگهداری پیش‌فرض گزارش‌ها 30 روز است. جدول‌های گزارش مدیر به‌طور پیش‌فرض 200 ردیف در هر صفحه نمایش می‌دهند. مهلت نشست را 0 تنظیم کنید تا نشست هنگام بسته شدن مرورگر منقضی شود."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "از این بخش برای بازنشانی راه‌اندازی برنامه احراز هویت کاربر استفاده کنید. بازنشانی یک راز خصوصی جدید برای احراز هویت ایجاد می‌کند و کاربر را مجبور می‌کند در ورود بعدی یک کد QR جدید را اسکن کند."
+
+msgid "Deleted user"
+msgstr "کاربر حذف‌شده"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "حساب‌های مدیر/مدیر LDAP در صورت فعال بودن وضعیت کارمند می‌توانند به مدیریت Django دسترسی داشته باشند."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "کنترل می‌کند که رمز عبور به‌صورت محلی در DjOpenKB مدیریت شود یا به‌صورت خارجی توسط Active Directory."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "برای جلوگیری از دسترسی کاربر به سایت اصلی ویکی، این گزینه را بردارید."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "زبان ترجیحی برای رابط کاربری اصلی ویکی."
+
+msgid "deleted-user"
+msgstr "کاربر-حذف‌شده"
+
+msgid "unknown user"
+msgstr "کاربر ناشناس"
+
+msgid "Article created"
+msgstr "مقاله ایجاد شد"
+
+msgid "Article updated"
+msgstr "مقاله به‌روزرسانی شد"
+
+msgid "Article deleted"
+msgstr "مقاله حذف شد"
+
+msgid "Article status changed"
+msgstr "وضعیت مقاله تغییر کرد"
+
+msgid "Article submitted for approval"
+msgstr "مقاله برای تأیید ارسال شد"
+
+msgid "Article approved/published"
+msgstr "مقاله تأیید/منتشر شد"
+
+msgid "Article marked pending failed"
+msgstr "مقاله به‌عنوان ناموفق در انتظار علامت‌گذاری شد"
+
+msgid "Orphan article assigned"
+msgstr "مقاله بدون مالک اختصاص داده شد"
+
+msgid "Orphan article deleted"
+msgstr "مقاله بدون مالک حذف شد"
+
+msgid "Article viewed"
+msgstr "مقاله مشاهده شد"
+
+msgid "Article vote up"
+msgstr "رأی مثبت به مقاله"
+
+msgid "Article vote down"
+msgstr "رأی منفی به مقاله"
+
+msgid "Article vote changed"
+msgstr "رأی مقاله تغییر کرد"
+
+msgid "Article vote removed"
+msgstr "رأی مقاله حذف شد"
+
+msgid "Article image uploaded"
+msgstr "تصویر مقاله بارگذاری شد"
+
+msgid "Article image deleted"
+msgstr "تصویر مقاله حذف شد"
+
+msgid "OpenKB AI question"
+msgstr "پرسش OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI با محدودیت نرخ مواجه شد"
+
+msgid "Bulk article import"
+msgstr "وارد کردن گروهی مقاله‌ها"
+
+msgid "Admin tool action"
+msgstr "اقدام ابزار مدیر"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "حداقل سن پاک‌سازی بارگذاری‌های بی‌استفاده (دقیقه)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "فایل‌هایی که از این تعداد دقیقه جدیدتر باشند توسط ابزار پاک‌سازی بارگذاری‌های بی‌استفاده نادیده گرفته می‌شوند. مقدار پیش‌فرض 1440 دقیقه (24 ساعت) است تا هنگام پیش‌نویس مقاله توسط کاربران، تصاویر حذف نشوند. برای شناسایی/حذف فوری بارگذاری‌های بی‌استفاده، مقدار را 0 تنظیم کنید."
+
+msgid "Authentication activity log retention (days)"
+msgstr "مدت نگهداری گزارش فعالیت احراز هویت (روز)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "گزارش‌های پایش احراز هویت/MFA قدیمی‌تر از این تعداد روز می‌توانند با فرمان پاک‌سازی حذف شوند. برای نگهداری نامحدود گزارش‌های فعالیت احراز هویت از 0 استفاده کنید."
+
+msgid "User session timeout (days)"
+msgstr "مهلت نشست کاربر (روز)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "نشست‌های کاربران احرازشده پس از این تعداد روز از زمان ورود منقضی می‌شوند. پس از انقضا، کاربران خارج می‌شوند و باید دوباره وارد شوند. برای انقضای نشست هنگام بسته شدن مرورگر، مقدار را 0 تنظیم کنید."
+
+msgid "General activity log retention (days)"
+msgstr "مدت نگهداری گزارش عمومی فعالیت (روز)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "گزارش‌های فعالیت مقاله/رأی/تصویر/ابزار مدیر که از این تعداد روز قدیمی‌تر باشند می‌توانند با فرمان پاک‌سازی حذف شوند. برای نگهداری نامحدود گزارش‌های عمومی فعالیت از 0 استفاده کنید."
+
+msgid "Admin log rows per page"
+msgstr "ردیف‌های گزارش مدیر در هر صفحه"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "تعداد ردیف‌هایی که در هر صفحه از جدول‌های گزارش Django Admin نمایش داده می‌شود. بازه پیشنهادی: 50 تا 500. مقدار پیش‌فرض 200 است."
+
+msgid "anonymous"
+msgstr "ناشناس"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "شما در آستانه بازنشانی MFA برای کاربر <strong>{{ username }}</strong> هستید."
+
+msgid "Notes"
+msgstr "یادداشت‌ها"
+
+msgid "Confirmed"
+msgstr "تأیید شده"
+
+msgid "Confirmed at"
+msgstr "تأیید شده در"
+
+msgid "Last verified at"
+msgstr "آخرین تأیید در"
+
+msgid "Reset at"
+msgstr "بازنشانی شده در"
+
+msgid "Event type"
+msgstr "نوع رویداد"
+
+msgid "Success"
+msgstr "موفقیت"
+
+msgid "Login mode"
+msgstr "حالت ورود"
+
+msgid "IP address"
+msgstr "نشانی IP"
+
+msgid "Request method"
+msgstr "روش درخواست"
+
+msgid "Details"
+msgstr "جزئیات"
+
+msgid "Owner"
+msgstr "مالک"
+
+msgid "Author username snapshot"
+msgstr "نمایه ذخیره‌شده نام کاربری نویسنده"
+
+msgid "Author name snapshot"
+msgstr "نمایه ذخیره‌شده نام نویسنده"
+
+msgid "Author email snapshot"
+msgstr "نمایه ذخیره‌شده ایمیل نویسنده"
+
+msgid "Author account type snapshot"
+msgstr "نمایه ذخیره‌شده نوع حساب نویسنده"
+
+msgid "Article body"
+msgstr "متن مقاله"
+
+msgid "Review notes"
+msgstr "یادداشت‌های بازبینی"
+
+msgid "Raw path"
+msgstr "مسیر خام"
+
+msgid "Wiki path"
+msgstr "مسیر ویکی"
+
+msgid "Image assets"
+msgstr "دارایی‌های تصویری"
+
+msgid "Update status"
+msgstr "وضعیت به‌روزرسانی"
+
+msgid "Uploader username snapshot"
+msgstr "نمایه ذخیره‌شده نام کاربری بارگذار"
+
+msgid "Uploader email snapshot"
+msgstr "نمایه ذخیره‌شده ایمیل بارگذار"
+
+msgid "Uploader account type snapshot"
+msgstr "نمایه ذخیره‌شده نوع حساب بارگذار"
+
+msgid "Upload IP address"
+msgstr "نشانی IP بارگذاری"
+
+msgid "Upload user agent"
+msgstr "عامل کاربر بارگذاری"
+
+msgid "Deleted by"
+msgstr "حذف‌شده توسط"

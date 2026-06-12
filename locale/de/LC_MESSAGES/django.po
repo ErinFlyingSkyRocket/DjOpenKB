@@ -1756,57 +1756,377 @@ msgstr "Benutzer-MFA-Geräte"
 
 msgid "Authentication and Authorization"
 msgstr "Authentifizierung und Autorisierung"
-
 msgid "Original name"
 msgstr "Ursprünglicher Name"
-
 msgid "Content type"
 msgstr "Inhaltstyp"
-
 msgid "Size bytes"
 msgstr "Größe in Bytes"
-
 msgid "User agent"
 msgstr "User-Agent"
-
 msgid "Path"
 msgstr "Pfad"
-
 msgid "Vote"
 msgstr "Stimme"
-
 msgid "Configured"
 msgstr "Konfiguriert"
-
 msgid "Setup pending"
 msgstr "Einrichtung ausstehend"
-
 msgid "Not set up"
 msgstr "Nicht eingerichtet"
-
 msgid "Not required"
 msgstr "Nicht erforderlich"
-
 msgid "Authentication source"
 msgstr "Authentifizierungsquelle"
-
 msgid "Can access main site"
-msgstr "Zugriff auf Hauptseite möglich"
-
+msgstr "Kann auf Hauptseite zugreifen"
 msgid "Preferred language"
 msgstr "Bevorzugte Sprache"
-
 msgid "Created at"
 msgstr "Erstellt am"
-
 msgid "Updated at"
 msgstr "Aktualisiert am"
-
 msgid "Deleted at"
 msgstr "Gelöscht am"
-
 msgid "Delete reason"
 msgstr "Löschgrund"
-
 msgid "Article status"
 msgstr "Artikelstatus"
+
+# DjOpenKB admin i18n sync batch 3
+
+msgid "Account Type"
+msgstr "Kontotyp"
+
+msgid "Source"
+msgstr "Quelle"
+
+msgid "Main Site Access"
+msgstr "Zugriff auf Hauptseite"
+
+msgid "MFA Status"
+msgstr "MFA-Status"
+
+msgid "MFA Reset"
+msgstr "MFA zurücksetzen"
+
+msgid "Authenticator key"
+msgstr "Authenticator-Schlüssel"
+
+msgid "Review history"
+msgstr "Prüfverlauf"
+
+msgid "Uploader display"
+msgstr "Uploader-Anzeige"
+
+msgid "Size (KB)"
+msgstr "Größe (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Das Domänenkennwort wird in Active Directory verwaltet und kann nicht über die Django-Administration geändert werden."
+
+msgid "Blocked"
+msgstr "Gesperrt"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Nicht verschlüsselt. Setzen Sie das MFA-Gerät dieses Benutzers zurück und bitten Sie den Benutzer, MFA erneut einzurichten."
+
+msgid "Allowed"
+msgstr "Erlaubt"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Setzt den Authenticator dieses Benutzers zurück und erfordert eine neue QR-Einrichtung. Der neue Authenticator-Schlüssel ist privat und wird Administratoren nicht angezeigt."
+
+msgid "Reset MFA for selected users"
+msgstr "MFA für ausgewählte Benutzer zurücksetzen"
+
+msgid "Allow selected users to access main site"
+msgstr "Ausgewählten Benutzern Zugriff auf die Hauptseite erlauben"
+
+msgid "Block selected users from main site"
+msgstr "Ausgewählte Benutzer von der Hauptseite sperren"
+
+msgid "Set selected users as User"
+msgstr "Ausgewählte Benutzer als Benutzer festlegen"
+
+msgid "Set selected users as Admin"
+msgstr "Ausgewählte Benutzer als Administratoren festlegen"
+
+msgid "Set selected users as LDAP user"
+msgstr "Ausgewählte Benutzer als LDAP-Benutzer festlegen"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Ausgewählte Benutzer als LDAP-Administratoren festlegen"
+
+msgid "Not set"
+msgstr "Nicht festgelegt"
+
+msgid "Encrypted and hidden"
+msgstr "Verschlüsselt und ausgeblendet"
+
+msgid "Reset this user's MFA"
+msgstr "MFA dieses Benutzers zurücksetzen"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Beim Zurücksetzen wird ein neuer privater Authenticator-Schlüssel erzeugt und die Einrichtung erneut erzwungen."
+
+msgid "Reset selected MFA devices"
+msgstr "Ausgewählte MFA-Geräte zurücksetzen"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Ausgewählte MFA-Geräte als Einrichtung ausstehend markieren"
+
+msgid "OpenKB files"
+msgstr "OpenKB-Dateien"
+
+msgid "Article statistics"
+msgstr "Artikelstatistiken"
+
+msgid "Author snapshot"
+msgstr "Autor-Snapshot"
+
+msgid "Timestamps"
+msgstr "Zeitstempel"
+
+msgid "Approve selected pending articles"
+msgstr "Ausgewählte ausstehende Artikel genehmigen"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Ausgewählte Artikel als ausstehend fehlgeschlagen markieren"
+
+msgid "Like"
+msgstr "Gefällt mir"
+
+msgid "Dislike"
+msgstr "Gefällt mir nicht"
+
+msgid "Article upload limits"
+msgstr "Artikel-Upload-Limits"
+
+msgid "Stray upload cleanup"
+msgstr "Bereinigung verwaister Uploads"
+
+msgid "Authentication and session settings"
+msgstr "Authentifizierungs- und Sitzungseinstellungen"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Kennwörter von Domänenbenutzern werden in Active Directory verwaltet."
+
+msgid "User does not exist."
+msgstr "Benutzer existiert nicht."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Vom Administrator als ausstehend fehlgeschlagen markiert. Bitte prüfen Sie diesen Artikel und reichen Sie ihn erneut zur Genehmigung ein."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Legt fest, wie viele eingefügte/hochgeladene Bilder jeder Artikel enthalten darf. Standard ist 50. Setzen Sie den Wert auf 0, um Artikelbild-Uploads zu deaktivieren."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Legt das Mindestalter fest, das unter Mein Profil → Admin-Tools → Verwaiste Upload-Dateien bereinigen verwendet wird. Verwenden Sie 0, um Dateien sofort anzuzeigen."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Steuert Authentifizierungs-/MFA-Protokolle, allgemeine Aktivitätsprotokolle, die Anzahl der angezeigten Admin-Protokollzeilen und die Lebensdauer von Benutzersitzungen. Die standardmäßige Protokollaufbewahrung beträgt 30 Tage. Admin-Protokolltabellen zeigen standardmäßig 200 Zeilen pro Seite. Setzen Sie das Sitzungs-Timeout auf 0, damit die Sitzung beim Schließen des Browsers abläuft."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Verwenden Sie diesen Abschnitt, um die Authenticator-Einrichtung eines Benutzers zurückzusetzen. Beim Zurücksetzen wird ein neues privates Authenticator-Geheimnis erzeugt und der Benutzer muss bei der nächsten Anmeldung einen neuen QR-Code scannen."
+
+msgid "Deleted user"
+msgstr "Gelöschter Benutzer"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Administrator-/LDAP-Administratorkonten können auf die Django-Administration zugreifen, wenn der Mitarbeiterstatus aktiviert ist."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Legt fest, ob das Kennwort lokal in DjOpenKB oder extern durch Active Directory verwaltet wird."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Deaktivieren Sie dies, um den Benutzer vom Zugriff auf die Haupt-Wiki-Seite zu sperren."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Bevorzugte Sprache für die Benutzeroberfläche des Haupt-Wikis."
+
+msgid "deleted-user"
+msgstr "gelöschter-benutzer"
+
+msgid "unknown user"
+msgstr "unbekannter Benutzer"
+
+msgid "Article created"
+msgstr "Artikel erstellt"
+
+msgid "Article updated"
+msgstr "Artikel aktualisiert"
+
+msgid "Article deleted"
+msgstr "Artikel gelöscht"
+
+msgid "Article status changed"
+msgstr "Artikelstatus geändert"
+
+msgid "Article submitted for approval"
+msgstr "Artikel zur Genehmigung eingereicht"
+
+msgid "Article approved/published"
+msgstr "Artikel genehmigt/veröffentlicht"
+
+msgid "Article marked pending failed"
+msgstr "Artikel als ausstehend fehlgeschlagen markiert"
+
+msgid "Orphan article assigned"
+msgstr "Artikel ohne Eigentümer zugewiesen"
+
+msgid "Orphan article deleted"
+msgstr "Artikel ohne Eigentümer gelöscht"
+
+msgid "Article viewed"
+msgstr "Artikel angesehen"
+
+msgid "Article vote up"
+msgstr "Artikel positiv bewertet"
+
+msgid "Article vote down"
+msgstr "Artikel negativ bewertet"
+
+msgid "Article vote changed"
+msgstr "Artikelbewertung geändert"
+
+msgid "Article vote removed"
+msgstr "Artikelbewertung entfernt"
+
+msgid "Article image uploaded"
+msgstr "Artikelbild hochgeladen"
+
+msgid "Article image deleted"
+msgstr "Artikelbild gelöscht"
+
+msgid "OpenKB AI question"
+msgstr "OpenKB-AI-Frage"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI ratenbegrenzt"
+
+msgid "Bulk article import"
+msgstr "Massenimport von Artikeln"
+
+msgid "Admin tool action"
+msgstr "Admin-Tool-Aktion"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Mindestalter für Bereinigung verwaister Uploads (Minuten)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Dateien, die jünger als diese Anzahl Minuten sind, werden vom Tool zur Bereinigung verwaister Uploads ignoriert. Standard ist 1440 Minuten (24 Stunden), um zu vermeiden, dass Bilder gelöscht werden, während Benutzer Artikel entwerfen. Setzen Sie den Wert auf 0, um verwaiste Uploads sofort zu erkennen/zu löschen."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Aufbewahrung von Authentifizierungsaktivitätsprotokollen (Tage)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Authentifizierungs-/MFA-Überwachungsprotokolle, die älter als diese Anzahl Tage sind, können durch den Bereinigungsbefehl gelöscht werden. Verwenden Sie 0, um Authentifizierungsaktivitätsprotokolle unbegrenzt aufzubewahren."
+
+msgid "User session timeout (days)"
+msgstr "Sitzungs-Timeout für Benutzer (Tage)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Authentifizierte Benutzersitzungen laufen nach dieser Anzahl Tage ab der Anmeldung ab. Nach Ablauf werden Benutzer abgemeldet und müssen sich erneut anmelden. Setzen Sie den Wert auf 0, damit die Sitzung beim Schließen des Browsers abläuft."
+
+msgid "General activity log retention (days)"
+msgstr "Aufbewahrung allgemeiner Aktivitätsprotokolle (Tage)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Artikel-/Stimmen-/Bild-/Admin-Tool-Aktivitätsprotokolle, die älter als diese Anzahl Tage sind, können durch den Bereinigungsbefehl gelöscht werden. Verwenden Sie 0, um allgemeine Aktivitätsprotokolle unbegrenzt aufzubewahren."
+
+msgid "Admin log rows per page"
+msgstr "Admin-Protokollzeilen pro Seite"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Anzahl der Zeilen, die pro Seite in Django-Admin-Protokolltabellen angezeigt werden. Empfohlener Bereich: 50 bis 500. Standard ist 200."
+
+msgid "anonymous"
+msgstr "anonym"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "Sie sind dabei, MFA für den Benutzer <strong>{{ username }}</strong> zurückzusetzen."
+
+msgid "Notes"
+msgstr "Notizen"
+
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+msgid "Confirmed at"
+msgstr "Bestätigt am"
+
+msgid "Last verified at"
+msgstr "Zuletzt verifiziert am"
+
+msgid "Reset at"
+msgstr "Zurückgesetzt am"
+
+msgid "Event type"
+msgstr "Ereignistyp"
+
+msgid "Success"
+msgstr "Erfolg"
+
+msgid "Login mode"
+msgstr "Anmeldemodus"
+
+msgid "IP address"
+msgstr "IP-Adresse"
+
+msgid "Request method"
+msgstr "Anfragemethode"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Owner"
+msgstr "Eigentümer"
+
+msgid "Author username snapshot"
+msgstr "Snapshot des Autor-Benutzernamens"
+
+msgid "Author name snapshot"
+msgstr "Snapshot des Autor-Namens"
+
+msgid "Author email snapshot"
+msgstr "Snapshot der Autor-E-Mail"
+
+msgid "Author account type snapshot"
+msgstr "Snapshot des Autor-Kontotyps"
+
+msgid "Article body"
+msgstr "Artikelinhalt"
+
+msgid "Review notes"
+msgstr "Prüfanmerkungen"
+
+msgid "Raw path"
+msgstr "Rohpfad"
+
+msgid "Wiki path"
+msgstr "Wiki-Pfad"
+
+msgid "Image assets"
+msgstr "Bild-Assets"
+
+msgid "Update status"
+msgstr "Aktualisierungsstatus"
+
+msgid "Uploader username snapshot"
+msgstr "Snapshot des Uploader-Benutzernamens"
+
+msgid "Uploader email snapshot"
+msgstr "Snapshot der Uploader-E-Mail"
+
+msgid "Uploader account type snapshot"
+msgstr "Snapshot des Uploader-Kontotyps"
+
+msgid "Upload IP address"
+msgstr "Upload-IP-Adresse"
+
+msgid "Upload user agent"
+msgstr "Upload-User-Agent"
+
+msgid "Deleted by"
+msgstr "Gelöscht von"

@@ -1758,57 +1758,377 @@ msgstr "أجهزة MFA للمستخدم"
 
 msgid "Authentication and Authorization"
 msgstr "المصادقة والتفويض"
-
 msgid "Original name"
 msgstr "الاسم الأصلي"
-
 msgid "Content type"
 msgstr "نوع المحتوى"
-
 msgid "Size bytes"
 msgstr "الحجم بالبايت"
-
 msgid "User agent"
 msgstr "وكيل المستخدم"
-
 msgid "Path"
 msgstr "المسار"
-
 msgid "Vote"
-msgstr "تصويت"
-
+msgstr "التصويت"
 msgid "Configured"
-msgstr "مُكوّن"
-
+msgstr "تم الإعداد"
 msgid "Setup pending"
-msgstr "الإعداد معلق"
-
+msgstr "الإعداد قيد الانتظار"
 msgid "Not set up"
-msgstr "غير معدّ"
-
+msgstr "غير مُعدّ"
 msgid "Not required"
 msgstr "غير مطلوب"
-
 msgid "Authentication source"
 msgstr "مصدر المصادقة"
-
 msgid "Can access main site"
 msgstr "يمكنه الوصول إلى الموقع الرئيسي"
-
 msgid "Preferred language"
 msgstr "اللغة المفضلة"
-
 msgid "Created at"
 msgstr "تاريخ الإنشاء"
-
 msgid "Updated at"
 msgstr "تاريخ التحديث"
-
 msgid "Deleted at"
-msgstr "وقت الحذف"
-
+msgstr "تاريخ الحذف"
 msgid "Delete reason"
 msgstr "سبب الحذف"
-
 msgid "Article status"
 msgstr "حالة المقالة"
+
+# DjOpenKB admin i18n sync batch 7
+
+msgid "Account Type"
+msgstr "نوع الحساب"
+
+msgid "Source"
+msgstr "المصدر"
+
+msgid "Main Site Access"
+msgstr "الوصول إلى الموقع الرئيسي"
+
+msgid "MFA Status"
+msgstr "حالة المصادقة متعددة العوامل"
+
+msgid "MFA Reset"
+msgstr "إعادة تعيين المصادقة متعددة العوامل"
+
+msgid "Authenticator key"
+msgstr "مفتاح تطبيق المصادقة"
+
+msgid "Review history"
+msgstr "سجل المراجعة"
+
+msgid "Uploader display"
+msgstr "اسم رافع الملف المعروض"
+
+msgid "Size (KB)"
+msgstr "الحجم (كيلوبايت)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "تتم إدارة كلمة مرور النطاق في Active Directory ولا يمكن تغييرها من لوحة إدارة Django."
+
+msgid "Blocked"
+msgstr "محظور"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "غير مشفر. أعد تعيين جهاز المصادقة متعددة العوامل لهذا المستخدم واطلب منه إعدادها مرة أخرى."
+
+msgid "Allowed"
+msgstr "مسموح"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "يعيد تعيين تطبيق المصادقة لهذا المستخدم ويتطلب إعداد رمز QR جديدًا. مفتاح تطبيق المصادقة الجديد خاص ولا يُعرض للمسؤولين."
+
+msgid "Reset MFA for selected users"
+msgstr "إعادة تعيين المصادقة متعددة العوامل للمستخدمين المحددين"
+
+msgid "Allow selected users to access main site"
+msgstr "السماح للمستخدمين المحددين بالوصول إلى الموقع الرئيسي"
+
+msgid "Block selected users from main site"
+msgstr "حظر المستخدمين المحددين من الوصول إلى الموقع الرئيسي"
+
+msgid "Set selected users as User"
+msgstr "تعيين المستخدمين المحددين كمستخدمين"
+
+msgid "Set selected users as Admin"
+msgstr "تعيين المستخدمين المحددين كمسؤولين"
+
+msgid "Set selected users as LDAP user"
+msgstr "تعيين المستخدمين المحددين كمستخدمي LDAP"
+
+msgid "Set selected users as LDAP admin"
+msgstr "تعيين المستخدمين المحددين كمسؤولي LDAP"
+
+msgid "Not set"
+msgstr "غير محدد"
+
+msgid "Encrypted and hidden"
+msgstr "مشفر ومخفي"
+
+msgid "Reset this user's MFA"
+msgstr "إعادة تعيين المصادقة متعددة العوامل لهذا المستخدم"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "تؤدي إعادة التعيين إلى إنشاء مفتاح مصادقة خاص جديد وتفرض الإعداد مرة أخرى."
+
+msgid "Reset selected MFA devices"
+msgstr "إعادة تعيين أجهزة المصادقة متعددة العوامل المحددة"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "وضع أجهزة المصادقة متعددة العوامل المحددة كقيد الإعداد"
+
+msgid "OpenKB files"
+msgstr "ملفات OpenKB"
+
+msgid "Article statistics"
+msgstr "إحصاءات المقالة"
+
+msgid "Author snapshot"
+msgstr "لقطة بيانات المؤلف"
+
+msgid "Timestamps"
+msgstr "الطوابع الزمنية"
+
+msgid "Approve selected pending articles"
+msgstr "الموافقة على المقالات المعلقة المحددة"
+
+msgid "Mark selected articles as pending failed"
+msgstr "وضع المقالات المحددة كفشل في الانتظار"
+
+msgid "Like"
+msgstr "إعجاب"
+
+msgid "Dislike"
+msgstr "عدم إعجاب"
+
+msgid "Article upload limits"
+msgstr "حدود رفع المقالات"
+
+msgid "Stray upload cleanup"
+msgstr "تنظيف الملفات المرفوعة غير المستخدمة"
+
+msgid "Authentication and session settings"
+msgstr "إعدادات المصادقة والجلسات"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "تتم إدارة كلمات مرور مستخدمي النطاق في Active Directory."
+
+msgid "User does not exist."
+msgstr "المستخدم غير موجود."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "تم وضعها كفشل في الانتظار بواسطة المسؤول. يُرجى مراجعة هذه المقالة وإعادة إرسالها للموافقة."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "يتحكم في عدد الصور الملصقة أو المرفوعة التي يمكن أن تحتوي عليها كل مقالة. القيمة الافتراضية هي 50. اضبطها على 0 لتعطيل رفع صور المقالات."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "يتحكم في الحد الأدنى للعمر المستخدم في ملفي الشخصي ← أدوات المسؤول ← تنظيف الملفات المرفوعة غير المستخدمة. استخدم 0 لعرض الملفات فورًا."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "يتحكم في سجلات المصادقة/المصادقة متعددة العوامل، وسجلات النشاط العامة، وعدد صفوف سجلات المسؤول المعروضة، ومدة جلسة المستخدم. مدة الاحتفاظ الافتراضية بالسجلات هي 30 يومًا. تعرض جداول سجلات المسؤول 200 صف في الصفحة افتراضيًا. اضبط مهلة الجلسة على 0 لإنهاء الجلسة عند إغلاق المتصفح."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "استخدم هذا القسم لإعادة تعيين إعداد تطبيق المصادقة للمستخدم. تؤدي إعادة التعيين إلى إنشاء سر مصادقة خاص جديد وتفرض على المستخدم مسح رمز QR جديد عند تسجيل الدخول التالي."
+
+msgid "Deleted user"
+msgstr "مستخدم محذوف"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "يمكن لحسابات المسؤول/مسؤول LDAP الوصول إلى لوحة إدارة Django عند تمكين حالة الموظف."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "يحدد ما إذا كانت كلمة المرور تُدار محليًا في DjOpenKB أو خارجيًا بواسطة Active Directory."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "أزل تحديد هذا الخيار لمنع المستخدم من الوصول إلى موقع الويكي الرئيسي."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "اللغة المفضلة لواجهة مستخدم الويكي الرئيسية."
+
+msgid "deleted-user"
+msgstr "مستخدم-محذوف"
+
+msgid "unknown user"
+msgstr "مستخدم غير معروف"
+
+msgid "Article created"
+msgstr "تم إنشاء المقالة"
+
+msgid "Article updated"
+msgstr "تم تحديث المقالة"
+
+msgid "Article deleted"
+msgstr "تم حذف المقالة"
+
+msgid "Article status changed"
+msgstr "تم تغيير حالة المقالة"
+
+msgid "Article submitted for approval"
+msgstr "تم إرسال المقالة للموافقة"
+
+msgid "Article approved/published"
+msgstr "تمت الموافقة على المقالة/نشرها"
+
+msgid "Article marked pending failed"
+msgstr "تم وضع المقالة كفشل في الانتظار"
+
+msgid "Orphan article assigned"
+msgstr "تم إسناد المقالة اليتيمة"
+
+msgid "Orphan article deleted"
+msgstr "تم حذف المقالة اليتيمة"
+
+msgid "Article viewed"
+msgstr "تم عرض المقالة"
+
+msgid "Article vote up"
+msgstr "تصويت إيجابي على المقالة"
+
+msgid "Article vote down"
+msgstr "تصويت سلبي على المقالة"
+
+msgid "Article vote changed"
+msgstr "تم تغيير تصويت المقالة"
+
+msgid "Article vote removed"
+msgstr "تمت إزالة تصويت المقالة"
+
+msgid "Article image uploaded"
+msgstr "تم رفع صورة المقالة"
+
+msgid "Article image deleted"
+msgstr "تم حذف صورة المقالة"
+
+msgid "OpenKB AI question"
+msgstr "سؤال OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "تم تقييد معدل OpenKB AI"
+
+msgid "Bulk article import"
+msgstr "استيراد مقالات بالجملة"
+
+msgid "Admin tool action"
+msgstr "إجراء أداة المسؤول"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "الحد الأدنى لعمر تنظيف الملفات غير المستخدمة (بالدقائق)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "تتجاهل أداة تنظيف الملفات المرفوعة غير المستخدمة الملفات الأحدث من هذا العدد من الدقائق. القيمة الافتراضية هي 1440 دقيقة (24 ساعة) لتجنب حذف الصور أثناء صياغة المستخدمين للمقالات. اضبطها على 0 لاكتشاف/حذف الملفات غير المستخدمة فورًا."
+
+msgid "Authentication activity log retention (days)"
+msgstr "مدة الاحتفاظ بسجل نشاط المصادقة (بالأيام)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "يمكن حذف سجلات مراقبة المصادقة/المصادقة متعددة العوامل الأقدم من هذا العدد من الأيام باستخدام أمر التنظيف. استخدم 0 للاحتفاظ بسجلات نشاط المصادقة إلى أجل غير مسمى."
+
+msgid "User session timeout (days)"
+msgstr "مهلة جلسة المستخدم (بالأيام)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "تنتهي جلسات المستخدمين الموثقين بعد هذا العدد من الأيام من تسجيل الدخول. بعد الانتهاء، يتم تسجيل خروج المستخدمين ويجب عليهم تسجيل الدخول مرة أخرى. اضبطها على 0 لإنهاء الجلسة عند إغلاق المتصفح."
+
+msgid "General activity log retention (days)"
+msgstr "مدة الاحتفاظ بسجل النشاط العام (بالأيام)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "يمكن حذف سجلات نشاط المقالات/التصويتات/الصور/أدوات المسؤول الأقدم من هذا العدد من الأيام باستخدام أمر التنظيف. استخدم 0 للاحتفاظ بسجلات النشاط العامة إلى أجل غير مسمى."
+
+msgid "Admin log rows per page"
+msgstr "صفوف سجل المسؤول في كل صفحة"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "عدد الصفوف المعروضة في كل صفحة في جداول سجلات Django Admin. النطاق الموصى به: من 50 إلى 500. القيمة الافتراضية هي 200."
+
+msgid "anonymous"
+msgstr "مجهول"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "أنت على وشك إعادة تعيين المصادقة متعددة العوامل للمستخدم <strong>{{ username }}</strong>."
+
+msgid "Notes"
+msgstr "ملاحظات"
+
+msgid "Confirmed"
+msgstr "مؤكد"
+
+msgid "Confirmed at"
+msgstr "تم التأكيد في"
+
+msgid "Last verified at"
+msgstr "آخر تحقق في"
+
+msgid "Reset at"
+msgstr "تمت إعادة التعيين في"
+
+msgid "Event type"
+msgstr "نوع الحدث"
+
+msgid "Success"
+msgstr "نجاح"
+
+msgid "Login mode"
+msgstr "وضع تسجيل الدخول"
+
+msgid "IP address"
+msgstr "عنوان IP"
+
+msgid "Request method"
+msgstr "طريقة الطلب"
+
+msgid "Details"
+msgstr "التفاصيل"
+
+msgid "Owner"
+msgstr "المالك"
+
+msgid "Author username snapshot"
+msgstr "لقطة اسم مستخدم المؤلف"
+
+msgid "Author name snapshot"
+msgstr "لقطة اسم المؤلف"
+
+msgid "Author email snapshot"
+msgstr "لقطة بريد المؤلف الإلكتروني"
+
+msgid "Author account type snapshot"
+msgstr "لقطة نوع حساب المؤلف"
+
+msgid "Article body"
+msgstr "محتوى المقالة"
+
+msgid "Review notes"
+msgstr "ملاحظات المراجعة"
+
+msgid "Raw path"
+msgstr "المسار الخام"
+
+msgid "Wiki path"
+msgstr "مسار الويكي"
+
+msgid "Image assets"
+msgstr "أصول الصور"
+
+msgid "Update status"
+msgstr "حالة التحديث"
+
+msgid "Uploader username snapshot"
+msgstr "لقطة اسم مستخدم رافع الملف"
+
+msgid "Uploader email snapshot"
+msgstr "لقطة بريد رافع الملف الإلكتروني"
+
+msgid "Uploader account type snapshot"
+msgstr "لقطة نوع حساب رافع الملف"
+
+msgid "Upload IP address"
+msgstr "عنوان IP للرفع"
+
+msgid "Upload user agent"
+msgstr "وكيل مستخدم الرفع"
+
+msgid "Deleted by"
+msgstr "حذف بواسطة"

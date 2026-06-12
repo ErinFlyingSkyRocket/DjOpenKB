@@ -1758,57 +1758,377 @@ msgstr "อุปกรณ์ MFA ของผู้ใช้"
 
 msgid "Authentication and Authorization"
 msgstr "การยืนยันตัวตนและการให้สิทธิ์"
-
 msgid "Original name"
 msgstr "ชื่อเดิม"
-
 msgid "Content type"
 msgstr "ประเภทเนื้อหา"
-
 msgid "Size bytes"
 msgstr "ขนาดเป็นไบต์"
-
 msgid "User agent"
 msgstr "ตัวแทนผู้ใช้"
-
 msgid "Path"
 msgstr "เส้นทาง"
-
 msgid "Vote"
-msgstr "โหวต"
-
+msgstr "คะแนนโหวต"
 msgid "Configured"
-msgstr "กำหนดค่าแล้ว"
-
+msgstr "ตั้งค่าแล้ว"
 msgid "Setup pending"
 msgstr "รอการตั้งค่า"
-
 msgid "Not set up"
 msgstr "ยังไม่ได้ตั้งค่า"
-
 msgid "Not required"
 msgstr "ไม่จำเป็น"
-
 msgid "Authentication source"
 msgstr "แหล่งที่มาของการยืนยันตัวตน"
-
 msgid "Can access main site"
-msgstr "เข้าถึงไซต์หลักได้"
-
+msgstr "สามารถเข้าถึงเว็บไซต์หลักได้"
 msgid "Preferred language"
 msgstr "ภาษาที่ต้องการ"
-
 msgid "Created at"
 msgstr "สร้างเมื่อ"
-
 msgid "Updated at"
 msgstr "อัปเดตเมื่อ"
-
 msgid "Deleted at"
 msgstr "ลบเมื่อ"
-
 msgid "Delete reason"
-msgstr "เหตุผลการลบ"
-
+msgstr "เหตุผลในการลบ"
 msgid "Article status"
 msgstr "สถานะบทความ"
+
+# DjOpenKB admin i18n sync batch 7
+
+msgid "Account Type"
+msgstr "ประเภทบัญชี"
+
+msgid "Source"
+msgstr "แหล่งที่มา"
+
+msgid "Main Site Access"
+msgstr "การเข้าถึงเว็บไซต์หลัก"
+
+msgid "MFA Status"
+msgstr "สถานะ MFA"
+
+msgid "MFA Reset"
+msgstr "รีเซ็ต MFA"
+
+msgid "Authenticator key"
+msgstr "คีย์แอปยืนยันตัวตน"
+
+msgid "Review history"
+msgstr "ประวัติการตรวจทาน"
+
+msgid "Uploader display"
+msgstr "ชื่อที่แสดงของผู้อัปโหลด"
+
+msgid "Size (KB)"
+msgstr "ขนาด (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "รหัสผ่านโดเมนถูกจัดการใน Active Directory และไม่สามารถเปลี่ยนจาก Django admin ได้"
+
+msgid "Blocked"
+msgstr "ถูกบล็อก"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "ไม่ได้เข้ารหัส รีเซ็ตอุปกรณ์ MFA ของผู้ใช้นี้และขอให้ผู้ใช้ตั้งค่า MFA ใหม่อีกครั้ง"
+
+msgid "Allowed"
+msgstr "อนุญาต"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "รีเซ็ตแอปยืนยันตัวตนของผู้ใช้นี้และต้องตั้งค่า QR ใหม่ คีย์แอปยืนยันตัวตนใหม่เป็นข้อมูลส่วนตัวและจะไม่แสดงให้ผู้ดูแลระบบเห็น"
+
+msgid "Reset MFA for selected users"
+msgstr "รีเซ็ต MFA สำหรับผู้ใช้ที่เลือก"
+
+msgid "Allow selected users to access main site"
+msgstr "อนุญาตให้ผู้ใช้ที่เลือกเข้าถึงเว็บไซต์หลัก"
+
+msgid "Block selected users from main site"
+msgstr "บล็อกผู้ใช้ที่เลือกไม่ให้เข้าถึงเว็บไซต์หลัก"
+
+msgid "Set selected users as User"
+msgstr "ตั้งค่าผู้ใช้ที่เลือกเป็นผู้ใช้"
+
+msgid "Set selected users as Admin"
+msgstr "ตั้งค่าผู้ใช้ที่เลือกเป็นผู้ดูแลระบบ"
+
+msgid "Set selected users as LDAP user"
+msgstr "ตั้งค่าผู้ใช้ที่เลือกเป็นผู้ใช้ LDAP"
+
+msgid "Set selected users as LDAP admin"
+msgstr "ตั้งค่าผู้ใช้ที่เลือกเป็นผู้ดูแลระบบ LDAP"
+
+msgid "Not set"
+msgstr "ไม่ได้ตั้งค่า"
+
+msgid "Encrypted and hidden"
+msgstr "เข้ารหัสและซ่อนไว้"
+
+msgid "Reset this user's MFA"
+msgstr "รีเซ็ต MFA ของผู้ใช้นี้"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "การรีเซ็ตจะสร้างคีย์แอปยืนยันตัวตนส่วนตัวใหม่และบังคับให้ตั้งค่าอีกครั้ง"
+
+msgid "Reset selected MFA devices"
+msgstr "รีเซ็ตอุปกรณ์ MFA ที่เลือก"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "ทำเครื่องหมายอุปกรณ์ MFA ที่เลือกว่ารอการตั้งค่า"
+
+msgid "OpenKB files"
+msgstr "ไฟล์ OpenKB"
+
+msgid "Article statistics"
+msgstr "สถิติบทความ"
+
+msgid "Author snapshot"
+msgstr "ข้อมูลผู้เขียนที่บันทึกไว้"
+
+msgid "Timestamps"
+msgstr "เวลา"
+
+msgid "Approve selected pending articles"
+msgstr "อนุมัติบทความที่รอดำเนินการที่เลือก"
+
+msgid "Mark selected articles as pending failed"
+msgstr "ทำเครื่องหมายบทความที่เลือกว่ารอดำเนินการล้มเหลว"
+
+msgid "Like"
+msgstr "ชอบ"
+
+msgid "Dislike"
+msgstr "ไม่ชอบ"
+
+msgid "Article upload limits"
+msgstr "ขีดจำกัดการอัปโหลดบทความ"
+
+msgid "Stray upload cleanup"
+msgstr "ล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน"
+
+msgid "Authentication and session settings"
+msgstr "การตั้งค่าการยืนยันตัวตนและเซสชัน"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "รหัสผ่านผู้ใช้โดเมนถูกจัดการใน Active Directory"
+
+msgid "User does not exist."
+msgstr "ไม่มีผู้ใช้นี้"
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "ผู้ดูแลระบบทำเครื่องหมายว่ารอดำเนินการล้มเหลว โปรดตรวจทานบทความนี้และส่งอีกครั้งเพื่อขออนุมัติ"
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "ควบคุมจำนวนรูปภาพที่วางหรืออัปโหลดซึ่งแต่ละบทความสามารถมีได้ ค่าเริ่มต้นคือ 50 ตั้งค่าเป็น 0 เพื่อปิดการอัปโหลดรูปภาพบทความ"
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "ควบคุมอายุขั้นต่ำที่ใช้โดย โปรไฟล์ของฉัน → เครื่องมือผู้ดูแลระบบ → ล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน ใช้ 0 เพื่อแสดงไฟล์ทันที"
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "ควบคุมบันทึกการยืนยันตัวตน/MFA บันทึกกิจกรรมทั่วไป จำนวนแถวที่แสดงในบันทึกผู้ดูแลระบบ และอายุเซสชันผู้ใช้ ค่าเริ่มต้นการเก็บบันทึกคือ 30 วัน ตารางบันทึกผู้ดูแลระบบแสดง 200 แถวต่อหน้าโดยค่าเริ่มต้น ตั้งค่าหมดเวลาเซสชันเป็น 0 เพื่อให้เซสชันหมดอายุเมื่อปิดเบราว์เซอร์"
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "ใช้ส่วนนี้เพื่อรีเซ็ตการตั้งค่าแอปยืนยันตัวตนของผู้ใช้ การรีเซ็ตจะสร้างรหัสลับแอปยืนยันตัวตนส่วนตัวใหม่และบังคับให้ผู้ใช้สแกน QR code ใหม่ในการเข้าสู่ระบบครั้งถัดไป"
+
+msgid "Deleted user"
+msgstr "ผู้ใช้ที่ถูกลบ"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "บัญชีผู้ดูแลระบบ/ผู้ดูแลระบบ LDAP สามารถเข้าถึง Django admin ได้เมื่อเปิดใช้งานสถานะ staff"
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "ควบคุมว่ารหัสผ่านจะถูกจัดการภายใน DjOpenKB หรือภายนอกโดย Active Directory"
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "ยกเลิกการเลือกตัวเลือกนี้เพื่อบล็อกผู้ใช้ไม่ให้เข้าถึงเว็บไซต์วิกิหลัก"
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "ภาษาที่ต้องการสำหรับส่วนติดต่อผู้ใช้วิกิหลัก"
+
+msgid "deleted-user"
+msgstr "ผู้ใช้-ที่ถูกลบ"
+
+msgid "unknown user"
+msgstr "ผู้ใช้ไม่ทราบชื่อ"
+
+msgid "Article created"
+msgstr "สร้างบทความแล้ว"
+
+msgid "Article updated"
+msgstr "อัปเดตบทความแล้ว"
+
+msgid "Article deleted"
+msgstr "ลบบทความแล้ว"
+
+msgid "Article status changed"
+msgstr "เปลี่ยนสถานะบทความแล้ว"
+
+msgid "Article submitted for approval"
+msgstr "ส่งบทความเพื่อขออนุมัติแล้ว"
+
+msgid "Article approved/published"
+msgstr "อนุมัติ/เผยแพร่บทความแล้ว"
+
+msgid "Article marked pending failed"
+msgstr "ทำเครื่องหมายบทความว่ารอดำเนินการล้มเหลวแล้ว"
+
+msgid "Orphan article assigned"
+msgstr "มอบหมายบทความที่ไม่มีเจ้าของแล้ว"
+
+msgid "Orphan article deleted"
+msgstr "ลบบทความที่ไม่มีเจ้าของแล้ว"
+
+msgid "Article viewed"
+msgstr "มีการดูบทความ"
+
+msgid "Article vote up"
+msgstr "โหวตเห็นด้วยบทความ"
+
+msgid "Article vote down"
+msgstr "โหวตไม่เห็นด้วยบทความ"
+
+msgid "Article vote changed"
+msgstr "เปลี่ยนคะแนนโหวตบทความแล้ว"
+
+msgid "Article vote removed"
+msgstr "นำคะแนนโหวตบทความออกแล้ว"
+
+msgid "Article image uploaded"
+msgstr "อัปโหลดรูปภาพบทความแล้ว"
+
+msgid "Article image deleted"
+msgstr "ลบรูปภาพบทความแล้ว"
+
+msgid "OpenKB AI question"
+msgstr "คำถาม OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI ถูกจำกัดอัตราการใช้งาน"
+
+msgid "Bulk article import"
+msgstr "นำเข้าบทความจำนวนมาก"
+
+msgid "Admin tool action"
+msgstr "การดำเนินการของเครื่องมือผู้ดูแลระบบ"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "อายุขั้นต่ำสำหรับการล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน (นาที)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "ไฟล์ที่ใหม่กว่าจำนวนนี้เป็นนาทีจะถูกละเว้นโดยเครื่องมือล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน ค่าเริ่มต้นคือ 1440 นาที (24 ชั่วโมง) เพื่อหลีกเลี่ยงการลบรูปภาพขณะที่ผู้ใช้กำลังร่างบทความ ตั้งค่าเป็น 0 เพื่อตรวจหา/ลบไฟล์อัปโหลดที่ไม่ได้ใช้งานทันที"
+
+msgid "Authentication activity log retention (days)"
+msgstr "ระยะเวลาเก็บบันทึกกิจกรรมการยืนยันตัวตน (วัน)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "บันทึกการตรวจสอบการยืนยันตัวตน/MFA ที่เก่ากว่าจำนวนวันนี้สามารถลบได้ด้วยคำสั่งล้างข้อมูล ใช้ 0 เพื่อเก็บบันทึกกิจกรรมการยืนยันตัวตนไว้ไม่จำกัดเวลา"
+
+msgid "User session timeout (days)"
+msgstr "หมดเวลาเซสชันผู้ใช้ (วัน)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "เซสชันของผู้ใช้ที่ยืนยันตัวตนแล้วจะหมดอายุหลังจากจำนวนวันนี้นับจากการเข้าสู่ระบบ หลังหมดอายุ ผู้ใช้จะถูกออกจากระบบและต้องเข้าสู่ระบบอีกครั้ง ตั้งค่าเป็น 0 เพื่อให้เซสชันหมดอายุเมื่อปิดเบราว์เซอร์"
+
+msgid "General activity log retention (days)"
+msgstr "ระยะเวลาเก็บบันทึกกิจกรรมทั่วไป (วัน)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "บันทึกกิจกรรมบทความ/คะแนนโหวต/รูปภาพ/เครื่องมือผู้ดูแลระบบที่เก่ากว่าจำนวนวันนี้สามารถลบได้ด้วยคำสั่งล้างข้อมูล ใช้ 0 เพื่อเก็บบันทึกกิจกรรมทั่วไปไว้ไม่จำกัดเวลา"
+
+msgid "Admin log rows per page"
+msgstr "จำนวนแถวบันทึกผู้ดูแลระบบต่อหน้า"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "จำนวนแถวที่จะแสดงต่อหน้าในตารางบันทึก Django Admin ช่วงที่แนะนำ: 50 ถึง 500 ค่าเริ่มต้นคือ 200"
+
+msgid "anonymous"
+msgstr "ไม่ระบุชื่อ"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "คุณกำลังจะรีเซ็ต MFA สำหรับผู้ใช้ <strong>{{ username }}</strong>"
+
+msgid "Notes"
+msgstr "หมายเหตุ"
+
+msgid "Confirmed"
+msgstr "ยืนยันแล้ว"
+
+msgid "Confirmed at"
+msgstr "ยืนยันเมื่อ"
+
+msgid "Last verified at"
+msgstr "ตรวจสอบล่าสุดเมื่อ"
+
+msgid "Reset at"
+msgstr "รีเซ็ตเมื่อ"
+
+msgid "Event type"
+msgstr "ประเภทเหตุการณ์"
+
+msgid "Success"
+msgstr "สำเร็จ"
+
+msgid "Login mode"
+msgstr "โหมดการเข้าสู่ระบบ"
+
+msgid "IP address"
+msgstr "ที่อยู่ IP"
+
+msgid "Request method"
+msgstr "วิธีการคำขอ"
+
+msgid "Details"
+msgstr "รายละเอียด"
+
+msgid "Owner"
+msgstr "เจ้าของ"
+
+msgid "Author username snapshot"
+msgstr "ข้อมูลชื่อผู้ใช้ผู้เขียนที่บันทึกไว้"
+
+msgid "Author name snapshot"
+msgstr "ข้อมูลชื่อผู้เขียนที่บันทึกไว้"
+
+msgid "Author email snapshot"
+msgstr "ข้อมูลอีเมลผู้เขียนที่บันทึกไว้"
+
+msgid "Author account type snapshot"
+msgstr "ข้อมูลประเภทบัญชีผู้เขียนที่บันทึกไว้"
+
+msgid "Article body"
+msgstr "เนื้อหาบทความ"
+
+msgid "Review notes"
+msgstr "หมายเหตุการตรวจทาน"
+
+msgid "Raw path"
+msgstr "เส้นทางดิบ"
+
+msgid "Wiki path"
+msgstr "เส้นทางวิกิ"
+
+msgid "Image assets"
+msgstr "ไฟล์รูปภาพ"
+
+msgid "Update status"
+msgstr "สถานะการอัปเดต"
+
+msgid "Uploader username snapshot"
+msgstr "ข้อมูลชื่อผู้ใช้อัปโหลดที่บันทึกไว้"
+
+msgid "Uploader email snapshot"
+msgstr "ข้อมูลอีเมลผู้อัปโหลดที่บันทึกไว้"
+
+msgid "Uploader account type snapshot"
+msgstr "ข้อมูลประเภทบัญชีผู้อัปโหลดที่บันทึกไว้"
+
+msgid "Upload IP address"
+msgstr "ที่อยู่ IP ของการอัปโหลด"
+
+msgid "Upload user agent"
+msgstr "ตัวแทนผู้ใช้ของการอัปโหลด"
+
+msgid "Deleted by"
+msgstr "ลบโดย"

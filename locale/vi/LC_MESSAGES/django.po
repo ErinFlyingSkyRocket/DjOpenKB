@@ -1756,57 +1756,377 @@ msgstr "Thiết bị MFA của người dùng"
 
 msgid "Authentication and Authorization"
 msgstr "Xác thực và phân quyền"
-
 msgid "Original name"
 msgstr "Tên gốc"
-
 msgid "Content type"
 msgstr "Loại nội dung"
-
 msgid "Size bytes"
-msgstr "Kích thước byte"
-
+msgstr "Kích thước theo byte"
 msgid "User agent"
-msgstr "User agent"
-
+msgstr "Tác nhân người dùng"
 msgid "Path"
 msgstr "Đường dẫn"
-
 msgid "Vote"
 msgstr "Bình chọn"
-
 msgid "Configured"
 msgstr "Đã cấu hình"
-
 msgid "Setup pending"
 msgstr "Đang chờ thiết lập"
-
 msgid "Not set up"
 msgstr "Chưa thiết lập"
-
 msgid "Not required"
 msgstr "Không bắt buộc"
-
 msgid "Authentication source"
 msgstr "Nguồn xác thực"
-
 msgid "Can access main site"
 msgstr "Có thể truy cập trang chính"
-
 msgid "Preferred language"
 msgstr "Ngôn ngữ ưu tiên"
-
 msgid "Created at"
 msgstr "Được tạo lúc"
-
 msgid "Updated at"
 msgstr "Được cập nhật lúc"
-
 msgid "Deleted at"
-msgstr "Xóa lúc"
-
+msgstr "Đã xóa lúc"
 msgid "Delete reason"
 msgstr "Lý do xóa"
-
 msgid "Article status"
 msgstr "Trạng thái bài viết"
+
+# DjOpenKB admin i18n sync batch 8
+
+msgid "Account Type"
+msgstr "Loại tài khoản"
+
+msgid "Source"
+msgstr "Nguồn"
+
+msgid "Main Site Access"
+msgstr "Quyền truy cập trang chính"
+
+msgid "MFA Status"
+msgstr "Trạng thái MFA"
+
+msgid "MFA Reset"
+msgstr "Đặt lại MFA"
+
+msgid "Authenticator key"
+msgstr "Khóa ứng dụng xác thực"
+
+msgid "Review history"
+msgstr "Lịch sử xét duyệt"
+
+msgid "Uploader display"
+msgstr "Tên hiển thị của người tải lên"
+
+msgid "Size (KB)"
+msgstr "Kích thước (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Mật khẩu miền được quản lý trong Active Directory và không thể thay đổi từ trang quản trị Django."
+
+msgid "Blocked"
+msgstr "Đã chặn"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Chưa được mã hóa. Hãy đặt lại thiết bị MFA của người dùng này và yêu cầu người dùng thiết lập MFA lại."
+
+msgid "Allowed"
+msgstr "Được phép"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Đặt lại ứng dụng xác thực của người dùng này và yêu cầu thiết lập QR mới. Khóa ứng dụng xác thực mới là riêng tư và không hiển thị cho quản trị viên."
+
+msgid "Reset MFA for selected users"
+msgstr "Đặt lại MFA cho người dùng đã chọn"
+
+msgid "Allow selected users to access main site"
+msgstr "Cho phép người dùng đã chọn truy cập trang chính"
+
+msgid "Block selected users from main site"
+msgstr "Chặn người dùng đã chọn khỏi trang chính"
+
+msgid "Set selected users as User"
+msgstr "Đặt người dùng đã chọn làm Người dùng"
+
+msgid "Set selected users as Admin"
+msgstr "Đặt người dùng đã chọn làm Quản trị viên"
+
+msgid "Set selected users as LDAP user"
+msgstr "Đặt người dùng đã chọn làm người dùng LDAP"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Đặt người dùng đã chọn làm quản trị viên LDAP"
+
+msgid "Not set"
+msgstr "Chưa đặt"
+
+msgid "Encrypted and hidden"
+msgstr "Đã mã hóa và ẩn"
+
+msgid "Reset this user's MFA"
+msgstr "Đặt lại MFA của người dùng này"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Việc đặt lại sẽ tạo khóa ứng dụng xác thực riêng tư mới và buộc thiết lập lại."
+
+msgid "Reset selected MFA devices"
+msgstr "Đặt lại các thiết bị MFA đã chọn"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Đánh dấu các thiết bị MFA đã chọn là đang chờ thiết lập"
+
+msgid "OpenKB files"
+msgstr "Tệp OpenKB"
+
+msgid "Article statistics"
+msgstr "Thống kê bài viết"
+
+msgid "Author snapshot"
+msgstr "Bản ghi nhanh tác giả"
+
+msgid "Timestamps"
+msgstr "Mốc thời gian"
+
+msgid "Approve selected pending articles"
+msgstr "Phê duyệt các bài viết đang chờ đã chọn"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Đánh dấu các bài viết đã chọn là chờ duyệt không đạt"
+
+msgid "Like"
+msgstr "Thích"
+
+msgid "Dislike"
+msgstr "Không thích"
+
+msgid "Article upload limits"
+msgstr "Giới hạn tải lên bài viết"
+
+msgid "Stray upload cleanup"
+msgstr "Dọn dẹp tệp tải lên không dùng đến"
+
+msgid "Authentication and session settings"
+msgstr "Cài đặt xác thực và phiên"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Mật khẩu người dùng miền được quản lý trong Active Directory."
+
+msgid "User does not exist."
+msgstr "Người dùng không tồn tại."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Đã được quản trị viên đánh dấu là chờ duyệt không đạt. Vui lòng xem lại bài viết này và gửi lại để phê duyệt."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Kiểm soát số lượng ảnh được dán/tải lên mà mỗi bài viết có thể chứa. Mặc định là 50. Đặt thành 0 để tắt tải lên ảnh bài viết."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Kiểm soát tuổi tối thiểu được dùng bởi Hồ sơ của tôi → Công cụ quản trị → Dọn dẹp tệp tải lên không dùng đến. Dùng 0 để hiển thị tệp ngay lập tức."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Kiểm soát nhật ký xác thực/MFA, nhật ký hoạt động chung, số dòng hiển thị trong nhật ký quản trị và thời hạn phiên người dùng. Thời gian lưu nhật ký mặc định là 30 ngày. Bảng nhật ký quản trị mặc định hiển thị 200 dòng mỗi trang. Đặt thời gian chờ phiên thành 0 để phiên hết hạn khi đóng trình duyệt."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Dùng phần này để đặt lại thiết lập ứng dụng xác thực của người dùng. Việc đặt lại sẽ tạo mã bí mật xác thực riêng tư mới và buộc người dùng quét mã QR mới ở lần đăng nhập tiếp theo."
+
+msgid "Deleted user"
+msgstr "Người dùng đã xóa"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Tài khoản quản trị/LDAP admin có thể truy cập trang quản trị Django khi trạng thái nhân viên được bật."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Kiểm soát việc mật khẩu được quản lý cục bộ trong DjOpenKB hay bên ngoài bởi Active Directory."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Bỏ chọn mục này để chặn người dùng truy cập trang wiki chính."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Ngôn ngữ ưu tiên cho giao diện người dùng wiki chính."
+
+msgid "deleted-user"
+msgstr "người-dùng-đã-xóa"
+
+msgid "unknown user"
+msgstr "người dùng không xác định"
+
+msgid "Article created"
+msgstr "Đã tạo bài viết"
+
+msgid "Article updated"
+msgstr "Đã cập nhật bài viết"
+
+msgid "Article deleted"
+msgstr "Đã xóa bài viết"
+
+msgid "Article status changed"
+msgstr "Đã thay đổi trạng thái bài viết"
+
+msgid "Article submitted for approval"
+msgstr "Bài viết đã được gửi để phê duyệt"
+
+msgid "Article approved/published"
+msgstr "Bài viết đã được phê duyệt/xuất bản"
+
+msgid "Article marked pending failed"
+msgstr "Bài viết đã được đánh dấu là chờ duyệt không đạt"
+
+msgid "Orphan article assigned"
+msgstr "Bài viết không còn chủ sở hữu đã được gán"
+
+msgid "Orphan article deleted"
+msgstr "Bài viết không còn chủ sở hữu đã bị xóa"
+
+msgid "Article viewed"
+msgstr "Bài viết đã được xem"
+
+msgid "Article vote up"
+msgstr "Bình chọn thích bài viết"
+
+msgid "Article vote down"
+msgstr "Bình chọn không thích bài viết"
+
+msgid "Article vote changed"
+msgstr "Bình chọn bài viết đã thay đổi"
+
+msgid "Article vote removed"
+msgstr "Bình chọn bài viết đã bị xóa"
+
+msgid "Article image uploaded"
+msgstr "Ảnh bài viết đã được tải lên"
+
+msgid "Article image deleted"
+msgstr "Ảnh bài viết đã bị xóa"
+
+msgid "OpenKB AI question"
+msgstr "Câu hỏi OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI bị giới hạn tốc độ"
+
+msgid "Bulk article import"
+msgstr "Nhập bài viết hàng loạt"
+
+msgid "Admin tool action"
+msgstr "Hành động công cụ quản trị"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Tuổi tối thiểu để dọn dẹp tệp tải lên không dùng đến (phút)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Các tệp mới hơn số phút này sẽ bị công cụ dọn dẹp tệp tải lên không dùng đến bỏ qua. Mặc định là 1440 phút (24 giờ) để tránh xóa ảnh khi người dùng đang soạn thảo bài viết. Đặt thành 0 để phát hiện/xóa tệp tải lên không dùng đến ngay lập tức."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Thời gian lưu nhật ký hoạt động xác thực (ngày)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Nhật ký giám sát xác thực/MFA cũ hơn số ngày này có thể bị xóa bằng lệnh dọn dẹp. Dùng 0 để giữ nhật ký hoạt động xác thực vô thời hạn."
+
+msgid "User session timeout (days)"
+msgstr "Thời gian chờ phiên người dùng (ngày)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Phiên của người dùng đã xác thực sẽ hết hạn sau số ngày này kể từ khi đăng nhập. Sau khi hết hạn, người dùng sẽ bị đăng xuất và phải đăng nhập lại. Đặt thành 0 để phiên hết hạn khi đóng trình duyệt."
+
+msgid "General activity log retention (days)"
+msgstr "Thời gian lưu nhật ký hoạt động chung (ngày)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Nhật ký hoạt động bài viết/bình chọn/ảnh/công cụ quản trị cũ hơn số ngày này có thể bị xóa bằng lệnh dọn dẹp. Dùng 0 để giữ nhật ký hoạt động chung vô thời hạn."
+
+msgid "Admin log rows per page"
+msgstr "Số dòng nhật ký quản trị mỗi trang"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Số dòng hiển thị mỗi trang trong bảng nhật ký Django Admin. Khoảng khuyến nghị: 50 đến 500. Mặc định là 200."
+
+msgid "anonymous"
+msgstr "ẩn danh"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "Bạn sắp đặt lại MFA cho người dùng <strong>{{ username }}</strong>."
+
+msgid "Notes"
+msgstr "Ghi chú"
+
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+msgid "Confirmed at"
+msgstr "Được xác nhận lúc"
+
+msgid "Last verified at"
+msgstr "Xác minh lần cuối lúc"
+
+msgid "Reset at"
+msgstr "Đặt lại lúc"
+
+msgid "Event type"
+msgstr "Loại sự kiện"
+
+msgid "Success"
+msgstr "Thành công"
+
+msgid "Login mode"
+msgstr "Chế độ đăng nhập"
+
+msgid "IP address"
+msgstr "Địa chỉ IP"
+
+msgid "Request method"
+msgstr "Phương thức yêu cầu"
+
+msgid "Details"
+msgstr "Chi tiết"
+
+msgid "Owner"
+msgstr "Chủ sở hữu"
+
+msgid "Author username snapshot"
+msgstr "Bản ghi nhanh tên người dùng của tác giả"
+
+msgid "Author name snapshot"
+msgstr "Bản ghi nhanh tên tác giả"
+
+msgid "Author email snapshot"
+msgstr "Bản ghi nhanh email tác giả"
+
+msgid "Author account type snapshot"
+msgstr "Bản ghi nhanh loại tài khoản tác giả"
+
+msgid "Article body"
+msgstr "Nội dung bài viết"
+
+msgid "Review notes"
+msgstr "Ghi chú xét duyệt"
+
+msgid "Raw path"
+msgstr "Đường dẫn thô"
+
+msgid "Wiki path"
+msgstr "Đường dẫn wiki"
+
+msgid "Image assets"
+msgstr "Tài nguyên hình ảnh"
+
+msgid "Update status"
+msgstr "Trạng thái cập nhật"
+
+msgid "Uploader username snapshot"
+msgstr "Bản ghi nhanh tên người dùng của người tải lên"
+
+msgid "Uploader email snapshot"
+msgstr "Bản ghi nhanh email người tải lên"
+
+msgid "Uploader account type snapshot"
+msgstr "Bản ghi nhanh loại tài khoản người tải lên"
+
+msgid "Upload IP address"
+msgstr "Địa chỉ IP tải lên"
+
+msgid "Upload user agent"
+msgstr "Tác nhân người dùng tải lên"
+
+msgid "Deleted by"
+msgstr "Được xóa bởi"

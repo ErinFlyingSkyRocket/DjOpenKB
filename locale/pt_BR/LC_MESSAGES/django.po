@@ -1756,57 +1756,377 @@ msgstr "Dispositivos MFA do usuário"
 
 msgid "Authentication and Authorization"
 msgstr "Autenticação e autorização"
-
 msgid "Original name"
 msgstr "Nome original"
-
 msgid "Content type"
 msgstr "Tipo de conteúdo"
-
 msgid "Size bytes"
 msgstr "Tamanho em bytes"
-
 msgid "User agent"
 msgstr "Agente de usuário"
-
 msgid "Path"
 msgstr "Caminho"
-
 msgid "Vote"
 msgstr "Voto"
-
 msgid "Configured"
 msgstr "Configurado"
-
 msgid "Setup pending"
 msgstr "Configuração pendente"
-
 msgid "Not set up"
 msgstr "Não configurado"
-
 msgid "Not required"
 msgstr "Não obrigatório"
-
 msgid "Authentication source"
-msgstr "Origem de autenticação"
-
+msgstr "Fonte de autenticação"
 msgid "Can access main site"
 msgstr "Pode acessar o site principal"
-
 msgid "Preferred language"
 msgstr "Idioma preferido"
-
 msgid "Created at"
 msgstr "Criado em"
-
 msgid "Updated at"
 msgstr "Atualizado em"
-
 msgid "Deleted at"
 msgstr "Excluído em"
-
 msgid "Delete reason"
 msgstr "Motivo da exclusão"
-
 msgid "Article status"
 msgstr "Status do artigo"
+
+# DjOpenKB admin i18n sync batch 5
+
+msgid "Account Type"
+msgstr "Tipo de conta"
+
+msgid "Source"
+msgstr "Fonte"
+
+msgid "Main Site Access"
+msgstr "Acesso ao site principal"
+
+msgid "MFA Status"
+msgstr "Status da MFA"
+
+msgid "MFA Reset"
+msgstr "Redefinição da MFA"
+
+msgid "Authenticator key"
+msgstr "Chave do autenticador"
+
+msgid "Review history"
+msgstr "Histórico de revisão"
+
+msgid "Uploader display"
+msgstr "Nome exibido do remetente"
+
+msgid "Size (KB)"
+msgstr "Tamanho (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "A senha de domínio é gerenciada no Active Directory e não pode ser alterada pelo Django Admin."
+
+msgid "Blocked"
+msgstr "Bloqueado"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Não criptografado. Redefina o dispositivo MFA deste usuário e peça que ele configure a MFA novamente."
+
+msgid "Allowed"
+msgstr "Permitido"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Redefine o autenticador deste usuário e exige uma nova configuração por QR. A nova chave do autenticador é privada e não é exibida aos administradores."
+
+msgid "Reset MFA for selected users"
+msgstr "Redefinir MFA dos usuários selecionados"
+
+msgid "Allow selected users to access main site"
+msgstr "Permitir que usuários selecionados acessem o site principal"
+
+msgid "Block selected users from main site"
+msgstr "Bloquear usuários selecionados do site principal"
+
+msgid "Set selected users as User"
+msgstr "Definir usuários selecionados como Usuário"
+
+msgid "Set selected users as Admin"
+msgstr "Definir usuários selecionados como Administrador"
+
+msgid "Set selected users as LDAP user"
+msgstr "Definir usuários selecionados como usuário LDAP"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Definir usuários selecionados como administrador LDAP"
+
+msgid "Not set"
+msgstr "Não definido"
+
+msgid "Encrypted and hidden"
+msgstr "Criptografado e oculto"
+
+msgid "Reset this user's MFA"
+msgstr "Redefinir a MFA deste usuário"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Uma redefinição gera uma nova chave privada do autenticador e força a configuração novamente."
+
+msgid "Reset selected MFA devices"
+msgstr "Redefinir dispositivos MFA selecionados"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Marcar dispositivos MFA selecionados como configuração pendente"
+
+msgid "OpenKB files"
+msgstr "Arquivos OpenKB"
+
+msgid "Article statistics"
+msgstr "Estatísticas do artigo"
+
+msgid "Author snapshot"
+msgstr "Snapshot do autor"
+
+msgid "Timestamps"
+msgstr "Carimbos de data/hora"
+
+msgid "Approve selected pending articles"
+msgstr "Aprovar artigos pendentes selecionados"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Marcar artigos selecionados como pendente com falha"
+
+msgid "Like"
+msgstr "Curtir"
+
+msgid "Dislike"
+msgstr "Não curtir"
+
+msgid "Article upload limits"
+msgstr "Limites de upload de artigos"
+
+msgid "Stray upload cleanup"
+msgstr "Limpeza de uploads órfãos"
+
+msgid "Authentication and session settings"
+msgstr "Configurações de autenticação e sessão"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "As senhas dos usuários de domínio são gerenciadas no Active Directory."
+
+msgid "User does not exist."
+msgstr "O usuário não existe."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Marcado pelo administrador como pendente com falha. Revise este artigo e reenvie-o para aprovação."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Controla quantas imagens coladas/enviadas cada artigo pode conter. O padrão é 50. Defina como 0 para desativar uploads de imagens de artigos."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Controla a idade mínima usada por Meu perfil → Ferramentas administrativas → Limpar arquivos de upload órfãos. Use 0 para mostrar os arquivos imediatamente."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Controla logs de autenticação/MFA, logs gerais de atividade, linhas exibidas nos logs administrativos e a duração das sessões de usuário. A retenção padrão dos logs é de 30 dias. As tabelas de logs administrativos mostram 200 linhas por página por padrão. Defina o tempo limite da sessão como 0 para expirar a sessão quando o navegador for fechado."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Use esta seção para redefinir a configuração do autenticador de um usuário. Uma redefinição gera um novo segredo privado do autenticador e força o usuário a escanear um novo código QR no próximo login."
+
+msgid "Deleted user"
+msgstr "Usuário excluído"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Contas de administrador/administrador LDAP podem acessar o Django Admin quando o status de equipe está habilitado."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Controla se a senha é gerenciada localmente no DjOpenKB ou externamente pelo Active Directory."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Desmarque isto para impedir que o usuário acesse o site wiki principal."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Idioma preferido para a interface principal do wiki."
+
+msgid "deleted-user"
+msgstr "usuário-excluído"
+
+msgid "unknown user"
+msgstr "usuário desconhecido"
+
+msgid "Article created"
+msgstr "Artigo criado"
+
+msgid "Article updated"
+msgstr "Artigo atualizado"
+
+msgid "Article deleted"
+msgstr "Artigo excluído"
+
+msgid "Article status changed"
+msgstr "Status do artigo alterado"
+
+msgid "Article submitted for approval"
+msgstr "Artigo enviado para aprovação"
+
+msgid "Article approved/published"
+msgstr "Artigo aprovado/publicado"
+
+msgid "Article marked pending failed"
+msgstr "Artigo marcado como pendente com falha"
+
+msgid "Orphan article assigned"
+msgstr "Artigo órfão atribuído"
+
+msgid "Orphan article deleted"
+msgstr "Artigo órfão excluído"
+
+msgid "Article viewed"
+msgstr "Artigo visualizado"
+
+msgid "Article vote up"
+msgstr "Voto positivo no artigo"
+
+msgid "Article vote down"
+msgstr "Voto negativo no artigo"
+
+msgid "Article vote changed"
+msgstr "Voto do artigo alterado"
+
+msgid "Article vote removed"
+msgstr "Voto do artigo removido"
+
+msgid "Article image uploaded"
+msgstr "Imagem do artigo enviada"
+
+msgid "Article image deleted"
+msgstr "Imagem do artigo excluída"
+
+msgid "OpenKB AI question"
+msgstr "Pergunta ao OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI limitado por taxa"
+
+msgid "Bulk article import"
+msgstr "Importação em massa de artigos"
+
+msgid "Admin tool action"
+msgstr "Ação de ferramenta administrativa"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Idade mínima para limpeza de uploads órfãos (minutos)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Arquivos mais recentes que este número de minutos são ignorados pela ferramenta de limpeza de uploads órfãos. O padrão é 1440 minutos (24 horas) para evitar a exclusão de imagens enquanto os usuários estão redigindo artigos. Defina como 0 para detectar/excluir uploads órfãos imediatamente."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Retenção dos logs de atividade de autenticação (dias)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Logs de monitoramento de autenticação/MFA mais antigos que este número de dias podem ser excluídos pelo comando de limpeza. Use 0 para manter os logs de atividade de autenticação indefinidamente."
+
+msgid "User session timeout (days)"
+msgstr "Tempo limite da sessão do usuário (dias)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Sessões de usuários autenticados expiram após este número de dias a partir do login. Após a expiração, os usuários são desconectados e precisam fazer login novamente. Defina como 0 para expirar a sessão quando o navegador for fechado."
+
+msgid "General activity log retention (days)"
+msgstr "Retenção dos logs gerais de atividade (dias)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Logs de atividade de artigos/votos/imagens/ferramentas administrativas mais antigos que este número de dias podem ser excluídos pelo comando de limpeza. Use 0 para manter os logs gerais de atividade indefinidamente."
+
+msgid "Admin log rows per page"
+msgstr "Linhas de logs administrativos por página"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Número de linhas a mostrar por página nas tabelas de logs do Django Admin. Intervalo recomendado: 50 a 500. O padrão é 200."
+
+msgid "anonymous"
+msgstr "anônimo"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "Você está prestes a redefinir a MFA do usuário <strong>{{ username }}</strong>."
+
+msgid "Notes"
+msgstr "Observações"
+
+msgid "Confirmed"
+msgstr "Confirmado"
+
+msgid "Confirmed at"
+msgstr "Confirmado em"
+
+msgid "Last verified at"
+msgstr "Última verificação em"
+
+msgid "Reset at"
+msgstr "Redefinido em"
+
+msgid "Event type"
+msgstr "Tipo de evento"
+
+msgid "Success"
+msgstr "Sucesso"
+
+msgid "Login mode"
+msgstr "Modo de login"
+
+msgid "IP address"
+msgstr "Endereço IP"
+
+msgid "Request method"
+msgstr "Método da solicitação"
+
+msgid "Details"
+msgstr "Detalhes"
+
+msgid "Owner"
+msgstr "Proprietário"
+
+msgid "Author username snapshot"
+msgstr "Snapshot do nome de usuário do autor"
+
+msgid "Author name snapshot"
+msgstr "Snapshot do nome do autor"
+
+msgid "Author email snapshot"
+msgstr "Snapshot do e-mail do autor"
+
+msgid "Author account type snapshot"
+msgstr "Snapshot do tipo de conta do autor"
+
+msgid "Article body"
+msgstr "Corpo do artigo"
+
+msgid "Review notes"
+msgstr "Notas de revisão"
+
+msgid "Raw path"
+msgstr "Caminho bruto"
+
+msgid "Wiki path"
+msgstr "Caminho wiki"
+
+msgid "Image assets"
+msgstr "Recursos de imagem"
+
+msgid "Update status"
+msgstr "Status da atualização"
+
+msgid "Uploader username snapshot"
+msgstr "Snapshot do nome de usuário do remetente"
+
+msgid "Uploader email snapshot"
+msgstr "Snapshot do e-mail do remetente"
+
+msgid "Uploader account type snapshot"
+msgstr "Snapshot do tipo de conta do remetente"
+
+msgid "Upload IP address"
+msgstr "Endereço IP do upload"
+
+msgid "Upload user agent"
+msgstr "Agente de usuário do upload"
+
+msgid "Deleted by"
+msgstr "Excluído por"

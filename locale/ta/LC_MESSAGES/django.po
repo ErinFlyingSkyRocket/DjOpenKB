@@ -1758,57 +1758,377 @@ msgstr "பயனர் MFA சாதனங்கள்"
 
 msgid "Authentication and Authorization"
 msgstr "அங்கீகாரம் மற்றும் அனுமதி"
-
 msgid "Original name"
 msgstr "அசல் பெயர்"
-
 msgid "Content type"
 msgstr "உள்ளடக்க வகை"
-
 msgid "Size bytes"
 msgstr "அளவு (பைட்டுகள்)"
-
 msgid "User agent"
 msgstr "பயனர் முகவர்"
-
 msgid "Path"
 msgstr "பாதை"
-
 msgid "Vote"
 msgstr "வாக்கு"
-
 msgid "Configured"
 msgstr "கட்டமைக்கப்பட்டது"
-
 msgid "Setup pending"
 msgstr "அமைப்பு நிலுவையில் உள்ளது"
-
 msgid "Not set up"
 msgstr "அமைக்கப்படவில்லை"
-
 msgid "Not required"
 msgstr "தேவையில்லை"
-
 msgid "Authentication source"
 msgstr "அங்கீகார மூலம்"
-
 msgid "Can access main site"
-msgstr "முதன்மை தளத்தை அணுகலாம்"
-
+msgstr "முக்கிய தளத்தை அணுக முடியும்"
 msgid "Preferred language"
 msgstr "விருப்ப மொழி"
-
 msgid "Created at"
-msgstr "உருவாக்கிய நேரம்"
-
+msgstr "உருவாக்கப்பட்ட நேரம்"
 msgid "Updated at"
-msgstr "புதுப்பித்த நேரம்"
-
+msgstr "புதுப்பிக்கப்பட்ட நேரம்"
 msgid "Deleted at"
-msgstr "நீக்கிய நேரம்"
-
+msgstr "நீக்கப்பட்ட நேரம்"
 msgid "Delete reason"
-msgstr "நீக்க காரணம்"
-
+msgstr "நீக்கக் காரணம்"
 msgid "Article status"
 msgstr "கட்டுரை நிலை"
+
+# DjOpenKB admin i18n sync batch 8
+
+msgid "Account Type"
+msgstr "கணக்கு வகை"
+
+msgid "Source"
+msgstr "மூலம்"
+
+msgid "Main Site Access"
+msgstr "முக்கிய தள அணுகல்"
+
+msgid "MFA Status"
+msgstr "MFA நிலை"
+
+msgid "MFA Reset"
+msgstr "MFA மீட்டமைப்பு"
+
+msgid "Authenticator key"
+msgstr "அங்கீகரிப்பு செயலி விசை"
+
+msgid "Review history"
+msgstr "மதிப்பாய்வு வரலாறு"
+
+msgid "Uploader display"
+msgstr "பதிவேற்றுபவர் காட்சி பெயர்"
+
+msgid "Size (KB)"
+msgstr "அளவு (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "டொமைன் கடவுச்சொல் Active Directory-யில் நிர்வகிக்கப்படுகிறது; அதை Django நிர்வாகத்தில் மாற்ற முடியாது."
+
+msgid "Blocked"
+msgstr "தடுக்கப்பட்டது"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "குறியாக்கப்படவில்லை. இந்த பயனரின் MFA சாதனத்தை மீட்டமைத்து, MFA-வை மீண்டும் அமைக்க பயனரிடம் கேளுங்கள்."
+
+msgid "Allowed"
+msgstr "அனுமதிக்கப்பட்டது"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "இந்த பயனரின் அங்கீகரிப்பு செயலியை மீட்டமைத்து, புதிய QR அமைப்பை தேவைப்படுத்துகிறது. புதிய அங்கீகரிப்பு விசை தனிப்பட்டது; அது நிர்வாகிகளுக்கு காட்டப்படாது."
+
+msgid "Reset MFA for selected users"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களுக்கான MFA-வை மீட்டமை"
+
+msgid "Allow selected users to access main site"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்கள் முக்கிய தளத்தை அணுக அனுமதி"
+
+msgid "Block selected users from main site"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை முக்கிய தளத்திலிருந்து தடு"
+
+msgid "Set selected users as User"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை பயனராக அமை"
+
+msgid "Set selected users as Admin"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை நிர்வாகியாக அமை"
+
+msgid "Set selected users as LDAP user"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை LDAP பயனராக அமை"
+
+msgid "Set selected users as LDAP admin"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை LDAP நிர்வாகியாக அமை"
+
+msgid "Not set"
+msgstr "அமைக்கப்படவில்லை"
+
+msgid "Encrypted and hidden"
+msgstr "குறியாக்கப்பட்டு மறைக்கப்பட்டது"
+
+msgid "Reset this user's MFA"
+msgstr "இந்த பயனரின் MFA-வை மீட்டமை"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "மீட்டமைப்பு புதிய தனிப்பட்ட அங்கீகரிப்பு விசையை உருவாக்கி, அமைப்பை மீண்டும் கட்டாயப்படுத்தும்."
+
+msgid "Reset selected MFA devices"
+msgstr "தேர்ந்தெடுக்கப்பட்ட MFA சாதனங்களை மீட்டமை"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "தேர்ந்தெடுக்கப்பட்ட MFA சாதனங்களை அமைப்பு நிலுவையில் என குறி"
+
+msgid "OpenKB files"
+msgstr "OpenKB கோப்புகள்"
+
+msgid "Article statistics"
+msgstr "கட்டுரை புள்ளிவிவரங்கள்"
+
+msgid "Author snapshot"
+msgstr "ஆசிரியர் பதிவு நகல்"
+
+msgid "Timestamps"
+msgstr "நேர முத்திரைகள்"
+
+msgid "Approve selected pending articles"
+msgstr "தேர்ந்தெடுக்கப்பட்ட நிலுவையிலுள்ள கட்டுரைகளை ஒப்புதல்"
+
+msgid "Mark selected articles as pending failed"
+msgstr "தேர்ந்தெடுக்கப்பட்ட கட்டுரைகளை நிலுவை தோல்வி என குறி"
+
+msgid "Like"
+msgstr "விருப்பம்"
+
+msgid "Dislike"
+msgstr "விருப்பமில்லை"
+
+msgid "Article upload limits"
+msgstr "கட்டுரை பதிவேற்ற வரம்புகள்"
+
+msgid "Stray upload cleanup"
+msgstr "பயன்படாத பதிவேற்றங்களை சுத்தம் செய்தல்"
+
+msgid "Authentication and session settings"
+msgstr "அங்கீகாரம் மற்றும் அமர்வு அமைப்புகள்"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "டொமைன் பயனர்களின் கடவுச்சொற்கள் Active Directory-யில் நிர்வகிக்கப்படுகின்றன."
+
+msgid "User does not exist."
+msgstr "பயனர் இல்லை."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "நிர்வாகியால் நிலுவை தோல்வி என குறிக்கப்பட்டது. இந்த கட்டுரையை மதிப்பாய்வு செய்து, ஒப்புதலுக்காக மீண்டும் சமர்ப்பிக்கவும்."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "ஒவ்வொரு கட்டுரையிலும் எத்தனை ஒட்டப்பட்ட/பதிவேற்றப்பட்ட படங்கள் இருக்கலாம் என்பதை கட்டுப்படுத்துகிறது. இயல்புநிலை 50. கட்டுரை பட பதிவேற்றங்களை முடக்க 0 என அமைக்கவும்."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "என் சுயவிவரம் → நிர்வாக கருவிகள் → பயன்படாத பதிவேற்ற கோப்புகளை சுத்தம் செய் என்பதில் பயன்படுத்தப்படும் குறைந்தபட்ச வயதை கட்டுப்படுத்துகிறது. கோப்புகளை உடனே காட்ட 0 பயன்படுத்தவும்."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "அங்கீகாரம்/MFA பதிவுகள், பொதுச் செயல்பாட்டு பதிவுகள், நிர்வாக பதிவு காட்சி வரிசைகள் மற்றும் பயனர் அமர்வு ஆயுட்காலத்தை கட்டுப்படுத்துகிறது. இயல்புநிலை பதிவு சேமிப்பு 30 நாட்கள். நிர்வாக பதிவு அட்டவணைகள் இயல்பாக ஒரு பக்கத்திற்கு 200 வரிசைகளை காட்டும். உலாவி மூடும்போது அமர்வு முடிவடைய, அமர்வு நேரவரம்பை 0 ஆக அமைக்கவும்."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "பயனரின் அங்கீகரிப்பு செயலி அமைப்பை மீட்டமைக்க இந்த பகுதியைப் பயன்படுத்தவும். மீட்டமைப்பு புதிய தனிப்பட்ட அங்கீகரிப்பு ரகசியத்தை உருவாக்கி, அடுத்த உள்நுழைவில் பயனர் புதிய QR குறியீட்டை ஸ்கேன் செய்ய கட்டாயப்படுத்தும்."
+
+msgid "Deleted user"
+msgstr "நீக்கப்பட்ட பயனர்"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "பணியாளர் நிலை இயக்கப்பட்டிருக்கும்போது நிர்வாகி/LDAP நிர்வாகி கணக்குகள் Django நிர்வாகத்தை அணுக முடியும்."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "கடவுச்சொல் DjOpenKB-யில் உள்ளூராக நிர்வகிக்கப்படுகிறதா அல்லது Active Directory மூலம் வெளிப்புறமாக நிர்வகிக்கப்படுகிறதா என்பதை கட்டுப்படுத்துகிறது."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "பயனர் முக்கிய விக்கி தளத்தை அணுகுவதைத் தடுக்க இதன் குறியை நீக்கவும்."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "முக்கிய விக்கி பயனர் இடைமுகத்திற்கான விருப்ப மொழி."
+
+msgid "deleted-user"
+msgstr "நீக்கப்பட்ட-பயனர்"
+
+msgid "unknown user"
+msgstr "தெரியாத பயனர்"
+
+msgid "Article created"
+msgstr "கட்டுரை உருவாக்கப்பட்டது"
+
+msgid "Article updated"
+msgstr "கட்டுரை புதுப்பிக்கப்பட்டது"
+
+msgid "Article deleted"
+msgstr "கட்டுரை நீக்கப்பட்டது"
+
+msgid "Article status changed"
+msgstr "கட்டுரை நிலை மாற்றப்பட்டது"
+
+msgid "Article submitted for approval"
+msgstr "கட்டுரை ஒப்புதலுக்காக சமர்ப்பிக்கப்பட்டது"
+
+msgid "Article approved/published"
+msgstr "கட்டுரை ஒப்புதல்/வெளியிடப்பட்டது"
+
+msgid "Article marked pending failed"
+msgstr "கட்டுரை நிலுவை தோல்வி என குறிக்கப்பட்டது"
+
+msgid "Orphan article assigned"
+msgstr "உரிமையற்ற கட்டுரை ஒதுக்கப்பட்டது"
+
+msgid "Orphan article deleted"
+msgstr "உரிமையற்ற கட்டுரை நீக்கப்பட்டது"
+
+msgid "Article viewed"
+msgstr "கட்டுரை பார்க்கப்பட்டது"
+
+msgid "Article vote up"
+msgstr "கட்டுரைக்கு ஆதரவு வாக்கு"
+
+msgid "Article vote down"
+msgstr "கட்டுரைக்கு எதிர்ப்பு வாக்கு"
+
+msgid "Article vote changed"
+msgstr "கட்டுரை வாக்கு மாற்றப்பட்டது"
+
+msgid "Article vote removed"
+msgstr "கட்டுரை வாக்கு அகற்றப்பட்டது"
+
+msgid "Article image uploaded"
+msgstr "கட்டுரை படம் பதிவேற்றப்பட்டது"
+
+msgid "Article image deleted"
+msgstr "கட்டுரை படம் நீக்கப்பட்டது"
+
+msgid "OpenKB AI question"
+msgstr "OpenKB AI கேள்வி"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI விகித வரம்பிற்கு உட்பட்டது"
+
+msgid "Bulk article import"
+msgstr "மொத்த கட்டுரை இறக்குமதி"
+
+msgid "Admin tool action"
+msgstr "நிர்வாக கருவி செயல்"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "பயன்படாத பதிவேற்ற சுத்தம் செய்யும் குறைந்தபட்ச வயது (நிமிடங்கள்)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "இந்த அளவு நிமிடங்களுக்குக் குறைவான புதிய கோப்புகள் பயன்படாத பதிவேற்ற சுத்தம் செய்யும் கருவியால் புறக்கணிக்கப்படும். பயனர்கள் கட்டுரை வரைவை உருவாக்கும் போது படங்கள் நீக்கப்படாமல் இருக்க இயல்புநிலை 1440 நிமிடங்கள் (24 மணி நேரம்). பயன்படாத பதிவேற்றங்களை உடனடியாக கண்டறிந்து/நீக்க 0 என அமைக்கவும்."
+
+msgid "Authentication activity log retention (days)"
+msgstr "அங்கீகார செயல்பாட்டு பதிவு சேமிப்பு (நாட்கள்)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "இந்த அளவு நாட்களுக்கும் பழைய அங்கீகாரம்/MFA கண்காணிப்பு பதிவுகளை சுத்தம் செய்யும் கட்டளையால் நீக்கலாம். அங்கீகார செயல்பாட்டு பதிவுகளை காலவரையின்றி வைத்திருக்க 0 பயன்படுத்தவும்."
+
+msgid "User session timeout (days)"
+msgstr "பயனர் அமர்வு நேரவரம்பு (நாட்கள்)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "அங்கீகரிக்கப்பட்ட பயனர் அமர்வுகள் உள்நுழைந்த நாளிலிருந்து இந்த அளவு நாட்கள் கழித்து முடிவடையும். முடிவடைந்த பிறகு, பயனர்கள் வெளியேற்றப்பட்டு மீண்டும் உள்நுழைய வேண்டும். உலாவி மூடும்போது அமர்வு முடிவடைய 0 என அமைக்கவும்."
+
+msgid "General activity log retention (days)"
+msgstr "பொது செயல்பாட்டு பதிவு சேமிப்பு (நாட்கள்)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "இந்த அளவு நாட்களுக்கும் பழைய கட்டுரை/வாக்கு/படம்/நிர்வாக கருவி செயல்பாட்டு பதிவுகளை சுத்தம் செய்யும் கட்டளையால் நீக்கலாம். பொதுச் செயல்பாட்டு பதிவுகளை காலவரையின்றி வைத்திருக்க 0 பயன்படுத்தவும்."
+
+msgid "Admin log rows per page"
+msgstr "ஒரு பக்கத்திற்கான நிர்வாக பதிவு வரிசைகள்"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Django Admin பதிவு அட்டவணைகளில் ஒரு பக்கத்திற்கு காட்ட வேண்டிய வரிசைகளின் எண்ணிக்கை. பரிந்துரைக்கப்படும் வரம்பு: 50 முதல் 500 வரை. இயல்புநிலை 200."
+
+msgid "anonymous"
+msgstr "பெயரில்லா"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "நீங்கள் <strong>{{ username }}</strong> பயனருக்கான MFA-வை மீட்டமைக்க உள்ளீர்கள்."
+
+msgid "Notes"
+msgstr "குறிப்புகள்"
+
+msgid "Confirmed"
+msgstr "உறுதிப்படுத்தப்பட்டது"
+
+msgid "Confirmed at"
+msgstr "உறுதிப்படுத்தப்பட்ட நேரம்"
+
+msgid "Last verified at"
+msgstr "கடைசியாக சரிபார்க்கப்பட்ட நேரம்"
+
+msgid "Reset at"
+msgstr "மீட்டமைக்கப்பட்ட நேரம்"
+
+msgid "Event type"
+msgstr "நிகழ்வு வகை"
+
+msgid "Success"
+msgstr "வெற்றி"
+
+msgid "Login mode"
+msgstr "உள்நுழைவு முறை"
+
+msgid "IP address"
+msgstr "IP முகவரி"
+
+msgid "Request method"
+msgstr "கோரிக்கை முறை"
+
+msgid "Details"
+msgstr "விவரங்கள்"
+
+msgid "Owner"
+msgstr "உரிமையாளர்"
+
+msgid "Author username snapshot"
+msgstr "ஆசிரியர் பயனர்பெயர் பதிவு நகல்"
+
+msgid "Author name snapshot"
+msgstr "ஆசிரியர் பெயர் பதிவு நகல்"
+
+msgid "Author email snapshot"
+msgstr "ஆசிரியர் மின்னஞ்சல் பதிவு நகல்"
+
+msgid "Author account type snapshot"
+msgstr "ஆசிரியர் கணக்கு வகை பதிவு நகல்"
+
+msgid "Article body"
+msgstr "கட்டுரை உள்ளடக்கம்"
+
+msgid "Review notes"
+msgstr "மதிப்பாய்வு குறிப்புகள்"
+
+msgid "Raw path"
+msgstr "மூல பாதை"
+
+msgid "Wiki path"
+msgstr "விக்கி பாதை"
+
+msgid "Image assets"
+msgstr "பட வளங்கள்"
+
+msgid "Update status"
+msgstr "புதுப்பிப்பு நிலை"
+
+msgid "Uploader username snapshot"
+msgstr "பதிவேற்றுபவர் பயனர்பெயர் பதிவு நகல்"
+
+msgid "Uploader email snapshot"
+msgstr "பதிவேற்றுபவர் மின்னஞ்சல் பதிவு நகல்"
+
+msgid "Uploader account type snapshot"
+msgstr "பதிவேற்றுபவர் கணக்கு வகை பதிவு நகல்"
+
+msgid "Upload IP address"
+msgstr "பதிவேற்ற IP முகவரி"
+
+msgid "Upload user agent"
+msgstr "பதிவேற்ற பயனர் முகவர்"
+
+msgid "Deleted by"
+msgstr "நீக்கியவர்"

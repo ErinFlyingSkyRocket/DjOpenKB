@@ -1756,57 +1756,377 @@ msgstr "Kullanıcı MFA cihazları"
 
 msgid "Authentication and Authorization"
 msgstr "Kimlik doğrulama ve yetkilendirme"
-
 msgid "Original name"
 msgstr "Özgün ad"
-
 msgid "Content type"
 msgstr "İçerik türü"
-
 msgid "Size bytes"
-msgstr "Bayt boyutu"
-
+msgstr "Boyut (bayt)"
 msgid "User agent"
 msgstr "Kullanıcı aracısı"
-
 msgid "Path"
 msgstr "Yol"
-
 msgid "Vote"
 msgstr "Oy"
-
 msgid "Configured"
 msgstr "Yapılandırıldı"
-
 msgid "Setup pending"
 msgstr "Kurulum bekliyor"
-
 msgid "Not set up"
 msgstr "Kurulmadı"
-
 msgid "Not required"
 msgstr "Gerekli değil"
-
 msgid "Authentication source"
 msgstr "Kimlik doğrulama kaynağı"
-
 msgid "Can access main site"
 msgstr "Ana siteye erişebilir"
-
 msgid "Preferred language"
 msgstr "Tercih edilen dil"
-
 msgid "Created at"
 msgstr "Oluşturulma zamanı"
-
 msgid "Updated at"
 msgstr "Güncellenme zamanı"
-
 msgid "Deleted at"
 msgstr "Silinme zamanı"
-
 msgid "Delete reason"
 msgstr "Silme nedeni"
-
 msgid "Article status"
 msgstr "Makale durumu"
+
+# DjOpenKB admin i18n sync batch 7
+
+msgid "Account Type"
+msgstr "Hesap türü"
+
+msgid "Source"
+msgstr "Kaynak"
+
+msgid "Main Site Access"
+msgstr "Ana site erişimi"
+
+msgid "MFA Status"
+msgstr "MFA durumu"
+
+msgid "MFA Reset"
+msgstr "MFA sıfırlama"
+
+msgid "Authenticator key"
+msgstr "Kimlik doğrulayıcı anahtarı"
+
+msgid "Review history"
+msgstr "İnceleme geçmişi"
+
+msgid "Uploader display"
+msgstr "Yükleyen görünen adı"
+
+msgid "Size (KB)"
+msgstr "Boyut (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Etki alanı parolası Active Directory tarafından yönetilir ve Django yönetiminden değiştirilemez."
+
+msgid "Blocked"
+msgstr "Engellendi"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Şifrelenmemiş. Bu kullanıcının MFA cihazını sıfırlayın ve kullanıcıdan MFA kurulumunu yeniden yapmasını isteyin."
+
+msgid "Allowed"
+msgstr "İzin verildi"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Bu kullanıcının kimlik doğrulayıcısını sıfırlar ve yeni bir QR kurulumu gerektirir. Yeni kimlik doğrulayıcı anahtarı özeldir ve yöneticilere gösterilmez."
+
+msgid "Reset MFA for selected users"
+msgstr "Seçili kullanıcılar için MFA’yı sıfırla"
+
+msgid "Allow selected users to access main site"
+msgstr "Seçili kullanıcıların ana siteye erişmesine izin ver"
+
+msgid "Block selected users from main site"
+msgstr "Seçili kullanıcıların ana siteye erişimini engelle"
+
+msgid "Set selected users as User"
+msgstr "Seçili kullanıcıları Kullanıcı olarak ayarla"
+
+msgid "Set selected users as Admin"
+msgstr "Seçili kullanıcıları Yönetici olarak ayarla"
+
+msgid "Set selected users as LDAP user"
+msgstr "Seçili kullanıcıları LDAP kullanıcısı olarak ayarla"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Seçili kullanıcıları LDAP yöneticisi olarak ayarla"
+
+msgid "Not set"
+msgstr "Ayarlanmadı"
+
+msgid "Encrypted and hidden"
+msgstr "Şifrelenmiş ve gizli"
+
+msgid "Reset this user's MFA"
+msgstr "Bu kullanıcının MFA’sını sıfırla"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Sıfırlama yeni bir özel kimlik doğrulayıcı anahtarı oluşturur ve kurulumu yeniden zorunlu kılar."
+
+msgid "Reset selected MFA devices"
+msgstr "Seçili MFA cihazlarını sıfırla"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Seçili MFA cihazlarını kurulum bekliyor olarak işaretle"
+
+msgid "OpenKB files"
+msgstr "OpenKB dosyaları"
+
+msgid "Article statistics"
+msgstr "Makale istatistikleri"
+
+msgid "Author snapshot"
+msgstr "Yazar anlık görüntüsü"
+
+msgid "Timestamps"
+msgstr "Zaman damgaları"
+
+msgid "Approve selected pending articles"
+msgstr "Seçili bekleyen makaleleri onayla"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Seçili makaleleri bekleme başarısız olarak işaretle"
+
+msgid "Like"
+msgstr "Beğen"
+
+msgid "Dislike"
+msgstr "Beğenme"
+
+msgid "Article upload limits"
+msgstr "Makale yükleme sınırları"
+
+msgid "Stray upload cleanup"
+msgstr "Sahipsiz yüklemeleri temizleme"
+
+msgid "Authentication and session settings"
+msgstr "Kimlik doğrulama ve oturum ayarları"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Etki alanı kullanıcı parolaları Active Directory tarafından yönetilir."
+
+msgid "User does not exist."
+msgstr "Kullanıcı mevcut değil."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Yönetici tarafından bekleme başarısız olarak işaretlendi. Lütfen bu makaleyi gözden geçirip onay için yeniden gönderin."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Her makalenin kaç yapıştırılmış/yüklenmiş resim içerebileceğini kontrol eder. Varsayılan 50’dir. Makale resmi yüklemelerini devre dışı bırakmak için 0 olarak ayarlayın."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Profilim → Yönetici araçları → Sahipsiz yükleme dosyalarını temizle için kullanılan minimum yaşı kontrol eder. Dosyaları hemen göstermek için 0 kullanın."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Kimlik doğrulama/MFA günlüklerini, genel etkinlik günlüklerini, yönetici günlüklerinde gösterilen satırları ve kullanıcı oturumu süresini kontrol eder. Varsayılan günlük saklama süresi 30 gündür. Yönetici günlük tabloları varsayılan olarak sayfa başına 200 satır gösterir. Tarayıcı kapandığında oturumun sona ermesi için oturum zaman aşımını 0 olarak ayarlayın."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Bu bölümü kullanıcının kimlik doğrulayıcı kurulumunu sıfırlamak için kullanın. Sıfırlama yeni bir özel kimlik doğrulayıcı sırrı oluşturur ve kullanıcının bir sonraki girişte yeni bir QR kodu taramasını zorunlu kılar."
+
+msgid "Deleted user"
+msgstr "Silinmiş kullanıcı"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Personel durumu etkin olduğunda Yönetici/LDAP yönetici hesapları Django yönetimine erişebilir."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Parolanın DjOpenKB içinde yerel olarak mı yoksa Active Directory tarafından harici olarak mı yönetileceğini kontrol eder."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Kullanıcının ana wiki sitesine erişimini engellemek için bu işareti kaldırın."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Ana wiki kullanıcı arayüzü için tercih edilen dil."
+
+msgid "deleted-user"
+msgstr "silinmiş-kullanıcı"
+
+msgid "unknown user"
+msgstr "bilinmeyen kullanıcı"
+
+msgid "Article created"
+msgstr "Makale oluşturuldu"
+
+msgid "Article updated"
+msgstr "Makale güncellendi"
+
+msgid "Article deleted"
+msgstr "Makale silindi"
+
+msgid "Article status changed"
+msgstr "Makale durumu değiştirildi"
+
+msgid "Article submitted for approval"
+msgstr "Makale onaya gönderildi"
+
+msgid "Article approved/published"
+msgstr "Makale onaylandı/yayımlandı"
+
+msgid "Article marked pending failed"
+msgstr "Makale bekleme başarısız olarak işaretlendi"
+
+msgid "Orphan article assigned"
+msgstr "Sahipsiz makale atandı"
+
+msgid "Orphan article deleted"
+msgstr "Sahipsiz makale silindi"
+
+msgid "Article viewed"
+msgstr "Makale görüntülendi"
+
+msgid "Article vote up"
+msgstr "Makaleye olumlu oy"
+
+msgid "Article vote down"
+msgstr "Makaleye olumsuz oy"
+
+msgid "Article vote changed"
+msgstr "Makale oyu değiştirildi"
+
+msgid "Article vote removed"
+msgstr "Makale oyu kaldırıldı"
+
+msgid "Article image uploaded"
+msgstr "Makale resmi yüklendi"
+
+msgid "Article image deleted"
+msgstr "Makale resmi silindi"
+
+msgid "OpenKB AI question"
+msgstr "OpenKB AI sorusu"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI hız sınırına takıldı"
+
+msgid "Bulk article import"
+msgstr "Toplu makale içe aktarma"
+
+msgid "Admin tool action"
+msgstr "Yönetici aracı eylemi"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Sahipsiz yükleme temizliği minimum yaşı (dakika)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Bu dakikadan daha yeni dosyalar sahipsiz yükleme temizleme aracı tarafından yok sayılır. Kullanıcılar makale taslağı hazırlarken resimlerin silinmesini önlemek için varsayılan değer 1440 dakikadır (24 saat). Sahipsiz yüklemeleri hemen algılamak/silmek için 0 olarak ayarlayın."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Kimlik doğrulama etkinlik günlüğü saklama süresi (gün)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Bu kadar günden eski kimlik doğrulama/MFA izleme günlükleri temizleme komutuyla silinebilir. Kimlik doğrulama etkinlik günlüklerini süresiz saklamak için 0 kullanın."
+
+msgid "User session timeout (days)"
+msgstr "Kullanıcı oturumu zaman aşımı (gün)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Kimliği doğrulanmış kullanıcı oturumları girişten bu kadar gün sonra sona erer. Süre dolduktan sonra kullanıcıların oturumu kapatılır ve tekrar giriş yapmaları gerekir. Tarayıcı kapandığında oturumun sona ermesi için 0 olarak ayarlayın."
+
+msgid "General activity log retention (days)"
+msgstr "Genel etkinlik günlüğü saklama süresi (gün)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Bu kadar günden eski makale/oy/resim/yönetici aracı etkinlik günlükleri temizleme komutuyla silinebilir. Genel etkinlik günlüklerini süresiz saklamak için 0 kullanın."
+
+msgid "Admin log rows per page"
+msgstr "Sayfa başına yönetici günlüğü satırı"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Django Admin günlük tablolarında sayfa başına gösterilecek satır sayısı. Önerilen aralık: 50–500. Varsayılan 200’dür."
+
+msgid "anonymous"
+msgstr "anonim"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "<strong>{{ username }}</strong> kullanıcısı için MFA’yı sıfırlamak üzeresiniz."
+
+msgid "Notes"
+msgstr "Notlar"
+
+msgid "Confirmed"
+msgstr "Onaylandı"
+
+msgid "Confirmed at"
+msgstr "Onaylanma zamanı"
+
+msgid "Last verified at"
+msgstr "Son doğrulama zamanı"
+
+msgid "Reset at"
+msgstr "Sıfırlanma zamanı"
+
+msgid "Event type"
+msgstr "Olay türü"
+
+msgid "Success"
+msgstr "Başarılı"
+
+msgid "Login mode"
+msgstr "Giriş modu"
+
+msgid "IP address"
+msgstr "IP adresi"
+
+msgid "Request method"
+msgstr "İstek yöntemi"
+
+msgid "Details"
+msgstr "Ayrıntılar"
+
+msgid "Owner"
+msgstr "Sahip"
+
+msgid "Author username snapshot"
+msgstr "Yazar kullanıcı adı anlık görüntüsü"
+
+msgid "Author name snapshot"
+msgstr "Yazar adı anlık görüntüsü"
+
+msgid "Author email snapshot"
+msgstr "Yazar e-posta anlık görüntüsü"
+
+msgid "Author account type snapshot"
+msgstr "Yazar hesap türü anlık görüntüsü"
+
+msgid "Article body"
+msgstr "Makale gövdesi"
+
+msgid "Review notes"
+msgstr "İnceleme notları"
+
+msgid "Raw path"
+msgstr "Ham yol"
+
+msgid "Wiki path"
+msgstr "Wiki yolu"
+
+msgid "Image assets"
+msgstr "Resim varlıkları"
+
+msgid "Update status"
+msgstr "Güncelleme durumu"
+
+msgid "Uploader username snapshot"
+msgstr "Yükleyen kullanıcı adı anlık görüntüsü"
+
+msgid "Uploader email snapshot"
+msgstr "Yükleyen e-posta anlık görüntüsü"
+
+msgid "Uploader account type snapshot"
+msgstr "Yükleyen hesap türü anlık görüntüsü"
+
+msgid "Upload IP address"
+msgstr "Yükleme IP adresi"
+
+msgid "Upload user agent"
+msgstr "Yükleme kullanıcı aracısı"
+
+msgid "Deleted by"
+msgstr "Silen"

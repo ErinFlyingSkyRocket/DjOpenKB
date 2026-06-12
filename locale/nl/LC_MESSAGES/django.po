@@ -1756,57 +1756,377 @@ msgstr "MFA-apparaten van gebruiker"
 
 msgid "Authentication and Authorization"
 msgstr "Authenticatie en autorisatie"
-
 msgid "Original name"
 msgstr "Oorspronkelijke naam"
-
 msgid "Content type"
 msgstr "Inhoudstype"
-
 msgid "Size bytes"
 msgstr "Grootte in bytes"
-
 msgid "User agent"
-msgstr "User-agent"
-
+msgstr "Useragent"
 msgid "Path"
 msgstr "Pad"
-
 msgid "Vote"
 msgstr "Stem"
-
 msgid "Configured"
 msgstr "Geconfigureerd"
-
 msgid "Setup pending"
-msgstr "Installatie in behandeling"
-
+msgstr "Configuratie in behandeling"
 msgid "Not set up"
 msgstr "Niet ingesteld"
-
 msgid "Not required"
 msgstr "Niet vereist"
-
 msgid "Authentication source"
 msgstr "Authenticatiebron"
-
 msgid "Can access main site"
 msgstr "Kan hoofdsite openen"
-
 msgid "Preferred language"
 msgstr "Voorkeurstaal"
-
 msgid "Created at"
 msgstr "Aangemaakt op"
-
 msgid "Updated at"
 msgstr "Bijgewerkt op"
-
 msgid "Deleted at"
 msgstr "Verwijderd op"
-
 msgid "Delete reason"
-msgstr "Verwijderreden"
-
+msgstr "Reden van verwijdering"
 msgid "Article status"
 msgstr "Artikelstatus"
+
+# DjOpenKB admin i18n sync batch 5
+
+msgid "Account Type"
+msgstr "Accounttype"
+
+msgid "Source"
+msgstr "Bron"
+
+msgid "Main Site Access"
+msgstr "Toegang tot hoofdsite"
+
+msgid "MFA Status"
+msgstr "MFA-status"
+
+msgid "MFA Reset"
+msgstr "MFA-reset"
+
+msgid "Authenticator key"
+msgstr "Authenticator-sleutel"
+
+msgid "Review history"
+msgstr "Beoordelingsgeschiedenis"
+
+msgid "Uploader display"
+msgstr "Weergavenaam uploader"
+
+msgid "Size (KB)"
+msgstr "Grootte (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Het domeinwachtwoord wordt beheerd in Active Directory en kan niet via Django-beheer worden gewijzigd."
+
+msgid "Blocked"
+msgstr "Geblokkeerd"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Niet versleuteld. Reset het MFA-apparaat van deze gebruiker en vraag de gebruiker MFA opnieuw in te stellen."
+
+msgid "Allowed"
+msgstr "Toegestaan"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Reset de authenticator van deze gebruiker en vereist een nieuwe QR-configuratie. De nieuwe authenticator-sleutel is privé en wordt niet aan beheerders getoond."
+
+msgid "Reset MFA for selected users"
+msgstr "MFA resetten voor geselecteerde gebruikers"
+
+msgid "Allow selected users to access main site"
+msgstr "Geselecteerde gebruikers toegang geven tot hoofdsite"
+
+msgid "Block selected users from main site"
+msgstr "Geselecteerde gebruikers blokkeren van hoofdsite"
+
+msgid "Set selected users as User"
+msgstr "Geselecteerde gebruikers instellen als gebruiker"
+
+msgid "Set selected users as Admin"
+msgstr "Geselecteerde gebruikers instellen als beheerder"
+
+msgid "Set selected users as LDAP user"
+msgstr "Geselecteerde gebruikers instellen als LDAP-gebruiker"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Geselecteerde gebruikers instellen als LDAP-beheerder"
+
+msgid "Not set"
+msgstr "Niet ingesteld"
+
+msgid "Encrypted and hidden"
+msgstr "Versleuteld en verborgen"
+
+msgid "Reset this user's MFA"
+msgstr "MFA van deze gebruiker resetten"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "Een reset genereert een nieuwe privé-authenticator-sleutel en dwingt de configuratie opnieuw af."
+
+msgid "Reset selected MFA devices"
+msgstr "Geselecteerde MFA-apparaten resetten"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Geselecteerde MFA-apparaten markeren als configuratie in behandeling"
+
+msgid "OpenKB files"
+msgstr "OpenKB-bestanden"
+
+msgid "Article statistics"
+msgstr "Artikelstatistieken"
+
+msgid "Author snapshot"
+msgstr "Momentopname van auteur"
+
+msgid "Timestamps"
+msgstr "Tijdstempels"
+
+msgid "Approve selected pending articles"
+msgstr "Geselecteerde artikelen in behandeling goedkeuren"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Geselecteerde artikelen markeren als in behandeling mislukt"
+
+msgid "Like"
+msgstr "Vind ik leuk"
+
+msgid "Dislike"
+msgstr "Vind ik niet leuk"
+
+msgid "Article upload limits"
+msgstr "Uploadlimieten voor artikelen"
+
+msgid "Stray upload cleanup"
+msgstr "Opschoning van verweesde uploads"
+
+msgid "Authentication and session settings"
+msgstr "Authenticatie- en sessie-instellingen"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Wachtwoorden van domeingebruikers worden beheerd in Active Directory."
+
+msgid "User does not exist."
+msgstr "Gebruiker bestaat niet."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Door de beheerder gemarkeerd als in behandeling mislukt. Controleer dit artikel en dien het opnieuw ter goedkeuring in."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Bepaalt hoeveel geplakte/geüploade afbeeldingen elk artikel mag bevatten. Standaard is 50. Stel in op 0 om afbeeldingsuploads voor artikelen uit te schakelen."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Bepaalt de minimale leeftijd die wordt gebruikt door Mijn profiel → Beheerhulpmiddelen → Verweesde uploadbestanden opschonen. Gebruik 0 om bestanden direct te tonen."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Beheert authenticatie-/MFA-logboeken, algemene activiteitslogboeken, het aantal rijen in beheerderslogboeken en de levensduur van gebruikerssessies. De standaardbewaring van logboeken is 30 dagen. Beheerderslogtabellen tonen standaard 200 rijen per pagina. Stel sessietime-out in op 0 om de sessie te laten verlopen wanneer de browser wordt gesloten."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Gebruik dit gedeelte om de authenticatorconfiguratie van een gebruiker te resetten. Een reset genereert een nieuw privé-authenticatorgeheim en dwingt de gebruiker bij de volgende aanmelding een nieuwe QR-code te scannen."
+
+msgid "Deleted user"
+msgstr "Verwijderde gebruiker"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Beheerder-/LDAP-beheerderaccounts kunnen Django-beheer openen wanneer de stafstatus is ingeschakeld."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Bepaalt of het wachtwoord lokaal in DjOpenKB of extern door Active Directory wordt beheerd."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Schakel dit uit om te voorkomen dat de gebruiker de hoofdwiki-site opent."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Voorkeurstaal voor de hoofdinterface van de wiki."
+
+msgid "deleted-user"
+msgstr "verwijderde-gebruiker"
+
+msgid "unknown user"
+msgstr "onbekende gebruiker"
+
+msgid "Article created"
+msgstr "Artikel aangemaakt"
+
+msgid "Article updated"
+msgstr "Artikel bijgewerkt"
+
+msgid "Article deleted"
+msgstr "Artikel verwijderd"
+
+msgid "Article status changed"
+msgstr "Artikelstatus gewijzigd"
+
+msgid "Article submitted for approval"
+msgstr "Artikel ter goedkeuring ingediend"
+
+msgid "Article approved/published"
+msgstr "Artikel goedgekeurd/gepubliceerd"
+
+msgid "Article marked pending failed"
+msgstr "Artikel gemarkeerd als in behandeling mislukt"
+
+msgid "Orphan article assigned"
+msgstr "Verweesd artikel toegewezen"
+
+msgid "Orphan article deleted"
+msgstr "Verweesd artikel verwijderd"
+
+msgid "Article viewed"
+msgstr "Artikel bekeken"
+
+msgid "Article vote up"
+msgstr "Positieve artikelstem"
+
+msgid "Article vote down"
+msgstr "Negatieve artikelstem"
+
+msgid "Article vote changed"
+msgstr "Artikelstem gewijzigd"
+
+msgid "Article vote removed"
+msgstr "Artikelstem verwijderd"
+
+msgid "Article image uploaded"
+msgstr "Artikelafbeelding geüpload"
+
+msgid "Article image deleted"
+msgstr "Artikelafbeelding verwijderd"
+
+msgid "OpenKB AI question"
+msgstr "Vraag aan OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI beperkt door limiet"
+
+msgid "Bulk article import"
+msgstr "Bulkimport van artikelen"
+
+msgid "Admin tool action"
+msgstr "Actie van beheerhulpmiddel"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Minimale leeftijd voor opschoning van verweesde uploads (minuten)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Bestanden die nieuwer zijn dan dit aantal minuten worden genegeerd door de opschoningstool voor verweesde uploads. Standaard is 1440 minuten (24 uur) om te voorkomen dat afbeeldingen worden verwijderd terwijl gebruikers artikelen opstellen. Stel in op 0 om verweesde uploads direct te detecteren/verwijderen."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Bewaartermijn authenticatieactiviteitslogboeken (dagen)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Authenticatie-/MFA-monitoringlogboeken ouder dan dit aantal dagen kunnen door de opschoningsopdracht worden verwijderd. Gebruik 0 om authenticatieactiviteitslogboeken onbeperkt te bewaren."
+
+msgid "User session timeout (days)"
+msgstr "Time-out gebruikerssessie (dagen)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Sessies van geauthenticeerde gebruikers verlopen dit aantal dagen na aanmelding. Na afloop worden gebruikers afgemeld en moeten zij opnieuw inloggen. Stel in op 0 om de sessie te laten verlopen wanneer de browser wordt gesloten."
+
+msgid "General activity log retention (days)"
+msgstr "Bewaartermijn algemene activiteitslogboeken (dagen)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Activiteitslogboeken voor artikelen/stemmen/afbeeldingen/beheerhulpmiddelen ouder dan dit aantal dagen kunnen door de opschoningsopdracht worden verwijderd. Gebruik 0 om algemene activiteitslogboeken onbeperkt te bewaren."
+
+msgid "Admin log rows per page"
+msgstr "Beheerderslogregels per pagina"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Aantal rijen dat per pagina wordt weergegeven in Django-beheerlogtabellen. Aanbevolen bereik: 50 tot 500. Standaard is 200."
+
+msgid "anonymous"
+msgstr "anoniem"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "U staat op het punt MFA te resetten voor gebruiker <strong>{{ username }}</strong>."
+
+msgid "Notes"
+msgstr "Notities"
+
+msgid "Confirmed"
+msgstr "Bevestigd"
+
+msgid "Confirmed at"
+msgstr "Bevestigd op"
+
+msgid "Last verified at"
+msgstr "Laatst geverifieerd op"
+
+msgid "Reset at"
+msgstr "Gerest op"
+
+msgid "Event type"
+msgstr "Gebeurtenistype"
+
+msgid "Success"
+msgstr "Geslaagd"
+
+msgid "Login mode"
+msgstr "Aanmeldmodus"
+
+msgid "IP address"
+msgstr "IP-adres"
+
+msgid "Request method"
+msgstr "Verzoekmethode"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Owner"
+msgstr "Eigenaar"
+
+msgid "Author username snapshot"
+msgstr "Momentopname gebruikersnaam auteur"
+
+msgid "Author name snapshot"
+msgstr "Momentopname naam auteur"
+
+msgid "Author email snapshot"
+msgstr "Momentopname e-mailadres auteur"
+
+msgid "Author account type snapshot"
+msgstr "Momentopname accounttype auteur"
+
+msgid "Article body"
+msgstr "Artikelinhoud"
+
+msgid "Review notes"
+msgstr "Beoordelingsnotities"
+
+msgid "Raw path"
+msgstr "Ruw pad"
+
+msgid "Wiki path"
+msgstr "Wikipad"
+
+msgid "Image assets"
+msgstr "Afbeeldingsassets"
+
+msgid "Update status"
+msgstr "Updatestatus"
+
+msgid "Uploader username snapshot"
+msgstr "Momentopname gebruikersnaam uploader"
+
+msgid "Uploader email snapshot"
+msgstr "Momentopname e-mailadres uploader"
+
+msgid "Uploader account type snapshot"
+msgstr "Momentopname accounttype uploader"
+
+msgid "Upload IP address"
+msgstr "Upload-IP-adres"
+
+msgid "Upload user agent"
+msgstr "Upload-useragent"
+
+msgid "Deleted by"
+msgstr "Verwijderd door"

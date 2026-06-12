@@ -1756,57 +1756,377 @@ msgstr "Användarens MFA-enheter"
 
 msgid "Authentication and Authorization"
 msgstr "Autentisering och auktorisering"
-
 msgid "Original name"
 msgstr "Ursprungligt namn"
-
 msgid "Content type"
 msgstr "Innehållstyp"
-
 msgid "Size bytes"
 msgstr "Storlek i byte"
-
 msgid "User agent"
-msgstr "Användaragent"
-
+msgstr "User-Agent"
 msgid "Path"
 msgstr "Sökväg"
-
 msgid "Vote"
 msgstr "Röst"
-
 msgid "Configured"
 msgstr "Konfigurerad"
-
 msgid "Setup pending"
-msgstr "Inställning väntar"
-
+msgstr "Konfiguration väntar"
 msgid "Not set up"
 msgstr "Inte konfigurerad"
-
 msgid "Not required"
 msgstr "Krävs inte"
-
 msgid "Authentication source"
 msgstr "Autentiseringskälla"
-
 msgid "Can access main site"
 msgstr "Kan komma åt huvudsidan"
-
 msgid "Preferred language"
 msgstr "Föredraget språk"
-
 msgid "Created at"
 msgstr "Skapad"
-
 msgid "Updated at"
 msgstr "Uppdaterad"
-
 msgid "Deleted at"
-msgstr "Borttagen"
-
+msgstr "Raderad"
 msgid "Delete reason"
-msgstr "Borttagningsorsak"
-
+msgstr "Raderingsorsak"
 msgid "Article status"
 msgstr "Artikelstatus"
+
+# DjOpenKB admin i18n sync batch 6
+
+msgid "Account Type"
+msgstr "Kontotyp"
+
+msgid "Source"
+msgstr "Källa"
+
+msgid "Main Site Access"
+msgstr "Åtkomst till huvudsidan"
+
+msgid "MFA Status"
+msgstr "MFA-status"
+
+msgid "MFA Reset"
+msgstr "MFA-återställning"
+
+msgid "Authenticator key"
+msgstr "Autentiseringsnyckel"
+
+msgid "Review history"
+msgstr "Granskningshistorik"
+
+msgid "Uploader display"
+msgstr "Visningsnamn för uppladdare"
+
+msgid "Size (KB)"
+msgstr "Storlek (KB)"
+
+msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
+msgstr "Domänlösenordet hanteras i Active Directory och kan inte ändras från Django-admin."
+
+msgid "Blocked"
+msgstr "Blockerad"
+
+msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+msgstr "Inte krypterad. Återställ den här användarens MFA-enhet och be användaren konfigurera MFA igen."
+
+msgid "Allowed"
+msgstr "Tillåten"
+
+msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
+msgstr "Återställer den här användarens autentiserare och kräver en ny QR-konfiguration. Den nya autentiseringsnyckeln är privat och visas inte för administratörer."
+
+msgid "Reset MFA for selected users"
+msgstr "Återställ MFA för valda användare"
+
+msgid "Allow selected users to access main site"
+msgstr "Tillåt valda användare att komma åt huvudsidan"
+
+msgid "Block selected users from main site"
+msgstr "Blockera valda användare från huvudsidan"
+
+msgid "Set selected users as User"
+msgstr "Ange valda användare som användare"
+
+msgid "Set selected users as Admin"
+msgstr "Ange valda användare som administratörer"
+
+msgid "Set selected users as LDAP user"
+msgstr "Ange valda användare som LDAP-användare"
+
+msgid "Set selected users as LDAP admin"
+msgstr "Ange valda användare som LDAP-administratörer"
+
+msgid "Not set"
+msgstr "Inte angivet"
+
+msgid "Encrypted and hidden"
+msgstr "Krypterad och dold"
+
+msgid "Reset this user's MFA"
+msgstr "Återställ den här användarens MFA"
+
+msgid "A reset generates a fresh private authenticator key and forces setup again."
+msgstr "En återställning skapar en ny privat autentiseringsnyckel och tvingar konfigurationen att göras om."
+
+msgid "Reset selected MFA devices"
+msgstr "Återställ valda MFA-enheter"
+
+msgid "Mark selected MFA devices as setup pending"
+msgstr "Markera valda MFA-enheter som väntande på konfiguration"
+
+msgid "OpenKB files"
+msgstr "OpenKB-filer"
+
+msgid "Article statistics"
+msgstr "Artikelstatistik"
+
+msgid "Author snapshot"
+msgstr "Författarögonblicksbild"
+
+msgid "Timestamps"
+msgstr "Tidsstämplar"
+
+msgid "Approve selected pending articles"
+msgstr "Godkänn valda väntande artiklar"
+
+msgid "Mark selected articles as pending failed"
+msgstr "Markera valda artiklar som väntande misslyckade"
+
+msgid "Like"
+msgstr "Gilla"
+
+msgid "Dislike"
+msgstr "Ogilla"
+
+msgid "Article upload limits"
+msgstr "Uppladdningsgränser för artiklar"
+
+msgid "Stray upload cleanup"
+msgstr "Rensning av övergivna uppladdningar"
+
+msgid "Authentication and session settings"
+msgstr "Inställningar för autentisering och sessioner"
+
+msgid "Domain user passwords are managed in Active Directory."
+msgstr "Domänanvändares lösenord hanteras i Active Directory."
+
+msgid "User does not exist."
+msgstr "Användaren finns inte."
+
+msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+msgstr "Markerad som väntande misslyckad av administratören. Granska artikeln och skicka in den för godkännande igen."
+
+msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
+msgstr "Styr hur många inklistrade/uppladdade bilder varje artikel får innehålla. Standard är 50. Ange 0 för att inaktivera bilduppladdningar för artiklar."
+
+msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
+msgstr "Styr minimiåldern som används av Min profil → Administratörsverktyg → Rensa övergivna uppladdningsfiler. Använd 0 för att visa filer direkt."
+
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
+msgstr "Styr autentiserings-/MFA-loggar, allmänna aktivitetsloggar, antal rader i adminloggar och användarsessionens livslängd. Standardlagring för loggar är 30 dagar. Adminloggtabeller visar som standard 200 rader per sida. Ange sessionsgränsen till 0 för att låta sessionen upphöra när webbläsaren stängs."
+
+msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+msgstr "Använd det här avsnittet för att återställa en användares autentiserarkonfiguration. En återställning skapar en ny privat autentiserarhemlighet och tvingar användaren att skanna en ny QR-kod vid nästa inloggning."
+
+msgid "Deleted user"
+msgstr "Raderad användare"
+
+msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
+msgstr "Administratörs-/LDAP-administratörskonton kan komma åt Django-admin när personalstatus är aktiverad."
+
+msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
+msgstr "Styr om lösenordet hanteras lokalt i DjOpenKB eller externt av Active Directory."
+
+msgid "Untick this to block the user from accessing the main wiki site."
+msgstr "Avmarkera detta för att blockera användaren från att komma åt huvud-wikisidan."
+
+msgid "Preferred language for the main wiki user interface."
+msgstr "Föredraget språk för huvud-wikigränssnittet."
+
+msgid "deleted-user"
+msgstr "raderad-användare"
+
+msgid "unknown user"
+msgstr "okänd användare"
+
+msgid "Article created"
+msgstr "Artikel skapad"
+
+msgid "Article updated"
+msgstr "Artikel uppdaterad"
+
+msgid "Article deleted"
+msgstr "Artikel raderad"
+
+msgid "Article status changed"
+msgstr "Artikelstatus ändrad"
+
+msgid "Article submitted for approval"
+msgstr "Artikel skickad för godkännande"
+
+msgid "Article approved/published"
+msgstr "Artikel godkänd/publicerad"
+
+msgid "Article marked pending failed"
+msgstr "Artikel markerad som väntande misslyckad"
+
+msgid "Orphan article assigned"
+msgstr "Föräldralös artikel tilldelad"
+
+msgid "Orphan article deleted"
+msgstr "Föräldralös artikel raderad"
+
+msgid "Article viewed"
+msgstr "Artikel visad"
+
+msgid "Article vote up"
+msgstr "Uppröstning av artikel"
+
+msgid "Article vote down"
+msgstr "Nedröstning av artikel"
+
+msgid "Article vote changed"
+msgstr "Artikelröst ändrad"
+
+msgid "Article vote removed"
+msgstr "Artikelröst borttagen"
+
+msgid "Article image uploaded"
+msgstr "Artikelbild uppladdad"
+
+msgid "Article image deleted"
+msgstr "Artikelbild raderad"
+
+msgid "OpenKB AI question"
+msgstr "Fråga till OpenKB AI"
+
+msgid "OpenKB AI rate limited"
+msgstr "OpenKB AI hastighetsbegränsad"
+
+msgid "Bulk article import"
+msgstr "Massimport av artiklar"
+
+msgid "Admin tool action"
+msgstr "Åtgärd i administratörsverktyg"
+
+msgid "Stray upload cleanup minimum age (minutes)"
+msgstr "Minimiålder för rensning av övergivna uppladdningar (minuter)"
+
+msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
+msgstr "Filer som är nyare än detta antal minuter ignoreras av rensningsverktyget för övergivna uppladdningar. Standard är 1440 minuter (24 timmar) för att undvika att bilder tas bort medan användare skriver artiklar. Ange 0 för att upptäcka/radera övergivna uppladdningar omedelbart."
+
+msgid "Authentication activity log retention (days)"
+msgstr "Lagringstid för autentiseringsaktivitetslogg (dagar)"
+
+msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
+msgstr "Autentiserings-/MFA-övervakningsloggar äldre än detta antal dagar kan tas bort av rensningskommandot. Använd 0 för att behålla autentiseringsaktivitetsloggar på obestämd tid."
+
+msgid "User session timeout (days)"
+msgstr "Timeout för användarsession (dagar)"
+
+msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+msgstr "Autentiserade användarsessioner upphör efter detta antal dagar från inloggning. Efter utgång loggas användare ut och måste logga in igen. Ange 0 för att sessionen ska upphöra när webbläsaren stängs."
+
+msgid "General activity log retention (days)"
+msgstr "Lagringstid för allmän aktivitetslogg (dagar)"
+
+msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
+msgstr "Aktivitetsloggar för artiklar/röster/bilder/adminverktyg äldre än detta antal dagar kan tas bort av rensningskommandot. Använd 0 för att behålla allmänna aktivitetsloggar på obestämd tid."
+
+msgid "Admin log rows per page"
+msgstr "Adminloggrader per sida"
+
+msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
+msgstr "Antal rader som visas per sida i Django Admin-loggtabeller. Rekommenderat intervall: 50 till 500. Standard är 200."
+
+msgid "anonymous"
+msgstr "anonym"
+
+msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
+msgstr "Du håller på att återställa MFA för användaren <strong>{{ username }}</strong>."
+
+msgid "Notes"
+msgstr "Anteckningar"
+
+msgid "Confirmed"
+msgstr "Bekräftad"
+
+msgid "Confirmed at"
+msgstr "Bekräftad vid"
+
+msgid "Last verified at"
+msgstr "Senast verifierad vid"
+
+msgid "Reset at"
+msgstr "Återställd vid"
+
+msgid "Event type"
+msgstr "Händelsetyp"
+
+msgid "Success"
+msgstr "Lyckades"
+
+msgid "Login mode"
+msgstr "Inloggningsläge"
+
+msgid "IP address"
+msgstr "IP-adress"
+
+msgid "Request method"
+msgstr "Begärandemetod"
+
+msgid "Details"
+msgstr "Detaljer"
+
+msgid "Owner"
+msgstr "Ägare"
+
+msgid "Author username snapshot"
+msgstr "Ögonblicksbild av författarens användarnamn"
+
+msgid "Author name snapshot"
+msgstr "Ögonblicksbild av författarens namn"
+
+msgid "Author email snapshot"
+msgstr "Ögonblicksbild av författarens e-post"
+
+msgid "Author account type snapshot"
+msgstr "Ögonblicksbild av författarens kontotyp"
+
+msgid "Article body"
+msgstr "Artikeltext"
+
+msgid "Review notes"
+msgstr "Granskningsanteckningar"
+
+msgid "Raw path"
+msgstr "Rå sökväg"
+
+msgid "Wiki path"
+msgstr "Wiki-sökväg"
+
+msgid "Image assets"
+msgstr "Bildresurser"
+
+msgid "Update status"
+msgstr "Uppdateringsstatus"
+
+msgid "Uploader username snapshot"
+msgstr "Ögonblicksbild av uppladdarens användarnamn"
+
+msgid "Uploader email snapshot"
+msgstr "Ögonblicksbild av uppladdarens e-post"
+
+msgid "Uploader account type snapshot"
+msgstr "Ögonblicksbild av uppladdarens kontotyp"
+
+msgid "Upload IP address"
+msgstr "IP-adress för uppladdning"
+
+msgid "Upload user agent"
+msgstr "User-Agent för uppladdning"
+
+msgid "Deleted by"
+msgstr "Raderad av"
