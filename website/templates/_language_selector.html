@@ -1,6 +1,6 @@
 {% load i18n language_choices %}
 {% get_current_language as CURRENT_LANGUAGE %}
-{% raw_available_languages as AVAILABLE_LANGUAGES %}
+{% configured_language_choices as AVAILABLE_LANGUAGES %}
 <style>
     .navbar-language-selector .dropdown-menu { max-height: 360px; overflow-y: auto; }
     .navbar-language-selector .language-option-form { margin: 0; }

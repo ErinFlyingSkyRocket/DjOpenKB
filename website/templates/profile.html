@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n language_choices %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
@@ -173,7 +173,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <form class="form-inline" method="post" action="{% url 'update_profile' %}" style="display: inline-block;">
                                     {% csrf_token %}
                                     <input type="hidden" name="profile_action" value="language">
-                                    {% raw_available_languages as RAW_AVAILABLE_LANGUAGES %}
+                                    {% configured_language_choices as RAW_AVAILABLE_LANGUAGES %}
                                     <select name="preferred_language" class="form-control input-sm">
                                         {% for code, name in RAW_AVAILABLE_LANGUAGES %}
                                             <option value="{{ code }}" {% if code == profile_preferred_language %}selected{% endif %}>{{ name }}</option>
