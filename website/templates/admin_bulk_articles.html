@@ -20,6 +20,15 @@
         .bulk-card { margin-top: 15px; }
         .bulk-actions .btn { margin-right: 6px; margin-bottom: 6px; }
         .bulk-code { background: #f8fafb; padding: 10px; border: 1px solid #e5eaee; border-radius: 4px; }
+        .bulk-import-modal .modal-dialog { width: 90%; max-width: 900px; }
+        .bulk-import-modal .modal-body { max-height: 70vh; overflow-y: auto; }
+        .bulk-import-summary-table th { width: 190px; background: #f8fafb; }
+        .bulk-import-error-table td:first-child { width: 60px; text-align: center; }
+        .bulk-result-header-success { background: #18bc9c; color: #ffffff; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+        .bulk-result-header-warning { background: #f39c12; color: #ffffff; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+        .bulk-result-header-danger { background: #e74c3c; color: #ffffff; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+        .bulk-result-header-info { background: #3498db; color: #ffffff; border-top-left-radius: 5px; border-top-right-radius: 5px; }
+        .bulk-import-modal .close { color: #ffffff; opacity: .9; text-shadow: none; }
     </style>
 </head>
 <body>
@@ -104,6 +113,86 @@ parts/djopenkb-export-part003-of-003.zip</pre>
             </div>
         </div>
     </div>
+
+    {% if import_result %}
+    <div class="modal fade bulk-import-modal" id="bulkImportResultModal" tabindex="-1" role="dialog" aria-labelledby="bulkImportResultTitle">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bulk-result-header-{{ import_result.status|default:'info' }}">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="bulkImportResultTitle">
+                        <i class="fa fa-table"></i> {{ import_result.title }}
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p class="bulk-muted">{% trans "The import result is shown here so it does not take over the main import/export page." %}</p>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-condensed bulk-import-summary-table">
+                            <tbody>
+                                <tr>
+                                    <th>{% trans "Import file" %}</th>
+                                    <td>{{ import_result.filename|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{% trans "File size" %}</th>
+                                    <td>{{ import_result.size_bytes|filesizeformat }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{% trans "Owner" %}</th>
+                                    <td>{{ import_result.owner|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{% trans "Imported articles" %}</th>
+                                    <td>{{ import_result.imported_count }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{% trans "Warnings / errors" %}</th>
+                                    <td>{{ import_result.error_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if import_result.errors %}
+                        <h5>{% trans "Import details" %}</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-condensed bulk-import-error-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>{% trans "Message" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for error in import_result.errors %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ error }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success">
+                            {% trans "Import completed without warnings or errors." %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                    <a class="btn btn-primary" href="{% url 'home' %}">{% trans "View articles" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#bulkImportResultModal').modal('show');
+        });
+    </script>
+    {% endif %}
     {% include "_footer.html" %}
 </body>
 </html>

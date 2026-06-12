@@ -94,10 +94,28 @@ def clean_stray_upload_files(request):
     })
 
 
+def _set_bulk_import_result(request, *, status, title, filename="", size_bytes=0, imported_count=0, owner="", errors=None):
+    """Store the latest import result so the redirected page can show it in a modal."""
+    error_list = [str(error) for error in (errors or [])]
+    request.session["bulk_import_result"] = {
+        "status": status,
+        "title": str(title),
+        "filename": str(filename or ""),
+        "size_bytes": int(size_bytes or 0),
+        "imported_count": int(imported_count or 0),
+        "owner": str(owner or ""),
+        "error_count": len(error_list),
+        "errors": error_list,
+    }
+
+
 @admin_tools_required
 def admin_bulk_articles(request):
     """Admin page for importing/exporting article bundles."""
-    return render(request, "admin_bulk_articles.html")
+    import_result = request.session.pop("bulk_import_result", None)
+    return render(request, "admin_bulk_articles.html", {
+        "import_result": import_result,
+    })
 
 
 @admin_tools_required
@@ -140,40 +158,98 @@ def import_articles_zip(request):
         return redirect("admin_bulk_articles")
 
     uploaded_zip = request.FILES.get("import_zip")
+    owner_name = request.user.get_username()
+
     if not uploaded_zip:
-        messages.error(request, _("Please choose a .zip file to import."))
+        _set_bulk_import_result(
+            request,
+            status="danger",
+            title=_("Import failed"),
+            errors=[_("Please choose a .zip file to import.")],
+            owner=owner_name,
+        )
         return redirect("admin_bulk_articles")
 
     if not uploaded_zip.name.lower().endswith(".zip"):
-        messages.error(request, _("Only .zip import files are allowed."))
+        _set_bulk_import_result(
+            request,
+            status="danger",
+            title=_("Import failed"),
+            filename=uploaded_zip.name,
+            size_bytes=uploaded_zip.size,
+            owner=owner_name,
+            errors=[_("Only .zip import files are allowed.")],
+        )
         return redirect("admin_bulk_articles")
 
     if uploaded_zip.size > BULK_IMPORT_MAX_UPLOAD_BYTES:
-        messages.error(request, _("Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."))
+        _set_bulk_import_result(
+            request,
+            status="danger",
+            title=_("Import failed"),
+            filename=uploaded_zip.name,
+            size_bytes=uploaded_zip.size,
+            owner=owner_name,
+            errors=[_("Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time.")],
+        )
         return redirect("admin_bulk_articles")
 
     try:
         imported_count, errors = import_articles_from_zip(uploaded_zip, owner=request.user)
     except zipfile.BadZipFile:
-        messages.error(request, _("Invalid zip file."))
+        _set_bulk_import_result(
+            request,
+            status="danger",
+            title=_("Import failed"),
+            filename=uploaded_zip.name,
+            size_bytes=uploaded_zip.size,
+            owner=owner_name,
+            errors=[_("Invalid zip file.")],
+        )
         return redirect("admin_bulk_articles")
     except ValueError as error:
-        messages.error(request, str(error))
+        _set_bulk_import_result(
+            request,
+            status="danger",
+            title=_("Import failed"),
+            filename=uploaded_zip.name,
+            size_bytes=uploaded_zip.size,
+            owner=owner_name,
+            errors=[str(error)],
+        )
         return redirect("admin_bulk_articles")
     except Exception as error:
-        messages.error(request, _("Import failed: %(error)s") % {"error": error})
+        _set_bulk_import_result(
+            request,
+            status="danger",
+            title=_("Import failed"),
+            filename=uploaded_zip.name,
+            size_bytes=uploaded_zip.size,
+            owner=owner_name,
+            errors=[_("Import failed: %(error)s") % {"error": error}],
+        )
         return redirect("admin_bulk_articles")
 
-    if imported_count:
-        messages.success(request, _("Imported %(count)s article(s). Owner set to %(username)s.") % {"count": imported_count, "username": request.user.get_username()})
+    if imported_count and errors:
+        result_status = "warning"
+        result_title = _("Import completed with warnings")
+    elif imported_count:
+        result_status = "success"
+        result_title = _("Import completed")
     else:
-        messages.warning(request, _("No articles were imported."))
+        result_status = "warning"
+        result_title = _("No articles were imported")
 
-    for error in errors[:10]:
-        messages.error(request, error)
-
-    if len(errors) > 10:
-        messages.error(request, f"{len(errors) - 10} more import error(s) were hidden.")
+    _set_bulk_import_result(
+        request,
+        status=result_status,
+        title=result_title,
+        filename=uploaded_zip.name,
+        size_bytes=uploaded_zip.size,
+        imported_count=imported_count,
+        owner=owner_name,
+        errors=errors,
+    )
 
     log_activity(
         request,
@@ -183,7 +259,7 @@ def import_articles_zip(request):
             "size_bytes": uploaded_zip.size,
             "imported_count": imported_count,
             "error_count": len(errors),
-            "owner": request.user.get_username(),
+            "owner": owner_name,
         },
     )
 
