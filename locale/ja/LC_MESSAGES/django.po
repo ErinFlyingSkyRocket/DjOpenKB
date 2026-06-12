@@ -946,7 +946,7 @@ msgstr "MFA/OTP コード"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "NextLabs AD によって管理"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1438,15 +1438,15 @@ msgstr "更新を承認"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "記事 更新 approved and published."
+msgstr "記事の更新が承認され、公開されました。"
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "記事 更新 marked as pending failed. The current published version remains visible."
+msgstr "記事の更新は「保留失敗」としてマークされました。現在公開中のバージョンは引き続き表示されます。"
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "記事 更新 submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "記事の更新が管理者の承認待ちとして送信されました。更新が承認されるまで、公開中のバージョンは引き続き表示されます。"
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
@@ -1654,7 +1654,6 @@ msgstr "記事ごとに最大%(limit)s枚の画像。"
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "この記事は画像アップロード上限に達しました。別の画像をアップロードする前に画像を1枚削除してください。"
 
-
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
 msgstr "戻る"
@@ -1706,3 +1705,51 @@ msgstr "エディターを最後に公開されたバージョンに戻しまし
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "更新の進行状況を保存しました。公開済みバージョンは引き続き表示され、この更新はまだ承認申請されていません。"
+
+msgid "KB"
+msgstr "ナレッジベース"
+
+msgid "Apply"
+msgstr "適用"
+
+msgid "Activity log"
+msgstr "アクティビティログ"
+
+msgid "Activity logs"
+msgstr "アクティビティログ"
+
+msgid "Article image upload log"
+msgstr "記事画像アップロードログ"
+
+msgid "Article image upload logs"
+msgstr "記事画像アップロードログ"
+
+msgid "Authentication activity log"
+msgstr "認証アクティビティログ"
+
+msgid "Authentication activity logs"
+msgstr "認証アクティビティログ"
+
+msgid "Main Site User Profile"
+msgstr "メインサイトのユーザープロフィール"
+
+msgid "Main Site User Profiles"
+msgstr "メインサイトのユーザープロフィール"
+
+msgid "Site setting"
+msgstr "サイト設定"
+
+msgid "Site settings"
+msgstr "サイト設定"
+
+msgid "Suggested Article"
+msgstr "提案された記事"
+
+msgid "Suggested Articles"
+msgstr "提案された記事"
+
+msgid "User MFA device"
+msgstr "ユーザー MFA デバイス"
+
+msgid "User MFA devices"
+msgstr "ユーザー MFA デバイス"

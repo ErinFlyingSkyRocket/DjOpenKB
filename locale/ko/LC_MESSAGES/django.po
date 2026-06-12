@@ -946,7 +946,7 @@ msgstr "MFA/OTP 코드"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "NextLabs AD에서 관리됨"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1130,7 +1130,7 @@ msgstr "상단 문서 페이지 이동"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "이 섹션을 사용하여 사용자의 인증 앱 설정을 재설정합니다. "
+msgstr "이 섹션을 사용하여 사용자의 인증 앱 설정을 재설정합니다."
 
 #: auto-generated
 msgid "User"
@@ -1438,15 +1438,15 @@ msgstr "업데이트 승인"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "문서 업데이트 approved and published."
+msgstr "문서 업데이트가 승인되어 게시되었습니다."
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "문서 업데이트 marked as pending failed. The current published version remains visible."
+msgstr "문서 업데이트가 대기 실패로 표시되었습니다. 현재 게시된 버전은 계속 표시됩니다."
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "문서 업데이트 submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "문서 업데이트가 관리자 승인을 위해 제출되었습니다. 업데이트가 승인될 때까지 게시된 버전은 계속 표시됩니다."
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
@@ -1654,7 +1654,6 @@ msgstr "문서당 최대 %(limit)s개 이미지."
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "이 문서는 이미지 업로드 제한에 도달했습니다. 다른 이미지를 업로드하기 전에 이미지를 하나 삭제하세요."
 
-
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
 msgstr "뒤로"
@@ -1706,3 +1705,51 @@ msgstr "편집기가 마지막 게시 버전으로 되돌아갔습니다."
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "업데이트 진행 상황이 저장되었습니다. 게시된 버전은 계속 표시되며, 업데이트는 아직 승인 요청되지 않았습니다."
+
+msgid "KB"
+msgstr "지식 베이스"
+
+msgid "Apply"
+msgstr "적용"
+
+msgid "Activity log"
+msgstr "활동 로그"
+
+msgid "Activity logs"
+msgstr "활동 로그"
+
+msgid "Article image upload log"
+msgstr "문서 이미지 업로드 로그"
+
+msgid "Article image upload logs"
+msgstr "문서 이미지 업로드 로그"
+
+msgid "Authentication activity log"
+msgstr "인증 활동 로그"
+
+msgid "Authentication activity logs"
+msgstr "인증 활동 로그"
+
+msgid "Main Site User Profile"
+msgstr "메인 사이트 사용자 프로필"
+
+msgid "Main Site User Profiles"
+msgstr "메인 사이트 사용자 프로필"
+
+msgid "Site setting"
+msgstr "사이트 설정"
+
+msgid "Site settings"
+msgstr "사이트 설정"
+
+msgid "Suggested Article"
+msgstr "제안된 문서"
+
+msgid "Suggested Articles"
+msgstr "제안된 문서"
+
+msgid "User MFA device"
+msgstr "사용자 MFA 장치"
+
+msgid "User MFA devices"
+msgstr "사용자 MFA 장치"

@@ -560,7 +560,7 @@ msgid "Article vote"
 msgstr "Голос за статью"
 
 msgid "Article votes"
-msgstr "Голоса за статью"
+msgstr "Голоса за статьи"
 
 msgid "Pending"
 msgstr "Ожидает"
@@ -946,7 +946,7 @@ msgstr "Код MFA/OTP"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "Управляется NextLabs AD"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1130,7 +1130,7 @@ msgstr "Верхняя пагинация статей"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Используйте этот раздел, чтобы сбросить настройку аутентификатора пользователя. "
+msgstr "Используйте этот раздел, чтобы сбросить настройку аутентификатора пользователя."
 
 #: auto-generated
 msgid "User"
@@ -1438,15 +1438,15 @@ msgstr "Утвердить обновление"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "статья обновление approved and published."
+msgstr "Обновление статьи одобрено и опубликовано."
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "статья обновление marked as pending failed. The current published version remains visible."
+msgstr "Обновление статьи помечено как ожидающее с ошибкой. Текущая опубликованная версия остается видимой."
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "статья обновление submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "Обновление статьи отправлено на утверждение администратором. Опубликованная версия будет видна до утверждения обновления."
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
@@ -1654,7 +1654,6 @@ msgstr "Максимум %(limit)s изображений на статью."
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Эта статья достигла лимита загрузки изображений. Удалите одно изображение перед загрузкой другого."
 
-
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
 msgstr "Назад"
@@ -1706,3 +1705,51 @@ msgstr "Редактор возвращён к последней опублик
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Ход обновления сохранён. Опубликованная версия всё ещё видна, а обновление пока не отправлено на проверку."
+
+msgid "KB"
+msgstr "База знаний"
+
+msgid "Apply"
+msgstr "Применить"
+
+msgid "Activity log"
+msgstr "Журнал активности"
+
+msgid "Activity logs"
+msgstr "Журналы активности"
+
+msgid "Article image upload log"
+msgstr "Журнал загрузки изображений статей"
+
+msgid "Article image upload logs"
+msgstr "Журналы загрузки изображений статей"
+
+msgid "Authentication activity log"
+msgstr "Журнал активности аутентификации"
+
+msgid "Authentication activity logs"
+msgstr "Журналы активности аутентификации"
+
+msgid "Main Site User Profile"
+msgstr "Профиль пользователя основного сайта"
+
+msgid "Main Site User Profiles"
+msgstr "Профили пользователей основного сайта"
+
+msgid "Site setting"
+msgstr "Настройка сайта"
+
+msgid "Site settings"
+msgstr "Настройки сайта"
+
+msgid "Suggested Article"
+msgstr "Предложенная статья"
+
+msgid "Suggested Articles"
+msgstr "Предложенные статьи"
+
+msgid "User MFA device"
+msgstr "MFA-устройство пользователя"
+
+msgid "User MFA devices"
+msgstr "MFA-устройства пользователей"

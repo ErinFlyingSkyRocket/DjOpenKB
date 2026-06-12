@@ -946,7 +946,7 @@ msgstr "MFA/OTP kodu"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "NextLabs AD tarafından yönetiliyor"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1130,7 +1130,7 @@ msgstr "Üst makale sayfalama"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Use this section to reset a user's authenticator setup. "
+msgstr "Kullanıcının kimlik doğrulayıcı kurulumunu sıfırlamak için bu bölümü kullanın."
 
 #: auto-generated
 msgid "User"
@@ -1438,19 +1438,19 @@ msgstr "Güncellemeyi onayla"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "makale güncelleme approved and published."
+msgstr "Makale güncellemesi onaylandı ve yayımlandı."
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "makale güncelleme marked as pending failed. The current published version remains visible."
+msgstr "Makale güncellemesi beklemede başarısız olarak işaretlendi. Mevcut yayımlanmış sürüm görünür kalır."
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "makale güncelleme submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "Makale güncellemesi yönetici onayı için gönderildi. Güncelleme onaylanana kadar yayımlanmış sürüm görünür kalır."
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Kullanıcının bu makaleyi veya güncellemeyi yeniden göndermeden önce neyi düzeltmesi gerektiğini açıklayın."
+msgstr "Bu makaleyi veya güncellemeyi yeniden göndermeden önce kullanıcının neyi düzeltmesi gerektiğini açıklayın."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1458,39 +1458,39 @@ msgstr "Bölünmüş paketi dışa aktar"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "manifest.json eksikse içe aktarıcı zip içinde bulunan tüm Markdown dosyalarını içe aktarmayı dener. Bölünmüş paketler için paketi çıkarın ve her parça zipini tek tek içe aktarın."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
-msgstr "Import failed: %(error)s"
+msgstr "İçe aktarma başarısız: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "İçe aktarma zipi çıkarıldıktan sonra çok büyük. İzin verilen en yüksek sıkıştırılmamış boyut 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "İçe aktarma zipi çok büyük. İzin verilen en yüksek boyut 100 MB. Bölünmüş dışa aktarımlar için paketi çıkarın ve her parça zipini tek tek içe aktarın."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
-msgstr "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "%(count)s makale içe aktarıldı. Sahip %(username)s olarak ayarlandı."
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Invalid zip file."
+msgstr "Geçersiz zip dosyası."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Büyük dışa aktarmalar bölünmüş paket olarak indirilebilir:"
+msgstr "Büyük dışa aktarımlar bölünmüş paket olarak indirilebilir:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "Maksimum yükleme boyutu: zip başına 100 MB. Maksimum sıkıştırılmamış boyut: 200 MB. Bölünmüş dışa aktarımlar için önce paketi çıkarın, ardından her parça zipini sırayla içe aktarın."
 
 #: synced from current templates/views
 msgid "No articles were imported."
-msgstr "No articles were imported."
+msgstr "Hiç makale içe aktarılmadı."
 
 #: synced from current templates/views
 msgid "No matching articles found."
@@ -1506,15 +1506,15 @@ msgstr "Bekleyen güncelleme yok"
 
 #: synced from current templates/views
 msgid "No stray upload files were selected for deletion."
-msgstr "No stray upload files were selected for deletion."
+msgstr "Silinmek üzere hiçbir gereksiz yükleme dosyası seçilmedi."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "İçerik çok büyükse normal dışa aktarma otomatik olarak bölünmüş pakete dönüşür. Bölünmüş paketler, parts/ klasörü altında içe aktarılabilir parça ZIP dosyaları içerir; paketi çıkarın ve her parça ZIP dosyasını sırayla içe aktarın."
+msgstr "İçerik çok büyükse normal dışa aktarım otomatik olarak bölünmüş pakete dönüşür. Bölünmüş paketler parts/ klasöründe içe aktarılabilir parça zipleri içerir; paketi çıkarın ve her parça zipini sırayla içe aktarın."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
-msgstr "Only .zip import files are allowed."
+msgstr "Yalnızca .zip içe aktarma dosyalarına izin verilir."
 
 #: synced from current templates/views
 msgid "Pending update"
@@ -1546,11 +1546,11 @@ msgstr "Bekleyen güncellemeler yalnızca Yayınlandı olarak onaylanabilir veya
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
-msgstr "Please choose a .zip file to import."
+msgstr "Lütfen içe aktarılacak bir .zip dosyası seçin."
 
 #: synced from current templates/views
 msgid "Please review the admin comments, update your changes, and submit again."
-msgstr "Please review the admin comments, update your changes, and submit again."
+msgstr "Lütfen yönetici yorumlarını inceleyin, değişikliklerinizi güncelleyin ve tekrar gönderin."
 
 #: synced from current templates/views
 msgid "Published version remains visible"
@@ -1566,7 +1566,7 @@ msgstr "Güncellemeyi reddet"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Yeni makaleleri ve bekleyen güncellemeleri herkese görünür hale gelmeden önce inceleyin."
+msgstr "Yeni makaleleri ve bekleyen güncellemeleri herkese görünür olmadan önce inceleyin."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1574,19 +1574,19 @@ msgstr "Arama sonuçları"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "%(part_name)s atlandı: parça 100 MB’den büyük. İçe aktarmadan önce çıkarıp yeniden bölün."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "OpenKB içinde zaten bulunan yinelenen başlık atlandı: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Skipped duplicate title inside import zip: %(title)s"
+msgstr "İçe aktarma zipindeki yinelenen başlık atlandı: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
-msgstr "Skipped invalid path: %(filename)s"
+msgstr "Geçersiz yol atlandı: %(filename)s"
 
 #: synced from current templates/views
 msgid "Submit update for approval"
@@ -1626,7 +1626,7 @@ msgstr "Güncelleme gönderilme zamanı"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "ve başvurulan tüm yüklenen dosyalar. Bekleyen güncelleme verileri, içe aktarmadan sonra veritabanı ve OpenKB dosyalarının senkron kalması için dahil edilir."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -1653,7 +1653,6 @@ msgstr "Makale başına en fazla %(limit)s görsel."
 
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Bu makale görsel yükleme sınırına ulaştı. Başka bir görsel yüklemeden önce bir görseli kaldırın."
-
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
@@ -1706,3 +1705,51 @@ msgstr "Düzenleyici son yayımlanan sürüme geri döndürüldü."
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Güncelleme ilerlemesi kaydedildi. Yayımlanmış sürüm hâlâ görünür ve güncelleme henüz onaya gönderilmedi."
+
+msgid "KB"
+msgstr "Bilgi bankası"
+
+msgid "Apply"
+msgstr "Uygula"
+
+msgid "Activity log"
+msgstr "Etkinlik günlüğü"
+
+msgid "Activity logs"
+msgstr "Etkinlik günlükleri"
+
+msgid "Article image upload log"
+msgstr "Makale resmi yükleme günlüğü"
+
+msgid "Article image upload logs"
+msgstr "Makale resmi yükleme günlükleri"
+
+msgid "Authentication activity log"
+msgstr "Kimlik doğrulama etkinlik günlüğü"
+
+msgid "Authentication activity logs"
+msgstr "Kimlik doğrulama etkinlik günlükleri"
+
+msgid "Main Site User Profile"
+msgstr "Ana site kullanıcı profili"
+
+msgid "Main Site User Profiles"
+msgstr "Ana site kullanıcı profilleri"
+
+msgid "Site setting"
+msgstr "Site ayarı"
+
+msgid "Site settings"
+msgstr "Site ayarları"
+
+msgid "Suggested Article"
+msgstr "Önerilen makale"
+
+msgid "Suggested Articles"
+msgstr "Önerilen makaleler"
+
+msgid "User MFA device"
+msgstr "Kullanıcı MFA cihazı"
+
+msgid "User MFA devices"
+msgstr "Kullanıcı MFA cihazları"

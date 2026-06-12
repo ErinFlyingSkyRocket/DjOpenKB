@@ -1,30 +1,12 @@
-{% extends "admin/base.html" %}
+{% extends "admin/base_site.html" %}
 {% load i18n %}
-
-{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
 <style>
-  /*
-    DjOpenKB admin usability:
-    - Browser vertical scrolling already works by default.
-    - Wide log tables now get a horizontal scrollbar instead of squeezing columns.
-    - Filters/paginator remain easier to use on long Activity Log pages.
-  */
-  #content {
-    max-width: none;
-  }
-
-  .change-list #content-main {
-    overflow-x: auto;
-    padding-bottom: 1rem;
-  }
-
-  .change-list #result_list {
-    min-width: 1100px;
-  }
-
+  #content { max-width: none; }
+  .change-list #content-main { overflow-x: auto; padding-bottom: 1rem; }
+  .change-list #result_list { min-width: 1100px; }
   .change-list .actions,
   .change-list .paginator {
     position: sticky;
@@ -32,70 +14,35 @@
     z-index: 2;
     background: var(--body-bg);
   }
-
   .djopenkb-admin-language {
-    display: inline-flex;
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.4rem;
     align-items: center;
-    gap: 0.35rem;
-    margin-left: 0.75rem;
-    white-space: nowrap;
+    justify-content: center;
+    flex-wrap: wrap;
   }
-
-  .djopenkb-admin-language select {
-    max-width: 180px;
-    padding: 0.15rem 0.35rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--body-bg);
-    color: var(--body-fg);
-  }
-
-  .djopenkb-admin-language button {
-    padding: 0.15rem 0.45rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--button-bg);
-    color: var(--button-fg);
-    cursor: pointer;
-  }
-
-  .djopenkb-admin-language button:hover,
-  .djopenkb-admin-language button:focus {
-    background: var(--button-hover-bg);
-  }
-
+  .djopenkb-admin-language label { font-weight: 600; }
+  .djopenkb-admin-language select { min-width: 150px; }
   @media (max-width: 1024px) {
-    .change-list #result_list {
-      min-width: 980px;
-    }
-
-    .djopenkb-admin-language {
-      display: flex;
-      margin: 0.5rem 0 0;
-    }
+    .change-list #result_list { min-width: 980px; }
   }
 </style>
 {% endblock %}
 
 {% block branding %}
-<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
-{% if user.is_anonymous %}
-  {% include "admin/color_theme_toggle.html" %}
-{% endif %}
-{% endblock %}
-
-{% block nav-global %}
-{% get_current_language as CURRENT_LANGUAGE %}
-{% get_available_languages as AVAILABLE_LANGUAGES %}
-<form class="djopenkb-admin-language" method="post" action="{% url 'set_site_language' %}">
+{{ block.super }}
+<form class="djopenkb-admin-language" action="{% url 'set_site_language' %}" method="post">
   {% csrf_token %}
   <input type="hidden" name="next" value="{{ request.get_full_path }}">
   <label for="admin-language-select">{% trans "Language" %}</label>
-  <select id="admin-language-select" name="language">
+  <select id="admin-language-select" name="language_code">
+    {% get_current_language as CURRENT_LANGUAGE %}
+    {% get_available_languages as AVAILABLE_LANGUAGES %}
     {% for code, name in AVAILABLE_LANGUAGES %}
       <option value="{{ code }}"{% if code == CURRENT_LANGUAGE %} selected{% endif %}>{{ name }}</option>
     {% endfor %}
   </select>
-  <button type="submit">{% trans "Apply" %}</button>
+  <button type="submit" class="button">{% trans "Apply" %}</button>
 </form>
 {% endblock %}

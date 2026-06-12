@@ -45,31 +45,31 @@ class UserProfile(models.Model):
         max_length=20,
         choices=AccountType.choices,
         default=AccountType.USER,
-        help_text="Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
+        help_text=_("Admin/LDAP admin accounts can access Django admin when staff status is enabled."),
     )
     auth_source = models.CharField(
         max_length=20,
         choices=AuthSource.choices,
         default=AuthSource.LOCAL,
-        help_text="Controls whether the password is managed locally in DjOpenKB or externally by Active Directory.",
+        help_text=_("Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."),
     )
     can_access_main_site = models.BooleanField(
         default=True,
-        help_text="Untick this to block the user from accessing the main wiki site.",
+        help_text=_("Untick this to block the user from accessing the main wiki site."),
     )
     preferred_language = models.CharField(
         max_length=20,
         choices=settings.LANGUAGES,
         default=settings.LANGUAGE_CODE,
-        help_text="Preferred language for the main wiki user interface.",
+        help_text=_("Preferred language for the main wiki user interface."),
     )
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Main Site User Profile"
-        verbose_name_plural = "Main Site User Profiles"
+        verbose_name = _("Main Site User Profile")
+        verbose_name_plural = _("Main Site User Profiles")
 
     def __str__(self):
         return f"{self.user.username} ({self.get_account_type_display()})"
@@ -146,8 +146,8 @@ class UserMFADevice(models.Model):
     reset_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        verbose_name = "User MFA device"
-        verbose_name_plural = "User MFA devices"
+        verbose_name = _("User MFA device")
+        verbose_name_plural = _("User MFA devices")
 
     def __str__(self):
         status = "confirmed" if self.confirmed else "setup pending"
@@ -219,8 +219,8 @@ class AuthActivityLog(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = "Authentication activity log"
-        verbose_name_plural = "Authentication activity logs"
+        verbose_name = _("Authentication activity log")
+        verbose_name_plural = _("Authentication activity logs")
         indexes = [
             models.Index(fields=["-created_at", "event_type"]),
             models.Index(fields=["ip_address", "-created_at"]),
@@ -348,8 +348,8 @@ class SuggestedArticle(models.Model):
 
     class Meta:
         ordering = ["-updated_at", "-created_at"]
-        verbose_name = "Suggested Article"
-        verbose_name_plural = "Suggested Articles"
+        verbose_name = _("Suggested Article")
+        verbose_name_plural = _("Suggested Articles")
 
     def __str__(self):
         return self.title
@@ -489,14 +489,14 @@ class SuggestedArticle(models.Model):
         if self.author_username_snapshot:
             return self.author_username_snapshot
 
-        return "Deleted user"
+        return _("Deleted user")
 
     @property
     def author_username(self):
         if self.owner:
             return self.owner.get_username()
 
-        return self.author_username_snapshot or "deleted-user"
+        return self.author_username_snapshot or _("deleted-user")
 
     @property
     def author_email(self):
@@ -554,8 +554,8 @@ class ArticleVote(models.Model):
     class Meta:
         unique_together = ("article", "user")
         ordering = ["-updated_at"]
-        verbose_name = "Article vote"
-        verbose_name_plural = "Article votes"
+        verbose_name = _("Article vote")
+        verbose_name_plural = _("Article votes")
 
     def __str__(self):
         label = "Helpful" if self.value == self.VoteValue.UP else "Not helpful"
@@ -607,8 +607,8 @@ class ArticleImageUploadLog(models.Model):
 
     class Meta:
         ordering = ["-uploaded_at"]
-        verbose_name = "Article image upload log"
-        verbose_name_plural = "Article image upload logs"
+        verbose_name = _("Article image upload log")
+        verbose_name_plural = _("Article image upload logs")
         indexes = [
             models.Index(fields=["filename"]),
             models.Index(fields=["uploader_username_snapshot", "-uploaded_at"]),
@@ -616,7 +616,7 @@ class ArticleImageUploadLog(models.Model):
         ]
 
     def __str__(self):
-        uploader = self.uploader_username_snapshot or "unknown user"
+        uploader = self.uploader_username_snapshot or _("unknown user")
         return f"{self.filename} uploaded by {uploader}"
 
     @property
@@ -664,26 +664,26 @@ class ActivityLog(models.Model):
     """
 
     class EventType(models.TextChoices):
-        ARTICLE_CREATED = "article_created", "Article created"
-        ARTICLE_UPDATED = "article_updated", "Article updated"
-        ARTICLE_DELETED = "article_deleted", "Article deleted"
-        ARTICLE_STATUS_CHANGED = "article_status_changed", "Article status changed"
-        ARTICLE_SUBMITTED = "article_submitted", "Article submitted for approval"
-        ARTICLE_APPROVED = "article_approved", "Article approved/published"
-        ARTICLE_REJECTED = "article_rejected", "Article marked pending failed"
-        ARTICLE_ORPHAN_ASSIGNED = "article_orphan_assigned", "Orphan article assigned"
-        ARTICLE_ORPHAN_DELETED = "article_orphan_deleted", "Orphan article deleted"
-        ARTICLE_VIEWED = "article_viewed", "Article viewed"
-        VOTE_UP = "vote_up", "Article vote up"
-        VOTE_DOWN = "vote_down", "Article vote down"
-        VOTE_UPDATED = "vote_updated", "Article vote changed"
-        VOTE_REMOVED = "vote_removed", "Article vote removed"
-        IMAGE_UPLOADED = "image_uploaded", "Article image uploaded"
-        IMAGE_DELETED = "image_deleted", "Article image deleted"
-        AI_QUESTION = "ai_question", "OpenKB AI question"
-        AI_RATE_LIMITED = "ai_rate_limited", "OpenKB AI rate limited"
-        BULK_IMPORT = "bulk_import", "Bulk article import"
-        ADMIN_TOOL_ACTION = "admin_tool_action", "Admin tool action"
+        ARTICLE_CREATED = "article_created", _("Article created")
+        ARTICLE_UPDATED = "article_updated", _("Article updated")
+        ARTICLE_DELETED = "article_deleted", _("Article deleted")
+        ARTICLE_STATUS_CHANGED = "article_status_changed", _("Article status changed")
+        ARTICLE_SUBMITTED = "article_submitted", _("Article submitted for approval")
+        ARTICLE_APPROVED = "article_approved", _("Article approved/published")
+        ARTICLE_REJECTED = "article_rejected", _("Article marked pending failed")
+        ARTICLE_ORPHAN_ASSIGNED = "article_orphan_assigned", _("Orphan article assigned")
+        ARTICLE_ORPHAN_DELETED = "article_orphan_deleted", _("Orphan article deleted")
+        ARTICLE_VIEWED = "article_viewed", _("Article viewed")
+        VOTE_UP = "vote_up", _("Article vote up")
+        VOTE_DOWN = "vote_down", _("Article vote down")
+        VOTE_UPDATED = "vote_updated", _("Article vote changed")
+        VOTE_REMOVED = "vote_removed", _("Article vote removed")
+        IMAGE_UPLOADED = "image_uploaded", _("Article image uploaded")
+        IMAGE_DELETED = "image_deleted", _("Article image deleted")
+        AI_QUESTION = "ai_question", _("OpenKB AI question")
+        AI_RATE_LIMITED = "ai_rate_limited", _("OpenKB AI rate limited")
+        BULK_IMPORT = "bulk_import", _("Bulk article import")
+        ADMIN_TOOL_ACTION = "admin_tool_action", _("Admin tool action")
 
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
     event_type = models.CharField(max_length=60, choices=EventType.choices, db_index=True)
@@ -714,8 +714,8 @@ class ActivityLog(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = "Activity log"
-        verbose_name_plural = "Activity logs"
+        verbose_name = _("Activity log")
+        verbose_name_plural = _("Activity logs")
         indexes = [
             models.Index(fields=["-created_at", "event_type"]),
             models.Index(fields=["username", "-created_at"]),
@@ -724,7 +724,7 @@ class ActivityLog(models.Model):
         ]
 
     def __str__(self):
-        actor = self.username or (self.user.get_username() if self.user_id else "anonymous")
+        actor = self.username or (self.user.get_username() if self.user_id else _("anonymous"))
         target = f" - {self.article_title}" if self.article_title else ""
         return f"{self.get_event_type_display()} - {actor}{target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
 
@@ -734,8 +734,8 @@ class SiteSetting(models.Model):
 
     stray_upload_cleanup_min_age_minutes = models.PositiveIntegerField(
         default=1440,
-        verbose_name="Stray upload cleanup minimum age (minutes)",
-        help_text=(
+        verbose_name=_("Stray upload cleanup minimum age (minutes)"),
+        help_text=_(
             "Files newer than this many minutes are ignored by the stray upload cleanup tool. "
             "Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. "
             "Set to 0 to detect/delete stray uploads immediately."
@@ -743,40 +743,40 @@ class SiteSetting(models.Model):
     )
     article_image_upload_limit = models.PositiveIntegerField(
         default=50,
-        verbose_name="Article image upload limit",
-        help_text=(
+        verbose_name=_("Article image upload limit"),
+        help_text=_(
             "Maximum number of pasted/uploaded images allowed per article, including draft, "
             "pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
         ),
     )
     auth_activity_log_retention_days = models.PositiveIntegerField(
         default=30,
-        verbose_name="Authentication activity log retention (days)",
-        help_text=(
+        verbose_name=_("Authentication activity log retention (days)"),
+        help_text=_(
             "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. "
             "Use 0 to keep authentication activity logs indefinitely."
         ),
     )
     session_timeout_days = models.PositiveIntegerField(
         default=30,
-        verbose_name="User session timeout (days)",
-        help_text=(
+        verbose_name=_("User session timeout (days)"),
+        help_text=_(
             "Authenticated user sessions expire after this many days from sign-in. "
             "After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
         ),
     )
     activity_log_retention_days = models.PositiveIntegerField(
         default=30,
-        verbose_name="General activity log retention (days)",
-        help_text=(
+        verbose_name=_("General activity log retention (days)"),
+        help_text=_(
             "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. "
             "Use 0 to keep general activity logs indefinitely."
         ),
     )
     admin_log_rows_per_page = models.PositiveIntegerField(
         default=200,
-        verbose_name="Admin log rows per page",
-        help_text=(
+        verbose_name=_("Admin log rows per page"),
+        help_text=_(
             "Number of rows to show per page in Django Admin log tables. "
             "Recommended range: 50 to 500. Default is 200."
         ),
@@ -785,11 +785,11 @@ class SiteSetting(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Site setting"
-        verbose_name_plural = "Site settings"
+        verbose_name = _("Site setting")
+        verbose_name_plural = _("Site settings")
 
     def __str__(self):
-        return "Site settings"
+        return _("Site settings")
 
     def save(self, *args, **kwargs):
         # Keep this model singleton-like: always use primary key 1.

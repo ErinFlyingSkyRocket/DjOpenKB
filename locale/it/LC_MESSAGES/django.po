@@ -946,7 +946,7 @@ msgstr "Codice MFA/OTP"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "Gestito da NextLabs AD"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1130,7 +1130,7 @@ msgstr "Paginazione superiore articoli"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Use this section to reset a user's authenticator setup. "
+msgstr "Usa questa sezione per reimpostare la configurazione dell’autenticatore di un utente."
 
 #: auto-generated
 msgid "User"
@@ -1438,19 +1438,19 @@ msgstr "Approva aggiornamento"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "articolo aggiornamento approved and published."
+msgstr "L’aggiornamento dell’articolo è stato approvato e pubblicato."
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "articolo aggiornamento marked as pending failed. The current published version remains visible."
+msgstr "L’aggiornamento dell’articolo è stato contrassegnato come in attesa non riuscita. La versione pubblicata attuale rimane visibile."
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "articolo aggiornamento submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "L’aggiornamento dell’articolo è stato inviato per l’approvazione dell’amministratore. La versione pubblicata rimane visibile finché l’aggiornamento non viene approvato."
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Spiega cosa deve correggere l'utente prima di inviare di nuovo questo articolo o aggiornamento."
+msgstr "Spiega cosa deve correggere l’utente prima di inviare di nuovo questo articolo o aggiornamento."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1458,39 +1458,39 @@ msgstr "Esporta pacchetto diviso"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "Se manifest.json manca, l’importatore proverà a importare tutti i file Markdown trovati nello zip. Per i pacchetti suddivisi, estrai il pacchetto e importa ogni zip di parte uno alla volta."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
-msgstr "Import failed: %(error)s"
+msgstr "Importazione non riuscita: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "Lo zip di importazione è troppo grande dopo l’estrazione. La dimensione massima non compressa consentita è 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "Lo zip di importazione è troppo grande. La dimensione massima consentita è 100 MB. Per esportazioni suddivise, estrai il pacchetto e importa ogni zip di parte uno alla volta."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
-msgstr "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "Importati %(count)s articolo/i. Proprietario impostato su %(username)s."
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Invalid zip file."
+msgstr "File zip non valido."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "Le esportazioni di grandi dimensioni potrebbero essere scaricate come pacchetto suddiviso:"
+msgstr "Le esportazioni grandi possono essere scaricate come pacchetto suddiviso:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "Dimensione massima upload: 100 MB per zip. Dimensione massima non compressa: 200 MB. Per esportazioni suddivise, estrai prima il pacchetto e importa ogni zip di parte in ordine."
 
 #: synced from current templates/views
 msgid "No articles were imported."
-msgstr "No articles were imported."
+msgstr "Nessun articolo è stato importato."
 
 #: synced from current templates/views
 msgid "No matching articles found."
@@ -1498,7 +1498,7 @@ msgstr "Nessun articolo corrispondente trovato."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "Nessuna revisione di articoli in sospeso corrisponde alla tua ricerca."
+msgstr "Nessuna revisione articolo in sospeso corrisponde alla ricerca."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1506,15 +1506,15 @@ msgstr "Nessun aggiornamento in attesa"
 
 #: synced from current templates/views
 msgid "No stray upload files were selected for deletion."
-msgstr "No stray upload files were selected for deletion."
+msgstr "Nessun file caricato inutilizzato è stato selezionato per l’eliminazione."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "L'esportazione normale diventa automaticamente un pacchetto suddiviso se il contenuto è troppo grande. I pacchetti suddivisi contengono file ZIP di parti importabili nella cartella parts/; estrai il pacchetto e importa ogni file ZIP di parte in ordine."
+msgstr "L’esportazione normale diventa automaticamente un pacchetto suddiviso se il contenuto è troppo grande. I pacchetti suddivisi contengono zip di parte importabili nella cartella parts/; estrai il pacchetto e importa ogni zip di parte in ordine."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
-msgstr "Only .zip import files are allowed."
+msgstr "Sono consentiti solo file di importazione .zip."
 
 #: synced from current templates/views
 msgid "Pending update"
@@ -1546,11 +1546,11 @@ msgstr "Gli aggiornamenti in sospeso possono solo essere approvati come pubblica
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
-msgstr "Please choose a .zip file to import."
+msgstr "Scegli un file .zip da importare."
 
 #: synced from current templates/views
 msgid "Please review the admin comments, update your changes, and submit again."
-msgstr "Please review the admin comments, update your changes, and submit again."
+msgstr "Controlla i commenti dell’amministratore, aggiorna le modifiche e invia di nuovo."
 
 #: synced from current templates/views
 msgid "Published version remains visible"
@@ -1566,7 +1566,7 @@ msgstr "Rifiuta aggiornamento"
 
 #: synced from current templates/views
 msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Revisiona i nuovi articoli e gli aggiornamenti in sospeso prima che diventino visibili pubblicamente."
+msgstr "Rivedi i nuovi articoli e gli aggiornamenti in sospeso prima che diventino visibili pubblicamente."
 
 #: synced from current templates/views
 msgid "Search results"
@@ -1574,19 +1574,19 @@ msgstr "Risultati di ricerca"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "Saltato %(part_name)s: la parte è più grande di 100 MB. Estraila e dividila di nuovo prima dell’importazione."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "Saltato titolo duplicato già presente in OpenKB: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Skipped duplicate title inside import zip: %(title)s"
+msgstr "Saltato titolo duplicato nello zip di importazione: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
-msgstr "Skipped invalid path: %(filename)s"
+msgstr "Saltato percorso non valido: %(filename)s"
 
 #: synced from current templates/views
 msgid "Submit update for approval"
@@ -1594,7 +1594,7 @@ msgstr "Invia aggiornamento per l'approvazione"
 
 #: synced from current templates/views
 msgid "There are no pending article reviews right now."
-msgstr "Al momento non ci sono revisioni di articoli in sospeso."
+msgstr "Al momento non ci sono revisioni articoli in sospeso."
 
 #: synced from current templates/views
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
@@ -1626,7 +1626,7 @@ msgstr "Aggiornamento inviato il"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "e tutti i file caricati referenziati. I dati degli aggiornamenti in sospeso sono inclusi affinché il database e i file OpenKB restino sincronizzati dopo l’importazione."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -1653,7 +1653,6 @@ msgstr "Massimo %(limit)s immagine/i per articolo."
 
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Questo articolo ha raggiunto il limite di caricamento immagini. Rimuovi un’immagine prima di caricarne un’altra."
-
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
@@ -1706,3 +1705,51 @@ msgstr "L'editor è stato ripristinato all'ultima versione pubblicata."
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "L'avanzamento dell'aggiornamento è stato salvato. La versione pubblicata resta visibile e l'aggiornamento non è ancora stato inviato per l'approvazione."
+
+msgid "KB"
+msgstr "Base di conoscenza"
+
+msgid "Apply"
+msgstr "Applica"
+
+msgid "Activity log"
+msgstr "Registro attività"
+
+msgid "Activity logs"
+msgstr "Registri attività"
+
+msgid "Article image upload log"
+msgstr "Registro caricamenti immagini articolo"
+
+msgid "Article image upload logs"
+msgstr "Registri caricamenti immagini articolo"
+
+msgid "Authentication activity log"
+msgstr "Registro attività di autenticazione"
+
+msgid "Authentication activity logs"
+msgstr "Registri attività di autenticazione"
+
+msgid "Main Site User Profile"
+msgstr "Profilo utente del sito principale"
+
+msgid "Main Site User Profiles"
+msgstr "Profili utente del sito principale"
+
+msgid "Site setting"
+msgstr "Impostazione del sito"
+
+msgid "Site settings"
+msgstr "Impostazioni del sito"
+
+msgid "Suggested Article"
+msgstr "Articolo suggerito"
+
+msgid "Suggested Articles"
+msgstr "Articoli suggeriti"
+
+msgid "User MFA device"
+msgstr "Dispositivo MFA utente"
+
+msgid "User MFA devices"
+msgstr "Dispositivi MFA utente"

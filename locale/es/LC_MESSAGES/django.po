@@ -557,10 +557,10 @@ msgid "Not helpful"
 msgstr "No útil"
 
 msgid "Article vote"
-msgstr "Voto del artículo"
+msgstr "Voto de artículo"
 
 msgid "Article votes"
-msgstr "Votos del artículo"
+msgstr "Votos de artículos"
 
 msgid "Pending"
 msgstr "Pendiente"
@@ -946,7 +946,7 @@ msgstr "Código MFA/OTP"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "Administrado por NextLabs AD"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1130,7 +1130,7 @@ msgstr "Paginación superior de artículos"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Use esta sección para restablecer la configuración del autenticador de un usuario. "
+msgstr "Use esta sección para restablecer la configuración del autenticador de un usuario."
 
 #: auto-generated
 msgid "User"
@@ -1438,15 +1438,15 @@ msgstr "Aprobar actualización"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "artículo actualización approved and published."
+msgstr "La actualización del artículo fue aprobada y publicada."
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "artículo actualización marked as pending failed. The current published version remains visible."
+msgstr "La actualización del artículo se marcó como pendiente fallida. La versión publicada actual sigue visible."
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "artículo actualización submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "La actualización del artículo se envió para aprobación del administrador. La versión publicada seguirá visible hasta que se apruebe la actualización."
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
@@ -1654,7 +1654,6 @@ msgstr "Máximo de %(limit)s imagen(es) por artículo."
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Este artículo ha alcanzado el límite de carga de imágenes. Elimine una imagen antes de cargar otra."
 
-
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
 msgstr "Atrás"
@@ -1706,3 +1705,51 @@ msgstr "El editor volvió a la última versión publicada."
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "El progreso de la actualización se guardó. La versión publicada sigue visible y la actualización aún no se ha enviado para aprobación."
+
+msgid "KB"
+msgstr "Base de conocimientos"
+
+msgid "Apply"
+msgstr "Aplicar"
+
+msgid "Activity log"
+msgstr "Registro de actividad"
+
+msgid "Activity logs"
+msgstr "Registros de actividad"
+
+msgid "Article image upload log"
+msgstr "Registro de carga de imágenes de artículos"
+
+msgid "Article image upload logs"
+msgstr "Registros de carga de imágenes de artículos"
+
+msgid "Authentication activity log"
+msgstr "Registro de actividad de autenticación"
+
+msgid "Authentication activity logs"
+msgstr "Registros de actividad de autenticación"
+
+msgid "Main Site User Profile"
+msgstr "Perfil de usuario del sitio principal"
+
+msgid "Main Site User Profiles"
+msgstr "Perfiles de usuario del sitio principal"
+
+msgid "Site setting"
+msgstr "Configuración del sitio"
+
+msgid "Site settings"
+msgstr "Configuración del sitio"
+
+msgid "Suggested Article"
+msgstr "Artículo sugerido"
+
+msgid "Suggested Articles"
+msgstr "Artículos sugeridos"
+
+msgid "User MFA device"
+msgstr "Dispositivo MFA de usuario"
+
+msgid "User MFA devices"
+msgstr "Dispositivos MFA de usuario"

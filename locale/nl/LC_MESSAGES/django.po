@@ -946,7 +946,7 @@ msgstr "MFA/OTP-code"
 
 #: auto-generated
 msgid "Managed by NextLabs AD"
-msgstr "Managed by NextLabs AD"
+msgstr "Beheerd door NextLabs AD"
 
 #: auto-generated
 msgid "Manual setup key"
@@ -1130,7 +1130,7 @@ msgstr "Bovenste artikelpaginering"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Use this section to reset a user's authenticator setup. "
+msgstr "Gebruik dit gedeelte om de authenticatorconfiguratie van een gebruiker opnieuw in te stellen."
 
 #: auto-generated
 msgid "User"
@@ -1438,19 +1438,19 @@ msgstr "Update goedkeuren"
 
 #: synced from current templates/views
 msgid "Article update approved and published."
-msgstr "artikel update approved and published."
+msgstr "De artikelupdate is goedgekeurd en gepubliceerd."
 
 #: synced from current templates/views
 msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "artikel update marked as pending failed. The current published version remains visible."
+msgstr "De artikelupdate is gemarkeerd als mislukt in afwachting. De huidige gepubliceerde versie blijft zichtbaar."
 
 #: synced from current templates/views
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "artikel update submitted for admin approval. The published version is still visible until the update is approved."
+msgstr "De artikelupdate is ingediend voor goedkeuring door een beheerder. De gepubliceerde versie blijft zichtbaar totdat de update is goedgekeurd."
 
 #: synced from current templates/views
 msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Leg uit wat de gebruiker moet aanpassen voordat dit artikel of deze update opnieuw wordt ingediend."
+msgstr "Leg uit wat de gebruiker moet corrigeren voordat dit artikel of deze update opnieuw wordt ingediend."
 
 #: synced from current templates/views
 msgid "Export split package"
@@ -1458,27 +1458,27 @@ msgstr "Gesplitst pakket exporteren"
 
 #: synced from current templates/views
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
+msgstr "Als manifest.json ontbreekt, probeert de importfunctie alle Markdown-bestanden in het zipbestand te importeren. Voor gesplitste pakketten: pak het pakket uit en importeer elk deel-zipbestand één voor één."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
-msgstr "Import failed: %(error)s"
+msgstr "Importeren mislukt: %(error)s"
 
 #: synced from current templates/views
 msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
+msgstr "Het import-zipbestand is na uitpakken te groot. De maximaal toegestane ongecomprimeerde grootte is 200 MB."
 
 #: synced from current templates/views
 msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
+msgstr "Het import-zipbestand is te groot. De maximaal toegestane grootte is 100 MB. Voor gesplitste exports: pak het gesplitste pakket uit en importeer elk deel-zipbestand één voor één."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
-msgstr "Imported %(count)s article(s). Owner set to %(username)s."
+msgstr "%(count)s artikel(en) geïmporteerd. Eigenaar ingesteld op %(username)s."
 
 #: synced from current templates/views
 msgid "Invalid zip file."
-msgstr "Invalid zip file."
+msgstr "Ongeldig zipbestand."
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
@@ -1486,11 +1486,11 @@ msgstr "Grote exports kunnen worden gedownload als een gesplitst pakket:"
 
 #: synced from current templates/views
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
+msgstr "Maximale uploadgrootte: 100 MB per zip. Maximale ongecomprimeerde grootte: 200 MB. Voor gesplitste exports: pak eerst het gesplitste pakket uit en importeer daarna elk deel-zipbestand op volgorde."
 
 #: synced from current templates/views
 msgid "No articles were imported."
-msgstr "No articles were imported."
+msgstr "Er zijn geen artikelen geïmporteerd."
 
 #: synced from current templates/views
 msgid "No matching articles found."
@@ -1498,7 +1498,7 @@ msgstr "Geen overeenkomende artikelen gevonden."
 
 #: synced from current templates/views
 msgid "No pending article reviews match your search."
-msgstr "Er zijn geen wachtende artikelbeoordelingen die overeenkomen met je zoekopdracht."
+msgstr "Geen wachtende artikelbeoordelingen komen overeen met je zoekopdracht."
 
 #: synced from current templates/views
 msgid "No pending update"
@@ -1506,7 +1506,7 @@ msgstr "Geen update in afwachting"
 
 #: synced from current templates/views
 msgid "No stray upload files were selected for deletion."
-msgstr "No stray upload files were selected for deletion."
+msgstr "Er zijn geen ongebruikte uploadbestanden geselecteerd voor verwijdering."
 
 #: synced from current templates/views
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
@@ -1514,7 +1514,7 @@ msgstr "Een normale export wordt automatisch een gesplitst pakket als de inhoud 
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
-msgstr "Only .zip import files are allowed."
+msgstr "Alleen .zip-importbestanden zijn toegestaan."
 
 #: synced from current templates/views
 msgid "Pending update"
@@ -1546,11 +1546,11 @@ msgstr "Openstaande updates kunnen alleen als gepubliceerd worden goedgekeurd of
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
-msgstr "Please choose a .zip file to import."
+msgstr "Kies een .zip-bestand om te importeren."
 
 #: synced from current templates/views
 msgid "Please review the admin comments, update your changes, and submit again."
-msgstr "Please review the admin comments, update your changes, and submit again."
+msgstr "Controleer de opmerkingen van de beheerder, werk je wijzigingen bij en dien opnieuw in."
 
 #: synced from current templates/views
 msgid "Published version remains visible"
@@ -1574,19 +1574,19 @@ msgstr "Zoekresultaten"
 
 #: synced from current templates/views
 msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
+msgstr "%(part_name)s overgeslagen: dit deel is groter dan 100 MB. Pak het uit en splits het opnieuw vóór import."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
-msgstr "Skipped duplicate title already in OpenKB: %(title)s"
+msgstr "Dubbele titel die al in OpenKB bestaat overgeslagen: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title inside import zip: %(title)s"
-msgstr "Skipped duplicate title inside import zip: %(title)s"
+msgstr "Dubbele titel in import-zip overgeslagen: %(title)s"
 
 #: synced from current templates/views
 msgid "Skipped invalid path: %(filename)s"
-msgstr "Skipped invalid path: %(filename)s"
+msgstr "Ongeldig pad overgeslagen: %(filename)s"
 
 #: synced from current templates/views
 msgid "Submit update for approval"
@@ -1626,7 +1626,7 @@ msgstr "Update ingediend op"
 
 #: synced from current templates/views
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
+msgstr "en alle gekoppelde geüploade bestanden. Wachtende updategegevens zijn inbegrepen zodat de database en OpenKB-bestanden na import gesynchroniseerd blijven."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -1653,7 +1653,6 @@ msgstr "Maximaal %(limit)s afbeelding(en) per artikel."
 
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Dit artikel heeft de uploadlimiet voor afbeeldingen bereikt. Verwijder een afbeelding voordat u er nog een uploadt."
-
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
@@ -1706,3 +1705,51 @@ msgstr "De editor is teruggezet naar de laatst gepubliceerde versie."
 # Added by DjOpenKB locale full cleanup patch
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Updatevoortgang opgeslagen. De gepubliceerde versie blijft zichtbaar en de update is nog niet ter goedkeuring ingediend."
+
+msgid "KB"
+msgstr "Kennisbank"
+
+msgid "Apply"
+msgstr "Toepassen"
+
+msgid "Activity log"
+msgstr "Activiteitenlog"
+
+msgid "Activity logs"
+msgstr "Activiteitenlogs"
+
+msgid "Article image upload log"
+msgstr "Log voor upload van artikelafbeeldingen"
+
+msgid "Article image upload logs"
+msgstr "Logs voor upload van artikelafbeeldingen"
+
+msgid "Authentication activity log"
+msgstr "Authenticatieactiviteitenlog"
+
+msgid "Authentication activity logs"
+msgstr "Authenticatieactiviteitenlogs"
+
+msgid "Main Site User Profile"
+msgstr "Gebruikersprofiel hoofdsite"
+
+msgid "Main Site User Profiles"
+msgstr "Gebruikersprofielen hoofdsite"
+
+msgid "Site setting"
+msgstr "Site-instelling"
+
+msgid "Site settings"
+msgstr "Site-instellingen"
+
+msgid "Suggested Article"
+msgstr "Voorgesteld artikel"
+
+msgid "Suggested Articles"
+msgstr "Voorgestelde artikelen"
+
+msgid "User MFA device"
+msgstr "MFA-apparaat van gebruiker"
+
+msgid "User MFA devices"
+msgstr "MFA-apparaten van gebruiker"

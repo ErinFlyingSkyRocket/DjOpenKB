@@ -115,9 +115,9 @@ class UserAdmin(DefaultUserAdmin):
         return bool(profile and getattr(profile, "is_ad_managed", False))
 
     def domain_password_status(self, obj):
-        return "Domain password is managed in Active Directory and cannot be changed from Django admin."
+        return _("Domain password is managed in Active Directory and cannot be changed from Django admin.")
 
-    domain_password_status.short_description = "Password"
+    domain_password_status.short_description = _("Password")
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
@@ -168,7 +168,7 @@ class UserAdmin(DefaultUserAdmin):
     def user_change_password(self, request, id, form_url=""):
         obj = self.get_object(request, id)
         if obj and self._is_domain_user(obj):
-            raise Http404("Domain user passwords are managed in Active Directory.")
+            raise Http404(_("Domain user passwords are managed in Active Directory."))
         return super().user_change_password(request, id, form_url)
 
     def save_model(self, request, obj, form, change):
@@ -189,7 +189,7 @@ class UserAdmin(DefaultUserAdmin):
             return "-"
         return profile.get_account_type_display()
 
-    main_site_account_type.short_description = "Account Type"
+    main_site_account_type.short_description = _("Account Type")
 
     def main_site_auth_source(self, obj):
         profile = getattr(obj, "kb_profile", None)
@@ -197,20 +197,20 @@ class UserAdmin(DefaultUserAdmin):
             return "-"
         return profile.get_auth_source_display()
 
-    main_site_auth_source.short_description = "Source"
+    main_site_auth_source.short_description = _("Source")
 
     def main_site_access(self, obj):
         profile = getattr(obj, "kb_profile", None)
 
         if not obj.is_active:
-            return "Inactive"
+            return _("Inactive")
 
         if profile and profile.can_access_main_site:
-            return "Allowed"
+            return _("Allowed")
 
-        return "Blocked"
+        return _("Blocked")
 
-    main_site_access.short_description = "Main Site Access"
+    main_site_access.short_description = _("Main Site Access")
 
 
     def mfa_status_display(self, obj):
@@ -221,20 +221,23 @@ class UserAdmin(DefaultUserAdmin):
             return format_html('<span style="color:#a15c00;font-weight:600;">{}</span>', status)
         return format_html('<span style="color:#8a1f11;font-weight:600;">{}</span>', status)
 
-    mfa_status_display.short_description = "MFA Status"
+    mfa_status_display.short_description = _("MFA Status")
 
     def mfa_reset_button(self, obj):
         if not obj or not obj.pk:
             return "-"
         url = reverse("admin:kb_user_reset_mfa", args=[quote(obj.pk)])
         return format_html(
-            '<a class="button" href="{}">Reset MFA</a><p class="help">'
-            'Resets this user\'s authenticator and requires a fresh QR setup. '
-            'The new authenticator key is private and is not displayed to admins.</p>',
+            '<a class="button" href="{}">{}</a><p class="help">{}</p>',
             url,
+            _("Reset MFA"),
+            _(
+                "Resets this user's authenticator and requires a fresh QR setup. "
+                "The new authenticator key is private and is not displayed to admins."
+            ),
         )
 
-    mfa_reset_button.short_description = "MFA Reset"
+    mfa_reset_button.short_description = _("MFA Reset")
 
     def get_urls(self):
         urls = super().get_urls()
@@ -250,7 +253,7 @@ class UserAdmin(DefaultUserAdmin):
     def reset_user_mfa_view(self, request, user_id):
         user = self.get_object(request, user_id)
         if user is None:
-            raise Http404("User does not exist.")
+            raise Http404(_("User does not exist."))
 
         opts = self.model._meta
         user_change_url = reverse(
@@ -287,7 +290,7 @@ class UserAdmin(DefaultUserAdmin):
         }
         return TemplateResponse(request, "admin/kb/reset_mfa_confirm.html", context)
 
-    @admin.action(description="Reset MFA for selected users")
+    @admin.action(description=_("Reset MFA for selected users"))
     def reset_mfa_for_selected_users(self, request, queryset):
         count = 0
         for user in queryset:
@@ -308,21 +311,21 @@ class UserAdmin(DefaultUserAdmin):
             level=messages.SUCCESS,
         )
 
-    @admin.action(description="Allow selected users to access main site")
+    @admin.action(description=_("Allow selected users to access main site"))
     def allow_main_site_access(self, request, queryset):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.can_access_main_site = True
             profile.save(update_fields=["can_access_main_site", "updated_at"])
 
-    @admin.action(description="Block selected users from main site")
+    @admin.action(description=_("Block selected users from main site"))
     def block_main_site_access(self, request, queryset):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.can_access_main_site = False
             profile.save(update_fields=["can_access_main_site", "updated_at"])
 
-    @admin.action(description="Set selected users as User")
+    @admin.action(description=_("Set selected users as User"))
     def make_django_user(self, request, queryset):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
@@ -330,7 +333,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
 
-    @admin.action(description="Set selected users as Admin")
+    @admin.action(description=_("Set selected users as Admin"))
     def make_django_admin(self, request, queryset):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
@@ -338,7 +341,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
 
-    @admin.action(description="Set selected users as LDAP user")
+    @admin.action(description=_("Set selected users as LDAP user"))
     def make_ldap_user(self, request, queryset):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
@@ -346,7 +349,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
 
-    @admin.action(description="Set selected users as LDAP admin")
+    @admin.action(description=_("Set selected users as LDAP admin"))
     def make_ldap_admin(self, request, queryset):
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
@@ -413,12 +416,12 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
 
     def secret_protected_display(self, obj):
         if not obj or not obj.secret:
-            return "Not set"
+            return _("Not set")
         if obj.secret_is_encrypted:
-            return "Encrypted and hidden"
-        return "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
+            return _("Encrypted and hidden")
+        return _("Not encrypted. Reset this user MFA device and ask the user to set up MFA again.")
 
-    secret_protected_display.short_description = "Authenticator key"
+    secret_protected_display.short_description = _("Authenticator key")
 
     def user_account_type(self, obj):
         profile = getattr(obj.user, "kb_profile", None)
@@ -426,21 +429,22 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
             return "-"
         return profile.get_account_type_display()
 
-    user_account_type.short_description = "Account Type"
+    user_account_type.short_description = _("Account Type")
 
     def reset_button(self, obj):
         if not obj or not obj.user_id:
             return "-"
         url = reverse("admin:kb_user_reset_mfa", args=[quote(obj.user_id)])
         return format_html(
-            "<a class=\"button\" href=\"{}\">Reset this user&#x27;s MFA</a><p class=\"help\">"
-            'A reset generates a fresh private authenticator key and forces setup again.</p>',
+            '<a class="button" href="{}">{}</a><p class="help">{}</p>',
             url,
+            _("Reset this user's MFA"),
+            _("A reset generates a fresh private authenticator key and forces setup again."),
         )
 
-    reset_button.short_description = "MFA Reset"
+    reset_button.short_description = _("MFA Reset")
 
-    @admin.action(description="Reset selected MFA devices")
+    @admin.action(description=_("Reset selected MFA devices"))
     def reset_selected_mfa_devices(self, request, queryset):
         count = 0
         for device in queryset.select_related("user"):
@@ -461,7 +465,7 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
             level=messages.SUCCESS,
         )
 
-    @admin.action(description="Mark selected MFA devices as setup pending")
+    @admin.action(description=_("Mark selected MFA devices as setup pending"))
     def mark_selected_devices_setup_pending(self, request, queryset):
         count = 0
         for device in queryset:
@@ -539,7 +543,7 @@ class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         value = obj.user_agent or "-"
         return value[:80] + ("..." if len(value) > 80 else "")
 
-    short_user_agent.short_description = "User agent"
+    short_user_agent.short_description = _("User agent")
 
 
 @admin.register(ActivityLog)
@@ -599,7 +603,7 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         value = obj.path or "-"
         return value[:80] + ("..." if len(value) > 80 else "")
 
-    short_path.short_description = "Path"
+    short_path.short_description = _("Path")
 
 
 @admin.register(SuggestedArticle)
@@ -660,7 +664,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
         "updated_at",
     )
     fieldsets = (
-        ("Article", {
+        (_("Article"), {
             "fields": ("owner", "title", "body", "keywords", "status"),
         }),
         (_("Approval / review"), {
@@ -677,13 +681,13 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
                 "pending_update_image_assets",
             ),
         }),
-        ("OpenKB files", {
+        (_("OpenKB files"), {
             "fields": ("filename", "raw_path", "wiki_path", "image_assets"),
         }),
-        ("Article statistics", {
+        (_("Article statistics"), {
             "fields": ("view_count", "helpful_vote_count", "unhelpful_vote_count"),
         }),
-        ("Author snapshot", {
+        (_("Author snapshot"), {
             "fields": (
                 "author_username_snapshot",
                 "author_name_snapshot",
@@ -691,12 +695,12 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
                 "author_account_type_snapshot",
             ),
         }),
-        ("Timestamps", {
+        (_("Timestamps"), {
             "fields": ("created_at", "updated_at"),
         }),
     )
 
-    @admin.action(description="Approve selected pending articles")
+    @admin.action(description=_("Approve selected pending articles"))
     def approve_selected_articles(self, request, queryset):
         for article in queryset:
             if article.review_notes:
@@ -714,14 +718,14 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
                 details={"source": "django_admin_bulk_action", "action": "approve_selected_articles"},
             )
 
-    @admin.action(description="Mark selected articles as pending failed")
+    @admin.action(description=_("Mark selected articles as pending failed"))
     def mark_selected_articles_pending_failed(self, request, queryset):
         for article in queryset:
             article.status = SuggestedArticle.Status.FAILED
             article.approved_by = None
             article.approved_at = None
             if not article.review_notes:
-                article.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+                article.review_notes = _("Marked as pending failed by admin. Please review this article and resubmit it for approval.")
             article.add_review_note_history(article.review_notes, reviewer=request.user, action="pending_failed")
             article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"])
             write_article_files(article)
@@ -739,22 +743,22 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
             return "-"
         return obj.review_notes[:80] + ("..." if len(obj.review_notes) > 80 else "")
 
-    review_notes_preview.short_description = "Current pending failed comments"
+    review_notes_preview.short_description = _("Current pending failed comments")
 
     def review_notes_history_count(self, obj):
         return len(obj.review_notes_history or [])
 
-    review_notes_history_count.short_description = "Review history"
+    review_notes_history_count.short_description = _("Review history")
 
     def helpful_vote_count(self, obj):
         return obj.votes.filter(value=ArticleVote.VoteValue.UP).count()
 
-    helpful_vote_count.short_description = "Likes"
+    helpful_vote_count.short_description = _("Likes")
 
     def unhelpful_vote_count(self, obj):
         return obj.votes.filter(value=ArticleVote.VoteValue.DOWN).count()
 
-    unhelpful_vote_count.short_description = "Dislikes"
+    unhelpful_vote_count.short_description = _("Dislikes")
 
     def save_model(self, request, obj, form, change):
         previous_status = None
@@ -780,7 +784,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
 
         if obj.status == SuggestedArticle.Status.FAILED:
             if not obj.review_notes:
-                obj.review_notes = "Marked as pending failed by admin. Please review this article and resubmit it for approval."
+                obj.review_notes = _("Marked as pending failed by admin. Please review this article and resubmit it for approval.")
             if obj.review_notes != previous_review_notes or previous_status != SuggestedArticle.Status.FAILED:
                 obj.add_review_note_history(obj.review_notes, reviewer=request.user, action="pending_failed")
         elif obj.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.PUBLISHED}:
@@ -845,34 +849,34 @@ class ArticleVoteAdmin(admin.ModelAdmin):
 
     def vote_label(self, obj):
         if obj.value == ArticleVote.VoteValue.UP:
-            return "Like"
+            return _("Like")
         if obj.value == ArticleVote.VoteValue.DOWN:
-            return "Dislike"
+            return _("Dislike")
         return obj.value
 
-    vote_label.short_description = "Vote"
+    vote_label.short_description = _("Vote")
 
 
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
     fieldsets = (
-        ("Article upload limits", {
+        (_("Article upload limits"), {
             "fields": ("article_image_upload_limit",),
-            "description": (
+            "description": _(
                 "Controls how many pasted/uploaded images each article may contain. "
                 "Default is 50. Set to 0 to disable article image uploads."
             ),
         }),
-        ("Stray upload cleanup", {
+        (_("Stray upload cleanup"), {
             "fields": ("stray_upload_cleanup_min_age_minutes",),
-            "description": (
+            "description": _(
                 "Controls the minimum age used by My Profile → Admin tools → "
                 "Clean stray upload files. Use 0 to show files immediately."
             ),
         }),
-        ("Authentication and session settings", {
+        (_("Authentication and session settings"), {
             "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "admin_log_rows_per_page", "session_timeout_days"),
-            "description": (
+            "description": _(
                 "Controls authentication/MFA logs, general activity logs, admin log display rows, "
                 "and user session lifetime. Default log retention is 30 days. "
                 "Admin log tables show 200 rows per page by default. "
@@ -932,4 +936,4 @@ class ArticleImageUploadLogAdmin(admin.ModelAdmin):
     def size_kb(self, obj):
         return round((obj.size_bytes or 0) / 1024, 1)
 
-    size_kb.short_description = "Size (KB)"
+    size_kb.short_description = _("Size (KB)")
