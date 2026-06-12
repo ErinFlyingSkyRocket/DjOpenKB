@@ -1,5 +1,8 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: ms\n"
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ms\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "Import / eksport artikel secara pukal"
@@ -34,17 +37,26 @@ msgstr "Log keluar"
 msgid "Bulk import / export articles"
 msgstr "Import / eksport artikel secara pukal"
 
-msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
-msgstr "Alat untuk admin sahaja. Eksport merangkumi Markdown artikel serta fail yang dirujuk di bawah"
+msgid ""
+"Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr ""
+"Alat untuk admin sahaja. Eksport merangkumi Markdown artikel serta fail yang "
+"dirujuk di bawah"
 
-msgid "Imported articles are assigned to the admin account performing the import."
-msgstr "Artikel yang diimport ditetapkan kepada akaun admin yang melakukan import."
+msgid ""
+"Imported articles are assigned to the admin account performing the import."
+msgstr ""
+"Artikel yang diimport ditetapkan kepada akaun admin yang melakukan import."
 
 msgid "Export articles"
 msgstr "Eksport artikel"
 
-msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
-msgstr "Muat turun zip yang mengandungi semua artikel yang diurus Django, kandungan Markdown, satu"
+msgid ""
+"Download a zip containing all Django-managed articles, their Markdown "
+"content, a"
+msgstr ""
+"Muat turun zip yang mengandungi semua artikel yang diurus Django, kandungan "
+"Markdown, satu"
 
 msgid "and all referenced uploaded files."
 msgstr "dan semua fail muat naik yang dirujuk."
@@ -55,20 +67,28 @@ msgstr "Zip eksport artikel"
 msgid "Import articles"
 msgstr "Import artikel"
 
-msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
-msgstr "Muat naik zip yang dieksport daripada sistem ini, atau zip yang mengandungi fail Markdown dan pilihan"
+msgid ""
+"Upload a zip exported from this system, or a zip containing Markdown files "
+"and an optional"
+msgstr ""
+"Muat naik zip yang dieksport daripada sistem ini, atau zip yang mengandungi "
+"fail Markdown dan pilihan"
 
 msgid "Imported articles will be owned by"
 msgstr "Artikel yang diimport akan dimiliki oleh"
 
-msgid "Import this zip? Imported articles will be assigned to your admin account."
-msgstr "Import zip ini? Artikel yang diimport akan ditetapkan kepada akaun admin anda."
+msgid ""
+"Import this zip? Imported articles will be assigned to your admin account."
+msgstr ""
+"Import zip ini? Artikel yang diimport akan ditetapkan kepada akaun admin "
+"anda."
 
 msgid "Import zip file"
 msgstr "Fail zip import"
 
 msgid "Maximum upload size: 100 MB. Maximum uncompressed size: 200 MB."
-msgstr "Saiz muat naik maksimum: 100 MB. Saiz maksimum selepas dinyahmampat: 200 MB."
+msgstr ""
+"Saiz muat naik maksimum: 100 MB. Saiz maksimum selepas dinyahmampat: 200 MB."
 
 msgid "Import zip"
 msgstr "Import fail zip"
@@ -82,8 +102,12 @@ msgstr "Format zip yang disokong"
 msgid "This tool prefers the system export format:"
 msgstr "Alat ini mengutamakan format eksport sistem:"
 
-msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
-msgstr "Jika manifest.json tiada, pengimport akan cuba mengimport semua fail Markdown yang ditemui dalam zip."
+msgid ""
+"If manifest.json is missing, the importer will try to import all Markdown "
+"files found in the zip."
+msgstr ""
+"Jika manifest.json tiada, pengimport akan cuba mengimport semua fail "
+"Markdown yang ditemui dalam zip."
 
 msgid "Clean Stray Upload Files"
 msgstr "Bersihkan fail muat naik tidak digunakan"
@@ -91,8 +115,12 @@ msgstr "Bersihkan fail muat naik tidak digunakan"
 msgid "Clean stray upload files"
 msgstr "Bersihkan fail muat naik tidak digunakan"
 
-msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
-msgstr "Ini mengimbas openkb-data/wiki/uploads dan mencari fail muat naik yang tidak dirujuk oleh mana-mana kandungan artikel Django,"
+msgid ""
+"This scans openkb-data/wiki/uploads and finds uploaded files that are not "
+"referenced by any Django article body,"
+msgstr ""
+"Ini mengimbas openkb-data/wiki/uploads dan mencari fail muat naik yang tidak "
+"dirujuk oleh mana-mana kandungan artikel Django,"
 
 msgid "article image_assets, or Markdown file under openkb-data/wiki."
 msgstr "image_assets artikel, atau fail Markdown di bawah openkb-data/wiki."
@@ -101,7 +129,9 @@ msgid "Review before deleting"
 msgstr "Semak sebelum memadam"
 
 msgid "Delete all listed stray upload files? This cannot be undone."
-msgstr "Padam semua fail muat naik tidak digunakan yang disenaraikan? Ini tidak boleh dibuat asal."
+msgstr ""
+"Padam semua fail muat naik tidak digunakan yang disenaraikan? Ini tidak "
+"boleh dibuat asal."
 
 msgid "Preview / Open"
 msgstr "Pratonton / Buka"
@@ -179,7 +209,8 @@ msgid "Edit My Articles"
 msgstr "Edit Artikel Saya"
 
 msgid "Search, edit, or delete your suggested Knowledge Repository articles."
-msgstr "Cari, edit, atau padam artikel Repositori Pengetahuan yang anda cadangkan."
+msgstr ""
+"Cari, edit, atau padam artikel Repositori Pengetahuan yang anda cadangkan."
 
 msgid "Search my suggestions"
 msgstr "Cari cadangan saya"
@@ -226,8 +257,12 @@ msgstr "openKB"
 msgid "IT Help Center"
 msgstr "Pusat Bantuan IT"
 
-msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
-msgstr "Dapatkan jawapan segera untuk soalan paling lazim dan belajar menggunakan 3 aksara seperti profesional."
+msgid ""
+"Get instant answers for the most common questions and learn how to use 3 "
+"characters like a pro."
+msgstr ""
+"Dapatkan jawapan segera untuk soalan paling lazim dan belajar menggunakan 3 "
+"aksara seperti profesional."
 
 msgid "Date"
 msgstr "Tarikh"
@@ -250,14 +285,22 @@ msgstr "alamat e-mel"
 msgid "Password"
 msgstr "Kata laluan"
 
-msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
-msgstr "Urus butiran akaun anda. Gunakan Artikel > Edit untuk mengurus artikel cadangan anda."
+msgid ""
+"Manage your account details. Use Article > Edit to manage your suggested "
+"articles."
+msgstr ""
+"Urus butiran akaun anda. Gunakan Artikel > Edit untuk mengurus artikel "
+"cadangan anda."
 
 msgid "Account summary"
 msgstr "Ringkasan akaun"
 
-msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
-msgstr "Nama pengguna dan e-mel dicipta daripada butiran akaun Django atau LDAP. Alamat e-mel LDAP tidak boleh diubah di sini."
+msgid ""
+"Username and email are created from Django or LDAP account details. LDAP "
+"email addresses cannot be changed here."
+msgstr ""
+"Nama pengguna dan e-mel dicipta daripada butiran akaun Django atau LDAP. "
+"Alamat e-mel LDAP tidak boleh diubah di sini."
 
 msgid "Username"
 msgstr "Nama pengguna"
@@ -298,8 +341,12 @@ msgstr "Bahasa"
 msgid "Save language"
 msgstr "Simpan bahasa"
 
-msgid "This changes the website interface language for your account. Article content stays in its original language for now."
-msgstr "Ini menukar bahasa antara muka laman web untuk akaun anda. Kandungan artikel kekal dalam bahasa asal buat masa ini."
+msgid ""
+"This changes the website interface language for your account. Article "
+"content stays in its original language for now."
+msgstr ""
+"Ini menukar bahasa antara muka laman web untuk akaun anda. Kandungan artikel "
+"kekal dalam bahasa asal buat masa ini."
 
 msgid "Change password"
 msgstr "Tukar kata laluan"
@@ -326,10 +373,15 @@ msgid "Finds unused files in"
 msgstr "Mencari fail yang tidak digunakan dalam"
 
 msgid "that are no longer referenced by any article or wiki Markdown file."
-msgstr "yang tidak lagi dirujuk oleh mana-mana artikel atau fail Markdown wiki."
+msgstr ""
+"yang tidak lagi dirujuk oleh mana-mana artikel atau fail Markdown wiki."
 
-msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
-msgstr "Eksport artikel sebagai zip dengan Markdown dan fail muat naik, atau import zip dan tetapkan artikel yang diimport kepada akaun admin anda."
+msgid ""
+"Export articles as a zip with Markdown and uploaded files, or import a zip "
+"and assign imported articles to your admin account."
+msgstr ""
+"Eksport artikel sebagai zip dengan Markdown dan fail muat naik, atau import "
+"zip dan tetapkan artikel yang diimport kepada akaun admin anda."
 
 msgid "Old password"
 msgstr "Kata laluan lama"
@@ -382,14 +434,22 @@ msgstr "Cadang"
 msgid "Pasted images"
 msgstr "Imej yang ditampal"
 
-msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
-msgstr "Imej yang dimuat naik dalam draf ini akan muncul di sini. Klik X untuk membuang imej daripada artikel dan memadam fail yang dimuat naik."
+msgid ""
+"Images uploaded in this draft appear here. Click X to remove the image from "
+"the article and delete the uploaded file."
+msgstr ""
+"Imej yang dimuat naik dalam draf ini akan muncul di sini. Klik X untuk "
+"membuang imej daripada artikel dan memadam fail yang dimuat naik."
 
 msgid "Article body (Markdown)"
 msgstr "Kandungan artikel (Markdown)"
 
-msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
-msgstr "Anda boleh menampal imej kecil PNG/JPG/GIF/WEBP terus ke editor atau memuat naik satu menggunakan butang. Maksimum 2 MB setiap satu."
+msgid ""
+"You can paste small PNG/JPG/GIF/WEBP images directly into the editor or "
+"upload one using the button. Maximum 2 MB each."
+msgstr ""
+"Anda boleh menampal imej kecil PNG/JPG/GIF/WEBP terus ke editor atau memuat "
+"naik satu menggunakan butang. Maksimum 2 MB setiap satu."
 
 msgid "Upload image"
 msgstr "Muat naik imej"
@@ -406,8 +466,12 @@ msgstr "Padam artikel yang dicadangkan"
 msgid "Are you sure you want to delete"
 msgstr "Adakah anda pasti mahu memadam?"
 
-msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
-msgstr "Ini membuang rekod profil dan memadam fail Markdown daripada storan raw/source OpenKB."
+msgid ""
+"This removes the profile record and deletes the Markdown files from OpenKB "
+"raw/source storage."
+msgstr ""
+"Ini membuang rekod profil dan memadam fail Markdown daripada storan raw/"
+"source OpenKB."
 
 msgid "Published"
 msgstr "Diterbitkan"
@@ -475,8 +539,11 @@ msgstr "Buka"
 msgid "Document Bulk Import / Export"
 msgstr "Import / eksport dokumen secara pukal"
 
-msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
-msgstr "Cari, sunting atau padam artikel yang anda cadangkan dalam Repositori Pengetahuan."
+msgid ""
+"Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgstr ""
+"Cari, sunting atau padam artikel yang anda cadangkan dalam Repositori "
+"Pengetahuan."
 
 #, python-format
 msgid "%(count)s articles"
@@ -506,7 +573,9 @@ msgstr "%(count)s jumlah"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
-msgstr "Memaparkan %(start)s-%(end)s daripada %(count)s artikel yang sepadan dengan \"%(query)s\""
+msgstr ""
+"Memaparkan %(start)s-%(end)s daripada %(count)s artikel yang sepadan dengan "
+"\"%(query)s\""
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles"
@@ -586,8 +655,12 @@ msgstr "Artikel berjaya dikemas kini."
 msgid "Manage pending articles"
 msgstr "Urus artikel menunggu"
 
-msgid "Review user-submitted articles waiting for admin approval before they become public."
-msgstr "Semak artikel yang dihantar pengguna dan menunggu kelulusan pentadbir sebelum diterbitkan."
+msgid ""
+"Review user-submitted articles waiting for admin approval before they become "
+"public."
+msgstr ""
+"Semak artikel yang dihantar pengguna dan menunggu kelulusan pentadbir "
+"sebelum diterbitkan."
 
 msgid "Review user-submitted articles before they become publicly visible."
 msgstr "Semak artikel yang dihantar pengguna sebelum ia kelihatan kepada umum."
@@ -647,19 +720,36 @@ msgid "Pending failed comments"
 msgstr "Komen gagal menunggu"
 
 msgid "Explain what the user needs to fix before resubmitting this article."
-msgstr "Terangkan perkara yang perlu dibaiki oleh pengguna sebelum menyerahkan semula artikel ini."
+msgstr ""
+"Terangkan perkara yang perlu dibaiki oleh pengguna sebelum menyerahkan "
+"semula artikel ini."
 
-msgid "These comments are shown to the article owner while the article is Draft or Pending failed. They are hidden while the article is Pending approval."
-msgstr "Komen ini dipaparkan kepada pemilik artikel semasa artikel berstatus Draf atau Gagal menunggu. Ia disembunyikan semasa artikel Menunggu kelulusan."
+msgid ""
+"These comments are shown to the article owner while the article is Draft or "
+"Pending failed. They are hidden while the article is Pending approval."
+msgstr ""
+"Komen ini dipaparkan kepada pemilik artikel semasa artikel berstatus Draf "
+"atau Gagal menunggu. Ia disembunyikan semasa artikel Menunggu kelulusan."
 
 msgid "Review comments history"
 msgstr "Sejarah komen semakan"
 
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
+msgid ""
+"Files newer than %(minutes)s minute are ignored. Change this value in Django "
+"Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr ""
+"Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini "
+"di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik "
+"terbiar serta-merta."
 
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik terbiar serta-merta."
+msgid ""
+"Files newer than %(minutes)s minutes are ignored. Change this value in "
+"Django Admin → Site settings. Use 0 minutes to show stray uploads "
+"immediately."
+msgstr ""
+"Fail yang lebih baharu daripada %(minutes)s minit diabaikan. Tukar nilai ini "
+"di Django Admin → Tetapan laman. Gunakan 0 minit untuk memaparkan muat naik "
+"terbiar serta-merta."
 
 msgid "stray upload file found"
 msgstr "fail muat naik tidak digunakan ditemui"
@@ -670,8 +760,12 @@ msgstr "fail muat naik tidak digunakan ditemui"
 msgid "%(size)s KB total"
 msgstr "jumlah %(size)s KB"
 
-msgid "These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed."
-msgstr "Fail ini kelihatan tidak digunakan. Klik bersihkan hanya selepas memastikan tiada fail muat naik ini masih diperlukan."
+msgid ""
+"These files appear unused. Click cleanup only after checking that none of "
+"these uploaded files are still needed."
+msgstr ""
+"Fail ini kelihatan tidak digunakan. Klik bersihkan hanya selepas memastikan "
+"tiada fail muat naik ini masih diperlukan."
 
 msgid "Delete %(count)s stray file"
 msgstr "Padam %(count)s fail tidak digunakan"
@@ -685,7 +779,8 @@ msgstr "Log masuk ke DjOpenKB"
 
 #: website/templates/login.html
 msgid "Use your NextLabs AD email account to access the knowledge repository."
-msgstr "Gunakan akaun e-mel NextLabs AD anda untuk mengakses repositori pengetahuan."
+msgstr ""
+"Gunakan akaun e-mel NextLabs AD anda untuk mengakses repositori pengetahuan."
 
 #: website/templates/login.html
 msgid "Invalid account credentials. Please check your username and password."
@@ -712,12 +807,18 @@ msgid "Sign in with local Django account"
 msgstr "Log masuk dengan akaun Django setempat"
 
 #: website/templates/login.html
-msgid "Use local sign-in only for Django administrator or break-glass accounts."
-msgstr "Gunakan log masuk setempat hanya untuk pentadbir Django atau akaun kecemasan."
+msgid ""
+"Use local sign-in only for Django administrator or break-glass accounts."
+msgstr ""
+"Gunakan log masuk setempat hanya untuk pentadbir Django atau akaun kecemasan."
 
 #: website/templates/login.html
-msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
-msgstr "Sila log masuk menggunakan akaun e-mel NextLabs AD anda untuk mengakses repositori pengetahuan."
+msgid ""
+"Please sign in using your NextLabs AD email account to access the knowledge "
+"repository."
+msgstr ""
+"Sila log masuk menggunakan akaun e-mel NextLabs AD anda untuk mengakses "
+"repositori pengetahuan."
 
 #: website/templates/login.html
 msgid "Example:"
@@ -757,7 +858,8 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "%(count)s keputusan ditemui daripada fail OpenKB."
 
 #: auto-generated
-msgid "An article with this title already exists. Please use a different title."
+msgid ""
+"An article with this title already exists. Please use a different title."
 msgstr "Artikel dengan tajuk ini sudah wujud. Sila gunakan tajuk lain."
 
 #: auto-generated
@@ -809,12 +911,20 @@ msgid "Complete MFA before accessing the Django admin site."
 msgstr "Lengkapkan MFA sebelum mengakses laman pentadbir Django."
 
 #: auto-generated
-msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "Lengkapkan MFA sebelum meneruskan. Anda belum log masuk sepenuhnya sehingga MFA selesai."
+msgid ""
+"Complete MFA before continuing. You are not fully signed in until MFA is "
+"completed."
+msgstr ""
+"Lengkapkan MFA sebelum meneruskan. Anda belum log masuk sepenuhnya sehingga "
+"MFA selesai."
 
 #: auto-generated
-msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "Lengkapkan MFA sebelum meneruskan. Anda tidak boleh mengakses DjOpenKB sehingga MFA selesai."
+msgid ""
+"Complete MFA before continuing. You cannot access DjOpenKB until MFA is "
+"completed."
+msgstr ""
+"Lengkapkan MFA sebelum meneruskan. Anda tidak boleh mengakses DjOpenKB "
+"sehingga MFA selesai."
 
 #: auto-generated
 msgid "Current MFA status"
@@ -842,15 +952,19 @@ msgstr "Hai, saya OpenKB AI."
 
 #: auto-generated
 msgid "I can help you find articles and answer questions from the wiki."
-msgstr "Saya boleh membantu anda mencari artikel dan menjawab soalan daripada wiki."
+msgstr ""
+"Saya boleh membantu anda mencari artikel dan menjawab soalan daripada wiki."
 
 #: auto-generated
 msgid "Image removed from this article draft."
 msgstr "Imej dibuang daripada draf artikel ini."
 
 #: auto-generated
-msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "Imej dibuang daripada draf ini. Simpan artikel untuk memadamkannya daripada storan."
+msgid ""
+"Image removed from this draft. Save the article to delete it from storage."
+msgstr ""
+"Imej dibuang daripada draf ini. Simpan artikel untuk memadamkannya daripada "
+"storan."
 
 #: auto-generated
 msgid "Image upload failed."
@@ -881,8 +995,11 @@ msgid "Last verified"
 msgstr "Kali terakhir disahkan"
 
 #: auto-generated
-msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "Akaun tempatan memerlukan pengesahan aplikasi pengesah selepas log masuk kata laluan."
+msgid ""
+"Local accounts require authenticator verification after password sign-in."
+msgstr ""
+"Akaun tempatan memerlukan pengesahan aplikasi pengesah selepas log masuk "
+"kata laluan."
 
 #: auto-generated
 msgid "MFA QR code"
@@ -897,12 +1014,20 @@ msgid "MFA reset by user"
 msgstr "MFA ditetapkan semula oleh pengguna"
 
 #: auto-generated
-msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "MFA ditetapkan semula untuk %(count)d peranti dipilih. Pengguna mesti menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
+msgid ""
+"MFA reset for %(count)d selected device(s). Users must set up a new "
+"authenticator at next sign-in."
+msgstr ""
+"MFA ditetapkan semula untuk %(count)d peranti dipilih. Pengguna mesti "
+"menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
 
 #: auto-generated
-msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "MFA ditetapkan semula untuk %(count)d pengguna dipilih. Mereka mesti menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
+msgid ""
+"MFA reset for %(count)d selected user(s). They must set up a new "
+"authenticator at next sign-in."
+msgstr ""
+"MFA ditetapkan semula untuk %(count)d pengguna dipilih. Mereka mesti "
+"menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
@@ -937,8 +1062,12 @@ msgid "MFA verify success"
 msgstr "Pengesahan MFA berjaya"
 
 #: auto-generated
-msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "MFA telah ditetapkan semula untuk %(username)s. Pengguna mesti menyediakan aplikasi pengesah baharu pada log masuk seterusnya."
+msgid ""
+"MFA was reset for %(username)s. The user must set up a new authenticator at "
+"next sign-in."
+msgstr ""
+"MFA telah ditetapkan semula untuk %(username)s. Pengguna mesti menyediakan "
+"aplikasi pengesah baharu pada log masuk seterusnya."
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -1013,8 +1142,12 @@ msgid "Pending failed comments history"
 msgstr "Sejarah komen kegagalan semakan"
 
 #: auto-generated
-msgid "Please enter Pending failed comments before marking this article as Pending failed."
-msgstr "Sila masukkan komen kegagalan semakan sebelum menandakan artikel ini sebagai gagal semakan."
+msgid ""
+"Please enter Pending failed comments before marking this article as Pending "
+"failed."
+msgstr ""
+"Sila masukkan komen kegagalan semakan sebelum menandakan artikel ini sebagai "
+"gagal semakan."
 
 #: auto-generated
 msgid "Please enter your MFA/OTP code to continue."
@@ -1073,11 +1206,16 @@ msgid "Reset MFA now"
 msgstr "Tetapkan semula MFA sekarang"
 
 #: auto-generated
-msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "Menetapkan semula MFA akan terus memerlukan anda menyediakan kod pengesah baharu sebelum meneruskan. Teruskan?"
+msgid ""
+"Resetting MFA will immediately require you to set up a new authenticator "
+"code before continuing. Continue?"
+msgstr ""
+"Menetapkan semula MFA akan terus memerlukan anda menyediakan kod pengesah "
+"baharu sebelum meneruskan. Teruskan?"
 
 #: auto-generated
-msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
+msgid ""
+"Scan the QR code with your authenticator app, then enter the MFA/OTP code."
 msgstr "Imbas kod QR dengan aplikasi pengesah, kemudian masukkan kod MFA/OTP."
 
 #: auto-generated
@@ -1109,20 +1247,39 @@ msgid "Something went wrong."
 msgstr "Sesuatu telah berlaku."
 
 #: auto-generated
-msgid "The next login will require authenticator setup before access is granted."
-msgstr "Log masuk seterusnya memerlukan persediaan aplikasi pengesah sebelum akses diberikan."
+msgid ""
+"The next login will require authenticator setup before access is granted."
+msgstr ""
+"Log masuk seterusnya memerlukan persediaan aplikasi pengesah sebelum akses "
+"diberikan."
 
 #: auto-generated
-msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "Alamat e-mel ini diuruskan oleh akaun domain anda dan tidak boleh ditukar di sini."
+msgid ""
+"This email address is managed by your domain account and cannot be changed "
+"here."
+msgstr ""
+"Alamat e-mel ini diuruskan oleh akaun domain anda dan tidak boleh ditukar di "
+"sini."
 
 #: auto-generated
-msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "Imej ini sudah dimuat naik dalam draf ini. Gunakan butang pratonton X untuk membuangnya dahulu."
+msgid ""
+"This image is already uploaded in this draft. Use the X preview button to "
+"remove it first."
+msgstr ""
+"Imej ini sudah dimuat naik dalam draf ini. Gunakan butang pratonton X untuk "
+"membuangnya dahulu."
 
 #: auto-generated
-msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "Ini akan menjana rahsia aplikasi pengesah peribadi yang baharu untuk pengguna. Kunci tidak dipaparkan kepada pentadbir dan tidak boleh dikongsi. Pengguna mesti log masuk semula dan mengimbas kod QR baharu mereka sendiri sebelum boleh terus menggunakan DjOpenKB."
+msgid ""
+"This will generate a brand-new private authenticator secret for the user. "
+"The key is not shown to administrators and should not be shared. The user "
+"must sign in again and scan their own new QR code before they can continue "
+"using DjOpenKB."
+msgstr ""
+"Ini akan menjana rahsia aplikasi pengesah peribadi yang baharu untuk "
+"pengguna. Kunci tidak dipaparkan kepada pentadbir dan tidak boleh dikongsi. "
+"Pengguna mesti log masuk semula dan mengimbas kod QR baharu mereka sendiri "
+"sebelum boleh terus menggunakan DjOpenKB."
 
 #: auto-generated
 msgid "Top article pagination"
@@ -1130,7 +1287,8 @@ msgstr "Penomboran atas artikel"
 
 #: auto-generated
 msgid "Use this section to reset a user's authenticator setup. "
-msgstr "Gunakan bahagian ini untuk menetapkan semula tetapan pengesah pengguna."
+msgstr ""
+"Gunakan bahagian ini untuk menetapkan semula tetapan pengesah pengguna."
 
 #: auto-generated
 msgid "User"
@@ -1142,11 +1300,16 @@ msgstr "Sahkan"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "Anda akan menetapkan semula MFA untuk pengguna <strong>%(username)s</strong>."
+msgstr ""
+"Anda akan menetapkan semula MFA untuk pengguna <strong>%(username)s</strong>."
 
 #: auto-generated
-msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "MFA anda telah ditetapkan semula. Lengkapkan persediaan aplikasi pengesah sekarang untuk terus menggunakan DjOpenKB."
+msgid ""
+"Your MFA was reset. Complete authenticator setup now to continue using "
+"DjOpenKB."
+msgstr ""
+"MFA anda telah ditetapkan semula. Lengkapkan persediaan aplikasi pengesah "
+"sekarang untuk terus menggunakan DjOpenKB."
 
 #: auto-generated
 msgid "Your vote has been removed."
@@ -1161,8 +1324,12 @@ msgid "matching"
 msgstr "sepadan"
 
 #: auto-generated
-msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB ialah aplikasi pengetahuan/FAQ/Wiki sumber terbuka berasaskan Node.js Markdown dengan carian lunr yang berkuasa"
+msgid ""
+"openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app "
+"with powerful lunr search"
+msgstr ""
+"openKB ialah aplikasi pengetahuan/FAQ/Wiki sumber terbuka berasaskan Node.js "
+"Markdown dengan carian lunr yang berkuasa"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
@@ -1181,16 +1348,26 @@ msgid "All statuses"
 msgstr "Semua status"
 
 #: synced from current templates/views
-msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
+msgid ""
+"An article with the title ‘%(title)s’ already exists. Please use a different "
+"title."
 msgstr "Artikel dengan tajuk ‘%(title)s’ sudah wujud. Sila gunakan tajuk lain."
 
 #: synced from current templates/views
-msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
-msgstr "Adakah anda pasti mahu menetapkan %(article_count)s artikel kepada %(username)s?"
+msgid ""
+"Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgstr ""
+"Adakah anda pasti mahu menetapkan %(article_count)s artikel kepada %"
+"(username)s?"
 
 #: synced from current templates/views
-msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "Adakah anda pasti mahu memadam kekal %(article_count)s artikel yatim yang dipilih? Ini juga akan membuang fail Markdown OpenKB yang dijana."
+msgid ""
+"Are you sure you want to permanently delete %(article_count)s selected "
+"orphan article(s)? This will also remove their generated OpenKB Markdown "
+"files."
+msgstr ""
+"Adakah anda pasti mahu memadam kekal %(article_count)s artikel yatim yang "
+"dipilih? Ini juga akan membuang fail Markdown OpenKB yang dijana."
 
 #: synced from current templates/views
 msgid "Assign selected"
@@ -1218,7 +1395,9 @@ msgstr "Padam fail terbiar dipilih"
 
 #: synced from current templates/views
 msgid "Delete the selected stray upload files? This cannot be undone."
-msgstr "Padam fail muat naik terbiar yang dipilih? Tindakan ini tidak boleh dibuat asal."
+msgstr ""
+"Padam fail muat naik terbiar yang dipilih? Tindakan ini tidak boleh dibuat "
+"asal."
 
 #: synced from current templates/views
 msgid "Deleted by admin stray-file cleanup"
@@ -1229,12 +1408,20 @@ msgid "Deleted by automatic stray-file cleanup"
 msgstr "Dipadam oleh pembersihan fail terbiar automatik"
 
 #: synced from current templates/views
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "Masukkan nama pengguna/e-mel tempatan atau AD yang aktif, kemudian tandakan artikel dan klik Tetapkan dipilih."
+msgid ""
+"Enter an active local or AD username/email, then tick articles and click "
+"Assign selected."
+msgstr ""
+"Masukkan nama pengguna/e-mel tempatan atau AD yang aktif, kemudian tandakan "
+"artikel dan klik Tetapkan dipilih."
 
 #: synced from current templates/views
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "Cari artikel tanpa pemilik atau pemilik tidak aktif/dipadam, kemudian tetapkan kepada pengguna aktif atau padamkannya."
+msgid ""
+"Find articles with no owner or an inactive/deleted owner, then assign them "
+"to an active user or delete them."
+msgstr ""
+"Cari artikel tanpa pemilik atau pemilik tidak aktif/dipadam, kemudian "
+"tetapkan kepada pengguna aktif atau padamkannya."
 
 #: synced from current templates/views
 msgid "Inactive"
@@ -1269,8 +1456,10 @@ msgid "No orphan articles match your search."
 msgstr "Tiada artikel yatim sepadan dengan carian anda."
 
 #: synced from current templates/views
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "Tiada artikel yatim ditemui. Semua artikel kini mempunyai pemilik aktif."
+msgid ""
+"No orphan articles were found. All articles currently have an active owner."
+msgstr ""
+"Tiada artikel yatim ditemui. Semua artikel kini mempunyai pemilik aktif."
 
 #: synced from current templates/views
 msgid "No owner"
@@ -1313,8 +1502,12 @@ msgid "Set up MFA before changing sensitive account details."
 msgstr "Sediakan MFA sebelum menukar butiran akaun sensitif."
 
 #: synced from current templates/views
-msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
-msgstr "Fail ini kelihatan tidak digunakan. Semak butiran pemuat naik, kemudian padam hanya fail yang tidak lagi diperlukan."
+msgid ""
+"These files appear unused. Check the uploader details, then delete only the "
+"files that are no longer needed."
+msgstr ""
+"Fail ini kelihatan tidak digunakan. Semak butiran pemuat naik, kemudian "
+"padam hanya fail yang tidak lagi diperlukan."
 
 #: synced from current templates/views
 msgid "Type username or email"
@@ -1327,6 +1520,7 @@ msgstr "Nyahpilih semua"
 #: synced from current templates/views
 msgid "Uploaded at"
 msgstr "Dimuat naik pada"
+
 msgid "Uploaded by"
 msgstr "Dimuat naik oleh"
 
@@ -1371,20 +1565,32 @@ msgid "Deleted %(count)s orphan article(s)."
 msgstr "Telah memadam %(count)s artikel yatim."
 
 #: synced from current templates/views
-msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
-msgstr "Cari artikel tanpa pemilik aktif, kemudian tetapkan kepada pengguna atau padam selepas pengesahan."
+msgid ""
+"Find articles with no active owner, then assign them to a user or delete "
+"them after confirmation."
+msgstr ""
+"Cari artikel tanpa pemilik aktif, kemudian tetapkan kepada pengguna atau "
+"padam selepas pengesahan."
 
 #: synced from current templates/views
 msgid "Invalid orphan article action."
 msgstr "Tindakan artikel yatim tidak sah."
 
 #: synced from current templates/views
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "Lebih daripada satu pengguna aktif sepadan dengan '%(user)s'. Sila gunakan nama pengguna yang tepat."
+msgid ""
+"More than one active user matched '%(user)s'. Please use the exact username "
+"instead."
+msgstr ""
+"Lebih daripada satu pengguna aktif sepadan dengan '%(user)s'. Sila gunakan "
+"nama pengguna yang tepat."
 
 #: synced from current templates/views
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "Tiada pengguna aktif ditemui untuk '%(user)s'. Sila masukkan nama pengguna atau e-mel yang sah."
+msgid ""
+"No active user was found for '%(user)s'. Please enter a valid username or "
+"email."
+msgstr ""
+"Tiada pengguna aktif ditemui untuk '%(user)s'. Sila masukkan nama pengguna "
+"atau e-mel yang sah."
 
 #: synced from current templates/views
 msgid "No orphan articles were deleted. Please refresh and try again."
@@ -1392,7 +1598,8 @@ msgstr "Tiada artikel yatim dipadam. Sila muat semula dan cuba lagi."
 
 #: synced from current templates/views
 msgid "Please enter a username or email to assign the selected articles to."
-msgstr "Sila masukkan nama pengguna atau e-mel untuk menetapkan artikel yang dipilih."
+msgstr ""
+"Sila masukkan nama pengguna atau e-mel untuk menetapkan artikel yang dipilih."
 
 #: synced from current templates/views
 msgid "Please select at least one orphan article first."
@@ -1407,24 +1614,43 @@ msgid "Some selected articles could not be deleted: %(titles)s"
 msgstr "Beberapa artikel yang dipilih tidak dapat dipadam: %(titles)s"
 
 #: synced from current templates/views
-msgid "Some selected articles were skipped because they are no longer orphan articles."
-msgstr "Beberapa artikel yang dipilih dilangkau kerana bukan lagi artikel yatim."
+msgid ""
+"Some selected articles were skipped because they are no longer orphan "
+"articles."
+msgstr ""
+"Beberapa artikel yang dipilih dilangkau kerana bukan lagi artikel yatim."
 
 #: synced from current templates/views
-msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "Sesuatu ralat berlaku semasa memproses tindakan artikel yatim. Tiada perubahan digunakan. Sila semak pilihan anda dan cuba lagi."
+msgid ""
+"Something went wrong while processing the orphan article action. No changes "
+"were applied. Please check your selection and try again."
+msgstr ""
+"Sesuatu ralat berlaku semasa memproses tindakan artikel yatim. Tiada "
+"perubahan digunakan. Sila semak pilihan anda dan cuba lagi."
 
 #: synced from current templates/views
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "Artikel tidak dapat ditetapkan dengan selamat. Tiada penetapan digunakan. Sila semak log dan cuba lagi."
+msgid ""
+"The articles could not be assigned safely. No assignment was applied. Please "
+"check the logs and try again."
+msgstr ""
+"Artikel tidak dapat ditetapkan dengan selamat. Tiada penetapan digunakan. "
+"Sila semak log dan cuba lagi."
 
 #: synced from current templates/views
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak lagi wujud. Sila muat semula dan cuba lagi."
+msgid ""
+"The selected articles are no longer orphan articles or no longer exist. "
+"Please refresh and try again."
+msgstr ""
+"Artikel yang dipilih bukan lagi artikel yatim atau tidak lagi wujud. Sila "
+"muat semula dan cuba lagi."
 
 #: synced from current templates/views
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "Pengguna sasaran yang dipilih tidak sah atau tidak aktif. Sila pilih pengguna aktif."
+msgid ""
+"The selected target user is invalid or inactive. Please choose an active "
+"user."
+msgstr ""
+"Pengguna sasaran yang dipilih tidak sah atau tidak aktif. Sila pilih "
+"pengguna aktif."
 
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
@@ -1439,40 +1665,68 @@ msgid "Article update approved and published."
 msgstr "Kemas kini artikel telah diluluskan dan diterbitkan."
 
 #: synced from current templates/views
-msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "Kemas kini artikel ditandakan sebagai gagal menunggu. Versi yang sedang diterbitkan masih kelihatan."
+msgid ""
+"Article update marked as pending failed. The current published version "
+"remains visible."
+msgstr ""
+"Kemas kini artikel ditandakan sebagai gagal menunggu. Versi yang sedang "
+"diterbitkan masih kelihatan."
 
 #: synced from current templates/views
-msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "Kemas kini artikel telah dihantar untuk kelulusan pentadbir. Versi yang diterbitkan masih kelihatan sehingga kemas kini diluluskan."
+msgid ""
+"Article update submitted for admin approval. The published version is still "
+"visible until the update is approved."
+msgstr ""
+"Kemas kini artikel telah dihantar untuk kelulusan pentadbir. Versi yang "
+"diterbitkan masih kelihatan sehingga kemas kini diluluskan."
 
 #: synced from current templates/views
-msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "Terangkan perkara yang perlu dibetulkan oleh pengguna sebelum menghantar semula artikel atau kemas kini ini."
+msgid ""
+"Explain what the user needs to fix before resubmitting this article or "
+"update."
+msgstr ""
+"Terangkan perkara yang perlu dibetulkan oleh pengguna sebelum menghantar "
+"semula artikel atau kemas kini ini."
 
 #: synced from current templates/views
 msgid "Export split package"
 msgstr "Eksport pakej berpecah"
 
 #: synced from current templates/views
-msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "Jika manifest.json tiada, pengimport akan cuba mengimport semua fail Markdown dalam zip. Untuk pakej berpecah, ekstrak pakej dan import setiap zip bahagian satu demi satu."
+msgid ""
+"If manifest.json is missing, the importer will try to import all Markdown "
+"files found in the zip. For split packages, extract the package and import "
+"each part zip one by one."
+msgstr ""
+"Jika manifest.json tiada, pengimport akan cuba mengimport semua fail "
+"Markdown dalam zip. Untuk pakej berpecah, ekstrak pakej dan import setiap "
+"zip bahagian satu demi satu."
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
 msgstr "Import gagal: %(error)s"
 
 #: synced from current templates/views
-msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "Fail zip import terlalu besar selepas diekstrak. Saiz nyahmampat maksimum yang dibenarkan ialah 200 MB."
+msgid ""
+"Import zip is too large after extraction. Maximum allowed uncompressed size "
+"is 200 MB."
+msgstr ""
+"Fail zip import terlalu besar selepas diekstrak. Saiz nyahmampat maksimum "
+"yang dibenarkan ialah 200 MB."
 
 #: synced from current templates/views
-msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "Fail zip import terlalu besar. Saiz maksimum yang dibenarkan ialah 100 MB. Untuk eksport berpecah, ekstrak pakej berpecah dan import setiap fail zip bahagian satu demi satu."
+msgid ""
+"Import zip is too large. Maximum allowed size is 100 MB. For split exports, "
+"extract the split package and import each part zip one at a time."
+msgstr ""
+"Fail zip import terlalu besar. Saiz maksimum yang dibenarkan ialah 100 MB. "
+"Untuk eksport berpecah, ekstrak pakej berpecah dan import setiap fail zip "
+"bahagian satu demi satu."
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
-msgstr "%(count)s artikel telah diimport. Pemilik ditetapkan kepada %(username)s."
+msgstr ""
+"%(count)s artikel telah diimport. Pemilik ditetapkan kepada %(username)s."
 
 #: synced from current templates/views
 msgid "Invalid zip file."
@@ -1483,8 +1737,14 @@ msgid "Large exports may download as a split package:"
 msgstr "Eksport besar mungkin dimuat turun sebagai pakej berpecah:"
 
 #: synced from current templates/views
-msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "Saiz muat naik maksimum: 100 MB setiap zip. Saiz tidak termampat maksimum: 200 MB. Untuk eksport berpecah, ekstrak pakej berpecah dahulu, kemudian import setiap zip bahagian mengikut urutan."
+msgid ""
+"Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For "
+"split exports, extract the split package first, then import each part zip in "
+"order."
+msgstr ""
+"Saiz muat naik maksimum: 100 MB setiap zip. Saiz tidak termampat maksimum: "
+"200 MB. Untuk eksport berpecah, ekstrak pakej berpecah dahulu, kemudian "
+"import setiap zip bahagian mengikut urutan."
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1507,8 +1767,15 @@ msgid "No stray upload files were selected for deletion."
 msgstr "Tiada fail muat naik tidak digunakan dipilih untuk dipadam."
 
 #: synced from current templates/views
-msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "Eksport biasa akan menjadi pakej berpecah secara automatik jika kandungan terlalu besar. Pakej berpecah mengandungi zip bahagian yang boleh diimport dalam folder parts/; ekstrak pakej dan import setiap zip bahagian mengikut urutan."
+msgid ""
+"Normal export automatically becomes a split package if the content is too "
+"large. Split packages contain importable part zips under the parts/ folder; "
+"extract the package and import each part zip in order."
+msgstr ""
+"Eksport biasa akan menjadi pakej berpecah secara automatik jika kandungan "
+"terlalu besar. Pakej berpecah mengandungi zip bahagian yang boleh diimport "
+"dalam folder parts/; ekstrak pakej dan import setiap zip bahagian mengikut "
+"urutan."
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1539,16 +1806,22 @@ msgid "Pending update title"
 msgstr "Kemas kini tertunda - tajuk"
 
 #: synced from current templates/views
-msgid "Pending updates can only be approved as Published or marked as Pending failed."
-msgstr "Kemas kini tertunda hanya boleh diluluskan sebagai Diterbitkan atau ditandakan sebagai Gagal kelulusan."
+msgid ""
+"Pending updates can only be approved as Published or marked as Pending "
+"failed."
+msgstr ""
+"Kemas kini tertunda hanya boleh diluluskan sebagai Diterbitkan atau "
+"ditandakan sebagai Gagal kelulusan."
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
 msgstr "Sila pilih fail .zip untuk diimport."
 
 #: synced from current templates/views
-msgid "Please review the admin comments, update your changes, and submit again."
-msgstr "Sila semak komen pentadbir, kemas kini perubahan anda, dan hantar semula."
+msgid ""
+"Please review the admin comments, update your changes, and submit again."
+msgstr ""
+"Sila semak komen pentadbir, kemas kini perubahan anda, dan hantar semula."
 
 #: synced from current templates/views
 msgid "Published version remains visible"
@@ -1556,23 +1829,31 @@ msgstr "Versi yang telah diterbitkan masih kelihatan"
 
 #: synced from current templates/views
 msgid "Published version remains visible until approval."
-msgstr "Versi yang telah diterbitkan masih kelihatan sehingga kemas kini diluluskan."
+msgstr ""
+"Versi yang telah diterbitkan masih kelihatan sehingga kemas kini diluluskan."
 
 #: synced from current templates/views
 msgid "Reject update"
 msgstr "Tolak kemas kini"
 
 #: synced from current templates/views
-msgid "Review new articles and pending updates before they become publicly visible."
-msgstr "Semak artikel baharu dan kemas kini tertunda sebelum ia kelihatan kepada umum."
+msgid ""
+"Review new articles and pending updates before they become publicly visible."
+msgstr ""
+"Semak artikel baharu dan kemas kini tertunda sebelum ia kelihatan kepada "
+"umum."
 
 #: synced from current templates/views
 msgid "Search results"
 msgstr "Keputusan carian"
 
 #: synced from current templates/views
-msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "%(part_name)s dilangkau: bahagian ini lebih besar daripada 100 MB. Ekstrak dan pecahkannya semula sebelum import."
+msgid ""
+"Skipped %(part_name)s: part is larger than 100 MB. Extract and split it "
+"again before import."
+msgstr ""
+"%(part_name)s dilangkau: bahagian ini lebih besar daripada 100 MB. Ekstrak "
+"dan pecahkannya semula sebelum import."
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
@@ -1595,12 +1876,20 @@ msgid "There are no pending article reviews right now."
 msgstr "Tiada semakan artikel tertunda buat masa ini."
 
 #: synced from current templates/views
-msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
-msgstr "Komen ini ditunjukkan kepada pemilik artikel apabila artikel atau kemas kini ditandakan sebagai Gagal kelulusan."
+msgid ""
+"These comments are shown to the article owner when the article or update is "
+"marked as Pending failed."
+msgstr ""
+"Komen ini ditunjukkan kepada pemilik artikel apabila artikel atau kemas kini "
+"ditandakan sebagai Gagal kelulusan."
 
 #: synced from current templates/views
-msgid "This edit is waiting for admin approval. The current published version is still visible to users."
-msgstr "Suntingan ini sedang menunggu kelulusan pentadbir. Versi semasa yang telah diterbitkan masih kelihatan kepada pengguna."
+msgid ""
+"This edit is waiting for admin approval. The current published version is "
+"still visible to users."
+msgstr ""
+"Suntingan ini sedang menunggu kelulusan pentadbir. Versi semasa yang telah "
+"diterbitkan masih kelihatan kepada pengguna."
 
 #: synced from current templates/views
 msgid "Untitled article"
@@ -1623,8 +1912,12 @@ msgid "Update submitted at"
 msgstr "Kemas kini dihantar pada"
 
 #: synced from current templates/views
-msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "dan semua fail muat naik yang dirujuk. Data kemas kini tertunda disertakan supaya pangkalan data dan fail OpenKB kekal selaras selepas import."
+msgid ""
+"and all referenced uploaded files. Pending update data is included so the "
+"database and OpenKB files remain in sync after import."
+msgstr ""
+"dan semua fail muat naik yang dirujuk. Data kemas kini tertunda disertakan "
+"supaya pangkalan data dan fail OpenKB kekal selaras selepas import."
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -1634,8 +1927,15 @@ msgstr "semakan artikel tertunda"
 msgid "Article image upload limit"
 msgstr "Had muat naik imej artikel"
 
-msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
-msgstr "Bilangan maksimum imej yang boleh ditampal atau dimuat naik bagi setiap artikel, termasuk versi draf, menunggu kelulusan, diterbitkan dan kemas kini tertunda. Lalai ialah 50. Tetapkan kepada 0 untuk menyahaktifkan muat naik imej artikel."
+msgid ""
+"Maximum number of pasted/uploaded images allowed per article, including "
+"draft, pending, published, and pending-update versions. Default is 50. Set "
+"to 0 to disable article image uploads."
+msgstr ""
+"Bilangan maksimum imej yang boleh ditampal atau dimuat naik bagi setiap "
+"artikel, termasuk versi draf, menunggu kelulusan, diterbitkan dan kemas kini "
+"tertunda. Lalai ialah 50. Tetapkan kepada 0 untuk menyahaktifkan muat naik "
+"imej artikel."
 
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Muat naik imej artikel sedang dinyahaktifkan oleh pentadbir."
@@ -1643,14 +1943,22 @@ msgstr "Muat naik imej artikel sedang dinyahaktifkan oleh pentadbir."
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Artikel ini telah mencapai had muat naik sebanyak %(limit)s imej."
 
-msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
-msgstr "Artikel ini mempunyai %(count)s imej, tetapi maksimum yang dibenarkan ialah %(limit)s imej. Sila buang beberapa imej sebelum menyimpan."
+msgid ""
+"This article has %(count)s image(s), but the maximum allowed is %(limit)s "
+"image(s). Please remove some images before saving."
+msgstr ""
+"Artikel ini mempunyai %(count)s imej, tetapi maksimum yang dibenarkan ialah %"
+"(limit)s imej. Sila buang beberapa imej sebelum menyimpan."
 
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Maksimum %(limit)s imej bagi setiap artikel."
 
-msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
-msgstr "Artikel ini telah mencapai had muat naik imej. Sila buang satu imej sebelum memuat naik imej lain."
+msgid ""
+"This article has reached the image upload limit. Please remove an image "
+"before uploading another one."
+msgstr ""
+"Artikel ini telah mencapai had muat naik imej. Sila buang satu imej sebelum "
+"memuat naik imej lain."
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
@@ -1673,36 +1981,61 @@ msgid "Submit update again"
 msgstr "Hantar kemas kini semula"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Discard this pending update draft and revert the editor to the last published version?"
-msgstr "Buang draf kemas kini yang menunggu kelulusan ini dan kembalikan editor kepada versi terakhir yang diterbitkan?"
+msgid ""
+"Discard this pending update draft and revert the editor to the last "
+"published version?"
+msgstr ""
+"Buang draf kemas kini yang menunggu kelulusan ini dan kembalikan editor "
+"kepada versi terakhir yang diterbitkan?"
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Discard your saved update draft and reload the last published version?"
-msgstr "Buang draf kemas kini yang disimpan dan muat semula versi terakhir yang diterbitkan?"
+msgstr ""
+"Buang draf kemas kini yang disimpan dan muat semula versi terakhir yang "
+"diterbitkan?"
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Discard your current edits and reload the last published version?"
-msgstr "Buang suntingan semasa anda dan muat semula versi terakhir yang diterbitkan?"
+msgstr ""
+"Buang suntingan semasa anda dan muat semula versi terakhir yang diterbitkan?"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
-msgstr "Kemas kini menunggu kelulusan — Suntingan ini sedang menunggu kelulusan pentadbir. Versi semasa yang diterbitkan masih dapat dilihat oleh pengguna."
+msgid ""
+"Pending update — This edit is waiting for admin approval. The current "
+"published version is still visible to users."
+msgstr ""
+"Kemas kini menunggu kelulusan — Suntingan ini sedang menunggu kelulusan "
+"pentadbir. Versi semasa yang diterbitkan masih dapat dilihat oleh pengguna."
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
-msgstr "Kemas kini tidak diluluskan — Sila semak komen pentadbir, kemas kini perubahan anda dan hantar semula."
+msgid ""
+"Update pending failed — Please review the admin comments, update your "
+"changes, and submit again."
+msgstr ""
+"Kemas kini tidak diluluskan — Sila semak komen pentadbir, kemas kini "
+"perubahan anda dan hantar semula."
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
-msgstr "Draf kemas kini disimpan — Anda sedang menyunting perubahan yang disimpan untuk artikel yang telah diterbitkan ini. Versi semasa yang diterbitkan masih dapat dilihat sehingga anda menghantar kemas kini ini untuk kelulusan."
+msgid ""
+"Saved update draft — You are currently editing saved changes for this "
+"published article. The current published version is still visible until you "
+"submit this update for approval."
+msgstr ""
+"Draf kemas kini disimpan — Anda sedang menyunting perubahan yang disimpan "
+"untuk artikel yang telah diterbitkan ini. Versi semasa yang diterbitkan "
+"masih dapat dilihat sehingga anda menghantar kemas kini ini untuk kelulusan."
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Editor reverted to the last published version."
 msgstr "Editor telah dikembalikan kepada versi terakhir yang diterbitkan."
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
-msgstr "Kemajuan kemas kini telah disimpan. Versi yang diterbitkan masih dapat dilihat, dan kemas kini belum dihantar untuk kelulusan."
+msgid ""
+"Update progress saved. The published version is still visible, and the "
+"update has not been submitted for approval yet."
+msgstr ""
+"Kemajuan kemas kini telah disimpan. Versi yang diterbitkan masih dapat "
+"dilihat, dan kemas kini belum dihantar untuk kelulusan."
 
 msgid "KB"
 msgstr "Pangkalan Pengetahuan"
@@ -1753,267 +2086,480 @@ msgid "User MFA devices"
 msgstr "Peranti MFA pengguna"
 
 # DjOpenKB admin field translation sync
-
 msgid "Authentication and Authorization"
 msgstr "Pengesahan dan kebenaran"
+
 msgid "Original name"
 msgstr "Nama asal"
+
 msgid "Content type"
 msgstr "Jenis kandungan"
+
 msgid "Size bytes"
 msgstr "Saiz dalam bait"
+
 msgid "User agent"
 msgstr "Ejen pengguna"
+
 msgid "Path"
 msgstr "Laluan"
+
 msgid "Vote"
 msgstr "Undian"
+
 msgid "Configured"
 msgstr "Dikonfigurasi"
+
 msgid "Setup pending"
 msgstr "Menunggu persediaan"
+
 msgid "Not set up"
 msgstr "Belum disediakan"
+
 msgid "Not required"
 msgstr "Tidak diperlukan"
+
 msgid "Authentication source"
 msgstr "Sumber pengesahan"
+
 msgid "Can access main site"
 msgstr "Boleh mengakses laman utama"
+
 msgid "Preferred language"
 msgstr "Bahasa pilihan"
+
 msgid "Created at"
 msgstr "Dicipta pada"
+
 msgid "Updated at"
 msgstr "Dikemas kini pada"
+
 msgid "Deleted at"
 msgstr "Dipadam pada"
+
 msgid "Delete reason"
 msgstr "Sebab pemadaman"
+
 msgid "Article status"
 msgstr "Status artikel"
+
 msgid "Account Type"
 msgstr "Jenis akaun"
+
 msgid "Source"
 msgstr "Sumber"
+
 msgid "Main Site Access"
 msgstr "Akses laman utama"
+
 msgid "MFA Status"
 msgstr "Status MFA"
+
 msgid "MFA Reset"
 msgstr "Tetapan semula MFA"
+
 msgid "Authenticator key"
 msgstr "Kunci pengesah"
+
 msgid "Review history"
 msgstr "Sejarah semakan"
+
 msgid "Uploader display"
 msgstr "Paparan pemuat naik"
+
 msgid "Size (KB)"
 msgstr "Saiz (KB)"
-msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
-msgstr "Kata laluan domain diurus dalam Active Directory dan tidak boleh diubah daripada pentadbir Django."
+
+msgid ""
+"Domain password is managed in Active Directory and cannot be changed from "
+"Django admin."
+msgstr ""
+"Kata laluan domain diurus dalam Active Directory dan tidak boleh diubah "
+"daripada pentadbir Django."
+
 msgid "Blocked"
 msgstr "Disekat"
-msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
-msgstr "Tidak disulitkan. Tetapkan semula peranti MFA pengguna ini dan minta pengguna menyediakan MFA semula."
+
+msgid ""
+"Not encrypted. Reset this user MFA device and ask the user to set up MFA "
+"again."
+msgstr ""
+"Tidak disulitkan. Tetapkan semula peranti MFA pengguna ini dan minta "
+"pengguna menyediakan MFA semula."
+
 msgid "Allowed"
 msgstr "Dibenarkan"
-msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
-msgstr "Menetapkan semula pengesah pengguna ini dan memerlukan persediaan QR baharu. Kunci pengesah baharu adalah peribadi dan tidak dipaparkan kepada pentadbir."
+
+msgid ""
+"Resets this user's authenticator and requires a fresh QR setup. The new "
+"authenticator key is private and is not displayed to admins."
+msgstr ""
+"Menetapkan semula pengesah pengguna ini dan memerlukan persediaan QR baharu. "
+"Kunci pengesah baharu adalah peribadi dan tidak dipaparkan kepada pentadbir."
+
 msgid "Reset MFA for selected users"
 msgstr "Tetapkan semula MFA untuk pengguna yang dipilih"
+
 msgid "Allow selected users to access main site"
 msgstr "Benarkan pengguna yang dipilih mengakses laman utama"
+
 msgid "Block selected users from main site"
 msgstr "Sekat pengguna yang dipilih daripada laman utama"
+
 msgid "Set selected users as User"
 msgstr "Tetapkan pengguna yang dipilih sebagai Pengguna"
+
 msgid "Set selected users as Admin"
 msgstr "Tetapkan pengguna yang dipilih sebagai Pentadbir"
+
 msgid "Set selected users as LDAP user"
 msgstr "Tetapkan pengguna yang dipilih sebagai pengguna LDAP"
+
 msgid "Set selected users as LDAP admin"
 msgstr "Tetapkan pengguna yang dipilih sebagai pentadbir LDAP"
+
 msgid "Not set"
 msgstr "Tidak ditetapkan"
+
 msgid "Encrypted and hidden"
 msgstr "Disulitkan dan disembunyikan"
+
 msgid "Reset this user's MFA"
 msgstr "Tetapkan semula MFA pengguna ini"
-msgid "A reset generates a fresh private authenticator key and forces setup again."
-msgstr "Tetapan semula akan menjana kunci pengesah peribadi baharu dan memaksa persediaan semula."
+
+msgid ""
+"A reset generates a fresh private authenticator key and forces setup again."
+msgstr ""
+"Tetapan semula akan menjana kunci pengesah peribadi baharu dan memaksa "
+"persediaan semula."
+
 msgid "Reset selected MFA devices"
 msgstr "Tetapkan semula peranti MFA yang dipilih"
+
 msgid "Mark selected MFA devices as setup pending"
 msgstr "Tandakan peranti MFA yang dipilih sebagai menunggu persediaan"
+
 msgid "OpenKB files"
 msgstr "Fail OpenKB"
+
 msgid "Article statistics"
 msgstr "Statistik artikel"
+
 msgid "Author snapshot"
 msgstr "Snapshot pengarang"
+
 msgid "Timestamps"
 msgstr "Cap masa"
+
 msgid "Approve selected pending articles"
 msgstr "Luluskan artikel menunggu semakan yang dipilih"
+
 msgid "Mark selected articles as pending failed"
 msgstr "Tandakan artikel yang dipilih sebagai gagal semakan"
+
 msgid "Like"
 msgstr "Suka"
+
 msgid "Dislike"
 msgstr "Tidak suka"
+
 msgid "Article upload limits"
 msgstr "Had muat naik artikel"
+
 msgid "Stray upload cleanup"
 msgstr "Pembersihan muat naik tidak digunakan"
+
 msgid "Authentication and session settings"
 msgstr "Tetapan pengesahan dan sesi"
+
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "Kata laluan pengguna domain diurus dalam Active Directory."
+
 msgid "User does not exist."
 msgstr "Pengguna tidak wujud."
-msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
-msgstr "Ditandakan sebagai gagal semakan oleh pentadbir. Sila semak artikel ini dan hantar semula untuk kelulusan."
-msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
-msgstr "Mengawal jumlah imej yang ditampal/dimuat naik yang boleh terdapat dalam setiap artikel. Lalai ialah 50. Tetapkan kepada 0 untuk melumpuhkan muat naik imej artikel."
-msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
-msgstr "Mengawal umur minimum yang digunakan oleh Profil Saya → Alat pentadbir → Bersihkan fail muat naik tidak digunakan. Gunakan 0 untuk memaparkan fail dengan serta-merta."
-msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
-msgstr "Mengawal log pengesahan/MFA, log aktiviti umum, bilangan baris paparan log pentadbir, dan tempoh hayat sesi pengguna. Pengekalan log lalai ialah 30 hari. Jadual log pentadbir memaparkan 200 baris setiap halaman secara lalai. Tetapkan tamat masa sesi kepada 0 supaya sesi tamat apabila pelayar ditutup."
-msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
-msgstr "Gunakan bahagian ini untuk menetapkan semula persediaan pengesah pengguna. Tetapan semula menjana rahsia pengesah peribadi baharu dan memaksa pengguna mengimbas kod QR baharu pada log masuk seterusnya."
+
+msgid ""
+"Marked as pending failed by admin. Please review this article and resubmit "
+"it for approval."
+msgstr ""
+"Ditandakan sebagai gagal semakan oleh pentadbir. Sila semak artikel ini dan "
+"hantar semula untuk kelulusan."
+
+msgid ""
+"Controls how many pasted/uploaded images each article may contain. Default "
+"is 50. Set to 0 to disable article image uploads."
+msgstr ""
+"Mengawal jumlah imej yang ditampal/dimuat naik yang boleh terdapat dalam "
+"setiap artikel. Lalai ialah 50. Tetapkan kepada 0 untuk melumpuhkan muat "
+"naik imej artikel."
+
+msgid ""
+"Controls the minimum age used by My Profile → Admin tools → Clean stray "
+"upload files. Use 0 to show files immediately."
+msgstr ""
+"Mengawal umur minimum yang digunakan oleh Profil Saya → Alat pentadbir → "
+"Bersihkan fail muat naik tidak digunakan. Gunakan 0 untuk memaparkan fail "
+"dengan serta-merta."
+
+msgid ""
+"Controls authentication/MFA logs, general activity logs, admin log display "
+"rows, and user session lifetime. Default log retention is 30 days. Admin log "
+"tables show 200 rows per page by default. Set session timeout to 0 to expire "
+"the session when the browser closes."
+msgstr ""
+"Mengawal log pengesahan/MFA, log aktiviti umum, bilangan baris paparan log "
+"pentadbir, dan tempoh hayat sesi pengguna. Pengekalan log lalai ialah 30 "
+"hari. Jadual log pentadbir memaparkan 200 baris setiap halaman secara lalai. "
+"Tetapkan tamat masa sesi kepada 0 supaya sesi tamat apabila pelayar ditutup."
+
+msgid ""
+"Use this section to reset a user's authenticator setup. A reset generates a "
+"new private authenticator secret and forces the user to scan a new QR code "
+"at next sign-in."
+msgstr ""
+"Gunakan bahagian ini untuk menetapkan semula persediaan pengesah pengguna. "
+"Tetapan semula menjana rahsia pengesah peribadi baharu dan memaksa pengguna "
+"mengimbas kod QR baharu pada log masuk seterusnya."
+
 msgid "Deleted user"
 msgstr "Pengguna dipadam"
-msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
-msgstr "Akaun pentadbir/pentadbir LDAP boleh mengakses pentadbir Django apabila status staf diaktifkan."
-msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
-msgstr "Mengawal sama ada kata laluan diurus secara setempat dalam DjOpenKB atau secara luaran oleh Active Directory."
+
+msgid ""
+"Admin/LDAP admin accounts can access Django admin when staff status is "
+"enabled."
+msgstr ""
+"Akaun pentadbir/pentadbir LDAP boleh mengakses pentadbir Django apabila "
+"status staf diaktifkan."
+
+msgid ""
+"Controls whether the password is managed locally in DjOpenKB or externally "
+"by Active Directory."
+msgstr ""
+"Mengawal sama ada kata laluan diurus secara setempat dalam DjOpenKB atau "
+"secara luaran oleh Active Directory."
+
 msgid "Untick this to block the user from accessing the main wiki site."
-msgstr "Nyahtanda ini untuk menyekat pengguna daripada mengakses laman wiki utama."
+msgstr ""
+"Nyahtanda ini untuk menyekat pengguna daripada mengakses laman wiki utama."
+
 msgid "Preferred language for the main wiki user interface."
 msgstr "Bahasa pilihan untuk antara muka pengguna wiki utama."
+
 msgid "deleted-user"
 msgstr "pengguna-dipadam"
+
 msgid "unknown user"
 msgstr "pengguna tidak diketahui"
+
 msgid "Article created"
 msgstr "Artikel dicipta"
+
 msgid "Article updated"
 msgstr "Artikel dikemas kini"
+
 msgid "Article deleted"
 msgstr "Artikel dipadam"
+
 msgid "Article status changed"
 msgstr "Status artikel diubah"
+
 msgid "Article submitted for approval"
 msgstr "Artikel dihantar untuk kelulusan"
+
 msgid "Article approved/published"
 msgstr "Artikel diluluskan/diterbitkan"
+
 msgid "Article marked pending failed"
 msgstr "Artikel ditandakan sebagai gagal semakan"
+
 msgid "Orphan article assigned"
 msgstr "Artikel tanpa pemilik diberikan"
+
 msgid "Orphan article deleted"
 msgstr "Artikel tanpa pemilik dipadam"
+
 msgid "Article viewed"
 msgstr "Artikel dilihat"
+
 msgid "Article vote up"
 msgstr "Artikel diundi naik"
+
 msgid "Article vote down"
 msgstr "Artikel diundi turun"
+
 msgid "Article vote changed"
 msgstr "Undian artikel diubah"
+
 msgid "Article vote removed"
 msgstr "Undian artikel dibuang"
+
 msgid "Article image uploaded"
 msgstr "Imej artikel dimuat naik"
+
 msgid "Article image deleted"
 msgstr "Imej artikel dipadam"
+
 msgid "OpenKB AI question"
 msgstr "Soalan OpenKB AI"
+
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI dihadkan kadar"
+
 msgid "Bulk article import"
 msgstr "Import artikel pukal"
+
 msgid "Admin tool action"
 msgstr "Tindakan alat pentadbir"
+
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "Umur minimum pembersihan muat naik tidak digunakan (minit)"
-msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
-msgstr "Fail yang lebih baharu daripada jumlah minit ini akan diabaikan oleh alat pembersihan muat naik tidak digunakan. Lalai ialah 1440 minit (24 jam) untuk mengelakkan imej dipadam semasa pengguna sedang merangka artikel. Tetapkan kepada 0 untuk mengesan/memadam muat naik tidak digunakan dengan serta-merta."
+
+msgid ""
+"Files newer than this many minutes are ignored by the stray upload cleanup "
+"tool. Default is 1440 minutes (24 hours) to avoid deleting images while "
+"users are drafting articles. Set to 0 to detect/delete stray uploads "
+"immediately."
+msgstr ""
+"Fail yang lebih baharu daripada jumlah minit ini akan diabaikan oleh alat "
+"pembersihan muat naik tidak digunakan. Lalai ialah 1440 minit (24 jam) untuk "
+"mengelakkan imej dipadam semasa pengguna sedang merangka artikel. Tetapkan "
+"kepada 0 untuk mengesan/memadam muat naik tidak digunakan dengan serta-merta."
+
 msgid "Authentication activity log retention (days)"
 msgstr "Pengekalan log aktiviti pengesahan (hari)"
-msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
-msgstr "Log pemantauan pengesahan/MFA yang lebih lama daripada jumlah hari ini boleh dipadam oleh arahan pembersihan. Gunakan 0 untuk menyimpan log aktiviti pengesahan tanpa had."
+
+msgid ""
+"Authentication/MFA monitoring logs older than this many days can be deleted "
+"by the cleanup command. Use 0 to keep authentication activity logs "
+"indefinitely."
+msgstr ""
+"Log pemantauan pengesahan/MFA yang lebih lama daripada jumlah hari ini boleh "
+"dipadam oleh arahan pembersihan. Gunakan 0 untuk menyimpan log aktiviti "
+"pengesahan tanpa had."
+
 msgid "User session timeout (days)"
 msgstr "Tamat masa sesi pengguna (hari)"
-msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
-msgstr "Sesi pengguna yang telah disahkan tamat selepas jumlah hari ini dari masa log masuk. Selepas tamat, pengguna akan dilog keluar dan mesti log masuk semula. Tetapkan kepada 0 supaya sesi tamat apabila pelayar ditutup."
+
+msgid ""
+"Authenticated user sessions expire after this many days from sign-in. After "
+"expiry, users are signed out and must log in again. Set to 0 to expire the "
+"session when the browser closes."
+msgstr ""
+"Sesi pengguna yang telah disahkan tamat selepas jumlah hari ini dari masa "
+"log masuk. Selepas tamat, pengguna akan dilog keluar dan mesti log masuk "
+"semula. Tetapkan kepada 0 supaya sesi tamat apabila pelayar ditutup."
+
 msgid "General activity log retention (days)"
 msgstr "Pengekalan log aktiviti umum (hari)"
-msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
-msgstr "Log aktiviti artikel/undian/imej/alat pentadbir yang lebih lama daripada jumlah hari ini boleh dipadam oleh arahan pembersihan. Gunakan 0 untuk menyimpan log aktiviti umum tanpa had."
+
+msgid ""
+"Article/vote/image/admin-tool activity logs older than this many days can be "
+"deleted by the cleanup command. Use 0 to keep general activity logs "
+"indefinitely."
+msgstr ""
+"Log aktiviti artikel/undian/imej/alat pentadbir yang lebih lama daripada "
+"jumlah hari ini boleh dipadam oleh arahan pembersihan. Gunakan 0 untuk "
+"menyimpan log aktiviti umum tanpa had."
+
 msgid "Admin log rows per page"
 msgstr "Baris log pentadbir setiap halaman"
-msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
-msgstr "Bilangan baris untuk dipaparkan setiap halaman dalam jadual log Pentadbir Django. Julat disyorkan: 50 hingga 500. Lalai ialah 200."
+
+msgid ""
+"Number of rows to show per page in Django Admin log tables. Recommended "
+"range: 50 to 500. Default is 200."
+msgstr ""
+"Bilangan baris untuk dipaparkan setiap halaman dalam jadual log Pentadbir "
+"Django. Julat disyorkan: 50 hingga 500. Lalai ialah 200."
+
 msgid "anonymous"
 msgstr "tanpa nama"
+
 msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
-msgstr "Anda akan menetapkan semula MFA untuk pengguna <strong>{{ username }}</strong>."
+msgstr ""
+"Anda akan menetapkan semula MFA untuk pengguna <strong>{{ username }}</"
+"strong>."
+
 msgid "Notes"
 msgstr "Nota"
+
 msgid "Confirmed"
 msgstr "Disahkan"
+
 msgid "Confirmed at"
 msgstr "Disahkan pada"
+
 msgid "Last verified at"
 msgstr "Terakhir disahkan pada"
+
 msgid "Reset at"
 msgstr "Ditetapkan semula pada"
+
 msgid "Event type"
 msgstr "Jenis peristiwa"
+
 msgid "Success"
 msgstr "Berjaya"
+
 msgid "Login mode"
 msgstr "Mod log masuk"
+
 msgid "IP address"
 msgstr "Alamat IP"
+
 msgid "Request method"
 msgstr "Kaedah permintaan"
+
 msgid "Details"
 msgstr "Butiran"
+
 msgid "Owner"
 msgstr "Pemilik"
+
 msgid "Author username snapshot"
 msgstr "Snapshot nama pengguna pengarang"
+
 msgid "Author name snapshot"
 msgstr "Snapshot nama pengarang"
+
 msgid "Author email snapshot"
 msgstr "Snapshot e-mel pengarang"
+
 msgid "Author account type snapshot"
 msgstr "Snapshot jenis akaun pengarang"
+
 msgid "Article body"
 msgstr "Isi artikel"
+
 msgid "Review notes"
 msgstr "Nota semakan"
+
 msgid "Raw path"
 msgstr "Laluan mentah"
+
 msgid "Wiki path"
 msgstr "Laluan wiki"
+
 msgid "Image assets"
 msgstr "Aset imej"
+
 msgid "Update status"
 msgstr "Status kemas kini"
+
 msgid "Uploader username snapshot"
 msgstr "Snapshot nama pengguna pemuat naik"
+
 msgid "Uploader email snapshot"
 msgstr "Snapshot e-mel pemuat naik"
+
 msgid "Uploader account type snapshot"
 msgstr "Snapshot jenis akaun pemuat naik"
+
 msgid "Upload IP address"
 msgstr "Alamat IP muat naik"
+
 msgid "Upload user agent"
 msgstr "Ejen pengguna muat naik"
+
 msgid "Deleted by"
 msgstr "Dipadam oleh"
 
@@ -2022,8 +2568,12 @@ msgid "No articles were imported"
 msgstr "Tiada artikel diimport"
 
 # DjOpenKB import result modal
-msgid "The import result is shown here so it does not take over the main import/export page."
-msgstr "Keputusan import dipaparkan di sini supaya ia tidak memenuhi halaman utama import/eksport."
+msgid ""
+"The import result is shown here so it does not take over the main import/"
+"export page."
+msgstr ""
+"Keputusan import dipaparkan di sini supaya ia tidak memenuhi halaman utama "
+"import/eksport."
 
 # DjOpenKB import result modal
 msgid "Import file"
@@ -2032,10 +2582,6 @@ msgstr "Fail import"
 # DjOpenKB import result modal
 msgid "File size"
 msgstr "Saiz fail"
-
-# DjOpenKB import result modal
-msgid "Owner"
-msgstr "Pemilik"
 
 # DjOpenKB import result modal
 msgid "Imported articles"

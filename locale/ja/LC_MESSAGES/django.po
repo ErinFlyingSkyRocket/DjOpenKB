@@ -1,5 +1,8 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: ja\n"
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
 
 msgid "Bulk Import / Export Articles"
 msgstr "記事の一括インポート / エクスポート"
@@ -34,16 +37,23 @@ msgstr "ログアウト"
 msgid "Bulk import / export articles"
 msgstr "記事の一括インポート / エクスポート"
 
-msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
-msgstr "管理者専用ツール。エクスポートには記事のMarkdownと参照ファイルが含まれます:"
+msgid ""
+"Admin-only tool. Exports include article Markdown plus referenced files under"
+msgstr ""
+"管理者専用ツール。エクスポートには記事のMarkdownと参照ファイルが含まれます:"
 
-msgid "Imported articles are assigned to the admin account performing the import."
-msgstr "インポートされた記事は、インポートを実行した管理者アカウントに割り当てられます。"
+msgid ""
+"Imported articles are assigned to the admin account performing the import."
+msgstr ""
+"インポートされた記事は、インポートを実行した管理者アカウントに割り当てられま"
+"す。"
 
 msgid "Export articles"
 msgstr "記事をエクスポート"
 
-msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
+msgid ""
+"Download a zip containing all Django-managed articles, their Markdown "
+"content, a"
 msgstr "Django管理の記事、Markdown内容、および"
 
 msgid "and all referenced uploaded files."
@@ -55,14 +65,19 @@ msgstr "記事エクスポートzip"
 msgid "Import articles"
 msgstr "記事をインポート"
 
-msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
+msgid ""
+"Upload a zip exported from this system, or a zip containing Markdown files "
+"and an optional"
 msgstr "このシステムからエクスポートされたzip、またはMarkdownファイルと任意の"
 
 msgid "Imported articles will be owned by"
 msgstr "インポートされた記事の所有者:"
 
-msgid "Import this zip? Imported articles will be assigned to your admin account."
-msgstr "このzipをインポートしますか？インポートされた記事はあなたの管理者アカウントに割り当てられます。"
+msgid ""
+"Import this zip? Imported articles will be assigned to your admin account."
+msgstr ""
+"このzipをインポートしますか？インポートされた記事はあなたの管理者アカウントに"
+"割り当てられます。"
 
 msgid "Import zip file"
 msgstr "インポート用zipファイル"
@@ -82,8 +97,12 @@ msgstr "対応zip形式"
 msgid "This tool prefers the system export format:"
 msgstr "このツールはシステムのエクスポート形式を推奨します:"
 
-msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip."
-msgstr "manifest.json がない場合、インポーターはzip内のすべてのMarkdownファイルをインポートしようとします。"
+msgid ""
+"If manifest.json is missing, the importer will try to import all Markdown "
+"files found in the zip."
+msgstr ""
+"manifest.json がない場合、インポーターはzip内のすべてのMarkdownファイルをイン"
+"ポートしようとします。"
 
 msgid "Clean Stray Upload Files"
 msgstr "未使用アップロードファイルをクリーンアップ"
@@ -91,17 +110,25 @@ msgstr "未使用アップロードファイルをクリーンアップ"
 msgid "Clean stray upload files"
 msgstr "未使用アップロードファイルをクリーンアップ"
 
-msgid "This scans openkb-data/wiki/uploads and finds uploaded files that are not referenced by any Django article body,"
-msgstr "これは openkb-data/wiki/uploads をスキャンし、Django の記事本文で参照されていないアップロードファイルを検出します。"
+msgid ""
+"This scans openkb-data/wiki/uploads and finds uploaded files that are not "
+"referenced by any Django article body,"
+msgstr ""
+"これは openkb-data/wiki/uploads をスキャンし、Django の記事本文で参照されてい"
+"ないアップロードファイルを検出します。"
 
 msgid "article image_assets, or Markdown file under openkb-data/wiki."
-msgstr "記事の image_assets または openkb-data/wiki 配下の Markdown ファイルでも参照されていないファイルが対象です。"
+msgstr ""
+"記事の image_assets または openkb-data/wiki 配下の Markdown ファイルでも参照"
+"されていないファイルが対象です。"
 
 msgid "Review before deleting"
 msgstr "削除前に確認"
 
 msgid "Delete all listed stray upload files? This cannot be undone."
-msgstr "表示されている未使用アップロードファイルをすべて削除しますか？この操作は元に戻せません。"
+msgstr ""
+"表示されている未使用アップロードファイルをすべて削除しますか？この操作は元に"
+"戻せません。"
 
 msgid "Preview / Open"
 msgstr "プレビュー / 開く"
@@ -226,8 +253,11 @@ msgstr "openKB"
 msgid "IT Help Center"
 msgstr "ITヘルプセンター"
 
-msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
-msgstr "よくある質問への即時回答を得て、3文字をプロのように使う方法を学びましょう。"
+msgid ""
+"Get instant answers for the most common questions and learn how to use 3 "
+"characters like a pro."
+msgstr ""
+"よくある質問への即時回答を得て、3文字をプロのように使う方法を学びましょう。"
 
 msgid "Date"
 msgstr "日付"
@@ -250,14 +280,21 @@ msgstr "メールアドレス"
 msgid "Password"
 msgstr "パスワード"
 
-msgid "Manage your account details. Use Article > Edit to manage your suggested articles."
-msgstr "アカウント情報を管理します。提案記事の管理は 記事 > 編集 を使用してください。"
+msgid ""
+"Manage your account details. Use Article > Edit to manage your suggested "
+"articles."
+msgstr ""
+"アカウント情報を管理します。提案記事の管理は 記事 > 編集 を使用してください。"
 
 msgid "Account summary"
 msgstr "アカウント概要"
 
-msgid "Username and email are created from Django or LDAP account details. LDAP email addresses cannot be changed here."
-msgstr "ユーザー名とメールはDjangoまたはLDAPアカウント情報から作成されます。LDAPメールアドレスはここでは変更できません。"
+msgid ""
+"Username and email are created from Django or LDAP account details. LDAP "
+"email addresses cannot be changed here."
+msgstr ""
+"ユーザー名とメールはDjangoまたはLDAPアカウント情報から作成されます。LDAPメー"
+"ルアドレスはここでは変更できません。"
 
 msgid "Username"
 msgstr "ユーザー名"
@@ -298,8 +335,12 @@ msgstr "言語"
 msgid "Save language"
 msgstr "言語を保存"
 
-msgid "This changes the website interface language for your account. Article content stays in its original language for now."
-msgstr "これはアカウントのWebサイト表示言語を変更します。記事内容は当面、元の言語のままです。"
+msgid ""
+"This changes the website interface language for your account. Article "
+"content stays in its original language for now."
+msgstr ""
+"これはアカウントのWebサイト表示言語を変更します。記事内容は当面、元の言語のま"
+"まです。"
 
 msgid "Change password"
 msgstr "パスワードを変更"
@@ -328,8 +369,12 @@ msgstr "未使用ファイルを検索:"
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "どの記事またはWiki Markdownファイルからも参照されていないもの。"
 
-msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
-msgstr "記事をMarkdownとアップロードファイル付きのzipとしてエクスポート、またはzipをインポートして記事を管理者アカウントに割り当てます。"
+msgid ""
+"Export articles as a zip with Markdown and uploaded files, or import a zip "
+"and assign imported articles to your admin account."
+msgstr ""
+"記事をMarkdownとアップロードファイル付きのzipとしてエクスポート、またはzipを"
+"インポートして記事を管理者アカウントに割り当てます。"
 
 msgid "Old password"
 msgstr "現在のパスワード"
@@ -382,14 +427,22 @@ msgstr "提案"
 msgid "Pasted images"
 msgstr "貼り付けた画像"
 
-msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
-msgstr "この下書きにアップロードされた画像はここに表示されます。Xをクリックすると記事から画像を削除し、アップロードファイルも削除します。"
+msgid ""
+"Images uploaded in this draft appear here. Click X to remove the image from "
+"the article and delete the uploaded file."
+msgstr ""
+"この下書きにアップロードされた画像はここに表示されます。Xをクリックすると記事"
+"から画像を削除し、アップロードファイルも削除します。"
 
 msgid "Article body (Markdown)"
 msgstr "記事本文（Markdown）"
 
-msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
-msgstr "小さなPNG/JPG/GIF/WEBP画像をエディターに直接貼り付けるか、ボタンでアップロードできます。各画像は最大2 MBです。"
+msgid ""
+"You can paste small PNG/JPG/GIF/WEBP images directly into the editor or "
+"upload one using the button. Maximum 2 MB each."
+msgstr ""
+"小さなPNG/JPG/GIF/WEBP画像をエディターに直接貼り付けるか、ボタンでアップロー"
+"ドできます。各画像は最大2 MBです。"
 
 msgid "Upload image"
 msgstr "画像をアップロード"
@@ -406,8 +459,12 @@ msgstr "提案記事を削除"
 msgid "Are you sure you want to delete"
 msgstr "本当に削除しますか"
 
-msgid "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage."
-msgstr "これはプロフィールレコードを削除し、OpenKBのraw/sourceストレージからMarkdownファイルを削除します。"
+msgid ""
+"This removes the profile record and deletes the Markdown files from OpenKB "
+"raw/source storage."
+msgstr ""
+"これはプロフィールレコードを削除し、OpenKBのraw/sourceストレージからMarkdown"
+"ファイルを削除します。"
 
 msgid "Published"
 msgstr "公開済み"
@@ -475,7 +532,8 @@ msgstr "開く"
 msgid "Document Bulk Import / Export"
 msgstr "文書の一括インポート / エクスポート"
 
-msgid "Search, edit, or delete articles you suggested in the Knowledge Repository."
+msgid ""
+"Search, edit, or delete articles you suggested in the Knowledge Repository."
 msgstr "ナレッジリポジトリに提案した記事を検索、編集、削除できます。"
 
 #, python-format
@@ -506,7 +564,8 @@ msgstr "合計 %(count)s 件"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles matching \"%(query)s\""
-msgstr "\"%(query)s\" に一致する %(count)s 件の記事のうち %(start)s-%(end)s 件を表示"
+msgstr ""
+"\"%(query)s\" に一致する %(count)s 件の記事のうち %(start)s-%(end)s 件を表示"
 
 #, python-format
 msgid "Showing %(start)s-%(end)s of %(count)s articles"
@@ -586,7 +645,9 @@ msgstr "記事を更新しました。"
 msgid "Manage pending articles"
 msgstr "承認待ち記事を管理"
 
-msgid "Review user-submitted articles waiting for admin approval before they become public."
+msgid ""
+"Review user-submitted articles waiting for admin approval before they become "
+"public."
 msgstr "公開前に、管理者承認を待っているユーザー投稿記事を確認します。"
 
 msgid "Review user-submitted articles before they become publicly visible."
@@ -649,17 +710,32 @@ msgstr "差し戻しコメント"
 msgid "Explain what the user needs to fix before resubmitting this article."
 msgstr "この記事を再送信する前に、ユーザーが修正すべき内容を説明してください。"
 
-msgid "These comments are shown to the article owner while the article is Draft or Pending failed. They are hidden while the article is Pending approval."
-msgstr "この記事が下書きまたは差し戻し状態の間、これらのコメントは記事の所有者に表示されます。承認待ちの間は非表示になります。"
+msgid ""
+"These comments are shown to the article owner while the article is Draft or "
+"Pending failed. They are hidden while the article is Pending approval."
+msgstr ""
+"この記事が下書きまたは差し戻し状態の間、これらのコメントは記事の所有者に表示"
+"されます。承認待ちの間は非表示になります。"
 
 msgid "Review comments history"
 msgstr "レビューコメント履歴"
 
-msgid "Files newer than %(minutes)s minute are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
+msgid ""
+"Files newer than %(minutes)s minute are ignored. Change this value in Django "
+"Admin → Site settings. Use 0 minutes to show stray uploads immediately."
+msgstr ""
+"%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin "
+"→ サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示しま"
+"す。"
 
-msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
-msgstr "%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin → サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示します。"
+msgid ""
+"Files newer than %(minutes)s minutes are ignored. Change this value in "
+"Django Admin → Site settings. Use 0 minutes to show stray uploads "
+"immediately."
+msgstr ""
+"%(minutes)s 分以内に作成されたファイルは無視されます。この値は Django Admin "
+"→ サイト設定で変更できます。0 分にすると未使用アップロードをすぐに表示しま"
+"す。"
 
 msgid "stray upload file found"
 msgstr "件の未使用アップロードファイルが見つかりました"
@@ -670,8 +746,12 @@ msgstr "件の未使用アップロードファイルが見つかりました"
 msgid "%(size)s KB total"
 msgstr "合計 %(size)s KB"
 
-msgid "These files appear unused. Click cleanup only after checking that none of these uploaded files are still needed."
-msgstr "これらのファイルは未使用のようです。これらのアップロードファイルが不要であることを確認してからクリーンアップしてください。"
+msgid ""
+"These files appear unused. Click cleanup only after checking that none of "
+"these uploaded files are still needed."
+msgstr ""
+"これらのファイルは未使用のようです。これらのアップロードファイルが不要である"
+"ことを確認してからクリーンアップしてください。"
 
 msgid "Delete %(count)s stray file"
 msgstr "%(count)s 件の未使用ファイルを削除"
@@ -685,11 +765,13 @@ msgstr "DjOpenKB にサインイン"
 
 #: website/templates/login.html
 msgid "Use your NextLabs AD email account to access the knowledge repository."
-msgstr "NextLabs AD のメールアカウントを使用してナレッジリポジトリにアクセスします。"
+msgstr ""
+"NextLabs AD のメールアカウントを使用してナレッジリポジトリにアクセスします。"
 
 #: website/templates/login.html
 msgid "Invalid account credentials. Please check your username and password."
-msgstr "アカウント認証情報が無効です。ユーザー名とパスワードを確認してください。"
+msgstr ""
+"アカウント認証情報が無効です。ユーザー名とパスワードを確認してください。"
 
 #: website/templates/login.html
 msgid "NextLabs AD email or username"
@@ -712,12 +794,19 @@ msgid "Sign in with local Django account"
 msgstr "ローカル Django アカウントでサインイン"
 
 #: website/templates/login.html
-msgid "Use local sign-in only for Django administrator or break-glass accounts."
-msgstr "ローカルサインインは Django 管理者または緊急用アカウントのみに使用してください。"
+msgid ""
+"Use local sign-in only for Django administrator or break-glass accounts."
+msgstr ""
+"ローカルサインインは Django 管理者または緊急用アカウントのみに使用してくださ"
+"い。"
 
 #: website/templates/login.html
-msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
-msgstr "ナレッジリポジトリにアクセスするには、NextLabs AD のメールアカウントでサインインしてください。"
+msgid ""
+"Please sign in using your NextLabs AD email account to access the knowledge "
+"repository."
+msgstr ""
+"ナレッジリポジトリにアクセスするには、NextLabs AD のメールアカウントでサイン"
+"インしてください。"
 
 #: website/templates/login.html
 msgid "Example:"
@@ -757,7 +846,8 @@ msgid "%(count)s result(s) found from OpenKB files."
 msgstr "OpenKB ファイルから %(count)s 件の結果が見つかりました。"
 
 #: auto-generated
-msgid "An article with this title already exists. Please use a different title."
+msgid ""
+"An article with this title already exists. Please use a different title."
 msgstr "このタイトルの記事は既に存在します。別のタイトルを使用してください。"
 
 #: auto-generated
@@ -809,12 +899,20 @@ msgid "Complete MFA before accessing the Django admin site."
 msgstr "Django 管理サイトにアクセスする前に MFA を完了してください。"
 
 #: auto-generated
-msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
-msgstr "続行する前に MFA を完了してください。MFA が完了するまで完全にはサインインしていません。"
+msgid ""
+"Complete MFA before continuing. You are not fully signed in until MFA is "
+"completed."
+msgstr ""
+"続行する前に MFA を完了してください。MFA が完了するまで完全にはサインインして"
+"いません。"
 
 #: auto-generated
-msgid "Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."
-msgstr "続行する前に MFA を完了してください。MFA が完了するまで DjOpenKB にアクセスできません。"
+msgid ""
+"Complete MFA before continuing. You cannot access DjOpenKB until MFA is "
+"completed."
+msgstr ""
+"続行する前に MFA を完了してください。MFA が完了するまで DjOpenKB にアクセスで"
+"きません。"
 
 #: auto-generated
 msgid "Current MFA status"
@@ -849,8 +947,11 @@ msgid "Image removed from this article draft."
 msgstr "この記事の下書きから画像を削除しました。"
 
 #: auto-generated
-msgid "Image removed from this draft. Save the article to delete it from storage."
-msgstr "この下書きから画像を削除しました。ストレージから削除するには記事を保存してください。"
+msgid ""
+"Image removed from this draft. Save the article to delete it from storage."
+msgstr ""
+"この下書きから画像を削除しました。ストレージから削除するには記事を保存してく"
+"ださい。"
 
 #: auto-generated
 msgid "Image upload failed."
@@ -858,7 +959,8 @@ msgstr "画像のアップロードに失敗しました。"
 
 #: auto-generated
 msgid "Image upload failed. Check Django terminal logs."
-msgstr "画像のアップロードに失敗しました。Django ターミナルログを確認してください。"
+msgstr ""
+"画像のアップロードに失敗しました。Django ターミナルログを確認してください。"
 
 #: auto-generated
 msgid "Image uploaded and inserted into the article."
@@ -881,8 +983,10 @@ msgid "Last verified"
 msgstr "最終確認"
 
 #: auto-generated
-msgid "Local accounts require authenticator verification after password sign-in."
-msgstr "ローカルアカウントでは、パスワードサインイン後に認証アプリの確認が必要です。"
+msgid ""
+"Local accounts require authenticator verification after password sign-in."
+msgstr ""
+"ローカルアカウントでは、パスワードサインイン後に認証アプリの確認が必要です。"
 
 #: auto-generated
 msgid "MFA QR code"
@@ -897,12 +1001,20 @@ msgid "MFA reset by user"
 msgstr "ユーザーによる MFA リセット"
 
 #: auto-generated
-msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
-msgstr "選択した %(count)d 件のデバイスの MFA をリセットしました。ユーザーは次回サインイン時に新しい認証アプリを設定する必要があります。"
+msgid ""
+"MFA reset for %(count)d selected device(s). Users must set up a new "
+"authenticator at next sign-in."
+msgstr ""
+"選択した %(count)d 件のデバイスの MFA をリセットしました。ユーザーは次回サイ"
+"ンイン時に新しい認証アプリを設定する必要があります。"
 
 #: auto-generated
-msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
-msgstr "選択した %(count)d 人のユーザーの MFA をリセットしました。次回サインイン時に新しい認証アプリを設定する必要があります。"
+msgid ""
+"MFA reset for %(count)d selected user(s). They must set up a new "
+"authenticator at next sign-in."
+msgstr ""
+"選択した %(count)d 人のユーザーの MFA をリセットしました。次回サインイン時に"
+"新しい認証アプリを設定する必要があります。"
 
 #: auto-generated
 msgid "MFA reset is available for your DjOpenKB account."
@@ -937,8 +1049,12 @@ msgid "MFA verify success"
 msgstr "MFA 確認成功"
 
 #: auto-generated
-msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
-msgstr "%(username)s の MFA をリセットしました。ユーザーは次回サインイン時に新しい認証アプリを設定する必要があります。"
+msgid ""
+"MFA was reset for %(username)s. The user must set up a new authenticator at "
+"next sign-in."
+msgstr ""
+"%(username)s の MFA をリセットしました。ユーザーは次回サインイン時に新しい認"
+"証アプリを設定する必要があります。"
 
 #: auto-generated
 msgid "MFA/OTP code"
@@ -1013,7 +1129,9 @@ msgid "Pending failed comments history"
 msgstr "却下コメント履歴"
 
 #: auto-generated
-msgid "Please enter Pending failed comments before marking this article as Pending failed."
+msgid ""
+"Please enter Pending failed comments before marking this article as Pending "
+"failed."
 msgstr "この記事を却下としてマークする前に、却下コメントを入力してください。"
 
 #: auto-generated
@@ -1073,11 +1191,16 @@ msgid "Reset MFA now"
 msgstr "今すぐ MFA をリセット"
 
 #: auto-generated
-msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
-msgstr "MFA をリセットすると、続行前に新しい認証コードの設定が必要になります。続行しますか？"
+msgid ""
+"Resetting MFA will immediately require you to set up a new authenticator "
+"code before continuing. Continue?"
+msgstr ""
+"MFA をリセットすると、続行前に新しい認証コードの設定が必要になります。続行し"
+"ますか？"
 
 #: auto-generated
-msgid "Scan the QR code with your authenticator app, then enter the MFA/OTP code."
+msgid ""
+"Scan the QR code with your authenticator app, then enter the MFA/OTP code."
 msgstr "認証アプリで QR コードをスキャンし、MFA/OTP コードを入力してください。"
 
 #: auto-generated
@@ -1109,20 +1232,36 @@ msgid "Something went wrong."
 msgstr "問題が発生しました。"
 
 #: auto-generated
-msgid "The next login will require authenticator setup before access is granted."
+msgid ""
+"The next login will require authenticator setup before access is granted."
 msgstr "次回ログイン時は、アクセス許可前に認証アプリの設定が必要です。"
 
 #: auto-generated
-msgid "This email address is managed by your domain account and cannot be changed here."
-msgstr "このメールアドレスはドメインアカウントで管理されているため、ここでは変更できません。"
+msgid ""
+"This email address is managed by your domain account and cannot be changed "
+"here."
+msgstr ""
+"このメールアドレスはドメインアカウントで管理されているため、ここでは変更でき"
+"ません。"
 
 #: auto-generated
-msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
-msgstr "この画像は既にこの下書きにアップロードされています。まずプレビューの X ボタンで削除してください。"
+msgid ""
+"This image is already uploaded in this draft. Use the X preview button to "
+"remove it first."
+msgstr ""
+"この画像は既にこの下書きにアップロードされています。まずプレビューの X ボタン"
+"で削除してください。"
 
 #: auto-generated
-msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using DjOpenKB."
-msgstr "これにより、ユーザー用の新しいプライベート認証シークレットが生成されます。キーは管理者には表示されず、共有してはいけません。ユーザーは再度サインインし、自分の新しい QR コードをスキャンしてから DjOpenKB を続行できます。"
+msgid ""
+"This will generate a brand-new private authenticator secret for the user. "
+"The key is not shown to administrators and should not be shared. The user "
+"must sign in again and scan their own new QR code before they can continue "
+"using DjOpenKB."
+msgstr ""
+"これにより、ユーザー用の新しいプライベート認証シークレットが生成されます。"
+"キーは管理者には表示されず、共有してはいけません。ユーザーは再度サインイン"
+"し、自分の新しい QR コードをスキャンしてから DjOpenKB を続行できます。"
 
 #: auto-generated
 msgid "Top article pagination"
@@ -1142,11 +1281,16 @@ msgstr "確認"
 
 #: auto-generated
 msgid "You are about to reset MFA for user <strong>%(username)s</strong>."
-msgstr "ユーザー <strong>%(username)s</strong> の MFA をリセットしようとしています。"
+msgstr ""
+"ユーザー <strong>%(username)s</strong> の MFA をリセットしようとしています。"
 
 #: auto-generated
-msgid "Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."
-msgstr "MFA がリセットされました。DjOpenKB の利用を続けるには認証アプリの設定を完了してください。"
+msgid ""
+"Your MFA was reset. Complete authenticator setup now to continue using "
+"DjOpenKB."
+msgstr ""
+"MFA がリセットされました。DjOpenKB の利用を続けるには認証アプリの設定を完了し"
+"てください。"
 
 #: auto-generated
 msgid "Your vote has been removed."
@@ -1161,8 +1305,12 @@ msgid "matching"
 msgstr "一致"
 
 #: auto-generated
-msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
-msgstr "openKB は Node.js と Markdown ベースのオープンソース知識ベース/FAQ/Wiki アプリで、強力な lunr 検索を備えています"
+msgid ""
+"openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app "
+"with powerful lunr search"
+msgstr ""
+"openKB は Node.js と Markdown ベースのオープンソース知識ベース/FAQ/Wiki アプ"
+"リで、強力な lunr 検索を備えています"
 
 #: auto-generated
 msgid "openKB powered knowledge repository"
@@ -1181,16 +1329,26 @@ msgid "All statuses"
 msgstr "すべてのステータス"
 
 #: synced from current templates/views
-msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
-msgstr "「%(title)s」というタイトルの記事は既に存在します。別のタイトルを使用してください。"
+msgid ""
+"An article with the title ‘%(title)s’ already exists. Please use a different "
+"title."
+msgstr ""
+"「%(title)s」というタイトルの記事は既に存在します。別のタイトルを使用してくだ"
+"さい。"
 
 #: synced from current templates/views
-msgid "Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
+msgid ""
+"Are you sure you want to assign %(article_count)s article(s) to %(username)s?"
 msgstr "%(article_count)s 件の記事を %(username)s に割り当てますか？"
 
 #: synced from current templates/views
-msgid "Are you sure you want to permanently delete %(article_count)s selected orphan article(s)? This will also remove their generated OpenKB Markdown files."
-msgstr "選択した %(article_count)s 件の孤立記事を完全に削除しますか？生成された OpenKB Markdown ファイルも削除されます。"
+msgid ""
+"Are you sure you want to permanently delete %(article_count)s selected "
+"orphan article(s)? This will also remove their generated OpenKB Markdown "
+"files."
+msgstr ""
+"選択した %(article_count)s 件の孤立記事を完全に削除しますか？生成された "
+"OpenKB Markdown ファイルも削除されます。"
 
 #: synced from current templates/views
 msgid "Assign selected"
@@ -1218,7 +1376,8 @@ msgstr "選択した未使用ファイルを削除"
 
 #: synced from current templates/views
 msgid "Delete the selected stray upload files? This cannot be undone."
-msgstr "選択した未使用アップロードファイルを削除しますか？この操作は元に戻せません。"
+msgstr ""
+"選択した未使用アップロードファイルを削除しますか？この操作は元に戻せません。"
 
 #: synced from current templates/views
 msgid "Deleted by admin stray-file cleanup"
@@ -1229,12 +1388,20 @@ msgid "Deleted by automatic stray-file cleanup"
 msgstr "自動未使用ファイル整理により削除"
 
 #: synced from current templates/views
-msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
-msgstr "有効なローカルまたは AD のユーザー名/メールを入力し、記事にチェックを入れて「選択項目を割り当て」をクリックしてください。"
+msgid ""
+"Enter an active local or AD username/email, then tick articles and click "
+"Assign selected."
+msgstr ""
+"有効なローカルまたは AD のユーザー名/メールを入力し、記事にチェックを入れて"
+"「選択項目を割り当て」をクリックしてください。"
 
 #: synced from current templates/views
-msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them."
-msgstr "所有者がいない、または所有者が無効/削除済みの記事を探し、有効なユーザーへ割り当てるか削除します。"
+msgid ""
+"Find articles with no owner or an inactive/deleted owner, then assign them "
+"to an active user or delete them."
+msgstr ""
+"所有者がいない、または所有者が無効/削除済みの記事を探し、有効なユーザーへ割り"
+"当てるか削除します。"
 
 #: synced from current templates/views
 msgid "Inactive"
@@ -1269,8 +1436,10 @@ msgid "No orphan articles match your search."
 msgstr "検索に一致する孤立記事はありません。"
 
 #: synced from current templates/views
-msgid "No orphan articles were found. All articles currently have an active owner."
-msgstr "孤立記事は見つかりませんでした。現在すべての記事に有効な所有者があります。"
+msgid ""
+"No orphan articles were found. All articles currently have an active owner."
+msgstr ""
+"孤立記事は見つかりませんでした。現在すべての記事に有効な所有者があります。"
 
 #: synced from current templates/views
 msgid "No owner"
@@ -1313,8 +1482,12 @@ msgid "Set up MFA before changing sensitive account details."
 msgstr "重要なアカウント情報を変更する前に MFA を設定してください。"
 
 #: synced from current templates/views
-msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
-msgstr "これらのファイルは未使用のようです。アップロード者の詳細を確認し、不要なファイルのみ削除してください。"
+msgid ""
+"These files appear unused. Check the uploader details, then delete only the "
+"files that are no longer needed."
+msgstr ""
+"これらのファイルは未使用のようです。アップロード者の詳細を確認し、不要なファ"
+"イルのみ削除してください。"
 
 #: synced from current templates/views
 msgid "Type username or email"
@@ -1373,20 +1546,31 @@ msgid "Deleted %(count)s orphan article(s)."
 msgstr "%(count)s 件の孤立記事を削除しました。"
 
 #: synced from current templates/views
-msgid "Find articles with no active owner, then assign them to a user or delete them after confirmation."
-msgstr "有効な所有者がいない記事を探し、確認後にユーザーへ割り当てるか削除します。"
+msgid ""
+"Find articles with no active owner, then assign them to a user or delete "
+"them after confirmation."
+msgstr ""
+"有効な所有者がいない記事を探し、確認後にユーザーへ割り当てるか削除します。"
 
 #: synced from current templates/views
 msgid "Invalid orphan article action."
 msgstr "孤立記事の操作が無効です。"
 
 #: synced from current templates/views
-msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
-msgstr "「%(user)s」に一致する有効なユーザーが複数見つかりました。正確なユーザー名を使用してください。"
+msgid ""
+"More than one active user matched '%(user)s'. Please use the exact username "
+"instead."
+msgstr ""
+"「%(user)s」に一致する有効なユーザーが複数見つかりました。正確なユーザー名を"
+"使用してください。"
 
 #: synced from current templates/views
-msgid "No active user was found for '%(user)s'. Please enter a valid username or email."
-msgstr "「%(user)s」に該当する有効なユーザーが見つかりません。正しいユーザー名またはメールを入力してください。"
+msgid ""
+"No active user was found for '%(user)s'. Please enter a valid username or "
+"email."
+msgstr ""
+"「%(user)s」に該当する有効なユーザーが見つかりません。正しいユーザー名または"
+"メールを入力してください。"
 
 #: synced from current templates/views
 msgid "No orphan articles were deleted. Please refresh and try again."
@@ -1394,7 +1578,8 @@ msgstr "孤立記事は削除されませんでした。更新してもう一度
 
 #: synced from current templates/views
 msgid "Please enter a username or email to assign the selected articles to."
-msgstr "選択した記事の割り当て先となるユーザー名またはメールを入力してください。"
+msgstr ""
+"選択した記事の割り当て先となるユーザー名またはメールを入力してください。"
 
 #: synced from current templates/views
 msgid "Please select at least one orphan article first."
@@ -1402,35 +1587,55 @@ msgstr "まず少なくとも 1 件の孤立記事を選択してください。
 
 #: synced from current templates/views
 msgid "Please use the Assign selected or Delete selected button."
-msgstr "「選択項目を割り当て」または「選択項目を削除」ボタンを使用してください。"
+msgstr ""
+"「選択項目を割り当て」または「選択項目を削除」ボタンを使用してください。"
 
 #: synced from current templates/views
 msgid "Some selected articles could not be deleted: %(titles)s"
 msgstr "一部の選択記事を削除できませんでした: %(titles)s"
 
 #: synced from current templates/views
-msgid "Some selected articles were skipped because they are no longer orphan articles."
+msgid ""
+"Some selected articles were skipped because they are no longer orphan "
+"articles."
 msgstr "一部の選択記事は孤立記事ではなくなったためスキップされました。"
 
 #: synced from current templates/views
-msgid "Something went wrong while processing the orphan article action. No changes were applied. Please check your selection and try again."
-msgstr "孤立記事の操作中にエラーが発生しました。変更は適用されていません。選択内容を確認してもう一度お試しください。"
+msgid ""
+"Something went wrong while processing the orphan article action. No changes "
+"were applied. Please check your selection and try again."
+msgstr ""
+"孤立記事の操作中にエラーが発生しました。変更は適用されていません。選択内容を"
+"確認してもう一度お試しください。"
 
 #: synced from current templates/views
-msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
-msgstr "記事を安全に割り当てられませんでした。割り当ては適用されていません。ログを確認してもう一度お試しください。"
+msgid ""
+"The articles could not be assigned safely. No assignment was applied. Please "
+"check the logs and try again."
+msgstr ""
+"記事を安全に割り当てられませんでした。割り当ては適用されていません。ログを確"
+"認してもう一度お試しください。"
 
 #: synced from current templates/views
-msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
-msgstr "選択した記事は孤立記事ではなくなったか、存在しません。更新してもう一度お試しください。"
+msgid ""
+"The selected articles are no longer orphan articles or no longer exist. "
+"Please refresh and try again."
+msgstr ""
+"選択した記事は孤立記事ではなくなったか、存在しません。更新してもう一度お試し"
+"ください。"
 
 #: synced from current templates/views
-msgid "The selected target user is invalid or inactive. Please choose an active user."
-msgstr "選択した対象ユーザーは無効または非アクティブです。有効なユーザーを選択してください。"
+msgid ""
+"The selected target user is invalid or inactive. Please choose an active "
+"user."
+msgstr ""
+"選択した対象ユーザーは無効または非アクティブです。有効なユーザーを選択してく"
+"ださい。"
 
 #: synced from current templates/views
 msgid "The selected target user was missing. Please choose the user again."
-msgstr "選択した対象ユーザーが見つかりません。もう一度ユーザーを選択してください。"
+msgstr ""
+"選択した対象ユーザーが見つかりません。もう一度ユーザーを選択してください。"
 
 #: synced from current templates/views
 msgid "Approve update"
@@ -1441,40 +1646,69 @@ msgid "Article update approved and published."
 msgstr "記事の更新が承認され、公開されました。"
 
 #: synced from current templates/views
-msgid "Article update marked as pending failed. The current published version remains visible."
-msgstr "記事の更新は「保留失敗」としてマークされました。現在公開中のバージョンは引き続き表示されます。"
+msgid ""
+"Article update marked as pending failed. The current published version "
+"remains visible."
+msgstr ""
+"記事の更新は「保留失敗」としてマークされました。現在公開中のバージョンは引き"
+"続き表示されます。"
 
 #: synced from current templates/views
-msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
-msgstr "記事の更新が管理者の承認待ちとして送信されました。更新が承認されるまで、公開中のバージョンは引き続き表示されます。"
+msgid ""
+"Article update submitted for admin approval. The published version is still "
+"visible until the update is approved."
+msgstr ""
+"記事の更新が管理者の承認待ちとして送信されました。更新が承認されるまで、公開"
+"中のバージョンは引き続き表示されます。"
 
 #: synced from current templates/views
-msgid "Explain what the user needs to fix before resubmitting this article or update."
-msgstr "この記事または更新を再送信する前に、ユーザーが修正すべき内容を説明してください。"
+msgid ""
+"Explain what the user needs to fix before resubmitting this article or "
+"update."
+msgstr ""
+"この記事または更新を再送信する前に、ユーザーが修正すべき内容を説明してくださ"
+"い。"
 
 #: synced from current templates/views
 msgid "Export split package"
 msgstr "分割パッケージをエクスポート"
 
 #: synced from current templates/views
-msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
-msgstr "manifest.json がない場合、インポーターは ZIP 内で見つかったすべての Markdown ファイルのインポートを試みます。分割パッケージの場合は、パッケージを展開し、各パート ZIP を 1 つずつインポートしてください。"
+msgid ""
+"If manifest.json is missing, the importer will try to import all Markdown "
+"files found in the zip. For split packages, extract the package and import "
+"each part zip one by one."
+msgstr ""
+"manifest.json がない場合、インポーターは ZIP 内で見つかったすべての Markdown "
+"ファイルのインポートを試みます。分割パッケージの場合は、パッケージを展開し、"
+"各パート ZIP を 1 つずつインポートしてください。"
 
 #: synced from current templates/views
 msgid "Import failed: %(error)s"
 msgstr "インポートに失敗しました: %(error)s"
 
 #: synced from current templates/views
-msgid "Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."
-msgstr "展開後のインポート用 zip ファイルが大きすぎます。許可される最大の未圧縮サイズは 200 MB です。"
+msgid ""
+"Import zip is too large after extraction. Maximum allowed uncompressed size "
+"is 200 MB."
+msgstr ""
+"展開後のインポート用 zip ファイルが大きすぎます。許可される最大の未圧縮サイズ"
+"は 200 MB です。"
 
 #: synced from current templates/views
-msgid "Import zip is too large. Maximum allowed size is 100 MB. For split exports, extract the split package and import each part zip one at a time."
-msgstr "インポート用 zip ファイルが大きすぎます。許可される最大サイズは 100 MB です。分割エクスポートの場合は、分割パッケージを展開し、各 part zip を1つずつインポートしてください。"
+msgid ""
+"Import zip is too large. Maximum allowed size is 100 MB. For split exports, "
+"extract the split package and import each part zip one at a time."
+msgstr ""
+"インポート用 zip ファイルが大きすぎます。許可される最大サイズは 100 MB です。"
+"分割エクスポートの場合は、分割パッケージを展開し、各 part zip を1つずつイン"
+"ポートしてください。"
 
 #: synced from current templates/views
 msgid "Imported %(count)s article(s). Owner set to %(username)s."
-msgstr "%(count)s 件の記事をインポートしました。所有者は %(username)s に設定されました。"
+msgstr ""
+"%(count)s 件の記事をインポートしました。所有者は %(username)s に設定されまし"
+"た。"
 
 #: synced from current templates/views
 msgid "Invalid zip file."
@@ -1482,11 +1716,18 @@ msgstr "無効な zip ファイルです。"
 
 #: synced from current templates/views
 msgid "Large exports may download as a split package:"
-msgstr "大きなエクスポートは分割パッケージとしてダウンロードされる場合があります:"
+msgstr ""
+"大きなエクスポートは分割パッケージとしてダウンロードされる場合があります:"
 
 #: synced from current templates/views
-msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
-msgstr "最大アップロードサイズ: ZIP 1 個あたり 100 MB。最大未圧縮サイズ: 200 MB。分割エクスポートの場合は、先に分割パッケージを展開し、各パート ZIP を順番にインポートしてください。"
+msgid ""
+"Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For "
+"split exports, extract the split package first, then import each part zip in "
+"order."
+msgstr ""
+"最大アップロードサイズ: ZIP 1 個あたり 100 MB。最大未圧縮サイズ: 200 MB。分割"
+"エクスポートの場合は、先に分割パッケージを展開し、各パート ZIP を順番にイン"
+"ポートしてください。"
 
 #: synced from current templates/views
 msgid "No articles were imported."
@@ -1509,8 +1750,14 @@ msgid "No stray upload files were selected for deletion."
 msgstr "削除する未使用アップロードファイルが選択されていません。"
 
 #: synced from current templates/views
-msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
-msgstr "通常のエクスポートは、内容が大きすぎる場合に自動的に分割パッケージになります。分割パッケージには parts/ フォルダー内にインポート可能なパート ZIP が含まれます。パッケージを展開し、各パート ZIP を順番にインポートしてください。"
+msgid ""
+"Normal export automatically becomes a split package if the content is too "
+"large. Split packages contain importable part zips under the parts/ folder; "
+"extract the package and import each part zip in order."
+msgstr ""
+"通常のエクスポートは、内容が大きすぎる場合に自動的に分割パッケージになりま"
+"す。分割パッケージには parts/ フォルダー内にインポート可能なパート ZIP が含ま"
+"れます。パッケージを展開し、各パート ZIP を順番にインポートしてください。"
 
 #: synced from current templates/views
 msgid "Only .zip import files are allowed."
@@ -1541,15 +1788,20 @@ msgid "Pending update title"
 msgstr "保留中の更新 - タイトル"
 
 #: synced from current templates/views
-msgid "Pending updates can only be approved as Published or marked as Pending failed."
-msgstr "保留中の更新は、公開として承認するか、承認失敗としてマークすることのみできます。"
+msgid ""
+"Pending updates can only be approved as Published or marked as Pending "
+"failed."
+msgstr ""
+"保留中の更新は、公開として承認するか、承認失敗としてマークすることのみできま"
+"す。"
 
 #: synced from current templates/views
 msgid "Please choose a .zip file to import."
 msgstr "インポートする .zip ファイルを選択してください。"
 
 #: synced from current templates/views
-msgid "Please review the admin comments, update your changes, and submit again."
+msgid ""
+"Please review the admin comments, update your changes, and submit again."
 msgstr "管理者コメントを確認し、変更を更新してから再送信してください。"
 
 #: synced from current templates/views
@@ -1565,7 +1817,8 @@ msgid "Reject update"
 msgstr "更新を却下"
 
 #: synced from current templates/views
-msgid "Review new articles and pending updates before they become publicly visible."
+msgid ""
+"Review new articles and pending updates before they become publicly visible."
 msgstr "新しい記事と保留中の更新は、公開される前にレビューしてください。"
 
 #: synced from current templates/views
@@ -1573,8 +1826,12 @@ msgid "Search results"
 msgstr "検索結果"
 
 #: synced from current templates/views
-msgid "Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import."
-msgstr "%(part_name)s をスキップしました: この部分は 100 MB を超えています。インポートする前に展開して再度分割してください。"
+msgid ""
+"Skipped %(part_name)s: part is larger than 100 MB. Extract and split it "
+"again before import."
+msgstr ""
+"%(part_name)s をスキップしました: この部分は 100 MB を超えています。インポー"
+"トする前に展開して再度分割してください。"
 
 #: synced from current templates/views
 msgid "Skipped duplicate title already in OpenKB: %(title)s"
@@ -1597,12 +1854,20 @@ msgid "There are no pending article reviews right now."
 msgstr "現在、保留中の記事レビューはありません。"
 
 #: synced from current templates/views
-msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
-msgstr "記事または更新が承認失敗としてマークされた場合、これらのコメントは記事の所有者に表示されます。"
+msgid ""
+"These comments are shown to the article owner when the article or update is "
+"marked as Pending failed."
+msgstr ""
+"記事または更新が承認失敗としてマークされた場合、これらのコメントは記事の所有"
+"者に表示されます。"
 
 #: synced from current templates/views
-msgid "This edit is waiting for admin approval. The current published version is still visible to users."
-msgstr "この編集は管理者の承認待ちです。現在公開されているバージョンは引き続きユーザーに表示されます。"
+msgid ""
+"This edit is waiting for admin approval. The current published version is "
+"still visible to users."
+msgstr ""
+"この編集は管理者の承認待ちです。現在公開されているバージョンは引き続きユー"
+"ザーに表示されます。"
 
 #: synced from current templates/views
 msgid "Untitled article"
@@ -1625,8 +1890,12 @@ msgid "Update submitted at"
 msgstr "更新の送信日時"
 
 #: synced from current templates/views
-msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
-msgstr "および参照されているすべてのアップロードファイル。インポート後もデータベースと OpenKB ファイルの同期を保つため、保留中の更新データも含まれます。"
+msgid ""
+"and all referenced uploaded files. Pending update data is included so the "
+"database and OpenKB files remain in sync after import."
+msgstr ""
+"および参照されているすべてのアップロードファイル。インポート後もデータベース"
+"と OpenKB ファイルの同期を保つため、保留中の更新データも含まれます。"
 
 #: synced from current templates/views
 msgid "pending article reviews"
@@ -1636,8 +1905,14 @@ msgstr "保留中の記事レビュー"
 msgid "Article image upload limit"
 msgstr "記事画像アップロード上限"
 
-msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
-msgstr "記事ごとに貼り付けまたはアップロードできる画像の最大数です。下書き、承認待ち、公開済み、更新承認待ちの各バージョンを含みます。既定値は50です。0に設定すると記事画像のアップロードを無効にします。"
+msgid ""
+"Maximum number of pasted/uploaded images allowed per article, including "
+"draft, pending, published, and pending-update versions. Default is 50. Set "
+"to 0 to disable article image uploads."
+msgstr ""
+"記事ごとに貼り付けまたはアップロードできる画像の最大数です。下書き、承認待"
+"ち、公開済み、更新承認待ちの各バージョンを含みます。既定値は50です。0に設定す"
+"ると記事画像のアップロードを無効にします。"
 
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "記事画像のアップロードは現在、管理者によって無効化されています。"
@@ -1645,14 +1920,22 @@ msgstr "記事画像のアップロードは現在、管理者によって無効
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "この記事は画像アップロード上限の%(limit)s枚に達しました。"
 
-msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
-msgstr "この記事には%(count)s枚の画像がありますが、許可される最大数は%(limit)s枚です。保存する前に一部の画像を削除してください。"
+msgid ""
+"This article has %(count)s image(s), but the maximum allowed is %(limit)s "
+"image(s). Please remove some images before saving."
+msgstr ""
+"この記事には%(count)s枚の画像がありますが、許可される最大数は%(limit)s枚で"
+"す。保存する前に一部の画像を削除してください。"
 
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "記事ごとに最大%(limit)s枚の画像。"
 
-msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
-msgstr "この記事は画像アップロード上限に達しました。別の画像をアップロードする前に画像を1枚削除してください。"
+msgid ""
+"This article has reached the image upload limit. Please remove an image "
+"before uploading another one."
+msgstr ""
+"この記事は画像アップロード上限に達しました。別の画像をアップロードする前に画"
+"像を1枚削除してください。"
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Back"
@@ -1675,36 +1958,60 @@ msgid "Submit update again"
 msgstr "更新を再送信"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Discard this pending update draft and revert the editor to the last published version?"
-msgstr "この承認待ちの更新下書きを破棄し、エディターを最後に公開されたバージョンに戻しますか？"
+msgid ""
+"Discard this pending update draft and revert the editor to the last "
+"published version?"
+msgstr ""
+"この承認待ちの更新下書きを破棄し、エディターを最後に公開されたバージョンに戻"
+"しますか？"
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Discard your saved update draft and reload the last published version?"
-msgstr "保存済みの更新下書きを破棄し、最後に公開されたバージョンを再読み込みしますか？"
+msgstr ""
+"保存済みの更新下書きを破棄し、最後に公開されたバージョンを再読み込みします"
+"か？"
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Discard your current edits and reload the last published version?"
-msgstr "現在の編集内容を破棄し、最後に公開されたバージョンを再読み込みしますか？"
+msgstr ""
+"現在の編集内容を破棄し、最後に公開されたバージョンを再読み込みしますか？"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
-msgstr "更新承認待ち — この編集は管理者の承認待ちです。現在公開中のバージョンは引き続きユーザーに表示されます。"
+msgid ""
+"Pending update — This edit is waiting for admin approval. The current "
+"published version is still visible to users."
+msgstr ""
+"更新承認待ち — この編集は管理者の承認待ちです。現在公開中のバージョンは引き続"
+"きユーザーに表示されます。"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
-msgstr "更新は承認されませんでした — 管理者コメントを確認し、変更を修正して再送信してください。"
+msgid ""
+"Update pending failed — Please review the admin comments, update your "
+"changes, and submit again."
+msgstr ""
+"更新は承認されませんでした — 管理者コメントを確認し、変更を修正して再送信して"
+"ください。"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
-msgstr "更新下書きを保存済み — この公開済み記事の保存済み変更を編集中です。この更新を承認申請するまで、現在公開中のバージョンが表示されます。"
+msgid ""
+"Saved update draft — You are currently editing saved changes for this "
+"published article. The current published version is still visible until you "
+"submit this update for approval."
+msgstr ""
+"更新下書きを保存済み — この公開済み記事の保存済み変更を編集中です。この更新を"
+"承認申請するまで、現在公開中のバージョンが表示されます。"
 
 # Added by DjOpenKB locale full cleanup patch
 msgid "Editor reverted to the last published version."
 msgstr "エディターを最後に公開されたバージョンに戻しました。"
 
 # Added by DjOpenKB locale full cleanup patch
-msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
-msgstr "更新の進行状況を保存しました。公開済みバージョンは引き続き表示され、この更新はまだ承認申請されていません。"
+msgid ""
+"Update progress saved. The published version is still visible, and the "
+"update has not been submitted for approval yet."
+msgstr ""
+"更新の進行状況を保存しました。公開済みバージョンは引き続き表示され、この更新"
+"はまだ承認申請されていません。"
 
 msgid "KB"
 msgstr "ナレッジベース"
@@ -1755,267 +2062,478 @@ msgid "User MFA devices"
 msgstr "ユーザー MFA デバイス"
 
 # DjOpenKB admin field translation sync
-
 msgid "Authentication and Authorization"
 msgstr "認証と認可"
+
 msgid "Original name"
 msgstr "元の名前"
+
 msgid "Content type"
 msgstr "コンテンツタイプ"
+
 msgid "Size bytes"
 msgstr "サイズ（バイト）"
+
 msgid "User agent"
 msgstr "ユーザーエージェント"
+
 msgid "Path"
 msgstr "パス"
+
 msgid "Vote"
 msgstr "投票"
+
 msgid "Configured"
 msgstr "設定済み"
+
 msgid "Setup pending"
 msgstr "設定待ち"
+
 msgid "Not set up"
 msgstr "未設定"
+
 msgid "Not required"
 msgstr "不要"
+
 msgid "Authentication source"
 msgstr "認証元"
+
 msgid "Can access main site"
 msgstr "メインサイトにアクセス可能"
+
 msgid "Preferred language"
 msgstr "優先言語"
+
 msgid "Created at"
 msgstr "作成日時"
+
 msgid "Updated at"
 msgstr "更新日時"
+
 msgid "Deleted at"
 msgstr "削除日時"
+
 msgid "Delete reason"
 msgstr "削除理由"
+
 msgid "Article status"
 msgstr "記事ステータス"
+
 msgid "Account Type"
 msgstr "アカウント種別"
+
 msgid "Source"
 msgstr "ソース"
+
 msgid "Main Site Access"
 msgstr "メインサイトアクセス"
+
 msgid "MFA Status"
 msgstr "MFA ステータス"
+
 msgid "MFA Reset"
 msgstr "MFA リセット"
+
 msgid "Authenticator key"
 msgstr "認証アプリキー"
+
 msgid "Review history"
 msgstr "レビュー履歴"
+
 msgid "Uploader display"
 msgstr "アップロード者表示名"
+
 msgid "Size (KB)"
 msgstr "サイズ (KB)"
-msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
-msgstr "ドメインパスワードは Active Directory で管理されているため、Django 管理画面から変更できません。"
+
+msgid ""
+"Domain password is managed in Active Directory and cannot be changed from "
+"Django admin."
+msgstr ""
+"ドメインパスワードは Active Directory で管理されているため、Django 管理画面か"
+"ら変更できません。"
+
 msgid "Blocked"
 msgstr "ブロック済み"
-msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
-msgstr "暗号化されていません。このユーザーの MFA デバイスをリセットし、MFA を再設定するよう依頼してください。"
+
+msgid ""
+"Not encrypted. Reset this user MFA device and ask the user to set up MFA "
+"again."
+msgstr ""
+"暗号化されていません。このユーザーの MFA デバイスをリセットし、MFA を再設定す"
+"るよう依頼してください。"
+
 msgid "Allowed"
 msgstr "許可済み"
-msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
-msgstr "このユーザーの認証アプリをリセットし、新しい QR 設定を要求します。新しい認証アプリキーは非公開であり、管理者には表示されません。"
+
+msgid ""
+"Resets this user's authenticator and requires a fresh QR setup. The new "
+"authenticator key is private and is not displayed to admins."
+msgstr ""
+"このユーザーの認証アプリをリセットし、新しい QR 設定を要求します。新しい認証"
+"アプリキーは非公開であり、管理者には表示されません。"
+
 msgid "Reset MFA for selected users"
 msgstr "選択したユーザーの MFA をリセット"
+
 msgid "Allow selected users to access main site"
 msgstr "選択したユーザーにメインサイトへのアクセスを許可"
+
 msgid "Block selected users from main site"
 msgstr "選択したユーザーのメインサイトアクセスをブロック"
+
 msgid "Set selected users as User"
 msgstr "選択したユーザーを一般ユーザーに設定"
+
 msgid "Set selected users as Admin"
 msgstr "選択したユーザーを管理者に設定"
+
 msgid "Set selected users as LDAP user"
 msgstr "選択したユーザーを LDAP ユーザーに設定"
+
 msgid "Set selected users as LDAP admin"
 msgstr "選択したユーザーを LDAP 管理者に設定"
+
 msgid "Not set"
 msgstr "未設定"
+
 msgid "Encrypted and hidden"
 msgstr "暗号化され非表示"
+
 msgid "Reset this user's MFA"
 msgstr "このユーザーの MFA をリセット"
-msgid "A reset generates a fresh private authenticator key and forces setup again."
-msgstr "リセットすると新しい非公開の認証アプリキーが生成され、再設定が必要になります。"
+
+msgid ""
+"A reset generates a fresh private authenticator key and forces setup again."
+msgstr ""
+"リセットすると新しい非公開の認証アプリキーが生成され、再設定が必要になりま"
+"す。"
+
 msgid "Reset selected MFA devices"
 msgstr "選択した MFA デバイスをリセット"
+
 msgid "Mark selected MFA devices as setup pending"
 msgstr "選択した MFA デバイスを設定待ちとしてマーク"
+
 msgid "OpenKB files"
 msgstr "OpenKB ファイル"
+
 msgid "Article statistics"
 msgstr "記事統計"
+
 msgid "Author snapshot"
 msgstr "作成者スナップショット"
+
 msgid "Timestamps"
 msgstr "タイムスタンプ"
+
 msgid "Approve selected pending articles"
 msgstr "選択した承認待ち記事を承認"
+
 msgid "Mark selected articles as pending failed"
 msgstr "選択した記事を承認失敗としてマーク"
+
 msgid "Like"
 msgstr "いいね"
+
 msgid "Dislike"
 msgstr "低評価"
+
 msgid "Article upload limits"
 msgstr "記事アップロード制限"
+
 msgid "Stray upload cleanup"
 msgstr "未使用アップロードのクリーンアップ"
+
 msgid "Authentication and session settings"
 msgstr "認証とセッション設定"
+
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "ドメインユーザーのパスワードは Active Directory で管理されています。"
+
 msgid "User does not exist."
 msgstr "ユーザーが存在しません。"
-msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
-msgstr "管理者により承認失敗としてマークされました。この記事を確認し、再度承認申請してください。"
-msgid "Controls how many pasted/uploaded images each article may contain. Default is 50. Set to 0 to disable article image uploads."
-msgstr "各記事に含められる貼り付け/アップロード画像の数を制御します。既定値は 50 です。0 に設定すると記事画像のアップロードを無効にします。"
-msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
-msgstr "マイプロフィール → 管理ツール → 未使用アップロードファイルのクリーンアップで使用する最小経過時間を制御します。0 を指定するとファイルをすぐに表示します。"
-msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Set session timeout to 0 to expire the session when the browser closes."
-msgstr "認証/MFA ログ、一般アクティビティログ、管理ログの表示行数、ユーザーセッションの有効期間を制御します。ログ保持期間の既定値は 30 日です。管理ログテーブルは既定で 1 ページあたり 200 行を表示します。セッションタイムアウトを 0 に設定すると、ブラウザーを閉じたときにセッションが期限切れになります。"
-msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
-msgstr "このセクションでユーザーの認証アプリ設定をリセットします。リセットすると新しい非公開の認証シークレットが生成され、次回サインイン時に新しい QR コードのスキャンが必要になります。"
+
+msgid ""
+"Marked as pending failed by admin. Please review this article and resubmit "
+"it for approval."
+msgstr ""
+"管理者により承認失敗としてマークされました。この記事を確認し、再度承認申請し"
+"てください。"
+
+msgid ""
+"Controls how many pasted/uploaded images each article may contain. Default "
+"is 50. Set to 0 to disable article image uploads."
+msgstr ""
+"各記事に含められる貼り付け/アップロード画像の数を制御します。既定値は 50 で"
+"す。0 に設定すると記事画像のアップロードを無効にします。"
+
+msgid ""
+"Controls the minimum age used by My Profile → Admin tools → Clean stray "
+"upload files. Use 0 to show files immediately."
+msgstr ""
+"マイプロフィール → 管理ツール → 未使用アップロードファイルのクリーンアップで"
+"使用する最小経過時間を制御します。0 を指定するとファイルをすぐに表示します。"
+
+msgid ""
+"Controls authentication/MFA logs, general activity logs, admin log display "
+"rows, and user session lifetime. Default log retention is 30 days. Admin log "
+"tables show 200 rows per page by default. Set session timeout to 0 to expire "
+"the session when the browser closes."
+msgstr ""
+"認証/MFA ログ、一般アクティビティログ、管理ログの表示行数、ユーザーセッション"
+"の有効期間を制御します。ログ保持期間の既定値は 30 日です。管理ログテーブルは"
+"既定で 1 ページあたり 200 行を表示します。セッションタイムアウトを 0 に設定す"
+"ると、ブラウザーを閉じたときにセッションが期限切れになります。"
+
+msgid ""
+"Use this section to reset a user's authenticator setup. A reset generates a "
+"new private authenticator secret and forces the user to scan a new QR code "
+"at next sign-in."
+msgstr ""
+"このセクションでユーザーの認証アプリ設定をリセットします。リセットすると新し"
+"い非公開の認証シークレットが生成され、次回サインイン時に新しい QR コードのス"
+"キャンが必要になります。"
+
 msgid "Deleted user"
 msgstr "削除済みユーザー"
-msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
-msgstr "管理者/LDAP 管理者アカウントは、スタッフ状態が有効な場合に Django 管理画面へアクセスできます。"
-msgid "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."
-msgstr "パスワードを DjOpenKB でローカル管理するか、Active Directory で外部管理するかを制御します。"
+
+msgid ""
+"Admin/LDAP admin accounts can access Django admin when staff status is "
+"enabled."
+msgstr ""
+"管理者/LDAP 管理者アカウントは、スタッフ状態が有効な場合に Django 管理画面へ"
+"アクセスできます。"
+
+msgid ""
+"Controls whether the password is managed locally in DjOpenKB or externally "
+"by Active Directory."
+msgstr ""
+"パスワードを DjOpenKB でローカル管理するか、Active Directory で外部管理するか"
+"を制御します。"
+
 msgid "Untick this to block the user from accessing the main wiki site."
-msgstr "チェックを外すと、このユーザーのメイン wiki サイトへのアクセスをブロックします。"
+msgstr ""
+"チェックを外すと、このユーザーのメイン wiki サイトへのアクセスをブロックしま"
+"す。"
+
 msgid "Preferred language for the main wiki user interface."
 msgstr "メイン wiki ユーザーインターフェースの優先言語です。"
+
 msgid "deleted-user"
 msgstr "削除済みユーザー"
+
 msgid "unknown user"
 msgstr "不明なユーザー"
+
 msgid "Article created"
 msgstr "記事を作成しました"
+
 msgid "Article updated"
 msgstr "記事を更新しました"
+
 msgid "Article deleted"
 msgstr "記事を削除しました"
+
 msgid "Article status changed"
 msgstr "記事ステータスを変更しました"
+
 msgid "Article submitted for approval"
 msgstr "記事を承認申請しました"
+
 msgid "Article approved/published"
 msgstr "記事を承認/公開しました"
+
 msgid "Article marked pending failed"
 msgstr "記事を承認失敗としてマークしました"
+
 msgid "Orphan article assigned"
 msgstr "所有者なし記事を割り当てました"
+
 msgid "Orphan article deleted"
 msgstr "所有者なし記事を削除しました"
+
 msgid "Article viewed"
 msgstr "記事を表示しました"
+
 msgid "Article vote up"
 msgstr "記事に賛成票を投じました"
+
 msgid "Article vote down"
 msgstr "記事に反対票を投じました"
+
 msgid "Article vote changed"
 msgstr "記事の投票を変更しました"
+
 msgid "Article vote removed"
 msgstr "記事の投票を削除しました"
+
 msgid "Article image uploaded"
 msgstr "記事画像をアップロードしました"
+
 msgid "Article image deleted"
 msgstr "記事画像を削除しました"
+
 msgid "OpenKB AI question"
 msgstr "OpenKB AI への質問"
+
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI のレート制限"
+
 msgid "Bulk article import"
 msgstr "記事の一括インポート"
+
 msgid "Admin tool action"
 msgstr "管理ツール操作"
+
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "未使用アップロードのクリーンアップ最小経過時間（分）"
-msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
-msgstr "この分数より新しいファイルは、未使用アップロードのクリーンアップツールで無視されます。ユーザーが記事を編集中に画像が削除されないよう、既定値は 1440 分（24 時間）です。0 に設定すると未使用アップロードをすぐに検出/削除します。"
+
+msgid ""
+"Files newer than this many minutes are ignored by the stray upload cleanup "
+"tool. Default is 1440 minutes (24 hours) to avoid deleting images while "
+"users are drafting articles. Set to 0 to detect/delete stray uploads "
+"immediately."
+msgstr ""
+"この分数より新しいファイルは、未使用アップロードのクリーンアップツールで無視"
+"されます。ユーザーが記事を編集中に画像が削除されないよう、既定値は 1440 分"
+"（24 時間）です。0 に設定すると未使用アップロードをすぐに検出/削除します。"
+
 msgid "Authentication activity log retention (days)"
 msgstr "認証アクティビティログ保持期間（日）"
-msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
-msgstr "この日数より古い認証/MFA 監視ログはクリーンアップコマンドで削除できます。0 を指定すると認証アクティビティログを無期限に保持します。"
+
+msgid ""
+"Authentication/MFA monitoring logs older than this many days can be deleted "
+"by the cleanup command. Use 0 to keep authentication activity logs "
+"indefinitely."
+msgstr ""
+"この日数より古い認証/MFA 監視ログはクリーンアップコマンドで削除できます。0 を"
+"指定すると認証アクティビティログを無期限に保持します。"
+
 msgid "User session timeout (days)"
 msgstr "ユーザーセッションタイムアウト（日）"
-msgid "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
-msgstr "認証済みユーザーのセッションは、サインインからこの日数が経過すると期限切れになります。期限切れ後、ユーザーはサインアウトされ、再度ログインする必要があります。0 に設定すると、ブラウザーを閉じたときにセッションが期限切れになります。"
+
+msgid ""
+"Authenticated user sessions expire after this many days from sign-in. After "
+"expiry, users are signed out and must log in again. Set to 0 to expire the "
+"session when the browser closes."
+msgstr ""
+"認証済みユーザーのセッションは、サインインからこの日数が経過すると期限切れに"
+"なります。期限切れ後、ユーザーはサインアウトされ、再度ログインする必要があり"
+"ます。0 に設定すると、ブラウザーを閉じたときにセッションが期限切れになりま"
+"す。"
+
 msgid "General activity log retention (days)"
 msgstr "一般アクティビティログ保持期間（日）"
-msgid "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely."
-msgstr "この日数より古い記事/投票/画像/管理ツールのアクティビティログは、クリーンアップコマンドで削除できます。0 を指定すると一般アクティビティログを無期限に保持します。"
+
+msgid ""
+"Article/vote/image/admin-tool activity logs older than this many days can be "
+"deleted by the cleanup command. Use 0 to keep general activity logs "
+"indefinitely."
+msgstr ""
+"この日数より古い記事/投票/画像/管理ツールのアクティビティログは、クリーンアッ"
+"プコマンドで削除できます。0 を指定すると一般アクティビティログを無期限に保持"
+"します。"
+
 msgid "Admin log rows per page"
 msgstr "管理ログの 1 ページあたり行数"
-msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
-msgstr "Django 管理ログテーブルで 1 ページあたりに表示する行数です。推奨範囲: 50〜500。既定値は 200 です。"
+
+msgid ""
+"Number of rows to show per page in Django Admin log tables. Recommended "
+"range: 50 to 500. Default is 200."
+msgstr ""
+"Django 管理ログテーブルで 1 ページあたりに表示する行数です。推奨範囲: 50〜"
+"500。既定値は 200 です。"
+
 msgid "anonymous"
 msgstr "匿名"
+
 msgid "You are about to reset MFA for user <strong>{{ username }}</strong>."
-msgstr "ユーザー <strong>{{ username }}</strong> の MFA をリセットしようとしています。"
+msgstr ""
+"ユーザー <strong>{{ username }}</strong> の MFA をリセットしようとしていま"
+"す。"
+
 msgid "Notes"
 msgstr "メモ"
+
 msgid "Confirmed"
 msgstr "確認済み"
+
 msgid "Confirmed at"
 msgstr "確認日時"
+
 msgid "Last verified at"
 msgstr "最終確認日時"
+
 msgid "Reset at"
 msgstr "リセット日時"
+
 msgid "Event type"
 msgstr "イベントタイプ"
+
 msgid "Success"
 msgstr "成功"
+
 msgid "Login mode"
 msgstr "ログインモード"
+
 msgid "IP address"
 msgstr "IP アドレス"
+
 msgid "Request method"
 msgstr "リクエストメソッド"
+
 msgid "Details"
 msgstr "詳細"
+
 msgid "Owner"
 msgstr "所有者"
+
 msgid "Author username snapshot"
 msgstr "作成者ユーザー名スナップショット"
+
 msgid "Author name snapshot"
 msgstr "作成者名スナップショット"
+
 msgid "Author email snapshot"
 msgstr "作成者メールアドレススナップショット"
+
 msgid "Author account type snapshot"
 msgstr "作成者アカウント種別スナップショット"
+
 msgid "Article body"
 msgstr "記事本文"
+
 msgid "Review notes"
 msgstr "レビュー備考"
+
 msgid "Raw path"
 msgstr "元パス"
+
 msgid "Wiki path"
 msgstr "Wiki パス"
+
 msgid "Image assets"
 msgstr "画像アセット"
+
 msgid "Update status"
 msgstr "更新ステータス"
+
 msgid "Uploader username snapshot"
 msgstr "アップロード者ユーザー名スナップショット"
+
 msgid "Uploader email snapshot"
 msgstr "アップロード者メールアドレススナップショット"
+
 msgid "Uploader account type snapshot"
 msgstr "アップロード者アカウント種別スナップショット"
+
 msgid "Upload IP address"
 msgstr "アップロード IP アドレス"
+
 msgid "Upload user agent"
 msgstr "アップロードユーザーエージェント"
+
 msgid "Deleted by"
 msgstr "削除者"
 
@@ -2024,8 +2542,12 @@ msgid "No articles were imported"
 msgstr "インポートされた記事はありません"
 
 # DjOpenKB import result modal
-msgid "The import result is shown here so it does not take over the main import/export page."
-msgstr "インポート結果はここに表示されるため、メインのインポート/エクスポートページを占有しません。"
+msgid ""
+"The import result is shown here so it does not take over the main import/"
+"export page."
+msgstr ""
+"インポート結果はここに表示されるため、メインのインポート/エクスポートページを"
+"占有しません。"
 
 # DjOpenKB import result modal
 msgid "Import file"
@@ -2034,10 +2556,6 @@ msgstr "インポートファイル"
 # DjOpenKB import result modal
 msgid "File size"
 msgstr "ファイルサイズ"
-
-# DjOpenKB import result modal
-msgid "Owner"
-msgstr "所有者"
 
 # DjOpenKB import result modal
 msgid "Imported articles"
