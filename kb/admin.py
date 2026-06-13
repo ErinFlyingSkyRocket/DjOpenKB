@@ -85,9 +85,14 @@ def _apply_admin_translation_labels():
             "event_type": "Event type",
             "user": "User",
             "username": "Username",
-            "article_id": "Article ID",
+            "article": "Article",
             "article_title": "Article title",
             "article_status": "Article status",
+            "article_owner_user_id_snapshot": "Article owner user ID",
+            "article_owner_username_snapshot": "Article owner username",
+            "article_owner_name_snapshot": "Article owner name",
+            "article_owner_email_snapshot": "Article owner email",
+            "article_owner_account_type_snapshot": "Article owner account type",
             "ip_address": "IP address",
             "user_agent": "User agent",
             "path": "Path",
@@ -664,18 +669,18 @@ class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         "event_type",
         "success",
         "username",
-        "user_reference_display",
+        "user",
         "login_mode",
         "ip_address",
         "short_user_agent",
     )
     list_filter = ("event_type", "success", "login_mode", "created_at")
-    search_fields = ("username", "ip_address", "user_agent", "path", "details")
+    search_fields = ("username", "user__username", "user__email", "ip_address", "user_agent", "path")
     readonly_fields = (
         "created_at",
         "event_type",
         "success",
-        "user_reference_display",
+        "user",
         "username",
         "login_mode",
         "ip_address",
@@ -696,17 +701,9 @@ class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         return False
 
     def has_delete_permission(self, request, obj=None):
-        # Authentication activity logs are immutable from both the admin UI and database layer.
+        # Authentication activity logs are append-only from the admin UI.
+        # Retention/deletion is controlled through Site settings and the cleanup command.
         return False
-
-    def user_reference_display(self, obj):
-        if obj.username:
-            return obj.username
-        if getattr(obj, "user_id", None):
-            return _("Deleted user") + f" #{obj.user_id}"
-        return "-"
-
-    user_reference_display.short_description = _("User")
 
     def short_user_agent(self, obj):
         value = obj.user_agent or "-"
@@ -723,17 +720,24 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         "created_at",
         "event_type",
         "username",
-        "user_reference_display",
+        "user",
         "article_title",
         "article_status",
+        "article_owner_display",
         "ip_address",
         "short_path",
     )
-    list_filter = ("event_type", "article_status", "created_at")
+    list_filter = ("event_type", "article_status", "article_owner_account_type_snapshot", "created_at")
     search_fields = (
         "username",
+        "user__username",
+        "user__email",
         "article_title",
-        "article_id",
+        "article__title",
+        "article_owner_username_snapshot",
+        "article_owner_name_snapshot",
+        "article_owner_email_snapshot",
+        "article_owner_account_type_snapshot",
         "ip_address",
         "path",
         "details",
@@ -741,12 +745,17 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     readonly_fields = (
         "created_at",
         "event_type",
-        "user_reference_display",
+        "user",
         "username",
         "article_reference_display",
-        "article_id",
         "article_title",
         "article_status",
+        "article_owner_display",
+        "article_owner_user_id_snapshot",
+        "article_owner_username_snapshot",
+        "article_owner_name_snapshot",
+        "article_owner_email_snapshot",
+        "article_owner_account_type_snapshot",
         "ip_address",
         "user_agent",
         "path",
@@ -767,23 +776,41 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def user_reference_display(self, obj):
-        if obj.username:
-            return obj.username
-        if getattr(obj, "user_id", None):
-            return _("Deleted user") + f" #{obj.user_id}"
-        return "-"
-
-    user_reference_display.short_description = _("User")
-
     def article_reference_display(self, obj):
         if not getattr(obj, "article_id", None):
             return "-"
 
-        label = obj.article_title or obj.article_id
-        return _("Article snapshot") + f" #{obj.article_id} ({label})"
+        try:
+            return str(obj.article)
+        except SuggestedArticle.DoesNotExist:
+            label = obj.article_title or obj.article_id
+            return _("Deleted article") + f" ({label})"
 
     article_reference_display.short_description = _("Article")
+
+    def article_owner_display(self, obj):
+        username = obj.article_owner_username_snapshot or ""
+        name = obj.article_owner_name_snapshot or ""
+        email = obj.article_owner_email_snapshot or ""
+        account_type = obj.article_owner_account_type_snapshot or ""
+
+        if not any([username, name, email, account_type, obj.article_owner_user_id_snapshot]):
+            return "-"
+
+        identity = name or username or email or str(obj.article_owner_user_id_snapshot)
+        extra_parts = []
+        if username and username != identity:
+            extra_parts.append(username)
+        if email and email not in {identity, username}:
+            extra_parts.append(email)
+        if account_type:
+            extra_parts.append(account_type)
+
+        if extra_parts:
+            return f"{identity} ({', '.join(extra_parts)})"
+        return identity
+
+    article_owner_display.short_description = _("Article owner")
 
     def short_path(self, obj):
         value = obj.path or "-"
@@ -1104,14 +1131,14 @@ class ArticleImageUploadLogAdmin(admin.ModelAdmin):
         "original_name",
         "content_type",
         "size_bytes",
-        "uploader_reference_display",
+        "uploaded_by",
         "uploader_username_snapshot",
         "uploader_email_snapshot",
         "uploader_account_type_snapshot",
         "upload_user_agent",
         "uploaded_at",
         "deleted_at",
-        "deleter_reference_display",
+        "deleted_by",
         "delete_reason",
     )
     ordering = ("-uploaded_at",)
@@ -1129,23 +1156,6 @@ class ArticleImageUploadLogAdmin(admin.ModelAdmin):
         return obj.uploader_display or "-"
 
     uploader_display.short_description = _("Uploader display")
-
-    def uploader_reference_display(self, obj):
-        value = obj.uploader_display or ""
-        if value:
-            return value
-        if getattr(obj, "uploaded_by_id", None):
-            return _("Deleted user") + f" #{obj.uploaded_by_id}"
-        return "-"
-
-    uploader_reference_display.short_description = _("Uploaded by")
-
-    def deleter_reference_display(self, obj):
-        if getattr(obj, "deleted_by_id", None):
-            return _("Deleted user") + f" #{obj.deleted_by_id}"
-        return "-"
-
-    deleter_reference_display.short_description = _("Deleted by")
 
     def size_kb(self, obj):
         return round((obj.size_bytes or 0) / 1024, 1)
