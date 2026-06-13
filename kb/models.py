@@ -725,8 +725,13 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         SuggestedArticle,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
         related_name="activity_logs",
+        help_text=_(
+            "Snapshot fields keep the audit trail after an article is deleted. "
+            "This relation intentionally does not enforce a database constraint because audit logs are append-only."
+        ),
     )
     article_title = models.CharField(max_length=255, blank=True, db_index=True)
     article_status = models.CharField(max_length=40, blank=True, db_index=True)

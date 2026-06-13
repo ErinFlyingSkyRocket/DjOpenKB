@@ -737,7 +737,7 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         "event_type",
         "user",
         "username",
-        "article",
+        "article_reference_display",
         "article_title",
         "article_status",
         "ip_address",
@@ -759,6 +759,18 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+    def article_reference_display(self, obj):
+        if not getattr(obj, "article_id", None):
+            return "-"
+
+        try:
+            return str(obj.article)
+        except SuggestedArticle.DoesNotExist:
+            label = obj.article_title or obj.article_id
+            return _("Deleted article") + f" ({label})"
+
+    article_reference_display.short_description = _("Article")
 
     def short_path(self, obj):
         value = obj.path or "-"
