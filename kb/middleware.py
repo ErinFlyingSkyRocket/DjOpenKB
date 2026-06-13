@@ -3,13 +3,13 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from django.http import Http404
 from django.shortcuts import redirect
+from django.http import Http404
 from django.urls import NoReverseMatch, reverse
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import translation
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
+import ipaddress
 
 from .mfa import (
     begin_pending_mfa_login,
@@ -23,6 +23,134 @@ from .mfa import (
 )
 from .models import SiteSetting, UserProfile
 
+
+
+# Paths that must remain reachable before a user has a full authenticated session.
+# Everything else in DjOpenKB is protected by MainLoginRequiredAndAdminGuardMiddleware.
+PUBLIC_AUTH_PATHS = (
+    "/login/",
+    "/logout/",
+    "/set-language/",
+    "/mfa/setup/",
+    "/mfa/verify/",
+)
+
+
+def _normalise_path(path):
+    path = path or "/"
+    if not path.startswith("/"):
+        path = f"/{path}"
+    return path
+
+
+def _client_ip_from_request(request):
+    """Return the best client IP value when Django is behind our Nginx proxy."""
+    # Nginx sets X-Real-IP from $remote_addr. Prefer this over X-Forwarded-For
+    # because clients can supply a fake X-Forwarded-For header before reaching Nginx.
+    value = (request.META.get("HTTP_X_REAL_IP") or "").strip()
+    if value:
+        return value
+
+    forwarded_for = (request.META.get("HTTP_X_FORWARDED_FOR") or "").strip()
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    return (request.META.get("REMOTE_ADDR") or "").strip()
+
+
+def _parse_admin_allowed_cidrs(raw_value):
+    """Parse comma/newline separated CIDR/IP entries into ip_network objects."""
+    networks = []
+    for item in (raw_value or "").replace(";", ",").replace("\n", ",").split(","):
+        value = item.strip()
+        if not value:
+            continue
+        try:
+            networks.append(ipaddress.ip_network(value, strict=False))
+        except ValueError:
+            # Ignore malformed entries instead of breaking the whole site. Admins
+            # can fix the value in Site settings. If all entries are invalid, the
+            # admin allow check fails closed.
+            continue
+    return networks
+
+
+def _request_ip_is_allowed_for_admin(request):
+    try:
+        raw_cidrs = SiteSetting.load().admin_allowed_cidrs
+    except Exception:
+        raw_cidrs = "10.65.0.0/16,127.0.0.1/32,::1/128"
+
+    networks = _parse_admin_allowed_cidrs(raw_cidrs)
+    if not networks:
+        return False
+
+    client_ip = _client_ip_from_request(request)
+    if not client_ip:
+        return False
+
+    try:
+        ip_obj = ipaddress.ip_address(client_ip)
+    except ValueError:
+        return False
+
+    return any(ip_obj in network for network in networks)
+
+
+class MainLoginRequiredAndAdminGuardMiddleware:
+    """Require main-site login and hide Django admin login endpoints.
+
+    Public users should not see the wiki, articles, AI, uploads, or Django admin
+    login page. Staff users must sign in through the main DjOpenKB login page,
+    then use the navbar/admin link to enter Django Admin.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def _path_is_public_asset(self, path):
+        allowed_prefixes = (
+            settings.STATIC_URL,
+            getattr(settings, "MEDIA_URL", "/media/"),
+            "/favicon.ico",
+            "/robots.txt",
+        )
+        return any(path.startswith(prefix) for prefix in allowed_prefixes if prefix)
+
+    def _path_is_public_auth_page(self, path):
+        return any(path == allowed or path.startswith(allowed) for allowed in PUBLIC_AUTH_PATHS)
+
+    def _path_is_admin_login(self, path):
+        return path in {"/admin/login", "/admin/login/"} or path.startswith("/admin/login/")
+
+    def _path_is_admin(self, path):
+        return path == "/admin" or path.startswith("/admin/")
+
+    def __call__(self, request):
+        path = _normalise_path(request.path_info or request.path)
+
+        # Do not expose Django's admin login page at all. Admins must authenticate
+        # through the main DjOpenKB login page first.
+        if self._path_is_admin_login(path):
+            raise Http404()
+
+        if self._path_is_public_asset(path) or self._path_is_public_auth_page(path):
+            return self.get_response(request)
+
+        if self._path_is_admin(path):
+            user = getattr(request, "user", None)
+            if not user or not user.is_authenticated or not user.is_staff:
+                raise Http404()
+            if not _request_ip_is_allowed_for_admin(request):
+                raise Http404()
+            return self.get_response(request)
+
+        user = getattr(request, "user", None)
+        if not user or not user.is_authenticated:
+            response = redirect(f"{settings.LOGIN_URL}?{urlencode({'next': request.get_full_path()})}")
+            return set_strict_no_cache_headers(response)
+
+        return self.get_response(request)
 
 
 
@@ -154,130 +282,6 @@ def set_strict_no_cache_headers(response):
     else:
         response["Vary"] = "Cookie"
     return response
-
-
-
-class MainSiteLoginRequiredMiddleware:
-    """Require main-site authentication before accessing DjOpenKB pages.
-
-    The normal /login/ page is now the only public entry point. This also
-    disables Django admin's standalone login page: unauthenticated /admin/
-    traffic is redirected to the main login page, and authenticated users must
-    use the normal session created by OpenKBLoginView before entering /admin/.
-    """
-
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def _reverse_or_none(self, name):
-        try:
-            return reverse(name)
-        except NoReverseMatch:
-            return None
-
-    def _path_is_public_asset(self, path):
-        allowed_prefixes = (
-            settings.STATIC_URL,
-            getattr(settings, "MEDIA_URL", "/media/"),
-            "/favicon.ico",
-            "/robots.txt",
-        )
-        return any(path.startswith(prefix) for prefix in allowed_prefixes if prefix)
-
-    def _safe_next_url(self, request):
-        next_url = request.get_full_path() or reverse("home")
-        if url_has_allowed_host_and_scheme(
-            url=next_url,
-            allowed_hosts={request.get_host()},
-            require_https=request.is_secure(),
-        ):
-            return next_url
-        return reverse("home")
-
-    def _redirect_to_main_login(self, request, next_url=None):
-        login_path = self._reverse_or_none("login") or settings.LOGIN_URL
-        next_url = next_url or self._safe_next_url(request)
-        response = redirect(f"{login_path}?{urlencode({'next': next_url})}")
-        return set_strict_no_cache_headers(response)
-
-    def _redirect_authenticated_admin_login(self, request):
-        user = getattr(request, "user", None)
-        if user and user.is_authenticated:
-            if self._user_can_access_django_admin(user):
-                return redirect("admin:index")
-            raise Http404("Page not found")
-        return self._redirect_to_main_login(request, next_url=reverse("admin:index"))
-
-    def _path_is_public_auth_path(self, path):
-        public_names = (
-            "login",
-            "logout",
-            "set_site_language",
-            "mfa_setup",
-            "mfa_verify",
-            "reset_mfa",
-        )
-        for name in public_names:
-            target = self._reverse_or_none(name)
-            if target and path == target:
-                return True
-        return False
-
-    def _user_can_access_main_site(self, user):
-        if not user or not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
-            return False
-        try:
-            profile, _created = UserProfile.objects.get_or_create(user=user)
-            return bool(profile.can_access_main_site)
-        except Exception:
-            # Fail closed. If the profile table is temporarily unavailable during
-            # early startup/migration, Django will surface the real DB error in logs.
-            return False
-
-    def _user_can_access_django_admin(self, user):
-        if not user or not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
-            return False
-        if not getattr(user, "is_staff", False):
-            return False
-        try:
-            from .permissions import user_can_use_admin_tools
-
-            return bool(user_can_use_admin_tools(user))
-        except Exception:
-            return bool(getattr(user, "is_superuser", False))
-
-    def __call__(self, request):
-        path = request.path_info or request.path
-
-        if self._path_is_public_asset(path):
-            return self.get_response(request)
-
-        if path.rstrip("/") == "/admin/login":
-            return self._redirect_authenticated_admin_login(request)
-
-        if self._path_is_public_auth_path(path):
-            return self.get_response(request)
-
-        # Pending MFA sessions are password-authenticated but not yet fully
-        # logged in. Let LocalMFARequiredMiddleware route them to MFA instead
-        # of sending them back to the password login page.
-        if get_pending_mfa_user(request):
-            return self.get_response(request)
-
-        user = getattr(request, "user", None)
-        if not user or not user.is_authenticated:
-            return self._redirect_to_main_login(request)
-
-        if not self._user_can_access_main_site(user):
-            logout(request)
-            messages.warning(request, _("Your account is not allowed to access DjOpenKB."))
-            return self._redirect_to_main_login(request, next_url=reverse("home"))
-
-        if path == "/admin" or path.startswith("/admin/"):
-            if not self._user_can_access_django_admin(user):
-                raise Http404("Page not found")
-
-        return self.get_response(request)
 
 
 class LocalMFARequiredMiddleware:

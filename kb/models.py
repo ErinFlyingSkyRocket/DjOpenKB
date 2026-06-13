@@ -93,36 +93,34 @@ class UserProfile(models.Model):
         return self.auth_source == self.AuthSource.AD
 
     def save(self, *args, **kwargs):
-        """Keep profile type and Django admin flags aligned with role groups.
+        """Keep Django admin permission flags aligned with the selected type.
 
-        Role groups are now the main permission source. Account type is kept for
-        local-vs-domain display/backwards compatibility. Admin / LDAP admin
-        account types still imply staff/admin-tool access.
+        - Admin / LDAP admin: staff access is enabled.
+        - User / LDAP user: staff and superuser access are removed.
+        - Existing createsuperuser accounts stay as superuser admin accounts.
         """
         super().save(*args, **kwargs)
 
-        try:
-            from .permissions import ROLE_ADMIN_USERS, ROLE_REGULAR_USER, assign_single_role_group, sync_user_staff_flags_from_roles
+        update_fields = []
 
-            if self.account_type in {self.AccountType.ADMIN, self.AccountType.LDAP_ADMIN}:
-                assign_single_role_group(self.user, ROLE_ADMIN_USERS)
-            else:
-                # New/basic users should have a view-only role if they do not
-                # already have one. Do not overwrite an explicitly assigned
-                # Writer/Manager/Admin Users group here.
-                if not self.user.groups.filter(name__in=(
-                    "Regular User",
-                    "Article Writer",
-                    "Article Manager",
-                    "Admin Users",
-                )).exists():
-                    assign_single_role_group(self.user, ROLE_REGULAR_USER)
-                else:
-                    sync_user_staff_flags_from_roles(self.user)
-        except Exception:
-            # Avoid breaking migrations/login if role groups are temporarily not
-            # available while deployment is applying migrations.
-            pass
+        if self.account_type == self.AccountType.ADMIN:
+            if not self.user.is_staff:
+                self.user.is_staff = True
+                update_fields.append("is_staff")
+        elif self.account_type == self.AccountType.LDAP_ADMIN:
+            if not self.user.is_staff:
+                self.user.is_staff = True
+                update_fields.append("is_staff")
+        else:
+            if self.user.is_staff:
+                self.user.is_staff = False
+                update_fields.append("is_staff")
+            if self.user.is_superuser:
+                self.user.is_superuser = False
+                update_fields.append("is_superuser")
+
+        if update_fields:
+            self.user.save(update_fields=update_fields)
 
 
 class UserMFADevice(models.Model):
@@ -372,12 +370,6 @@ class SuggestedArticle(models.Model):
         ordering = ["-updated_at", "-created_at"]
         verbose_name = _("Suggested Article")
         verbose_name_plural = _("Suggested Articles")
-        permissions = [
-            ("can_view_articles", _("Can view published articles")),
-            ("can_add_articles", _("Can add/submit articles for approval")),
-            ("can_manage_articles", _("Can manage pending articles and article reviews")),
-            ("can_use_admin_tools", _("Can use DjOpenKB admin tools")),
-        ]
 
     def __str__(self):
         return self.title
@@ -846,6 +838,16 @@ class SiteSetting(models.Model):
         help_text=_(
             "Number of rows to show per page in Django Admin log tables. "
             "Recommended range: 50 to 500. Default is 200."
+        ),
+    )
+    admin_allowed_cidrs = models.TextField(
+        default="10.65.0.0/16,127.0.0.1/32,::1/128",
+        verbose_name=_("Admin allowed IP ranges"),
+        help_text=_(
+            "Comma or newline separated CIDR/IP allowlist for Django Admin access. "
+            "Default allows 10.65.0.0/16 and local loopback. "
+            "Users outside this range receive 404 even if they know the admin URL. "
+            "Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."
         ),
     )
 
