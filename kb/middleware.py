@@ -372,8 +372,8 @@ class ForceLoginAndAdminGuardMiddleware:
         # login. MFA paths are still protected by LocalMFARequiredMiddleware and
         # only work for users with a pending MFA session.
         public_names = (
+            "root_login",
             "login",
-            "logout",
             "set_site_language",
             "mfa_setup",
             "mfa_verify",
@@ -415,23 +415,19 @@ class ForceLoginAndAdminGuardMiddleware:
             raise Http404()
 
         login_path = self._reverse_or_none("login") or settings.LOGIN_URL
-        if path == login_path:
+        root_login_path = self._reverse_or_none("root_login") or "/"
+        if path in {login_path, root_login_path}:
             return self.get_response(request)
 
-        # The bare site URL is the login entry point for normal users.
-        # Everything else stays 404 for anonymous users so directory
-        # enumeration does not confirm that application routes exist.
-        if path in {"", "/"}:
-            response = redirect(f"{login_path}?{urlencode({'next': request.get_full_path()})}")
-            return set_strict_no_cache_headers(response)
-
+        # Anonymous users should not be able to confirm whether application
+        # URLs exist. The only public entry points are / and /login/.
         raise Http404()
 
 
 class AuthSessionCacheControlMiddleware:
     """Apply no-store headers to login/logout/MFA and authenticated pages."""
 
-    AUTH_PATH_NAMES = ("login", "logout", "mfa_setup", "mfa_verify", "reset_mfa")
+    AUTH_PATH_NAMES = ("root_login", "login", "logout", "mfa_setup", "mfa_verify", "reset_mfa")
 
     def __init__(self, get_response):
         self.get_response = get_response

@@ -21,6 +21,9 @@ from kb.views import OpenKBLoginView, OpenKBLogoutView
 
 
 urlpatterns = [
+    # The site root is the public login entry point. Authenticated users are
+    # redirected by OpenKBLoginView to LOGIN_REDIRECT_URL (/home/).
+    path("", OpenKBLoginView.as_view(), name="root_login"),
     path("admin/", admin.site.urls),
     path("login/", OpenKBLoginView.as_view(), name="login"),
     path("logout/", OpenKBLogoutView.as_view(), name="logout"),

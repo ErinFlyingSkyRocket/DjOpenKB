@@ -24,7 +24,7 @@ class OpenKBLoginView(LoginView):
         if request.user.is_authenticated:
             if not user_can_access_main_site(request.user):
                 logout(request)
-                return redirect("home")
+                return redirect("root_login")
 
             if user_requires_mfa(request.user):
                 if mfa_is_verified(request):
@@ -118,7 +118,7 @@ class OpenKBLoginView(LoginView):
 
 class OpenKBLogoutView(LogoutView):
     """Logout view that prevents browser back/forward cache from showing stale pages."""
-    next_page = "login"
+    next_page = "root_login"
 
     def dispatch(self, request, *args, **kwargs):
         from kb.middleware import set_strict_no_cache_headers

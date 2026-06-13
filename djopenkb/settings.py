@@ -347,8 +347,8 @@ else:
 # Authentication / LDAP / Active Directory
 # ---------------------------------------------------------------------
 
-LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/"
+LOGIN_REDIRECT_URL = "/home/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Site-level TOTP MFA. Enforced as a login criterion for local and LDAP/AD users.

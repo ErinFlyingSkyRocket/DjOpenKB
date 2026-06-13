@@ -3,7 +3,7 @@ from . import views
 from .views.main import search_article_suggestions
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path("home/", views.home, name="home"),
     path("suggest/", views.suggest, name="suggest"),
     path("set-language/", views.set_site_language, name="set_site_language"),
     path("profile/", views.profile, name="profile"),
