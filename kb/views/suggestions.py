@@ -3,14 +3,14 @@ from django.utils.translation import gettext as _
 from urllib.parse import quote
 
 
-@main_site_login_required
+@article_add_required
 def suggest(request):
     init_openkb_storage()
-    is_admin = user_is_site_admin(request.user)
+    can_publish_directly = user_can_use_admin_tools(request.user)
 
     def render_suggest_form(extra_context=None):
         context = {
-            "can_publish_directly": is_admin,
+            "can_publish_directly": can_publish_directly,
             "article_image_upload_limit": get_article_image_upload_limit(),
         }
         if extra_context:
@@ -29,9 +29,8 @@ def suggest(request):
 
     if submit_action == "draft":
         status = SuggestedArticle.Status.DRAFT
-    elif is_admin:
-        # Admin-created articles do not require approval. They are published
-        # immediately when the admin uses the main submit button.
+    elif can_publish_directly:
+        # Admin Users can publish directly from the main submit button.
         status = SuggestedArticle.Status.PUBLISHED
     else:
         status = SuggestedArticle.Status.PENDING
@@ -100,7 +99,7 @@ def suggest(request):
         details={
             "action": "create",
             "status": status,
-            "is_admin_direct_publish": bool(is_admin and status == SuggestedArticle.Status.PUBLISHED),
+            "is_admin_direct_publish": bool(can_publish_directly and status == SuggestedArticle.Status.PUBLISHED),
             "image_count": len(article.image_assets or []),
         },
     )
@@ -114,7 +113,7 @@ def suggest(request):
     return redirect("edit_my_suggestions")
 
 
-@main_site_login_required
+@article_add_required
 def edit_my_suggestions(request):
     search_query = request.GET.get("q", "").strip()
 
@@ -161,8 +160,9 @@ def edit_suggestion(request, article_id):
 
     def render_edit_form(extra_context=None):
         extra_context = extra_context or {}
+        can_review_article = user_can_manage_articles(request.user)
         pending_update_review = (
-            user_is_site_admin(request.user)
+            can_review_article
             and article.status == SuggestedArticle.Status.PUBLISHED
             and article.update_status == SuggestedArticle.UpdateStatus.PENDING
         )
@@ -201,6 +201,8 @@ def edit_suggestion(request, article_id):
             "body_value": edit_body,
             "keywords_value": edit_keywords,
             "is_pending_update_review": pending_update_review,
+            "can_review_article": can_review_article,
+            "can_use_admin_tools": user_can_use_admin_tools(request.user),
             "has_pending_update": article.has_pending_update,
             "has_failed_update": article.has_failed_update,
             "has_update_draft": article.has_update_draft,
@@ -224,7 +226,7 @@ def edit_suggestion(request, article_id):
     previous_status = article.status
     previous_update_status = article.update_status
 
-    is_admin_action = user_is_site_admin(request.user)
+    is_admin_action = user_can_manage_articles(request.user)
     is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
     is_admin_pending_update_review = (
         is_admin_action
@@ -248,7 +250,7 @@ def edit_suggestion(request, article_id):
             # User publish/submit means pending admin approval, never direct public publishing.
             status = SuggestedArticle.Status.PENDING
 
-    if user_is_site_admin(request.user):
+    if user_can_manage_articles(request.user):
         review_notes = (request.POST.get("review_notes") or "").strip()
     else:
         review_notes = article.review_notes
@@ -501,7 +503,7 @@ def delete_suggestion(request, article_id):
                 "article_id": article_id_for_log,
                 "title": title,
                 "status": article_status_for_log,
-                "is_admin_action": user_is_site_admin(request.user),
+                "is_admin_action": user_can_manage_articles(request.user),
             },
         )
         delete_article_files(article)
@@ -512,7 +514,7 @@ def delete_suggestion(request, article_id):
     return render(request, "suggest_delete.html", {"article": article, "return_url": return_url})
 
 
-@main_site_login_required
+@article_image_editor_required
 @require_POST
 def upload_article_image(request):
     """Upload a small pasted image for use inside Markdown articles.
@@ -585,7 +587,7 @@ def upload_article_image(request):
     })
 
 
-@main_site_login_required
+@article_image_editor_required
 @require_POST
 def delete_article_image(request):
     """Delete a pasted image that was uploaded during the current editing session.
@@ -676,7 +678,7 @@ def serve_article_image(request, filename):
         allowed = False
 
         if request.user.is_authenticated:
-            if user_is_site_admin(request.user):
+            if user_can_manage_articles(request.user):
                 allowed = True
             else:
                 allowed = referenced_articles.filter(owner=request.user).exists()

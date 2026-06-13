@@ -1,16 +1,36 @@
 from django import template
 
+from kb.permissions import (
+    user_can_add_articles,
+    user_can_manage_articles,
+    user_can_use_admin_tools,
+    user_can_view_articles,
+)
+
 register = template.Library()
 
 
 @register.filter
 def is_site_admin(user):
-    """Return True when a user should see DjOpenKB admin navigation items."""
-    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
-        return False
+    """Return True when a user should see full DjOpenKB admin-tool navigation."""
+    return user_can_use_admin_tools(user)
 
-    if getattr(user, "is_superuser", False):
-        return True
 
-    profile = getattr(user, "kb_profile", None)
-    return bool(profile and getattr(profile, "is_admin_type", False))
+@register.filter
+def can_view_articles(user):
+    return user_can_view_articles(user)
+
+
+@register.filter
+def can_add_articles(user):
+    return user_can_add_articles(user)
+
+
+@register.filter
+def can_manage_articles(user):
+    return user_can_manage_articles(user)
+
+
+@register.filter
+def can_use_admin_tools(user):
+    return user_can_use_admin_tools(user)

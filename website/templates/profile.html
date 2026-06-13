@@ -230,19 +230,34 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                     </div>
 
+                    {% if can_see_article_management %}
                     <div class="panel panel-default profile-account-panel">
                         <div class="panel-heading">{% trans "Articles" %}</div>
                         <div class="panel-body">
-                            <div class="profile-account-row">
-                                <span class="profile-account-label">{% trans "Own suggested articles" %}:</span>
-                                <span class="profile-account-value">{{ total_user_article_count }}</span>
-                                <div class="profile-article-buttons">
-                                    <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
-                                    <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my articles" %}</a>
+                            {% if can_add_articles %}
+                                <div class="profile-account-row">
+                                    <span class="profile-account-label">{% trans "Own suggested articles" %}:</span>
+                                    <span class="profile-account-value">{{ total_user_article_count }}</span>
+                                    <div class="profile-article-buttons">
+                                        <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
+                                        <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my articles" %}</a>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
+
+                            {% if can_manage_articles %}
+                                {% if can_add_articles %}<hr>{% endif %}
+                                <div class="profile-admin-tools">
+                                    <div><strong>{% trans "Manage pending articles" %}</strong></div>
+                                    <div class="profile-muted">{% trans "Review user-submitted articles waiting for approval before they become public." %}</div>
+                                    <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">
+                                        <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
+                    {% endif %}
 
 
                     {% if can_use_admin_tools %}
@@ -277,15 +292,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 </a>
                             </div>
 
-                            <hr>
-
-                            <div class="profile-admin-tools">
-                                <div><strong>{% trans "Manage pending articles" %}</strong></div>
-                                <div class="profile-muted">{% trans "Review user-submitted articles waiting for admin approval before they become public." %}</div>
-                                <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">
-                                    <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
-                                </a>
-                            </div>
                         </div>
                     </div>
                     {% endif %}

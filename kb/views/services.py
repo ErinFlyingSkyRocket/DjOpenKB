@@ -36,6 +36,17 @@ from django.views.decorators.http import require_POST
 
 from ..models import ActivityLog, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
 from ..mfa import user_requires_mfa
+from ..permissions import (
+    PERM_ADD_ARTICLES,
+    PERM_MANAGE_ARTICLES,
+    PERM_USE_ADMIN_TOOLS,
+    PERM_VIEW_ARTICLES,
+    role_permissions_summary,
+    user_can_add_articles,
+    user_can_manage_articles,
+    user_can_use_admin_tools as permission_user_can_use_admin_tools,
+    user_can_view_articles,
+)
 
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
@@ -173,26 +184,38 @@ def get_safe_return_url(request, fallback_view_name="edit_my_suggestions"):
 
 
 def user_is_site_admin(user):
-    """Return True only for explicitly trusted DjOpenKB admins.
+    """Return True for users allowed to use full DjOpenKB admin tools."""
+    return permission_user_can_use_admin_tools(user)
 
-    Staff status alone is not enough for profile-level admin tools. A user must
-    be a superuser or have a UserProfile account type of Admin / LDAP admin.
-    """
-    if not getattr(user, "is_authenticated", False) or not user.is_active:
-        return False
 
-    if user.is_superuser:
-        return True
-
-    profile = getattr(user, "kb_profile", None)
-    return bool(profile and profile.is_admin_type)
+def user_can_review_articles(user):
+    """Return True for users allowed to review/manage pending article approvals."""
+    return user_can_manage_articles(user)
 
 
 def user_can_manage_article(user, article):
-    """Return True when a user can edit/delete an article they own or administer."""
+    """Return True when a user may edit/delete/review this article.
+
+    Writers may manage only their own articles. Article Managers and Admin
+    Users may manage articles that are in an approval/review workflow. Admin
+    Users may manage all articles.
+    """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
-    return bool(article.owner_id == user.pk or user_is_site_admin(user))
+
+    if user_can_use_admin_tools(user):
+        return True
+
+    if article.owner_id == user.pk and user_can_add_articles(user):
+        return True
+
+    if user_can_manage_articles(user):
+        return bool(
+            article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
+            or article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
+        )
+
+    return False
 
 
 def user_owns_article(user, article):
@@ -213,8 +236,8 @@ def require_article_manager(user, article):
 
 
 def require_site_admin(user):
-    """Fail closed when the current user is not a trusted DjOpenKB admin."""
-    if not user_is_site_admin(user):
+    """Fail closed when the current user is not allowed to use admin tools."""
+    if not user_can_use_admin_tools(user):
         raise Http404("Page not found")
     return True
 
@@ -228,11 +251,12 @@ def allowed_article_edit_actions_for(user, article):
     if not user_can_manage_article(user, article):
         return set()
 
-    if user_is_site_admin(user):
-        # Admin article editing is controlled by the status dropdown and Save.
+    if user_can_manage_articles(user):
+        # Article Managers and Admin Users review through the status dropdown
+        # and Save button. Managers reach this view from Manage pending articles.
         return {"save", ""}
 
-    if not user_owns_article(user, article):
+    if not user_owns_article(user, article) or not user_can_add_articles(user):
         return set()
 
     if article.status == SuggestedArticle.Status.PUBLISHED:
@@ -507,11 +531,47 @@ def clear_committed_pending_uploads(request, image_assets):
 
 def user_can_use_admin_tools(user):
     """Return True for users allowed to use profile-level admin maintenance tools."""
-    return user_is_site_admin(user)
+    return permission_user_can_use_admin_tools(user)
+
+
+def article_add_required(view_func):
+    """Require permission to create/maintain own article submissions."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_add_articles(request.user):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def article_image_editor_required(view_func):
+    """Require article authoring or article review permission for editor uploads."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not (user_can_add_articles(request.user) or user_can_manage_articles(request.user)):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def article_management_required(view_func):
+    """Require permission to review/manage pending articles."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_manage_articles(request.user):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
 
 
 def admin_tools_required(view_func):
-    """Require normal site access plus explicit DjOpenKB admin permission.
+    """Require normal site access plus explicit DjOpenKB admin-tool permission.
 
     Anonymous users are still redirected to login by main_site_login_required.
     Logged-in non-admin users receive 404 so admin-tool route discovery is less
@@ -1318,8 +1378,15 @@ def get_user_profile(user):
 
     profile, created = UserProfile.objects.get_or_create(user=user)
 
-    # Keep existing superuser/staff accounts visible as Admin unless already LDAP admin.
-    if (user.is_superuser or user.is_staff) and profile.account_type not in {
+    # Keep superusers and Admin Users role accounts visible as Admin unless already LDAP admin.
+    # Article Manager accounts may also be staff for limited Django admin access,
+    # so staff status alone must not promote someone to full Admin.
+    try:
+        has_admin_role = user.groups.filter(name="Admin Users").exists()
+    except Exception:
+        has_admin_role = False
+
+    if (user.is_superuser or has_admin_role) and profile.account_type not in {
         UserProfile.AccountType.ADMIN,
         UserProfile.AccountType.LDAP_ADMIN,
     }:
@@ -1400,7 +1467,12 @@ def get_profile_account_context(user):
         "auth_source_display": profile.get_auth_source_display() if hasattr(profile, "get_auth_source_display") else "Local user",
         "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
         "can_confirm_profile_changes": user.has_usable_password(),
+        "can_view_articles": user_can_view_articles(user),
+        "can_add_articles": user_can_add_articles(user),
+        "can_manage_articles": user_can_manage_articles(user),
         "can_use_admin_tools": user_can_use_admin_tools(user),
+        "can_see_article_management": user_can_add_articles(user) or user_can_manage_articles(user),
+        "role_permissions_summary": role_permissions_summary(user),
         "profile_preferred_language": profile.preferred_language,
         "supported_languages": settings.LANGUAGES,
         "mfa_required": mfa_required,

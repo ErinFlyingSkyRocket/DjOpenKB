@@ -266,7 +266,7 @@ def import_articles_zip(request):
     return redirect("admin_bulk_articles")
 
 
-@admin_tools_required
+@article_management_required
 def manage_pending_articles(request):
     search_query = request.GET.get("q", "").strip()
 

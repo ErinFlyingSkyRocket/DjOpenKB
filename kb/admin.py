@@ -4,7 +4,8 @@ from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
+from django.contrib.auth.admin import GroupAdmin as DefaultGroupAdmin, UserAdmin as DefaultUserAdmin
+from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -13,9 +14,63 @@ from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivit
 from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
+from .permissions import (
+    ROLE_ADMIN_USERS,
+    ROLE_ARTICLE_MANAGER,
+    ROLE_ARTICLE_WRITER,
+    ROLE_GROUP_NAMES,
+    ROLE_REGULAR_USER,
+    assign_single_role_group,
+    role_descriptions_html,
+    role_permissions_summary,
+    seed_djopenkb_role_groups,
+    user_role_group_names,
+)
 
 
 User = get_user_model()
+
+
+try:
+    admin.site.unregister(Group)
+except admin.sites.NotRegistered:
+    pass
+
+
+@admin.register(Group)
+class GroupAdmin(DefaultGroupAdmin):
+    """Django Group admin with DjOpenKB role guidance."""
+
+    readonly_fields = ("djopenkb_role_guide",)
+    actions = ("reset_djopenkb_role_permissions",)
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = list(super().get_fieldsets(request, obj))
+        fieldsets.append((
+            _("DjOpenKB role guide"),
+            {
+                "fields": ("djopenkb_role_guide",),
+                "description": _(
+                    "Use the standard DjOpenKB role groups for most users. "
+                    "You may still create other groups for custom permission combinations."
+                ),
+            },
+        ))
+        return tuple(fieldsets)
+
+    def djopenkb_role_guide(self, obj=None):
+        return role_descriptions_html()
+
+    djopenkb_role_guide.short_description = _("Role descriptions")
+
+    @admin.action(description=_("Reset standard DjOpenKB role group permissions"))
+    def reset_djopenkb_role_permissions(self, request, queryset):
+        seed_djopenkb_role_groups()
+        self.message_user(
+            request,
+            _("Standard DjOpenKB role groups and permissions were refreshed."),
+            level=messages.SUCCESS,
+        )
 
 
 
@@ -219,11 +274,17 @@ class UserProfileInline(admin.StackedInline):
         "auth_source",
         "can_access_main_site",
         "preferred_language",
+        "djopenkb_role_guide",
         "notes",
         "created_at",
         "updated_at",
     )
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("djopenkb_role_guide", "created_at", "updated_at")
+
+    def djopenkb_role_guide(self, obj=None):
+        return role_descriptions_html()
+
+    djopenkb_role_guide.short_description = _("DjOpenKB role guide")
 
 
 try:
@@ -247,6 +308,8 @@ class UserAdmin(DefaultUserAdmin):
         "main_site_account_type",
         "main_site_auth_source",
         "main_site_access",
+        "djopenkb_roles",
+        "djopenkb_permission_summary",
         "mfa_status_display",
     )
     list_filter = (
@@ -256,6 +319,7 @@ class UserAdmin(DefaultUserAdmin):
         "kb_profile__account_type",
         "kb_profile__auth_source",
         "kb_profile__can_access_main_site",
+        "groups",
         "kb_mfa_device__confirmed",
     )
     search_fields = (
@@ -271,6 +335,11 @@ class UserAdmin(DefaultUserAdmin):
         "make_django_admin",
         "make_ldap_user",
         "make_ldap_admin",
+        "assign_regular_user_role",
+        "assign_article_writer_role",
+        "assign_article_manager_role",
+        "assign_admin_users_role",
+        "clear_direct_user_permissions",
         "reset_mfa_for_selected_users",
     )
 
@@ -288,6 +357,9 @@ class UserAdmin(DefaultUserAdmin):
         readonly_fields = list(super().get_readonly_fields(request, obj))
         if obj and self._is_domain_user(obj) and "domain_password_status" not in readonly_fields:
             readonly_fields.append("domain_password_status")
+        for field in ("djopenkb_role_guide", "djopenkb_permission_summary"):
+            if field not in readonly_fields:
+                readonly_fields.append(field)
         if obj:
             for field in ("mfa_status_display", "mfa_reset_button"):
                 if field not in readonly_fields:
@@ -316,6 +388,17 @@ class UserAdmin(DefaultUserAdmin):
             options["fields"] = fields
             cleaned_fieldsets.append((title, options))
 
+        cleaned_fieldsets.append((
+            _("DjOpenKB roles and permissions"),
+            {
+                "fields": ("djopenkb_role_guide", "djopenkb_permission_summary"),
+                "description": _(
+                    "Assign one of the standard Groups below for normal role management. "
+                    "The User permissions checkboxes can still be used for custom combinations."
+                ),
+            },
+        ))
+
         if obj:
             cleaned_fieldsets.append((
                 _("Multi-factor authentication"),
@@ -330,6 +413,24 @@ class UserAdmin(DefaultUserAdmin):
 
         return tuple(cleaned_fieldsets)
 
+    def djopenkb_role_guide(self, obj=None):
+        return role_descriptions_html()
+
+    djopenkb_role_guide.short_description = _("Role descriptions")
+
+    def djopenkb_roles(self, obj):
+        roles = user_role_group_names(obj)
+        return ", ".join(roles) if roles else _("No role group")
+
+    djopenkb_roles.short_description = _("DjOpenKB roles")
+
+    def djopenkb_permission_summary(self, obj):
+        if not obj or not obj.pk:
+            return _("Save the user first, then assign groups or permissions.")
+        return role_permissions_summary(obj)
+
+    djopenkb_permission_summary.short_description = _("Effective DjOpenKB permissions")
+
     def user_change_password(self, request, id, form_url=""):
         obj = self.get_object(request, id)
         if obj and self._is_domain_user(obj):
@@ -340,7 +441,8 @@ class UserAdmin(DefaultUserAdmin):
         super().save_model(request, obj, form, change)
 
         profile, created = UserProfile.objects.get_or_create(user=obj)
-        if obj.is_superuser or obj.is_staff:
+        has_admin_role = obj.groups.filter(name=ROLE_ADMIN_USERS).exists()
+        if obj.is_superuser or has_admin_role:
             if profile.account_type not in {
                 UserProfile.AccountType.ADMIN,
                 UserProfile.AccountType.LDAP_ADMIN,
@@ -477,6 +579,45 @@ class UserAdmin(DefaultUserAdmin):
             level=messages.SUCCESS,
         )
 
+    def _assign_role_to_queryset(self, request, queryset, role_name):
+        count = 0
+        for user in queryset:
+            assign_single_role_group(user, role_name)
+            count += 1
+        self.message_user(
+            request,
+            _("Assigned %(count)d selected user(s) to %(role)s.") % {"count": count, "role": role_name},
+            level=messages.SUCCESS,
+        )
+
+    @admin.action(description=_("Set selected users to Regular User role"))
+    def assign_regular_user_role(self, request, queryset):
+        self._assign_role_to_queryset(request, queryset, ROLE_REGULAR_USER)
+
+    @admin.action(description=_("Set selected users to Article Writer role"))
+    def assign_article_writer_role(self, request, queryset):
+        self._assign_role_to_queryset(request, queryset, ROLE_ARTICLE_WRITER)
+
+    @admin.action(description=_("Set selected users to Article Manager role"))
+    def assign_article_manager_role(self, request, queryset):
+        self._assign_role_to_queryset(request, queryset, ROLE_ARTICLE_MANAGER)
+
+    @admin.action(description=_("Set selected users to Admin Users role"))
+    def assign_admin_users_role(self, request, queryset):
+        self._assign_role_to_queryset(request, queryset, ROLE_ADMIN_USERS)
+
+    @admin.action(description=_("Clear selected users' direct permission checkbox overrides"))
+    def clear_direct_user_permissions(self, request, queryset):
+        count = 0
+        for user in queryset:
+            user.user_permissions.clear()
+            count += 1
+        self.message_user(
+            request,
+            _("Cleared direct permission overrides for %(count)d selected user(s). Group permissions remain active.") % {"count": count},
+            level=messages.SUCCESS,
+        )
+
     @admin.action(description=_("Allow selected users to access main site"))
     def allow_main_site_access(self, request, queryset):
         for user in queryset:
@@ -498,6 +639,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.USER
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_REGULAR_USER)
 
     @admin.action(description=_("Set selected users as Admin"))
     def make_django_admin(self, request, queryset):
@@ -506,6 +648,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.ADMIN
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_ADMIN_USERS)
 
     @admin.action(description=_("Set selected users as LDAP user"))
     def make_ldap_user(self, request, queryset):
@@ -514,6 +657,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.LDAP_USER
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_REGULAR_USER)
 
     @admin.action(description=_("Set selected users as LDAP admin"))
     def make_ldap_admin(self, request, queryset):
@@ -522,6 +666,7 @@ class UserAdmin(DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.LDAP_ADMIN
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_ADMIN_USERS)
 
 
 @admin.register(UserProfile)
@@ -532,6 +677,7 @@ class UserProfileAdmin(admin.ModelAdmin):
         "auth_source",
         "can_access_main_site",
         "preferred_language",
+        "djopenkb_roles",
         "created_at",
         "updated_at",
     )
@@ -555,11 +701,34 @@ class UserProfileAdmin(admin.ModelAdmin):
         "auth_source",
         "can_access_main_site",
         "preferred_language",
+        "djopenkb_role_guide",
+        "djopenkb_roles",
+        "djopenkb_permission_summary",
         "notes",
         "created_at",
         "updated_at",
     )
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("djopenkb_role_guide", "djopenkb_roles", "djopenkb_permission_summary", "created_at", "updated_at")
+
+    def djopenkb_role_guide(self, obj=None):
+        return role_descriptions_html()
+
+    djopenkb_role_guide.short_description = _("DjOpenKB role guide")
+
+    def djopenkb_roles(self, obj):
+        if not obj or not obj.user_id:
+            return "-"
+        roles = user_role_group_names(obj.user)
+        return ", ".join(roles) if roles else _("No role group")
+
+    djopenkb_roles.short_description = _("DjOpenKB roles")
+
+    def djopenkb_permission_summary(self, obj):
+        if not obj or not obj.user_id:
+            return "-"
+        return role_permissions_summary(obj.user)
+
+    djopenkb_permission_summary.short_description = _("Effective DjOpenKB permissions")
 
 
 @admin.register(UserMFADevice)

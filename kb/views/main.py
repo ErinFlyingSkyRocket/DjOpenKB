@@ -19,7 +19,10 @@ def article_detail(request, article_id):
     """Display an article through Django without exposing raw /wiki/*.md paths."""
     article = get_object_or_404(SuggestedArticle.objects.select_related("owner"), pk=article_id)
 
-    if article.status != SuggestedArticle.Status.PUBLISHED and not user_can_manage_article(request.user, article):
+    if article.status == SuggestedArticle.Status.PUBLISHED:
+        if request.user.is_authenticated and not user_can_view_articles(request.user):
+            raise Http404("Article not found")
+    elif not user_can_manage_article(request.user, article):
         raise Http404("Article not found")
 
     record_article_session_view(request, article)

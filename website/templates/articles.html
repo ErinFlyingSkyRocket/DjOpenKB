@@ -337,7 +337,7 @@
 
                         <span class="article-vote-counts">
                             {% trans "Likes" %}: {{ metadata.helpful_vote_count|default:0 }}
-                            {% if user|is_site_admin %}
+                            {% if user|can_use_admin_tools %}
                                 / {% trans "Dislikes" %}: {{ metadata.unhelpful_vote_count|default:0 }}
                             {% endif %}
                         </span>

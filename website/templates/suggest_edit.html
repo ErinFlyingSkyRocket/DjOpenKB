@@ -218,7 +218,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                             <div class="form-group">
                                 <label>{% trans "Status" %}</label><br/>
-                                {% if user|is_site_admin %}
+                                {% if can_review_article %}
                                     <select name="status" id="articleStatusSelect" class="form-control">
                                         {% if is_pending_update_review %}
                                             <option value="published" selected>{% trans "Approve update" %}</option>
@@ -253,7 +253,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
-                            {% if user|is_site_admin %}
+                            {% if can_review_article %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
@@ -284,7 +284,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                     </div>
 
-                    {% if user|is_site_admin %}
+                    {% if can_review_article %}
                         <div class="col-xs-12">
                             <div id="adminReviewNotesGroup" class="admin-review-notes" {% if current_status != 'failed' %}style="display:none;"{% endif %}>
                                 <div class="form-group" style="margin-bottom:0;">
