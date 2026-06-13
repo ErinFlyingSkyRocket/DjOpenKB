@@ -379,10 +379,41 @@ def log_activity(request, event_type, article=None, user=None, details=None):
         article_id = None
         article_title = ""
         article_status = ""
+        article_owner_user_id = None
+        article_owner_username = ""
+        article_owner_name = ""
+        article_owner_email = ""
+        article_owner_account_type = ""
+
         if article is not None:
             article_id = getattr(article, "pk", None)
             article_title = (getattr(article, "title", "") or "")[:255]
             article_status = getattr(article, "status", "") or ""
+
+            # Store the article owner's identity as a historical snapshot.
+            # This lets audit logs remain readable even if the article or user
+            # is later deleted, and separates "actor" from "article owner".
+            article_owner_user_id = getattr(article, "owner_id", None)
+            article_owner_username = (getattr(article, "author_username_snapshot", "") or "")[:255]
+            article_owner_name = (getattr(article, "author_name_snapshot", "") or "")[:255]
+            article_owner_email = (getattr(article, "author_email_snapshot", "") or "")[:254]
+            article_owner_account_type = (getattr(article, "author_account_type_snapshot", "") or "")[:50]
+
+            owner = getattr(article, "owner", None)
+            if owner is not None:
+                article_owner_username = (
+                    owner.get_username()
+                    or getattr(owner, "email", "")
+                    or article_owner_username
+                    or ""
+                )[:255]
+                article_owner_email = (getattr(owner, "email", "") or article_owner_email or "")[:254]
+                owner_name = (owner.get_full_name() or "").strip()
+                if owner_name:
+                    article_owner_name = owner_name[:255]
+                profile = getattr(owner, "kb_profile", None)
+                if profile is not None and hasattr(profile, "get_account_type_display"):
+                    article_owner_account_type = (profile.get_account_type_display() or article_owner_account_type or "")[:50]
 
         ActivityLog.objects.create(
             event_type=event_type,
@@ -391,6 +422,11 @@ def log_activity(request, event_type, article=None, user=None, details=None):
             article_id=article_id,
             article_title=article_title,
             article_status=article_status,
+            article_owner_user_id_snapshot=article_owner_user_id,
+            article_owner_username_snapshot=article_owner_username,
+            article_owner_name_snapshot=article_owner_name,
+            article_owner_email_snapshot=article_owner_email,
+            article_owner_account_type_snapshot=article_owner_account_type,
             ip_address=get_client_ip(request) if request is not None else None,
             user_agent=(request.META.get("HTTP_USER_AGENT", "") if request is not None else ""),
             path=(request.get_full_path()[:500] if request is not None else ""),

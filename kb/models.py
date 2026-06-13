@@ -778,76 +778,9 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
             models.Index(fields=["-created_at", "event_type"]),
             models.Index(fields=["username", "-created_at"]),
             models.Index(fields=["article_title", "-created_at"]),
-            models.Index(fields=["article_owner_username_snapshot", "-created_at"], name="kb_activity_article_owner_created_idx"),
+            models.Index(fields=["article_owner_username_snapshot", "-created_at"], name="kb_act_owner_cr_idx"),
             models.Index(fields=["ip_address", "-created_at"]),
         ]
-
-    def snapshot_article_owner(self):
-        """Store article owner details directly on the audit row.
-
-        Activity logs must remain readable even if the article or its owner is
-        later deleted.  The live article/user relationship is used only at
-        insert time to populate these snapshot fields.
-        """
-        if any([
-            self.article_owner_user_id_snapshot,
-            self.article_owner_username_snapshot,
-            self.article_owner_name_snapshot,
-            self.article_owner_email_snapshot,
-            self.article_owner_account_type_snapshot,
-        ]):
-            return
-
-        article = None
-        article_pk = getattr(self, "article_id", None)
-        if not article_pk:
-            return
-
-        try:
-            article = self.article
-        except SuggestedArticle.DoesNotExist:
-            article = None
-
-        if article is None:
-            try:
-                article = (
-                    SuggestedArticle.objects
-                    .select_related("owner", "owner__kb_profile")
-                    .filter(pk=article_pk)
-                    .first()
-                )
-            except Exception:
-                article = None
-
-        if article is None:
-            return
-
-        owner = getattr(article, "owner", None)
-        if owner is not None:
-            self.article_owner_user_id_snapshot = owner.pk
-            self.article_owner_username_snapshot = (owner.get_username() or "")[:255]
-            self.article_owner_name_snapshot = (owner.get_full_name().strip() or "")[:255]
-            self.article_owner_email_snapshot = owner.email or ""
-
-            profile = getattr(owner, "kb_profile", None)
-            if profile:
-                self.article_owner_account_type_snapshot = profile.get_account_type_display()
-            elif owner.is_superuser or owner.is_staff:
-                self.article_owner_account_type_snapshot = "Admin"
-            else:
-                self.article_owner_account_type_snapshot = ""
-            return
-
-        # Fallback for articles whose live owner was already removed.
-        self.article_owner_username_snapshot = (getattr(article, "author_username_snapshot", "") or "")[:255]
-        self.article_owner_name_snapshot = (getattr(article, "author_name_snapshot", "") or "")[:255]
-        self.article_owner_email_snapshot = getattr(article, "author_email_snapshot", "") or ""
-        self.article_owner_account_type_snapshot = (getattr(article, "author_account_type_snapshot", "") or "")[:50]
-
-    def save(self, *args, **kwargs):
-        if not self.pk and self._state.adding:
-            self.snapshot_article_owner()
-        return super().save(*args, **kwargs)
 
     def __str__(self):
         actor = self.username or (self.user.get_username() if self.user_id else str(_("anonymous")))
