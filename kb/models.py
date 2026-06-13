@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -181,15 +181,16 @@ class UserMFADevice(models.Model):
 
 
 class AppendOnlyAuditLogMixin:
-    """Application-level guard for audit log rows.
+    """Application-level guard for immutable audit log rows.
 
-    Log records may be inserted, but existing records must not be edited or
-    manually deleted. Retention cleanup uses database-level protection so that
-    scheduled deletion of expired logs can still run according to Site settings.
+    Log records are independent historical snapshots. They may be inserted,
+    but existing rows must never be edited or deleted by application code.
+    Database triggers enforce the same append-only rule for bulk ORM actions,
+    raw SQL, Django admin, and cleanup commands.
     """
 
     immutable_update_message = _("Audit log records are append-only and cannot be edited.")
-    immutable_delete_message = _("Audit log records cannot be manually deleted. They are removed only by retention cleanup.")
+    immutable_delete_message = _("Audit log records are immutable and cannot be deleted.")
 
     def save(self, *args, **kwargs):
         if self.pk and not self._state.adding:
@@ -226,8 +227,13 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
         related_name="auth_activity_logs",
+        help_text=_(
+            "Historical user ID snapshot only. This relation intentionally does not enforce "
+            "a database constraint because audit logs must remain immutable when users are deleted."
+        ),
     )
     username = models.CharField(max_length=255, blank=True, db_index=True)
     login_mode = models.CharField(max_length=30, blank=True, db_index=True)
@@ -248,7 +254,7 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         ]
 
     def __str__(self):
-        user_label = self.username or (self.user.get_username() if self.user_id else "unknown")
+        user_label = self.username or f"deleted-user-{self.user_id}" if self.user_id else "unknown"
         return f"{self.get_event_type_display()} - {user_label} - {self.created_at:%Y-%m-%d %H:%M:%S}"
 
 
@@ -605,8 +611,13 @@ class ArticleImageUploadLog(models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
         related_name="uploaded_article_images",
+        help_text=_(
+            "Historical uploader ID snapshot only. The username/email snapshot fields keep the log readable "
+            "after the user account is changed or deleted."
+        ),
     )
     uploader_username_snapshot = models.CharField(max_length=150, blank=True, db_index=True)
     uploader_email_snapshot = models.EmailField(blank=True)
@@ -620,8 +631,13 @@ class ArticleImageUploadLog(models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
         related_name="deleted_article_images",
+        help_text=_(
+            "Historical deleter ID snapshot only. Image deletion activity is appended into ActivityLog "
+            "rather than editing this upload log row."
+        ),
     )
     delete_reason = models.CharField(max_length=30, choices=DeleteReason.choices, blank=True)
 
@@ -641,24 +657,34 @@ class ArticleImageUploadLog(models.Model):
 
     @property
     def uploader_display(self):
-        if self.uploaded_by:
-            full_name = self.uploaded_by.get_full_name().strip()
+        try:
+            uploader = self.uploaded_by
+        except ObjectDoesNotExist:
+            uploader = None
+
+        if uploader:
+            full_name = uploader.get_full_name().strip()
             if full_name:
-                return f"{full_name} ({self.uploaded_by.get_username()})"
-            return self.uploaded_by.get_username()
-        return self.uploader_username_snapshot or ""
+                return f"{full_name} ({uploader.get_username()})"
+            return uploader.get_username()
+        return self.uploader_username_snapshot or (f"deleted-user-{self.uploaded_by_id}" if self.uploaded_by_id else "")
 
     def snapshot_uploader(self):
-        if not self.uploaded_by:
+        try:
+            uploader = self.uploaded_by
+        except ObjectDoesNotExist:
+            uploader = None
+
+        if not uploader:
             return
 
-        self.uploader_username_snapshot = self.uploaded_by.get_username()
-        self.uploader_email_snapshot = self.uploaded_by.email or ""
+        self.uploader_username_snapshot = uploader.get_username()
+        self.uploader_email_snapshot = uploader.email or ""
 
-        profile = getattr(self.uploaded_by, "kb_profile", None)
+        profile = getattr(uploader, "kb_profile", None)
         if profile:
             self.uploader_account_type_snapshot = profile.get_account_type_display()
-        elif self.uploaded_by.is_superuser or self.uploaded_by.is_staff:
+        elif uploader.is_superuser or uploader.is_staff:
             self.uploader_account_type_snapshot = "Admin"
         else:
             self.uploader_account_type_snapshot = ""
@@ -671,7 +697,7 @@ class ArticleImageUploadLog(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        raise ValidationError(_("Article image upload log records cannot be manually deleted."))
+        raise ValidationError(_("Article image upload log records are immutable and cannot be deleted."))
 
     def mark_deleted(self, actor=None, reason=""):
         # Kept as a no-op compatibility method. This model is now append-only;
@@ -716,17 +742,30 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
         related_name="activity_logs",
+        help_text=_(
+            "Historical user ID snapshot only. This relation intentionally does not enforce "
+            "a database constraint because audit logs must remain immutable when users are deleted."
+        ),
     )
     username = models.CharField(max_length=255, blank=True, db_index=True)
 
-    article = models.ForeignKey(
-        SuggestedArticle,
+    # Historical article identifier only.
+    #
+    # Do not use a ForeignKey here. Activity logs are append-only, so Django must
+    # not try to update or cascade log rows when a live article is deleted. The
+    # title/status snapshot fields below keep the audit trail readable after the
+    # article record is gone. This field reuses the existing database column
+    # named article_id from the older ForeignKey, but the ORM now treats it as a
+    # plain integer snapshot.
+    article_id = models.PositiveIntegerField(
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="activity_logs",
+        db_index=True,
+        verbose_name=_("Article ID"),
+        help_text=_("Historical article ID snapshot. This is intentionally not a live article relationship."),
     )
     article_title = models.CharField(max_length=255, blank=True, db_index=True)
     article_status = models.CharField(max_length=40, blank=True, db_index=True)
@@ -749,7 +788,7 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         ]
 
     def __str__(self):
-        actor = self.username or (self.user.get_username() if self.user_id else str(_("anonymous")))
+        actor = self.username or (f"deleted-user-{self.user_id}" if self.user_id else str(_("anonymous")))
         target = f" - {self.article_title}" if self.article_title else ""
         return f"{self.get_event_type_display()} - {actor}{target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
 

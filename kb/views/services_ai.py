@@ -376,9 +376,11 @@ def log_activity(request, event_type, article=None, user=None, details=None):
         if actor is not None and getattr(actor, "is_authenticated", False):
             username = actor.get_username() or getattr(actor, "email", "") or ""
 
+        article_id = None
         article_title = ""
         article_status = ""
         if article is not None:
+            article_id = getattr(article, "pk", None)
             article_title = (getattr(article, "title", "") or "")[:255]
             article_status = getattr(article, "status", "") or ""
 
@@ -386,7 +388,7 @@ def log_activity(request, event_type, article=None, user=None, details=None):
             event_type=event_type,
             user=actor if getattr(actor, "pk", None) else None,
             username=username,
-            article=article if getattr(article, "pk", None) else None,
+            article_id=article_id,
             article_title=article_title,
             article_status=article_status,
             ip_address=get_client_ip(request) if request is not None else None,
