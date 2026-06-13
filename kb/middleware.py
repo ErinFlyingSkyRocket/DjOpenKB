@@ -337,12 +337,12 @@ class LocalMFARequiredMiddleware:
 
 
 class ForceLoginAndAdminGuardMiddleware:
-    """Require main-site login for DjOpenKB and hide Django admin login.
+    """Require authentication for every application page except the login entry.
 
-    Public users should only see the main login page and static assets required
-    to render it. Every wiki/application URL requires an authenticated Django
-    session. Django admin is only reachable after signing in through the main
-    site, and the built-in /admin/login/ endpoint is hidden with 404.
+    Public anonymous visitors may only load the login page and static assets
+    needed to render it. The old article index must never be reachable at /;
+    it is only available at /home/ after successful login. Django's default
+    /admin/login/ endpoint is hidden with 404.
     """
 
     def __init__(self, get_response):
@@ -355,22 +355,16 @@ class ForceLoginAndAdminGuardMiddleware:
             return None
 
     def _is_static_or_safe_asset(self, path):
-        allowed_prefixes = (
-            settings.STATIC_URL,
-            getattr(settings, "MEDIA_URL", "/media/"),
-        )
-        if any(path.startswith(prefix) for prefix in allowed_prefixes if prefix):
+        # Public static files are required for the login page CSS/JS/images.
+        # Uploaded article files are deliberately not included here.
+        if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
             return True
-
-        return path in {
-            "/favicon.ico",
-            "/robots.txt",
-        }
+        return path in {"/favicon.ico", "/robots.txt"}
 
     def _is_public_auth_path(self, path):
-        # These are the only application routes that can be reached before full
-        # login. MFA paths are still protected by LocalMFARequiredMiddleware and
-        # only work for users with a pending MFA session.
+        # / and /login/ are the only normal anonymous entry points.
+        # MFA pages are reachable only for pending-MFA sessions; the MFA
+        # middleware validates that state before allowing completion.
         public_names = (
             "root_login",
             "login",
@@ -385,7 +379,7 @@ class ForceLoginAndAdminGuardMiddleware:
         return False
 
     def _is_admin_login_path(self, path):
-        return path in {"/admin/login", "/admin/login/"}
+        return path in {"/admin/login", "/admin/login/"} or path.startswith("/admin/login/")
 
     def _is_admin_path(self, path):
         return path == "/admin" or path.startswith("/admin/")
@@ -393,7 +387,7 @@ class ForceLoginAndAdminGuardMiddleware:
     def __call__(self, request):
         path = request.path_info or request.path
 
-        # Do not expose the default Django admin login page. Admin users must
+        # Do not expose the default Django admin login page. Admins must
         # authenticate from the main DjOpenKB login page first.
         if self._is_admin_login_path(path):
             raise Http404()
@@ -410,17 +404,8 @@ class ForceLoginAndAdminGuardMiddleware:
                 raise Http404()
             return self.get_response(request)
 
-        # Anonymous users should not be able to confirm whether /admin/ exists.
-        if self._is_admin_path(path):
-            raise Http404()
-
-        login_path = self._reverse_or_none("login") or settings.LOGIN_URL
-        root_login_path = self._reverse_or_none("root_login") or "/"
-        if path in {login_path, root_login_path}:
-            return self.get_response(request)
-
-        # Anonymous users should not be able to confirm whether application
-        # URLs exist. The only public entry points are / and /login/.
+        # Anonymous users should not be able to enumerate application URLs.
+        # They must know and visit / or /login/ directly.
         raise Http404()
 
 

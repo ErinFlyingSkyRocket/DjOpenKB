@@ -17,15 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from kb.views import OpenKBLoginView, OpenKBLogoutView
+from kb.views.auth import OpenKBLoginView, OpenKBLogoutView, root_entry
 
 
 urlpatterns = [
-    # The site root is the public login entry point. Authenticated users are
-    # redirected by OpenKBLoginView to LOGIN_REDIRECT_URL (/home/).
-    path("", OpenKBLoginView.as_view(), name="root_login"),
+    # Root URL is the login entry page.
+    # Anonymous users see the DjOpenKB login form here.
+    # Authenticated users are sent to /home/.
+    path("", root_entry, name="root_login"),
+
     path("admin/", admin.site.urls),
     path("login/", OpenKBLoginView.as_view(), name="login"),
     path("logout/", OpenKBLogoutView.as_view(), name="logout"),
+
+    # All normal application pages live under kb.urls.
+    # The old index page is intentionally moved to /home/.
     path("", include("kb.urls")),
 ]

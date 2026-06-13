@@ -1,3 +1,4 @@
+from django.views.decorators.cache import never_cache
 from .services import *
 from ..auth_monitoring import log_auth_event
 from ..mfa import (
@@ -14,6 +15,20 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
+
+
+@never_cache
+def root_entry(request):
+    """Site root entry point.
+
+    Anonymous users see the normal DjOpenKB login page at /. Authenticated
+    users are sent to the actual article index at /home/. Keeping this as an
+    explicit view prevents the old index view from being exposed at the root
+    URL by accident.
+    """
+    if request.user.is_authenticated:
+        return redirect("home")
+    return OpenKBLoginView.as_view()(request)
 
 
 class OpenKBLoginView(LoginView):

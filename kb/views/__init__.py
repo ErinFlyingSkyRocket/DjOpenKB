@@ -15,7 +15,7 @@ from .services import (
     sync_openkb_ai_index,
     write_article_files,
 )
-from .auth import OpenKBLoginView, OpenKBLogoutView, set_site_language, profile, update_profile, change_password
+from .auth import OpenKBLoginView, OpenKBLogoutView, root_entry, set_site_language, profile, update_profile, change_password
 from .main import home, article_detail, wiki_detail, vote_article, search_articles, search_article_suggestions
 from .suggestions import (
     suggest,
@@ -40,6 +40,7 @@ from .mfa import mfa_setup, mfa_verify, reset_mfa
 __all__ = [
     "OpenKBLoginView",
     "OpenKBLogoutView",
+    "root_entry",
     "set_site_language",
     "profile",
     "update_profile",
