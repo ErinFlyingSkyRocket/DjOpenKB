@@ -339,10 +339,12 @@ class LocalMFARequiredMiddleware:
 class ForceLoginAndAdminGuardMiddleware:
     """Require main-site login for DjOpenKB and hide Django admin login.
 
-    Public users should only see the main login page and static assets required
-    to render it. Every wiki/application URL requires an authenticated Django
-    session. Django admin is only reachable after signing in through the main
-    site, and the built-in /admin/login/ endpoint is hidden with 404.
+    Anonymous users may only access the main login page and the static assets
+    required to render it. The site root redirects to /login/ so the login page
+    is the default entry point. Other anonymous application URLs return 404 so
+    directory enumeration does not confirm that the routes exist. Django admin
+    is only reachable after signing in through the main site, and the built-in
+    /admin/login/ endpoint is hidden with 404.
     """
 
     def __init__(self, get_response):
@@ -418,8 +420,14 @@ class ForceLoginAndAdminGuardMiddleware:
         if path == login_path:
             return self.get_response(request)
 
+        # Make the bare site URL the login entry point. This keeps
+        # https://host:8080/ usable for normal users while hiding all other
+        # application routes from anonymous directory enumeration.
+        if path in {"", "/"}:
+            return redirect(f"{login_path}?{urlencode({'next': request.get_full_path()})}")
+
         # Anonymous users should not be able to confirm whether application
-        # URLs exist. They must know and visit /login/ directly.
+        # URLs exist. They must authenticate first.
         raise Http404()
 
 
