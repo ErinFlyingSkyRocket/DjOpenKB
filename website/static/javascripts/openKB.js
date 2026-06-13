@@ -397,30 +397,56 @@ $(document).ready(function(){
         }
     }
 
-    // Editor save button clicked
+    function saveEditorMarkdown(){
+        if(typeof simplemde !== 'undefined' && simplemde && simplemde.codemirror){
+            simplemde.codemirror.save();
+            $('#editor').val(simplemde.value());
+        }
+    }
+
+    function submitEditorFormWithButton(submitButton){
+        saveEditorMarkdown();
+
+        var form = document.getElementById('edit_form');
+        if(!form){
+            return;
+        }
+
+        // Programmatic form submits do not automatically include the clicked
+        // submit button's name/value. Django uses submit_action to distinguish
+        // Save draft, Submit for approval, and Submit update for approval, so
+        // preserve the actual clicked button before submitting.
+        if(form.requestSubmit && submitButton){
+            form.requestSubmit(submitButton);
+            return;
+        }
+
+        if(submitButton && submitButton.name){
+            $('#edit_form input.js-clicked-submit-action').remove();
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', submitButton.name)
+                .attr('value', submitButton.value)
+                .addClass('js-clicked-submit-action')
+                .appendTo('#edit_form');
+        }
+
+        form.submit();
+    }
+
+    // Editor save/submit button clicked
     $(document).on('click', '#frm_edit_kb_save', function(e){
         e.preventDefault();
 
-        if($('#versionSidebar').length){
+        if($('#versionSidebar').length && $('#frm_kb_edit_reason').val() === ''){
             // only save if a version is edited
-            if($('#frm_kb_edit_reason').val() === ''){
-                show_notification('Please enter a reason for editing article', 'danger');
-                $('#btnVersionMenu').trigger('click');
-                $('#frm_kb_edit_reason').focus();
-            }else{
-                if(typeof simplemde !== 'undefined' && simplemde && simplemde.codemirror){
-                    simplemde.codemirror.save();
-                    $('#editor').val(simplemde.value());
-                }
-                $('#edit_form').submit();
-            }
-        }else{
-            if(typeof simplemde !== 'undefined' && simplemde && simplemde.codemirror){
-                simplemde.codemirror.save();
-                $('#editor').val(simplemde.value());
-            }
-            $('#edit_form').submit();
+            show_notification('Please enter a reason for editing article', 'danger');
+            $('#btnVersionMenu').trigger('click');
+            $('#frm_kb_edit_reason').focus();
+            return;
         }
+
+        submitEditorFormWithButton(this);
     });
 
     // Version edit button clicked
