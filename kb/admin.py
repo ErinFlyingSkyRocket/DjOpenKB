@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.utils import quote
 from django.http import Http404, HttpResponseRedirect
@@ -5,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.urls import path, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import GroupAdmin as DefaultGroupAdmin, UserAdmin as DefaultUserAdmin
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from django.utils.html import format_html
@@ -15,6 +17,9 @@ from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
 from .permissions import (
+    PERM_ADD_ARTICLES,
+    PERM_MANAGE_ARTICLES,
+    PERM_USE_ADMIN_TOOLS,
     ROLE_ADMIN_USERS,
     ROLE_ARTICLE_MANAGER,
     ROLE_ARTICLE_WRITER,
@@ -24,12 +29,61 @@ from .permissions import (
     role_descriptions_html,
     role_permissions_summary,
     seed_djopenkb_role_groups,
+    set_user_direct_kb_permission,
+    sync_user_staff_flags_from_roles,
+    user_has_direct_kb_permission,
     user_role_group_names,
 )
 
 
 User = get_user_model()
 
+
+
+
+class DjOpenKBUserChangeForm(UserChangeForm):
+    """User admin form with clear DjOpenKB direct-permission checkboxes.
+
+    These checkboxes manage direct user permissions only. Group permissions are
+    still managed through the normal Groups selector and remain additive.
+    """
+
+    dj_perm_add_articles = forms.BooleanField(
+        label=_("Can create / submit articles"),
+        required=False,
+        help_text=_(
+            "Direct permission. Allows the user to create articles, save drafts, "
+            "and submit articles for approval. Does not allow reviewing other users' articles."
+        ),
+    )
+    dj_perm_manage_articles = forms.BooleanField(
+        label=_("Can manage / approve articles"),
+        required=False,
+        help_text=_(
+            "Direct permission. Allows the user to manage pending articles and pending updates, "
+            "including viewing dislike counts. Does not grant full admin tools by itself."
+        ),
+    )
+    dj_perm_use_admin_tools = forms.BooleanField(
+        label=_("Can use full admin tools"),
+        required=False,
+        help_text=_(
+            "Direct permission. Allows full DjOpenKB admin tools. This also makes the user staff "
+            "so they can enter Django admin, but log tables remain read-only."
+        ),
+    )
+
+    class Meta(UserChangeForm.Meta):
+        model = User
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        user = self.instance
+        if user and user.pk:
+            self.fields["dj_perm_add_articles"].initial = user_has_direct_kb_permission(user, PERM_ADD_ARTICLES)
+            self.fields["dj_perm_manage_articles"].initial = user_has_direct_kb_permission(user, PERM_MANAGE_ARTICLES)
+            self.fields["dj_perm_use_admin_tools"].initial = user_has_direct_kb_permission(user, PERM_USE_ADMIN_TOOLS)
 
 try:
     admin.site.unregister(Group)
@@ -295,6 +349,7 @@ except admin.sites.NotRegistered:
 
 @admin.register(User)
 class UserAdmin(DefaultUserAdmin):
+    form = DjOpenKBUserChangeForm
     inlines = (UserProfileInline,)
 
     list_display = (
@@ -374,6 +429,19 @@ class UserAdmin(DefaultUserAdmin):
             options = dict(options)
             fields = options.get("fields", ())
 
+            def remove_user_permissions_field(value):
+                if value == "user_permissions":
+                    return None
+                if isinstance(value, (list, tuple)):
+                    cleaned = [remove_user_permissions_field(item) for item in value]
+                    return tuple(item for item in cleaned if item)
+                return value
+
+            # Hide Django's huge raw User permissions selector from normal user editing.
+            # DjOpenKB permissions are managed through the clear checkboxes below;
+            # groups remain available as role templates.
+            fields = remove_user_permissions_field(fields)
+
             if obj and self._is_domain_user(obj):
                 def replace_password_field(value):
                     if value == "password":
@@ -394,7 +462,22 @@ class UserAdmin(DefaultUserAdmin):
                 "fields": ("djopenkb_role_guide", "djopenkb_permission_summary"),
                 "description": _(
                     "Assign one of the standard Groups below for normal role management. "
-                    "The User permissions checkboxes can still be used for custom combinations."
+                    "Use the direct permission checkboxes below only when a user needs a custom combination."
+                ),
+            },
+        ))
+
+        cleaned_fieldsets.append((
+            _("DjOpenKB direct permission checkboxes"),
+            {
+                "fields": (
+                    "dj_perm_add_articles",
+                    "dj_perm_manage_articles",
+                    "dj_perm_use_admin_tools",
+                ),
+                "description": _(
+                    "All active signed-in users can view published articles and vote by default. "
+                    "Tick these boxes only for extra create, manager, or admin capabilities."
                 ),
             },
         ))
@@ -449,6 +532,27 @@ class UserAdmin(DefaultUserAdmin):
             }:
                 profile.account_type = UserProfile.AccountType.ADMIN
                 profile.save(update_fields=["account_type", "updated_at"])
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
+        if obj and obj.pk and hasattr(form, "cleaned_data"):
+            set_user_direct_kb_permission(
+                obj,
+                PERM_ADD_ARTICLES,
+                bool(form.cleaned_data.get("dj_perm_add_articles")),
+            )
+            set_user_direct_kb_permission(
+                obj,
+                PERM_MANAGE_ARTICLES,
+                bool(form.cleaned_data.get("dj_perm_manage_articles")),
+            )
+            set_user_direct_kb_permission(
+                obj,
+                PERM_USE_ADMIN_TOOLS,
+                bool(form.cleaned_data.get("dj_perm_use_admin_tools")),
+            )
+            sync_user_staff_flags_from_roles(obj)
 
     def main_site_account_type(self, obj):
         profile = getattr(obj, "kb_profile", None)
@@ -606,15 +710,18 @@ class UserAdmin(DefaultUserAdmin):
     def assign_admin_users_role(self, request, queryset):
         self._assign_role_to_queryset(request, queryset, ROLE_ADMIN_USERS)
 
-    @admin.action(description=_("Clear selected users' direct permission checkbox overrides"))
+    @admin.action(description=_("Clear selected users' DjOpenKB direct permission checkboxes"))
     def clear_direct_user_permissions(self, request, queryset):
         count = 0
         for user in queryset:
-            user.user_permissions.clear()
+            set_user_direct_kb_permission(user, PERM_ADD_ARTICLES, False)
+            set_user_direct_kb_permission(user, PERM_MANAGE_ARTICLES, False)
+            set_user_direct_kb_permission(user, PERM_USE_ADMIN_TOOLS, False)
+            sync_user_staff_flags_from_roles(user)
             count += 1
         self.message_user(
             request,
-            _("Cleared direct permission overrides for %(count)d selected user(s). Group permissions remain active.") % {"count": count},
+            _("Cleared DjOpenKB direct permission checkbox overrides for %(count)d selected user(s). Group permissions remain active.") % {"count": count},
             level=messages.SUCCESS,
         )
 

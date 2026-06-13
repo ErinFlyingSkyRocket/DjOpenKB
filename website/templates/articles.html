@@ -303,7 +303,7 @@
                     <div class="article-vote-box">
                         <span class="article-vote-question">{% trans "Was this article helpful?" %}</span>
 
-                        {% if user.is_authenticated %}
+                        {% if metadata.can_vote %}
                             <form class="article-vote-form" method="post" action="{{ metadata.vote_url }}">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -337,7 +337,7 @@
 
                         <span class="article-vote-counts">
                             {% trans "Likes" %}: {{ metadata.helpful_vote_count|default:0 }}
-                            {% if user|can_use_admin_tools %}
+                            {% if metadata.show_dislike_count %}
                                 / {% trans "Dislikes" %}: {{ metadata.unhelpful_vote_count|default:0 }}
                             {% endif %}
                         </span>

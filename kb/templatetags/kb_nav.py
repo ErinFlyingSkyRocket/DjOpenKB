@@ -5,6 +5,7 @@ from kb.permissions import (
     user_can_manage_articles,
     user_can_use_admin_tools,
     user_can_view_articles,
+    user_can_view_dislike_counts,
 )
 
 register = template.Library()
@@ -34,3 +35,8 @@ def can_manage_articles(user):
 @register.filter
 def can_use_admin_tools(user):
     return user_can_use_admin_tools(user)
+
+
+@register.filter
+def can_view_dislike_counts(user):
+    return user_can_view_dislike_counts(user)

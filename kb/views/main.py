@@ -52,7 +52,8 @@ def article_detail(request, article_id):
             if request.user.is_authenticated else None
         ),
         "vote_url": reverse("vote_article", kwargs={"article_id": article.pk}) if article.status == SuggestedArticle.Status.PUBLISHED else "",
-        "can_vote": request.user.is_authenticated and article.status == SuggestedArticle.Status.PUBLISHED,
+        "can_vote": user_can_vote_articles(request.user) and article.status == SuggestedArticle.Status.PUBLISHED,
+        "show_dislike_count": user_can_view_dislike_counts(request.user),
         "login_url": f'{reverse("login")}?next={request.get_full_path()}',
         "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
         "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),

@@ -46,6 +46,8 @@ from ..permissions import (
     user_can_manage_articles,
     user_can_use_admin_tools as permission_user_can_use_admin_tools,
     user_can_view_articles,
+    user_can_view_dislike_counts,
+    user_can_vote_articles,
 )
 
 

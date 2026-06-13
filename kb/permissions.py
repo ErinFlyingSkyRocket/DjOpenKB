@@ -126,6 +126,24 @@ def user_can_manage_articles(user) -> bool:
     )
 
 
+def user_can_vote_articles(user) -> bool:
+    """All active signed-in main-site users may vote on published articles.
+
+    Voting is a baseline feature and is intentionally not split into a
+    separate role permission. Article visibility/access is still enforced by
+    the article detail view and the main-site access checks.
+    """
+    return bool(
+        getattr(user, "is_authenticated", False)
+        and getattr(user, "is_active", False)
+    )
+
+
+def user_can_view_dislike_counts(user) -> bool:
+    """Only article managers and admins can see down-vote/dislike counts."""
+    return bool(user_can_manage_articles(user) or user_can_use_admin_tools(user))
+
+
 def user_can_use_admin_tools(user) -> bool:
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
@@ -237,7 +255,7 @@ def seed_djopenkb_role_groups():
             perms.extend(_model_permissions("kb", "suggestedarticle", {"view", "change"}))
 
         if role_name == ROLE_ADMIN_USERS:
-            perms.extend(Permission.objects.filter(content_type__app_label="kb"))
+            perms.extend(_admin_safe_model_permissions())
             perms.extend(Permission.objects.filter(content_type__app_label="auth", content_type__model__in={"user", "group"}))
 
         group.permissions.set(sorted(set(perms), key=lambda permission: permission.pk))
@@ -246,6 +264,57 @@ def seed_djopenkb_role_groups():
 def _model_permissions(app_label: str, model: str, actions: set[str]):
     codenames = [f"{action}_{model}" for action in actions]
     return list(Permission.objects.filter(content_type__app_label=app_label, codename__in=codenames))
+
+
+def _admin_safe_model_permissions():
+    """Model permissions for Admin Users without destructive log permissions.
+
+    The log admin classes are read-only in the UI, and the standard Admin Users
+    group should not be granted add/change/delete permissions on audit tables.
+    Retention cleanup commands remain responsible for deleting old logs.
+    """
+    safe_permissions = []
+
+    safe_permissions.extend(_model_permissions("kb", "suggestedarticle", {"view", "add", "change", "delete"}))
+    safe_permissions.extend(_model_permissions("kb", "articlevote", {"view", "change", "delete"}))
+    safe_permissions.extend(_model_permissions("kb", "sitesetting", {"view", "change"}))
+    safe_permissions.extend(_model_permissions("kb", "userprofile", {"view", "change"}))
+    safe_permissions.extend(_model_permissions("kb", "usermfadevice", {"view", "change"}))
+
+    # Audit/log tables are visible to admins but not manually editable/deletable.
+    for model_name in ("activitylog", "authactivitylog", "articleimageuploadlog"):
+        safe_permissions.extend(_model_permissions("kb", model_name, {"view"}))
+
+    return safe_permissions
+
+
+def set_user_direct_kb_permission(user, codename: str, enabled: bool):
+    """Add/remove one custom DjOpenKB permission directly on a user."""
+    if codename not in PERMISSION_LABELS or not getattr(user, "pk", None):
+        return
+
+    try:
+        permissions = create_article_permissions()
+        permission = permissions[codename]
+        if enabled:
+            user.user_permissions.add(permission)
+        else:
+            user.user_permissions.remove(permission)
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return
+
+
+def user_has_direct_kb_permission(user, codename: str) -> bool:
+    if codename not in PERMISSION_LABELS or not getattr(user, "pk", None):
+        return False
+    try:
+        return user.user_permissions.filter(
+            content_type__app_label="kb",
+            content_type__model="suggestedarticle",
+            codename=codename,
+        ).exists()
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
 
 
 def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: bool = False):
@@ -306,6 +375,8 @@ def sync_user_staff_flags_from_roles(user):
     try:
         has_admin_group = user.groups.filter(name=ROLE_ADMIN_USERS).exists()
         has_article_manager_group = user.groups.filter(name=ROLE_ARTICLE_MANAGER).exists()
+        has_direct_admin_perm = user_has_direct_kb_permission(user, PERM_USE_ADMIN_TOOLS)
+        has_direct_manage_perm = user_has_direct_kb_permission(user, PERM_MANAGE_ARTICLES)
     except (DatabaseError, OperationalError, ProgrammingError):
         return
 
@@ -314,6 +385,8 @@ def sync_user_staff_flags_from_roles(user):
         getattr(user, "is_superuser", False)
         or has_admin_group
         or has_article_manager_group
+        or has_direct_admin_perm
+        or has_direct_manage_perm
         or (profile and getattr(profile, "is_admin_type", False))
     )
 
