@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.utils import quote
 from django.http import Http404, HttpResponseRedirect
@@ -6,14 +7,25 @@ from django.urls import path, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 from django.utils import timezone
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
-from .permissions import ROLE_ADMIN_USERS, sync_user_staff_flags_from_roles
+from .permissions import (
+    PERM_ADD_ARTICLES,
+    PERM_MANAGE_ARTICLES,
+    PERM_USE_ADMIN_TOOLS,
+    PERM_VIEW_ARTICLES,
+    ROLE_ADMIN_USERS,
+    highest_role_group_name,
+    role_permissions_summary,
+    set_user_direct_kb_permission,
+    sync_user_staff_flags_from_roles,
+    user_has_direct_kb_permission,
+)
 
 
 User = get_user_model()
@@ -175,7 +187,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
-        (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Users outside this range receive 404 even if they know the admin URL.",
+        (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
     }
 
     for model, field_labels in labels.items():
@@ -213,20 +225,208 @@ class SiteSettingLogPaginationMixin:
         self.list_max_show_all = max(rows_per_page, 500)
         return super().changelist_view(request, extra_context=extra_context)
 
+DIRECT_PERMISSION_FIELD_MAP = {
+    "direct_can_view_articles": PERM_VIEW_ARTICLES,
+    "direct_can_add_articles": PERM_ADD_ARTICLES,
+    "direct_can_manage_articles": PERM_MANAGE_ARTICLES,
+    "direct_can_use_admin_tools": PERM_USE_ADMIN_TOOLS,
+}
+
+
+class UserProfileInlineForm(forms.ModelForm):
+    """Expose DjOpenKB direct user permissions as simple checkboxes.
+
+    Groups remain the standard role templates. These checkboxes add/remove only
+    direct user permissions, so admins can make exceptions without creating a
+    custom group for every special case.
+    """
+
+    direct_can_view_articles = forms.BooleanField(
+        required=False,
+        label=_("Can view articles"),
+        help_text=_(
+            "Direct user permission. Allows the user to open the main wiki and read published articles after login. "
+            "It does not allow creating articles, approving articles, or using admin tools. "
+            "Unticked means no direct user grant; the user may still receive this permission from their group."
+        ),
+    )
+    direct_can_add_articles = forms.BooleanField(
+        required=False,
+        label=_("Can create articles"),
+        help_text=_(
+            "Direct user permission. Allows the user to create article drafts, submit new articles for approval, "
+            "and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles "
+            "or using Django admin tools."
+        ),
+    )
+    direct_can_manage_articles = forms.BooleanField(
+        required=False,
+        label=_("Can approve/manage articles"),
+        help_text=_(
+            "Direct user permission. Allows access to article review/management workflows such as pending article review, "
+            "pending update review, approve/reject actions, and manager-level article moderation views. "
+            "It does not automatically allow creating new articles or full Django admin access unless another permission/group grants those."
+        ),
+    )
+    direct_can_use_admin_tools = forms.BooleanField(
+        required=False,
+        label=_("Can use admin tools"),
+        help_text=_(
+            "Direct user permission for trusted administrators. Allows DjOpenKB admin tools and syncs Django staff access. "
+            "This permission also acts as a higher-level override for article creation and article management checks. "
+            "Admin access is still protected by login, MFA, CIDR/VPN allowlist, and Django admin permission checks."
+        ),
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        user = getattr(self.instance, "user", None)
+        if not user or not getattr(user, "pk", None):
+            return
+
+        for field_name, codename in DIRECT_PERMISSION_FIELD_MAP.items():
+            self.fields[field_name].initial = user_has_direct_kb_permission(user, codename)
+
+    def save(self, commit=True):
+        profile = super().save(commit=commit)
+
+        if commit and getattr(profile, "user_id", None) and hasattr(self, "cleaned_data"):
+            for field_name, codename in DIRECT_PERMISSION_FIELD_MAP.items():
+                set_user_direct_kb_permission(
+                    profile.user,
+                    codename,
+                    bool(self.cleaned_data.get(field_name)),
+                )
+            sync_user_staff_flags_from_roles(profile.user)
+
+        return profile
+
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+    form = UserProfileInlineForm
     can_delete = False
     extra = 0
-    fields = (
-        "account_type",
-        "auth_source",
-        "can_access_main_site",
-        "preferred_language",
-        "notes",
+    fieldsets = (
+        (
+            _("Main site profile"),
+            {
+                "fields": (
+                    "account_type",
+                    "auth_source",
+                    "can_access_main_site",
+                    "preferred_language",
+                    "notes",
+                )
+            },
+        ),
+        (
+            _("DjOpenKB role permissions"),
+            {
+                "fields": (
+                    "permission_exception_guide",
+                    "effective_role_group",
+                    "effective_permissions",
+                    "direct_can_view_articles",
+                    "direct_can_add_articles",
+                    "direct_can_manage_articles",
+                    "direct_can_use_admin_tools",
+                ),
+                "description": _(
+                    "Use Groups as the user's standard role. Tick these boxes only when this specific user needs extra permissions "
+                    "outside their group. Django combines group permissions and direct user permissions together."
+                ),
+            },
+        ),
+        (
+            _("Timestamps"),
+            {"fields": ("created_at", "updated_at")},
+        ),
+    )
+    readonly_fields = (
+        "permission_exception_guide",
+        "effective_role_group",
+        "effective_permissions",
         "created_at",
         "updated_at",
     )
-    readonly_fields = ("created_at", "updated_at")
+
+    def permission_exception_guide(self, obj):
+        rows = (
+            (
+                _("Group permissions"),
+                _(
+                    "Set the normal role from the user's Groups section, for example Regular User, Article Writer, "
+                    "Article Manager, or Admin Users."
+                ),
+            ),
+            (
+                _("Direct user permissions"),
+                _(
+                    "The checkboxes below are special per-user exceptions. They are useful when one user needs slightly more access "
+                    "than their group, without creating a new group."
+                ),
+            ),
+            (
+                _("Unticking a checkbox"),
+                _(
+                    "This removes only the direct user permission. If the user's group still grants the same permission, "
+                    "the effective permission will remain active."
+                ),
+            ),
+            (
+                _("Effective permissions"),
+                _(
+                    "This line shows the final result after Django combines group permissions, direct user permissions, "
+                    "superuser status, and DjOpenKB admin account status."
+                ),
+            ),
+        )
+        return format_html(
+            "<div style='max-width:920px;line-height:1.5;'>"
+            "<p class='help'><strong>{}</strong> {}</p>"
+            "<table style='border-collapse:collapse;margin-top:8px;'>"
+            "{}"
+            "</table>"
+            "<p class='help' style='margin-top:8px;'>{}</p>"
+            "</div>",
+            _("How to use these permissions:"),
+            _(
+                "Choose a group first, then use direct checkboxes only for exceptions. "
+                "For most users, the group alone should be enough."
+            ),
+            format_html_join(
+                "",
+                "<tr>"
+                "<th style='text-align:left;vertical-align:top;padding:4px 12px 4px 0;white-space:nowrap;'>{}</th>"
+                "<td style='padding:4px 0;'>{}</td>"
+                "</tr>",
+                rows,
+            ),
+            _(
+                "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
+            ),
+        )
+
+    permission_exception_guide.short_description = _("Permission guide")
+
+    def effective_role_group(self, obj):
+        if not obj or not getattr(obj, "user_id", None):
+            return "-"
+        return highest_role_group_name(obj.user)
+
+    effective_role_group.short_description = _("Effective role group")
+
+    def effective_permissions(self, obj):
+        if not obj or not getattr(obj, "user_id", None):
+            return "-"
+        return role_permissions_summary(obj.user)
+
+    effective_permissions.short_description = _("Effective permissions")
 
 
 try:
@@ -250,6 +450,8 @@ class UserAdmin(DefaultUserAdmin):
         "main_site_account_type",
         "main_site_auth_source",
         "main_site_access",
+        "djopenkb_role_group",
+        "djopenkb_permissions",
         "mfa_status_display",
     )
     list_filter = (
@@ -382,6 +584,16 @@ class UserAdmin(DefaultUserAdmin):
         return _("Blocked")
 
     main_site_access.short_description = _("Main Site Access")
+
+    def djopenkb_role_group(self, obj):
+        return highest_role_group_name(obj)
+
+    djopenkb_role_group.short_description = _("DjOpenKB Role")
+
+    def djopenkb_permissions(self, obj):
+        return role_permissions_summary(obj)
+
+    djopenkb_permissions.short_description = _("DjOpenKB Permissions")
 
 
     def mfa_status_display(self, obj):

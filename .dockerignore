@@ -1,0 +1,45 @@
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Vault runtime secrets
+vault/keys/
+vault/bootstrap/djopenkb.env
+
+# Certificates / private keys
+nginx/certs/*.key
+nginx/certs/*.crt
+ldap-certs/
+*.pem
+*.key
+*.crt
+*.cer
+
+# Runtime data
+openkb-data/
+postgres-data/
+media/
+staticfiles/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Git / editor / OS
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Local virtual environments
+.venv/
+venv/
+.openkb-venv/
+
+# Logs / temporary files
+*.log
+tmp/
+temp/
