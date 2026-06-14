@@ -97,13 +97,13 @@ def user_has_kb_permission(user, codename: str) -> bool:
 
 
 def user_can_view_articles(user) -> bool:
-    """Published articles remain public for anonymous visitors.
+    """Return True for signed-in users allowed to view internal articles.
 
-    For authenticated users, the explicit view permission allows admins to
-    disable article viewing by removing that permission/group.
+    DjOpenKB is an internal-only wiki, so anonymous visitors must not be able to
+    view published articles or their uploaded images.
     """
-    if not getattr(user, "is_authenticated", False):
-        return True
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return False
     return bool(
         user_has_kb_permission(user, PERM_VIEW_ARTICLES)
         or user_can_add_articles(user)
@@ -248,12 +248,8 @@ def seed_djopenkb_role_groups():
         group, _created = Group.objects.get_or_create(name=role_name)
         perms = [custom_permissions[codename] for codename in definition["permissions"]]
 
-        # Give Article Manager enough model permissions to review from Django admin
-        # only if is_staff is later enabled manually. The main pending-review UI
-        # still uses the custom can_manage_articles permission.
-        if role_name == ROLE_ARTICLE_MANAGER:
-            perms.extend(_model_permissions("kb", "suggestedarticle", {"view", "change"}))
-
+        # Article Managers review from the normal DjOpenKB pending-review UI only.
+        # They must not receive Django Admin model permissions or staff access.
         if role_name == ROLE_ADMIN_USERS:
             perms.extend(_admin_safe_model_permissions())
             perms.extend(Permission.objects.filter(content_type__app_label="auth", content_type__model__in={"user", "group"}))
@@ -374,9 +370,7 @@ def sync_user_staff_flags_from_roles(user):
 
     try:
         has_admin_group = user.groups.filter(name=ROLE_ADMIN_USERS).exists()
-        has_article_manager_group = user.groups.filter(name=ROLE_ARTICLE_MANAGER).exists()
         has_direct_admin_perm = user_has_direct_kb_permission(user, PERM_USE_ADMIN_TOOLS)
-        has_direct_manage_perm = user_has_direct_kb_permission(user, PERM_MANAGE_ARTICLES)
     except (DatabaseError, OperationalError, ProgrammingError):
         return
 
@@ -384,9 +378,7 @@ def sync_user_staff_flags_from_roles(user):
     should_be_staff = bool(
         getattr(user, "is_superuser", False)
         or has_admin_group
-        or has_article_manager_group
         or has_direct_admin_perm
-        or has_direct_manage_perm
         or (profile and getattr(profile, "is_admin_type", False))
     )
 

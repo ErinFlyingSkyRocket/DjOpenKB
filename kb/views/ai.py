@@ -24,6 +24,7 @@ def _article_recommendation_response(question, related_articles=None, status=200
     )
 
 
+@main_site_login_required
 @require_POST
 def ask_openkb_ai(request):
     """Answer questions through OpenKB/Gemini first, then attach relevant articles.

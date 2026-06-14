@@ -13,6 +13,7 @@ from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivit
 from .auth_monitoring import log_auth_event
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
+from .permissions import ROLE_ADMIN_USERS, sync_user_staff_flags_from_roles
 
 
 User = get_user_model()
@@ -158,6 +159,7 @@ def _apply_admin_translation_labels():
             "session_timeout_days": "User session timeout (days)",
             "activity_log_retention_days": "General activity log retention (days)",
             "admin_log_rows_per_page": "Admin log rows per page",
+            "admin_allowed_cidrs": "Admin allowed IP ranges",
             "updated_at": "Updated at",
         },
     }
@@ -173,6 +175,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
+        (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Users outside this range receive 404 even if they know the admin URL.",
     }
 
     for model, field_labels in labels.items():
@@ -340,13 +343,16 @@ class UserAdmin(DefaultUserAdmin):
         super().save_model(request, obj, form, change)
 
         profile, created = UserProfile.objects.get_or_create(user=obj)
-        if obj.is_superuser or obj.is_staff:
+        has_admin_group = obj.groups.filter(name=ROLE_ADMIN_USERS).exists() if obj.pk else False
+        if obj.is_superuser or has_admin_group or profile.is_admin_type:
             if profile.account_type not in {
                 UserProfile.AccountType.ADMIN,
                 UserProfile.AccountType.LDAP_ADMIN,
             }:
                 profile.account_type = UserProfile.AccountType.ADMIN
                 profile.save(update_fields=["account_type", "updated_at"])
+
+        sync_user_staff_flags_from_roles(obj)
 
     def main_site_account_type(self, obj):
         profile = getattr(obj, "kb_profile", None)

@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
 
+@main_site_login_required
 def home(request):
     all_articles = get_openkb_wiki_articles(sort_by_views=True)
     page_obj = paginate_articles(request, all_articles, per_page=10)
@@ -15,6 +16,7 @@ def home(request):
     })
 
 
+@main_site_login_required
 def article_detail(request, article_id):
     """Display an article through Django without exposing raw /wiki/*.md paths."""
     article = get_object_or_404(SuggestedArticle.objects.select_related("owner"), pk=article_id)
@@ -80,6 +82,7 @@ def article_detail(request, article_id):
     })
 
 
+@main_site_login_required
 def wiki_detail(request, wiki_path):
     """Block direct public access to raw OpenKB Markdown files.
 
@@ -169,6 +172,7 @@ def vote_article(request, article_id):
 
 
 
+@main_site_login_required
 def search_article_suggestions(request):
     """Return a title-only list of matching published articles for the search dropdown."""
     init_openkb_storage()
@@ -193,6 +197,7 @@ def search_article_suggestions(request):
 
     return JsonResponse({"results": results})
 
+@main_site_login_required
 def search_articles(request):
     """Search OpenKB articles with relevance ranking instead of plain substring order."""
     init_openkb_storage()

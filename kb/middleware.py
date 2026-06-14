@@ -1,3 +1,6 @@
+import ipaddress
+import re
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
@@ -21,11 +24,68 @@ from .mfa import (
     user_requires_mfa,
 )
 from .models import SiteSetting, UserProfile
+from .permissions import user_can_use_admin_tools
 
 
 
 
 SESSION_STARTED_AT_KEY = "djopenkb_session_started_at"
+
+
+def _split_cidr_values(raw_value):
+    return [item.strip() for item in re.split(r"[,\s]+", raw_value or "") if item.strip()]
+
+
+def _configured_admin_networks():
+    """Return valid admin allowlist networks from Site settings.
+
+    If the database is not ready, fall back to the model default. Invalid entries
+    are ignored instead of breaking the whole site, but if no valid network is
+    left, /admin/ is denied closed.
+    """
+    try:
+        raw_value = SiteSetting.load().admin_allowed_cidrs
+    except Exception:
+        raw_value = SiteSetting._meta.get_field("admin_allowed_cidrs").default
+
+    networks = []
+    for value in _split_cidr_values(raw_value):
+        try:
+            networks.append(ipaddress.ip_network(value, strict=False))
+        except ValueError:
+            continue
+    return networks
+
+
+def _request_client_ip(request):
+    """Return the best client IP for admin CIDR checks behind Nginx.
+
+    Nginx overwrites X-Real-IP with the actual remote client address before
+    proxying to Django. X-Forwarded-For is used as a fallback for compatible
+    proxy setups, and REMOTE_ADDR is the final direct-access fallback.
+    """
+    for value in (
+        request.META.get("HTTP_X_REAL_IP", ""),
+        request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0],
+        request.META.get("REMOTE_ADDR", ""),
+    ):
+        value = (value or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _admin_cidr_allowed(request):
+    networks = _configured_admin_networks()
+    if not networks:
+        return False
+
+    try:
+        client_ip = ipaddress.ip_address(_request_client_ip(request))
+    except ValueError:
+        return False
+
+    return any(client_ip in network for network in networks)
 
 
 def _get_session_timeout_days():
@@ -400,8 +460,11 @@ class ForceLoginAndAdminGuardMiddleware:
 
         user = getattr(request, "user", None)
         if user and user.is_authenticated:
-            if self._is_admin_path(path) and not user.is_staff:
-                raise Http404()
+            if self._is_admin_path(path):
+                if not (user.is_staff and user_can_use_admin_tools(user)):
+                    raise Http404()
+                if not _admin_cidr_allowed(request):
+                    raise Http404()
             return self.get_response(request)
 
         # Anonymous users should not be able to enumerate application URLs.

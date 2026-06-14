@@ -637,14 +637,15 @@ def delete_article_image(request):
     return JsonResponse({"deleted": True})
 
 
+@main_site_login_required
 def serve_article_image(request, filename):
-    """Serve article images safely.
+    """Serve article images safely for signed-in internal users only.
 
-    Published article images are public. Draft/pending/failed article images are
-    only visible to the article owner or site admins, so admins can review
-    pending submissions without exposing private draft uploads to everyone.
-    Newly uploaded images that are not saved into an article yet are visible
-    only in the uploader's current editing session.
+    Published article images are visible to authenticated users who can view
+    internal articles. Draft/pending/failed article images are only visible to
+    the article owner or article reviewers/admins. Newly uploaded images that
+    are not saved into an article yet are visible only in the uploader's current
+    editing session.
     """
     if not is_allowed_article_image_filename(filename):
         raise Http404("Image not found")
@@ -673,6 +674,9 @@ def serve_article_image(request, filename):
     ).filter(
         Q(image_assets__contains=[filename]) | Q(body__icontains=f"/wiki/uploads/{filename}")
     ).exists()
+
+    if is_public_image and not user_can_view_articles(request.user):
+        raise Http404("Image not found")
 
     if not is_public_image:
         allowed = False
