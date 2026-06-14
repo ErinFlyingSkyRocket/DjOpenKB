@@ -412,6 +412,25 @@ def get_article_image_upload_limit():
     return max(limit, 0)
 
 
+def _bounded_site_setting_int(field_name, default, minimum, maximum):
+    """Return an integer SiteSetting value clamped to a safe range."""
+    try:
+        value = int(getattr(SiteSetting.load(), field_name, default) or default)
+    except Exception:
+        return default
+
+    if value < minimum:
+        return minimum
+    if value > maximum:
+        return maximum
+    return value
+
+
+def get_articles_per_page():
+    """Return article count for public search pagination and homepage columns."""
+    return _bounded_site_setting_int("articles_per_page", default=10, minimum=5, maximum=100)
+
+
 def article_image_limit_error_message(image_count=None, limit=None):
     limit = get_article_image_upload_limit() if limit is None else max(int(limit), 0)
     if limit <= 0:

@@ -6,27 +6,29 @@ from django.utils.translation import gettext as _
 @main_site_login_required
 def home(request):
     all_articles = get_openkb_wiki_articles(sort_by_views=False)
+    article_limit = get_articles_per_page()
 
     trending_articles = sorted(
         all_articles,
         key=lambda item: (item.get("views") or 0, item.get("likes") or 0, item.get("date") or ""),
         reverse=True,
-    )[:8]
+    )[:article_limit]
     most_liked_articles = sorted(
         all_articles,
         key=lambda item: (item.get("likes") or 0, item.get("views") or 0, item.get("date") or ""),
         reverse=True,
-    )[:8]
+    )[:article_limit]
     most_recent_articles = sorted(
         all_articles,
         key=lambda item: item.get("date") or "",
         reverse=True,
-    )[:8]
+    )[:article_limit]
 
     return render(request, "index.html", {
         "trending_articles": trending_articles,
         "most_liked_articles": most_liked_articles,
         "most_recent_articles": most_recent_articles,
+        "article_limit": article_limit,
         "total_article_count": len(all_articles),
     })
 
@@ -224,7 +226,7 @@ def search_articles(request):
     all_public_articles = get_openkb_wiki_articles(sort_by_views=False)
     all_articles = rank_articles_for_query(all_public_articles, query_original)
 
-    page_obj = paginate_articles(request, all_articles, per_page=20)
+    page_obj = paginate_articles(request, all_articles, per_page=get_articles_per_page())
 
     return render(request, "index.html", {
         "articles": page_obj.object_list,

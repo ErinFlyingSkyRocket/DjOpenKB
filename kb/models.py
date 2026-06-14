@@ -828,6 +828,14 @@ class SiteSetting(models.Model):
             "pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
         ),
     )
+    articles_per_page = models.PositiveIntegerField(
+        default=10,
+        verbose_name=_("Articles per page"),
+        help_text=_(
+            "Number of published articles shown per page in search/results and in each homepage article column "
+            "such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
+        ),
+    )
     auth_activity_log_retention_days = models.PositiveIntegerField(
         default=30,
         verbose_name=_("Authentication activity log retention (days)"),

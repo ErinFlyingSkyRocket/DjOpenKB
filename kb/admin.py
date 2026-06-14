@@ -1458,11 +1458,12 @@ class ArticleVoteAdmin(admin.ModelAdmin):
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
     fieldsets = (
-        (_("Article upload limits"), {
-            "fields": ("article_image_upload_limit",),
+        (_("Article display and upload limits"), {
+            "fields": ("articles_per_page", "article_image_upload_limit"),
             "description": _(
-                "Controls how many pasted/uploaded images each article may contain. "
-                "Default is 50. Set to 0 to disable article image uploads."
+                "Controls how many articles are shown per page/on each homepage column, "
+                "and how many pasted/uploaded images each article may contain. "
+                "Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads."
             ),
         }),
         (_("Stray upload cleanup"), {
