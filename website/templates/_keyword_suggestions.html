@@ -24,11 +24,6 @@
         line-height: 1.5;
         flex: 0 0 auto;
     }
-    .openkb-keyword-suggestions-help {
-        margin-bottom: 8px;
-        color: #7b8a97;
-        font-size: 12px;
-    }
     .openkb-keyword-suggestion-chips {
         display: flex;
         flex-wrap: nowrap;
@@ -90,9 +85,6 @@
         <div class="openkb-keyword-suggestions-title">
             <i class="fa fa-tags" aria-hidden="true"></i> {% trans "Suggested keywords" %}
         </div>
-    </div>
-    <div class="openkb-keyword-suggestions-help">
-        {% trans "Click Refresh to scan the current title and article body. Only existing manually-created keywords are suggested when the exact keyword appears in the draft." %}
     </div>
     <div class="openkb-keyword-suggestion-chips" id="openkbKeywordSuggestionChips" aria-label="{% trans 'Suggested keyword list' %}">
         <span class="openkb-keyword-empty">{% trans "Click Refresh to scan the current title and article body for existing keywords." %}</span>
