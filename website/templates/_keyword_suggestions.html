@@ -10,18 +10,19 @@
     .openkb-keyword-suggestions-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 10px;
-        margin-bottom: 3px;
+        margin-bottom: 6px;
     }
     .openkb-keyword-suggestions-title {
         font-weight: 600;
         color: #2c3e50;
     }
     .openkb-keyword-refresh {
-        padding: 2px 8px;
+        padding: 3px 10px;
         font-size: 12px;
         line-height: 1.5;
+        flex: 0 0 auto;
     }
     .openkb-keyword-suggestions-help {
         margin-bottom: 8px;
@@ -75,26 +76,26 @@
     }
     @media (max-width: 767px) {
         .openkb-keyword-suggestions-header {
-            align-items: flex-start;
-            flex-direction: column;
+            align-items: center;
+            flex-wrap: wrap;
         }
     }
 </style>
 
 <div class="openkb-keyword-suggestions" id="openkbKeywordSuggestions">
     <div class="openkb-keyword-suggestions-header">
-        <div class="openkb-keyword-suggestions-title">
-            <i class="fa fa-tags" aria-hidden="true"></i> {% trans "Suggested keywords" %}
-        </div>
         <button type="button" class="btn btn-default btn-xs openkb-keyword-refresh" id="openkbKeywordRefresh">
             <i class="fa fa-refresh" aria-hidden="true"></i> {% trans "Refresh" %}
         </button>
+        <div class="openkb-keyword-suggestions-title">
+            <i class="fa fa-tags" aria-hidden="true"></i> {% trans "Suggested keywords" %}
+        </div>
     </div>
     <div class="openkb-keyword-suggestions-help">
-        {% trans "Only existing manually-created keywords are suggested. A keyword appears only when that exact keyword is found in the current title or article body." %}
+        {% trans "Click Refresh to scan the current title and article body. Only existing manually-created keywords are suggested when the exact keyword appears in the draft." %}
     </div>
     <div class="openkb-keyword-suggestion-chips" id="openkbKeywordSuggestionChips" aria-label="{% trans 'Suggested keyword list' %}">
-        <span class="openkb-keyword-empty">{% trans "Start typing the title or article body to see matching existing keywords." %}</span>
+        <span class="openkb-keyword-empty">{% trans "Click Refresh to scan the current title and article body for existing keywords." %}</span>
     </div>
     <div class="openkb-keyword-scroll-hint">{% trans "Scroll sideways to view more matching keywords." %}</div>
 </div>
@@ -262,52 +263,26 @@
         });
     }
 
-    function bindEditorChange() {
-        const cm = getEditorCodeMirror();
-        if (cm && !cm.openkbKeywordSuggestionBound) {
-            cm.openkbKeywordSuggestionBound = true;
-            cm.on("change", debounceRenderSuggestions);
-        }
+    function renderInitialMessage() {
+        chipContainer.innerHTML = "";
+        const empty = document.createElement("span");
+        empty.className = "openkb-keyword-empty";
+        empty.textContent = "{% trans 'Click Refresh to scan the current title and article body for existing keywords.' %}";
+        chipContainer.appendChild(empty);
     }
-
-    let renderTimer = null;
-    function debounceRenderSuggestions() {
-        window.clearTimeout(renderTimer);
-        renderTimer = window.setTimeout(function () {
-            bindEditorChange();
-            renderSuggestions();
-        }, 180);
-    }
-
-    if (titleInput) {
-        titleInput.addEventListener("input", debounceRenderSuggestions);
-    }
-    keywordInput.addEventListener("change", debounceRenderSuggestions);
-    keywordInput.addEventListener("tokenfield:createdtoken", debounceRenderSuggestions);
-    keywordInput.addEventListener("tokenfield:removedtoken", debounceRenderSuggestions);
 
     if (refreshButton) {
         refreshButton.addEventListener("click", function () {
-            bindEditorChange();
             renderSuggestions();
         });
     }
 
-    const editorTextarea = document.getElementById("editor");
-    if (editorTextarea) {
-        editorTextarea.addEventListener("input", debounceRenderSuggestions);
-    }
-
-    if (window.jQuery) {
-        window.jQuery(function () {
-            bindEditorChange();
-            renderSuggestions();
-        });
+    // Do not auto-scan while the user is typing. This avoids unnecessary browser work
+    // and keeps suggestions predictable. The Refresh button is the only trigger.
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderInitialMessage);
     } else {
-        document.addEventListener("DOMContentLoaded", function () {
-            bindEditorChange();
-            renderSuggestions();
-        });
+        renderInitialMessage();
     }
 })();
 </script>
