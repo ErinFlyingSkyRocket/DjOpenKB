@@ -164,30 +164,18 @@
         }
         .openkb-home-tab-content { padding: 0; }
         .openkb-home-list { margin-bottom: 0; }
-        .openkb-home-list .list-group-item { padding: 0; }
-        .openkb-home-article-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 13px 16px;
-        }
-        .openkb-home-article-main { min-width: 0; }
-        .openkb-home-article-title {
-            display: block;
-            font-weight: 600;
-            line-height: 1.35;
-            word-break: break-word;
-        }
-        .openkb-home-article-side {
-            flex: 0 0 auto;
-            min-width: 180px;
-            text-align: right;
+        .openkb-home-list .list-group-item { padding: 10px 15px; }
+        .openkb-home-list h4 { margin: 0; line-height: 1.35; }
+        .openkb-home-list h4 a { font-weight: 600; }
+        .openkb-home-list .view_count {
             color: #899aa6;
             font-size: 12px;
+            font-weight: normal;
+            margin-left: 20px;
+            text-align: right;
             white-space: nowrap;
         }
-        .openkb-home-article-side strong { color: #6d7f8b; }
+        .openkb-home-list .view_count strong { color: #6d7f8b; }
         .openkb-home-tab-footer { padding: 14px 16px 16px; border-top: 1px solid #eee; background: #fff; }
         .openkb-home-tab-meta { color: #899aa6; font-size: 12px; margin-bottom: 10px; text-align: center; }
         .openkb-home-tab-pagination { text-align: center; }
@@ -196,8 +184,14 @@
         @media (max-width: 767px) {
             .openkb-home-tabs-heading .nav-tabs > li { float: none; display: block; }
             .openkb-home-tabs-heading .nav-tabs > li > a { border-right: 0; }
-            .openkb-home-article-row { align-items: flex-start; display: block; }
-            .openkb-home-article-side { margin-top: 5px; min-width: 0; text-align: left; white-space: normal; }
+            .openkb-home-list .view_count {
+                display: block;
+                float: none !important;
+                margin-left: 0;
+                margin-top: 5px;
+                text-align: left;
+                white-space: normal;
+            }
         }
     </style>
 </head>
@@ -331,16 +325,14 @@
                                 {% if trending_articles %}
                                     {% for article in trending_articles %}
                                         <li class="list-group-item">
-                                            <div class="openkb-home-article-row">
-                                                <div class="openkb-home-article-main">
-                                                    <a class="openkb-home-article-title" href="{{ article.url }}">{{ article.title }}</a>
-                                                </div>
-                                                <div class="openkb-home-article-side">
-                                                    <strong>{% trans "Views" %}</strong>: {{ article.views|default:0 }}
-                                                    &nbsp;&middot;&nbsp;
-                                                    <strong>{% trans "Likes" %}</strong>: {{ article.likes|default:0 }}
-                                                </div>
-                                            </div>
+                                            <h4>
+                                                <a href="{{ article.url }}">{{ article.title }}</a>
+                                                <span class="pull-right view_count">
+                                                    <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
+                                                    &nbsp;/&nbsp;<strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
+                                                    {% if article.date %}&nbsp;/&nbsp;<strong>{% trans "Date" %}:</strong> {{ article.date }}{% endif %}
+                                                </span>
+                                            </h4>
                                         </li>
                                     {% endfor %}
                                 {% else %}
@@ -380,16 +372,14 @@
                                 {% if most_liked_articles %}
                                     {% for article in most_liked_articles %}
                                         <li class="list-group-item">
-                                            <div class="openkb-home-article-row">
-                                                <div class="openkb-home-article-main">
-                                                    <a class="openkb-home-article-title" href="{{ article.url }}">{{ article.title }}</a>
-                                                </div>
-                                                <div class="openkb-home-article-side">
-                                                    <strong>{% trans "Likes" %}</strong>: {{ article.likes|default:0 }}
-                                                    &nbsp;&middot;&nbsp;
-                                                    <strong>{% trans "Views" %}</strong>: {{ article.views|default:0 }}
-                                                </div>
-                                            </div>
+                                            <h4>
+                                                <a href="{{ article.url }}">{{ article.title }}</a>
+                                                <span class="pull-right view_count">
+                                                    <strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
+                                                    &nbsp;/&nbsp;<strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
+                                                    {% if article.date %}&nbsp;/&nbsp;<strong>{% trans "Date" %}:</strong> {{ article.date }}{% endif %}
+                                                </span>
+                                            </h4>
                                         </li>
                                     {% endfor %}
                                 {% else %}
@@ -429,14 +419,14 @@
                                 {% if most_recent_articles %}
                                     {% for article in most_recent_articles %}
                                         <li class="list-group-item">
-                                            <div class="openkb-home-article-row">
-                                                <div class="openkb-home-article-main">
-                                                    <a class="openkb-home-article-title" href="{{ article.url }}">{{ article.title }}</a>
-                                                </div>
-                                                <div class="openkb-home-article-side">
-                                                    <strong>{% trans "Updated" %}</strong>: {{ article.date }}
-                                                </div>
-                                            </div>
+                                            <h4>
+                                                <a href="{{ article.url }}">{{ article.title }}</a>
+                                                <span class="pull-right view_count">
+                                                    {% if article.date %}<strong>{% trans "Date" %}:</strong> {{ article.date }}&nbsp;/&nbsp;{% endif %}
+                                                    <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
+                                                    &nbsp;/&nbsp;<strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
+                                                </span>
+                                            </h4>
                                         </li>
                                     {% endfor %}
                                 {% else %}
