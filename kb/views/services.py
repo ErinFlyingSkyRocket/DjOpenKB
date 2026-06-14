@@ -1349,7 +1349,7 @@ def get_openkb_wiki_articles(sort_by_views=False):
     queryset = SuggestedArticle.objects.select_related("owner").filter(
         status=SuggestedArticle.Status.PUBLISHED,
     ).annotate(
-        helpful_vote_count=Count(
+        db_helpful_vote_count=Count(
             "votes",
             filter=Q(votes__value=ArticleVote.VoteValue.UP),
         )
@@ -1362,7 +1362,7 @@ def get_openkb_wiki_articles(sort_by_views=False):
             "type": "Article",
             "date": modified_at,
             "views": suggested.view_count or 0,
-            "likes": getattr(suggested, "helpful_vote_count", 0) or 0,
+            "likes": getattr(suggested, "db_helpful_vote_count", 0) or 0,
             "url": suggested.public_url,
             "path": "",
             "raw_markdown": build_article_markdown(suggested),
