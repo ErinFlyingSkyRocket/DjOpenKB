@@ -7,10 +7,21 @@
         border-radius: 6px;
         background: #f8fafc;
     }
+    .openkb-keyword-suggestions-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 3px;
+    }
     .openkb-keyword-suggestions-title {
         font-weight: 600;
-        margin-bottom: 3px;
         color: #2c3e50;
+    }
+    .openkb-keyword-refresh {
+        padding: 2px 8px;
+        font-size: 12px;
+        line-height: 1.5;
     }
     .openkb-keyword-suggestions-help {
         margin-bottom: 8px;
@@ -52,10 +63,6 @@
         color: #1d5f89;
         outline: none;
     }
-    .openkb-keyword-chip small {
-        color: #6b8799;
-        margin-left: 4px;
-    }
     .openkb-keyword-empty {
         flex: 0 0 auto;
         color: #899aa6;
@@ -66,19 +73,30 @@
         color: #899aa6;
         font-size: 11px;
     }
+    @media (max-width: 767px) {
+        .openkb-keyword-suggestions-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
 </style>
 
 <div class="openkb-keyword-suggestions" id="openkbKeywordSuggestions">
-    <div class="openkb-keyword-suggestions-title">
-        <i class="fa fa-tags" aria-hidden="true"></i> {% trans "Suggested keywords" %}
+    <div class="openkb-keyword-suggestions-header">
+        <div class="openkb-keyword-suggestions-title">
+            <i class="fa fa-tags" aria-hidden="true"></i> {% trans "Suggested keywords" %}
+        </div>
+        <button type="button" class="btn btn-default btn-xs openkb-keyword-refresh" id="openkbKeywordRefresh">
+            <i class="fa fa-refresh" aria-hidden="true"></i> {% trans "Refresh" %}
+        </button>
     </div>
     <div class="openkb-keyword-suggestions-help">
-        {% trans "Suggestions update while you edit the title or article body. They only use keywords manually added to existing published articles. Click a keyword to add it." %}
+        {% trans "Only existing manually-created keywords are suggested. A keyword appears only when that exact keyword is found in the current title or article body." %}
     </div>
     <div class="openkb-keyword-suggestion-chips" id="openkbKeywordSuggestionChips" aria-label="{% trans 'Suggested keyword list' %}">
-        <span class="openkb-keyword-empty">{% trans "Start typing the title or article body to see suggestions." %}</span>
+        <span class="openkb-keyword-empty">{% trans "Start typing the title or article body to see matching existing keywords." %}</span>
     </div>
-    <div class="openkb-keyword-scroll-hint">{% trans "Scroll sideways to view more suggested keywords." %}</div>
+    <div class="openkb-keyword-scroll-hint">{% trans "Scroll sideways to view more matching keywords." %}</div>
 </div>
 
 <script id="openkbKeywordSuggestionCatalog" type="application/json">{{ keyword_suggestion_catalog_json|default:"[]"|safe }}</script>
@@ -87,6 +105,7 @@
     const titleInput = document.getElementById("frm_kb_title");
     const keywordInput = document.getElementById("frm_kb_keywords");
     const chipContainer = document.getElementById("openkbKeywordSuggestionChips");
+    const refreshButton = document.getElementById("openkbKeywordRefresh");
     const catalogScript = document.getElementById("openkbKeywordSuggestionCatalog");
 
     if (!keywordInput || !chipContainer || !catalogScript) {
@@ -132,22 +151,6 @@
             .trim();
     }
 
-    function tokenize(value) {
-        const text = normaliseKeyword(value);
-        const matches = text.match(/[a-z0-9][a-z0-9+#.\-]{1,}/g) || [];
-        const seen = new Set();
-        const tokens = [];
-        matches.forEach(function (token) {
-            token = token.replace(/^[.\-#]+|[.\-#]+$/g, "");
-            if (!token || token.length < 2 || seen.has(token)) {
-                return;
-            }
-            seen.add(token);
-            tokens.push(token);
-        });
-        return tokens;
-    }
-
     function getCurrentKeywords() {
         const keywords = [];
         if (window.jQuery && window.jQuery.fn && window.jQuery(keywordInput).data("bs.tokenfield")) {
@@ -191,60 +194,32 @@
         renderSuggestions();
     }
 
-    function scoreCandidate(candidate, draftText, draftTokens, titleTokens) {
-        const keyword = normaliseKeyword(candidate.keyword);
-        if (!keyword) {
-            return 0;
+    function keywordAppearsInDraft(keyword, draftText) {
+        keyword = normaliseKeyword(keyword);
+        if (!keyword || !draftText) {
+            return false;
         }
 
-        const keywordTokens = tokenize(keyword);
-        let score = 0;
-
-        if (draftText.indexOf(keyword) >= 0) {
-            score += 120;
-        }
-
-        if (keywordTokens.length && keywordTokens.every(function (token) { return draftTokens.has(token); })) {
-            score += 80;
-        }
-
-        keywordTokens.forEach(function (token) {
-            if (titleTokens.has(token)) {
-                score += 25;
-            } else if (draftTokens.has(token)) {
-                score += 14;
-            }
-        });
-
-        let overlap = 0;
-        (candidate.match_terms || []).forEach(function (term) {
-            term = normaliseKeyword(term);
-            if (term && draftTokens.has(term)) {
-                overlap += 1;
-            }
-        });
-
-        score += Math.min(overlap, 8) * 8;
-        score += Math.min(parseInt(candidate.usage_count || 0, 10), 10) * 3;
-
-        return score;
+        // Exact normalized keyword/phrase match only.
+        // Example: keyword "first article" appears only when the draft contains
+        // "first article". Keyword "is" appears only as its own word, not inside "this".
+        const paddedDraft = " " + draftText + " ";
+        const paddedKeyword = " " + keyword + " ";
+        return paddedDraft.indexOf(paddedKeyword) !== -1;
     }
 
     function renderSuggestions() {
         const title = titleInput ? titleInput.value || "" : "";
         const body = getEditorValue();
         const draftText = normaliseKeyword(title + " " + body);
-        const draftTokensArray = tokenize(draftText);
-        const draftTokens = new Set(draftTokensArray);
-        const titleTokens = new Set(tokenize(title));
         const currentKeywords = getCurrentKeywords();
 
         chipContainer.innerHTML = "";
 
-        if (draftTokensArray.length < 2) {
+        if (!draftText) {
             const empty = document.createElement("span");
             empty.className = "openkb-keyword-empty";
-            empty.textContent = "{% trans 'Start typing the title or article body to see suggestions.' %}";
+            empty.textContent = "{% trans 'Start typing the title or article body to see matching existing keywords.' %}";
             chipContainer.appendChild(empty);
             return;
         }
@@ -253,25 +228,24 @@
             .map(function (candidate) {
                 return {
                     keyword: normaliseKeyword(candidate.keyword),
-                    source: "existing",
-                    usage_count: parseInt(candidate.usage_count || 0, 10),
-                    score: scoreCandidate(candidate, draftText, draftTokens, titleTokens)
+                    usage_count: parseInt(candidate.usage_count || 0, 10)
                 };
             })
             .filter(function (candidate) {
-                return candidate.keyword && candidate.score > 0 && !currentKeywords.has(candidate.keyword);
+                return candidate.keyword &&
+                    !currentKeywords.has(candidate.keyword) &&
+                    keywordAppearsInDraft(candidate.keyword, draftText);
             })
             .sort(function (a, b) {
-                if (b.score !== a.score) { return b.score - a.score; }
                 if (b.usage_count !== a.usage_count) { return b.usage_count - a.usage_count; }
                 return a.keyword.localeCompare(b.keyword);
             })
-            .slice(0, 12);
+            .slice(0, 40);
 
         if (!suggestions.length) {
             const empty = document.createElement("span");
             empty.className = "openkb-keyword-empty";
-            empty.textContent = "{% trans 'No matching existing keywords yet. Add a clearer title/body or create a new keyword manually.' %}";
+            empty.textContent = "{% trans 'No existing keywords match the current title or body yet.' %}";
             chipContainer.appendChild(empty);
             return;
         }
@@ -281,11 +255,6 @@
             button.type = "button";
             button.className = "openkb-keyword-chip";
             button.textContent = suggestion.keyword;
-
-            const meta = document.createElement("small");
-            meta.textContent = "{% trans 'used' %} " + suggestion.usage_count;
-            button.appendChild(meta);
-
             button.addEventListener("click", function () {
                 addKeyword(suggestion.keyword);
             });
@@ -316,6 +285,13 @@
     keywordInput.addEventListener("change", debounceRenderSuggestions);
     keywordInput.addEventListener("tokenfield:createdtoken", debounceRenderSuggestions);
     keywordInput.addEventListener("tokenfield:removedtoken", debounceRenderSuggestions);
+
+    if (refreshButton) {
+        refreshButton.addEventListener("click", function () {
+            bindEditorChange();
+            renderSuggestions();
+        });
+    }
 
     const editorTextarea = document.getElementById("editor");
     if (editorTextarea) {

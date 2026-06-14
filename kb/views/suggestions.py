@@ -1,5 +1,5 @@
 from .services import *
-from collections import Counter, defaultdict
+from collections import Counter
 import json
 import re
 from django.utils.translation import gettext as _
@@ -10,10 +10,10 @@ def _normalise_keyword_suggestion(value):
     """Return a clean manually-entered keyword/tag value or an empty string if unsuitable."""
     value = re.sub(r"\s+", " ", (value or "").strip().lower())
     value = re.sub(r"[^a-z0-9+#.\- ]+", "", value).strip(" ,;:/\\")
-    if not value or len(value) < 2 or len(value) > 40:
+    if not value or len(value) < 1 or len(value) > 80:
         return ""
     words = [word for word in value.split() if word]
-    if not words or len(words) > 4:
+    if not words or len(words) > 8:
         return ""
     return value
 
@@ -27,80 +27,33 @@ def _split_keywords_for_suggestions(value):
     return candidates
 
 
-def _tokenize_keyword_suggestion_text(value, limit=120):
-    """Create safe matching tokens without exposing full article bodies to JS.
-
-    No filler-word or stopword filtering is applied because keyword popularity
-    should be controlled by the manually shared keywords from articles.
-    """
-    text = remove_openkb_internal_metadata(value or "")
-    text = re.sub(r"```.*?```", " ", text, flags=re.DOTALL)
-    text = re.sub(r"`([^`]+)`", r"\1", text)
-    text = re.sub(r"!?\[([^\]]+)\]\([^\)]+\)", r"\1", text)
-    text = re.sub(r"<[^>]+>", " ", text)
-    text = re.sub(r"[^a-zA-Z0-9+#.\- ]+", " ", text.lower())
-
-    tokens = []
-    seen = set()
-    for token in re.findall(r"[a-z0-9][a-z0-9+#.\-]{1,}", text):
-        token = token.strip("-.#")
-        if len(token) < 2 or token in seen:
-            continue
-        seen.add(token)
-        tokens.append(token)
-        if len(tokens) >= limit:
-            break
-    return tokens
-
-
 def get_keyword_suggestion_catalog_json():
-    """Return JSON for keyword suggestions on add/edit article forms.
+    """Return existing manually-created keywords for the add/edit article forms.
 
-    Suggestions are based only on keywords that were manually entered on
-    existing published articles. No built-in/predetermined keyword list is used.
-
-    For each existing keyword, compact matching terms are derived from the
-    published articles that already used that keyword. The frontend receives
-    keywords and matching tokens only, not full article bodies.
+    Suggestions are intentionally limited to keywords that already exist on
+    published articles. No predetermined keyword list, filler-word filter,
+    content scoring, or inferred keyword generation is used.
     """
     counts = Counter()
-    match_terms = defaultdict(set)
 
     queryset = (
         SuggestedArticle.objects
         .filter(status=SuggestedArticle.Status.PUBLISHED)
         .exclude(keywords="")
         .order_by("-updated_at")
-        .values("title", "body", "keywords")[:500]
+        .values_list("keywords", flat=True)[:1000]
     )
 
-    for article in queryset:
-        keywords = _split_keywords_for_suggestions(article.get("keywords") or "")
-        if not keywords:
-            continue
-
-        article_terms = _tokenize_keyword_suggestion_text(
-            f"{article.get('title') or ''} {article.get('body') or ''}",
-            limit=80,
-        )
-
-        for keyword in keywords:
+    for keywords_raw in queryset:
+        for keyword in _split_keywords_for_suggestions(keywords_raw):
             counts[keyword] += 1
-            match_terms[keyword].update(_tokenize_keyword_suggestion_text(keyword, limit=10))
-            match_terms[keyword].update(article_terms[:80])
 
-
-    catalog = []
-    for keyword in sorted(counts):
-        catalog.append({
-            "keyword": keyword,
-            "usage_count": counts.get(keyword, 0),
-            "source": "existing",
-            "match_terms": sorted(match_terms[keyword])[:90],
-        })
-
-    catalog.sort(key=lambda item: (item["usage_count"], item["keyword"]), reverse=True)
-    return json.dumps(catalog[:300], ensure_ascii=False)
+    catalog = [
+        {"keyword": keyword, "usage_count": count}
+        for keyword, count in counts.items()
+    ]
+    catalog.sort(key=lambda item: (-item["usage_count"], item["keyword"]))
+    return json.dumps(catalog[:500], ensure_ascii=False)
 
 
 @article_add_required
