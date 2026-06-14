@@ -25,7 +25,7 @@ from django.contrib.auth.views import LoginView
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.db.models import F, Q
+from django.db.models import Count, F, Q
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -1329,6 +1329,11 @@ def get_openkb_wiki_articles(sort_by_views=False):
 
     queryset = SuggestedArticle.objects.select_related("owner").filter(
         status=SuggestedArticle.Status.PUBLISHED,
+    ).annotate(
+        helpful_vote_count=Count(
+            "votes",
+            filter=Q(votes__value=ArticleVote.VoteValue.UP),
+        )
     )
 
     for suggested in queryset:
@@ -1338,6 +1343,7 @@ def get_openkb_wiki_articles(sort_by_views=False):
             "type": "Article",
             "date": modified_at,
             "views": suggested.view_count or 0,
+            "likes": getattr(suggested, "helpful_vote_count", 0) or 0,
             "url": suggested.public_url,
             "path": "",
             "raw_markdown": build_article_markdown(suggested),

@@ -4,6 +4,7 @@ This module is imported back by services.py so existing imports continue to work
 """
 
 from .services import *  # noqa: F401,F403
+from django.utils.translation import gettext as _
 
 def tokenize_search_query(value):
     """Return meaningful lowercase search tokens for ranking and related articles."""
@@ -59,63 +60,68 @@ def build_search_excerpt(raw_markdown, query_words, max_length=180):
     return snippet
 
 
+def build_keyword_search_excerpt(article, max_keywords=8):
+    """Return a short search helper line using article keywords only."""
+    keywords = [keyword for keyword in (article.get("keywords") or []) if keyword]
+    if not keywords:
+        return ""
+
+    keyword_text = ", ".join(keywords[:max_keywords])
+    if len(keywords) > max_keywords:
+        keyword_text += "…"
+    return _("Keywords: %(keywords)s") % {"keywords": keyword_text}
+
+
 def score_article_for_query(article, query):
-    """Score one public article for a user query. Higher means more relevant."""
+    """Score one public article using only the title and article keywords.
+
+    The main site search is intentionally simple: it does not scan the full
+    Markdown body, author name, or internal file path. This keeps results closer
+    to what users expect when they search by article topic or known title.
+    """
     query = (query or "").strip().lower()
     query_words = tokenize_search_query(query)
     if not query and not query_words:
         return 0
 
     title = (article.get("title") or "").lower()
-    raw_markdown = article.get("raw_markdown") or ""
-    body = strip_markdown_for_search(raw_markdown).lower()
     keywords = " ".join(article.get("keywords") or []).lower()
-    path = (article.get("path") or "").lower()
-    author = (article.get("author") or "").lower()
 
     score = 0
 
     if query:
         if title == query:
-            score += 150
+            score += 200
+        elif title.startswith(query):
+            score += 140
         elif query in title:
-            score += 90
-        if query in keywords:
-            score += 70
-        if query in body:
-            score += 35
-        if query in path:
-            score += 15
+            score += 100
+
+        if keywords == query:
+            score += 120
+        elif query in keywords:
+            score += 80
 
     matched_words = 0
     for word in query_words:
         word_score = 0
         if word in title:
-            word_score += 20
+            word_score += 35
         if word in keywords:
-            word_score += 16
-        if word in path:
-            word_score += 7
-        if word in author:
-            word_score += 4
-
-        body_hits = body.count(word)
-        if body_hits:
-            word_score += min(body_hits, 8) * 2
+            word_score += 28
 
         if word_score:
             matched_words += 1
             score += word_score
 
     if query_words and matched_words == len(query_words):
-        score += 30
+        score += 40
     elif query_words and matched_words:
-        score += matched_words * 3
+        score += matched_words * 5
 
-    # Small tie-breakers: stronger source files, viewed articles, then recent files.
-    if (article.get("type") or "").lower() == "openkb source":
-        score += 5
-    score += min(int(article.get("views") or 0), 50)
+    # Tie-breakers only. Search relevance still comes from title/keywords.
+    score += min(int(article.get("likes") or 0), 30)
+    score += min(int(article.get("views") or 0), 30)
 
     return score
 
@@ -132,7 +138,7 @@ def rank_articles_for_query(articles, query):
 
         item = dict(article)
         item["search_score"] = score
-        item["search_excerpt"] = build_search_excerpt(item.get("raw_markdown", ""), query_words)
+        item["search_excerpt"] = build_keyword_search_excerpt(item)
         ranked.append(item)
 
     ranked.sort(

@@ -5,13 +5,28 @@ from django.utils.translation import gettext as _
 
 @main_site_login_required
 def home(request):
-    all_articles = get_openkb_wiki_articles(sort_by_views=True)
-    page_obj = paginate_articles(request, all_articles, per_page=10)
+    all_articles = get_openkb_wiki_articles(sort_by_views=False)
+
+    trending_articles = sorted(
+        all_articles,
+        key=lambda item: (item.get("views") or 0, item.get("likes") or 0, item.get("date") or ""),
+        reverse=True,
+    )[:8]
+    most_liked_articles = sorted(
+        all_articles,
+        key=lambda item: (item.get("likes") or 0, item.get("views") or 0, item.get("date") or ""),
+        reverse=True,
+    )[:8]
+    most_recent_articles = sorted(
+        all_articles,
+        key=lambda item: item.get("date") or "",
+        reverse=True,
+    )[:8]
 
     return render(request, "index.html", {
-        "articles": page_obj.object_list,
-        "page_obj": page_obj,
-        "paginator": page_obj.paginator,
+        "trending_articles": trending_articles,
+        "most_liked_articles": most_liked_articles,
+        "most_recent_articles": most_recent_articles,
         "total_article_count": len(all_articles),
     })
 
@@ -174,7 +189,7 @@ def vote_article(request, article_id):
 
 @main_site_login_required
 def search_article_suggestions(request):
-    """Return a title-only list of matching published articles for the search dropdown."""
+    """Return title/keyword matches for the search dropdown."""
     init_openkb_storage()
 
     query = (request.GET.get("q") or "").strip()[:80]
@@ -199,16 +214,15 @@ def search_article_suggestions(request):
 
 @main_site_login_required
 def search_articles(request):
-    """Search OpenKB articles with relevance ranking instead of plain substring order."""
+    """Search published articles by title and keywords only."""
     init_openkb_storage()
 
     query_original = request.GET.get("q", "").strip()
-    all_public_articles = get_openkb_wiki_articles(sort_by_views=not bool(query_original))
+    if not query_original:
+        return redirect("home")
 
-    if query_original:
-        all_articles = rank_articles_for_query(all_public_articles, query_original)
-    else:
-        all_articles = all_public_articles
+    all_public_articles = get_openkb_wiki_articles(sort_by_views=False)
+    all_articles = rank_articles_for_query(all_public_articles, query_original)
 
     page_obj = paginate_articles(request, all_articles, per_page=20)
 

@@ -144,6 +144,17 @@
             font-weight: 600;
             color: #2c3e50;
         }
+        .openkb-home-columns { margin-top: 30px; }
+        .openkb-home-column .panel { min-height: 355px; }
+        .openkb-home-column .panel-heading { font-weight: 600; }
+        .openkb-home-list { margin-bottom: 0; }
+        .openkb-home-list .list-group-item { padding: 12px 14px; }
+        .openkb-home-article-title { display: block; font-weight: 600; line-height: 1.35; }
+        .openkb-home-article-meta { color: #899aa6; display: block; font-size: 12px; margin-top: 4px; }
+        .openkb-search-excerpt { margin-top: 8px; }
+        @media (max-width: 991px) {
+            .openkb-home-column .panel { min-height: 0; }
+        }
     </style>
 </head>
 
@@ -185,14 +196,14 @@
         </div>
     </div>
 
-    <div>
+    {% if is_search %}
         <div class="row featuredArticles"><div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"></div></div>
 
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             <div class="panel panel-default" style="margin-top: 30px;">
-                <div class="panel-heading">{% if is_search %}{% blocktrans with query=search_query %}::: SEARCH RESULTS FOR "{{ query }}" :::{% endblocktrans %}{% else %}{% trans "::: TRENDING TOPICS :::" %}{% endif %}</div>
+                <div class="panel-heading">{% blocktrans with query=search_query %}::: SEARCH RESULTS FOR "{{ query }}" :::{% endblocktrans %}</div>
                 <div class="panel-body">
-                    {% if is_search %}<p class="openkb-meta">{% blocktrans with count=result_count %}{{ count }} result(s) found from OpenKB files.{% endblocktrans %}</p>{% endif %}
+                    <p class="openkb-meta">{% blocktrans with count=result_count %}{{ count }} result(s) found by matching article title and keywords.{% endblocktrans %}</p>
 
                     <ul class="list-group">
                         {% if articles %}
@@ -201,7 +212,8 @@
                                     <h4>
                                         <a href="{{ article.url }}">{{ article.title }}</a>
                                         <span class="pull-right view_count">
-                                            <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
+                                            <strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
+                                            &nbsp;/&nbsp;<strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
                                             {% if article.date %}&nbsp;/&nbsp;<strong>{% trans "Date" %}:</strong> {{ article.date }}{% endif %}
                                         </span>
                                     </h4>
@@ -211,7 +223,7 @@
                                 </li>
                             {% endfor %}
                         {% else %}
-                            <li class="list-group-item openkb-empty">{% if is_search %}{% trans "No matching OpenKB articles found." %}{% else %}{% trans "No OpenKB articles yet. Add a solution from Suggest." %}{% endif %}</li>
+                            <li class="list-group-item openkb-empty">{% trans "No matching published articles found by title or keywords." %}</li>
                         {% endif %}
                     </ul>
 
@@ -245,7 +257,63 @@
                 </div>
             </div>
         </div>
-    </div>
+    {% else %}
+        <div class="row openkb-home-columns">
+            <div class="col-md-4 openkb-home-column">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><i class="fa fa-line-chart" aria-hidden="true"></i> {% trans "Trending Topics" %}</div>
+                    <ul class="list-group openkb-home-list">
+                        {% if trending_articles %}
+                            {% for article in trending_articles %}
+                                <li class="list-group-item">
+                                    <a class="openkb-home-article-title" href="{{ article.url }}">{{ article.title }}</a>
+                                    <span class="openkb-home-article-meta">{% trans "Views" %}: {{ article.views|default:0 }} &middot; {% trans "Likes" %}: {{ article.likes|default:0 }}</span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item openkb-empty">{% trans "No published articles yet." %}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4 openkb-home-column">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><i class="fa fa-thumbs-up" aria-hidden="true"></i> {% trans "Most Liked" %}</div>
+                    <ul class="list-group openkb-home-list">
+                        {% if most_liked_articles %}
+                            {% for article in most_liked_articles %}
+                                <li class="list-group-item">
+                                    <a class="openkb-home-article-title" href="{{ article.url }}">{{ article.title }}</a>
+                                    <span class="openkb-home-article-meta">{% trans "Likes" %}: {{ article.likes|default:0 }} &middot; {% trans "Views" %}: {{ article.views|default:0 }}</span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item openkb-empty">{% trans "No liked articles yet." %}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4 openkb-home-column">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><i class="fa fa-clock-o" aria-hidden="true"></i> {% trans "Most Recent Articles" %}</div>
+                    <ul class="list-group openkb-home-list">
+                        {% if most_recent_articles %}
+                            {% for article in most_recent_articles %}
+                                <li class="list-group-item">
+                                    <a class="openkb-home-article-title" href="{{ article.url }}">{{ article.title }}</a>
+                                    <span class="openkb-home-article-meta">{% trans "Updated" %}: {{ article.date }}</span>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item openkb-empty">{% trans "No recent articles yet." %}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
 
 <div id="openkbAiChat" class="openkb-ai-chat" aria-hidden="true">
