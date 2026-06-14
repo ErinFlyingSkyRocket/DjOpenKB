@@ -7,6 +7,7 @@ from django.urls import path, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import GroupAdmin as DefaultGroupAdmin, UserAdmin as DefaultUserAdmin
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils import timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
@@ -24,7 +25,6 @@ from .permissions import (
     ROLE_ADMIN_USERS,
     ROLE_DEFINITIONS,
     ROLE_GROUP_NAMES,
-    assign_default_kb_role_group,
     highest_role_group_name,
     role_permissions_summary,
     set_user_direct_kb_permission,
@@ -35,35 +35,6 @@ from .permissions import (
 
 User = get_user_model()
 
-
-def _sync_user_after_role_group_change(user, preferred_role_name=None):
-    """Keep DjOpenKB role membership/staff flags consistent after admin edits.
-
-    DjOpenKB uses one standard role group per user. Direct user permissions are
-    still additive exceptions and are managed from the User admin page.
-    """
-    if not getattr(user, "pk", None):
-        return
-
-    try:
-        keep_role_name = None
-        if (
-            preferred_role_name in ROLE_GROUP_NAMES
-            and user.groups.filter(name=preferred_role_name).exists()
-        ):
-            keep_role_name = preferred_role_name
-        elif user.groups.filter(name__in=ROLE_GROUP_NAMES).exists():
-            keep_role_name = highest_role_group_name(user)
-
-        if keep_role_name:
-            other_role_groups = Group.objects.filter(name__in=ROLE_GROUP_NAMES).exclude(name=keep_role_name)
-            user.groups.remove(*other_role_groups)
-
-        assign_default_kb_role_group(user)
-        sync_user_staff_flags_from_roles(user)
-    except Exception:
-        # Keep the admin save path resilient during initial setup/migrations.
-        return
 
 
 def _set_admin_model_label(model, singular, plural):
@@ -463,18 +434,44 @@ class UserProfileInline(admin.StackedInline):
     effective_permissions.short_description = _("Effective permissions")
 
 
-class GroupUserMembershipInline(admin.TabularInline):
-    """Show and edit users that belong to the selected group."""
+class GroupAdminForm(forms.ModelForm):
+    """Use a left/right searchable selector to manage users inside a group."""
 
-    model = User.groups.through
-    fk_name = "group"
-    autocomplete_fields = ("user",)
-    extra = 1
-    verbose_name = _("Group member")
-    verbose_name_plural = _("Group members")
+    group_users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(),
+        required=False,
+        label=_("Users in this group"),
+        widget=FilteredSelectMultiple(_("users"), is_stacked=False),
+        help_text=_(
+            "Select the users who should belong to this group. Use the filter box on the left to search users, "
+            "move selected users to the right, then save. Removing a user from the right removes only this group membership."
+        ),
+    )
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("user")
+    class Meta:
+        model = Group
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["group_users"].queryset = User.objects.order_by("username", "email")
+        self._original_group_user_ids = set()
+        if self.instance and self.instance.pk:
+            current_users = self.instance.user_set.all()
+            self.fields["group_users"].initial = current_users
+            self._original_group_user_ids = set(current_users.values_list("pk", flat=True))
+
+    def save_m2m(self):
+        super().save_m2m()
+        if self.instance and self.instance.pk and "group_users" in self.cleaned_data:
+            selected_users = self.cleaned_data["group_users"]
+            selected_user_ids = set(selected_users.values_list("pk", flat=True))
+            affected_user_ids = self._original_group_user_ids | selected_user_ids
+
+            self.instance.user_set.set(selected_users)
+
+            for user in User.objects.filter(pk__in=affected_user_ids):
+                sync_user_staff_flags_from_roles(user)
 
 
 try:
@@ -487,7 +484,7 @@ except admin.sites.NotRegistered:
 class GroupAdmin(DefaultGroupAdmin):
     """Make group membership manageable directly from the Group admin page."""
 
-    inlines = (GroupUserMembershipInline,)
+    form = GroupAdminForm
     list_display = ("name", "group_type", "member_count", "member_preview", "role_permissions")
     search_fields = (
         "name",
@@ -502,25 +499,24 @@ class GroupAdmin(DefaultGroupAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("user_set", "permissions")
 
-    def save_formset(self, request, form, formset, change):
-        group = form.instance
-        affected_user_ids = set()
-        if group and getattr(group, "pk", None) and formset.model is User.groups.through:
-            affected_user_ids.update(group.user_set.values_list("pk", flat=True))
+    def get_fieldsets(self, request, obj=None):
+        role_fields = ("name", "permissions")
+        if obj and obj.name in ROLE_GROUP_NAMES:
+            role_fields = ("name", "djopenkb_role_guide", "permissions")
 
-        super().save_formset(request, form, formset, change)
-
-        if group and getattr(group, "pk", None) and formset.model is User.groups.through:
-            affected_user_ids.update(group.user_set.values_list("pk", flat=True))
-            preferred_role_name = group.name if group.name in ROLE_GROUP_NAMES else None
-            for user in User.objects.filter(pk__in=affected_user_ids):
-                _sync_user_after_role_group_change(user, preferred_role_name=preferred_role_name)
-
-    def get_fields(self, request, obj=None):
-        fields = list(super().get_fields(request, obj))
-        if obj and obj.name in ROLE_GROUP_NAMES and "djopenkb_role_guide" not in fields:
-            fields.insert(1, "djopenkb_role_guide")
-        return fields
+        return (
+            (None, {"fields": role_fields}),
+            (
+                _("Group members"),
+                {
+                    "fields": ("group_users",),
+                    "description": _(
+                        "Use this searchable left/right list to add or remove users from this group. "
+                        "Users on the right are members of this group. Users on the left are available users."
+                    ),
+                },
+            ),
+        )
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
@@ -549,7 +545,7 @@ class GroupAdmin(DefaultGroupAdmin):
             _("Default permissions:"),
             permission_text,
             _(
-                "Use the Group members section below to add or remove users from this role. "
+                "Use the Group members selector below to add or remove users from this role. "
                 "For one-off exceptions, edit the specific user and tick the direct DjOpenKB permission checkboxes instead. "
                 "New non-admin users are automatically placed into Regular User when their account is created."
             ),
@@ -598,7 +594,6 @@ class GroupAdmin(DefaultGroupAdmin):
         return text
 
     role_permissions.short_description = _("Permissions")
-
 
 
 try:
@@ -727,14 +722,6 @@ class UserAdmin(DefaultUserAdmin):
                 profile.save(update_fields=["account_type", "updated_at"])
 
         sync_user_staff_flags_from_roles(obj)
-
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-        # The built-in User form saves group memberships after save_model().
-        # Re-apply the default role here so a newly-created user is not left
-        # without a DjOpenKB role when the Groups field is left blank.
-        user = form.instance
-        _sync_user_after_role_group_change(user)
 
     def main_site_account_type(self, obj):
         profile = getattr(obj, "kb_profile", None)
