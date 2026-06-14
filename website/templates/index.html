@@ -167,7 +167,10 @@
         .openkb-home-list .list-group-item { padding: 13px 16px; }
         .openkb-home-article-title { display: block; font-weight: 600; line-height: 1.35; }
         .openkb-home-article-meta { color: #899aa6; display: block; font-size: 12px; margin-top: 4px; }
-        .openkb-tab-count { color: #899aa6; font-weight: normal; margin-left: 4px; }
+        .openkb-home-tab-footer { padding: 14px 16px 16px; border-top: 1px solid #eee; background: #fff; }
+        .openkb-home-tab-meta { color: #899aa6; font-size: 12px; margin-bottom: 10px; text-align: center; }
+        .openkb-home-tab-pagination { text-align: center; }
+        .openkb-home-tab-pagination .pagination { margin: 0; }
         .openkb-search-excerpt { margin-top: 8px; }
         @media (max-width: 767px) {
             .openkb-home-tabs-heading .nav-tabs > li { float: none; display: block; }
@@ -281,29 +284,26 @@
                 <div class="panel panel-default openkb-home-tabs-panel">
                     <div class="panel-heading openkb-home-tabs-heading">
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active">
+                            <li role="presentation" class="{% if active_home_tab == 'trending' %}active{% endif %}">
                                 <a href="#openkb-tab-trending" aria-controls="openkb-tab-trending" role="tab" data-toggle="tab">
                                     <i class="fa fa-line-chart" aria-hidden="true"></i> {% trans "Trending Topics" %}
-                                    <span class="openkb-tab-count">({{ trending_articles|length }})</span>
                                 </a>
                             </li>
-                            <li role="presentation">
+                            <li role="presentation" class="{% if active_home_tab == 'liked' %}active{% endif %}">
                                 <a href="#openkb-tab-liked" aria-controls="openkb-tab-liked" role="tab" data-toggle="tab">
                                     <i class="fa fa-thumbs-up" aria-hidden="true"></i> {% trans "Most Liked" %}
-                                    <span class="openkb-tab-count">({{ most_liked_articles|length }})</span>
                                 </a>
                             </li>
-                            <li role="presentation">
+                            <li role="presentation" class="{% if active_home_tab == 'recent' %}active{% endif %}">
                                 <a href="#openkb-tab-recent" aria-controls="openkb-tab-recent" role="tab" data-toggle="tab">
                                     <i class="fa fa-clock-o" aria-hidden="true"></i> {% trans "Most Recent Articles" %}
-                                    <span class="openkb-tab-count">({{ most_recent_articles|length }})</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
 
                     <div class="tab-content openkb-home-tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="openkb-tab-trending">
+                        <div role="tabpanel" class="tab-pane {% if active_home_tab == 'trending' %}active{% endif %}" id="openkb-tab-trending">
                             <ul class="list-group openkb-home-list">
                                 {% if trending_articles %}
                                     {% for article in trending_articles %}
@@ -316,9 +316,35 @@
                                     <li class="list-group-item openkb-empty">{% trans "No published articles yet." %}</li>
                                 {% endif %}
                             </ul>
+                            <div class="openkb-home-tab-footer">
+                                <div class="openkb-home-tab-meta">
+                                    {% blocktrans with number=trending_page_obj.number num_pages=trending_page_obj.paginator.num_pages start=trending_page_obj.start_index end=trending_page_obj.end_index count=trending_page_obj.paginator.count %}Page {{ number }} of {{ num_pages }} · Showing {{ start }}–{{ end }} of {{ count }} article(s){% endblocktrans %}
+                                </div>
+                                {% if trending_page_obj.paginator.num_pages > 1 %}
+                                    <nav class="openkb-home-tab-pagination" aria-label="{% trans 'Trending article pages' %}">
+                                        <ul class="pagination pagination-sm">
+                                            {% if trending_page_obj.has_previous %}
+                                                <li><a href="?tab=trending&trending_page=1">&laquo; {% trans "First" %}</a></li>
+                                                <li><a href="?tab=trending&trending_page={{ trending_page_obj.previous_page_number }}">&lsaquo; {% trans "Previous" %}</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                                                <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
+                                            {% endif %}
+                                            <li class="active"><span>{% blocktrans with number=trending_page_obj.number num_pages=trending_page_obj.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}</span></li>
+                                            {% if trending_page_obj.has_next %}
+                                                <li><a href="?tab=trending&trending_page={{ trending_page_obj.next_page_number }}">{% trans "Next" %} &rsaquo;</a></li>
+                                                <li><a href="?tab=trending&trending_page={{ trending_page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                                                <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div role="tabpanel" class="tab-pane" id="openkb-tab-liked">
+                        <div role="tabpanel" class="tab-pane {% if active_home_tab == 'liked' %}active{% endif %}" id="openkb-tab-liked">
                             <ul class="list-group openkb-home-list">
                                 {% if most_liked_articles %}
                                     {% for article in most_liked_articles %}
@@ -331,9 +357,35 @@
                                     <li class="list-group-item openkb-empty">{% trans "No liked articles yet." %}</li>
                                 {% endif %}
                             </ul>
+                            <div class="openkb-home-tab-footer">
+                                <div class="openkb-home-tab-meta">
+                                    {% blocktrans with number=most_liked_page_obj.number num_pages=most_liked_page_obj.paginator.num_pages start=most_liked_page_obj.start_index end=most_liked_page_obj.end_index count=most_liked_page_obj.paginator.count %}Page {{ number }} of {{ num_pages }} · Showing {{ start }}–{{ end }} of {{ count }} article(s){% endblocktrans %}
+                                </div>
+                                {% if most_liked_page_obj.paginator.num_pages > 1 %}
+                                    <nav class="openkb-home-tab-pagination" aria-label="{% trans 'Most liked article pages' %}">
+                                        <ul class="pagination pagination-sm">
+                                            {% if most_liked_page_obj.has_previous %}
+                                                <li><a href="?tab=liked&liked_page=1">&laquo; {% trans "First" %}</a></li>
+                                                <li><a href="?tab=liked&liked_page={{ most_liked_page_obj.previous_page_number }}">&lsaquo; {% trans "Previous" %}</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                                                <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
+                                            {% endif %}
+                                            <li class="active"><span>{% blocktrans with number=most_liked_page_obj.number num_pages=most_liked_page_obj.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}</span></li>
+                                            {% if most_liked_page_obj.has_next %}
+                                                <li><a href="?tab=liked&liked_page={{ most_liked_page_obj.next_page_number }}">{% trans "Next" %} &rsaquo;</a></li>
+                                                <li><a href="?tab=liked&liked_page={{ most_liked_page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                                                <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <div role="tabpanel" class="tab-pane" id="openkb-tab-recent">
+                        <div role="tabpanel" class="tab-pane {% if active_home_tab == 'recent' %}active{% endif %}" id="openkb-tab-recent">
                             <ul class="list-group openkb-home-list">
                                 {% if most_recent_articles %}
                                     {% for article in most_recent_articles %}
@@ -346,6 +398,32 @@
                                     <li class="list-group-item openkb-empty">{% trans "No recent articles yet." %}</li>
                                 {% endif %}
                             </ul>
+                            <div class="openkb-home-tab-footer">
+                                <div class="openkb-home-tab-meta">
+                                    {% blocktrans with number=most_recent_page_obj.number num_pages=most_recent_page_obj.paginator.num_pages start=most_recent_page_obj.start_index end=most_recent_page_obj.end_index count=most_recent_page_obj.paginator.count %}Page {{ number }} of {{ num_pages }} · Showing {{ start }}–{{ end }} of {{ count }} article(s){% endblocktrans %}
+                                </div>
+                                {% if most_recent_page_obj.paginator.num_pages > 1 %}
+                                    <nav class="openkb-home-tab-pagination" aria-label="{% trans 'Most recent article pages' %}">
+                                        <ul class="pagination pagination-sm">
+                                            {% if most_recent_page_obj.has_previous %}
+                                                <li><a href="?tab=recent&recent_page=1">&laquo; {% trans "First" %}</a></li>
+                                                <li><a href="?tab=recent&recent_page={{ most_recent_page_obj.previous_page_number }}">&lsaquo; {% trans "Previous" %}</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                                                <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
+                                            {% endif %}
+                                            <li class="active"><span>{% blocktrans with number=most_recent_page_obj.number num_pages=most_recent_page_obj.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}</span></li>
+                                            {% if most_recent_page_obj.has_next %}
+                                                <li><a href="?tab=recent&recent_page={{ most_recent_page_obj.next_page_number }}">{% trans "Next" %} &rsaquo;</a></li>
+                                                <li><a href="?tab=recent&recent_page={{ most_recent_page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                                                <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

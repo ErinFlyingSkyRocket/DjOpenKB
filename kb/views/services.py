@@ -1465,10 +1465,14 @@ def format_profile_display_name(user):
     return full_name or user.get_username()
 
 
-def paginate_articles(request, articles, per_page=20):
-    """Paginate article lists safely for the index/search page."""
+def paginate_articles(request, articles, per_page=20, page_param="page"):
+    """Paginate article lists safely for the index/search page.
+
+    page_param lets homepage tabs keep separate pagination states while the
+    normal search page continues using the default ?page= parameter.
+    """
     paginator = Paginator(articles, per_page)
-    page_number = request.GET.get("page", 1)
+    page_number = request.GET.get(page_param, 1)
 
     try:
         page_obj = paginator.page(page_number)

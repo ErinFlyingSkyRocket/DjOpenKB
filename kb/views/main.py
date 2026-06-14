@@ -8,30 +8,56 @@ def home(request):
     all_articles = get_openkb_wiki_articles(sort_by_views=False)
     article_limit = get_articles_per_page()
 
-    trending_articles = sorted(
+    active_home_tab = request.GET.get("tab") or "trending"
+    if active_home_tab not in {"trending", "liked", "recent"}:
+        active_home_tab = "trending"
+
+    trending_articles_all = sorted(
         all_articles,
         key=lambda item: (item.get("views") or 0, item.get("likes") or 0, item.get("date") or ""),
         reverse=True,
-    )[:article_limit]
-    most_liked_articles = sorted(
+    )
+    most_liked_articles_all = sorted(
         all_articles,
         key=lambda item: (item.get("likes") or 0, item.get("views") or 0, item.get("date") or ""),
         reverse=True,
-    )[:article_limit]
-    most_recent_articles = sorted(
+    )
+    most_recent_articles_all = sorted(
         all_articles,
         key=lambda item: item.get("date") or "",
         reverse=True,
-    )[:article_limit]
+    )
+
+    trending_page_obj = paginate_articles(
+        request,
+        trending_articles_all,
+        per_page=article_limit,
+        page_param="trending_page",
+    )
+    most_liked_page_obj = paginate_articles(
+        request,
+        most_liked_articles_all,
+        per_page=article_limit,
+        page_param="liked_page",
+    )
+    most_recent_page_obj = paginate_articles(
+        request,
+        most_recent_articles_all,
+        per_page=article_limit,
+        page_param="recent_page",
+    )
 
     return render(request, "index.html", {
-        "trending_articles": trending_articles,
-        "most_liked_articles": most_liked_articles,
-        "most_recent_articles": most_recent_articles,
+        "trending_articles": trending_page_obj.object_list,
+        "most_liked_articles": most_liked_page_obj.object_list,
+        "most_recent_articles": most_recent_page_obj.object_list,
+        "trending_page_obj": trending_page_obj,
+        "most_liked_page_obj": most_liked_page_obj,
+        "most_recent_page_obj": most_recent_page_obj,
+        "active_home_tab": active_home_tab,
         "article_limit": article_limit,
         "total_article_count": len(all_articles),
     })
-
 
 @main_site_login_required
 def article_detail(request, article_id):
