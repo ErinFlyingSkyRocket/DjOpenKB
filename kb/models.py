@@ -226,7 +226,12 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        db_constraint=False,
+        help_text=_(
+            "Historical user ID snapshot only. This relation intentionally does not enforce "
+            "a database constraint because audit logs must remain immutable when users are deleted."
+        ),
+        on_delete=models.DO_NOTHING,
         related_name="auth_activity_logs",
     )
     username = models.CharField(max_length=255, blank=True, db_index=True)
@@ -242,9 +247,9 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         verbose_name = _("Authentication activity log")
         verbose_name_plural = _("Authentication activity logs")
         indexes = [
-            models.Index(fields=["-created_at", "event_type"]),
-            models.Index(fields=["ip_address", "-created_at"]),
-            models.Index(fields=["username", "-created_at"]),
+            models.Index(fields=["-created_at", "event_type"], name="kb_authacti_created_9c7968_idx"),
+            models.Index(fields=["ip_address", "-created_at"], name="kb_authacti_ip_addr_f1d0bb_idx"),
+            models.Index(fields=["username", "-created_at"], name="kb_authacti_usernam_0b8fd5_idx"),
         ]
 
     def __str__(self):
@@ -605,7 +610,12 @@ class ArticleImageUploadLog(models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        db_constraint=False,
+        help_text=_(
+            "Historical uploader ID snapshot only. The username/email snapshot fields keep the log readable "
+            "after the user account is changed or deleted."
+        ),
+        on_delete=models.DO_NOTHING,
         related_name="uploaded_article_images",
     )
     uploader_username_snapshot = models.CharField(max_length=150, blank=True, db_index=True)
@@ -620,7 +630,12 @@ class ArticleImageUploadLog(models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        db_constraint=False,
+        help_text=_(
+            "Historical deleter ID snapshot only. Image deletion activity is appended into ActivityLog "
+            "rather than editing this upload log row."
+        ),
+        on_delete=models.DO_NOTHING,
         related_name="deleted_article_images",
     )
     delete_reason = models.CharField(max_length=30, choices=DeleteReason.choices, blank=True)
@@ -630,9 +645,9 @@ class ArticleImageUploadLog(models.Model):
         verbose_name = _("Article image upload log")
         verbose_name_plural = _("Article image upload logs")
         indexes = [
-            models.Index(fields=["filename"]),
-            models.Index(fields=["uploader_username_snapshot", "-uploaded_at"]),
-            models.Index(fields=["-uploaded_at"]),
+            models.Index(fields=["filename"], name="kb_articlei_filenam_c7f6d4_idx"),
+            models.Index(fields=["uploader_username_snapshot", "-uploaded_at"], name="kb_articlei_uploade_6e1e42_idx"),
+            models.Index(fields=["-uploaded_at"], name="kb_articlei_uploade_5d2a0f_idx"),
         ]
 
     def __str__(self):
@@ -716,7 +731,12 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        db_constraint=False,
+        help_text=_(
+            "Historical user ID snapshot only. This relation intentionally does not enforce "
+            "a database constraint because audit logs must remain immutable when users are deleted."
+        ),
+        on_delete=models.DO_NOTHING,
         related_name="activity_logs",
     )
     username = models.CharField(max_length=255, blank=True, db_index=True)
@@ -775,11 +795,11 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         verbose_name = _("Activity log")
         verbose_name_plural = _("Activity logs")
         indexes = [
-            models.Index(fields=["-created_at", "event_type"]),
-            models.Index(fields=["username", "-created_at"]),
-            models.Index(fields=["article_title", "-created_at"]),
+            models.Index(fields=["-created_at", "event_type"], name="kb_activity_created_34f83d_idx"),
+            models.Index(fields=["username", "-created_at"], name="kb_activity_usernam_e4c3d4_idx"),
+            models.Index(fields=["article_title", "-created_at"], name="kb_activity_article_0387e8_idx"),
             models.Index(fields=["article_owner_username_snapshot", "-created_at"], name="kb_act_owner_cr_idx"),
-            models.Index(fields=["ip_address", "-created_at"]),
+            models.Index(fields=["ip_address", "-created_at"], name="kb_activity_ip_addr_709e8b_idx"),
         ]
 
     def __str__(self):
