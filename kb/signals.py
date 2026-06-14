@@ -60,15 +60,32 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 
 @receiver(m2m_changed, sender=get_user_model().groups.through)
-def sync_user_role_flags(sender, instance, action, **kwargs):
-    """Update is_staff when DjOpenKB role groups are changed in Django Admin."""
+def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, **kwargs):
+    """Update staff/default-role state when DjOpenKB group membership changes.
+
+    The signal can be fired from the User side (user.groups.add/remove) or from
+    the Group side (group.user_set.add/remove). Handle both so Admin Users group
+    membership keeps Django staff access in sync no matter where it is edited.
+    """
     if action not in {"post_add", "post_remove", "post_clear"}:
         return
 
     try:
-        from .permissions import sync_user_staff_flags_from_roles
+        from django.contrib.auth.models import Group
 
-        sync_user_staff_flags_from_roles(instance)
+        from .permissions import assign_default_kb_role_group, sync_user_staff_flags_from_roles
+
+        UserModel = get_user_model()
+        users = []
+
+        if isinstance(instance, UserModel):
+            users = [instance]
+        elif isinstance(instance, Group) and pk_set:
+            users = list(UserModel.objects.filter(pk__in=pk_set))
+
+        for user in users:
+            assign_default_kb_role_group(user)
+            sync_user_staff_flags_from_roles(user)
     except Exception:
         pass
 
