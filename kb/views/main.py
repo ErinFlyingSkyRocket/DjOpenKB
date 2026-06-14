@@ -224,11 +224,10 @@ def search_article_suggestions(request):
     if len(query) < 2:
         return JsonResponse({"results": []})
 
-    public_articles = get_openkb_wiki_articles(sort_by_views=False)
-    ranked_articles = rank_articles_for_query(public_articles, query)[:8]
+    matched_articles = search_public_articles_by_title_keywords(query, limit=8)
 
     results = []
-    for article in ranked_articles:
+    for article in matched_articles:
         url = article.get("url") or "#"
         if not isinstance(url, str) or not url.startswith("/") or url.startswith("//"):
             url = "#"
@@ -249,8 +248,7 @@ def search_articles(request):
     if not query_original:
         return redirect("home")
 
-    all_public_articles = get_openkb_wiki_articles(sort_by_views=False)
-    all_articles = rank_articles_for_query(all_public_articles, query_original)
+    all_articles = search_public_articles_by_title_keywords(query_original)
 
     page_obj = paginate_articles(request, all_articles, per_page=get_articles_per_page())
 
@@ -261,5 +259,4 @@ def search_articles(request):
         "search_query": query_original,
         "is_search": bool(query_original),
         "result_count": len(all_articles),
-        "total_article_count": len(all_public_articles),
     })

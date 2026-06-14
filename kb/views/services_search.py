@@ -72,84 +72,114 @@ def build_keyword_search_excerpt(article, max_keywords=8):
     return _("Keywords: %(keywords)s") % {"keywords": keyword_text}
 
 
-def score_article_for_query(article, query):
-    """Score one public article using only the title and article keywords.
+def _normalize_article_search_text(value):
+    """Normalize title/keyword values for simple contains checks."""
+    return re.sub(r"\s+", " ", (value or "").strip().lower())
 
-    The main site search is intentionally simple: it does not scan the full
-    Markdown body, author name, or internal file path. This keeps results closer
-    to what users expect when they search by article topic or known title.
+
+def article_matches_title_or_keywords(article, query):
+    """Return True only when the query appears in the article title or keywords.
+
+    This intentionally does not inspect the article body, author, generated
+    Markdown, OpenKB paths, or any internal content. The public search should be
+    predictable: title and keyword fields only.
     """
-    query = (query or "").strip().lower()
+    query = _normalize_article_search_text(query)
     query_words = tokenize_search_query(query)
     if not query and not query_words:
-        return 0
+        return False
 
-    title = (article.get("title") or "").lower()
-    keywords = " ".join(article.get("keywords") or []).lower()
+    title = _normalize_article_search_text(article.get("title"))
+    keywords = _normalize_article_search_text(" ".join(article.get("keywords") or []))
+    searchable_text = f"{title} {keywords}".strip()
 
-    score = 0
+    if query and query in searchable_text:
+        return True
 
-    if query:
-        if title == query:
-            score += 200
-        elif title.startswith(query):
-            score += 140
-        elif query in title:
-            score += 100
+    if query_words:
+        return all(word in searchable_text for word in query_words)
 
-        if keywords == query:
-            score += 120
-        elif query in keywords:
-            score += 80
+    return False
 
-    matched_words = 0
-    for word in query_words:
-        word_score = 0
-        if word in title:
-            word_score += 35
-        if word in keywords:
-            word_score += 28
 
-        if word_score:
-            matched_words += 1
-            score += word_score
+def build_search_article_card(suggested):
+    """Build a lightweight public search result card without reading article body."""
+    modified_at = timezone.localtime(suggested.updated_at).strftime("%Y-%m-%d %H:%M")
+    keywords = suggested.keyword_list
+    card = {
+        "title": suggested.title,
+        "type": "Article",
+        "date": modified_at,
+        "views": suggested.view_count or 0,
+        "likes": getattr(suggested, "db_helpful_vote_count", 0) or 0,
+        "url": suggested.public_url,
+        "path": "",
+        "raw_markdown": "",
+        "author": suggested.author_display,
+        "keywords": keywords,
+        "suggested_id": suggested.pk,
+    }
+    card["search_excerpt"] = build_keyword_search_excerpt(card)
+    return card
 
-    if query_words and matched_words == len(query_words):
-        score += 40
-    elif query_words and matched_words:
-        score += matched_words * 5
 
-    # Tie-breakers only. Search relevance still comes from title/keywords.
-    score += min(int(article.get("likes") or 0), 30)
-    score += min(int(article.get("views") or 0), 30)
+def search_public_articles_by_title_keywords(query, limit=None):
+    """Return published articles matching title/keywords only, newest first.
 
-    return score
+    No relevance score is calculated and the article body is not read. The
+    database filter only checks SuggestedArticle.title and SuggestedArticle.keywords.
+    """
+    query = (query or "").strip()[:120]
+    query_words = tokenize_search_query(query)
+    if not query and not query_words:
+        return []
+
+    full_query_filter = Q(title__icontains=query) | Q(keywords__icontains=query) if query else Q(pk__in=[])
+
+    token_filter = Q()
+    if query_words:
+        for word in query_words:
+            token_filter &= (Q(title__icontains=word) | Q(keywords__icontains=word))
+
+    final_filter = full_query_filter | token_filter
+
+    queryset = (
+        SuggestedArticle.objects.select_related("owner")
+        .filter(status=SuggestedArticle.Status.PUBLISHED)
+        .filter(final_filter)
+        .annotate(
+            db_helpful_vote_count=Count(
+                "votes",
+                filter=Q(votes__value=ArticleVote.VoteValue.UP),
+            )
+        )
+        .order_by("-updated_at", "-pk")
+    )
+
+    if limit is not None:
+        queryset = queryset[:limit]
+
+    return [build_search_article_card(suggested) for suggested in queryset]
 
 
 def rank_articles_for_query(articles, query):
-    """Return matching articles sorted by relevance for the search page."""
-    query_words = tokenize_search_query(query)
-    ranked = []
+    """Backward-compatible wrapper for simple title/keyword filtering.
 
+    Older views called this ranking helper. It now only filters by title and
+    keywords, removes score-based ranking, and returns newest matches first.
+    """
+    matched = []
     for article in articles:
-        score = score_article_for_query(article, query)
-        if score <= 0:
+        if not article_matches_title_or_keywords(article, query):
             continue
-
         item = dict(article)
-        item["search_score"] = score
+        item.pop("search_score", None)
         item["search_excerpt"] = build_keyword_search_excerpt(item)
-        ranked.append(item)
+        matched.append(item)
 
-    ranked.sort(
-        key=lambda item: (
-            item.get("search_score") or 0,
-            item.get("views") or 0,
-            item.get("date") or "",
-        ),
-        reverse=True,
-    )
-    return ranked
+    matched.sort(key=lambda item: item.get("date") or "", reverse=True)
+    return matched
+
 
 
 def _article_identity_matches(left, right):

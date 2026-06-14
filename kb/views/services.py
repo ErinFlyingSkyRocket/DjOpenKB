@@ -1597,7 +1597,8 @@ from .services_search import (  # noqa: F401
     tokenize_search_query,
     strip_markdown_for_search,
     build_search_excerpt,
-    score_article_for_query,
+    article_matches_title_or_keywords,
+    search_public_articles_by_title_keywords,
     rank_articles_for_query,
     get_contextual_related_articles,
 )
