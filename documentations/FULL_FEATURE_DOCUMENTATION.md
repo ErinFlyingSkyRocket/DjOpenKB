@@ -24,17 +24,36 @@ The Docker Compose stack contains the following main services:
 
 ## 3. User Types and Permission Summary
 
-DjOpenKB separates users by both authentication source and permission level. To keep the permission model clear, the main website roles can be grouped into three practical access levels: anonymous visitors, authenticated users, and main-site administrators. Local and Active Directory accounts may share similar website permissions, but their account management rules are different.
+DjOpenKB now uses a login-only main website model. Anonymous visitors are not allowed to browse the wiki, search articles, use the AI chatbot, vote, upload files, or access admin tools. The root URL shows the login page. Other protected paths return 404 for anonymous users to reduce route discovery value.
 
 ### 3.1 Main Website Access Levels
 
 | Access level | Applies to | Main permissions | Restrictions |
 |---|---|---|---|
-| Anonymous visitor | Not signed in | Can browse published articles and use the OpenKB AI chatbot. | Cannot vote, suggest articles, edit content, access profile features, or use admin tools. |
-| Authenticated user | Local user or AD / LDAP user | Can browse published articles, vote on articles, suggest articles, and edit their own draft or pending failed articles. | Cannot approve/publish other users' articles or access admin tools. |
-| Main-site administrator | Local admin or AD / LDAP admin | Can access admin tools, review pending articles, publish/return suggested articles, manage orphan articles, run import/export, and perform maintenance actions. | Django admin access still requires the correct Django staff/superuser/admin permission. |
+| Anonymous visitor | Not signed in | Can access only the login page, language endpoint, and required static/login support assets. | Cannot browse articles, search, vote, suggest content, use AI, access profiles, or use admin tools. Protected paths return 404. |
+| Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. |
+| Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. |
+| Article Manager | Logged-in user in `Article Manager` group | Can view published articles and manage pending articles/pending updates, including approve/reject actions. | Cannot create new articles by group default unless separately granted writer/admin permission. |
+| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Can view, create, manage approvals, use DjOpenKB admin tools, and access Django Admin when staff/admin checks and network restrictions pass. | Should be assigned only to trusted administrators. |
 
-### 3.2 Account Source Differences
+### 3.2 Group Baseline and Direct User Permission Add-ons
+
+Groups provide the baseline role. Django Admin also shows direct user permission checkboxes for one-off exceptions:
+
+```text
+Can view articles
+Can create articles
+Can approve/manage articles
+Can use admin tools
+```
+
+These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group.
+
+### 3.3 Default Group Assignment
+
+Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. Admin/staff/superuser accounts are aligned with `Admin Users` where applicable.
+
+### 3.4 Account Source Differences
 
 The `UserProfile` model stores the account source, so the system does not guess whether a user is local or AD-managed based on email domain alone. This prevents a local user with an email such as `alice@openkb.local` from being incorrectly treated as an AD account.
 
@@ -43,24 +62,11 @@ The `UserProfile` model stores the account source, so the system does not guess 
 | Local account | Django | Django/local admin | Allowed with fresh MFA/OTP | Allowed with fresh MFA/OTP |
 | Active Directory account | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
 
-### 3.3 Account Types
+### 3.5 Role Enforcement
 
-The profile layer tracks the main account type for permission and display purposes.
+Main-site admin tools require explicit admin checks. A normal `staff` flag alone is not treated as sufficient for main-site admin tools unless the user also has the correct DjOpenKB admin permission or is a superuser.
 
-| Account type | Source | Website role | Purpose |
-|---|---|---|---|
-| `User` | Local Django account | Authenticated user | Normal local website contributor. |
-| `Admin` | Local Django account | Main-site administrator | Local administrator with main-site admin privileges. |
-| `LDAP user` | Active Directory / LDAPS | Authenticated user | Domain-authenticated contributor. |
-| `LDAP admin` | Active Directory / LDAPS | Main-site administrator | Domain-authenticated administrator with main-site admin privileges. |
-
-Admins can also allow or block a user's main-site access through Django admin.
-
-### 3.4 Role Enforcement
-
-Main-site admin tools require explicit admin checks. A normal `staff` flag alone is not treated as sufficient for main-site admin tools unless the user also has the correct main-site admin profile or superuser permissions.
-
-Non-admin users receive a 404 response for protected main-site admin tools to reduce route discovery usefulness.
+Non-admin users receive a 404 response for protected main-site admin tools. Anonymous users also receive 404 for normal protected routes instead of being shown application content.
 
 ## 4. Authentication and Account Management
 
@@ -282,23 +288,67 @@ The tool supports:
 
 The assign-user field supports typing/searching by username or email so the admin does not need to scroll through a very large user list.
 
-## 10. Article Browsing, Search, Views, and Trending
+## 10. Article Browsing, Search, Views, Voting, and Homepage Tabs
 
-### 10.1 Article Listing and Search
+### 10.1 Login-Protected Article Listing
 
-The main website allows users to browse and search published articles. Draft, pending, pending failed, and unapproved pending-update content are not publicly visible unless the current user owns the article or has admin permission.
+The main website is login protected. Published article listing, article search, article details, voting, and the AI chatbot are available only after authentication and MFA completion where applicable.
 
-Search bars on the home and article pages can show a title-only dropdown of possible published article matches while the user types. The dropdown displays clickable article titles only, while the normal search button and Enter key still perform a full article search.
+Draft, pending, pending failed, and unapproved pending-update content are not publicly visible unless the current user owns the article or has the required manager/admin permission.
 
-### 10.2 View Counts
+### 10.2 Simple Title and Keyword Search
+
+The main search intentionally stays simple and predictable. It matches only:
+
+```text
+published article title
+published article keywords manually entered by users/admins
+```
+
+It does not search article body content, Markdown files, author names, OpenKB paths, internal metadata, or relevance scores. This reduces unnecessary scanning and makes search behaviour easier for users to understand.
+
+### 10.3 Search Suggestions
+
+The search bar suggestion dropdown uses the same title/keyword-only search logic. It returns clickable published article titles only and does not expose internal paths or article body excerpts.
+
+### 10.4 Homepage Article Tabs
+
+The homepage article panel uses one container with tabs:
+
+```text
+Trending Topics
+Most Liked
+Most Recent Articles
+```
+
+Each tab has pagination and shows the current page, total pages, and total article count. The article count per page is controlled through the admin site setting `Articles per page`.
+
+Sorting behaviour:
+
+| Tab | Sort order |
+|---|---|
+| Trending Topics | Highest views first, then likes, then latest update |
+| Most Liked | Highest likes first, then views, then latest update |
+| Most Recent Articles | Latest updated/published articles first |
+
+### 10.5 Article Count Site Setting
+
+Admins can configure how many articles appear per page from Django Admin → KB → Site settings.
+
+```text
+Articles per page
+Minimum: 5
+Maximum: 100
+Default: 10
+```
+
+The setting is validated in admin and also clamped at runtime for safety.
+
+### 10.6 View Counts
 
 Each article stores a `view_count`. Views are tracked per user session to avoid simply refreshing the same article repeatedly to increase the count.
 
-### 10.3 Trending Articles
-
-Trending articles are based on higher view counts. This allows commonly accessed articles to appear more prominently.
-
-### 10.4 Voting
+### 10.7 Voting
 
 Signed-in users can vote on published articles:
 
@@ -308,6 +358,24 @@ Signed-in users can vote on published articles:
 - Users can change or remove their vote.
 
 Helpful counts are visible to users. Admins can review vote details through Django admin and through activity logging.
+
+### 10.8 Manual Existing-Keyword Suggestions
+
+When users add or edit an article, the suggested keyword panel uses a manual refresh button. It scans the current draft title/body in the browser and compares it against keywords that already exist on published articles.
+
+Keyword suggestion behaviour:
+
+```text
+Only existing manually-created article keywords are considered.
+No built-in keyword list is used.
+No filler-word filter is used.
+No similarity score is shown.
+No usage count is shown.
+A keyword appears only when the exact keyword or phrase exists in the current title/body.
+Suggested keyword chips scroll horizontally.
+```
+
+This keeps keyword sharing predictable. If users repeatedly choose the same manual keyword across articles, that keyword naturally becomes more useful for search and related article discovery.
 
 ## 11. Upload and Image Security
 
@@ -423,14 +491,14 @@ The AI provider is configured through environment settings:
 
 ```env
 OPENKB_AI_PROVIDER=openkb-cli
-OPENKB_GEMINI_MODEL=gemini/gemini-2.5-flash
+OPENKB_AI_MODEL=gemini/gemini-2.5-flash
 ```
 
 The Gemini API key is stored in Vault, not directly in source code.
 
 ### 14.3 AI Endpoint Safety Limits and Rate Limiting
 
-The Ask OpenKB AI endpoint includes limits such as:
+The Ask OpenKB AI endpoint is available only after login in the current deployment. It includes limits such as:
 
 - Maximum prompt length.
 - Request rate limiting.
@@ -448,21 +516,11 @@ OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = 60
 OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = 1800
 ```
 
-This means each rate-limit identity can send up to 5 AI questions within 60 seconds. If the limit is exceeded, that identity is temporarily blocked from using the chatbot for 1800 seconds, which is 30 minutes.
+This means each logged-in user can send up to 5 AI questions within 60 seconds. If the limit is exceeded, that user is temporarily blocked from using the chatbot for 1800 seconds, which is 30 minutes.
 
-The rate-limit identity is selected based on authentication state:
+The rate-limit identity for logged-in local and AD/LDAP users is the Django user ID. The limit follows the authenticated account even if the user refreshes the browser, opens another tab, or logs in again from the same browser.
 
-| Visitor type | Rate-limit identity | Behaviour |
-|---|---|---|
-| Logged-in local user | Django user ID | The limit follows the authenticated user account, even if the user refreshes the browser, opens another tab, or logs in again from the same browser. |
-| Logged-in AD / LDAP user | Django user ID | The limit follows the Django-side account created for the domain user. |
-| Anonymous visitor | IP address | The limit follows the detected client IP address. Incognito mode or a new browser session does not bypass the limit unless the client IP changes. |
-
-The rate limit is intentionally not based on the browser session. This prevents a user from bypassing the limit simply by refreshing the browser, opening another tab, or starting a new private browsing session.
-
-For a company intranet deployment, this design keeps anonymous chatbot access available while still providing basic abuse protection. Logged-in users are limited by their own user ID so that a shared office, VPN, Wi-Fi, or proxy IP address does not accidentally block all authenticated staff members.
-
-If the site is deployed behind Nginx or another reverse proxy, client IP detection should continue to use the trusted reverse proxy header configuration so anonymous IP-based rate limiting and activity logs remain accurate.
+If anonymous chatbot access is ever re-enabled in the future, IP-based limiting should be treated as a fallback and should rely on trusted Nginx reverse proxy headers.
 
 ### 14.4 Related Article Recommendations
 
@@ -484,28 +542,62 @@ The locale files have been updated across all supported languages so extracted U
 
 This design keeps UI translation independent from the AI chatbot and avoids sending translation content to external AI services.
 
-## 16. Admin Tools and Access Control
+## 16. Admin Tools, Django Admin, and Access Control
 
 ### 16.1 Admin Tool Restriction
 
-Admin tools are protected by explicit admin checks. Staff status alone is not enough for main-site admin tools. A user must be a superuser or have an admin-type `UserProfile`.
+Admin tools are protected by explicit DjOpenKB admin checks. Staff status alone is not enough for main-site admin tools. A user must be a superuser or have the correct DjOpenKB admin permission through the `Admin Users` role group or direct add-on permission.
 
-Non-admin users receive 404 responses for admin-only main-site tools to reduce route discovery usefulness.
+Non-admin users receive 404 responses for admin-only main-site tools to reduce route discovery usefulness. The Django admin login path is hidden; admins should sign in through the normal login flow and then open `/admin/`.
 
-### 16.2 Main Admin Tools
+### 16.2 Admin Network Restriction
+
+The deployment can restrict Django Admin access by source IP/CIDR, such as a VPN or internal subnet. A correct username/password is not enough if the request source is outside the allowed admin CIDR range.
+
+### 16.3 Main Admin Tools
 
 Admin tools include:
 
 - Clean stray upload files.
 - Bulk import/export articles.
-- Manage pending articles.
+- Manage pending articles and pending updates.
 - Review suggested articles.
 - Scan and manage orphan articles.
+- Configure site settings such as article count per page and log retention.
+- Manage user roles and direct user permission add-ons.
 - View authentication activity logs through Django admin.
 - View general activity logs through Django admin.
 - View upload audit records through Django admin.
 
-### 16.3 Article Import/Export
+### 16.4 Group and User Permission Management
+
+Django Admin Groups represent the main role groups:
+
+```text
+Regular User
+Article Writer
+Article Manager
+Admin Users
+```
+
+The Groups admin page shows current users in each group and provides a searchable left/right selector to add or remove users from the group.
+
+The Users admin page provides direct DjOpenKB permission checkboxes for one-off exceptions:
+
+```text
+Can view articles
+Can create articles
+Can approve/manage articles
+Can use admin tools
+```
+
+These direct user permissions are add-on only. The final permission result is:
+
+```text
+final access = group permissions + direct user permissions
+```
+
+### 16.5 Article Import/Export
 
 Bulk import/export supports article content and referenced upload files. Zip member names are normalised to avoid unsafe paths. Duplicate article titles are detected during import.
 
@@ -535,7 +627,7 @@ Article image upload limit: 2 MB per image
 
 When restoring from a split export, the admin should extract the outer package first and import each part ZIP one at a time. Import restores article keywords as well as article body content, and published imports are synced back into the OpenKB-compatible Markdown files.
 
-### 16.4 Django Admin Usability
+### 16.6 Django Admin Usability
 
 Django admin pages scroll normally in the browser. For log-heavy pages:
 
@@ -701,7 +793,7 @@ PostgreSQL is the default database. The database credentials are provided throug
 
 ### 23.2 SQLite Fallback
 
-`USE_SQLITE=true` exists only as a local fallback for quick testing outside the normal Docker/PostgreSQL deployment. The intended deployment uses PostgreSQL.
+The intended deployment uses PostgreSQL through Docker Compose. SQLite fallback is not part of the supported deployment path and should not be relied on for normal testing or production use.
 
 ### 23.3 Article Storage
 
@@ -736,12 +828,17 @@ The following files/folders may contain secrets, tokens, generated keys, or loca
 
 ```text
 .env
+.env.*
+!.env.example
 vault/bootstrap/djopenkb.env
 vault/keys/*
 vault/file/*
-openkb-data/.env
+openkb-data/.openkb/
+.openkb-venv/
+ldap-certs/
 nginx/certs/*.key
 postgres-data/*
+exported article ZIP backups
 ```
 
 The `.gitignore` should continue to exclude these sensitive/generated files.
@@ -801,8 +898,14 @@ docker compose up -d
 - Use `--dry-run` before cleanup commands when validating behaviour.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
+- Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
+- Keep the group model simple: `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`.
+- Use direct user permission checkboxes only for one-off exceptions because they add permissions on top of group permissions.
+- Review the full-project Docker bind mount `.:/app` before final production-style deployment. It is convenient during development but should be removed where possible for hardened deployment.
+- Keep `.dockerignore` updated so secrets and runtime folders are not copied into Docker images.
+
 ## 28. Final Notes
 
 DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, article review workflow, orphan article management, role separation between local and AD users, and OpenKB AI integration.
 
-For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, and cleanup/log retention settings are reviewed by administrators.
+For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, the login-only route policy is maintained, role groups are reviewed, and cleanup/log retention settings are reviewed by administrators.

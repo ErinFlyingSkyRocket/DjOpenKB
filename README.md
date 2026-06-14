@@ -9,12 +9,12 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 ## Main Features
 
 - Internal IT wiki / knowledge base website.
-- Article browsing, searching, view tracking, voting, and trending articles.
-- User article suggestion workflow with admin approval.
+- Login-protected article browsing, title/keyword search, view tracking, voting, trending articles, most-liked articles, and most-recent articles.
+- User article suggestion workflow with admin approval and pending-update review for published article edits.
 - Draft, pending approval, pending failed, and published article states.
 - Published article update workflow where normal-user edits are held as pending updates while the current published version remains visible.
 - Admin review area for new pending articles, pending updates, rejected / pending failed feedback, and update rejection feedback.
-- Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, and site settings.
+- Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, group/user role management, and site settings.
 - Local Django login support.
 - Active Directory login over LDAPS for domain users.
 - Clear separation between local users and AD users.
@@ -24,46 +24,54 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Vault integration for sensitive secrets such as Django, database, LDAP, and AI credentials.
 - PostgreSQL database through Docker Compose.
 - Nginx HTTPS reverse proxy on port `8080`.
-- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`, including prompt length limits, rate limiting, cooldown blocking, related article recommendations, and activity logging.
+- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`, including prompt length limits, logged-in user rate limiting, cooldown blocking, related article recommendations, and activity logging.
 - Markdown article rendering with sanitization.
 - Image upload restrictions for article content.
 - Multilingual UI support through Django translation files.
 - Docker cleanup scheduler for routine cleanup tasks.
+- Manual keyword suggestion refresh that scans the current title/body against existing manually created article keywords only.
+- Admin-configurable article count per page with safe limits from 5 to 100.
+- Login page is the only public entry point; normal app/admin paths return 404 to anonymous users.
 
 ---
 
 ## User Types and Rights
 
-| User type | Authentication source | Main purpose | Article browsing | Vote on articles | Suggest articles | Edit own drafts / pending failed / published updates | Change own email/password | Admin tools | Django Admin access |
-|---|---|---|---|---|---|---|---|---|---|
-| Anonymous visitor | None | Read-only public access if allowed by deployment | Published articles only | No | No | No | No | No | No |
-| Local user | Django local account | Normal internal contributor | Published articles | Yes, after login | Yes | Yes; published edits go to pending update for admin approval | Yes, with MFA/OTP | No | No |
-| Local admin | Django local account | Main-site administrator | All relevant article workflow views | Yes | Yes | Yes | Yes, with MFA/OTP | Yes | Only if staff/superuser/Django Admin permission is granted |
-| AD user | Active Directory / LDAPS | Domain-authenticated contributor | Published articles | Yes, after login | Yes | Yes; published edits go to pending update for admin approval | No; AD-managed values are blocked in Django | No | No |
-| AD admin / LDAP admin | Active Directory / LDAPS | Domain-authenticated administrator | All relevant article workflow views | Yes | Yes | Yes | No; AD-managed values are blocked in Django | Yes | Only if staff/superuser/Django Admin permission is granted |
+DjOpenKB currently uses a login-only website model. The root URL displays the login page. Anonymous users should not be able to browse normal article, search, profile, admin, AI, or upload pages; protected paths return 404 instead of exposing normal application pages.
+
+| Role / group | Authentication source | Main purpose | Article browsing | Vote on articles | Add / submit articles | Manage approvals | Admin tools | Django Admin access |
+|---|---|---|---|---|---|---|---|---|
+| Anonymous visitor | None | Not allowed into the main site | No; only the login page and static/login support paths are public | No | No | No | No | No |
+| Regular User | Local or AD / LDAPS | Default internal reader | Yes, published articles after login | Yes | No | No | No | No |
+| Article Writer | Local or AD / LDAPS | Contributor | Yes | Yes | Yes; drafts and submissions go through approval | No | No | No |
+| Article Manager | Local or AD / LDAPS | Reviewer / moderator | Yes | Yes | No by group default unless also granted writer/admin permission | Yes, can review pending articles and pending updates | No | No by default |
+| Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes, when staff/superuser/admin-role sync allows it and network/admin guards pass |
+
+Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admin/staff/superuser accounts are aligned with the `Admin Users` group where applicable.
+
+Group membership is the baseline permission model. Django Admin also provides direct user permission checkboxes for one-off exceptions. These direct user permissions are add-on permissions only; unticking a direct permission does not remove a permission that the user's group already provides.
 
 Local and AD users are separated by account source metadata, not by email domain. This means a local user can use an email address such as `alice@openkb.local` without being incorrectly treated as an AD user.
-
----
 
 ## Security Overview
 
 | Area | Security controls |
 |---|---|
-| Authentication | Local login, AD/LDAPS login, MFA, session timeout, authentication logging |
+| Authentication | Login-only site access, local login, AD/LDAPS login, MFA, session timeout, authentication logging |
+| Anonymous access | Only the login/language/static support paths are public; normal app pages and hidden admin login return 404 when unauthenticated |
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
-| Authorization | Admin-only tools, article owner checks, approval workflow, and restricted admin routes |
+| Authorization | Group-based roles, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, and restricted admin routes |
 | Articles | Draft/pending/pending failed/published workflow, pending-update review for published edits, duplicate title prevention, admin approval, and orphan article management |
+| Search and listing | Main search matches published article title and manually entered keywords only; homepage uses paginated tabs for trending, most liked, and most recent articles |
+| Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
-| AI chatbot | Prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, per-user limiting for logged-in users, per-IP limiting for anonymous users, safer error handling, related article recommendations, and activity logging |
+| AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, user-ID based limiting, safer error handling, related article recommendations, and activity logging |
 | Logging | Separate authentication logs and general activity logs |
 | Secrets | Vault-backed Django/database/LDAP/AI secrets |
-| Network | Nginx HTTPS reverse proxy and configurable trusted hosts/origins |
-| Operations | Cleanup commands, cleanup scheduler, deployment checks, and backup guidance |
-
----
+| Network | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, and optional admin CIDR/VPN restrictions |
+| Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
 
 ## Article Workflow Summary
 
@@ -106,6 +114,18 @@ Import:
 Export does not remove or unpublish live articles. It only creates a downloadable backup copy for administrators.
 
 ---
+
+## Architecture Overview
+
+The reference architecture diagram is stored under:
+
+```text
+documentations/Djopenkb Architecture Layout Diagram.png
+```
+
+It shows the intended internal deployment path: users connect to Nginx over HTTPS on port `8080`, Nginx reverse-proxies to the Django web application, Django uses PostgreSQL for data, Vault for secrets, OpenKB for local AI knowledge-base integration, and optional LDAPS to Active Directory. Only one configured AI provider/API key is required at runtime.
+
+![DjOpenKB Architecture Layout Diagram](documentations/Djopenkb%20Architecture%20Layout%20Diagram.png)
 
 ## Main Documentation
 
@@ -368,27 +388,9 @@ Time window: 60 seconds
 Cooldown after exceeding limit: 30 minutes
 ```
 
-Rate limiting is based on the visitor type:
+In the current login-only deployment, the chatbot is a protected signed-in feature. Logged-in users are rate-limited by their Django user ID, so refreshing the browser, opening a new tab, or starting a new private session does not reset the counter for that account.
 
-| Visitor type | Rate-limit identity | Behaviour |
-|---|---|---|
-| Logged-in local user | Django user ID | The limit follows the authenticated local account. |
-| Logged-in AD / LDAP user | Django user ID | The limit follows the Django-side account created for the domain user. |
-| Anonymous visitor | IP address | The limit follows the detected client IP address. |
-
-This means refreshing the browser, opening a new tab, or using incognito mode does not bypass the limit for anonymous users unless the IP address changes. Logged-in users are limited by their own account ID, so a shared company network, VPN, Wi-Fi, or proxy IP does not accidentally block all authenticated staff.
-
-The related settings are:
-
-```text
-OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = 5
-OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = 60
-OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = 1800
-```
-
-The rate limit is intentionally not based on the browser session.
-
----
+If anonymous chatbot access is ever re-enabled in the future, the fallback rate-limit identity should be the detected client IP address behind the trusted Nginx reverse proxy.
 
 ### `postgres-data/`
 
@@ -531,6 +533,18 @@ docker compose exec web python manage.py compilemessages
 
 ---
 
+## Development vs Production Runtime Notes
+
+During active development, the Docker Compose bind mount below is useful because code edits on the host appear inside the container immediately:
+
+```yaml
+- .:/app
+```
+
+For a production or final demonstration deployment, remove the full project bind mount where possible and rebuild the image instead. This reduces the chance that host-side files such as `.env`, Vault material, local certificates, Git metadata, or temporary files are visible inside the running web container.
+
+A `.dockerignore` file should remain in place so local secrets and runtime data are not copied into the Docker image during `COPY . /app/`.
+
 ## Backup and Restore Notes
 
 For a real intranet or production-style deployment, back up these areas regularly:
@@ -570,12 +584,17 @@ Do not commit or share these files/folders:
 
 ```text
 .env
+.env.*
+!.env.example
 vault/bootstrap/djopenkb.env
 vault/keys/*
 vault/file/*
-openkb-data/.env
-nginx/certs/localhost.key
+openkb-data/.openkb/
+.openkb-venv/
+ldap-certs/
+nginx/certs/*.key
 postgres-data/
+exported article ZIP backups
 ```
 
 These may contain secrets, tokens, private keys, database content, or local runtime state.

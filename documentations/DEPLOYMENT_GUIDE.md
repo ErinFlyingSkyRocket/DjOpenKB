@@ -745,6 +745,52 @@ https://192.168.81.50:8080
 
 If using the self-signed certificate, accept the browser warning for the lab/internal environment.
 
+### 15.1 Expected access-control behaviour
+
+Current DjOpenKB is configured as a login-only internal knowledge base.
+
+Expected browser behaviour:
+
+```text
+https://<linux-server-ip>:8080/          → login page
+https://<linux-server-ip>:8080/home/     → requires login
+normal article/search/profile/admin URLs → require login
+anonymous access to protected paths       → 404
+/admin/login/                             → hidden / 404
+/admin/                                   → allowed only after normal login, staff/admin role checks, and admin CIDR/VPN checks
+```
+
+After login and MFA completion where applicable, users are redirected to `/home/`.
+
+Default role behaviour:
+
+```text
+New normal local/AD user → Regular User group
+Regular User            → view published articles and vote
+Article Writer          → create and submit articles
+Article Manager         → review/manage pending articles and pending updates
+Admin Users             → admin tools and Django Admin access when network/admin checks pass
+```
+
+Direct user permission checkboxes in Django Admin are add-on permissions only. They grant exceptions on top of group membership and do not remove group permissions.
+
+### 15.2 Quick post-login validation checklist
+
+After deployment, test these flows once:
+
+```text
+1. Incognito / anonymous request to /home/ returns 404 or forces login according to the login guard.
+2. / displays the login page.
+3. A new local or AD user lands in Regular User and can view published articles.
+4. Article Writer can create and submit an article.
+5. Article Manager can approve/reject pending articles.
+6. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN.
+7. /admin/login/ does not expose the normal Django admin login page.
+8. Search only returns title/keyword matches.
+9. Homepage tabs paginate correctly according to the Articles per page setting.
+10. Keyword suggestion refresh only suggests existing manually-created keywords that exactly appear in the current draft title/body.
+```
+
 ---
 
 ## 16. Normal Docker Compose operation commands
@@ -897,6 +943,22 @@ sudo docker compose down -v
 ```
 
 For this project, local bind-mounted folders such as `postgres-data/`, `vault/file/`, `vault/keys/`, `openkb-data/`, and uploaded files should also be protected. Do not delete them unless you are intentionally resetting the environment.
+
+### Production hardening note for the `/app` bind mount
+
+During development, the Compose bind mount below is convenient because host code changes appear immediately in the web container:
+
+```yaml
+- .:/app
+```
+
+For a final production-style deployment, remove the full-project bind mount where possible and rebuild the Docker image with:
+
+```bash
+sudo docker compose up -d --build
+```
+
+This reduces the chance that `.env`, Vault material, local certificates, `.git/`, or temporary files are visible inside the running web container. Keep `.dockerignore` updated so secrets and runtime folders are not copied into the image during build.
 
 ---
 
@@ -1135,6 +1197,47 @@ sudo docker compose exec web python manage.py sync_openkb_ai
 sudo docker compose exec web python manage.py check
 ```
 
+### Homepage search, tabs, and article count setting
+
+The main search is intentionally simple. It matches only published article titles and manually entered article keywords. It does not search article body content, Markdown files, internal paths, or relevance scores.
+
+The homepage article panel uses three paginated tabs:
+
+```text
+Trending Topics
+Most Liked
+Most Recent Articles
+```
+
+The number of articles shown per page is controlled in:
+
+```text
+Django Admin → KB → Site settings → Articles per page
+```
+
+Valid range:
+
+```text
+Minimum: 5
+Maximum: 100
+Default: 10
+```
+
+### Manual existing-keyword suggestions
+
+When adding or editing an article, users can click **Refresh** in the Suggested keywords area. The browser scans the current title/body and shows only keywords that already exist on published articles and exactly appear in the current draft.
+
+This behaviour deliberately avoids:
+
+```text
+built-in keyword lists
+AI guessing
+similarity scores
+usage-count badges
+filler-word filtering
+```
+
+Keyword chips scroll horizontally so the article form does not grow too tall.
 
 ## 18. Files not to share
 
@@ -1142,12 +1245,17 @@ Do not commit or share these files/folders:
 
 ```text
 .env
+.env.*
+!.env.example
 vault/bootstrap/djopenkb.env
 vault/keys/
 vault/file/
 openkb-data/.openkb/
 .openkb-venv/
-nginx/certs/localhost.key
+ldap-certs/
+nginx/certs/*.key
+postgres-data/
+exported article ZIP backups
 ```
 
 The public repository should only contain examples, scripts, and safe default configuration.

@@ -429,3 +429,35 @@ OPENKB\Administrator
 ```
 
 Use the service account only for LDAP bind/search, not AD CS installation.
+
+---
+
+## 11. Expected DjOpenKB Behaviour After LDAPS Login
+
+After LDAPS is working and a domain user signs in successfully, DjOpenKB should create or update the corresponding Django-side account and assign the default role:
+
+```text
+New AD / LDAP user → Regular User group
+```
+
+The user should then complete MFA setup or verification if MFA is required. After login and MFA completion, the user can access the main site at `/home/` and view published articles.
+
+Protected pages should not be available to anonymous users:
+
+```text
+/              → login page
+/home/         → requires login
+/admin/login/  → hidden / 404
+/admin/        → requires login, admin/staff role, and allowed admin network/VPN
+```
+
+To test role changes, sign in as a Django admin and use Django Admin → Groups:
+
+```text
+Regular User
+Article Writer
+Article Manager
+Admin Users
+```
+
+Move the AD test user between groups and confirm the expected website permissions. Direct user permission checkboxes can be used for one-off add-on permissions.
