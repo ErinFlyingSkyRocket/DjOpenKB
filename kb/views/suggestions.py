@@ -6,25 +6,14 @@ from django.utils.translation import gettext as _
 from urllib.parse import quote
 
 
-KEYWORD_SUGGESTION_STOPWORDS = {
-    "a", "an", "and", "are", "as", "at", "be", "by", "can", "for", "from",
-    "how", "i", "in", "into", "is", "it", "its", "of", "on", "or", "that",
-    "the", "this", "to", "use", "user", "users", "was", "were", "when", "with",
-    "you", "your", "article", "issue", "problem", "error", "fix", "setup",
-    "configure", "install", "cannot", "failed", "failure", "using", "after",
-}
-
-
 def _normalise_keyword_suggestion(value):
-    """Return a clean keyword/tag value or an empty string if unsuitable."""
+    """Return a clean manually-entered keyword/tag value or an empty string if unsuitable."""
     value = re.sub(r"\s+", " ", (value or "").strip().lower())
     value = re.sub(r"[^a-z0-9+#.\- ]+", "", value).strip(" ,;:/\\")
     if not value or len(value) < 2 or len(value) > 40:
         return ""
     words = [word for word in value.split() if word]
     if not words or len(words) > 4:
-        return ""
-    if all(word in KEYWORD_SUGGESTION_STOPWORDS for word in words):
         return ""
     return value
 
@@ -39,7 +28,11 @@ def _split_keywords_for_suggestions(value):
 
 
 def _tokenize_keyword_suggestion_text(value, limit=120):
-    """Create safe matching tokens without exposing full article bodies to JS."""
+    """Create safe matching tokens without exposing full article bodies to JS.
+
+    No filler-word or stopword filtering is applied because keyword popularity
+    should be controlled by the manually shared keywords from articles.
+    """
     text = remove_openkb_internal_metadata(value or "")
     text = re.sub(r"```.*?```", " ", text, flags=re.DOTALL)
     text = re.sub(r"`([^`]+)`", r"\1", text)
@@ -51,7 +44,7 @@ def _tokenize_keyword_suggestion_text(value, limit=120):
     seen = set()
     for token in re.findall(r"[a-z0-9][a-z0-9+#.\-]{1,}", text):
         token = token.strip("-.#")
-        if len(token) < 2 or token in KEYWORD_SUGGESTION_STOPWORDS or token in seen:
+        if len(token) < 2 or token in seen:
             continue
         seen.add(token)
         tokens.append(token)

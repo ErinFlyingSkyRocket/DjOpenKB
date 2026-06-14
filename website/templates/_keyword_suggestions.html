@@ -52,7 +52,7 @@
         <i class="fa fa-tags" aria-hidden="true"></i> {% trans "Suggested keywords" %}
     </div>
     <div class="openkb-keyword-suggestions-help">
-        {% trans "Suggestions only use keywords that were manually added to existing published articles. Click a keyword to add it." %}
+        {% trans "Suggestions only use keywords that were manually added to existing published articles. No built-in keyword list or filler-word filter is used. Click a keyword to add it." %}
     </div>
     <div class="openkb-keyword-suggestion-chips" id="openkbKeywordSuggestionChips">
         <span class="openkb-keyword-empty">{% trans "Start typing the title or article body to see suggestions." %}</span>
@@ -77,11 +77,6 @@
     } catch (error) {
         catalog = [];
     }
-
-    const stopWords = new Set([
-        "the", "and", "for", "with", "this", "that", "from", "into", "using",
-        "article", "issue", "problem", "error", "failed", "cannot", "setup", "how"
-    ]);
 
     function getEditorCodeMirror() {
         const wrapper = document.querySelector(".CodeMirror");
@@ -115,7 +110,7 @@
         const tokens = [];
         matches.forEach(function (token) {
             token = token.replace(/^[.\-#]+|[.\-#]+$/g, "");
-            if (!token || token.length < 2 || stopWords.has(token) || seen.has(token)) {
+            if (!token || token.length < 2 || seen.has(token)) {
                 return;
             }
             seen.add(token);
