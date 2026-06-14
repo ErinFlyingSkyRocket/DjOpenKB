@@ -212,7 +212,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                             <div class="form-group">
                                 <label for="preview">{% trans "Article title" %} *</label><br/>
-                                <input type="text" name="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" required/>
+                                <input type="text" name="frm_kb_title" id="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" required/>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
@@ -373,6 +373,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div class="form-group">
                                 <label>{% trans "Keywords" %}</label><br/>
                                 <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:article.keywords }}">
+                                {% include "_keyword_suggestions.html" %}
                             </div>
                         </div>
                     </footer>

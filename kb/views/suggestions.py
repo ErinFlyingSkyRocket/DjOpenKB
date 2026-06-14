@@ -1,6 +1,113 @@
 from .services import *
+from collections import Counter, defaultdict
+import json
+import re
 from django.utils.translation import gettext as _
 from urllib.parse import quote
+
+
+KEYWORD_SUGGESTION_STOPWORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "can", "for", "from",
+    "how", "i", "in", "into", "is", "it", "its", "of", "on", "or", "that",
+    "the", "this", "to", "use", "user", "users", "was", "were", "when", "with",
+    "you", "your", "article", "issue", "problem", "error", "fix", "setup",
+    "configure", "install", "cannot", "failed", "failure", "using", "after",
+}
+
+
+def _normalise_keyword_suggestion(value):
+    """Return a clean keyword/tag value or an empty string if unsuitable."""
+    value = re.sub(r"\s+", " ", (value or "").strip().lower())
+    value = re.sub(r"[^a-z0-9+#.\- ]+", "", value).strip(" ,;:/\\")
+    if not value or len(value) < 2 or len(value) > 40:
+        return ""
+    words = [word for word in value.split() if word]
+    if not words or len(words) > 4:
+        return ""
+    if all(word in KEYWORD_SUGGESTION_STOPWORDS for word in words):
+        return ""
+    return value
+
+
+def _split_keywords_for_suggestions(value):
+    candidates = []
+    for item in re.split(r"[,;\n]+", value or ""):
+        keyword = _normalise_keyword_suggestion(item)
+        if keyword and keyword not in candidates:
+            candidates.append(keyword)
+    return candidates
+
+
+def _tokenize_keyword_suggestion_text(value, limit=120):
+    """Create safe matching tokens without exposing full article bodies to JS."""
+    text = remove_openkb_internal_metadata(value or "")
+    text = re.sub(r"```.*?```", " ", text, flags=re.DOTALL)
+    text = re.sub(r"`([^`]+)`", r"\1", text)
+    text = re.sub(r"!?\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"[^a-zA-Z0-9+#.\- ]+", " ", text.lower())
+
+    tokens = []
+    seen = set()
+    for token in re.findall(r"[a-z0-9][a-z0-9+#.\-]{1,}", text):
+        token = token.strip("-.#")
+        if len(token) < 2 or token in KEYWORD_SUGGESTION_STOPWORDS or token in seen:
+            continue
+        seen.add(token)
+        tokens.append(token)
+        if len(tokens) >= limit:
+            break
+    return tokens
+
+
+def get_keyword_suggestion_catalog_json():
+    """Return JSON for keyword suggestions on add/edit article forms.
+
+    Suggestions are based only on keywords that were manually entered on
+    existing published articles. No built-in/predetermined keyword list is used.
+
+    For each existing keyword, compact matching terms are derived from the
+    published articles that already used that keyword. The frontend receives
+    keywords and matching tokens only, not full article bodies.
+    """
+    counts = Counter()
+    match_terms = defaultdict(set)
+
+    queryset = (
+        SuggestedArticle.objects
+        .filter(status=SuggestedArticle.Status.PUBLISHED)
+        .exclude(keywords="")
+        .order_by("-updated_at")
+        .values("title", "body", "keywords")[:500]
+    )
+
+    for article in queryset:
+        keywords = _split_keywords_for_suggestions(article.get("keywords") or "")
+        if not keywords:
+            continue
+
+        article_terms = _tokenize_keyword_suggestion_text(
+            f"{article.get('title') or ''} {article.get('body') or ''}",
+            limit=80,
+        )
+
+        for keyword in keywords:
+            counts[keyword] += 1
+            match_terms[keyword].update(_tokenize_keyword_suggestion_text(keyword, limit=10))
+            match_terms[keyword].update(article_terms[:80])
+
+
+    catalog = []
+    for keyword in sorted(counts):
+        catalog.append({
+            "keyword": keyword,
+            "usage_count": counts.get(keyword, 0),
+            "source": "existing",
+            "match_terms": sorted(match_terms[keyword])[:90],
+        })
+
+    catalog.sort(key=lambda item: (item["usage_count"], item["keyword"]), reverse=True)
+    return json.dumps(catalog[:300], ensure_ascii=False)
 
 
 @article_add_required
@@ -12,6 +119,7 @@ def suggest(request):
         context = {
             "can_publish_directly": can_publish_directly,
             "article_image_upload_limit": get_article_image_upload_limit(),
+            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(),
         }
         if extra_context:
             context.update(extra_context)
@@ -195,6 +303,7 @@ def edit_suggestion(request, article_id):
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
             "article_image_upload_limit": get_article_image_upload_limit(),
+            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(),
             "return_url": return_url,
             "back_url": back_url,
             "title_value": edit_title,
