@@ -22,6 +22,7 @@ from ..mfa import (
     reset_mfa_device_for_user,
     get_pending_mfa_user,
     get_totp_issuer,
+    mfa_device_secret_is_readable,
     mfa_is_verified,
     mark_mfa_verified,
     pending_mfa_next_url,
@@ -187,6 +188,24 @@ def mfa_verify(request):
 
     if request.user.is_authenticated and request.user.pk == user.pk and mfa_is_verified(request):
         return redirect(_safe_next_url(request))
+
+    if not mfa_device_secret_is_readable(device):
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={"reason": "unreadable_mfa_secret"},
+        )
+        messages.error(
+            request,
+            _(
+                "This MFA device cannot be verified because its secret could not be read. "
+                "Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
+            ),
+        )
+        return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
 
     if request.method == "POST":
         if verify_totp_code(device, request.POST.get("code")):

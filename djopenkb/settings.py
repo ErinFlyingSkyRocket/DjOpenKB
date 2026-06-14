@@ -353,6 +353,13 @@ LOGOUT_REDIRECT_URL = "/"
 
 # Site-level TOTP MFA. Enforced as a login criterion for local and LDAP/AD users.
 MFA_TOTP_ISSUER = config_value("MFA_TOTP_ISSUER", "IT Wiki")
+# Number of adjacent 30-second TOTP windows accepted before/after the
+# current one. 2 tolerates small server/phone clock drift without making MFA
+# too loose. Keep this low and fix NTP if clocks drift by more than a minute.
+try:
+    MFA_TOTP_VALID_WINDOW = max(0, min(int(config_value("MFA_TOTP_VALID_WINDOW", "2")), 3))
+except (TypeError, ValueError):
+    MFA_TOTP_VALID_WINDOW = 2
 
 # Application-level encryption key for recoverable sensitive database fields,
 # such as TOTP authenticator secrets. Prefer storing this in Vault as

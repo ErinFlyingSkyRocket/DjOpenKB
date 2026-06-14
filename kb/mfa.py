@@ -26,6 +26,29 @@ def get_totp_issuer():
     return getattr(settings, "MFA_TOTP_ISSUER", "IT Wiki")
 
 
+def get_totp_valid_window():
+    """Return the allowed TOTP drift window, clamped to a safe range.
+
+    Each window is 30 seconds. A value of 2 accepts the current code plus
+    codes one or two windows before/after the current server time. This helps
+    with small host/phone clock drift, but it should not replace proper NTP.
+    """
+    try:
+        return max(0, min(int(getattr(settings, "MFA_TOTP_VALID_WINDOW", 2)), 3))
+    except (TypeError, ValueError):
+        return 2
+
+
+def mfa_device_secret_is_readable(device):
+    """Return True when an MFA device has a decryptable TOTP secret.
+
+    If this is False for a confirmed device, the field encryption key or
+    DJANGO_SECRET_KEY likely changed after the device was created. The safe
+    recovery is to reset MFA for that user and have them scan a new QR code.
+    """
+    return bool(device and device.get_secret())
+
+
 def _configured_backend_contains(name_fragment):
     for backend in getattr(settings, "AUTHENTICATION_BACKENDS", []):
         if name_fragment in backend:
@@ -288,4 +311,4 @@ def verify_totp_code(device, code):
         return False
 
     totp = pyotp.TOTP(secret)
-    return bool(totp.verify(code, valid_window=1))
+    return bool(totp.verify(code, valid_window=get_totp_valid_window()))

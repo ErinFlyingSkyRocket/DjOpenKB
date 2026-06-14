@@ -18,7 +18,15 @@
 </head>
 <body class="show_footer">
 <div class="container-fluid">
-    {% include "_page_back_button.html" %}
+    <div class="container-fluid openkb-page-back-wrap" style="margin-top: 14px; margin-bottom: 10px;">
+        <div class="row">
+            <div class="col-xs-12 col-md-10 col-md-offset-1">
+                <a class="btn btn-default" href="{% url 'root_login' %}">
+                    <i class="fa fa-arrow-left"></i> {% trans "Back" %}
+                </a>
+            </div>
+        </div>
+    </div>
     <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 90px">
         <form class="form-signin" method="post" action="{% url 'mfa_verify' %}">
             {% csrf_token %}
