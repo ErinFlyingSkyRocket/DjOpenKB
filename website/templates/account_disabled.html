@@ -27,7 +27,7 @@
                     <p class="text-muted" style="margin-bottom: 24px;">
                         {% trans "Your account is currently disabled and cannot access DjOpenKB. Please contact an administrator if you believe this is unexpected." %}
                     </p>
-                    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                    <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary btn-block">
                             <i class="fa fa-sign-out" aria-hidden="true"></i> {% trans "Sign out and go to sign in" %}

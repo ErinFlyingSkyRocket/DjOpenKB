@@ -21,6 +21,8 @@ from .mfa import (
     get_or_create_mfa_device,
     mfa_is_verified,
     pending_mfa_target_name,
+    PRE_MFA_USER_ID_SESSION_KEY,
+    start_disabled_account_session,
     user_requires_mfa,
 )
 from .models import SiteSetting, UserProfile
@@ -217,22 +219,16 @@ def set_strict_no_cache_headers(response):
 
 
 class DisabledUserLogoutMiddleware:
-    """Restrict Disabled User sessions to the disabled page and logout only.
+    """Restrict Disabled User sessions before normal views run.
 
-    If an administrator disables an account while the user still has a browser
-    session, the next request is stopped before the requested function runs and
-    redirected to the clean disabled-account page. The session is kept only so
-    /account-disabled/ is not public to unrelated anonymous visitors. The user
-    clears the session by pressing the Sign out button on that page.
+    Disabled accounts keep a temporary authenticated session only so the clean
+    /account-disabled/ page can be shown. Every other request is stopped before
+    the requested function runs and redirected to that page. The session is
+    cleared only when the user clicks the sign-out button.
     """
 
     def __init__(self, get_response):
         self.get_response = get_response
-
-    def _is_static_or_safe_asset(self, path):
-        if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
-            return True
-        return path in {"/favicon.ico", "/robots.txt"}
 
     def _reverse_or_none(self, name):
         try:
@@ -240,28 +236,36 @@ class DisabledUserLogoutMiddleware:
         except NoReverseMatch:
             return None
 
-    def _disabled_allowed_paths(self):
-        allowed = set()
-        for name in ("account_disabled", "logout"):
-            path = self._reverse_or_none(name)
-            if path:
-                allowed.add(path)
-        return allowed
+    def _is_static_or_safe_asset(self, path):
+        if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
+            return True
+        return path in {"/favicon.ico", "/robots.txt"}
+
+    def _is_disabled_allowed_path(self, path):
+        allowed_names = ("account_disabled", "logout", "set_site_language")
+        for name in allowed_names:
+            candidate = self._reverse_or_none(name)
+            if candidate and path == candidate:
+                return True
+        return False
 
     def _redirect_disabled_user(self, request, user, *, source):
         username = user.get_username() if user else ""
-        try:
-            log_auth_event(
-                request,
-                event_type="password_failure",
-                success=False,
-                user=user,
-                username=username,
-                details={"reason": "account_disabled", "source": source, "path": request.path_info or request.path},
-            )
-        except Exception:
-            # Logging must never prevent the defensive redirect.
-            pass
+        if not request.session.get("djopenkb_disabled_redirect_logged"):
+            try:
+                log_auth_event(
+                    request,
+                    event_type="password_failure",
+                    success=False,
+                    user=user,
+                    username=username,
+                    details={"reason": "account_disabled", "source": source},
+                )
+            except Exception:
+                # Logging must never prevent the defensive redirect.
+                pass
+            request.session["djopenkb_disabled_redirect_logged"] = True
+            request.session.modified = True
 
         response = redirect("account_disabled")
         return set_strict_no_cache_headers(response)
@@ -271,20 +275,29 @@ class DisabledUserLogoutMiddleware:
         if self._is_static_or_safe_asset(path):
             return self.get_response(request)
 
-        if path in self._disabled_allowed_paths():
-            return self.get_response(request)
-
         user = getattr(request, "user", None)
         if user and user.is_authenticated and user_has_disabled_role(user):
+            if self._is_disabled_allowed_path(path):
+                return self.get_response(request)
             return self._redirect_disabled_user(request, user, source="disabled_user_middleware")
 
-        # Also handle users who are between password login and MFA completion.
-        # They are not fully authenticated yet, but if an admin disables them
-        # during this state, any next request should still go to the clean
-        # disabled-account page instead of bouncing through MFA/404 pages.
-        pending_user = get_pending_mfa_user(request)
+        # If an admin disables a user while that user is between password login
+        # and MFA completion, create the same restricted authenticated session
+        # so /account-disabled/ remains authenticated-only. Use the raw pending
+        # session key here because normal pending-MFA lookup may clear disabled
+        # users once their main-site access is removed.
+        pending_user = None
+        pending_user_id = request.session.get(PRE_MFA_USER_ID_SESSION_KEY)
+        if pending_user_id:
+            try:
+                pending_user = get_user_model().objects.get(pk=pending_user_id, is_active=True)
+            except get_user_model().DoesNotExist:
+                clear_pending_mfa_login(request)
+
         if pending_user and user_has_disabled_role(pending_user):
-            return self._redirect_disabled_user(request, pending_user, source="disabled_pending_mfa")
+            start_disabled_account_session(request, pending_user)
+            response = redirect("account_disabled")
+            return set_strict_no_cache_headers(response)
 
         return self.get_response(request)
 
@@ -497,12 +510,11 @@ class ForceLoginAndAdminGuardMiddleware:
 
     def _is_public_auth_path(self, path):
         # / and /login/ are the only normal anonymous entry points.
-        # MFA/account-disabled pages perform their own session-state checks;
-        # anonymous visitors cannot view disabled-account content.
+        # MFA pages are reachable only for pending-MFA sessions; the MFA
+        # middleware validates that state before allowing completion.
         public_names = (
             "root_login",
             "login",
-            "account_disabled",
             "set_site_language",
             "mfa_setup",
             "mfa_verify",
@@ -550,7 +562,7 @@ class ForceLoginAndAdminGuardMiddleware:
 class AuthSessionCacheControlMiddleware:
     """Apply no-store headers to login/logout/MFA and authenticated pages."""
 
-    AUTH_PATH_NAMES = ("root_login", "login", "logout", "account_disabled", "mfa_setup", "mfa_verify", "reset_mfa")
+    AUTH_PATH_NAMES = ("root_login", "login", "logout", "mfa_setup", "mfa_verify", "reset_mfa")
 
     def __init__(self, get_response):
         self.get_response = get_response

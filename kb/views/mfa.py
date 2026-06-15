@@ -33,6 +33,7 @@ from ..mfa import (
     mfa_is_verified,
     mark_mfa_verified,
     pending_mfa_next_url,
+    start_disabled_account_session,
     user_requires_mfa,
     verify_totp_code,
 )
@@ -40,7 +41,7 @@ from ..permissions import user_has_disabled_role
 
 
 def _deny_disabled_account_after_mfa(request, user, *, source):
-    """Send Disabled User accounts to the authenticated disabled page after MFA."""
+    """Stop Disabled User accounts after successful MFA validation."""
     log_auth_event(
         request,
         event_type="mfa_verify_failure",
@@ -49,12 +50,7 @@ def _deny_disabled_account_after_mfa(request, user, *, source):
         username=user.get_username(),
         details={"reason": "account_disabled", "source": source},
     )
-
-    if get_pending_mfa_user(request):
-        complete_pending_mfa_login(request, user)
-    else:
-        mark_mfa_verified(request, user)
-
+    start_disabled_account_session(request, user)
     return redirect("account_disabled")
 
 

@@ -1,5 +1,6 @@
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.shortcuts import redirect, render
 from .services import *
 from ..auth_monitoring import (
@@ -14,14 +15,13 @@ from ..mfa import (
     clear_mfa_verified,
     clear_pending_mfa_login,
     get_or_create_mfa_device,
-    get_pending_mfa_user,
-    get_mfa_completion_backend,
     mfa_is_verified,
+    start_disabled_account_session,
     user_requires_mfa,
     verify_totp_code,
 )
 from ..permissions import user_has_disabled_role
-from django.contrib.auth import logout, login as auth_login
+from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -38,30 +38,12 @@ def _disabled_account_login_message(request):
     )
 
 
-def _login_disabled_user_for_notice(request, user):
-    """Create a restricted authenticated session only for the disabled page.
-
-    Disabled User is still blocked by middleware from every normal site/admin
-    function. Keeping this short-lived session lets the clean disabled-account
-    page require a real account context, and the Sign out button then clears the
-    browser session normally.
-    """
-    backend = getattr(user, "backend", None) or get_mfa_completion_backend(user)
-    clear_pending_mfa_login(request)
-    clear_mfa_verified(request)
-    if backend:
-        auth_login(request, user, backend=backend)
-    else:
-        auth_login(request, user)
-
-
 def _block_disabled_account_after_verified_credentials(request, user, *, login_mode="", source="password"):
-    """Send a Disabled User to the authenticated disabled-account page.
+    """Stop a Disabled User after valid credentials, without creating a login session.
 
+    Disabled accounts are intentionally not rejected as a generic bad password.
     The message is shown only after the password/LDAP bind succeeds, and for
-    MFA-enabled accounts only after the MFA code succeeds. The user is not
-    allowed into DjOpenKB; middleware restricts the authenticated disabled
-    session to /account-disabled/ and /logout/ only.
+    MFA-enabled accounts only after the MFA code succeeds.
     """
     log_auth_event(
         request,
@@ -72,27 +54,31 @@ def _block_disabled_account_after_verified_credentials(request, user, *, login_m
         login_mode=login_mode,
         details={"reason": "account_disabled", "source": source},
     )
-    _login_disabled_user_for_notice(request, user)
+    start_disabled_account_session(request, user)
     request._skip_auth_failure_log = True
     return redirect("account_disabled")
 
 
 @never_cache
 def account_disabled(request):
-    """Disabled-account page; not visible to unrelated anonymous visitors."""
-    user = request.user if getattr(request, "user", None) and request.user.is_authenticated else None
-    pending_user = get_pending_mfa_user(request)
+    """Authenticated disabled-account page.
 
-    if user and user_has_disabled_role(user):
-        return render(request, "account_disabled.html", {"disabled_user": user})
+    Anonymous users are not allowed to browse this page directly. A disabled
+    account reaches this page only through a restricted authenticated session,
+    and the page provides an explicit sign-out button to clear that session.
+    """
+    if not request.user.is_authenticated:
+        return redirect("root_login")
 
-    if pending_user and user_has_disabled_role(pending_user):
-        return render(request, "account_disabled.html", {"disabled_user": pending_user})
-
-    if user:
+    if not user_has_disabled_role(request.user):
         return redirect("home")
 
-    return redirect("root_login")
+    # Admin success messages can be created before a self-disable redirect. Do
+    # not carry those messages onto the disabled-account page or the next login.
+    for _message in get_messages(request):
+        pass
+
+    return render(request, "account_disabled.html")
 
 
 @never_cache

@@ -301,6 +301,30 @@ def complete_pending_mfa_login(request, user):
     return next_url
 
 
+def start_disabled_account_session(request, user):
+    """Create a restricted authenticated session for the disabled-account page.
+
+    Disabled users must not be allowed into normal DjOpenKB functions, but the
+    account-disabled page is intentionally authenticated-only so anonymous users
+    cannot browse to it. This helper promotes a verified password/MFA flow into
+    a restricted session. DisabledUserLogoutMiddleware then allows only the
+    disabled-account page and logout, and redirects every other request back to
+    the disabled page before the requested function can run.
+    """
+    backend = request.session.get(PRE_MFA_BACKEND_SESSION_KEY) or get_mfa_completion_backend(user)
+
+    clear_pending_mfa_login(request)
+    clear_mfa_verified(request)
+
+    if backend:
+        auth_login(request, user, backend=backend)
+    else:
+        auth_login(request, user)
+
+    request.session["djopenkb_disabled_account_session"] = True
+    request.session.modified = True
+
+
 def verify_totp_code(device, code):
     code = (code or "").strip().replace(" ", "")
     if not code or not device:
