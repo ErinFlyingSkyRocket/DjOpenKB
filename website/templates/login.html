@@ -58,7 +58,7 @@
 
             <input type="hidden" id="id_login_mode" name="login_mode" value="{{ request.POST.login_mode|default:'ad' }}">
 
-            <h2 id="login-heading" class="form-signin-heading" style="margin-bottom: 8px;">{% trans "Sign in to DjOpenKB" %}</h2>
+            <h2 id="login-heading" class="form-signin-heading" style="margin-bottom: 8px;">{% trans "Sign in to Knowledge Repository" %}</h2>
             <p id="login-description" class="text-muted" style="margin-bottom: 20px;">
                 {% trans "Please sign in using your NextLabs AD email account to access the knowledge repository." %}
             </p>
@@ -118,12 +118,12 @@
                     var adLink = document.getElementById('switch-to-ad-login');
 
                     var text = {
-                        adHeading: "{% trans 'Sign in to DjOpenKB' %}",
+                        adHeading: "{% trans 'Sign in to Knowledge Repository' %}",
                         adDescription: "{% trans 'Please sign in using your NextLabs AD email account to access the knowledge repository.' %}",
                         adUsername: "{% trans 'NextLabs AD email or username' %}",
                         adSubmit: "{% trans 'Sign in with NextLabs AD' %}",
                         localHeading: "{% trans 'Local account sign-in' %}",
-                        localDescription: "{% trans 'Sign in with your local DjOpenKB account.' %}",
+                        localDescription: "{% trans 'Sign in with your local Knowledge Repository account.' %}",
                         localUsername: "{% trans 'Local username or email' %}",
                         localSubmit: "{% trans 'Sign in with local account' %}"
                     };
