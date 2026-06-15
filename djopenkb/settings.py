@@ -41,7 +41,7 @@ def env_or_file(name: str, default: str = "") -> str:
 
 
 def _load_vault_secrets() -> dict:
-    """Load the DjOpenKB secret bundle from Vault KV v2.
+    """Load the Knowledge Repository secret bundle from Vault KV v2.
 
     Expected Vault path by default:
       secret/data/djopenkb
@@ -302,6 +302,7 @@ MIDDLEWARE = [
     "kb.middleware.UserProfileLanguageMiddleware",
     "kb.middleware.LocalMFARequiredMiddleware",
     "kb.middleware.ForceLoginAndAdminGuardMiddleware",
+    "kb.middleware.AdminActivityLogMiddleware",
     "kb.middleware.AuthSessionCacheControlMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -434,7 +435,7 @@ LOGIN_REDIRECT_URL = "/home/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Site-level TOTP MFA. Enforced as a login criterion for local and LDAP/AD users.
-MFA_TOTP_ISSUER = config_value("MFA_TOTP_ISSUER", "IT Wiki")
+MFA_TOTP_ISSUER = config_value("MFA_TOTP_ISSUER", "Knowledge Repository")
 # Number of adjacent 30-second TOTP windows accepted before/after the
 # current one. 2 tolerates small server/phone clock drift without making MFA
 # too loose. Keep this low and fix NTP if clocks drift by more than a minute.

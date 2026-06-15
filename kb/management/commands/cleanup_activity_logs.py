@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection, transaction
 from django.utils import timezone
 
-from kb.models import ActivityLog, SiteSetting
+from kb.models import ActivityLog, AdminActivityLog, SiteSetting
 
 
 class Command(BaseCommand):
@@ -38,16 +38,28 @@ class Command(BaseCommand):
             return
 
         cutoff = timezone.now() - timedelta(days=days)
-        queryset = ActivityLog.objects.filter(created_at__lt=cutoff)
-        count = queryset.count()
+        activity_queryset = ActivityLog.objects.filter(created_at__lt=cutoff)
+        admin_queryset = AdminActivityLog.objects.filter(created_at__lt=cutoff)
+        activity_count = activity_queryset.count()
+        admin_count = admin_queryset.count()
+        count = activity_count + admin_count
 
         if options["dry_run"]:
-            self.stdout.write(f"Would delete {count} general activity log(s) older than {days} day(s).")
+            self.stdout.write(
+                f"Would delete {activity_count} general activity log(s) and "
+                f"{admin_count} admin activity log(s) older than {days} day(s)."
+            )
             return
 
         with transaction.atomic():
             with connection.cursor() as cursor:
                 cursor.execute("SET LOCAL djopenkb.audit_retention_cleanup = 'on'")
-            deleted, _ = queryset.delete()
+            activity_deleted, _ = activity_queryset.delete()
+            admin_deleted, _ = admin_queryset.delete()
 
-        self.stdout.write(self.style.SUCCESS(f"Deleted {deleted} general activity log row(s) older than {days} day(s)."))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Deleted {activity_deleted} general activity log row(s) and "
+                f"{admin_deleted} admin activity log row(s) older than {days} day(s)."
+            )
+        )

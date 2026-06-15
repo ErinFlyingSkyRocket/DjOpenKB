@@ -1,3 +1,4 @@
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth import get_user_model
 from django.db.models.signals import m2m_changed, post_migrate, post_save
 from django.dispatch import receiver
@@ -105,3 +106,22 @@ def seed_role_groups_after_migrate(sender, app_config=None, **kwargs):
         seed_djopenkb_role_groups()
     except Exception:
         pass
+
+@receiver(post_save, sender=LogEntry)
+def mirror_django_admin_logentry(sender, instance, created, **kwargs):
+    """Copy Django Admin add/change/delete LogEntry rows into AdminActivityLog.
+
+    Django writes LogEntry only after admin object actions succeed. Keeping a
+    separate append-only log lets Knowledge Repository apply the same retention
+    and immutability controls as the other audit tables.
+    """
+    if not created:
+        return
+
+    try:
+        from .admin_audit import log_admin_logentry
+
+        log_admin_logentry(instance)
+    except Exception:
+        pass
+

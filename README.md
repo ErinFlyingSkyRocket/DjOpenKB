@@ -48,7 +48,7 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 | Regular User | Local or AD / LDAPS | Default internal reader | Yes, published articles after login | Yes | No | No | No | No |
 | Article Writer | Local or AD / LDAPS | Contributor | Yes | Yes | Yes; drafts and submissions go through approval | No | No | No |
 | Article Manager | Local or AD / LDAPS | Reviewer / moderator | Yes | Yes | No by group default unless also granted writer/admin permission | Yes, can review pending articles and pending updates | No | No by default |
-| Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes, when staff/superuser/admin-role sync allows it and network/admin guards pass |
+| Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes, view-only in Django Admin by default; MFA/lockout reset actions allowed; full Django Admin edits/deletes reserved for superusers |
 
 Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admin/staff/superuser accounts are aligned with the `Admin Users` group where applicable. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the wiki.
 
@@ -72,7 +72,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
 | AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
-| Logging | Separate authentication logs and general activity logs |
+| Logging | Separate authentication logs, general activity logs, and Django Admin activity logs |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
 | Network | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, and optional admin CIDR/VPN restrictions |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
@@ -202,7 +202,7 @@ djopenkb/wsgi.py
 
 Contains the main Django app for the knowledge base.
 
-This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, activity logging, and management commands.
+This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, activity logging, Django Admin activity logging, and management commands.
 
 Important areas:
 
@@ -530,7 +530,7 @@ Sync OpenKB AI article data:
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
-Clean activity logs:
+Clean general and Django Admin activity logs:
 
 ```bash
 docker compose exec web python manage.py cleanup_activity_logs --dry-run

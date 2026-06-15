@@ -78,7 +78,7 @@ ROLE_DEFINITIONS = {
     },
     ROLE_ADMIN_USERS: {
         "description": _(
-            "Knowledge Repository administrator. Can create/publish articles directly, manage all article reviews, use admin tools, and access Django admin when staff status is enabled."
+            "Knowledge Repository administrator. Can create/publish articles directly and use the admin site for monitoring/MFA resets. Standard Admin Users are view-only inside Django Admin; destructive admin edits are reserved for superusers."
         ),
         "permissions": (
             PERM_VIEW_ARTICLES,
@@ -296,7 +296,6 @@ def seed_djopenkb_role_groups():
         # They must not receive Django Admin model permissions or staff access.
         if role_name == ROLE_ADMIN_USERS:
             perms.extend(_admin_safe_model_permissions())
-            perms.extend(Permission.objects.filter(content_type__app_label="auth", content_type__model__in={"user", "group"}))
 
         group.permissions.set(sorted(set(perms), key=lambda permission: permission.pk))
 
@@ -307,23 +306,32 @@ def _model_permissions(app_label: str, model: str, actions: set[str]):
 
 
 def _admin_safe_model_permissions():
-    """Model permissions for Admin Users without destructive log permissions.
+    """View-only model permissions for standard Admin Users.
 
-    The log admin classes are read-only in the UI, and the standard Admin Users
-    group should not be granted add/change/delete permissions on audit tables.
-    Retention cleanup commands remain responsible for deleting old logs.
+    Standard Admin Users may enter Django Admin to view users, groups, logs,
+    settings, articles, and MFA devices, and may use the custom MFA/lockout reset
+    buttons. They do not receive add/change/delete model permissions. Full
+    create/edit/delete power in Django Admin is reserved for superusers.
     """
     safe_permissions = []
 
-    safe_permissions.extend(_model_permissions("kb", "suggestedarticle", {"view", "add", "change", "delete"}))
-    safe_permissions.extend(_model_permissions("kb", "articlevote", {"view", "change", "delete"}))
-    safe_permissions.extend(_model_permissions("kb", "sitesetting", {"view", "change"}))
-    safe_permissions.extend(_model_permissions("kb", "userprofile", {"view", "change"}))
-    safe_permissions.extend(_model_permissions("kb", "usermfadevice", {"view", "change"}))
-
-    # Audit/log tables are visible to admins but not manually editable/deletable.
-    for model_name in ("activitylog", "authactivitylog", "articleimageuploadlog"):
+    for model_name in (
+        "suggestedarticle",
+        "articlevote",
+        "sitesetting",
+        "userprofile",
+        "usermfadevice",
+        "activitylog",
+        "authactivitylog",
+        "adminactivitylog",
+        "articleimageuploadlog",
+        "authlockoutpolicystage",
+    ):
         safe_permissions.extend(_model_permissions("kb", model_name, {"view"}))
+
+    # Allow viewing users/groups in Django Admin without granting edits/deletes.
+    safe_permissions.extend(_model_permissions("auth", "user", {"view"}))
+    safe_permissions.extend(_model_permissions("auth", "group", {"view"}))
 
     return safe_permissions
 

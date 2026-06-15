@@ -21,7 +21,7 @@ The Docker Compose stack contains the following main services:
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, field-encryption key, PostgreSQL password, AI provider API keys, and LDAP bind password. |
 | `vault-init` | First-time Vault initialisation and secret seeding helper. |
 | `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment. |
-| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general activity log cleanup. |
+| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general/admin activity log cleanup. |
 
 ## 3. User Types and Permission Summary
 
@@ -36,7 +36,7 @@ DjOpenKB now uses a login-only main website model. Anonymous visitors are not al
 | Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. |
 | Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. |
 | Article Manager | Logged-in user in `Article Manager` group | Can view published articles and manage pending articles/pending updates, including approve/reject actions. | Cannot create new articles by group default unless separately granted writer/admin permission. |
-| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Can view, create, manage approvals, use DjOpenKB admin tools, and access Django Admin when staff/admin checks and network restrictions pass. | Should be assigned only to trusted administrators. |
+| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Can use Knowledge Repository admin tools and access Django Admin when staff/admin checks and network restrictions pass. Django Admin is view-only for standard Admin Users; MFA/lockout reset actions are allowed. Full Django Admin edits/deletes are reserved for superusers. | Should be assigned only to trusted administrators. |
 
 ### 3.2 Group Baseline and Direct User Permission Add-ons
 
@@ -609,6 +609,7 @@ Admin tools include:
 - Manage user roles and direct user permission add-ons.
 - View authentication activity logs through Django admin.
 - View general activity logs through Django admin.
+- View Django Admin activity logs for admin create/change/delete/actions.
 - View upload audit records through Django admin.
 
 ### 17.4 Group and User Permission Management
@@ -721,7 +722,7 @@ Examples of authentication events:
 
 ### 18.2 General Activity Logs
 
-General site and content actions are logged in `ActivityLog`. This is separate from authentication logs so admins can review content and usage behaviour without mixing it with login/MFA activity.
+General site and content actions are logged in `ActivityLog`. Django Admin actions are logged separately in `AdminActivityLog`. This is separate from authentication logs so admins can review content/admin behaviour without mixing it with login/MFA activity.
 
 Examples of logged activity include:
 
@@ -742,7 +743,7 @@ IP logging prefers trusted reverse proxy headers such as `X-Real-IP` from Nginx 
 
 ### 18.4 Read-Only Admin Log Views
 
-`AuthActivityLog` and general `ActivityLog` are intended to be read-only in Django admin. Admin users can search and filter logs, but should not manually add or edit them from the admin interface.
+`AuthActivityLog`, general `ActivityLog`, `AdminActivityLog`, and article image upload logs are read-only in Django admin. Admin users can search and filter logs, but cannot manually add, edit, or delete them from the admin interface.
 
 Retention/deletion is controlled through cleanup commands instead of manual editing.
 
@@ -754,7 +755,7 @@ Authentication activity log retention is controlled by site setting:
 auth_activity_log_retention_days = 30 by default
 ```
 
-General activity log retention is controlled by site setting:
+General and Django Admin activity log retention is controlled by site setting:
 
 ```text
 activity_log_retention_days = 30 by default
@@ -884,7 +885,7 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | LDAP | LDAPS with certificate validation for AD integration. |
 | HTTPS | Nginx HTTPS and security headers. |
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
-| Activity logs | Article, vote, upload, AI, import/export, and admin-tool activity logging with retention cleanup. |
+| Activity logs | Article, vote, upload, AI, import/export, admin-tool, and Django Admin activity logging with retention cleanup. |
 | Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
 | AI endpoint | Prompt length limit, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting for logged-in users, timeout handling, concurrency limiting, output cleanup, and redacted activity previews. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
@@ -959,14 +960,14 @@ docker compose up -d
 - Keep `DJANGO_DEBUG=false` for deployment.
 - Keep Vault secrets out of shared packages.
 - Use LDAPS with certificate validation for AD.
-- Use the activity logs and authentication logs to review suspicious behaviour.
+- Use the activity logs, Django Admin activity logs, and authentication logs to review suspicious behaviour.
 - Keep the OpenKB AI rate limit enabled so one user or anonymous IP cannot continuously consume AI resources.
 - Keep log retention at 30 days unless longer investigation history is needed.
 - Use `--dry-run` before cleanup commands when validating behaviour.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
-- Keep the group model simple: `Disabled User`, `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`.
+- Keep the protected role groups intact: `Disabled User`, `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`. These default groups are protected from deletion.
 - Use direct user permission checkboxes only for one-off exceptions because they add permissions on top of group permissions.
 - Review the full-project Docker bind mount `.:/app` before final production-style deployment. It is convenient during development but should be removed where possible for hardened deployment.
 - Keep `.dockerignore` updated so secrets and runtime folders are not copied into Docker images.

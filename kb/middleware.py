@@ -590,3 +590,48 @@ class AuthSessionCacheControlMiddleware:
             set_strict_no_cache_headers(response)
 
         return response
+
+class AdminActivityLogMiddleware:
+    """Append audit rows for state-changing Django Admin requests.
+
+    Object-level add/change/delete details are mirrored from Django's built-in
+    LogEntry table by kb.signals. This middleware catches custom admin POSTs
+    such as MFA resets, lockout resets, bulk actions, and other admin forms.
+    """
+
+    STATE_CHANGING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def _is_admin_path(self, path):
+        return path == "/admin" or path.startswith("/admin/")
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        try:
+            path = request.path_info or request.path
+            user = getattr(request, "user", None)
+            if (
+                self._is_admin_path(path)
+                and request.method in self.STATE_CHANGING_METHODS
+                and user
+                and user.is_authenticated
+                and user.is_staff
+            ):
+                from .admin_audit import log_admin_activity, request_post_metadata
+                from .models import AdminActivityLog
+
+                log_admin_activity(
+                    request=request,
+                    event_type=AdminActivityLog.EventType.ADMIN_ACTION,
+                    status_code=getattr(response, "status_code", None),
+                    details=request_post_metadata(request),
+                )
+        except Exception:
+            # Admin audit logging must never break the admin response.
+            pass
+
+        return response
+

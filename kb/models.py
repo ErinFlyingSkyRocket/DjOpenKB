@@ -809,6 +809,65 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         return f"{self.get_event_type_display()} - {actor}{target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
 
 
+class AdminActivityLog(AppendOnlyAuditLogMixin, models.Model):
+    """Append-only audit log for actions performed inside Django Admin.
+
+    This complements Django's built-in admin LogEntry table by keeping a
+    project-owned retention-managed audit trail for admin create/change/delete
+    actions and admin POST requests such as MFA resets or bulk actions.
+    """
+
+    class EventType(models.TextChoices):
+        ADMIN_ADD = "admin_add", _("Admin object created")
+        ADMIN_CHANGE = "admin_change", _("Admin object changed")
+        ADMIN_DELETE = "admin_delete", _("Admin object deleted")
+        ADMIN_ACTION = "admin_action", _("Admin action/request")
+
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
+    event_type = models.CharField(max_length=40, choices=EventType.choices, db_index=True)
+    admin_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        db_constraint=False,
+        help_text=_(
+            "Historical admin user snapshot only. This relation intentionally does not enforce "
+            "a database constraint because admin audit logs must remain immutable when users are deleted."
+        ),
+        on_delete=models.DO_NOTHING,
+        related_name="admin_activity_logs",
+    )
+    admin_username = models.CharField(max_length=255, blank=True, db_index=True)
+    target_app_label = models.CharField(max_length=100, blank=True, db_index=True)
+    target_model = models.CharField(max_length=100, blank=True, db_index=True)
+    target_object_id = models.CharField(max_length=255, blank=True, db_index=True)
+    target_repr = models.CharField(max_length=500, blank=True)
+    action_flag = models.PositiveSmallIntegerField(null=True, blank=True, db_index=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True, db_index=True)
+    user_agent = models.TextField(blank=True)
+    path = models.CharField(max_length=500, blank=True)
+    request_method = models.CharField(max_length=10, blank=True)
+    status_code = models.PositiveSmallIntegerField(null=True, blank=True, db_index=True)
+    change_message = models.TextField(blank=True)
+    details = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = _("Admin activity log")
+        verbose_name_plural = _("Admin activity logs")
+        indexes = [
+            models.Index(fields=["-created_at", "event_type"], name="kb_adminlog_created_idx"),
+            models.Index(fields=["admin_username", "-created_at"], name="kb_adminlog_user_idx"),
+            models.Index(fields=["target_app_label", "target_model", "-created_at"], name="kb_adminlog_target_idx"),
+            models.Index(fields=["ip_address", "-created_at"], name="kb_adminlog_ip_idx"),
+        ]
+
+    def __str__(self):
+        actor = self.admin_username or (self.admin_user.get_username() if self.admin_user_id else str(_("unknown admin")))
+        target = self.target_repr or self.target_object_id or self.path or "-"
+        return f"{self.get_event_type_display()} - {actor} - {target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
+
+
 class SiteSetting(models.Model):
     """Singleton-style site settings editable from Django Admin."""
 
@@ -857,8 +916,8 @@ class SiteSetting(models.Model):
         default=30,
         verbose_name=_("General activity log retention (days)"),
         help_text=_(
-            "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. "
-            "Use 0 to keep general activity logs indefinitely."
+            "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. "
+            "Use 0 to keep general and admin activity logs indefinitely."
         ),
     )
     admin_log_rows_per_page = models.PositiveIntegerField(

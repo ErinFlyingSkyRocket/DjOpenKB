@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.utils import quote
+from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -12,8 +13,9 @@ from django.utils import timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
-from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .models import ActivityLog, AdminActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import log_auth_event, reset_user_auth_lockouts
+from .admin_audit import log_admin_activity
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
 from .permissions import (
@@ -69,6 +71,7 @@ def _apply_admin_translation_labels():
     _set_admin_model_label(SiteSetting, "Site setting", "Site settings")
     _set_admin_model_label(ArticleImageUploadLog, "Article image upload log", "Article image upload logs")
     _set_admin_model_label(ActivityLog, "Activity log", "Activity logs")
+    _set_admin_model_label(AdminActivityLog, "Admin activity log", "Admin activity logs")
 
     labels = {
         UserProfile: {
@@ -101,6 +104,24 @@ def _apply_admin_translation_labels():
             "user_agent": "User agent",
             "path": "Path",
             "request_method": "Request method",
+            "details": "Details",
+        },
+        AdminActivityLog: {
+            "created_at": "Created at",
+            "event_type": "Event type",
+            "admin_user": "Admin user",
+            "admin_username": "Admin username",
+            "target_app_label": "Target app",
+            "target_model": "Target model",
+            "target_object_id": "Target object ID",
+            "target_repr": "Target object",
+            "action_flag": "Django admin action flag",
+            "ip_address": "IP address",
+            "user_agent": "User agent",
+            "path": "Path",
+            "request_method": "Request method",
+            "status_code": "Status code",
+            "change_message": "Change message",
             "details": "Details",
         },
         ActivityLog: {
@@ -204,7 +225,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
         (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
-        (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely.",
+        (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
         (SiteSetting, "auth_lockout_strike_ttl_seconds"): "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).",
@@ -258,6 +279,39 @@ def format_admin_duration_with_seconds(seconds):
     except (TypeError, ValueError):
         seconds_int = 0
     return f"{readable} ({seconds_int} seconds)"
+
+
+def can_modify_django_admin(request):
+    """Only superusers may create/edit/delete through Django Admin.
+
+    Standard Admin Users can access Django Admin for visibility and operational
+    reset actions, but they should not be able to change or delete users,
+    groups, articles, settings, or logs from the admin site.
+    """
+    user = getattr(request, "user", None)
+    return bool(user and user.is_authenticated and user.is_superuser)
+
+
+class SuperuserWriteOnlyAdminMixin:
+    """Allow non-superuser admin users to view, but not edit/delete records."""
+
+    def has_add_permission(self, request):
+        return can_modify_django_admin(request) and super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return can_modify_django_admin(request) and super().has_change_permission(request, obj=obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return can_modify_django_admin(request) and super().has_delete_permission(request, obj=obj)
+
+    def has_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj=obj) or super().has_change_permission(request, obj=obj)
+
+
+def require_admin_reset_permission(request):
+    """Allow custom admin reset actions to standard Admin Users and superusers."""
+    if not user_can_use_admin_tools(request.user):
+        raise PermissionDenied(_("You do not have permission to perform this admin reset."))
 
 def get_admin_log_rows_per_page():
     """Return admin log row count from Site settings with safe bounds."""
@@ -548,7 +602,7 @@ except admin.sites.NotRegistered:
 
 
 @admin.register(Group)
-class GroupAdmin(DefaultGroupAdmin):
+class GroupAdmin(SuperuserWriteOnlyAdminMixin, DefaultGroupAdmin):
     """Make group membership manageable directly from the Group admin page."""
 
     form = GroupAdminForm
@@ -569,7 +623,9 @@ class GroupAdmin(DefaultGroupAdmin):
     def get_fieldsets(self, request, obj=None):
         role_fields = ("name", "permissions")
         if obj and obj.name in ROLE_GROUP_NAMES:
-            role_fields = ("name", "djopenkb_role_guide", "permissions")
+            # Protected role permissions are seeded by the app and not editable
+            # from Django Admin. Membership remains editable below.
+            role_fields = ("name", "djopenkb_role_guide")
 
         return (
             (None, {"fields": role_fields}),
@@ -587,9 +643,26 @@ class GroupAdmin(DefaultGroupAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if obj and obj.name in ROLE_GROUP_NAMES and "djopenkb_role_guide" not in readonly_fields:
-            readonly_fields.append("djopenkb_role_guide")
+        if obj and obj.name in ROLE_GROUP_NAMES:
+            for field_name in ("name", "djopenkb_role_guide"):
+                if field_name not in readonly_fields:
+                    readonly_fields.append(field_name)
         return tuple(readonly_fields)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.name in ROLE_GROUP_NAMES:
+            return False
+        return super().has_delete_permission(request, obj=obj)
+
+    def delete_model(self, request, obj):
+        if obj.name in ROLE_GROUP_NAMES:
+            raise PermissionDenied(_("Default Knowledge Repository role groups cannot be deleted."))
+        return super().delete_model(request, obj)
+
+    def delete_queryset(self, request, queryset):
+        if queryset.filter(name__in=ROLE_GROUP_NAMES).exists():
+            raise PermissionDenied(_("Default Knowledge Repository role groups cannot be deleted."))
+        return super().delete_queryset(request, queryset)
 
     def djopenkb_role_guide(self, obj):
         if not obj or obj.name not in ROLE_DEFINITIONS:
@@ -670,7 +743,7 @@ except admin.sites.NotRegistered:
 
 
 @admin.register(User)
-class UserAdmin(DefaultUserAdmin):
+class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
     inlines = (UserProfileInline,)
 
     list_display = (
@@ -714,6 +787,16 @@ class UserAdmin(DefaultUserAdmin):
         "reset_mfa_for_selected_users",
         "reset_auth_lockouts_for_selected_users",
     )
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if can_modify_django_admin(request):
+            return actions
+
+        # Standard Admin Users are allowed operational resets only; they must
+        # not edit, delete, disable, or convert users through admin bulk actions.
+        allowed = {"reset_mfa_for_selected_users", "reset_auth_lockouts_for_selected_users"}
+        return {name: action for name, action in actions.items() if name in allowed}
 
     def _is_domain_user(self, obj):
         """Return True when this Django user is managed by AD/LDAP."""
@@ -916,6 +999,7 @@ class UserAdmin(DefaultUserAdmin):
         return custom_urls + urls
 
     def reset_user_auth_lockout_view(self, request, user_id):
+        require_admin_reset_permission(request)
         user = self.get_object(request, user_id)
         if user is None:
             raise Http404(_("User does not exist."))
@@ -957,6 +1041,7 @@ class UserAdmin(DefaultUserAdmin):
         return TemplateResponse(request, "admin/kb/reset_auth_lockout_confirm.html", context)
 
     def reset_user_mfa_view(self, request, user_id):
+        require_admin_reset_permission(request)
         user = self.get_object(request, user_id)
         if user is None:
             raise Http404(_("User does not exist."))
@@ -998,6 +1083,7 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Reset MFA for selected users"))
     def reset_mfa_for_selected_users(self, request, queryset):
+        require_admin_reset_permission(request)
         count = 0
         for user in queryset:
             _device, sessions_deleted = admin_reset_user_mfa(user)
@@ -1019,6 +1105,7 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Reset password/MFA lockout for selected users"))
     def reset_auth_lockouts_for_selected_users(self, request, queryset):
+        require_admin_reset_permission(request)
         count = 0
         for user in queryset:
             identifiers = reset_user_auth_lockouts(user)
@@ -1043,6 +1130,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Set selected users as Disabled User"))
     def set_selected_users_disabled(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can assign Disabled User from Django Admin."))
         count = 0
         skipped_self = 0
         for user in queryset:
@@ -1079,6 +1168,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Allow selected users to access main site"))
     def allow_main_site_access(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.can_access_main_site = True
@@ -1086,6 +1177,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Block selected users from main site"))
     def block_main_site_access(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.can_access_main_site = False
@@ -1093,6 +1186,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Set selected users as User"))
     def make_django_user(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.USER
@@ -1101,6 +1196,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Set selected users as Admin"))
     def make_django_admin(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.ADMIN
@@ -1109,6 +1206,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Set selected users as LDAP user"))
     def make_ldap_user(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.LDAP_USER
@@ -1117,6 +1216,8 @@ class UserAdmin(DefaultUserAdmin):
 
     @admin.action(description=_("Set selected users as LDAP admin"))
     def make_ldap_admin(self, request, queryset):
+        if not can_modify_django_admin(request):
+            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.LDAP_ADMIN
@@ -1125,7 +1226,7 @@ class UserAdmin(DefaultUserAdmin):
 
 
 @admin.register(UserProfile)
-class UserProfileAdmin(admin.ModelAdmin):
+class UserProfileAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
     list_display = (
         "user",
         "account_type",
@@ -1164,6 +1265,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     @admin.action(description=_("Reset password/MFA lockout for selected profiles"))
     def reset_auth_lockouts_for_selected_profiles(self, request, queryset):
+        require_admin_reset_permission(request)
         count = 0
         for profile in queryset.select_related("user"):
             identifiers = reset_user_auth_lockouts(profile.user)
@@ -1188,7 +1290,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserMFADevice)
-class UserMFADeviceAdmin(admin.ModelAdmin):
+class UserMFADeviceAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
     list_display = (
         "user",
         "user_account_type",
@@ -1237,6 +1339,7 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
 
     @admin.action(description=_("Reset selected MFA devices"))
     def reset_selected_mfa_devices(self, request, queryset):
+        require_admin_reset_permission(request)
         count = 0
         for device in queryset.select_related("user"):
             _device, sessions_deleted = admin_reset_user_mfa(device.user)
@@ -1258,6 +1361,7 @@ class UserMFADeviceAdmin(admin.ModelAdmin):
 
     @admin.action(description=_("Mark selected MFA devices as setup pending"))
     def mark_selected_devices_setup_pending(self, request, queryset):
+        require_admin_reset_permission(request)
         count = 0
         for device in queryset:
             device.confirmed = False
@@ -1444,8 +1548,83 @@ class ActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     short_path.short_description = _("Path")
 
 
+@admin.register(AdminActivityLog)
+class AdminActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
+    """Read-only log for Django Admin create/change/delete/actions."""
+
+    list_display = (
+        "created_at",
+        "event_type",
+        "admin_username",
+        "admin_user",
+        "target_label",
+        "target_object_id",
+        "status_code",
+        "ip_address",
+        "short_path",
+    )
+    list_filter = ("event_type", "target_app_label", "target_model", "status_code", "created_at")
+    search_fields = (
+        "admin_username",
+        "admin_user__username",
+        "admin_user__email",
+        "target_app_label",
+        "target_model",
+        "target_object_id",
+        "target_repr",
+        "path",
+        "ip_address",
+        "change_message",
+        "details",
+    )
+    readonly_fields = (
+        "created_at",
+        "event_type",
+        "admin_user",
+        "admin_username",
+        "target_app_label",
+        "target_model",
+        "target_object_id",
+        "target_repr",
+        "action_flag",
+        "ip_address",
+        "user_agent",
+        "path",
+        "request_method",
+        "status_code",
+        "change_message",
+        "details",
+    )
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+    list_per_page = 200
+    list_max_show_all = 500
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def target_label(self, obj):
+        if obj.target_app_label or obj.target_model:
+            return f"{obj.target_app_label}.{obj.target_model}".strip(".")
+        return "-"
+
+    target_label.short_description = _("Target model")
+
+    def short_path(self, obj):
+        value = obj.path or "-"
+        return value[:80] + ("..." if len(value) > 80 else "")
+
+    short_path.short_description = _("Path")
+
+
 @admin.register(SuggestedArticle)
-class SuggestedArticleAdmin(admin.ModelAdmin):
+class SuggestedArticleAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
     list_display = (
         "title",
         "owner",
@@ -1679,7 +1858,7 @@ class SuggestedArticleAdmin(admin.ModelAdmin):
 
 
 @admin.register(ArticleVote)
-class ArticleVoteAdmin(admin.ModelAdmin):
+class ArticleVoteAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
     list_display = ("article", "user", "vote_label", "created_at", "updated_at")
     list_filter = ("value", "created_at", "updated_at")
     search_fields = ("article__title", "user__username", "user__email")
@@ -1720,7 +1899,7 @@ class AuthLockoutPolicyStageInline(admin.TabularInline):
 
 
 @admin.register(SiteSetting)
-class SiteSettingAdmin(admin.ModelAdmin):
+class SiteSettingAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
     fieldsets = (
         (_("Article display and upload limits"), {
             "fields": ("articles_per_page", "article_image_upload_limit"),
@@ -1804,8 +1983,8 @@ class SiteSettingAdmin(admin.ModelAdmin):
     auth_lockout_strike_ttl_display.short_description = _("Escalation memory readable")
 
     def has_add_permission(self, request):
-        # Only allow creating the singleton if it does not already exist.
-        return not SiteSetting.objects.exists()
+        # Only superusers may create the singleton, and only if it does not already exist.
+        return can_modify_django_admin(request) and not SiteSetting.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         # Prevent accidental removal of the settings row.
