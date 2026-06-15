@@ -793,7 +793,7 @@ Disabled User          → account retained but blocked after valid password/MFA
 Regular User            → view published articles and vote
 Article Writer          → create and submit articles
 Article Manager         → review/manage pending articles and pending updates
-Admin Users             → admin tools and view-only Django Admin access when network/admin checks pass; full Django Admin edits/deletes remain superuser-only
+Admin Users             → admin tools and full Django Admin access through superuser status when network/admin checks pass
 ```
 
 Direct user permission checkboxes in Django Admin are add-on permissions only. They grant exceptions on top of group membership and do not remove group permissions.
@@ -809,7 +809,7 @@ After deployment, test these flows once:
 4. A user moved to Disabled User cannot complete login or access the wiki.
 5. Article Writer can create and submit an article.
 6. Article Manager can approve/reject pending articles.
-6. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN. In Django Admin they are view-only by default, with MFA/lockout reset actions allowed; superusers retain full edit/delete rights.
+6. Admin Users are synchronised to Django superuser status and can access /admin/ from the allowed admin network/VPN. There is no separate limited Django Admin role.
 7. /admin/login/ does not expose the normal Django admin login page.
 8. Search only returns title/keyword matches.
 9. Homepage tabs paginate correctly according to the Articles per page setting.

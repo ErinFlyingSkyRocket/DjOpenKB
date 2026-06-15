@@ -287,59 +287,21 @@ def format_admin_duration_with_seconds(seconds):
 
 
 def can_modify_django_admin(request):
-    """Only superusers may create/edit/delete through Django Admin.
+    """Return True only for full Django Admin superusers.
 
-    Standard Admin Users can access Django Admin for visibility and operational
-    reset actions, but they should not be able to change or delete users,
-    groups, articles, settings, or logs from the admin site.
+    Admin Users are synchronised to ``is_staff=True`` and ``is_superuser=True``.
+    There is no separate limited Django Admin role anymore.
     """
     user = getattr(request, "user", None)
     return bool(user and user.is_authenticated and user.is_superuser)
 
 
-def _friendly_admin_permission_denied(modeladmin, request, message=None):
-    """Show a normal Django Admin notification instead of raising a 500/403 flow.
+class AdminAuditMixin:
+    """Add readable AdminActivityLog entries for admin add/change/delete actions.
 
-    Standard Admin Users are intentionally view-only in Django Admin. When they
-    click or tamper with a state-changing action, keep them on the admin page
-    and show a clear message instead of letting PermissionDenied bubble into a
-    server error page.
+    Django Admin access itself is restricted to superusers. This mixin focuses
+    only on audit capture, not on providing a separate limited admin mode.
     """
-    modeladmin.message_user(
-        request,
-        message or _("You do not have permission to perform this admin action."),
-        level=messages.ERROR,
-    )
-
-
-def _admin_changelist_url(modeladmin):
-    opts = modeladmin.model._meta
-    return reverse(f"admin:{opts.app_label}_{opts.model_name}_changelist")
-
-
-class SuperuserWriteOnlyAdminMixin:
-    """Allow non-superuser admin users to view, but not edit/delete records.
-
-    Subclasses may expose a small allowlist of safe operational actions, such
-    as MFA reset, by setting ``non_superuser_allowed_actions``. All other bulk
-    actions are hidden and direct tampering attempts return a friendly admin
-    message instead of a server error. The mixin also records a readable,
-    field-level AdminActivityLog entry for admin add/change/delete operations.
-    """
-
-    non_superuser_allowed_actions = ()
-
-    def has_add_permission(self, request):
-        return can_modify_django_admin(request) and super().has_add_permission(request)
-
-    def has_change_permission(self, request, obj=None):
-        return can_modify_django_admin(request) and super().has_change_permission(request, obj=obj)
-
-    def has_delete_permission(self, request, obj=None):
-        return can_modify_django_admin(request) and super().has_delete_permission(request, obj=obj)
-
-    def has_view_permission(self, request, obj=None):
-        return super().has_view_permission(request, obj=obj) or super().has_change_permission(request, obj=obj)
 
     def _admin_audit_snapshot_key(self, obj):
         if obj is None or not getattr(obj, "pk", None):
@@ -352,88 +314,6 @@ class SuperuserWriteOnlyAdminMixin:
 
     def get_admin_audit_snapshot(self, obj):
         return build_admin_object_snapshot(obj, extra=self.get_admin_audit_extra_snapshot(obj))
-
-    def add_view(self, request, form_url="", extra_context=None):
-        if request.method == "POST" and not can_modify_django_admin(request):
-            _friendly_admin_permission_denied(
-                self,
-                request,
-                _("You do not have permission to create records in Django Admin."),
-            )
-            return HttpResponseRedirect(_admin_changelist_url(self))
-        try:
-            return super().add_view(request, form_url=form_url, extra_context=extra_context)
-        except PermissionDenied:
-            _friendly_admin_permission_denied(self, request)
-            return HttpResponseRedirect(_admin_changelist_url(self))
-
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        if request.method == "POST" and not can_modify_django_admin(request):
-            _friendly_admin_permission_denied(
-                self,
-                request,
-                _("You do not have permission to edit records in Django Admin."),
-            )
-            redirect_to = request.get_full_path() if object_id else _admin_changelist_url(self)
-            return HttpResponseRedirect(redirect_to)
-
-        if request.method == "POST" and object_id:
-            try:
-                obj = self.get_object(request, object_id)
-                key = self._admin_audit_snapshot_key(obj)
-                if key:
-                    request._admin_audit_before_snapshots = getattr(request, "_admin_audit_before_snapshots", {})
-                    request._admin_audit_before_snapshots[key] = self.get_admin_audit_snapshot(obj)
-            except Exception:
-                pass
-        try:
-            return super().changeform_view(request, object_id=object_id, form_url=form_url, extra_context=extra_context)
-        except PermissionDenied:
-            _friendly_admin_permission_denied(self, request)
-            redirect_to = request.get_full_path() if object_id else _admin_changelist_url(self)
-            return HttpResponseRedirect(redirect_to)
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if can_modify_django_admin(request):
-            return actions
-
-        allowed = set(getattr(self, "non_superuser_allowed_actions", ()) or ())
-        return {name: action for name, action in actions.items() if name in allowed}
-
-    def response_action(self, request, queryset):
-        requested_action = request.POST.get("action") or ""
-        if not can_modify_django_admin(request):
-            allowed = set(getattr(self, "non_superuser_allowed_actions", ()) or ())
-            if requested_action and requested_action not in allowed:
-                _friendly_admin_permission_denied(self, request)
-                return HttpResponseRedirect(request.get_full_path())
-        try:
-            return super().response_action(request, queryset)
-        except PermissionDenied:
-            _friendly_admin_permission_denied(self, request)
-            return HttpResponseRedirect(request.get_full_path())
-
-    def changelist_view(self, request, extra_context=None):
-        try:
-            return super().changelist_view(request, extra_context=extra_context)
-        except PermissionDenied:
-            _friendly_admin_permission_denied(self, request)
-            return HttpResponseRedirect(request.get_full_path())
-
-    def delete_view(self, request, object_id, extra_context=None):
-        if not can_modify_django_admin(request):
-            _friendly_admin_permission_denied(
-                self,
-                request,
-                _("You do not have permission to delete records in Django Admin."),
-            )
-            return HttpResponseRedirect(_admin_changelist_url(self))
-        try:
-            return super().delete_view(request, object_id=object_id, extra_context=extra_context)
-        except PermissionDenied as exc:
-            _friendly_admin_permission_denied(self, request, str(exc) or None)
-            return HttpResponseRedirect(_admin_changelist_url(self))
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
@@ -557,7 +437,7 @@ class SuperuserWriteOnlyAdminMixin:
 
 
 def require_admin_reset_permission(request):
-    """Allow custom admin reset actions to standard Admin Users and superusers."""
+    """Allow custom admin reset actions only for full administrators."""
     if not user_can_use_admin_tools(request.user):
         raise PermissionDenied(_("You do not have permission to perform this admin reset."))
 
@@ -624,7 +504,6 @@ DIRECT_PERMISSION_FIELD_MAP = {
     "direct_can_view_articles": PERM_VIEW_ARTICLES,
     "direct_can_add_articles": PERM_ADD_ARTICLES,
     "direct_can_manage_articles": PERM_MANAGE_ARTICLES,
-    "direct_can_use_admin_tools": PERM_USE_ADMIN_TOOLS,
 }
 
 
@@ -664,16 +543,6 @@ class UserProfileInlineForm(forms.ModelForm):
             "It does not automatically allow creating new articles or full Django admin access unless another permission/group grants those."
         ),
     )
-    direct_can_use_admin_tools = forms.BooleanField(
-        required=False,
-        label=_("Can use admin tools"),
-        help_text=_(
-            "Direct user permission for trusted administrators. Allows Knowledge Repository admin tools and syncs Django staff access. "
-            "This permission also acts as a higher-level override for article creation and article management checks. "
-            "Admin access is still protected by login, MFA, CIDR/VPN allowlist, and Django admin permission checks."
-        ),
-    )
-
     class Meta:
         model = UserProfile
         fields = "__all__"
@@ -732,7 +601,6 @@ class UserProfileInline(admin.StackedInline):
                     "direct_can_view_articles",
                     "direct_can_add_articles",
                     "direct_can_manage_articles",
-                    "direct_can_use_admin_tools",
                 ),
                 "description": _(
                     "Use Groups as the user's standard role. Tick these boxes only when this specific user needs extra permissions "
@@ -772,8 +640,8 @@ class UserProfileInline(admin.StackedInline):
             (
                 _("Direct user permissions"),
                 _(
-                    "The checkboxes below are special per-user exceptions. They are useful when one user needs slightly more access "
-                    "than their group, without creating a new group."
+                    "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs "
+                    "slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
                 ),
             ),
             (
@@ -787,7 +655,7 @@ class UserProfileInline(admin.StackedInline):
                 _("Effective permissions"),
                 _(
                     "This line shows the final result after Django combines group permissions, direct user permissions, "
-                    "superuser status, and Knowledge Repository admin account status."
+                    "and superuser status."
                 ),
             ),
         )
@@ -883,7 +751,7 @@ except admin.sites.NotRegistered:
 
 
 @admin.register(Group)
-class GroupAdmin(SuperuserWriteOnlyAdminMixin, DefaultGroupAdmin):
+class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
     """Make group membership manageable directly from the Group admin page."""
 
     form = GroupAdminForm
@@ -1049,8 +917,7 @@ except admin.sites.NotRegistered:
 
 
 @admin.register(User)
-class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
-    non_superuser_allowed_actions = ("reset_mfa_for_selected_users", "reset_auth_lockouts_for_selected_users")
+class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
     inlines = (UserProfileInline,)
 
     list_display = (
@@ -1094,16 +961,6 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
         "reset_mfa_for_selected_users",
         "reset_auth_lockouts_for_selected_users",
     )
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        if can_modify_django_admin(request):
-            return actions
-
-        # Standard Admin Users are allowed operational resets only; they must
-        # not edit, delete, disable, or convert users through admin bulk actions.
-        allowed = {"reset_mfa_for_selected_users", "reset_auth_lockouts_for_selected_users"}
-        return {name: action for name, action in actions.items() if name in allowed}
 
     def _is_domain_user(self, obj):
         """Return True when this Django user is managed by AD/LDAP."""
@@ -1644,8 +1501,7 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
 
 
 @admin.register(UserProfile)
-class UserProfileAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
-    non_superuser_allowed_actions = ("reset_auth_lockouts_for_selected_profiles",)
+class UserProfileAdmin(AdminAuditMixin, admin.ModelAdmin):
     list_display = (
         "user",
         "account_type",
@@ -1715,8 +1571,7 @@ class UserProfileAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(UserMFADevice)
-class UserMFADeviceAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
-    non_superuser_allowed_actions = ("reset_selected_mfa_devices", "mark_selected_devices_setup_pending")
+class UserMFADeviceAdmin(AdminAuditMixin, admin.ModelAdmin):
     list_display = (
         "user",
         "user_account_type",
@@ -2144,7 +1999,7 @@ class AdminActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
 
 
 @admin.register(SuggestedArticle)
-class SuggestedArticleAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
+class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
     list_display = (
         "title",
         "owner",
@@ -2396,7 +2251,7 @@ class SuggestedArticleAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(ArticleVote)
-class ArticleVoteAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
+class ArticleVoteAdmin(AdminAuditMixin, admin.ModelAdmin):
     list_display = ("article", "user", "vote_label", "created_at", "updated_at")
     list_filter = ("value", "created_at", "updated_at")
     search_fields = ("article__title", "user__username", "user__email")
@@ -2437,7 +2292,7 @@ class AuthLockoutPolicyStageInline(admin.TabularInline):
 
 
 @admin.register(SiteSetting)
-class SiteSettingAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
+class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
     fieldsets = (
         (_("Article display and upload limits"), {
             "fields": ("articles_per_page", "article_image_upload_limit"),

@@ -27,7 +27,7 @@ from .mfa import (
 )
 from .models import SiteSetting, UserProfile
 from .auth_monitoring import log_auth_event
-from .permissions import user_can_use_admin_tools, user_has_disabled_role
+from .permissions import user_has_disabled_role
 
 
 
@@ -548,7 +548,7 @@ class ForceLoginAndAdminGuardMiddleware:
         user = getattr(request, "user", None)
         if user and user.is_authenticated:
             if self._is_admin_path(path):
-                if not (user.is_staff and user_can_use_admin_tools(user)):
+                if not getattr(user, "is_superuser", False):
                     raise Http404()
                 if not _admin_cidr_allowed(request):
                     raise Http404()

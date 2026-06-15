@@ -36,7 +36,7 @@ DjOpenKB now uses a login-only main website model. Anonymous visitors are not al
 | Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. |
 | Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. |
 | Article Manager | Logged-in user in `Article Manager` group | Can view published articles and manage pending articles/pending updates, including approve/reject actions. | Cannot create new articles by group default unless separately granted writer/admin permission. |
-| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Can use Knowledge Repository admin tools and access Django Admin when staff/admin checks and network restrictions pass. Django Admin is view-only for standard Admin Users; MFA/lockout reset actions are allowed. Full Django Admin edits/deletes are reserved for superusers. | Should be assigned only to trusted administrators. |
+| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Can use Knowledge Repository admin tools and is synchronised to Django superuser status for full Django Admin management when network restrictions pass. | Should be assigned only to trusted administrators. |
 
 ### 3.2 Group Baseline and Direct User Permission Add-ons
 

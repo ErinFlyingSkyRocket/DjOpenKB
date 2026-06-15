@@ -78,7 +78,7 @@ ROLE_DEFINITIONS = {
     },
     ROLE_ADMIN_USERS: {
         "description": _(
-            "Knowledge Repository administrator. Can create/publish articles directly and use the admin site for monitoring/MFA resets. Standard Admin Users are view-only inside Django Admin; destructive admin edits are reserved for superusers."
+            "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
         ),
         "permissions": (
             PERM_VIEW_ARTICLES,
@@ -185,16 +185,16 @@ def user_can_view_dislike_counts(user) -> bool:
 
 
 def user_can_use_admin_tools(user) -> bool:
+    """Return True only for full administrators.
+
+    Admin Users are synchronised to Django superuser status. Direct article
+    permission exceptions no longer grant Django Admin/admin-tool access.
+    """
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
     if user_has_disabled_role(user):
         return False
-    if getattr(user, "is_superuser", False):
-        return True
-    if user_has_kb_permission(user, PERM_USE_ADMIN_TOOLS):
-        return True
-    profile = getattr(user, "kb_profile", None)
-    return bool(profile and getattr(profile, "is_admin_type", False))
+    return bool(getattr(user, "is_superuser", False))
 
 
 def user_role_group_names(user) -> list[str]:
@@ -292,48 +292,11 @@ def seed_djopenkb_role_groups():
         group, _created = Group.objects.get_or_create(name=role_name)
         perms = [custom_permissions[codename] for codename in definition["permissions"]]
 
-        # Article Managers review from the normal Knowledge Repository pending-review UI only.
-        # They must not receive Django Admin model permissions or staff access.
-        if role_name == ROLE_ADMIN_USERS:
-            perms.extend(_admin_safe_model_permissions())
-
+        # Admin Users do not need explicit Django model view permissions here.
+        # They are synchronised to superuser status, and superuser status grants
+        # full Django Admin access. Keeping the group to custom Knowledge
+        # Repository permissions avoids confusing/redundant "view only" grants.
         group.permissions.set(sorted(set(perms), key=lambda permission: permission.pk))
-
-
-def _model_permissions(app_label: str, model: str, actions: set[str]):
-    codenames = [f"{action}_{model}" for action in actions]
-    return list(Permission.objects.filter(content_type__app_label=app_label, codename__in=codenames))
-
-
-def _admin_safe_model_permissions():
-    """View-only model permissions for standard Admin Users.
-
-    Standard Admin Users may enter Django Admin to view users, groups, logs,
-    settings, articles, and MFA devices, and may use the custom MFA/lockout reset
-    buttons. They do not receive add/change/delete model permissions. Full
-    create/edit/delete power in Django Admin is reserved for superusers.
-    """
-    safe_permissions = []
-
-    for model_name in (
-        "suggestedarticle",
-        "articlevote",
-        "sitesetting",
-        "userprofile",
-        "usermfadevice",
-        "activitylog",
-        "authactivitylog",
-        "adminactivitylog",
-        "articleimageuploadlog",
-        "authlockoutpolicystage",
-    ):
-        safe_permissions.extend(_model_permissions("kb", model_name, {"view"}))
-
-    # Allow viewing users/groups in Django Admin without granting edits/deletes.
-    safe_permissions.extend(_model_permissions("auth", "user", {"view"}))
-    safe_permissions.extend(_model_permissions("auth", "group", {"view"}))
-
-    return safe_permissions
 
 
 def set_user_direct_kb_permission(user, codename: str, enabled: bool):
@@ -484,35 +447,44 @@ def assign_default_kb_role_group(user):
 
 
 def sync_user_staff_flags_from_roles(user):
-    """Keep Django admin staff flag aligned with admin-capable role sources."""
+    """Keep Django admin flags aligned with Knowledge Repository admin roles.
+
+    Current policy:
+    - Disabled User is a hard override and removes Django Admin access.
+    - Admin Users / admin-type accounts are full Django Admin superusers.
+    - Non-admin users are not staff/superusers.
+
+    This avoids the earlier confusing state where an Admin User could enter
+    Django Admin but hit permission errors or 500 pages when attempting actions.
+    """
     if not getattr(user, "pk", None):
         return
 
     try:
         has_disabled_role = user.groups.filter(name=ROLE_DISABLED_USER).exists()
         has_admin_group = user.groups.filter(name=ROLE_ADMIN_USERS).exists()
-        has_direct_admin_perm = user_has_direct_kb_permission(user, PERM_USE_ADMIN_TOOLS)
     except (DatabaseError, OperationalError, ProgrammingError):
         return
 
     profile = getattr(user, "kb_profile", None)
-    should_be_staff = bool(
+    has_admin_profile = bool(profile and getattr(profile, "is_admin_type", False))
+    should_be_superuser = bool(
         not has_disabled_role
         and (
             getattr(user, "is_superuser", False)
             or has_admin_group
-            or has_direct_admin_perm
-            or (profile and getattr(profile, "is_admin_type", False))
+            or has_admin_profile
         )
     )
+    should_be_staff = should_be_superuser
 
     update_fields = []
     if user.is_staff != should_be_staff:
         user.is_staff = should_be_staff
         update_fields.append("is_staff")
 
-    if not should_be_staff and user.is_superuser:
-        user.is_superuser = False
+    if user.is_superuser != should_be_superuser:
+        user.is_superuser = should_be_superuser
         update_fields.append("is_superuser")
 
     if update_fields:
