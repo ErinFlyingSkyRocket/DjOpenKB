@@ -297,6 +297,26 @@ def can_modify_django_admin(request):
     return bool(user and user.is_authenticated and user.is_superuser)
 
 
+def _friendly_admin_permission_denied(modeladmin, request, message=None):
+    """Show a normal Django Admin notification instead of raising a 500/403 flow.
+
+    Standard Admin Users are intentionally view-only in Django Admin. When they
+    click or tamper with a state-changing action, keep them on the admin page
+    and show a clear message instead of letting PermissionDenied bubble into a
+    server error page.
+    """
+    modeladmin.message_user(
+        request,
+        message or _("You do not have permission to perform this admin action."),
+        level=messages.ERROR,
+    )
+
+
+def _admin_changelist_url(modeladmin):
+    opts = modeladmin.model._meta
+    return reverse(f"admin:{opts.app_label}_{opts.model_name}_changelist")
+
+
 class SuperuserWriteOnlyAdminMixin:
     """Allow non-superuser admin users to view, but not edit/delete records.
 
@@ -333,7 +353,30 @@ class SuperuserWriteOnlyAdminMixin:
     def get_admin_audit_snapshot(self, obj):
         return build_admin_object_snapshot(obj, extra=self.get_admin_audit_extra_snapshot(obj))
 
+    def add_view(self, request, form_url="", extra_context=None):
+        if request.method == "POST" and not can_modify_django_admin(request):
+            _friendly_admin_permission_denied(
+                self,
+                request,
+                _("You do not have permission to create records in Django Admin."),
+            )
+            return HttpResponseRedirect(_admin_changelist_url(self))
+        try:
+            return super().add_view(request, form_url=form_url, extra_context=extra_context)
+        except PermissionDenied:
+            _friendly_admin_permission_denied(self, request)
+            return HttpResponseRedirect(_admin_changelist_url(self))
+
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        if request.method == "POST" and not can_modify_django_admin(request):
+            _friendly_admin_permission_denied(
+                self,
+                request,
+                _("You do not have permission to edit records in Django Admin."),
+            )
+            redirect_to = request.get_full_path() if object_id else _admin_changelist_url(self)
+            return HttpResponseRedirect(redirect_to)
+
         if request.method == "POST" and object_id:
             try:
                 obj = self.get_object(request, object_id)
@@ -343,7 +386,12 @@ class SuperuserWriteOnlyAdminMixin:
                     request._admin_audit_before_snapshots[key] = self.get_admin_audit_snapshot(obj)
             except Exception:
                 pass
-        return super().changeform_view(request, object_id=object_id, form_url=form_url, extra_context=extra_context)
+        try:
+            return super().changeform_view(request, object_id=object_id, form_url=form_url, extra_context=extra_context)
+        except PermissionDenied:
+            _friendly_admin_permission_denied(self, request)
+            redirect_to = request.get_full_path() if object_id else _admin_changelist_url(self)
+            return HttpResponseRedirect(redirect_to)
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -358,13 +406,34 @@ class SuperuserWriteOnlyAdminMixin:
         if not can_modify_django_admin(request):
             allowed = set(getattr(self, "non_superuser_allowed_actions", ()) or ())
             if requested_action and requested_action not in allowed:
-                self.message_user(
-                    request,
-                    _("You do not have permission to perform this admin action."),
-                    level=messages.ERROR,
-                )
+                _friendly_admin_permission_denied(self, request)
                 return HttpResponseRedirect(request.get_full_path())
-        return super().response_action(request, queryset)
+        try:
+            return super().response_action(request, queryset)
+        except PermissionDenied:
+            _friendly_admin_permission_denied(self, request)
+            return HttpResponseRedirect(request.get_full_path())
+
+    def changelist_view(self, request, extra_context=None):
+        try:
+            return super().changelist_view(request, extra_context=extra_context)
+        except PermissionDenied:
+            _friendly_admin_permission_denied(self, request)
+            return HttpResponseRedirect(request.get_full_path())
+
+    def delete_view(self, request, object_id, extra_context=None):
+        if not can_modify_django_admin(request):
+            _friendly_admin_permission_denied(
+                self,
+                request,
+                _("You do not have permission to delete records in Django Admin."),
+            )
+            return HttpResponseRedirect(_admin_changelist_url(self))
+        try:
+            return super().delete_view(request, object_id=object_id, extra_context=extra_context)
+        except PermissionDenied as exc:
+            _friendly_admin_permission_denied(self, request, str(exc) or None)
+            return HttpResponseRedirect(_admin_changelist_url(self))
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
@@ -879,12 +948,26 @@ class GroupAdmin(SuperuserWriteOnlyAdminMixin, DefaultGroupAdmin):
 
     def delete_model(self, request, obj):
         if obj.name in ROLE_GROUP_NAMES:
-            raise PermissionDenied(_("Default Knowledge Repository role groups cannot be deleted."))
+            self.message_user(
+                request,
+                _("Default Knowledge Repository role groups cannot be deleted."),
+                level=messages.ERROR,
+            )
+            return
         return super().delete_model(request, obj)
 
     def delete_queryset(self, request, queryset):
-        if queryset.filter(name__in=ROLE_GROUP_NAMES).exists():
-            raise PermissionDenied(_("Default Knowledge Repository role groups cannot be deleted."))
+        protected_count = queryset.filter(name__in=ROLE_GROUP_NAMES).count()
+        if protected_count:
+            self.message_user(
+                request,
+                _("Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped.")
+                % {"count": protected_count},
+                level=messages.ERROR,
+            )
+            queryset = queryset.exclude(name__in=ROLE_GROUP_NAMES)
+            if not queryset.exists():
+                return
         return super().delete_queryset(request, queryset)
 
     def djopenkb_role_guide(self, obj):
