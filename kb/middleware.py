@@ -620,14 +620,20 @@ class AdminActivityLogMiddleware:
                 and user.is_authenticated
                 and user.is_staff
             ):
-                from .admin_audit import log_admin_activity, request_post_metadata
+                from .admin_audit import infer_admin_request_context, log_admin_activity
                 from .models import AdminActivityLog
 
+                context = infer_admin_request_context(request, response=response)
                 log_admin_activity(
                     request=request,
                     event_type=AdminActivityLog.EventType.ADMIN_ACTION,
+                    target_app_label=context.get("target_app_label", ""),
+                    target_model=context.get("target_model", ""),
+                    target_object_id=context.get("target_object_id", ""),
+                    target_repr=context.get("target_repr", ""),
+                    change_message=context.get("change_message", ""),
                     status_code=getattr(response, "status_code", None),
-                    details=request_post_metadata(request),
+                    details=context.get("details", {}),
                 )
         except Exception:
             # Admin audit logging must never break the admin response.

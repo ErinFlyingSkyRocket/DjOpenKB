@@ -15,7 +15,12 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import ActivityLog, AdminActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import log_auth_event, reset_user_auth_lockouts
-from .admin_audit import log_admin_activity
+from .admin_audit import (
+    build_admin_change_entries,
+    build_admin_object_snapshot,
+    describe_admin_change_entries,
+    log_admin_activity,
+)
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
 from .permissions import (
@@ -293,7 +298,16 @@ def can_modify_django_admin(request):
 
 
 class SuperuserWriteOnlyAdminMixin:
-    """Allow non-superuser admin users to view, but not edit/delete records."""
+    """Allow non-superuser admin users to view, but not edit/delete records.
+
+    Subclasses may expose a small allowlist of safe operational actions, such
+    as MFA reset, by setting ``non_superuser_allowed_actions``. All other bulk
+    actions are hidden and direct tampering attempts return a friendly admin
+    message instead of a server error. The mixin also records a readable,
+    field-level AdminActivityLog entry for admin add/change/delete operations.
+    """
+
+    non_superuser_allowed_actions = ()
 
     def has_add_permission(self, request):
         return can_modify_django_admin(request) and super().has_add_permission(request)
@@ -307,11 +321,209 @@ class SuperuserWriteOnlyAdminMixin:
     def has_view_permission(self, request, obj=None):
         return super().has_view_permission(request, obj=obj) or super().has_change_permission(request, obj=obj)
 
+    def _admin_audit_snapshot_key(self, obj):
+        if obj is None or not getattr(obj, "pk", None):
+            return None
+        return f"{obj._meta.label_lower}:{obj.pk}"
+
+    def get_admin_audit_extra_snapshot(self, obj):
+        """Subclasses can add safe related-object state to field-level audit diffs."""
+        return {}
+
+    def get_admin_audit_snapshot(self, obj):
+        return build_admin_object_snapshot(obj, extra=self.get_admin_audit_extra_snapshot(obj))
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        if request.method == "POST" and object_id:
+            try:
+                obj = self.get_object(request, object_id)
+                key = self._admin_audit_snapshot_key(obj)
+                if key:
+                    request._admin_audit_before_snapshots = getattr(request, "_admin_audit_before_snapshots", {})
+                    request._admin_audit_before_snapshots[key] = self.get_admin_audit_snapshot(obj)
+            except Exception:
+                pass
+        return super().changeform_view(request, object_id=object_id, form_url=form_url, extra_context=extra_context)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if can_modify_django_admin(request):
+            return actions
+
+        allowed = set(getattr(self, "non_superuser_allowed_actions", ()) or ())
+        return {name: action for name, action in actions.items() if name in allowed}
+
+    def response_action(self, request, queryset):
+        requested_action = request.POST.get("action") or ""
+        if not can_modify_django_admin(request):
+            allowed = set(getattr(self, "non_superuser_allowed_actions", ()) or ())
+            if requested_action and requested_action not in allowed:
+                self.message_user(
+                    request,
+                    _("You do not have permission to perform this admin action."),
+                    level=messages.ERROR,
+                )
+                return HttpResponseRedirect(request.get_full_path())
+        return super().response_action(request, queryset)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        obj = getattr(form, "instance", None)
+        if obj is None:
+            return
+
+        try:
+            key = self._admin_audit_snapshot_key(obj)
+            before = None
+            if change and key:
+                before = getattr(request, "_admin_audit_before_snapshots", {}).get(key)
+            after = self.get_admin_audit_snapshot(obj)
+            target_label = str(obj._meta.verbose_name)
+            target_display = str(obj)
+
+            if change:
+                entries = build_admin_change_entries(before, after)
+                if not entries:
+                    return
+                change_text = describe_admin_change_entries(entries)
+                action_label = _("Changed %(target_label)s %(target)s: %(changes)s") % {
+                    "target_label": target_label,
+                    "target": target_display,
+                    "changes": change_text,
+                }
+                details = {
+                    "source": "admin_field_diff",
+                    "action_label": str(action_label),
+                    "changed_fields": entries,
+                }
+                event_type = AdminActivityLog.EventType.ADMIN_CHANGE
+            else:
+                # For newly-created objects, include the safe initial values so
+                # the audit row is useful without opening Django's raw LogEntry.
+                created_values = []
+                for key_name, item in after.items():
+                    value = item.get("value")
+                    if value in ("", "-", [], None):
+                        continue
+                    created_values.append({
+                        "field": key_name,
+                        "label": item.get("label") or key_name,
+                        "value": value,
+                        "kind": item.get("kind") or "field",
+                    })
+                preview_parts = []
+                for item in created_values[:8]:
+                    value = item.get("value")
+                    if isinstance(value, list):
+                        value = ", ".join(value[:8])
+                    preview_parts.append(f"{item.get('label')}: {value}")
+                preview = "; ".join(preview_parts)
+                action_label = _("Created %(target_label)s %(target)s") % {
+                    "target_label": target_label,
+                    "target": target_display,
+                }
+                if preview:
+                    action_label = f"{action_label}: {preview}"
+                details = {
+                    "source": "admin_field_diff",
+                    "action_label": str(action_label),
+                    "created_values": created_values,
+                }
+                event_type = AdminActivityLog.EventType.ADMIN_ADD
+
+            log_admin_activity(
+                request=request,
+                event_type=event_type,
+                target_app_label=obj._meta.app_label,
+                target_model=obj._meta.model_name,
+                target_object_id=str(obj.pk or ""),
+                target_repr=target_display,
+                change_message=str(action_label),
+                details=details,
+            )
+        except Exception:
+            pass
+
+    def delete_model(self, request, obj):
+        target_display = str(obj)
+        target_label = str(obj._meta.verbose_name)
+        target_app_label = obj._meta.app_label
+        target_model = obj._meta.model_name
+        target_object_id = str(obj.pk or "")
+        super().delete_model(request, obj)
+        _log_admin_explicit_action(
+            request,
+            action_label=_("Deleted %(target_label)s %(target)s") % {"target_label": target_label, "target": target_display},
+            target_obj=obj,
+            details={
+                "source": "admin_delete_model",
+                "target_label": target_label,
+                "target_display": target_display,
+                "deleted_object_id": target_object_id,
+            },
+            event_type=AdminActivityLog.EventType.ADMIN_DELETE,
+        )
+
+    def delete_queryset(self, request, queryset):
+        model = queryset.model
+        target_label = str(model._meta.verbose_name_plural)
+        preview = [str(obj)[:120] for obj in queryset[:20]]
+        count = queryset.count()
+        super().delete_queryset(request, queryset)
+        _log_admin_explicit_action(
+            request,
+            action_label=_("Deleted %(count)d %(target_label)s: %(preview)s") % {
+                "count": count,
+                "target_label": target_label,
+                "preview": ", ".join(preview[:5]) + (f", +{count - 5} more" if count > 5 else ""),
+            },
+            details={
+                "source": "admin_delete_queryset",
+                "target_label": target_label,
+                "selected_count": count,
+                "selected_objects_preview": preview,
+            },
+            event_type=AdminActivityLog.EventType.ADMIN_DELETE,
+        )
+
 
 def require_admin_reset_permission(request):
     """Allow custom admin reset actions to standard Admin Users and superusers."""
     if not user_can_use_admin_tools(request.user):
         raise PermissionDenied(_("You do not have permission to perform this admin reset."))
+
+
+def _log_admin_explicit_action(request, *, action_label, target_obj=None, details=None, event_type=None):
+    """Write a clear AdminActivityLog row for custom admin buttons/actions."""
+    details = {**(details or {})}
+    details.setdefault("source", "explicit_admin_action")
+    details["action_label"] = str(action_label)
+
+    target_app_label = ""
+    target_model = ""
+    target_object_id = ""
+    target_repr = ""
+    if target_obj is not None:
+        try:
+            target_app_label = target_obj._meta.app_label
+            target_model = target_obj._meta.model_name
+            target_object_id = str(target_obj.pk or "")
+            target_repr = str(target_obj)
+            details.setdefault("target_display", target_repr)
+        except Exception:
+            target_repr = str(target_obj)
+            details.setdefault("target_display", target_repr)
+
+    log_admin_activity(
+        request=request,
+        event_type=event_type or AdminActivityLog.EventType.ADMIN_ACTION,
+        target_app_label=target_app_label,
+        target_model=target_model,
+        target_object_id=target_object_id,
+        target_repr=target_repr,
+        change_message=str(action_label),
+        details=details,
+    )
 
 def get_admin_log_rows_per_page():
     """Return admin log row count from Site settings with safe bounds."""
@@ -620,6 +832,17 @@ class GroupAdmin(SuperuserWriteOnlyAdminMixin, DefaultGroupAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("user_set", "permissions")
 
+    def get_admin_audit_extra_snapshot(self, obj):
+        if not obj or not getattr(obj, "pk", None):
+            return {}
+        return {
+            "group_users": {
+                "label": str(_("Users in this group")),
+                "value": sorted(user.get_username() for user in obj.user_set.all()),
+                "kind": "m2m",
+            },
+        }
+
     def get_fieldsets(self, request, obj=None):
         role_fields = ("name", "permissions")
         if obj and obj.name in ROLE_GROUP_NAMES:
@@ -744,6 +967,7 @@ except admin.sites.NotRegistered:
 
 @admin.register(User)
 class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
+    non_superuser_allowed_actions = ("reset_mfa_for_selected_users", "reset_auth_lockouts_for_selected_users")
     inlines = (UserProfileInline,)
 
     list_display = (
@@ -802,6 +1026,44 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
         """Return True when this Django user is managed by AD/LDAP."""
         profile = getattr(obj, "kb_profile", None)
         return bool(profile and getattr(profile, "is_ad_managed", False))
+
+    def get_admin_audit_extra_snapshot(self, obj):
+        if not obj or not getattr(obj, "pk", None):
+            return {}
+
+        profile, _ = UserProfile.objects.get_or_create(user=obj)
+        direct_permissions = []
+        for codename in DIRECT_PERMISSION_FIELD_MAP.values():
+            if user_has_direct_kb_permission(obj, codename):
+                direct_permissions.append(str(_(PERMISSION_LABELS.get(codename, codename))))
+
+        return {
+            "profile_account_type": {
+                "label": str(_("Profile account type")),
+                "value": profile.get_account_type_display(),
+                "kind": "field",
+            },
+            "profile_auth_source": {
+                "label": str(_("Authentication source")),
+                "value": profile.get_auth_source_display(),
+                "kind": "field",
+            },
+            "profile_main_site_access": {
+                "label": str(_("Main site access")),
+                "value": bool(profile.can_access_main_site),
+                "kind": "field",
+            },
+            "profile_preferred_language": {
+                "label": str(_("Preferred language")),
+                "value": profile.preferred_language or "-",
+                "kind": "field",
+            },
+            "direct_knowledge_repository_permissions": {
+                "label": str(_("Direct Knowledge Repository permissions")),
+                "value": sorted(direct_permissions),
+                "kind": "m2m",
+            },
+        }
 
     def domain_password_status(self, obj):
         return _("Domain password is managed in Active Directory and cannot be changed from Django admin.")
@@ -1024,6 +1286,12 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
                     "source": "user_change_button",
                 },
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Reset password/MFA lockout for user %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"reset_identifiers": identifiers, "admin_action": "reset_user_auth_lockout"},
+            )
             self.message_user(
                 request,
                 _("Password/MFA lockout counters were reset for %(username)s.") % {"username": user.get_username()},
@@ -1062,6 +1330,12 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
                 username=user.get_username(),
                 details={"actor": request.user.get_username(), "sessions_deleted": sessions_deleted},
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Reset MFA for user %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"sessions_deleted": sessions_deleted, "admin_action": "reset_user_mfa"},
+            )
             self.message_user(
                 request,
                 _(
@@ -1095,6 +1369,12 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
                 username=user.get_username(),
                 details={"actor": request.user.get_username(), "sessions_deleted": sessions_deleted, "source": "bulk_user_action"},
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Reset MFA for user %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"sessions_deleted": sessions_deleted, "admin_action": "reset_mfa_for_selected_users"},
+            )
             count += 1
         self.message_user(
             request,
@@ -1121,6 +1401,12 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
                     "source": "bulk_user_action",
                 },
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Reset password/MFA lockout for user %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"reset_identifiers": identifiers, "admin_action": "reset_auth_lockouts_for_selected_users"},
+            )
             count += 1
         self.message_user(
             request,
@@ -1131,7 +1417,8 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
     @admin.action(description=_("Set selected users as Disabled User"))
     def set_selected_users_disabled(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can assign Disabled User from Django Admin."))
+            self.message_user(request, _("You do not have permission to assign Disabled User."), level=messages.ERROR)
+            return
         count = 0
         skipped_self = 0
         for user in queryset:
@@ -1152,6 +1439,12 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
                     "source": "bulk_user_action",
                 },
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Assigned Disabled User role to %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"role": ROLE_DISABLED_USER, "admin_action": "set_selected_users_disabled"},
+            )
             count += 1
         if count:
             self.message_user(
@@ -1169,64 +1462,107 @@ class UserAdmin(SuperuserWriteOnlyAdminMixin, DefaultUserAdmin):
     @admin.action(description=_("Allow selected users to access main site"))
     def allow_main_site_access(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
+            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
+            return
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.can_access_main_site = True
             profile.save(update_fields=["can_access_main_site", "updated_at"])
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Allowed main-site access for user %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"admin_action": "allow_main_site_access"},
+            )
 
     @admin.action(description=_("Block selected users from main site"))
     def block_main_site_access(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
+            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
+            return
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.can_access_main_site = False
             profile.save(update_fields=["can_access_main_site", "updated_at"])
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Blocked main-site access for user %(username)s") % {"username": user.get_username()},
+                target_obj=user,
+                details={"admin_action": "block_main_site_access"},
+            )
 
     @admin.action(description=_("Set selected users as User"))
     def make_django_user(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
+            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
+            return
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.USER
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Set user %(username)s as local user") % {"username": user.get_username()},
+                target_obj=user,
+                details={"admin_action": "make_django_user"},
+            )
 
     @admin.action(description=_("Set selected users as Admin"))
     def make_django_admin(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
+            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
+            return
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.ADMIN
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Set user %(username)s as local admin") % {"username": user.get_username()},
+                target_obj=user,
+                details={"admin_action": "make_django_admin"},
+            )
 
     @admin.action(description=_("Set selected users as LDAP user"))
     def make_ldap_user(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
+            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
+            return
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.LDAP_USER
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Set user %(username)s as LDAP user") % {"username": user.get_username()},
+                target_obj=user,
+                details={"admin_action": "make_ldap_user"},
+            )
 
     @admin.action(description=_("Set selected users as LDAP admin"))
     def make_ldap_admin(self, request, queryset):
         if not can_modify_django_admin(request):
-            raise PermissionDenied(_("Only superusers can modify users from Django Admin."))
+            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
+            return
         for user in queryset:
             profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.account_type = UserProfile.AccountType.LDAP_ADMIN
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Set user %(username)s as LDAP admin") % {"username": user.get_username()},
+                target_obj=user,
+                details={"admin_action": "make_ldap_admin"},
+            )
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
+    non_superuser_allowed_actions = ("reset_auth_lockouts_for_selected_profiles",)
     list_display = (
         "user",
         "account_type",
@@ -1281,6 +1617,12 @@ class UserProfileAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
                     "source": "bulk_profile_action",
                 },
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Reset password/MFA lockout for user %(username)s") % {"username": profile.user.get_username()},
+                target_obj=profile.user,
+                details={"reset_identifiers": identifiers, "admin_action": "reset_auth_lockouts_for_selected_profiles"},
+            )
             count += 1
         self.message_user(
             request,
@@ -1291,6 +1633,7 @@ class UserProfileAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
 
 @admin.register(UserMFADevice)
 class UserMFADeviceAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
+    non_superuser_allowed_actions = ("reset_selected_mfa_devices", "mark_selected_devices_setup_pending")
     list_display = (
         "user",
         "user_account_type",
@@ -1351,6 +1694,12 @@ class UserMFADeviceAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
                 username=device.user.get_username(),
                 details={"actor": request.user.get_username(), "sessions_deleted": sessions_deleted, "source": "bulk_device_action"},
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Reset MFA for user %(username)s") % {"username": device.user.get_username()},
+                target_obj=device.user,
+                details={"sessions_deleted": sessions_deleted, "admin_action": "reset_selected_mfa_devices"},
+            )
             count += 1
         self.message_user(
             request,
@@ -1376,6 +1725,12 @@ class UserMFADeviceAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
                 user=device.user,
                 username=device.user.get_username(),
                 details={"actor": request.user.get_username(), "source": "mark_setup_pending"},
+            )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Marked MFA setup pending for user %(username)s") % {"username": device.user.get_username()},
+                target_obj=device.user,
+                details={"admin_action": "mark_selected_devices_setup_pending"},
             )
             count += 1
         self.message_user(
@@ -1554,12 +1909,12 @@ class AdminActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
 
     list_display = (
         "created_at",
-        "event_type",
+        "action_summary",
         "admin_username",
         "admin_user",
+        "target_display",
         "target_label",
-        "target_object_id",
-        "status_code",
+        "status_display",
         "ip_address",
         "short_path",
     )
@@ -1579,13 +1934,17 @@ class AdminActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     )
     readonly_fields = (
         "created_at",
+        "action_summary",
         "event_type",
         "admin_user",
         "admin_username",
+        "target_display",
+        "target_label",
+        "target_object_id",
         "target_app_label",
         "target_model",
-        "target_object_id",
         "target_repr",
+        "status_display",
         "action_flag",
         "ip_address",
         "user_agent",
@@ -1609,12 +1968,90 @@ class AdminActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+    def action_summary(self, obj):
+        details = obj.details or {}
+        explicit = details.get("action_label") or details.get("summary")
+        if explicit:
+            return explicit
+
+        target = self.target_display(obj)
+        target_label = self.target_label(obj)
+        change_message = obj.change_message or ""
+
+        if obj.event_type == AdminActivityLog.EventType.ADMIN_ADD:
+            return _("Created %(target_label)s: %(target)s") % {"target_label": target_label, "target": target}
+        if obj.event_type == AdminActivityLog.EventType.ADMIN_CHANGE:
+            if change_message:
+                return _("Changed %(target_label)s: %(target)s — %(changes)s") % {
+                    "target_label": target_label,
+                    "target": target,
+                    "changes": change_message,
+                }
+            return _("Changed %(target_label)s: %(target)s") % {"target_label": target_label, "target": target}
+        if obj.event_type == AdminActivityLog.EventType.ADMIN_DELETE:
+            return _("Deleted %(target_label)s: %(target)s") % {"target_label": target_label, "target": target}
+
+        admin_action = details.get("admin_action") or details.get("action")
+        if admin_action:
+            return _("Ran admin action '%(action)s' on %(target)s") % {"action": admin_action, "target": target}
+        if obj.status_code and int(obj.status_code) >= 400:
+            return _("Admin request failed or denied for %(target)s") % {"target": target}
+        return change_message or (_("Admin request for %(target)s") % {"target": target})
+
+    action_summary.short_description = _("Action")
+
     def target_label(self, obj):
+        details = obj.details or {}
+        if details.get("target_label"):
+            return details["target_label"]
         if obj.target_app_label or obj.target_model:
             return f"{obj.target_app_label}.{obj.target_model}".strip(".")
         return "-"
 
     target_label.short_description = _("Target model")
+
+    def target_display(self, obj):
+        details = obj.details or {}
+        if obj.target_repr:
+            return obj.target_repr
+        if details.get("target_display"):
+            return details["target_display"]
+        preview = details.get("selected_objects_preview") or []
+        if preview:
+            selected_count = int(details.get("selected_count") or len(preview))
+            shown = ", ".join(str(item) for item in preview[:5])
+            extra = selected_count - min(selected_count, 5)
+            return f"{shown}, +{extra} more" if extra > 0 else shown
+        if details.get("target_username"):
+            return details["target_username"]
+        if details.get("target_usernames"):
+            values = details.get("target_usernames") or []
+            return ", ".join(str(value) for value in values[:5])
+        if obj.target_object_id:
+            return _("Object ID %(object_id)s") % {"object_id": obj.target_object_id}
+        return "-"
+
+    target_display.short_description = _("Target")
+
+    def status_display(self, obj):
+        if not obj.status_code:
+            return "-"
+        status = int(obj.status_code)
+        if 200 <= status < 300:
+            label = _("OK")
+        elif 300 <= status < 400:
+            label = _("Redirect")
+        elif status in {401, 403}:
+            label = _("Denied")
+        elif status == 404:
+            label = _("Not found")
+        elif status >= 500:
+            label = _("Server error")
+        else:
+            label = _("Failed")
+        return f"{status} - {label}"
+
+    status_display.short_description = _("Status")
 
     def short_path(self, obj):
         value = obj.path or "-"
@@ -1719,6 +2156,9 @@ class SuggestedArticleAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
 
     @admin.action(description=_("Approve selected pending articles"))
     def approve_selected_articles(self, request, queryset):
+        if not can_modify_django_admin(request):
+            self.message_user(request, _("You do not have permission to approve articles from Django Admin."), level=messages.ERROR)
+            return
         for article in queryset:
             if article.review_notes:
                 article.archive_current_review_note(actor=request.user, action="approved")
@@ -1734,9 +2174,18 @@ class SuggestedArticleAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
                 article=article,
                 details={"source": "django_admin_bulk_action", "action": "approve_selected_articles"},
             )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Approved article %(title)s from Django Admin") % {"title": article.title},
+                target_obj=article,
+                details={"admin_action": "approve_selected_articles"},
+            )
 
     @admin.action(description=_("Mark selected articles as pending failed"))
     def mark_selected_articles_pending_failed(self, request, queryset):
+        if not can_modify_django_admin(request):
+            self.message_user(request, _("You do not have permission to reject articles from Django Admin."), level=messages.ERROR)
+            return
         for article in queryset:
             article.status = SuggestedArticle.Status.FAILED
             article.approved_by = None
@@ -1751,6 +2200,12 @@ class SuggestedArticleAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
                 ActivityLog.EventType.ARTICLE_REJECTED,
                 article=article,
                 details={"source": "django_admin_bulk_action", "action": "mark_selected_articles_pending_failed"},
+            )
+            _log_admin_explicit_action(
+                request,
+                action_label=_("Marked article %(title)s as pending failed from Django Admin") % {"title": article.title},
+                target_obj=article,
+                details={"admin_action": "mark_selected_articles_pending_failed"},
             )
 
 
@@ -1948,6 +2403,31 @@ class SiteSettingAdmin(SuperuserWriteOnlyAdminMixin, admin.ModelAdmin):
     )
     readonly_fields = ("updated_at", "auth_lockout_policy_guide", "auth_lockout_strike_ttl_display")
     inlines = (AuthLockoutPolicyStageInline,)
+
+    def get_admin_audit_extra_snapshot(self, obj):
+        if not obj or not getattr(obj, "pk", None):
+            return {}
+        stages = []
+        for stage in obj.auth_lockout_stages.all().order_by("sort_order", "id"):
+            repeat = _("repeat forever") if stage.repeat_count == 0 else _("repeat %(count)s time(s)") % {"count": stage.repeat_count}
+            enabled = _("enabled") if stage.enabled else _("disabled")
+            stages.append(
+                str(_("Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"))
+                % {
+                    "order": stage.sort_order,
+                    "failures": stage.failure_limit,
+                    "duration": format_admin_duration_with_seconds(stage.block_seconds),
+                    "repeat": repeat,
+                    "enabled": enabled,
+                }
+            )
+        return {
+            "authentication_lockout_policy_stages": {
+                "label": str(_("Authentication lockout policy stages")),
+                "value": stages,
+                "kind": "m2m",
+            },
+        }
 
     def auth_lockout_policy_guide(self, obj):
         return format_html(
