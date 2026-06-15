@@ -25,11 +25,14 @@ from .permissions import (
     ROLE_ADMIN_USERS,
     ROLE_DEFINITIONS,
     ROLE_GROUP_NAMES,
+    ROLE_DISABLED_USER,
+    assign_single_role_group,
     highest_role_group_name,
     role_permissions_summary,
     set_user_direct_kb_permission,
     sync_user_staff_flags_from_roles,
     user_has_direct_kb_permission,
+    user_has_disabled_role,
 )
 
 
@@ -303,7 +306,8 @@ class UserProfileInlineForm(forms.ModelForm):
         help_text=_(
             "Direct user permission. Allows the user to open the main wiki and read published articles after login. "
             "It does not allow creating articles, approving articles, or using admin tools. "
-            "Unticked means no direct user grant; the user may still receive this permission from their group."
+            "Unticked means no direct user grant; the user may still receive this permission from their group. "
+            "The Disabled User group overrides direct permission add-ons."
         ),
     )
     direct_can_add_articles = forms.BooleanField(
@@ -394,7 +398,7 @@ class UserProfileInline(admin.StackedInline):
                 ),
                 "description": _(
                     "Use Groups as the user's standard role. Tick these boxes only when this specific user needs extra permissions "
-                    "outside their group. Django combines group permissions and direct user permissions together."
+                    "outside their group. The Disabled User group overrides these direct permission add-ons."
                 ),
             },
         ),
@@ -416,8 +420,15 @@ class UserProfileInline(admin.StackedInline):
             (
                 _("Group permissions"),
                 _(
-                    "Set the normal role from the user's Groups section, for example Regular User, Article Writer, "
-                    "Article Manager, or Admin Users."
+                    "Set the normal role from the user's Groups section, for example Disabled User, Regular User, "
+                    "Article Writer, Article Manager, or Admin Users."
+                ),
+            ),
+            (
+                _("Disabled User role"),
+                _(
+                    "Use Disabled User when an account should remain in the database for audit/history, but should not be allowed "
+                    "to complete login or access DjOpenKB. Disabled User overrides direct permission add-ons."
                 ),
             ),
             (
@@ -688,6 +699,7 @@ class UserAdmin(DefaultUserAdmin):
         "last_name",
     )
     actions = (
+        "set_selected_users_disabled",
         "allow_main_site_access",
         "block_main_site_access",
         "make_django_user",
@@ -774,8 +786,9 @@ class UserAdmin(DefaultUserAdmin):
         super().save_model(request, obj, form, change)
 
         profile, created = UserProfile.objects.get_or_create(user=obj)
+        has_disabled_group = user_has_disabled_role(obj) if obj.pk else False
         has_admin_group = obj.groups.filter(name=ROLE_ADMIN_USERS).exists() if obj.pk else False
-        if obj.is_superuser or has_admin_group or profile.is_admin_type:
+        if not has_disabled_group and (obj.is_superuser or has_admin_group or profile.is_admin_type):
             if profile.account_type not in {
                 UserProfile.AccountType.ADMIN,
                 UserProfile.AccountType.LDAP_ADMIN,
@@ -806,6 +819,9 @@ class UserAdmin(DefaultUserAdmin):
 
         if not obj.is_active:
             return _("Inactive")
+
+        if user_has_disabled_role(obj):
+            return _("Disabled User")
 
         if profile and profile.can_access_main_site:
             return _("Allowed")
@@ -1009,6 +1025,41 @@ class UserAdmin(DefaultUserAdmin):
             _("Password/MFA lockout counters reset for %(count)d selected user(s).") % {"count": count},
             level=messages.SUCCESS,
         )
+
+    @admin.action(description=_("Set selected users as Disabled User"))
+    def set_selected_users_disabled(self, request, queryset):
+        count = 0
+        skipped_self = 0
+        for user in queryset:
+            if request.user.pk == user.pk:
+                skipped_self += 1
+                continue
+            assign_single_role_group(user, ROLE_DISABLED_USER, clear_direct_permissions=True)
+            log_auth_event(
+                request,
+                event_type="auth_lockout_reset_admin",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "actor": request.user.get_username(),
+                    "reason": "assigned_disabled_user_role",
+                    "source": "bulk_user_action",
+                },
+            )
+            count += 1
+        if count:
+            self.message_user(
+                request,
+                _("Disabled User role assigned to %(count)d selected user(s).") % {"count": count},
+                level=messages.SUCCESS,
+            )
+        if skipped_self:
+            self.message_user(
+                request,
+                _("Your own account was skipped to reduce accidental self-lockout."),
+                level=messages.WARNING,
+            )
 
     @admin.action(description=_("Allow selected users to access main site"))
     def allow_main_site_access(self, request, queryset):

@@ -21,7 +21,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - MFA support using authenticator-app one-time passwords.
 - Authentication and activity logging for important user, article, admin, AI, and maintenance actions.
 - Configurable log retention and admin log display settings.
-- Admin-configurable progressive password/MFA lockout policy with readable seconds-to-minutes/hours display and reset actions for administrators.
+- Admin-configurable progressive password/MFA lockout policy with reset actions for administrators.
 - Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, and AI credentials.
 - PostgreSQL database through Docker Compose.
 - Redis-backed production cache for rate limiting, authentication lockout counters, and AI concurrency controls.
@@ -44,14 +44,15 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 | Role / group | Authentication source | Main purpose | Article browsing | Vote on articles | Add / submit articles | Manage approvals | Admin tools | Django Admin access |
 |---|---|---|---|---|---|---|---|---|
 | Anonymous visitor | None | Not allowed into the main site | No; only the login page and static/login support paths are public | No | No | No | No | No |
+| Disabled User | Local or AD / LDAPS | Account retained but blocked | No; stopped after valid password/MFA with a disabled-account message | No | No | No | No | No |
 | Regular User | Local or AD / LDAPS | Default internal reader | Yes, published articles after login | Yes | No | No | No | No |
 | Article Writer | Local or AD / LDAPS | Contributor | Yes | Yes | Yes; drafts and submissions go through approval | No | No | No |
 | Article Manager | Local or AD / LDAPS | Reviewer / moderator | Yes | Yes | No by group default unless also granted writer/admin permission | Yes, can review pending articles and pending updates | No | No by default |
 | Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes, when staff/superuser/admin-role sync allows it and network/admin guards pass |
 
-Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admin/staff/superuser accounts are aligned with the `Admin Users` group where applicable.
+Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admin/staff/superuser accounts are aligned with the `Admin Users` group where applicable. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the wiki.
 
-Group membership is the baseline permission model. Django Admin also provides direct user permission checkboxes for one-off exceptions. These direct user permissions are add-on permissions only; unticking a direct permission does not remove a permission that the user's group already provides.
+Group membership is the baseline permission model. Django Admin also provides direct user permission checkboxes for one-off exceptions. `Disabled User` overrides these direct permission add-ons. These direct user permissions are add-on permissions only; unticking a direct permission does not remove a permission that the user's group already provides.
 
 Local and AD users are separated by account source metadata, not by email domain. This means a local user can use an email address such as `alice@openkb.local` without being incorrectly treated as an AD user.
 
@@ -70,7 +71,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
 | AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
-| Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, readable duration display, and admin reset actions |
+| Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs and general activity logs |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
 | Network | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, and optional admin CIDR/VPN restrictions |
@@ -214,10 +215,6 @@ kb/urls.py                   # App-level URL routes
 kb/views/                    # Main page, article, admin, auth, MFA, AI, and service views
 kb/management/commands/      # Custom Django management commands
 kb/migrations/               # Database migrations
-
-### Migration Squashing Note
-
-The project can be safely reduced to one squashed `kb` migration after all existing servers have already applied the current migrations. Do not manually delete migration files on a production server before checking `python manage.py migrate --plan`. Use the safe guide in `documentations/MIGRATION_SQUASH_GUIDE.md`.
 kb/templatetags/             # Custom template filters/tags
 ```
 

@@ -42,6 +42,7 @@ from ..permissions import (
     PERM_USE_ADMIN_TOOLS,
     PERM_VIEW_ARTICLES,
     role_permissions_summary,
+    user_has_disabled_role,
     user_can_add_articles,
     user_can_manage_articles,
     user_can_use_admin_tools as permission_user_can_use_admin_tools,
@@ -1425,6 +1426,9 @@ def get_user_profile(user):
 
 def user_can_access_main_site(user):
     if not user.is_authenticated or not user.is_active:
+        return False
+
+    if user_has_disabled_role(user):
         return False
 
     profile = get_user_profile(user)

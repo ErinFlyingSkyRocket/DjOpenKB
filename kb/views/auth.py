@@ -16,11 +16,45 @@ from ..mfa import (
     user_requires_mfa,
     verify_totp_code,
 )
+from ..permissions import user_has_disabled_role
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
+
+
+def _disabled_account_login_message(request):
+    messages.error(
+        request,
+        _(
+            "Your account is currently disabled and cannot access DjOpenKB. "
+            "Please contact an administrator if you believe this is unexpected."
+        ),
+    )
+
+
+def _block_disabled_account_after_verified_credentials(request, user, *, login_mode="", source="password"):
+    """Stop a Disabled User after valid credentials, without creating a login session.
+
+    Disabled accounts are intentionally not rejected as a generic bad password.
+    The message is shown only after the password/LDAP bind succeeds, and for
+    MFA-enabled accounts only after the MFA code succeeds.
+    """
+    log_auth_event(
+        request,
+        event_type="password_failure",
+        success=False,
+        user=user,
+        username=user.get_username(),
+        login_mode=login_mode,
+        details={"reason": "account_disabled", "source": source},
+    )
+    clear_pending_mfa_login(request)
+    clear_mfa_verified(request)
+    logout(request)
+    _disabled_account_login_message(request)
+    request._skip_auth_failure_log = True
 
 
 @never_cache
@@ -134,19 +168,6 @@ class OpenKBLoginView(LoginView):
     def form_valid(self, form):
         user = form.get_user()
         login_mode = (self.request.POST.get("login_mode") or "").strip().lower()
-        if not user_can_access_main_site(user):
-            log_auth_event(
-                self.request,
-                event_type="password_failure",
-                success=False,
-                user=user,
-                username=user.get_username(),
-                login_mode=login_mode,
-                details={"reason": "main_site_access_blocked"},
-            )
-            logout(self.request)
-            self.request._skip_auth_failure_log = True
-            return self.form_invalid(form)
 
         record_auth_success(
             self.request,
@@ -163,6 +184,52 @@ class OpenKBLoginView(LoginView):
             username=user.get_username(),
             login_mode=login_mode,
         )
+
+        if user_has_disabled_role(user):
+            device = getattr(user, "kb_mfa_device", None)
+            if user_requires_mfa(user) and device and device.confirmed:
+                # Let MFA-enabled disabled accounts prove MFA first, then show
+                # the disabled-account message after the MFA code succeeds.
+                clear_pending_mfa_login(self.request)
+                clear_mfa_verified(self.request)
+                begin_pending_mfa_login(
+                    self.request,
+                    user,
+                    next_url=self.get_success_url(),
+                    backend=getattr(user, "backend", None),
+                )
+                log_auth_event(
+                    self.request,
+                    event_type="pending_mfa",
+                    success=True,
+                    user=user,
+                    username=user.get_username(),
+                    login_mode=login_mode,
+                    details={"device_confirmed": True, "account_disabled": True},
+                )
+                return redirect("mfa_verify")
+
+            _block_disabled_account_after_verified_credentials(
+                self.request,
+                user,
+                login_mode=login_mode,
+                source="password",
+            )
+            return redirect("root_login")
+
+        if not user_can_access_main_site(user):
+            log_auth_event(
+                self.request,
+                event_type="password_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                login_mode=login_mode,
+                details={"reason": "main_site_access_blocked"},
+            )
+            logout(self.request)
+            self.request._skip_auth_failure_log = True
+            return self.form_invalid(form)
 
         if user_requires_mfa(user):
             # MFA is part of login completion. Do not create the real

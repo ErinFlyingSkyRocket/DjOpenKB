@@ -789,6 +789,7 @@ Default role behaviour:
 
 ```text
 New normal local/AD user → Regular User group
+Disabled User          → account retained but blocked after valid password/MFA
 Regular User            → view published articles and vote
 Article Writer          → create and submit articles
 Article Manager         → review/manage pending articles and pending updates
@@ -805,8 +806,9 @@ After deployment, test these flows once:
 1. Incognito / anonymous request to /home/ returns 404 or forces login according to the login guard.
 2. / displays the login page.
 3. A new local or AD user lands in Regular User and can view published articles.
-4. Article Writer can create and submit an article.
-5. Article Manager can approve/reject pending articles.
+4. A user moved to Disabled User cannot complete login or access the wiki.
+5. Article Writer can create and submit an article.
+6. Article Manager can approve/reject pending articles.
 6. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN.
 7. /admin/login/ does not expose the normal Django admin login page.
 8. Search only returns title/keyword matches.

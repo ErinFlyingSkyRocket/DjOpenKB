@@ -84,7 +84,8 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
             users = list(UserModel.objects.filter(pk__in=pk_set))
 
         for user in users:
-            assign_default_kb_role_group(user)
+            if not getattr(user, "_djopenkb_syncing_role_groups", False):
+                assign_default_kb_role_group(user)
             sync_user_staff_flags_from_roles(user)
     except Exception:
         pass

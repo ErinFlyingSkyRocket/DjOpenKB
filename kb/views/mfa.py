@@ -23,6 +23,7 @@ from ..auth_monitoring import (
 from ..mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
+    clear_pending_mfa_login,
     complete_pending_mfa_login,
     get_or_create_mfa_device,
     reset_mfa_device_for_user,
@@ -35,6 +36,30 @@ from ..mfa import (
     user_requires_mfa,
     verify_totp_code,
 )
+from ..permissions import user_has_disabled_role
+
+
+def _deny_disabled_account_after_mfa(request, user, *, source):
+    """Stop Disabled User accounts after successful MFA validation."""
+    log_auth_event(
+        request,
+        event_type="mfa_verify_failure",
+        success=False,
+        user=user,
+        username=user.get_username(),
+        details={"reason": "account_disabled", "source": source},
+    )
+    clear_pending_mfa_login(request)
+    clear_mfa_verified(request)
+    logout(request)
+    messages.error(
+        request,
+        _(
+            "Your account is currently disabled and cannot access DjOpenKB. "
+            "Please contact an administrator if you believe this is unexpected."
+        ),
+    )
+    return redirect("root_login")
 
 
 def _blocked_next_paths():
@@ -177,6 +202,8 @@ def mfa_setup(request):
                 user=user,
                 username=user.get_username(),
             )
+            if user_has_disabled_role(user):
+                return _deny_disabled_account_after_mfa(request, user, source="mfa_setup")
             next_url = _finish_mfa(request, user)
             messages.success(request, _("Authenticator setup completed successfully."))
             return redirect(next_url)
@@ -287,6 +314,8 @@ def mfa_verify(request):
                 user=user,
                 username=user.get_username(),
             )
+            if user_has_disabled_role(user):
+                return _deny_disabled_account_after_mfa(request, user, source="mfa_verify")
             next_url = _finish_mfa(request, user)
             messages.success(request, _("MFA verification successful."))
             return redirect(next_url)

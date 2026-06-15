@@ -32,6 +32,7 @@ DjOpenKB now uses a login-only main website model. Anonymous visitors are not al
 | Access level | Applies to | Main permissions | Restrictions |
 |---|---|---|---|
 | Anonymous visitor | Not signed in | Can access only the login page, language endpoint, and required static/login support assets. | Cannot browse articles, search, vote, suggest content, use AI, access profiles, or use admin tools. Protected paths return 404. |
+| Disabled User | Local or AD / LDAP account in `Disabled User` group | Account record remains available for audit/history and later reassignment. Valid password/MFA does not complete login; the user receives a disabled-account message. | Cannot access the wiki, articles, voting, AI assistant, admin tools, or Django Admin through DjOpenKB permissions. |
 | Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. |
 | Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. |
 | Article Manager | Logged-in user in `Article Manager` group | Can view published articles and manage pending articles/pending updates, including approve/reject actions. | Cannot create new articles by group default unless separately granted writer/admin permission. |
@@ -48,11 +49,11 @@ Can approve/manage articles
 Can use admin tools
 ```
 
-These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group.
+These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group. The `Disabled User` role is the exception and overrides direct add-on permissions.
 
 ### 3.3 Default Group Assignment
 
-Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. Admin/staff/superuser accounts are aligned with `Admin Users` where applicable.
+Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. Admin/staff/superuser accounts are aligned with `Admin Users` where applicable. Admins can assign `Disabled User` to retain an account while preventing login completion and wiki access.
 
 ### 3.4 Account Source Differences
 
@@ -64,6 +65,9 @@ The `UserProfile` model stores the account source, so the system does not guess 
 | Active Directory account | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
 
 ### 3.5 Role Enforcement
+
+`Disabled User` is treated as a deliberate no-access role. A disabled account may still exist in Django for ownership, audit, and historical records, but it cannot complete login. If the password/LDAP bind succeeds and the account has a confirmed MFA device, the user is asked to complete MFA first and then receives a general disabled-account message. If no confirmed MFA device exists, the disabled-account message is shown after the valid password check.
+
 
 Main-site admin tools require explicit admin checks. A normal `staff` flag alone is not treated as sufficient for main-site admin tools unless the user also has the correct DjOpenKB admin permission or is a superuser.
 
@@ -612,6 +616,7 @@ Admin tools include:
 Django Admin Groups represent the main role groups:
 
 ```text
+Disabled User
 Regular User
 Article Writer
 Article Manager
@@ -961,7 +966,7 @@ docker compose up -d
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
-- Keep the group model simple: `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`.
+- Keep the group model simple: `Disabled User`, `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`.
 - Use direct user permission checkboxes only for one-off exceptions because they add permissions on top of group permissions.
 - Review the full-project Docker bind mount `.:/app` before final production-style deployment. It is convenient during development but should be removed where possible for hardened deployment.
 - Keep `.dockerignore` updated so secrets and runtime folders are not copied into Docker images.

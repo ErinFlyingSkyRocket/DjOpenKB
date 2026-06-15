@@ -27,12 +27,14 @@ PERMISSION_LABELS = {
     PERM_USE_ADMIN_TOOLS: "Can use DjOpenKB admin tools",
 }
 
+ROLE_DISABLED_USER = "Disabled User"
 ROLE_REGULAR_USER = "Regular User"
 ROLE_ARTICLE_WRITER = "Article Writer"
 ROLE_ARTICLE_MANAGER = "Article Manager"
 ROLE_ADMIN_USERS = "Admin Users"
 
 ROLE_GROUP_NAMES = (
+    ROLE_DISABLED_USER,
     ROLE_REGULAR_USER,
     ROLE_ARTICLE_WRITER,
     ROLE_ARTICLE_MANAGER,
@@ -40,6 +42,12 @@ ROLE_GROUP_NAMES = (
 )
 
 ROLE_DEFINITIONS = {
+    ROLE_DISABLED_USER: {
+        "description": _(
+            "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
+        ),
+        "permissions": (),
+    },
     ROLE_REGULAR_USER: {
         "description": _(
             "View-only account. Can view published articles after sign-in, but cannot create, edit, review, or use admin tools."
@@ -72,6 +80,7 @@ ROLE_DEFINITIONS = {
 }
 
 ROLE_PRIORITY = {
+    ROLE_DISABLED_USER: 100,
     ROLE_REGULAR_USER: 10,
     ROLE_ARTICLE_WRITER: 20,
     ROLE_ARTICLE_MANAGER: 30,
@@ -83,8 +92,25 @@ def permission_codename_to_full(codename: str) -> str:
     return f"kb.{codename}"
 
 
+def user_has_disabled_role(user) -> bool:
+    """Return True when the user is assigned to the Disabled User role.
+
+    Disabled User is a deliberate no-access role. It overrides direct and
+    group-based DjOpenKB permissions while still keeping the account record for
+    audit/history purposes.
+    """
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "pk", None):
+        return False
+    try:
+        return user.groups.filter(name=ROLE_DISABLED_USER).exists()
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
+
+
 def _permission_exists(user, codename: str) -> bool:
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return False
+    if user_has_disabled_role(user):
         return False
     if getattr(user, "is_superuser", False):
         return True
@@ -103,6 +129,8 @@ def user_can_view_articles(user) -> bool:
     view published articles or their uploaded images.
     """
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return False
+    if user_has_disabled_role(user):
         return False
     return bool(
         user_has_kb_permission(user, PERM_VIEW_ARTICLES)
@@ -136,6 +164,8 @@ def user_can_vote_articles(user) -> bool:
     return bool(
         getattr(user, "is_authenticated", False)
         and getattr(user, "is_active", False)
+        and not user_has_disabled_role(user)
+        and user_can_view_articles(user)
     )
 
 
@@ -146,6 +176,8 @@ def user_can_view_dislike_counts(user) -> bool:
 
 def user_can_use_admin_tools(user) -> bool:
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return False
+    if user_has_disabled_role(user):
         return False
     if getattr(user, "is_superuser", False):
         return True
@@ -167,6 +199,8 @@ def user_role_group_names(user) -> list[str]:
 
 def highest_role_group_name(user) -> str:
     role_names = user_role_group_names(user)
+    if user_has_disabled_role(user):
+        return ROLE_DISABLED_USER
     if role_names:
         return role_names[0]
     if getattr(user, "is_superuser", False):
@@ -238,7 +272,7 @@ def create_article_permissions():
 
 
 def seed_djopenkb_role_groups():
-    """Create/update the four standard DjOpenKB role groups."""
+    """Create/update the standard DjOpenKB role groups."""
     try:
         custom_permissions = create_article_permissions()
     except (DatabaseError, OperationalError, ProgrammingError):
@@ -326,12 +360,31 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
 
     seed_djopenkb_role_groups()
     role_group = Group.objects.get(name=role_name)
-    user.groups.remove(*Group.objects.filter(name__in=ROLE_GROUP_NAMES).exclude(pk=role_group.pk))
-    user.groups.add(role_group)
+
+    previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
+    user._djopenkb_syncing_role_groups = True
+    try:
+        user.groups.remove(*Group.objects.filter(name__in=ROLE_GROUP_NAMES).exclude(pk=role_group.pk))
+        user.groups.add(role_group)
+    finally:
+        user._djopenkb_syncing_role_groups = previous_syncing
+
+    if role_name == ROLE_DISABLED_USER:
+        clear_direct_permissions = True
 
     if clear_direct_permissions:
         kb_perms = Permission.objects.filter(content_type__app_label="kb")
         user.user_permissions.remove(*kb_perms)
+
+    try:
+        from .models import UserProfile
+
+        profile, _created = UserProfile.objects.get_or_create(user=user)
+        if role_name != ROLE_DISABLED_USER and not profile.can_access_main_site:
+            profile.can_access_main_site = True
+            profile.save(update_fields=["can_access_main_site", "updated_at"])
+    except (DatabaseError, OperationalError, ProgrammingError):
+        pass
 
     sync_user_staff_flags_from_roles(user)
 
@@ -369,6 +422,7 @@ def sync_user_staff_flags_from_roles(user):
         return
 
     try:
+        has_disabled_role = user.groups.filter(name=ROLE_DISABLED_USER).exists()
         has_admin_group = user.groups.filter(name=ROLE_ADMIN_USERS).exists()
         has_direct_admin_perm = user_has_direct_kb_permission(user, PERM_USE_ADMIN_TOOLS)
     except (DatabaseError, OperationalError, ProgrammingError):
@@ -376,10 +430,13 @@ def sync_user_staff_flags_from_roles(user):
 
     profile = getattr(user, "kb_profile", None)
     should_be_staff = bool(
-        getattr(user, "is_superuser", False)
-        or has_admin_group
-        or has_direct_admin_perm
-        or (profile and getattr(profile, "is_admin_type", False))
+        not has_disabled_role
+        and (
+            getattr(user, "is_superuser", False)
+            or has_admin_group
+            or has_direct_admin_perm
+            or (profile and getattr(profile, "is_admin_type", False))
+        )
     )
 
     update_fields = []
