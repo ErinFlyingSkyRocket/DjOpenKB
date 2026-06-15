@@ -1,4 +1,6 @@
 from django.views.decorators.cache import never_cache
+from django.contrib import messages
+from django.shortcuts import redirect, render
 from .services import *
 from ..auth_monitoring import (
     format_retry_after,
@@ -53,8 +55,16 @@ def _block_disabled_account_after_verified_credentials(request, user, *, login_m
     clear_pending_mfa_login(request)
     clear_mfa_verified(request)
     logout(request)
-    _disabled_account_login_message(request)
     request._skip_auth_failure_log = True
+    return redirect("account_disabled")
+
+
+@never_cache
+def account_disabled(request):
+    """Public disabled-account page shown after a disabled login/session is cleared."""
+    if request.user.is_authenticated and not user_has_disabled_role(request.user):
+        return redirect("home")
+    return render(request, "account_disabled.html")
 
 
 @never_cache
@@ -77,6 +87,12 @@ class OpenKBLoginView(LoginView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+            if user_has_disabled_role(request.user):
+                clear_pending_mfa_login(request)
+                clear_mfa_verified(request)
+                logout(request)
+                return redirect("account_disabled")
+
             if not user_can_access_main_site(request.user):
                 logout(request)
                 return redirect("root_login")
@@ -209,13 +225,12 @@ class OpenKBLoginView(LoginView):
                 )
                 return redirect("mfa_verify")
 
-            _block_disabled_account_after_verified_credentials(
+            return _block_disabled_account_after_verified_credentials(
                 self.request,
                 user,
                 login_mode=login_mode,
                 source="password",
             )
-            return redirect("root_login")
 
         if not user_can_access_main_site(user):
             log_auth_event(

@@ -52,14 +52,7 @@ def _deny_disabled_account_after_mfa(request, user, *, source):
     clear_pending_mfa_login(request)
     clear_mfa_verified(request)
     logout(request)
-    messages.error(
-        request,
-        _(
-            "Your account is currently disabled and cannot access DjOpenKB. "
-            "Please contact an administrator if you believe this is unexpected."
-        ),
-    )
-    return redirect("root_login")
+    return redirect("account_disabled")
 
 
 def _blocked_next_paths():

@@ -217,12 +217,11 @@ def set_strict_no_cache_headers(response):
 
 
 class DisabledUserLogoutMiddleware:
-    """Immediately end any already-authenticated session for Disabled User accounts.
+    """End any already-authenticated Disabled User session before views run.
 
-    Admin actions already clear active sessions when the Disabled User role is
-    assigned. This middleware is a second server-side safety net: if a disabled
-    account still has a usable session cookie for any reason, the next real page
-    or form/API request is logged out before the requested view can run.
+    If an administrator disables an account while the user still has a browser
+    session, the next request is stopped before the requested function runs. The
+    session is cleared and the user is sent to a simple disabled-account page.
     """
 
     def __init__(self, get_response):
@@ -252,14 +251,7 @@ class DisabledUserLogoutMiddleware:
         clear_mfa_verified(request)
         clear_session_started_at(request)
         logout(request)
-        messages.error(
-            request,
-            _(
-                "Your account is currently disabled and cannot access DjOpenKB. "
-                "Please contact an administrator if you believe this is unexpected."
-            ),
-        )
-        response = redirect("root_login")
+        response = redirect("account_disabled")
         return set_strict_no_cache_headers(response)
 
     def __call__(self, request):
@@ -487,6 +479,7 @@ class ForceLoginAndAdminGuardMiddleware:
         public_names = (
             "root_login",
             "login",
+            "account_disabled",
             "set_site_language",
             "mfa_setup",
             "mfa_verify",

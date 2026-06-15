@@ -1,0 +1,40 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Account disabled" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+</head>
+<body class="show_footer">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 110px;">
+            <div class="panel panel-default" style="border-radius: 8px;">
+                <div class="panel-body text-center" style="padding: 32px 26px;">
+                    <div style="font-size: 42px; margin-bottom: 12px;">
+                        <i class="fa fa-user-times" aria-hidden="true"></i>
+                    </div>
+                    <h2 style="margin-top: 0; margin-bottom: 12px;">{% trans "Account currently disabled" %}</h2>
+                    <p class="text-muted" style="margin-bottom: 24px;">
+                        {% trans "Your account is currently disabled and cannot access DjOpenKB. Please contact an administrator if you believe this is unexpected." %}
+                    </p>
+                    <a class="btn btn-primary btn-block" href="{% url 'root_login' %}">
+                        <i class="fa fa-sign-in" aria-hidden="true"></i> {% trans "Go to sign in" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "_footer.html" %}
+</body>
+</html>

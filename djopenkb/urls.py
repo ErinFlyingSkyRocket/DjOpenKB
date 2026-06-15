@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from kb.views.auth import OpenKBLoginView, OpenKBLogoutView, root_entry
+from kb.views.auth import OpenKBLoginView, OpenKBLogoutView, account_disabled, root_entry
 
 
 urlpatterns = [
@@ -29,6 +29,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("login/", OpenKBLoginView.as_view(), name="login"),
     path("logout/", OpenKBLogoutView.as_view(), name="logout"),
+    path("account-disabled/", account_disabled, name="account_disabled"),
 
     # All normal application pages live under kb.urls.
     # The old index page is intentionally moved to /home/.
