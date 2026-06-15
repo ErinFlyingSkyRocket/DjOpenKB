@@ -33,8 +33,10 @@ from .permissions import (
     ROLE_DEFINITIONS,
     ROLE_GROUP_NAMES,
     ROLE_DISABLED_USER,
+    ROLE_REGULAR_USER,
     assign_single_role_group,
     enforce_disabled_user_exclusive,
+    enforce_admin_users_exclusive,
     highest_role_group_name,
     role_permissions_summary,
     set_user_direct_kb_permission,
@@ -568,6 +570,7 @@ class UserProfileInlineForm(forms.ModelForm):
                 )
             if enforce_disabled_user_exclusive(profile.user):
                 return profile
+            enforce_admin_users_exclusive(profile.user)
             sync_user_staff_flags_from_roles(profile.user)
 
         return profile
@@ -741,6 +744,7 @@ class GroupAdminForm(forms.ModelForm):
             for user in User.objects.filter(pk__in=affected_user_ids):
                 if enforce_disabled_user_exclusive(user):
                     continue
+                enforce_admin_users_exclusive(user)
                 sync_user_staff_flags_from_roles(user)
 
 
@@ -1076,17 +1080,8 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         super().save_model(request, obj, form, change)
 
         profile, created = UserProfile.objects.get_or_create(user=obj)
-        enforce_disabled_user_exclusive(obj)
-        has_disabled_group = user_has_disabled_role(obj) if obj.pk else False
-        has_admin_group = obj.groups.filter(name=ROLE_ADMIN_USERS).exists() if obj.pk else False
-        if not has_disabled_group and (obj.is_superuser or has_admin_group or profile.is_admin_type):
-            if profile.account_type not in {
-                UserProfile.AccountType.ADMIN,
-                UserProfile.AccountType.LDAP_ADMIN,
-            }:
-                profile.account_type = UserProfile.AccountType.ADMIN
-                profile.save(update_fields=["account_type", "updated_at"])
-
+        if not enforce_disabled_user_exclusive(obj):
+            enforce_admin_users_exclusive(obj)
         sync_user_staff_flags_from_roles(obj)
 
     def save_related(self, request, form, formsets, change):
@@ -1096,6 +1091,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         # cannot be combined with old direct Knowledge Repository permission overrides.
         if enforce_disabled_user_exclusive(user):
             return
+        enforce_admin_users_exclusive(user)
         sync_user_staff_flags_from_roles(user)
 
     def main_site_account_type(self, obj):
@@ -1441,6 +1437,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.USER
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_REGULAR_USER)
             _log_admin_explicit_action(
                 request,
                 action_label=_("Set user %(username)s as local user") % {"username": user.get_username()},
@@ -1458,6 +1455,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.ADMIN
             profile.auth_source = UserProfile.AuthSource.LOCAL
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_ADMIN_USERS, clear_direct_permissions=True)
             _log_admin_explicit_action(
                 request,
                 action_label=_("Set user %(username)s as local admin") % {"username": user.get_username()},
@@ -1475,6 +1473,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.LDAP_USER
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_REGULAR_USER)
             _log_admin_explicit_action(
                 request,
                 action_label=_("Set user %(username)s as LDAP user") % {"username": user.get_username()},
@@ -1492,6 +1491,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             profile.account_type = UserProfile.AccountType.LDAP_ADMIN
             profile.auth_source = UserProfile.AuthSource.AD
             profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+            assign_single_role_group(user, ROLE_ADMIN_USERS, clear_direct_permissions=True)
             _log_admin_explicit_action(
                 request,
                 action_label=_("Set user %(username)s as LDAP admin") % {"username": user.get_username()},

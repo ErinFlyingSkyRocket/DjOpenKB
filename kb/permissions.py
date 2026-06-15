@@ -328,6 +328,121 @@ def user_has_direct_kb_permission(user, codename: str) -> bool:
         return False
 
 
+def _profile_user_type_for_auth_source(profile):
+    """Return the non-admin profile type matching the profile auth source."""
+    from .models import UserProfile
+
+    if getattr(profile, "auth_source", None) == UserProfile.AuthSource.AD:
+        return UserProfile.AccountType.LDAP_USER
+    return UserProfile.AccountType.USER
+
+
+def _profile_admin_type_for_auth_source(profile):
+    """Return the admin profile type matching the profile auth source."""
+    from .models import UserProfile
+
+    if getattr(profile, "auth_source", None) == UserProfile.AuthSource.AD:
+        return UserProfile.AccountType.LDAP_ADMIN
+    return UserProfile.AccountType.ADMIN
+
+
+def _save_profile_without_role_side_effects(profile, *, update_fields: list[str]):
+    """Save UserProfile fields without triggering role sync loops."""
+    if not update_fields:
+        return
+    profile._djopenkb_syncing_from_roles = True
+    try:
+        profile.save(update_fields=update_fields)
+    finally:
+        profile._djopenkb_syncing_from_roles = False
+
+
+def sync_user_profile_type_from_roles(user):
+    """Keep the profile label in sync with the effective role state.
+
+    The Admin Users group is now the source of truth for full Django Admin
+    access. When a local account is placed in Admin Users it becomes a local
+    admin; when an AD-managed account is placed in Admin Users it becomes an
+    LDAP admin. Removing Admin Users demotes the profile back to local user or
+    LDAP user according to its authentication source.
+    """
+    if not getattr(user, "pk", None):
+        return
+
+    try:
+        from .models import UserProfile
+
+        profile, _created = UserProfile.objects.get_or_create(user=user)
+        has_disabled_role = user.groups.filter(name=ROLE_DISABLED_USER).exists()
+        has_admin_group = user.groups.filter(name=ROLE_ADMIN_USERS).exists()
+
+        update_fields = []
+        if has_disabled_role:
+            target_type = _profile_user_type_for_auth_source(profile)
+            if profile.account_type != target_type:
+                profile.account_type = target_type
+                update_fields.append("account_type")
+            if profile.can_access_main_site:
+                profile.can_access_main_site = False
+                update_fields.append("can_access_main_site")
+        elif has_admin_group:
+            target_type = _profile_admin_type_for_auth_source(profile)
+            if profile.account_type != target_type:
+                profile.account_type = target_type
+                update_fields.append("account_type")
+            if not profile.can_access_main_site:
+                profile.can_access_main_site = True
+                update_fields.append("can_access_main_site")
+        else:
+            target_type = _profile_user_type_for_auth_source(profile)
+            if profile.account_type != target_type:
+                profile.account_type = target_type
+                update_fields.append("account_type")
+
+        if update_fields:
+            update_fields.append("updated_at")
+            _save_profile_without_role_side_effects(profile, update_fields=update_fields)
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return
+
+
+def enforce_admin_users_exclusive(user):
+    """Make Admin Users exclusive among Knowledge Repository role groups.
+
+    Normal users may still belong to multiple non-admin/custom groups, but once
+    Admin Users is assigned it grants full access, so Regular User / Article
+    Writer / Article Manager and direct Knowledge Repository permission add-ons
+    become redundant and are removed.
+    """
+    if not getattr(user, "pk", None):
+        return False
+
+    try:
+        if user.groups.filter(name=ROLE_DISABLED_USER).exists():
+            return False
+        if not user.groups.filter(name=ROLE_ADMIN_USERS).exists():
+            return False
+
+        seed_djopenkb_role_groups()
+        previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
+        user._djopenkb_syncing_role_groups = True
+        try:
+            user.groups.remove(
+                *Group.objects.filter(
+                    name__in=(ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_MANAGER)
+                )
+            )
+        finally:
+            user._djopenkb_syncing_role_groups = previous_syncing
+
+        kb_perms = Permission.objects.filter(content_type__app_label="kb")
+        user.user_permissions.remove(*kb_perms)
+        sync_user_profile_type_from_roles(user)
+        return True
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
+
+
 def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
     """Make Disabled User a hard no-access override without forcing one role normally.
 
@@ -374,8 +489,9 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
 
     This helper is still used for default role setup and explicit admin actions.
     It does not prevent admins from later adding multiple non-disabled groups.
-    If the selected role is Disabled User, it becomes exclusive and clears direct
-    Knowledge Repository permissions.
+    Disabled User and Admin Users are exclusive override roles. Regular/writer/
+    manager assignments remove those override roles but still allow multiple
+    non-admin groups to be added manually later.
     """
     if not getattr(user, "pk", None) or role_name not in ROLE_GROUP_NAMES:
         return
@@ -388,13 +504,19 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
     try:
         if role_name == ROLE_DISABLED_USER:
             user.groups.remove(*Group.objects.filter(name__in=ROLE_ACCESS_GROUP_NAMES))
+        elif role_name == ROLE_ADMIN_USERS:
+            user.groups.remove(
+                *Group.objects.filter(
+                    name__in=(ROLE_DISABLED_USER, ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_MANAGER)
+                )
+            )
         else:
-            user.groups.remove(*Group.objects.filter(name=ROLE_DISABLED_USER))
+            user.groups.remove(*Group.objects.filter(name__in=(ROLE_DISABLED_USER, ROLE_ADMIN_USERS)))
         user.groups.add(role_group)
     finally:
         user._djopenkb_syncing_role_groups = previous_syncing
 
-    if role_name == ROLE_DISABLED_USER:
+    if role_name in {ROLE_DISABLED_USER, ROLE_ADMIN_USERS}:
         clear_direct_permissions = True
 
     if clear_direct_permissions:
@@ -407,20 +529,26 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         profile, _created = UserProfile.objects.get_or_create(user=user)
         if role_name != ROLE_DISABLED_USER and not profile.can_access_main_site:
             profile.can_access_main_site = True
-            profile.save(update_fields=["can_access_main_site", "updated_at"])
+            _save_profile_without_role_side_effects(profile, update_fields=["can_access_main_site", "updated_at"])
     except (DatabaseError, OperationalError, ProgrammingError):
         pass
 
     if role_name == ROLE_DISABLED_USER:
         enforce_disabled_user_exclusive(user)
+    elif role_name == ROLE_ADMIN_USERS:
+        enforce_admin_users_exclusive(user)
+        sync_user_staff_flags_from_roles(user)
     else:
         sync_user_staff_flags_from_roles(user)
+
 
 def assign_default_kb_role_group(user):
     """Put a newly-created user into a default Knowledge Repository role group.
 
-    Superusers/staff/profile admins become Admin Users. Everyone else becomes
-    Regular User, including new AD-created users.
+    New createsuperuser/staff accounts are normalised into Admin Users only
+    when they do not already have a Knowledge Repository role group. Existing
+    non-admin role groups are respected so removing Admin Users and assigning
+    Regular User/Writer/Manager demotes the account cleanly.
     """
     if not getattr(user, "pk", None):
         return
@@ -428,14 +556,16 @@ def assign_default_kb_role_group(user):
     try:
         if enforce_disabled_user_exclusive(user):
             return
+        if enforce_admin_users_exclusive(user):
+            sync_user_staff_flags_from_roles(user)
+            return
 
         existing_role_groups = user.groups.filter(name__in=ROLE_GROUP_NAMES)
         if existing_role_groups.exists():
             sync_user_staff_flags_from_roles(user)
             return
 
-        profile = getattr(user, "kb_profile", None)
-        if getattr(user, "is_superuser", False) or getattr(user, "is_staff", False) or (profile and getattr(profile, "is_admin_type", False)):
+        if getattr(user, "is_superuser", False) or getattr(user, "is_staff", False):
             role_name = ROLE_ADMIN_USERS
         else:
             role_name = ROLE_REGULAR_USER
@@ -447,15 +577,12 @@ def assign_default_kb_role_group(user):
 
 
 def sync_user_staff_flags_from_roles(user):
-    """Keep Django admin flags aligned with Knowledge Repository admin roles.
+    """Keep Django admin flags aligned with Knowledge Repository role groups.
 
     Current policy:
     - Disabled User is a hard override and removes Django Admin access.
-    - Admin Users / admin-type accounts are full Django Admin superusers.
-    - Non-admin users are not staff/superusers.
-
-    This avoids the earlier confusing state where an Admin User could enter
-    Django Admin but hit permission errors or 500 pages when attempting actions.
+    - Admin Users is the source of truth for full staff/superuser access.
+    - Removing Admin Users and assigning a non-admin role removes staff/superuser.
     """
     if not getattr(user, "pk", None):
         return
@@ -466,16 +593,10 @@ def sync_user_staff_flags_from_roles(user):
     except (DatabaseError, OperationalError, ProgrammingError):
         return
 
-    profile = getattr(user, "kb_profile", None)
-    has_admin_profile = bool(profile and getattr(profile, "is_admin_type", False))
-    should_be_superuser = bool(
-        not has_disabled_role
-        and (
-            getattr(user, "is_superuser", False)
-            or has_admin_group
-            or has_admin_profile
-        )
-    )
+    if has_disabled_role:
+        should_be_superuser = False
+    else:
+        should_be_superuser = bool(has_admin_group)
     should_be_staff = should_be_superuser
 
     update_fields = []
@@ -490,6 +611,7 @@ def sync_user_staff_flags_from_roles(user):
     if update_fields:
         user.save(update_fields=update_fields)
 
+    sync_user_profile_type_from_roles(user)
 
 def require_view_articles(user):
     if not user_can_view_articles(user):

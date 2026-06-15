@@ -93,34 +93,42 @@ class UserProfile(models.Model):
         return self.auth_source == self.AuthSource.AD
 
     def save(self, *args, **kwargs):
-        """Keep Django admin permission flags aligned with the selected type.
+        """Keep the profile label and admin role in sync.
 
-        - Admin / LDAP admin: staff access is enabled.
-        - User / LDAP user: staff and superuser access are removed.
-        - Existing createsuperuser accounts stay as superuser admin accounts.
+        The Admin Users group is the source of truth for Django Admin access.
+        Editing this profile to a local/LDAP admin type adds the Admin Users
+        group. Editing it back to a local/LDAP user removes the Admin Users
+        group and the user's staff/superuser flags are cleared automatically.
         """
+        syncing_from_roles = getattr(self, "_djopenkb_syncing_from_roles", False)
         super().save(*args, **kwargs)
 
-        update_fields = []
+        if syncing_from_roles or not getattr(self.user, "pk", None):
+            return
 
-        if self.account_type == self.AccountType.ADMIN:
-            if not self.user.is_staff:
-                self.user.is_staff = True
-                update_fields.append("is_staff")
-        elif self.account_type == self.AccountType.LDAP_ADMIN:
-            if not self.user.is_staff:
-                self.user.is_staff = True
-                update_fields.append("is_staff")
-        else:
-            if self.user.is_staff:
-                self.user.is_staff = False
-                update_fields.append("is_staff")
-            if self.user.is_superuser:
-                self.user.is_superuser = False
-                update_fields.append("is_superuser")
+        try:
+            from .permissions import (
+                ROLE_ADMIN_USERS,
+                ROLE_REGULAR_USER,
+                assign_single_role_group,
+                sync_user_staff_flags_from_roles,
+                user_has_disabled_role,
+            )
 
-        if update_fields:
-            self.user.save(update_fields=update_fields)
+            if user_has_disabled_role(self.user):
+                sync_user_staff_flags_from_roles(self.user)
+                return
+
+            if self.is_admin_type:
+                assign_single_role_group(self.user, ROLE_ADMIN_USERS, clear_direct_permissions=True)
+            elif self.user.groups.filter(name=ROLE_ADMIN_USERS).exists():
+                assign_single_role_group(self.user, ROLE_REGULAR_USER)
+            else:
+                sync_user_staff_flags_from_roles(self.user)
+        except Exception:
+            # Do not break migrations or user saves if auth/group tables are not
+            # ready yet during initial deployment.
+            return
 
 
 class UserMFADevice(models.Model):
