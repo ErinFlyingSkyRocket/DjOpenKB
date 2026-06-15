@@ -65,6 +65,42 @@ def ensure_openkb_config_model():
             return
 
 
+
+
+class OpenKBAIOverloaded(RuntimeError):
+    """Raised when the global OpenKB AI concurrency limit is full."""
+
+
+def acquire_openkb_ai_slot():
+    """Acquire a short-lived global AI concurrency slot from Django cache.
+
+    cache.add() is atomic on Redis, so this works across all Gunicorn workers.
+    With the development LocMem fallback it is only per-process, which is why
+    Redis is required when DJANGO_DEBUG=false.
+    """
+    limit = max(1, int(getattr(settings, "OPENKB_AI_CONCURRENCY_LIMIT", 2)))
+    lock_seconds = max(30, int(getattr(settings, "OPENKB_AI_CONCURRENCY_LOCK_SECONDS", 120)))
+    token = uuid.uuid4().hex
+
+    for slot in range(limit):
+        key = f"openkb_ai:active:{slot}"
+        if cache.add(key, token, lock_seconds):
+            return key, token
+
+    raise OpenKBAIOverloaded("OpenKB AI is currently busy")
+
+
+def release_openkb_ai_slot(lock):
+    if not lock:
+        return
+    key, token = lock
+    try:
+        if cache.get(key) == token:
+            cache.delete(key)
+    except Exception:
+        logger.exception("Failed to release OpenKB AI concurrency lock")
+
+
 def run_openkb_query(question):
     """Call the local bundled OpenKB CLI against the synced Django OpenKB data."""
     init_openkb_storage()
@@ -72,15 +108,27 @@ def run_openkb_query(question):
     ensure_openkb_ai_synced()
     scrub_openkb_runtime_log_files()
 
+    lock = acquire_openkb_ai_slot()
     env = os.environ.copy()
 
     ai_api_key = getattr(settings, "AI_API_KEY", "")
     if ai_api_key:
-        # Admin enters one general key in Vault. At runtime only, expose it to
-        # common provider env names because OpenKB/LiteLLM expects those names.
+        # Development/simple-deployment fallback. Provider-specific keys below
+        # take precedence when configured in Vault/env for production.
         env["AI_API_KEY"] = ai_api_key
         env["LLM_API_KEY"] = ai_api_key
-        env["GEMINI_API_KEY"] = ai_api_key
+        env.setdefault("GEMINI_API_KEY", ai_api_key)
+        env.setdefault("OPENAI_API_KEY", ai_api_key)
+        env.setdefault("ANTHROPIC_API_KEY", ai_api_key)
+
+    provider_keys = {
+        "OPENAI_API_KEY": getattr(settings, "OPENAI_API_KEY", ""),
+        "GEMINI_API_KEY": getattr(settings, "GEMINI_API_KEY", ""),
+        "ANTHROPIC_API_KEY": getattr(settings, "ANTHROPIC_API_KEY", ""),
+    }
+    for name, value in provider_keys.items():
+        if value:
+            env[name] = value
 
     env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
     env["OPENKB_AI_MODEL"] = get_openkb_ai_model()
@@ -113,7 +161,7 @@ def run_openkb_query(question):
             env=env,
             capture_output=True,
             text=True,
-            timeout=180,
+            timeout=int(getattr(settings, "OPENKB_AI_TIMEOUT_SECONDS", 90)),
         )
 
         if result.returncode != 0:
@@ -121,6 +169,7 @@ def run_openkb_query(question):
 
         return result.stdout.strip()
     finally:
+        release_openkb_ai_slot(lock)
         # OpenKB may append the current query to wiki/log.md after execution.
         # Remove it again so the next user query cannot read internal log data.
         scrub_openkb_runtime_log_files()
@@ -449,9 +498,9 @@ def check_openkb_ai_rate_limit(request):
     identifier = get_openkb_ai_rate_identifier(request)
     now = int(time.time())
 
-    window_seconds = settings.OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS
-    max_requests = settings.OPENKB_AI_RATE_LIMIT_MAX_REQUESTS
-    block_seconds = settings.OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS
+    window_seconds = int(settings.OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS)
+    max_requests = int(settings.OPENKB_AI_RATE_LIMIT_MAX_REQUESTS)
+    block_seconds = int(settings.OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS)
 
     block_key = f"openkb_ai:block:{identifier}"
     blocked_until = cache.get(block_key)
@@ -466,26 +515,32 @@ def check_openkb_ai_rate_limit(request):
         )
         return False, retry_after
 
-    attempts_key = f"openkb_ai:attempts:{identifier}"
-    attempts = cache.get(attempts_key, [])
-    attempts = [timestamp for timestamp in attempts if now - timestamp < window_seconds]
+    # Fixed-window counter. cache.add/cache.incr are atomic on Redis, which is
+    # why production settings require REDIS_URL.
+    window_id = now // window_seconds
+    attempts_key = f"openkb_ai:attempts:{identifier}:{window_id}"
+    if cache.add(attempts_key, 1, window_seconds + 5):
+        attempts = 1
+    else:
+        try:
+            attempts = cache.incr(attempts_key)
+        except ValueError:
+            cache.set(attempts_key, 1, window_seconds + 5)
+            attempts = 1
 
-    if len(attempts) >= max_requests:
+    if attempts > max_requests:
         cache.set(block_key, now + block_seconds, block_seconds)
-        cache.set(attempts_key, attempts, window_seconds)
         logger.warning(
             "OpenKB AI rate limit exceeded: identifier=%s ip=%s user_id=%s attempts=%s window_seconds=%s block_seconds=%s",
             identifier,
             get_client_ip(request),
             request.user.pk if request.user.is_authenticated else "anonymous",
-            len(attempts),
+            attempts,
             window_seconds,
             block_seconds,
         )
         return False, block_seconds
 
-    attempts.append(now)
-    cache.set(attempts_key, attempts, window_seconds)
     return True, 0
 
 

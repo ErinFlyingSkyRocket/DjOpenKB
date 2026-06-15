@@ -13,7 +13,13 @@ from django.views.decorators.http import require_POST
 
 from .services import main_site_login_required
 
-from ..auth_monitoring import log_auth_event
+from ..auth_monitoring import (
+    format_retry_after,
+    get_auth_lockout_status,
+    log_auth_event,
+    record_auth_failure,
+    record_auth_success,
+)
 from ..mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
@@ -138,7 +144,31 @@ def mfa_setup(request):
     otpauth_uri = totp.provisioning_uri(name=label, issuer_name=get_totp_issuer())
 
     if request.method == "POST":
-        if verify_totp_code(device, request.POST.get("code")):
+        locked, retry_after, identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="mfa",
+        )
+        if locked:
+            log_auth_event(
+                request,
+                event_type="mfa_setup_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "reason": "temporary_lockout",
+                    "lockout_identifier": identifier,
+                    "retry_after_seconds": retry_after,
+                },
+            )
+            messages.error(
+                request,
+                _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+                % {"duration": format_retry_after(retry_after)},
+            )
+        elif verify_totp_code(device, request.POST.get("code")):
+            record_auth_success(request, user=user, purpose="mfa")
             device.mark_confirmed()
             log_auth_event(
                 request,
@@ -150,16 +180,32 @@ def mfa_setup(request):
             next_url = _finish_mfa(request, user)
             messages.success(request, _("Authenticator setup completed successfully."))
             return redirect(next_url)
+        else:
+            lockout = record_auth_failure(request, user=user, purpose="mfa")
+            details = {
+                "reason": "invalid_totp",
+                "lockout_identifier": lockout.get("identifier"),
+                "failure_count": lockout.get("failure_count"),
+                "failure_limit": lockout.get("failure_limit"),
+            }
+            if lockout.get("locked"):
+                details["reason"] = "temporary_lockout_created"
+                details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+                messages.error(
+                    request,
+                    _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+                    % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+                )
 
-        log_auth_event(
-            request,
-            event_type="mfa_setup_failure",
-            success=False,
-            user=user,
-            username=user.get_username(),
-            details={"reason": "invalid_totp"},
-        )
-        messages.error(request, _("Invalid authenticator code. Please try again."))
+            log_auth_event(
+                request,
+                event_type="mfa_setup_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                details=details,
+            )
+            messages.error(request, _("Invalid authenticator code. Please try again."))
 
     return render(
         request,
@@ -208,7 +254,31 @@ def mfa_verify(request):
         return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
 
     if request.method == "POST":
-        if verify_totp_code(device, request.POST.get("code")):
+        locked, retry_after, identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="mfa",
+        )
+        if locked:
+            log_auth_event(
+                request,
+                event_type="mfa_verify_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "reason": "temporary_lockout",
+                    "lockout_identifier": identifier,
+                    "retry_after_seconds": retry_after,
+                },
+            )
+            messages.error(
+                request,
+                _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+                % {"duration": format_retry_after(retry_after)},
+            )
+        elif verify_totp_code(device, request.POST.get("code")):
+            record_auth_success(request, user=user, purpose="mfa")
             device.mark_verified()
             log_auth_event(
                 request,
@@ -220,16 +290,32 @@ def mfa_verify(request):
             next_url = _finish_mfa(request, user)
             messages.success(request, _("MFA verification successful."))
             return redirect(next_url)
+        else:
+            lockout = record_auth_failure(request, user=user, purpose="mfa")
+            details = {
+                "reason": "invalid_totp",
+                "lockout_identifier": lockout.get("identifier"),
+                "failure_count": lockout.get("failure_count"),
+                "failure_limit": lockout.get("failure_limit"),
+            }
+            if lockout.get("locked"):
+                details["reason"] = "temporary_lockout_created"
+                details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+                messages.error(
+                    request,
+                    _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+                    % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+                )
 
-        log_auth_event(
-            request,
-            event_type="mfa_verify_failure",
-            success=False,
-            user=user,
-            username=user.get_username(),
-            details={"reason": "invalid_totp"},
-        )
-        messages.error(request, _("Invalid authenticator code. Please try again."))
+            log_auth_event(
+                request,
+                event_type="mfa_verify_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                details=details,
+            )
+            messages.error(request, _("Invalid authenticator code. Please try again."))
 
     return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
 

@@ -170,6 +170,21 @@ def ask_openkb_ai(request):
             "show_related_articles": False,
         }, status=500)
 
+    except OpenKBAIOverloaded:
+        ctx = _openkb_ai_user_context(request)
+        logger.warning(
+            "OpenKB AI concurrency limit reached: identifier=%s ip=%s user_id=%s question_length=%s",
+            ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
+        )
+        related_articles = find_related_openkb_articles(question, limit=5)
+        if related_articles:
+            return _article_recommendation_response(question, related_articles=related_articles, status=503)
+        return JsonResponse({
+            "error": "OpenKB AI is currently handling other questions. Please try again shortly.",
+            "related_articles": [],
+            "show_related_articles": False,
+        }, status=503)
+
     except subprocess.TimeoutExpired:
         ctx = _openkb_ai_user_context(request)
         logger.warning(

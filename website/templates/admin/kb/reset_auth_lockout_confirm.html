@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div id="content-main">
+  <h1>{{ title }}</h1>
+
+  <div class="module aligned">
+    <p>
+      {% blocktrans with username=user_obj.get_username %}
+      You are about to reset password/MFA lockout counters for user <strong>{{ username }}</strong>.
+      {% endblocktrans %}
+    </p>
+
+    <p>
+      {% trans "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions." %}
+    </p>
+
+    <ul>
+      <li>{% trans "Use this only after verifying the unlock request is legitimate." %}</li>
+      <li>{% trans "Password and MFA counters are reset separately but both are cleared by this action." %}</li>
+      <li>{% trans "The reset is recorded in the authentication activity log." %}</li>
+    </ul>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="submit-row">
+      <input type="submit" class="default" value="{% trans 'Reset lockout now' %}">
+      <a class="button cancel-link" href="{{ user_change_url }}">{% trans "Cancel" %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

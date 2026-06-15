@@ -51,6 +51,19 @@ services:
       - ./vault/keys:/vault/keys
     entrypoint: ["/bin/sh", "/vault/scripts/auto-unseal.sh"]
 
+  redis:
+    image: redis:7-alpine
+    container_name: djopenkb-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   db:
     build:
       context: .
@@ -89,11 +102,19 @@ services:
         condition: service_completed_successfully
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DJANGO_SETTINGS_MODULE: djopenkb.settings
       DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,web,nginx}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-https://localhost:8080,https://127.0.0.1:8080}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/1}
+      DJANGO_ALLOW_LOCAL_CACHE_FALLBACK: "${DJANGO_ALLOW_LOCAL_CACHE_FALLBACK:-false}"
+      AUTH_LOCKOUT_FAILURE_LIMIT: "${AUTH_LOCKOUT_FAILURE_LIMIT:-10}"
+      AUTH_LOCKOUT_WINDOW_SECONDS: "${AUTH_LOCKOUT_WINDOW_SECONDS:-600}"
+      AUTH_LOCKOUT_DURATIONS_SECONDS: "${AUTH_LOCKOUT_DURATIONS_SECONDS:-300,900,3600,86400}"
+      AUTH_LOCKOUT_STRIKE_TTL_SECONDS: "${AUTH_LOCKOUT_STRIKE_TTL_SECONDS:-86400}"
       MFA_TOTP_ISSUER: "${MFA_TOTP_ISSUER:-IT Wiki}"
       MFA_TOTP_VALID_WINDOW: "${MFA_TOTP_VALID_WINDOW:-2}"
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
@@ -101,6 +122,13 @@ services:
       OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
       OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-gemini/gemini-2.5-flash}
       LITELLM_DROP_PARAMS: ${LITELLM_DROP_PARAMS:-true}
+      OPENKB_AI_MAX_PROMPT_CHARS: "${OPENKB_AI_MAX_PROMPT_CHARS:-1000}"
+      OPENKB_AI_RATE_LIMIT_MAX_REQUESTS: "${OPENKB_AI_RATE_LIMIT_MAX_REQUESTS:-5}"
+      OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS: "${OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS:-60}"
+      OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS: "${OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS:-1800}"
+      OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-90}"
+      OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-2}"
+      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-120}"
       GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
       GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-300}"
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
@@ -172,11 +200,19 @@ services:
         condition: service_completed_successfully
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DJANGO_SETTINGS_MODULE: djopenkb.settings
       DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,web,nginx}
       DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-https://localhost:8080,https://127.0.0.1:8080}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/1}
+      DJANGO_ALLOW_LOCAL_CACHE_FALLBACK: "${DJANGO_ALLOW_LOCAL_CACHE_FALLBACK:-false}"
+      AUTH_LOCKOUT_FAILURE_LIMIT: "${AUTH_LOCKOUT_FAILURE_LIMIT:-10}"
+      AUTH_LOCKOUT_WINDOW_SECONDS: "${AUTH_LOCKOUT_WINDOW_SECONDS:-600}"
+      AUTH_LOCKOUT_DURATIONS_SECONDS: "${AUTH_LOCKOUT_DURATIONS_SECONDS:-300,900,3600,86400}"
+      AUTH_LOCKOUT_STRIKE_TTL_SECONDS: "${AUTH_LOCKOUT_STRIKE_TTL_SECONDS:-86400}"
       MFA_TOTP_ISSUER: "${MFA_TOTP_ISSUER:-IT Wiki}"
       MFA_TOTP_VALID_WINDOW: "${MFA_TOTP_VALID_WINDOW:-2}"
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
@@ -228,3 +264,4 @@ services:
 
 volumes:
   static_volume:
+  redis_data:

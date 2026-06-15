@@ -48,6 +48,9 @@ DJANGO_FIELD_ENCRYPTION_KEY=replace-with-a-long-random-field-encryption-key
 POSTGRES_PASSWORD=replace-with-stable-postgres-password
 
 AI_API_KEY=replace-with-selected-ai-provider-api-key
+GEMINI_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
 LDAP_BIND_PASSWORD=replace-with-real-svc-djopenkb-password
 LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
 "@ | Set-Content -Path $OutputFile -Encoding UTF8
@@ -97,39 +100,33 @@ if (-not $found["LDAP_PLACEHOLDER_PASSWORD"]) {
 }
 
 
-# Remove old duplicate AI key names if this file came from an older version.
-# If AI_API_KEY is missing, preserve the first old non-placeholder value as AI_API_KEY.
-$oldAi = $null
-$newOut = New-Object System.Collections.Generic.List[string]
-foreach ($line in $out) {
-    $trimmed = $line.Trim()
-    if ($trimmed.StartsWith("GEMINI_API_KEY=") -or $trimmed.StartsWith("LLM_API_KEY=")) {
-        $value = $trimmed.Split("=", 2)[1].Trim()
-        if ($value -and $value -notlike "*replace-with*" -and -not $oldAi) {
-            $oldAi = $value
-        }
-        continue
+# Keep provider-specific AI key placeholders available. Do not generate or
+# overwrite API keys because those are manually issued by the provider.
+foreach ($key in @("AI_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "LDAP_BIND_PASSWORD")) {
+    $exists = $false
+    foreach ($line in $out) {
+        if ($line.Trim().StartsWith("$key=")) { $exists = $true; break }
     }
-    $newOut.Add($line)
-}
-$out = $newOut
-$hasAi = $false
-foreach ($line in $out) {
-    if ($line.Trim().StartsWith("AI_API_KEY=")) { $hasAi = $true; break }
-}
-if ($oldAi -and -not $hasAi) {
-    if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") { $out.Add("") }
-    $out.Add("# OpenKB AI provider key.")
-    $out.Add("AI_API_KEY=$oldAi")
+    if (-not $exists) {
+        if ($out.Count -gt 0 -and $out[$out.Count - 1].Trim() -ne "") { $out.Add("") }
+        if ($key -eq "AI_API_KEY") {
+            $out.Add("# General fallback AI provider key.")
+        } elseif ($key -in @("GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY")) {
+            $out.Add("# Optional provider-specific AI key.")
+        } elseif ($key -eq "LDAP_BIND_PASSWORD") {
+            $out.Add("# AD LDAP service account password.")
+        }
+        $out.Add("$key=")
+    }
 }
 
 $out | Set-Content -Path $OutputFile -Encoding UTF8
 
 Write-Host "Generated bootstrap secrets in: $OutputFile"
 Write-Host "Updated: DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD"
-Write-Host "Preserved: comments, AI_API_KEY, LDAP_BIND_PASSWORD"
+Write-Host "Preserved: comments, AI_API_KEY/GEMINI_API_KEY/OPENAI_API_KEY/ANTHROPIC_API_KEY, LDAP_BIND_PASSWORD"
 Write-Host ""
-Write-Host "Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually."
+Write-Host "Next: edit the correct AI provider key and LDAP_BIND_PASSWORD manually."
 Write-Host "Use no quotes, no spaces around '=', and avoid spaces/shell symbols."
 Write-Host "Good example: LDAP_BIND_PASSWORD=P@ssw0rd"
 Write-Host "Avoid: LDAP_BIND_PASSWORD=`"P@ssw0rd!`""

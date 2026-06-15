@@ -1,6 +1,12 @@
 from django.views.decorators.cache import never_cache
 from .services import *
-from ..auth_monitoring import log_auth_event
+from ..auth_monitoring import (
+    format_retry_after,
+    get_auth_lockout_status,
+    log_auth_event,
+    record_auth_failure,
+    record_auth_success,
+)
 from ..mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
@@ -62,17 +68,66 @@ class OpenKBLoginView(LoginView):
 
             return redirect(self.get_success_url())
 
+        if request.method == "POST":
+            username = (request.POST.get("username") or "").strip()
+            locked, retry_after, identifier = get_auth_lockout_status(
+                request,
+                username=username,
+                purpose="password",
+            )
+            if locked:
+                log_auth_event(
+                    request,
+                    event_type="password_failure",
+                    success=False,
+                    username=username,
+                    login_mode=(request.POST.get("login_mode") or "").strip().lower(),
+                    details={
+                        "reason": "temporary_lockout",
+                        "lockout_identifier": identifier,
+                        "retry_after_seconds": retry_after,
+                    },
+                )
+                messages.error(
+                    request,
+                    _("Too many failed sign-in attempts. Please try again in %(duration)s.")
+                    % {"duration": format_retry_after(retry_after)},
+                )
+                form = self.get_form()
+                return self.render_to_response(self.get_context_data(form=form))
+
         return super().dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
         if not getattr(self.request, "_skip_auth_failure_log", False):
+            username = (self.request.POST.get("username") or "").strip()
+            lockout = record_auth_failure(
+                self.request,
+                username=username,
+                purpose="password",
+            )
+            details = {
+                "reason": "invalid_credentials",
+                "lockout_identifier": lockout.get("identifier"),
+                "failure_count": lockout.get("failure_count"),
+                "failure_limit": lockout.get("failure_limit"),
+            }
+            if lockout.get("locked"):
+                details["reason"] = "temporary_lockout_created"
+                details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+                messages.error(
+                    self.request,
+                    _("Too many failed sign-in attempts. Please try again in %(duration)s.")
+                    % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+                )
+
             log_auth_event(
                 self.request,
                 event_type="password_failure",
                 success=False,
-                username=(self.request.POST.get("username") or "").strip(),
+                username=username,
                 login_mode=(self.request.POST.get("login_mode") or "").strip().lower(),
-                details={"reason": "invalid_credentials"},
+                details=details,
             )
         return super().form_invalid(form)
 
@@ -92,6 +147,13 @@ class OpenKBLoginView(LoginView):
             logout(self.request)
             self.request._skip_auth_failure_log = True
             return self.form_invalid(form)
+
+        record_auth_success(
+            self.request,
+            username=user.get_username(),
+            user=user,
+            purpose="password",
+        )
 
         log_auth_event(
             self.request,
@@ -205,18 +267,54 @@ def _verify_profile_mfa_code(request, user):
         return False
 
     code = request.POST.get("mfa_code", "")
-    if not verify_totp_code(device, code):
+    locked, retry_after, identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="mfa",
+    )
+    if locked:
         log_auth_event(
             request,
             event_type="mfa_verify_failure",
             success=False,
             user=user,
             username=user.get_username(),
-            details={"reason": "invalid_profile_change_totp"},
+            details={
+                "reason": "temporary_lockout",
+                "lockout_identifier": identifier,
+                "retry_after_seconds": retry_after,
+            },
+        )
+        messages.error(
+            request,
+            _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+            % {"duration": format_retry_after(retry_after)},
+        )
+        return False
+
+    if not verify_totp_code(device, code):
+        lockout = record_auth_failure(request, user=user, purpose="mfa")
+        details = {
+            "reason": "invalid_profile_change_totp",
+            "lockout_identifier": lockout.get("identifier"),
+            "failure_count": lockout.get("failure_count"),
+            "failure_limit": lockout.get("failure_limit"),
+        }
+        if lockout.get("locked"):
+            details["reason"] = "temporary_lockout_created"
+            details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details=details,
         )
         messages.error(request, _("MFA/OTP code is incorrect."))
         return False
 
+    record_auth_success(request, user=user, purpose="mfa")
     device.mark_verified()
     log_auth_event(
         request,

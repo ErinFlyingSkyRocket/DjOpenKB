@@ -8,7 +8,7 @@
 # - LDAP_PLACEHOLDER_PASSWORD
 #
 # It preserves existing comments and manual lines such as:
-# - AI_API_KEY
+# - AI_API_KEY / provider-specific AI keys
 # - LDAP_BIND_PASSWORD
 #
 # IMPORTANT:
@@ -62,6 +62,9 @@ DJANGO_FIELD_ENCRYPTION_KEY=replace-with-a-long-random-field-encryption-key
 POSTGRES_PASSWORD=replace-with-stable-postgres-password
 
 AI_API_KEY=replace-with-selected-ai-provider-api-key
+GEMINI_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
 LDAP_BIND_PASSWORD=replace-with-real-svc-djopenkb-password
 LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random
 HEADER
@@ -120,32 +123,27 @@ if not found["LDAP_PLACEHOLDER_PASSWORD"]:
     out.append("# Only used if LDAP_PLACEHOLDER_ENABLED=true.")
     out.append(f"LDAP_PLACEHOLDER_PASSWORD={replacements['LDAP_PLACEHOLDER_PASSWORD']}")
 
-# Remove old duplicate AI key names if this file came from an older version.
-# If AI_API_KEY is missing, preserve the first old non-placeholder value as AI_API_KEY.
-old_ai = None
-new_lines = []
-for line in out:
-    stripped = line.strip()
-    if stripped.startswith(("GEMINI_API_KEY=", "LLM_API_KEY=")):
-        value = stripped.split("=", 1)[1].strip()
-        if value and "replace-with" not in value and old_ai is None:
-            old_ai = value
-        continue
-    new_lines.append(line)
-out = new_lines
-if old_ai and not any(line.strip().startswith("AI_API_KEY=") for line in out):
-    if out and out[-1].strip():
-        out.append("")
-    out.append("# OpenKB AI provider key.")
-    out.append(f"AI_API_KEY={old_ai}")
+# Keep provider-specific AI key placeholders available. Do not generate or
+# overwrite API keys because those are manually issued by the provider.
+for key in ("AI_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "LDAP_BIND_PASSWORD"):
+    if not any(line.strip().startswith(key + "=") for line in out):
+        if out and out[-1].strip():
+            out.append("")
+        if key == "AI_API_KEY":
+            out.append("# General fallback AI provider key.")
+        elif key in {"GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"}:
+            out.append("# Optional provider-specific AI key.")
+        elif key == "LDAP_BIND_PASSWORD":
+            out.append("# AD LDAP service account password.")
+        out.append(f"{key}=")
 
 path.write_text("\n".join(out) + "\n", encoding="utf-8")
 
 print(f"Generated bootstrap secrets in: {path}")
 print("Updated: DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, POSTGRES_PASSWORD, LDAP_PLACEHOLDER_PASSWORD")
-print("Preserved: comments, AI_API_KEY, LDAP_BIND_PASSWORD")
+print("Preserved: comments, AI_API_KEY/GEMINI_API_KEY/OPENAI_API_KEY/ANTHROPIC_API_KEY, LDAP_BIND_PASSWORD")
 print()
-print("Next: edit AI_API_KEY and LDAP_BIND_PASSWORD manually.")
+print("Next: edit the correct AI provider key and LDAP_BIND_PASSWORD manually.")
 print("Use no spaces around '='. Generated values are unquoted.")
 print("Good simple example: LDAP_BIND_PASSWORD=P@ssw0rd")
 print("If needed, use single quotes: LDAP_BIND_PASSWORD='P@ssw0rd!abc$123'")

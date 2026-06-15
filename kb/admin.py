@@ -12,8 +12,8 @@ from django.utils import timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
-from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
-from .auth_monitoring import log_auth_event
+from .models import ActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
+from .auth_monitoring import log_auth_event, reset_user_auth_lockouts
 from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
 from .permissions import (
@@ -59,6 +59,7 @@ def _apply_admin_translation_labels():
     _set_admin_model_label(UserProfile, "Main Site User Profile", "Main Site User Profiles")
     _set_admin_model_label(UserMFADevice, "User MFA device", "User MFA devices")
     _set_admin_model_label(AuthActivityLog, "Authentication activity log", "Authentication activity logs")
+    _set_admin_model_label(AuthLockoutPolicyStage, "Authentication lockout policy stage", "Authentication lockout policy stages")
     _set_admin_model_label(SuggestedArticle, "Suggested Article", "Suggested Articles")
     _set_admin_model_label(ArticleVote, "Article vote", "Article votes")
     _set_admin_model_label(SiteSetting, "Site setting", "Site settings")
@@ -177,7 +178,17 @@ def _apply_admin_translation_labels():
             "activity_log_retention_days": "General activity log retention (days)",
             "admin_log_rows_per_page": "Admin log rows per page",
             "admin_allowed_cidrs": "Admin allowed IP ranges",
+            "auth_lockout_strike_ttl_seconds": "Authentication lockout escalation memory (seconds)",
             "updated_at": "Updated at",
+        },
+        AuthLockoutPolicyStage: {
+            "site_setting": "Site setting",
+            "sort_order": "Stage order",
+            "failure_limit": "Failed attempts before block",
+            "failure_window_seconds": "Failure counting window (seconds)",
+            "block_seconds": "Block duration (seconds)",
+            "repeat_count": "Repeat count",
+            "enabled": "Enabled",
         },
     }
 
@@ -193,6 +204,12 @@ def _apply_admin_translation_labels():
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
+        (SiteSetting, "auth_lockout_strike_ttl_seconds"): "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).",
+        (AuthLockoutPolicyStage, "sort_order"): "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later.",
+        (AuthLockoutPolicyStage, "failure_limit"): "Number of wrong password/MFA attempts required before this stage blocks the user.",
+        (AuthLockoutPolicyStage, "failure_window_seconds"): "Failures must happen within this time window to trigger the stage. Default is 600 seconds (10 minutes).",
+        (AuthLockoutPolicyStage, "block_seconds"): "How long the login/MFA check is blocked after this stage triggers.",
+        (AuthLockoutPolicyStage, "repeat_count"): "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever.",
     }
 
     for model, field_labels in labels.items():
@@ -644,6 +661,7 @@ class UserAdmin(DefaultUserAdmin):
         "make_ldap_user",
         "make_ldap_admin",
         "reset_mfa_for_selected_users",
+        "reset_auth_lockouts_for_selected_users",
     )
 
     def _is_domain_user(self, obj):
@@ -661,7 +679,7 @@ class UserAdmin(DefaultUserAdmin):
         if obj and self._is_domain_user(obj) and "domain_password_status" not in readonly_fields:
             readonly_fields.append("domain_password_status")
         if obj:
-            for field in ("mfa_status_display", "mfa_reset_button"):
+            for field in ("mfa_status_display", "mfa_reset_button", "auth_lockout_reset_button"):
                 if field not in readonly_fields:
                     readonly_fields.append(field)
         return tuple(readonly_fields)
@@ -696,6 +714,16 @@ class UserAdmin(DefaultUserAdmin):
                     "description": _(
                         "Use this section to reset a user's authenticator setup. "
                         "A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
+                    ),
+                },
+            ))
+            cleaned_fieldsets.append((
+                _("Authentication lockout"),
+                {
+                    "fields": ("auth_lockout_reset_button",),
+                    "description": _(
+                        "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. "
+                        "It clears password and MFA lockout counters for this user only."
                     ),
                 },
             ))
@@ -790,6 +818,22 @@ class UserAdmin(DefaultUserAdmin):
 
     mfa_reset_button.short_description = _("MFA Reset")
 
+    def auth_lockout_reset_button(self, obj):
+        if not obj or not obj.pk:
+            return "-"
+        url = reverse("admin:kb_user_reset_auth_lockout", args=[quote(obj.pk)])
+        return format_html(
+            '<a class="button" href="{}">{}</a><p class="help">{}</p>',
+            url,
+            _("Reset password/MFA lockout"),
+            _(
+                "Clears temporary blocks and progressive lockout history for this user. "
+                "Use this after verifying the request is legitimate."
+            ),
+        )
+
+    auth_lockout_reset_button.short_description = _("Authentication Lockout Reset")
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -798,8 +842,54 @@ class UserAdmin(DefaultUserAdmin):
                 self.admin_site.admin_view(self.reset_user_mfa_view),
                 name="kb_user_reset_mfa",
             ),
+            path(
+                "<path:user_id>/reset-auth-lockout/",
+                self.admin_site.admin_view(self.reset_user_auth_lockout_view),
+                name="kb_user_reset_auth_lockout",
+            ),
         ]
         return custom_urls + urls
+
+    def reset_user_auth_lockout_view(self, request, user_id):
+        user = self.get_object(request, user_id)
+        if user is None:
+            raise Http404(_("User does not exist."))
+
+        opts = self.model._meta
+        user_change_url = reverse(
+            f"admin:{opts.app_label}_{opts.model_name}_change",
+            args=[quote(user.pk)],
+        )
+
+        if request.method == "POST":
+            identifiers = reset_user_auth_lockouts(user)
+            log_auth_event(
+                request,
+                event_type="auth_lockout_reset_admin",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "actor": request.user.get_username(),
+                    "reset_identifiers": identifiers,
+                    "source": "user_change_button",
+                },
+            )
+            self.message_user(
+                request,
+                _("Password/MFA lockout counters were reset for %(username)s.") % {"username": user.get_username()},
+                level=messages.SUCCESS,
+            )
+            return HttpResponseRedirect(user_change_url)
+
+        context = {
+            **self.admin_site.each_context(request),
+            "opts": opts,
+            "title": _("Reset password/MFA lockout for %(username)s") % {"username": user.get_username()},
+            "user_obj": user,
+            "user_change_url": user_change_url,
+        }
+        return TemplateResponse(request, "admin/kb/reset_auth_lockout_confirm.html", context)
 
     def reset_user_mfa_view(self, request, user_id):
         user = self.get_object(request, user_id)
@@ -859,6 +949,30 @@ class UserAdmin(DefaultUserAdmin):
             request,
             _("MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in.")
             % {"count": count},
+            level=messages.SUCCESS,
+        )
+
+    @admin.action(description=_("Reset password/MFA lockout for selected users"))
+    def reset_auth_lockouts_for_selected_users(self, request, queryset):
+        count = 0
+        for user in queryset:
+            identifiers = reset_user_auth_lockouts(user)
+            log_auth_event(
+                request,
+                event_type="auth_lockout_reset_admin",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "actor": request.user.get_username(),
+                    "reset_identifiers": identifiers,
+                    "source": "bulk_user_action",
+                },
+            )
+            count += 1
+        self.message_user(
+            request,
+            _("Password/MFA lockout counters reset for %(count)d selected user(s).") % {"count": count},
             level=messages.SUCCESS,
         )
 
@@ -945,6 +1059,31 @@ class UserProfileAdmin(admin.ModelAdmin):
         "updated_at",
     )
     readonly_fields = ("created_at", "updated_at")
+    actions = ("reset_auth_lockouts_for_selected_profiles",)
+
+    @admin.action(description=_("Reset password/MFA lockout for selected profiles"))
+    def reset_auth_lockouts_for_selected_profiles(self, request, queryset):
+        count = 0
+        for profile in queryset.select_related("user"):
+            identifiers = reset_user_auth_lockouts(profile.user)
+            log_auth_event(
+                request,
+                event_type="auth_lockout_reset_admin",
+                success=True,
+                user=profile.user,
+                username=profile.user.get_username(),
+                details={
+                    "actor": request.user.get_username(),
+                    "reset_identifiers": identifiers,
+                    "source": "bulk_profile_action",
+                },
+            )
+            count += 1
+        self.message_user(
+            request,
+            _("Password/MFA lockout counters reset for %(count)d selected profile(s).") % {"count": count},
+            level=messages.SUCCESS,
+        )
 
 
 @admin.register(UserMFADevice)
@@ -1455,6 +1594,20 @@ class ArticleVoteAdmin(admin.ModelAdmin):
     vote_label.short_description = _("Vote")
 
 
+class AuthLockoutPolicyStageInline(admin.TabularInline):
+    model = AuthLockoutPolicyStage
+    extra = 1
+    fields = (
+        "sort_order",
+        "failure_limit",
+        "failure_window_seconds",
+        "block_seconds",
+        "repeat_count",
+        "enabled",
+    )
+    ordering = ("sort_order", "id")
+
+
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -1482,6 +1635,13 @@ class SiteSettingAdmin(admin.ModelAdmin):
                 "Set session timeout to 0 to expire the session when the browser closes."
             ),
         }),
+        (_("Authentication lockout policy"), {
+            "fields": ("auth_lockout_policy_guide", "auth_lockout_strike_ttl_seconds"),
+            "description": _(
+                "Use the inline rows below to control progressive password/MFA lockouts. "
+                "repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
+            ),
+        }),
         (_("Django Admin access restrictions"), {
             "fields": ("admin_allowed_cidrs",),
             "description": _(
@@ -1491,7 +1651,37 @@ class SiteSettingAdmin(admin.ModelAdmin):
             ),
         }),
     )
-    readonly_fields = ("updated_at",)
+    readonly_fields = ("updated_at", "auth_lockout_policy_guide")
+    inlines = (AuthLockoutPolicyStageInline,)
+
+    def auth_lockout_policy_guide(self, obj):
+        return format_html(
+            "<div style='max-width:900px;line-height:1.5;'>"
+            "<p>{}</p>"
+            "<ol>"
+            "<li>{}</li>"
+            "<li>{}</li>"
+            "<li>{}</li>"
+            "</ol>"
+            "<p class='help'>{}</p>"
+            "</div>",
+            _(
+                "The same progressive policy is used for password-login failures and MFA-code failures, "
+                "but password and MFA counters are tracked separately per user."
+            ),
+            _("Default stage 1: 10 wrong attempts within 10 minutes blocks for 5 minutes, repeated 2 times."),
+            _("Default stage 2: 5 wrong attempts blocks for 15 minutes, repeated 2 times."),
+            _(
+                "Later defaults: 3 wrong attempts block for 30 minutes, then 1 hour, then 2 hours, "
+                "then 1 day repeatedly until successful login or admin reset."
+            ),
+            _(
+                "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. "
+                "Admins can reset a user's counters from the User admin page."
+            ),
+        )
+
+    auth_lockout_policy_guide.short_description = _("Policy guide")
 
     def has_add_permission(self, request):
         # Only allow creating the singleton if it does not already exist.

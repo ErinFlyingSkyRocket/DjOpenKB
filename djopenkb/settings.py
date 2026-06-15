@@ -143,18 +143,65 @@ AI_API_KEY = secret_value("AI_API_KEY", "")
 # General LiteLLM/OpenKB model name.
 # Use OPENKB_AI_MODEL for all providers, for example:
 #   gemini/gemini-2.5-flash
-#   gpt-5.5
+#   openai/gpt-5.5
 #   anthropic/claude-3-5-sonnet-latest
 OPENKB_AI_MODEL = config_value("OPENKB_AI_MODEL", "gemini/gemini-2.5-flash").strip()
 
+# Prefer provider-specific keys in production. AI_API_KEY is kept as a simple
+# development fallback so the current free-tier key setup still works.
+OPENAI_API_KEY = secret_value("OPENAI_API_KEY", "")
+GEMINI_API_KEY = secret_value("GEMINI_API_KEY", "")
+ANTHROPIC_API_KEY = secret_value("ANTHROPIC_API_KEY", "")
+
 LITELLM_DROP_PARAMS = config_value("LITELLM_DROP_PARAMS", "true")
 
-# Safety limits for the public Ask OpenKB AI endpoint.
-# These values can be overridden in your root .env file.
-OPENKB_AI_MAX_PROMPT_CHARS = int(os.getenv("OPENKB_AI_MAX_PROMPT_CHARS", "1000"))
-OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = int(os.getenv("OPENKB_AI_RATE_LIMIT_MAX_REQUESTS", "5"))
-OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS", "60"))
-OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = int(os.getenv("OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS", "1800"))
+
+def int_config(name: str, default: int, minimum: int | None = None, maximum: int | None = None) -> int:
+    """Read an integer config value with safe fallback/clamping."""
+    try:
+        value = int(config_value(name, str(default)))
+    except (TypeError, ValueError):
+        value = int(default)
+    if minimum is not None:
+        value = max(value, int(minimum))
+    if maximum is not None:
+        value = min(value, int(maximum))
+    return value
+
+
+def csv_int_config(name: str, default: str) -> list[int]:
+    """Read comma-separated integer config, ignoring invalid entries."""
+    values: list[int] = []
+    for item in config_value(name, default).split(","):
+        item = item.strip()
+        if not item:
+            continue
+        try:
+            value = int(item)
+        except ValueError:
+            continue
+        if value > 0:
+            values.append(value)
+    return values or [int(part) for part in default.split(",") if part.strip().isdigit()]
+
+
+# Safety limits for the Ask OpenKB AI endpoint.
+# Redis/shared cache makes these limits work across multiple Gunicorn workers.
+OPENKB_AI_MAX_PROMPT_CHARS = int_config("OPENKB_AI_MAX_PROMPT_CHARS", 1000, minimum=100, maximum=10000)
+OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = int_config("OPENKB_AI_RATE_LIMIT_MAX_REQUESTS", 5, minimum=1, maximum=100)
+OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = int_config("OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS", 60, minimum=10, maximum=3600)
+OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = int_config("OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS", 1800, minimum=60, maximum=86400)
+OPENKB_AI_TIMEOUT_SECONDS = int_config("OPENKB_AI_TIMEOUT_SECONDS", 90, minimum=10, maximum=300)
+OPENKB_AI_CONCURRENCY_LIMIT = int_config("OPENKB_AI_CONCURRENCY_LIMIT", 2, minimum=1, maximum=20)
+OPENKB_AI_CONCURRENCY_LOCK_SECONDS = int_config("OPENKB_AI_CONCURRENCY_LOCK_SECONDS", OPENKB_AI_TIMEOUT_SECONDS + 30, minimum=30, maximum=600)
+
+# Progressive lockout for password/MFA failures. Default policy:
+# 10 failures in 10 minutes -> 5 minute block. Repeated blocks escalate to
+# 15 minutes, 1 hour, then 1 day.
+AUTH_LOCKOUT_FAILURE_LIMIT = int_config("AUTH_LOCKOUT_FAILURE_LIMIT", 10, minimum=3, maximum=50)
+AUTH_LOCKOUT_WINDOW_SECONDS = int_config("AUTH_LOCKOUT_WINDOW_SECONDS", 600, minimum=60, maximum=86400)
+AUTH_LOCKOUT_DURATIONS_SECONDS = csv_int_config("AUTH_LOCKOUT_DURATIONS_SECONDS", "300,900,3600,86400")
+AUTH_LOCKOUT_STRIKE_TTL_SECONDS = int_config("AUTH_LOCKOUT_STRIKE_TTL_SECONDS", 86400, minimum=3600, maximum=604800)
 
 
 # ---------------------------------------------------------------------
@@ -277,14 +324,34 @@ WSGI_APPLICATION = "djopenkb.wsgi.application"
 # Cache / logging
 # ---------------------------------------------------------------------
 
-# Used for lightweight Ask OpenKB AI rate limiting. For multi-container
-# production deployments, replace this with Redis or another shared cache.
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "djopenkb-local-cache",
+# Shared cache used for AI rate limiting, AI concurrency locks, and auth/MFA
+# progressive lockout. Production should use Redis so all Gunicorn workers share
+# the same counters. Local memory is allowed only for development or an explicit
+# emergency fallback.
+REDIS_URL = config_value("REDIS_URL", "").strip()
+DJANGO_ALLOW_LOCAL_CACHE_FALLBACK = config_value("DJANGO_ALLOW_LOCAL_CACHE_FALLBACK", "false").lower() == "true"
+
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+            "TIMEOUT": 300,
+        }
     }
-}
+elif DEBUG or DJANGO_ALLOW_LOCAL_CACHE_FALLBACK:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "djopenkb-local-cache",
+        }
+    }
+else:
+    raise ImproperlyConfigured(
+        "REDIS_URL is required when DJANGO_DEBUG=false. "
+        "Set REDIS_URL=redis://redis:6379/1, or set "
+        "DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=true only as a temporary emergency fallback."
+    )
 
 LOGGING = {
     "version": 1,
@@ -331,12 +398,19 @@ if USE_SQLITE:
         }
     }
 else:
+    POSTGRES_PASSWORD = secret_value("POSTGRES_PASSWORD", "djopenkb_password" if DEBUG else "")
+    if not POSTGRES_PASSWORD:
+        raise ImproperlyConfigured(
+            "POSTGRES_PASSWORD is required when USE_SQLITE=false and DJANGO_DEBUG=false. "
+            "Store POSTGRES_PASSWORD in Vault, an environment variable, or POSTGRES_PASSWORD_FILE."
+        )
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": os.getenv("POSTGRES_DB", "djopenkb"),
             "USER": os.getenv("POSTGRES_USER", "djopenkb"),
-            "PASSWORD": secret_value("POSTGRES_PASSWORD", "djopenkb_password"),
+            "PASSWORD": POSTGRES_PASSWORD,
             "HOST": os.getenv("POSTGRES_HOST", "db"),
             "PORT": os.getenv("POSTGRES_PORT", "5432"),
         }

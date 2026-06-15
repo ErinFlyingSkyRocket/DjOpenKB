@@ -217,6 +217,7 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         MFA_VERIFY_FAILURE = "mfa_verify_failure", _("MFA verify failure")
         MFA_RESET_SELF = "mfa_reset_self", _("MFA reset by user")
         MFA_RESET_ADMIN = "mfa_reset_admin", _("MFA reset by admin")
+        AUTH_LOCKOUT_RESET_ADMIN = "auth_lockout_reset_admin", _("Authentication lockout reset by admin")
         LOGOUT = "logout", _("Logout")
 
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
@@ -878,6 +879,14 @@ class SiteSetting(models.Model):
             "Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."
         ),
     )
+    auth_lockout_strike_ttl_seconds = models.PositiveIntegerField(
+        default=604800,
+        verbose_name=_("Authentication lockout escalation memory (seconds)"),
+        help_text=_(
+            "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. "
+            "Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
+        ),
+    )
 
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -897,3 +906,74 @@ class SiteSetting(models.Model):
     def load(cls):
         obj, _created = cls.objects.get_or_create(pk=1)
         return obj
+
+
+class AuthLockoutPolicyStage(models.Model):
+    """Progressive password/MFA lockout stages managed from Site settings.
+
+    The same policy is used for password-login failures and MFA-code failures,
+    but their counters remain separate per user. repeat_count=0 means this
+    stage repeats forever, which is ideal for the last stage.
+    """
+
+    site_setting = models.ForeignKey(
+        SiteSetting,
+        on_delete=models.CASCADE,
+        related_name="auth_lockout_stages",
+    )
+    sort_order = models.PositiveIntegerField(
+        default=10,
+        verbose_name=_("Stage order"),
+        help_text=_("Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."),
+    )
+    failure_limit = models.PositiveIntegerField(
+        default=10,
+        verbose_name=_("Failed attempts before block"),
+        help_text=_("Number of wrong password/MFA attempts required before this stage blocks the user."),
+    )
+    failure_window_seconds = models.PositiveIntegerField(
+        default=600,
+        verbose_name=_("Failure counting window (seconds)"),
+        help_text=_("Failures must happen within this time window to trigger the stage. Default is 600 seconds (10 minutes)."),
+    )
+    block_seconds = models.PositiveIntegerField(
+        default=300,
+        verbose_name=_("Block duration (seconds)"),
+        help_text=_("How long the login/MFA check is blocked after this stage triggers."),
+    )
+    repeat_count = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_("Repeat count"),
+        help_text=_("How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."),
+    )
+    enabled = models.BooleanField(
+        default=True,
+        verbose_name=_("Enabled"),
+    )
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        verbose_name = _("Authentication lockout policy stage")
+        verbose_name_plural = _("Authentication lockout policy stages")
+
+    def __str__(self):
+        repeat_label = _("forever") if self.repeat_count == 0 else self.repeat_count
+        return _(
+            "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
+        ) % {
+            "order": self.sort_order,
+            "failures": self.failure_limit,
+            "block": self.block_seconds,
+            "repeat": repeat_label,
+        }
+
+    def clean(self):
+        errors = {}
+        if self.failure_limit < 1:
+            errors["failure_limit"] = _("Failed attempts must be at least 1.")
+        if self.failure_window_seconds < 60:
+            errors["failure_window_seconds"] = _("Failure counting window must be at least 60 seconds.")
+        if self.block_seconds < 60:
+            errors["block_seconds"] = _("Block duration must be at least 60 seconds.")
+        if errors:
+            raise ValidationError(errors)
