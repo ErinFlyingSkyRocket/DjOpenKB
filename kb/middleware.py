@@ -263,6 +263,14 @@ class DisabledUserLogoutMiddleware:
         if user and user.is_authenticated and user_has_disabled_role(user):
             return self._logout_disabled_user(request, user)
 
+        # Also handle users who are between password login and MFA completion.
+        # They are not fully authenticated yet, but if an admin disables them
+        # during this state, any next request should still go to the clean
+        # disabled-account page instead of bouncing through MFA/404 pages.
+        pending_user = get_pending_mfa_user(request)
+        if pending_user and user_has_disabled_role(pending_user):
+            return self._logout_disabled_user(request, pending_user)
+
         return self.get_response(request)
 
 

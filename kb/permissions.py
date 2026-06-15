@@ -365,6 +365,11 @@ def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
     is assigned, it must be exclusive among DjOpenKB role groups and direct
     DjOpenKB permissions must be cleared so the user cannot regain access through
     an old override.
+
+    Existing browser sessions are intentionally not deleted here. Keeping the
+    session until the next request lets DisabledUserLogoutMiddleware identify the
+    account and send the user to the clean /account-disabled/ page instead of
+    causing a confusing anonymous 404/redirect flow.
     """
     if not getattr(user, "pk", None):
         return False
@@ -385,14 +390,9 @@ def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
         user.user_permissions.remove(*kb_perms)
         sync_user_staff_flags_from_roles(user)
 
-        if clear_sessions:
-            try:
-                from .mfa import clear_user_auth_sessions
-
-                clear_user_auth_sessions(user)
-            except Exception:
-                pass
-
+        # Do not clear sessions here. DisabledUserLogoutMiddleware handles the
+        # next request and redirects the affected browser to /account-disabled/.
+        # The clear_sessions parameter is kept for backwards-compatible callers.
         return True
     except (DatabaseError, OperationalError, ProgrammingError):
         return False
@@ -441,7 +441,7 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         pass
 
     if role_name == ROLE_DISABLED_USER:
-        enforce_disabled_user_exclusive(user, clear_sessions=True)
+        enforce_disabled_user_exclusive(user)
     else:
         sync_user_staff_flags_from_roles(user)
 

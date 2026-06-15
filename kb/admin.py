@@ -362,7 +362,7 @@ class UserProfileInlineForm(forms.ModelForm):
                     codename,
                     bool(self.cleaned_data.get(field_name)),
                 )
-            if enforce_disabled_user_exclusive(profile.user, clear_sessions=True):
+            if enforce_disabled_user_exclusive(profile.user):
                 return profile
             sync_user_staff_flags_from_roles(profile.user)
 
@@ -536,7 +536,7 @@ class GroupAdminForm(forms.ModelForm):
             self.instance.user_set.set(selected_users)
 
             for user in User.objects.filter(pk__in=affected_user_ids):
-                if enforce_disabled_user_exclusive(user, clear_sessions=True):
+                if enforce_disabled_user_exclusive(user):
                     continue
                 sync_user_staff_flags_from_roles(user)
 
@@ -791,7 +791,7 @@ class UserAdmin(DefaultUserAdmin):
         super().save_model(request, obj, form, change)
 
         profile, created = UserProfile.objects.get_or_create(user=obj)
-        enforce_disabled_user_exclusive(obj, clear_sessions=True)
+        enforce_disabled_user_exclusive(obj)
         has_disabled_group = user_has_disabled_role(obj) if obj.pk else False
         has_admin_group = obj.groups.filter(name=ROLE_ADMIN_USERS).exists() if obj.pk else False
         if not has_disabled_group and (obj.is_superuser or has_admin_group or profile.is_admin_type):
@@ -809,7 +809,7 @@ class UserAdmin(DefaultUserAdmin):
         user = form.instance
         # Run after Django saves groups/user_permissions/inlines so Disabled User
         # cannot be combined with old direct DjOpenKB permission overrides.
-        if enforce_disabled_user_exclusive(user, clear_sessions=True):
+        if enforce_disabled_user_exclusive(user):
             return
         sync_user_staff_flags_from_roles(user)
 
@@ -1050,7 +1050,7 @@ class UserAdmin(DefaultUserAdmin):
                 skipped_self += 1
                 continue
             assign_single_role_group(user, ROLE_DISABLED_USER, clear_direct_permissions=True)
-            enforce_disabled_user_exclusive(user, clear_sessions=True)
+            enforce_disabled_user_exclusive(user)
             log_auth_event(
                 request,
                 event_type="auth_lockout_reset_admin",
