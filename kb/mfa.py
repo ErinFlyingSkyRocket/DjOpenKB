@@ -23,7 +23,7 @@ LOCAL_MFA_USER_SESSION_KEY = MFA_USER_SESSION_KEY
 
 
 def get_totp_issuer():
-    return getattr(settings, "MFA_TOTP_ISSUER", "IT Wiki")
+    return getattr(settings, "MFA_TOTP_ISSUER", "Knowledge Repository")
 
 
 def get_totp_valid_window():
@@ -304,7 +304,7 @@ def complete_pending_mfa_login(request, user):
 def start_disabled_account_session(request, user):
     """Create a restricted authenticated session for the disabled-account page.
 
-    Disabled users must not be allowed into normal DjOpenKB functions, but the
+    Disabled users must not be allowed into normal Knowledge Repository functions, but the
     account-disabled page is intentionally authenticated-only so anonymous users
     cannot browse to it. This helper promotes a verified password/MFA flow into
     a restricted session. DisabledUserLogoutMiddleware then allows only the

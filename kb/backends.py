@@ -143,7 +143,7 @@ def _notify_ldap_username_conflict(request, username):
     """Show a clear warning only after LDAP credentials have succeeded."""
     message = (
         "This domain account uses a username that already exists as a local "
-        "DjOpenKB account. The account was not linked for safety. Please "
+        "Knowledge Repository account. The account was not linked for safety. Please "
         "contact an administrator."
     )
     if request is not None:

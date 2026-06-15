@@ -346,7 +346,7 @@ def mfa_verify(request):
 def reset_mfa(request):
     user = request.user
     if not user_requires_mfa(user):
-        messages.info(request, _("MFA reset is available for your DjOpenKB account."))
+        messages.info(request, _("MFA reset is available for your Knowledge Repository account."))
         return redirect("profile")
 
     reset_mfa_device_for_user(user)
@@ -365,5 +365,5 @@ def reset_mfa(request):
     logout(request)
     begin_pending_mfa_login(request, user, next_url=next_url, backend=backend)
 
-    messages.warning(request, _("Your MFA was reset. Complete authenticator setup now to continue using DjOpenKB."))
+    messages.warning(request, _("Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."))
     return redirect("mfa_setup")

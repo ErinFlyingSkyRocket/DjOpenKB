@@ -6,7 +6,7 @@ from kb.mfa import admin_reset_user_mfa
 
 
 class Command(BaseCommand):
-    help = "Reset MFA for one DjOpenKB user from the server command line."
+    help = "Reset MFA for one Knowledge Repository user from the server command line."
 
     def add_arguments(self, parser):
         parser.add_argument("username", help="Username or email address of the user whose MFA should be reset.")

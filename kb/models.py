@@ -51,7 +51,7 @@ class UserProfile(models.Model):
         max_length=20,
         choices=AuthSource.choices,
         default=AuthSource.LOCAL,
-        help_text=_("Controls whether the password is managed locally in DjOpenKB or externally by Active Directory."),
+        help_text=_("Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."),
     )
     can_access_main_site = models.BooleanField(
         default=True,
@@ -124,7 +124,7 @@ class UserProfile(models.Model):
 
 
 class UserMFADevice(models.Model):
-    """TOTP authenticator device for DjOpenKB users.
+    """TOTP authenticator device for Knowledge Repository users.
 
     MFA is enforced as a login criterion for both local Django accounts and
     LDAP/AD accounts. Users must have one confirmed device before using the

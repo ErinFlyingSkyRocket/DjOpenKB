@@ -1,4 +1,4 @@
-"""DjOpenKB role and permission helpers.
+"""Knowledge Repository role and permission helpers.
 
 Django's built-in permissions are additive: a user gets permissions from all
 assigned groups plus any direct user permissions. These helpers define the
@@ -24,7 +24,7 @@ PERMISSION_LABELS = {
     PERM_VIEW_ARTICLES: "Can view published articles",
     PERM_ADD_ARTICLES: "Can add/submit articles for approval",
     PERM_MANAGE_ARTICLES: "Can manage pending articles and article reviews",
-    PERM_USE_ADMIN_TOOLS: "Can use DjOpenKB admin tools",
+    PERM_USE_ADMIN_TOOLS: "Can use Knowledge Repository admin tools",
 }
 
 ROLE_DISABLED_USER = "Disabled User"
@@ -78,7 +78,7 @@ ROLE_DEFINITIONS = {
     },
     ROLE_ADMIN_USERS: {
         "description": _(
-            "DjOpenKB administrator. Can create/publish articles directly, manage all article reviews, use admin tools, and access Django admin when staff status is enabled."
+            "Knowledge Repository administrator. Can create/publish articles directly, manage all article reviews, use admin tools, and access Django admin when staff status is enabled."
         ),
         "permissions": (
             PERM_VIEW_ARTICLES,
@@ -106,7 +106,7 @@ def user_has_disabled_role(user) -> bool:
     """Return True when the user is assigned to the Disabled User role.
 
     Disabled User is a deliberate no-access role. It overrides direct and
-    group-based DjOpenKB permissions while still keeping the account record for
+    group-based Knowledge Repository permissions while still keeping the account record for
     audit/history purposes.
     """
     if not getattr(user, "is_authenticated", False) or not getattr(user, "pk", None):
@@ -128,14 +128,14 @@ def _permission_exists(user, codename: str) -> bool:
 
 
 def user_has_kb_permission(user, codename: str) -> bool:
-    """Return True if the user has one of the custom DjOpenKB permissions."""
+    """Return True if the user has one of the custom Knowledge Repository permissions."""
     return _permission_exists(user, codename)
 
 
 def user_can_view_articles(user) -> bool:
     """Return True for signed-in users allowed to view internal articles.
 
-    DjOpenKB is an internal-only wiki, so anonymous visitors must not be able to
+    Knowledge Repository is an internal-only wiki, so anonymous visitors must not be able to
     view published articles or their uploaded images.
     """
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
@@ -228,7 +228,7 @@ def role_permissions_summary(user) -> str:
     for codename, label in PERMISSION_LABELS.items():
         if user_has_kb_permission(user, codename):
             labels.append(str(_(label)))
-    return ", ".join(labels) if labels else str(_("No DjOpenKB role permissions"))
+    return ", ".join(labels) if labels else str(_("No Knowledge Repository role permissions"))
 
 
 def role_descriptions_text() -> str:
@@ -249,7 +249,7 @@ def role_descriptions_html() -> str:
         "</ul>"
         "<p class='help'>{}</p>"
         "</div>",
-        _("DjOpenKB role guide"),
+        _("Knowledge Repository role guide"),
         format_html_join(
             "",
             "<li><strong>{}</strong>: {}</li>",
@@ -282,7 +282,7 @@ def create_article_permissions():
 
 
 def seed_djopenkb_role_groups():
-    """Create/update the standard DjOpenKB role groups."""
+    """Create/update the standard Knowledge Repository role groups."""
     try:
         custom_permissions = create_article_permissions()
     except (DatabaseError, OperationalError, ProgrammingError):
@@ -292,7 +292,7 @@ def seed_djopenkb_role_groups():
         group, _created = Group.objects.get_or_create(name=role_name)
         perms = [custom_permissions[codename] for codename in definition["permissions"]]
 
-        # Article Managers review from the normal DjOpenKB pending-review UI only.
+        # Article Managers review from the normal Knowledge Repository pending-review UI only.
         # They must not receive Django Admin model permissions or staff access.
         if role_name == ROLE_ADMIN_USERS:
             perms.extend(_admin_safe_model_permissions())
@@ -329,7 +329,7 @@ def _admin_safe_model_permissions():
 
 
 def set_user_direct_kb_permission(user, codename: str, enabled: bool):
-    """Add/remove one custom DjOpenKB permission directly on a user."""
+    """Add/remove one custom Knowledge Repository permission directly on a user."""
     if codename not in PERMISSION_LABELS or not getattr(user, "pk", None):
         return
 
@@ -362,8 +362,8 @@ def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
 
     Non-disabled users may belong to multiple groups for future combinations such
     as article permissions plus notification groups. When the Disabled User role
-    is assigned, it must be exclusive among DjOpenKB role groups and direct
-    DjOpenKB permissions must be cleared so the user cannot regain access through
+    is assigned, it must be exclusive among Knowledge Repository role groups and direct
+    Knowledge Repository permissions must be cleared so the user cannot regain access through
     an old override.
 
     Existing browser sessions are intentionally not deleted here. Keeping the
@@ -399,12 +399,12 @@ def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
 
 
 def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: bool = False):
-    """Assign one standard DjOpenKB role group while preserving custom groups.
+    """Assign one standard Knowledge Repository role group while preserving custom groups.
 
     This helper is still used for default role setup and explicit admin actions.
     It does not prevent admins from later adding multiple non-disabled groups.
     If the selected role is Disabled User, it becomes exclusive and clears direct
-    DjOpenKB permissions.
+    Knowledge Repository permissions.
     """
     if not getattr(user, "pk", None) or role_name not in ROLE_GROUP_NAMES:
         return
@@ -446,7 +446,7 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         sync_user_staff_flags_from_roles(user)
 
 def assign_default_kb_role_group(user):
-    """Put a newly-created user into a default DjOpenKB role group.
+    """Put a newly-created user into a default Knowledge Repository role group.
 
     Superusers/staff/profile admins become Admin Users. Everyone else becomes
     Regular User, including new AD-created users.

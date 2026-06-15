@@ -303,12 +303,12 @@ class DisabledUserLogoutMiddleware:
 
 
 class LocalMFARequiredMiddleware:
-    """Server-side MFA login gate for all DjOpenKB users.
+    """Server-side MFA login gate for all Knowledge Repository users.
 
     MFA is treated as part of login completion. After AD or local password
     authentication succeeds, users are stored in a pending-MFA session, not a
     fully authenticated Django session. Until setup/verification succeeds, every
-    internal DjOpenKB page redirects back to the required MFA page.
+    internal Knowledge Repository page redirects back to the required MFA page.
     """
 
     def __init__(self, get_response):
@@ -391,7 +391,7 @@ class LocalMFARequiredMiddleware:
         if path != target_path:
             messages.warning(
                 request,
-                _("Complete MFA before continuing. You cannot access DjOpenKB until MFA is completed."),
+                _("Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."),
             )
             return self._redirect_to_target(request, target_name, next_url=request.get_full_path())
 
@@ -419,7 +419,7 @@ class LocalMFARequiredMiddleware:
         """Turn a direct Django-admin login into a pending MFA login.
 
         Django admin has its own login view. Without this conversion, admin users
-        can create a real Django session before completing DjOpenKB MFA. This
+        can create a real Django session before completing Knowledge Repository MFA. This
         makes MFA part of the admin login criteria too.
         """
         backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
@@ -444,7 +444,7 @@ class LocalMFARequiredMiddleware:
 
         # If a direct /admin/ request already has an authenticated session but
         # MFA was not completed, convert it into a pending-MFA session. This
-        # prevents admin users from bypassing the normal DjOpenKB login page.
+        # prevents admin users from bypassing the normal Knowledge Repository login page.
         user = getattr(request, "user", None)
         if (
             self._admin_path_requires_mfa(path)
@@ -535,7 +535,7 @@ class ForceLoginAndAdminGuardMiddleware:
         path = request.path_info or request.path
 
         # Do not expose the default Django admin login page. Admins must
-        # authenticate from the main DjOpenKB login page first.
+        # authenticate from the main Knowledge Repository login page first.
         if self._is_admin_login_path(path):
             raise Http404()
 

@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
-    help = "Test DjOpenKB LDAP/AD bind, search, and optional Django authentication."
+    help = "Test Knowledge Repository LDAP/AD bind, search, and optional Django authentication."
 
     def add_arguments(self, parser):
         parser.add_argument("username", nargs="?", help="AD username to search/test, e.g. alice or alice@openkb.local")

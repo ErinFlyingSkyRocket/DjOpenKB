@@ -16,7 +16,7 @@ def scrub_openkb_runtime_log_files():
 
     The OpenKB CLI keeps a wiki/log.md audit file for CLI operations. Because
     OpenKB's query agent reads from the wiki folder, that runtime log can leak
-    internal timestamps or previous query details into chatbot answers. DjOpenKB
+    internal timestamps or previous query details into chatbot answers. Knowledge Repository
     already has Django ActivityLog/AuthActivityLog for auditing, so the chat
     knowledge base should not include OpenKB's internal runtime log.
     """

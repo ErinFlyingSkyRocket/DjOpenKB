@@ -9,7 +9,7 @@ from kb.models import UserMFADevice
 
 class Command(BaseCommand):
     help = (
-        "Diagnose DjOpenKB MFA without printing TOTP secrets. "
+        "Diagnose Knowledge Repository MFA without printing TOTP secrets. "
         "Use this when users keep seeing 'wrong code'."
     )
 

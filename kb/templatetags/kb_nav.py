@@ -13,7 +13,7 @@ register = template.Library()
 
 @register.filter
 def is_site_admin(user):
-    """Return True when a user should see full DjOpenKB admin-tool navigation."""
+    """Return True when a user should see full Knowledge Repository admin-tool navigation."""
     return user_can_use_admin_tools(user)
 
 

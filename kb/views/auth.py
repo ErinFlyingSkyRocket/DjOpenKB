@@ -32,7 +32,7 @@ def _disabled_account_login_message(request):
     messages.error(
         request,
         _(
-            "Your account is currently disabled and cannot access DjOpenKB. "
+            "Your account is currently disabled and cannot access Knowledge Repository. "
             "Please contact an administrator if you believe this is unexpected."
         ),
     )
@@ -85,7 +85,7 @@ def account_disabled(request):
 def root_entry(request):
     """Site root entry point.
 
-    Anonymous users see the normal DjOpenKB login page at /. Authenticated
+    Anonymous users see the normal Knowledge Repository login page at /. Authenticated
     users are sent to the actual article index at /home/. Keeping this as an
     explicit view prevents the old index view from being exposed at the root
     URL by accident.

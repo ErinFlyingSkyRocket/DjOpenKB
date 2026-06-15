@@ -9,7 +9,7 @@ from .models import SuggestedArticle, UserProfile
 def create_user_profile(sender, instance, created, **kwargs):
     """Create/sync the main-site profile whenever a User is created.
 
-    New users are placed into a default DjOpenKB role group:
+    New users are placed into a default Knowledge Repository role group:
     - staff/superuser/admin-type accounts -> Admin Users
     - all other local/AD accounts -> Regular User (view-only)
 
@@ -61,7 +61,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(m2m_changed, sender=get_user_model().groups.through)
 def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, **kwargs):
-    """Update staff/default-role state when DjOpenKB group membership changes.
+    """Update staff/default-role state when Knowledge Repository group membership changes.
 
     The signal can be fired from the User side (user.groups.add/remove) or from
     the Group side (group.user_set.add/remove). Handle both so Admin Users group

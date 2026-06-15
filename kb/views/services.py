@@ -187,7 +187,7 @@ def get_safe_return_url(request, fallback_view_name="edit_my_suggestions"):
 
 
 def user_is_site_admin(user):
-    """Return True for users allowed to use full DjOpenKB admin tools."""
+    """Return True for users allowed to use full Knowledge Repository admin tools."""
     return permission_user_can_use_admin_tools(user)
 
 
@@ -610,7 +610,7 @@ def article_management_required(view_func):
 
 
 def admin_tools_required(view_func):
-    """Require normal site access plus explicit DjOpenKB admin-tool permission.
+    """Require normal site access plus explicit Knowledge Repository admin-tool permission.
 
     Anonymous users are still redirected to login by main_site_login_required.
     Logged-in non-admin users receive 404 so admin-tool route discovery is less

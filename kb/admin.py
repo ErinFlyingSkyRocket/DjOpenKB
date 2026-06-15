@@ -197,7 +197,7 @@ def _apply_admin_translation_labels():
 
     help_texts = {
         (UserProfile, "account_type"): "Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
-        (UserProfile, "auth_source"): "Controls whether the password is managed locally in DjOpenKB or externally by Active Directory.",
+        (UserProfile, "auth_source"): "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory.",
         (UserProfile, "can_access_main_site"): "Untick this to block the user from accessing the main wiki site.",
         (UserProfile, "preferred_language"): "Preferred language for the main wiki user interface.",
         (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
@@ -294,7 +294,7 @@ DIRECT_PERMISSION_FIELD_MAP = {
 
 
 class UserProfileInlineForm(forms.ModelForm):
-    """Expose DjOpenKB direct user permissions as simple checkboxes.
+    """Expose Knowledge Repository direct user permissions as simple checkboxes.
 
     Groups remain the standard role templates. These checkboxes add/remove only
     direct user permissions, so admins can make exceptions without creating a
@@ -333,7 +333,7 @@ class UserProfileInlineForm(forms.ModelForm):
         required=False,
         label=_("Can use admin tools"),
         help_text=_(
-            "Direct user permission for trusted administrators. Allows DjOpenKB admin tools and syncs Django staff access. "
+            "Direct user permission for trusted administrators. Allows Knowledge Repository admin tools and syncs Django staff access. "
             "This permission also acts as a higher-level override for article creation and article management checks. "
             "Admin access is still protected by login, MFA, CIDR/VPN allowlist, and Django admin permission checks."
         ),
@@ -388,7 +388,7 @@ class UserProfileInline(admin.StackedInline):
             },
         ),
         (
-            _("DjOpenKB role permissions"),
+            _("Knowledge Repository role permissions"),
             {
                 "fields": (
                     "permission_exception_guide",
@@ -431,7 +431,7 @@ class UserProfileInline(admin.StackedInline):
                 _("Disabled User role"),
                 _(
                     "Use Disabled User when an account should remain in the database for audit/history, but should not be allowed "
-                    "to complete login or access DjOpenKB. Disabled User overrides direct permission add-ons."
+                    "to complete login or access Knowledge Repository. Disabled User overrides direct permission add-ons."
                 ),
             ),
             (
@@ -452,7 +452,7 @@ class UserProfileInline(admin.StackedInline):
                 _("Effective permissions"),
                 _(
                     "This line shows the final result after Django combines group permissions, direct user permissions, "
-                    "superuser status, and DjOpenKB admin account status."
+                    "superuser status, and Knowledge Repository admin account status."
                 ),
             ),
         )
@@ -598,7 +598,7 @@ class GroupAdmin(DefaultGroupAdmin):
         definition = ROLE_DEFINITIONS[obj.name]
         permissions = definition.get("permissions", ())
         permission_labels = [str(_(PERMISSION_LABELS.get(codename, codename))) for codename in permissions]
-        permission_text = ", ".join(permission_labels) if permission_labels else str(_("No DjOpenKB role permissions"))
+        permission_text = ", ".join(permission_labels) if permission_labels else str(_("No Knowledge Repository role permissions"))
 
         return format_html(
             "<div style='max-width:920px;line-height:1.5;'>"
@@ -607,22 +607,22 @@ class GroupAdmin(DefaultGroupAdmin):
             "<p><strong>{}</strong> {}</p>"
             "<p class='help'>{}</p>"
             "</div>",
-            _("DjOpenKB role group"),
+            _("Knowledge Repository role group"),
             definition.get("description", ""),
             _("Default permissions:"),
             permission_text,
             _(
                 "Use the Group members selector below to add or remove users from this role. "
-                "For one-off exceptions, edit the specific user and tick the direct DjOpenKB permission checkboxes instead. "
+                "For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. "
                 "New non-admin users are automatically placed into Regular User when their account is created."
             ),
         )
 
-    djopenkb_role_guide.short_description = _("DjOpenKB role information")
+    djopenkb_role_guide.short_description = _("Knowledge Repository role information")
 
     def group_type(self, obj):
         if obj.name in ROLE_GROUP_NAMES:
-            return _("DjOpenKB role")
+            return _("Knowledge Repository role")
         return _("Custom Django group")
 
     group_type.short_description = _("Group type")
@@ -649,7 +649,7 @@ class GroupAdmin(DefaultGroupAdmin):
         if obj.name in ROLE_DEFINITIONS:
             permissions = ROLE_DEFINITIONS[obj.name].get("permissions", ())
             labels = [str(_(PERMISSION_LABELS.get(codename, codename))) for codename in permissions]
-            return ", ".join(labels) if labels else _("No DjOpenKB role permissions")
+            return ", ".join(labels) if labels else _("No Knowledge Repository role permissions")
 
         permissions = [permission.name for permission in obj.permissions.all()[:6]]
         if not permissions:
@@ -808,7 +808,7 @@ class UserAdmin(DefaultUserAdmin):
         super().save_related(request, form, formsets, change)
         user = form.instance
         # Run after Django saves groups/user_permissions/inlines so Disabled User
-        # cannot be combined with old direct DjOpenKB permission overrides.
+        # cannot be combined with old direct Knowledge Repository permission overrides.
         if enforce_disabled_user_exclusive(user):
             return
         sync_user_staff_flags_from_roles(user)
@@ -848,12 +848,12 @@ class UserAdmin(DefaultUserAdmin):
     def djopenkb_role_group(self, obj):
         return highest_role_group_name(obj)
 
-    djopenkb_role_group.short_description = _("DjOpenKB Role")
+    djopenkb_role_group.short_description = _("Knowledge Repository Role")
 
     def djopenkb_permissions(self, obj):
         return role_permissions_summary(obj)
 
-    djopenkb_permissions.short_description = _("DjOpenKB Permissions")
+    djopenkb_permissions.short_description = _("Knowledge Repository Permissions")
 
 
     def mfa_status_display(self, obj):

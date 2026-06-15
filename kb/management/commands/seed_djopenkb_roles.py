@@ -11,18 +11,18 @@ from kb.permissions import (
 
 
 class Command(BaseCommand):
-    help = "Create/update DjOpenKB role groups and optionally assign missing users to a default role."
+    help = "Create/update Knowledge Repository role groups and optionally assign missing users to a default role."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--assign-missing-users",
             action="store_true",
-            help="Assign users without a DjOpenKB role group to Regular User or Admin Users.",
+            help="Assign users without a Knowledge Repository role group to Regular User or Admin Users.",
         )
 
     def handle(self, *args, **options):
         seed_djopenkb_role_groups()
-        self.stdout.write(self.style.SUCCESS("DjOpenKB role groups and permissions were seeded."))
+        self.stdout.write(self.style.SUCCESS("Knowledge Repository role groups and permissions were seeded."))
 
         if not options["assign_missing_users"]:
             return

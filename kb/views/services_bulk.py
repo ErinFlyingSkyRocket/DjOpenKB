@@ -224,7 +224,7 @@ def split_articles_for_bulk_export(max_part_size_bytes=BULK_EXPORT_PART_SIZE_BYT
 
 
 def build_single_bulk_export_zip(articles=None, part_number=None, part_count=None):
-    """Build one importable DjOpenKB export zip and return its bytes plus manifest."""
+    """Build one importable Knowledge Repository export zip and return its bytes plus manifest."""
     manifest = build_bulk_export_payload(articles=articles)
     if part_number and part_count:
         manifest["part_number"] = part_number
@@ -236,7 +236,7 @@ def build_single_bulk_export_zip(articles=None, part_number=None, part_count=Non
         archive.writestr(
             "README.txt",
             (
-                "DjOpenKB bulk article export.\n"
+                "Knowledge Repository bulk article export.\n"
                 "Import this zip from My Profile -> Admin tools -> Bulk import/export articles.\n"
                 "Articles are stored in manifest.json and articles/*.md.\n"
                 "Referenced uploaded files are stored in uploads/.\n"
@@ -309,9 +309,9 @@ def build_bulk_export_download(force_split=False, max_part_size_bytes=BULK_EXPOR
         outer.writestr(
             "README.txt",
             (
-                "DjOpenKB split bulk export package.\n\n"
+                "Knowledge Repository split bulk export package.\n\n"
                 "Extract this package first, then import each zip inside the parts/ folder.\n"
-                "Each part zip is a normal DjOpenKB import file. Import part001, then part002, and continue in order.\n"
+                "Each part zip is a normal Knowledge Repository import file. Import part001, then part002, and continue in order.\n"
             ),
         )
 
@@ -377,7 +377,7 @@ def copy_imported_uploads_from_zip(zip_file, upload_member_names):
 
 
 def import_articles_from_zip(uploaded_zip, owner):
-    """Import articles and uploaded files from a DjOpenKB bulk export zip.
+    """Import articles and uploaded files from a Knowledge Repository bulk export zip.
 
     All imported articles are assigned to the admin user performing the import.
     Normal single-part export zips and extracted split-export part zips are both
