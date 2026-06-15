@@ -16,13 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_AUTH_LOCKOUT_POLICY_STAGES = [
-    # failure_limit, failure_window_seconds, block_seconds, repeat_count
-    {"failure_limit": 10, "failure_window_seconds": 600, "block_seconds": 300, "repeat_count": 2},
-    {"failure_limit": 5, "failure_window_seconds": 600, "block_seconds": 900, "repeat_count": 2},
-    {"failure_limit": 3, "failure_window_seconds": 600, "block_seconds": 1800, "repeat_count": 1},
-    {"failure_limit": 3, "failure_window_seconds": 600, "block_seconds": 3600, "repeat_count": 1},
-    {"failure_limit": 3, "failure_window_seconds": 600, "block_seconds": 7200, "repeat_count": 1},
-    {"failure_limit": 3, "failure_window_seconds": 600, "block_seconds": 86400, "repeat_count": 0},
+    # failure_limit, block_seconds, repeat_count
+    {"failure_limit": 10, "block_seconds": 300, "repeat_count": 2},
+    {"failure_limit": 5, "block_seconds": 900, "repeat_count": 2},
+    {"failure_limit": 3, "block_seconds": 3600, "repeat_count": 0},
 ]
 
 
@@ -119,30 +116,56 @@ def _positive_int(value, default, minimum=1, maximum=None):
     return parsed
 
 
-def _env_fallback_policy_stages():
-    """Fallback policy for first boot before the DB setting/table exists."""
-    failure_limit = _positive_int(getattr(settings, "AUTH_LOCKOUT_FAILURE_LIMIT", 10), 10, minimum=1)
-    window_seconds = _positive_int(getattr(settings, "AUTH_LOCKOUT_WINDOW_SECONDS", 600), 600, minimum=60)
-    durations = getattr(settings, "AUTH_LOCKOUT_DURATIONS_SECONDS", [300, 900, 3600, 86400])
-    clean_durations = []
-    for duration in durations:
-        value = _positive_int(duration, 0, minimum=0)
-        if value > 0:
-            clean_durations.append(value)
-    if not clean_durations:
-        clean_durations = [300, 900, 3600, 86400]
+def _parse_env_policy_stages(raw_policy):
+    """Parse AUTH_LOCKOUT_POLICY_STAGES.
 
+    Format: failure_limit:block_seconds:repeat_count
+    Example: 10:300:2,5:900:2,3:3600:0
+    A repeat_count of 0 means repeat this stage forever. Failed-attempt
+    counters are remembered until successful login/MFA verification, admin
+    reset, or AUTH_LOCKOUT_STRIKE_TTL_SECONDS expiry.
+    """
     stages = []
-    for index, duration in enumerate(clean_durations):
+    for index, chunk in enumerate(str(raw_policy or "").split(","), start=1):
+        chunk = chunk.strip()
+        if not chunk:
+            continue
+        parts = [part.strip() for part in chunk.split(":")]
+        if len(parts) != 3:
+            logger.warning("Ignoring invalid AUTH_LOCKOUT_POLICY_STAGES entry: %s", chunk)
+            continue
+        try:
+            failure_limit, block_seconds, repeat_count = [int(part) for part in parts]
+        except ValueError:
+            logger.warning("Ignoring non-numeric AUTH_LOCKOUT_POLICY_STAGES entry: %s", chunk)
+            continue
         stages.append(
             {
-                "failure_limit": failure_limit,
-                "failure_window_seconds": window_seconds,
-                "block_seconds": duration,
-                # Old env fallback escalates once per duration, then repeats the last duration.
-                "repeat_count": 0 if index == len(clean_durations) - 1 else 1,
-                "source": "env_fallback",
-                "stage_number": index + 1,
+                "failure_limit": _positive_int(failure_limit, 10, minimum=1, maximum=200),
+                "block_seconds": _positive_int(block_seconds, 300, minimum=60, maximum=2592000),
+                "repeat_count": _positive_int(repeat_count, 1, minimum=0, maximum=1000),
+                "source": "env_policy_stages",
+                "stage_number": len(stages) + 1,
+            }
+        )
+    return stages
+
+
+def _env_fallback_policy_stages():
+    """Fallback policy for first boot before the DB setting/table exists."""
+    explicit_policy = _parse_env_policy_stages(getattr(settings, "AUTH_LOCKOUT_POLICY_STAGES", ""))
+    if explicit_policy:
+        return explicit_policy
+
+    stages = []
+    for index, stage in enumerate(DEFAULT_AUTH_LOCKOUT_POLICY_STAGES, start=1):
+        stages.append(
+            {
+                "failure_limit": _positive_int(stage.get("failure_limit"), 10, minimum=1, maximum=200),
+                "block_seconds": _positive_int(stage.get("block_seconds"), 300, minimum=60, maximum=2592000),
+                "repeat_count": _positive_int(stage.get("repeat_count"), 1, minimum=0, maximum=1000),
+                "source": "default_fallback",
+                "stage_number": index,
             }
         )
     return stages
@@ -160,13 +183,11 @@ def get_auth_lockout_policy_stages():
         stages = []
         for index, row in enumerate(setting.auth_lockout_stages.filter(enabled=True).order_by("sort_order", "id"), start=1):
             failure_limit = _positive_int(row.failure_limit, 10, minimum=1, maximum=200)
-            failure_window_seconds = _positive_int(row.failure_window_seconds, 600, minimum=60, maximum=604800)
             block_seconds = _positive_int(row.block_seconds, 300, minimum=60, maximum=2592000)
             repeat_count = _positive_int(row.repeat_count, 1, minimum=0, maximum=1000)
             stages.append(
                 {
                     "failure_limit": failure_limit,
-                    "failure_window_seconds": failure_window_seconds,
                     "block_seconds": block_seconds,
                     "repeat_count": repeat_count,
                     "source": "site_setting",
@@ -253,7 +274,7 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
 
     stage = _stage_for_strike_count(strikes_so_far)
     failure_limit = _positive_int(stage.get("failure_limit"), 10, minimum=1)
-    window_seconds = _positive_int(stage.get("failure_window_seconds"), 600, minimum=60)
+    counter_ttl_seconds = _get_strike_ttl_seconds(stage)
 
     if locked:
         return {
@@ -272,7 +293,7 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
         failures = int(failures) + 1
     except (TypeError, ValueError):
         failures = 1
-    cache.set(keys["failures"], failures, window_seconds)
+    cache.set(keys["failures"], failures, counter_ttl_seconds)
 
     block_seconds = 0
     if failures >= failure_limit:

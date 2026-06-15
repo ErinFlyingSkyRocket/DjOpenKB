@@ -195,13 +195,20 @@ OPENKB_AI_TIMEOUT_SECONDS = int_config("OPENKB_AI_TIMEOUT_SECONDS", 90, minimum=
 OPENKB_AI_CONCURRENCY_LIMIT = int_config("OPENKB_AI_CONCURRENCY_LIMIT", 2, minimum=1, maximum=20)
 OPENKB_AI_CONCURRENCY_LOCK_SECONDS = int_config("OPENKB_AI_CONCURRENCY_LOCK_SECONDS", OPENKB_AI_TIMEOUT_SECONDS + 30, minimum=30, maximum=600)
 
-# Progressive lockout for password/MFA failures. Default policy:
-# 10 failures in 10 minutes -> 5 minute block. Repeated blocks escalate to
-# 15 minutes, 1 hour, then 1 day.
-AUTH_LOCKOUT_FAILURE_LIMIT = int_config("AUTH_LOCKOUT_FAILURE_LIMIT", 10, minimum=3, maximum=50)
-AUTH_LOCKOUT_WINDOW_SECONDS = int_config("AUTH_LOCKOUT_WINDOW_SECONDS", 600, minimum=60, maximum=86400)
-AUTH_LOCKOUT_DURATIONS_SECONDS = csv_int_config("AUTH_LOCKOUT_DURATIONS_SECONDS", "300,900,3600,86400")
-AUTH_LOCKOUT_STRIKE_TTL_SECONDS = int_config("AUTH_LOCKOUT_STRIKE_TTL_SECONDS", 86400, minimum=3600, maximum=604800)
+# Progressive lockout for password/MFA failures.
+# Primary production policy is editable in Django Admin > Site settings.
+# AUTH_LOCKOUT_POLICY_STAGES is only the early-startup/env fallback. Format:
+# failure_limit:block_seconds:repeat_count
+# Example below means:
+# 10 failures -> 5 min block twice; 5 failures -> 15 min block twice;
+# 3 failures -> 1 hour block forever.
+# Failed-attempt counters reset after successful login/MFA, admin reset,
+# or AUTH_LOCKOUT_STRIKE_TTL_SECONDS expiry.
+AUTH_LOCKOUT_POLICY_STAGES = config_value(
+    "AUTH_LOCKOUT_POLICY_STAGES",
+    "10:300:2,5:900:2,3:3600:0",
+)
+AUTH_LOCKOUT_STRIKE_TTL_SECONDS = int_config("AUTH_LOCKOUT_STRIKE_TTL_SECONDS", 604800, minimum=3600, maximum=604800)
 
 
 # ---------------------------------------------------------------------

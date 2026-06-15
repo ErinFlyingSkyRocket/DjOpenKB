@@ -169,6 +169,23 @@ OPENKB_AI_PROVIDER=openkb-cli
 OPENKB_AI_MODEL=gemini/gemini-2.5-flash
 LITELLM_DROP_PARAMS=true
 
+# Production shared cache/rate-limit backend. Required when DJANGO_DEBUG=false.
+REDIS_URL=redis://redis:6379/1
+DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false
+
+# OpenKB AI safety limits.
+OPENKB_AI_MAX_PROMPT_CHARS=1000
+OPENKB_AI_RATE_LIMIT_MAX_REQUESTS=5
+OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS=60
+OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS=1800
+OPENKB_AI_TIMEOUT_SECONDS=90
+OPENKB_AI_CONCURRENCY_LIMIT=2
+OPENKB_AI_CONCURRENCY_LOCK_SECONDS=120
+
+# Fallback authentication lockout values used before Site settings are available.
+# The real production policy is managed in Django Admin -> Site settings.
+AUTH_LOCKOUT_STRIKE_TTL_SECONDS=604800
+
 USE_SQLITE=false
 
 VAULT_KV_MOUNT=secret
@@ -277,10 +294,16 @@ Confirm it contains the required secrets.
 ```env
 DJANGO_SECRET_KEY=generated-random-value
 POSTGRES_PASSWORD=generated-random-value
+DJANGO_FIELD_ENCRYPTION_KEY=generated-random-value
 
+# Use the key for the provider selected by OPENKB_AI_MODEL.
+# Keep AI_API_KEY for compatibility and set the provider-specific key as well.
 AI_API_KEY=your-selected-ai-provider-api-key
+GEMINI_API_KEY=your-gemini-api-key-if-using-gemini
+OPENAI_API_KEY=your-openai-api-key-if-using-openai
+ANTHROPIC_API_KEY=your-anthropic-api-key-if-using-claude
 
-LDAP_BIND_PASSWORD="your-ad-service-account-password"
+LDAP_BIND_PASSWORD=your-ad-service-account-password
 LDAP_PLACEHOLDER_PASSWORD=generated-random-value
 ```
 
@@ -290,16 +313,18 @@ Important notes:
 - Do not commit or share vault/bootstrap/djopenkb.env.
 - For a fresh setup, generate POSTGRES_PASSWORD before the first startup.
 - For an existing database, do not change POSTGRES_PASSWORD unless you also update it inside Postgres.
+- Use plain `KEY=value` format with no quotes and no spaces around `=` where possible.
 - Keep DJANGO_SECRET_KEY stable after deployment. Changing it can invalidate sessions and signed data.
+- Keep DJANGO_FIELD_ENCRYPTION_KEY stable after deployment. Changing it can make encrypted MFA secrets unreadable unless data is reset or re-encrypted.
 - Keep POSTGRES_PASSWORD stable after the database is created. If Vault and Postgres passwords no longer match, Django/Postgres access can fail.
-- Keep Vault data and keys safe. If Vault data/keys are lost, Django may not be able to read the stored database, LDAP, and AI secrets.
+- Keep Vault data and keys safe. If Vault data/keys are lost, Django may not be able to read the stored database, LDAP, field-encryption, and AI secrets.
 - After Vault is seeded and login works, remove vault/bootstrap/djopenkb.env from exported/shared copies.
 ```
 
 Recommended practice:
 
 ```text
-Save the final generated DJANGO_SECRET_KEY and POSTGRES_PASSWORD securely in an offline password manager or protected administrator record.
+Save the final generated DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, and POSTGRES_PASSWORD securely in an offline password manager or protected administrator record.
 Do not regenerate these values on an existing deployment unless you intentionally rotate them and know the matching update steps.
 ```
 
@@ -365,7 +390,7 @@ PYTHONPATH=../OpenKB-main python -m openkb.cli init
 OpenKB will ask for a model in LiteLLM format. When you see this prompt:
 
 ```text
-Model (enter for default gpt-5.4-mini):
+Model (enter for default shown by your installed OpenKB version):
 ```
 
 type the same model name configured in `.env` as `OPENKB_AI_MODEL`.
@@ -382,9 +407,7 @@ gemini/gemini-2.5-flash
 |---|---|
 | Gemini Flash | `gemini/gemini-2.5-flash` |
 | Gemini Pro | `gemini/gemini-2.5-pro` |
-| OpenAI latest frontier | `gpt-5.5` |
-| OpenAI standard | `gpt-5.4` |
-| OpenAI mini/default-style | `gpt-5.4-mini` |
+| OpenAI model | `openai/<model-name>` or the exact model string supported by your OpenKB/LiteLLM version |
 | Anthropic Claude Haiku | `anthropic/claude-3-5-haiku-latest` |
 | Anthropic Claude Sonnet | `anthropic/claude-3-5-sonnet-latest` |
 | OpenRouter | `openrouter/openai/gpt-4o-mini` |
@@ -424,7 +447,7 @@ openkb-data/.openkb/
 .openkb-venv/
 ```
 
-The old `openkb-data/.env` file is not required for the current DjOpenKB setup because the AI model is configured through `.env` and the AI API key is stored in Vault as `AI_API_KEY`.
+The old `openkb-data/.env` file is not required for the current DjOpenKB setup because the AI model is configured through `.env` and the AI API keys are stored in Vault as `AI_API_KEY` and provider-specific keys such as `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY`.
 
 ---
 
@@ -569,7 +592,7 @@ Check Nginx logs.
 sudo docker compose logs -f nginx
 ```
 
-If everything is successful, the `web`, `db`, `vault`, `cleanup-scheduler`, and `nginx` services should be running.
+If everything is successful, the `web`, `db`, `redis`, `vault`, `cleanup-scheduler`, and `nginx` services should be running.
 
 ---
 
@@ -588,7 +611,7 @@ Examples:
 ```env
 DJANGO_SECRET_KEY=randomvalue
 POSTGRES_PASSWORD=randomvalue
-LDAP_BIND_PASSWORD="password-with-symbols"
+LDAP_BIND_PASSWORD=password-without-quotes-when-possible
 ```
 
 Do not put spaces around `=`.
@@ -621,7 +644,7 @@ Do not reset Vault on a real deployment unless you understand that it removes lo
 
 ## 12. Run Django setup commands
 
-Run migrations.
+Run migrations. This also creates the admin-configurable authentication lockout policy stages and seeds the default policy if it does not already exist.
 
 ```bash
 sudo docker compose exec web python manage.py migrate
@@ -890,7 +913,7 @@ exit
 
 ### Run common Django commands
 
-Run migrations.
+Run migrations. This also creates the admin-configurable authentication lockout policy stages and seeds the default policy if it does not already exist.
 
 ```bash
 sudo docker compose exec web python manage.py migrate
@@ -1239,6 +1262,51 @@ filler-word filtering
 
 Keyword chips scroll horizontally so the article form does not grow too tall.
 
+## 17.10 Authentication lockout and production rate-limit notes
+
+### Admin-configurable password/MFA lockout policy
+
+Password and MFA lockout policy is managed from Django Admin:
+
+```text
+Django Admin -> Site settings -> Authentication lockout policy stages
+```
+
+Each stage can define:
+
+```text
+Failed attempts required
+Block duration
+Repeat count
+Sort order
+Enabled/disabled state
+```
+
+Default simplified policy after migration:
+
+| Stage | Failed attempts | Block duration | Repeat count |
+|---|---:|---:|---:|
+| 1 | 10 | 5 minutes | 2 |
+| 2 | 5 | 15 minutes | 2 |
+| 3 | 3 | 1 hour | repeat forever |
+
+`repeat_count=0` means the stage repeats forever. The last stage uses `repeat_count=0`, so repeated attacks continue receiving a 1-hour block instead of escalating to a full-day block.
+
+The policy no longer uses a separate failure time window. Failed counters stay active until successful password login/MFA verification, an administrator reset, or the lockout escalation memory expiry (`AUTH_LOCKOUT_STRIKE_TTL_SECONDS`, default 7 days).
+
+Successful password login resets the password lockout history. Successful MFA verification resets the MFA lockout history. Administrators can manually reset lockout state from the Django Admin user/profile actions.
+
+### Redis-backed AI and authentication protection
+
+Production deployments should keep Redis enabled:
+
+```env
+REDIS_URL=redis://redis:6379/1
+DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false
+```
+
+Redis is used so password/MFA lockout counters, AI rate limits, and AI concurrency counters are shared across all Gunicorn workers. Without Redis, each worker would have its own local-memory counters, which is not suitable for production.
+
 ## 18. Files not to share
 
 Do not commit or share these files/folders:
@@ -1395,3 +1463,30 @@ Then sync Django articles:
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
 ```
+
+
+### Redis required in production
+
+When `DJANGO_DEBUG=false`, the web container expects Redis to be available unless `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=true` is explicitly set. For production, do not enable local-cache fallback. Check Redis status with:
+
+```bash
+sudo docker compose ps redis
+sudo docker compose logs redis --tail=80
+```
+
+If Redis is not running, restart the stack:
+
+```bash
+sudo docker compose up -d redis
+sudo docker compose restart web cleanup-scheduler
+```
+
+### User blocked by password or MFA lockout
+
+If a user is blocked because of repeated wrong password or MFA attempts, an administrator can reset the lockout state from Django Admin:
+
+```text
+Django Admin -> Users -> open user -> Authentication lockout -> Reset password/MFA lockout
+```
+
+Admins can also use the bulk action on selected users or profiles.

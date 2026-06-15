@@ -931,11 +931,6 @@ class AuthLockoutPolicyStage(models.Model):
         verbose_name=_("Failed attempts before block"),
         help_text=_("Number of wrong password/MFA attempts required before this stage blocks the user."),
     )
-    failure_window_seconds = models.PositiveIntegerField(
-        default=600,
-        verbose_name=_("Failure counting window (seconds)"),
-        help_text=_("Failures must happen within this time window to trigger the stage. Default is 600 seconds (10 minutes)."),
-    )
     block_seconds = models.PositiveIntegerField(
         default=300,
         verbose_name=_("Block duration (seconds)"),
@@ -971,8 +966,6 @@ class AuthLockoutPolicyStage(models.Model):
         errors = {}
         if self.failure_limit < 1:
             errors["failure_limit"] = _("Failed attempts must be at least 1.")
-        if self.failure_window_seconds < 60:
-            errors["failure_window_seconds"] = _("Failure counting window must be at least 60 seconds.")
         if self.block_seconds < 60:
             errors["block_seconds"] = _("Block duration must be at least 60 seconds.")
         if errors:

@@ -21,10 +21,12 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - MFA support using authenticator-app one-time passwords.
 - Authentication and activity logging for important user, article, admin, AI, and maintenance actions.
 - Configurable log retention and admin log display settings.
-- Vault integration for sensitive secrets such as Django, database, LDAP, and AI credentials.
+- Admin-configurable progressive password/MFA lockout policy with reset actions for administrators.
+- Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, and AI credentials.
 - PostgreSQL database through Docker Compose.
+- Redis-backed production cache for rate limiting, authentication lockout counters, and AI concurrency controls.
 - Nginx HTTPS reverse proxy on port `8080`.
-- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`, including prompt length limits, logged-in user rate limiting, cooldown blocking, related article recommendations, and activity logging.
+- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`, including prompt length limits, Redis-backed user rate limiting, cooldown blocking, concurrency limits, timeout controls, related article recommendations, and activity logging.
 - Markdown article rendering with sanitization.
 - Image upload restrictions for article content.
 - Multilingual UI support through Django translation files.
@@ -67,9 +69,10 @@ Local and AD users are separated by account source metadata, not by email domain
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
-| AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, user-ID based limiting, safer error handling, related article recommendations, and activity logging |
+| AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
+| Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs and general activity logs |
-| Secrets | Vault-backed Django/database/LDAP/AI secrets |
+| Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
 | Network | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, and optional admin CIDR/VPN restrictions |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
 
@@ -157,6 +160,7 @@ DjOpenKB/
 ├── docker/                      # Docker helper scripts
 ├── nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
 ├── vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
+├── redis-data/                  # Optional persistent Redis data if enabled in future deployment tuning
 ├── ldap-certs/                  # AD/LDAPS CA certificate mounted into the web container
 ├── OpenKB-main/                 # OpenKB source code used by the AI chatbot
 ├── openkb-data/                 # OpenKB workspace and article data used by the AI chatbot
@@ -303,7 +307,7 @@ nginx/certs/localhost.key
 
 Contains HashiCorp Vault configuration and local Vault runtime folders.
 
-Vault is used to store sensitive values such as Django secret key, PostgreSQL password, LDAP bind password, and AI API key.
+Vault is used to store sensitive values such as Django secret key, PostgreSQL password, field-encryption key, LDAP bind password, and AI API keys.
 
 Important paths:
 
@@ -376,19 +380,25 @@ If OpenKB is not initialized, the chatbot may fail or not detect the article dat
 
 ---
 
-## OpenKB AI Chatbot Rate Limiting
+## OpenKB AI Chatbot Rate Limiting and Production Controls
 
-The AI chatbot is protected with rate limiting so users cannot continuously consume AI resources.
+The AI chatbot is protected with production controls so users cannot continuously consume AI resources or occupy all Gunicorn workers with slow AI requests.
 
 Current default behaviour:
 
 ```text
-Maximum questions: 5
+Maximum questions per user: 5
 Time window: 60 seconds
 Cooldown after exceeding limit: 30 minutes
+Prompt length limit: 1000 characters
+OpenKB timeout: 90 seconds
+Concurrent AI requests: 2
+Concurrency lock expiry: 120 seconds
 ```
 
 In the current login-only deployment, the chatbot is a protected signed-in feature. Logged-in users are rate-limited by their Django user ID, so refreshing the browser, opening a new tab, or starting a new private session does not reset the counter for that account.
+
+For production, these counters use Redis through `REDIS_URL`, so the limits remain consistent even when Gunicorn runs multiple workers. Local memory cache is only a development/emergency fallback and should not be used for production.
 
 If anonymous chatbot access is ever re-enabled in the future, the fallback rate-limit identity should be the detected client IP address behind the trusted Nginx reverse proxy.
 
@@ -453,6 +463,7 @@ docker compose exec web python manage.py createsuperuser
 docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 docker compose exec web python manage.py sync_openkb_ai
 docker compose exec web python manage.py check --deploy
+# After first login, review Site settings → Authentication lockout policy stages.
 ```
 
 Access the website using:
@@ -543,6 +554,8 @@ During active development, the Docker Compose bind mount below is useful because
 
 For a production or final demonstration deployment, remove the full project bind mount where possible and rebuild the image instead. This reduces the chance that host-side files such as `.env`, Vault material, local certificates, Git metadata, or temporary files are visible inside the running web container.
 
+Production deployments should keep `REDIS_URL=redis://redis:6379/1` and `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` so authentication lockout, AI rate limits, and AI concurrency controls are shared across all Gunicorn workers.
+
 A `.dockerignore` file should remain in place so local secrets and runtime data are not copied into the Docker image during `COPY . /app/`.
 
 ## Backup and Restore Notes
@@ -552,6 +565,7 @@ For a real intranet or production-style deployment, back up these areas regularl
 ```text
 PostgreSQL database
 Vault data and recovery material
+Redis data if persistence is enabled
 openkb-data/
 article uploaded images
 generated OpenKB Markdown files
@@ -591,6 +605,7 @@ vault/keys/*
 vault/file/*
 openkb-data/.openkb/
 .openkb-venv/
+redis-data/
 ldap-certs/
 nginx/certs/*.key
 postgres-data/
@@ -614,5 +629,7 @@ LDAPS certificate validation is working
 Vault is initialized and sealed/unsealed correctly
 Django check --deploy has been reviewed
 Backups and restore steps are documented
-OpenKB AI rate limiting and activity logging are enabled
+Redis-backed rate limiting/cache is enabled for production
+OpenKB AI rate limiting, concurrency control, and activity logging are enabled
+Admin-configurable password/MFA lockout stages have been reviewed
 ```

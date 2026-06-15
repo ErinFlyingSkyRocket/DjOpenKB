@@ -185,7 +185,6 @@ def _apply_admin_translation_labels():
             "site_setting": "Site setting",
             "sort_order": "Stage order",
             "failure_limit": "Failed attempts before block",
-            "failure_window_seconds": "Failure counting window (seconds)",
             "block_seconds": "Block duration (seconds)",
             "repeat_count": "Repeat count",
             "enabled": "Enabled",
@@ -207,7 +206,6 @@ def _apply_admin_translation_labels():
         (SiteSetting, "auth_lockout_strike_ttl_seconds"): "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).",
         (AuthLockoutPolicyStage, "sort_order"): "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later.",
         (AuthLockoutPolicyStage, "failure_limit"): "Number of wrong password/MFA attempts required before this stage blocks the user.",
-        (AuthLockoutPolicyStage, "failure_window_seconds"): "Failures must happen within this time window to trigger the stage. Default is 600 seconds (10 minutes).",
         (AuthLockoutPolicyStage, "block_seconds"): "How long the login/MFA check is blocked after this stage triggers.",
         (AuthLockoutPolicyStage, "repeat_count"): "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever.",
     }
@@ -1600,7 +1598,6 @@ class AuthLockoutPolicyStageInline(admin.TabularInline):
     fields = (
         "sort_order",
         "failure_limit",
-        "failure_window_seconds",
         "block_seconds",
         "repeat_count",
         "enabled",
@@ -1669,12 +1666,9 @@ class SiteSettingAdmin(admin.ModelAdmin):
                 "The same progressive policy is used for password-login failures and MFA-code failures, "
                 "but password and MFA counters are tracked separately per user."
             ),
-            _("Default stage 1: 10 wrong attempts within 10 minutes blocks for 5 minutes, repeated 2 times."),
-            _("Default stage 2: 5 wrong attempts blocks for 15 minutes, repeated 2 times."),
-            _(
-                "Later defaults: 3 wrong attempts block for 30 minutes, then 1 hour, then 2 hours, "
-                "then 1 day repeatedly until successful login or admin reset."
-            ),
+            _("Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."),
+            _("Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."),
+            _("Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."),
             _(
                 "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. "
                 "Admins can reset a user's counters from the User admin page."

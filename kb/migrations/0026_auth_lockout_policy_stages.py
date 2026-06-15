@@ -6,12 +6,9 @@ import django.db.models.deletion
 
 DEFAULT_LOCKOUT_STAGES = [
     # sort_order, failure_limit, failure_window_seconds, block_seconds, repeat_count
-    (10, 10, 600, 300, 2),
-    (20, 5, 600, 900, 2),
-    (30, 3, 600, 1800, 1),
-    (40, 3, 600, 3600, 1),
-    (50, 3, 600, 7200, 1),
-    (60, 3, 600, 86400, 0),
+    (10, 10, 600, 300, 2),   # 10 failures within 10 minutes -> 5 minutes, twice
+    (20, 5, 600, 900, 2),    # 5 failures within 10 minutes -> 15 minutes, twice
+    (30, 3, 600, 3600, 0),   # 3 failures within 10 minutes -> 1 hour, repeat forever
 ]
 
 

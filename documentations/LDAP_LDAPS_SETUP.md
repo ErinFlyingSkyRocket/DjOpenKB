@@ -74,13 +74,13 @@ Store the service account password in Vault, not `.env`:
 LDAP_BIND_PASSWORD=service-account-password
 ```
 
-If the password contains shell special characters, use single quotes in `vault/bootstrap/djopenkb.env`:
+Use plain `KEY=value` format in `vault/bootstrap/djopenkb.env` where possible:
 
 ```env
-LDAP_BIND_PASSWORD='P@ssw0rd!abc$123'
+LDAP_BIND_PASSWORD=P@ssw0rd-example
 ```
 
-Avoid double quotes for passwords containing `$`, backticks, or backslashes because the bootstrap file is read by a Linux shell.
+Avoid spaces around `=`. For the simplest deployment experience, use service-account passwords made from letters, numbers, `@`, `.`, `_`, and `-`. If the password contains shell-breaking characters, test the Vault bootstrap logs carefully and rotate to a simpler service-account password if seeding fails.
 ## 3. CA Certificate File
 
 Export the AD CS Root CA certificate from Windows Server. Recommended export format:
