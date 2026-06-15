@@ -41,6 +41,16 @@ ROLE_GROUP_NAMES = (
     ROLE_ADMIN_USERS,
 )
 
+# Permission-bearing access roles. A user may belong to more than one of these
+# groups if needed, because Django permissions are additive. Disabled User is
+# intentionally kept separate and always overrides these access roles.
+ROLE_ACCESS_GROUP_NAMES = (
+    ROLE_REGULAR_USER,
+    ROLE_ARTICLE_WRITER,
+    ROLE_ARTICLE_MANAGER,
+    ROLE_ADMIN_USERS,
+)
+
 ROLE_DEFINITIONS = {
     ROLE_DISABLED_USER: {
         "description": _(
@@ -347,13 +357,54 @@ def user_has_direct_kb_permission(user, codename: str) -> bool:
         return False
 
 
-def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: bool = False):
-    """Assign exactly one DjOpenKB role group to a user.
+def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
+    """Make Disabled User a hard no-access override without forcing one role normally.
 
-    Existing non-DjOpenKB groups are preserved. Direct user permissions are kept
-    by default so admins can use checkbox overrides in the normal Django User
-    form. Pass clear_direct_permissions=True when you intentionally want the
-    selected role group to be the only effective DjOpenKB permission source.
+    Non-disabled users may belong to multiple groups for future combinations such
+    as article permissions plus notification groups. When the Disabled User role
+    is assigned, it must be exclusive among DjOpenKB role groups and direct
+    DjOpenKB permissions must be cleared so the user cannot regain access through
+    an old override.
+    """
+    if not getattr(user, "pk", None):
+        return False
+
+    try:
+        if not user.groups.filter(name=ROLE_DISABLED_USER).exists():
+            return False
+
+        seed_djopenkb_role_groups()
+        previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
+        user._djopenkb_syncing_role_groups = True
+        try:
+            user.groups.remove(*Group.objects.filter(name__in=ROLE_ACCESS_GROUP_NAMES))
+        finally:
+            user._djopenkb_syncing_role_groups = previous_syncing
+
+        kb_perms = Permission.objects.filter(content_type__app_label="kb")
+        user.user_permissions.remove(*kb_perms)
+        sync_user_staff_flags_from_roles(user)
+
+        if clear_sessions:
+            try:
+                from .mfa import clear_user_auth_sessions
+
+                clear_user_auth_sessions(user)
+            except Exception:
+                pass
+
+        return True
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
+
+
+def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: bool = False):
+    """Assign one standard DjOpenKB role group while preserving custom groups.
+
+    This helper is still used for default role setup and explicit admin actions.
+    It does not prevent admins from later adding multiple non-disabled groups.
+    If the selected role is Disabled User, it becomes exclusive and clears direct
+    DjOpenKB permissions.
     """
     if not getattr(user, "pk", None) or role_name not in ROLE_GROUP_NAMES:
         return
@@ -364,7 +415,10 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
     previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
     user._djopenkb_syncing_role_groups = True
     try:
-        user.groups.remove(*Group.objects.filter(name__in=ROLE_GROUP_NAMES).exclude(pk=role_group.pk))
+        if role_name == ROLE_DISABLED_USER:
+            user.groups.remove(*Group.objects.filter(name__in=ROLE_ACCESS_GROUP_NAMES))
+        else:
+            user.groups.remove(*Group.objects.filter(name=ROLE_DISABLED_USER))
         user.groups.add(role_group)
     finally:
         user._djopenkb_syncing_role_groups = previous_syncing
@@ -386,8 +440,10 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
     except (DatabaseError, OperationalError, ProgrammingError):
         pass
 
-    sync_user_staff_flags_from_roles(user)
-
+    if role_name == ROLE_DISABLED_USER:
+        enforce_disabled_user_exclusive(user, clear_sessions=True)
+    else:
+        sync_user_staff_flags_from_roles(user)
 
 def assign_default_kb_role_group(user):
     """Put a newly-created user into a default DjOpenKB role group.
@@ -399,6 +455,9 @@ def assign_default_kb_role_group(user):
         return
 
     try:
+        if enforce_disabled_user_exclusive(user):
+            return
+
         existing_role_groups = user.groups.filter(name__in=ROLE_GROUP_NAMES)
         if existing_role_groups.exists():
             sync_user_staff_flags_from_roles(user)
@@ -450,6 +509,12 @@ def sync_user_staff_flags_from_roles(user):
 
     if update_fields:
         user.save(update_fields=update_fields)
+
+
+def require_view_articles(user):
+    if not user_can_view_articles(user):
+        raise PermissionDenied(_("You do not have permission to view articles."))
+    return True
 
 
 def require_add_articles(user):

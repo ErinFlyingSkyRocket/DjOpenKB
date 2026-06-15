@@ -472,7 +472,12 @@ def delete_uploaded_image_file(filename):
     upload_dir = get_openkb_uploads_dir().resolve()
     file_path = (upload_dir / filename).resolve()
 
-    if str(file_path).startswith(str(upload_dir)) and file_path.exists() and file_path.is_file():
+    try:
+        file_path.relative_to(upload_dir)
+    except ValueError:
+        return
+
+    if file_path.exists() and file_path.is_file():
         file_path.unlink()
         mark_article_image_deleted(
             filename,
@@ -554,6 +559,18 @@ def clear_committed_pending_uploads(request, image_assets):
 def user_can_use_admin_tools(user):
     """Return True for users allowed to use profile-level admin maintenance tools."""
     return permission_user_can_use_admin_tools(user)
+
+
+def article_view_required(view_func):
+    """Require permission to view published internal articles/search/AI."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_view_articles(request.user):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
 
 
 def article_add_required(view_func):
@@ -1287,7 +1304,12 @@ def delete_article_files(article):
         file_path = file_path.resolve()
         root_dir = root_dir.resolve()
 
-        if str(file_path).startswith(str(root_dir)) and file_path.exists() and file_path.is_file():
+        try:
+            file_path.relative_to(root_dir)
+        except ValueError:
+            continue
+
+        if file_path.exists() and file_path.is_file():
             file_path.unlink()
 
     for filename in (article.image_assets or extract_article_image_filenames(article.body)):
@@ -1441,7 +1463,7 @@ def main_site_login_required(view_func):
     def wrapper(request, *args, **kwargs):
         if not user_can_access_main_site(request.user):
             logout(request)
-            return redirect("home")
+            return redirect("root_login")
         return view_func(request, *args, **kwargs)
 
     return wrapper

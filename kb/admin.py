@@ -27,6 +27,7 @@ from .permissions import (
     ROLE_GROUP_NAMES,
     ROLE_DISABLED_USER,
     assign_single_role_group,
+    enforce_disabled_user_exclusive,
     highest_role_group_name,
     role_permissions_summary,
     set_user_direct_kb_permission,
@@ -361,6 +362,8 @@ class UserProfileInlineForm(forms.ModelForm):
                     codename,
                     bool(self.cleaned_data.get(field_name)),
                 )
+            if enforce_disabled_user_exclusive(profile.user, clear_sessions=True):
+                return profile
             sync_user_staff_flags_from_roles(profile.user)
 
         return profile
@@ -533,6 +536,8 @@ class GroupAdminForm(forms.ModelForm):
             self.instance.user_set.set(selected_users)
 
             for user in User.objects.filter(pk__in=affected_user_ids):
+                if enforce_disabled_user_exclusive(user, clear_sessions=True):
+                    continue
                 sync_user_staff_flags_from_roles(user)
 
 
@@ -786,6 +791,7 @@ class UserAdmin(DefaultUserAdmin):
         super().save_model(request, obj, form, change)
 
         profile, created = UserProfile.objects.get_or_create(user=obj)
+        enforce_disabled_user_exclusive(obj, clear_sessions=True)
         has_disabled_group = user_has_disabled_role(obj) if obj.pk else False
         has_admin_group = obj.groups.filter(name=ROLE_ADMIN_USERS).exists() if obj.pk else False
         if not has_disabled_group and (obj.is_superuser or has_admin_group or profile.is_admin_type):
@@ -797,6 +803,15 @@ class UserAdmin(DefaultUserAdmin):
                 profile.save(update_fields=["account_type", "updated_at"])
 
         sync_user_staff_flags_from_roles(obj)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        user = form.instance
+        # Run after Django saves groups/user_permissions/inlines so Disabled User
+        # cannot be combined with old direct DjOpenKB permission overrides.
+        if enforce_disabled_user_exclusive(user, clear_sessions=True):
+            return
+        sync_user_staff_flags_from_roles(user)
 
     def main_site_account_type(self, obj):
         profile = getattr(obj, "kb_profile", None)
@@ -1035,6 +1050,7 @@ class UserAdmin(DefaultUserAdmin):
                 skipped_self += 1
                 continue
             assign_single_role_group(user, ROLE_DISABLED_USER, clear_direct_permissions=True)
+            enforce_disabled_user_exclusive(user, clear_sessions=True)
             log_auth_event(
                 request,
                 event_type="auth_lockout_reset_admin",

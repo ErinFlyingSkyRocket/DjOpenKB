@@ -297,6 +297,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "kb.middleware.DisabledUserLogoutMiddleware",
     "kb.middleware.SessionTimeoutMiddleware",
     "kb.middleware.UserProfileLanguageMiddleware",
     "kb.middleware.LocalMFARequiredMiddleware",

@@ -666,7 +666,9 @@ def delete_article_image(request):
 
     upload_dir = get_openkb_uploads_dir().resolve()
     file_path = (upload_dir / filename).resolve()
-    if not str(file_path).startswith(str(upload_dir)):
+    try:
+        file_path.relative_to(upload_dir)
+    except ValueError:
         return JsonResponse({"error": "Invalid image path."}, status=400)
 
     if file_path.exists() and file_path.is_file():

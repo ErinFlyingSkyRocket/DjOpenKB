@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
 
-@main_site_login_required
+@article_view_required
 def home(request):
     all_articles = get_openkb_wiki_articles(sort_by_views=False)
     article_limit = get_articles_per_page()
@@ -65,7 +65,7 @@ def article_detail(request, article_id):
     article = get_object_or_404(SuggestedArticle.objects.select_related("owner"), pk=article_id)
 
     if article.status == SuggestedArticle.Status.PUBLISHED:
-        if request.user.is_authenticated and not user_can_view_articles(request.user):
+        if not user_can_view_articles(request.user):
             raise Http404("Article not found")
     elif not user_can_manage_article(request.user, article):
         raise Http404("Article not found")
@@ -136,6 +136,8 @@ def wiki_detail(request, wiki_path):
     """
     suggested = get_article_metadata_by_wiki_path(wiki_path)
     if suggested:
+        if not user_can_view_articles(request.user):
+            raise Http404("Wiki page not found")
         return redirect(suggested.public_url)
 
     raise Http404("Wiki page not found")
@@ -150,6 +152,9 @@ def vote_article(request, article_id):
         pk=article_id,
         status=SuggestedArticle.Status.PUBLISHED,
     )
+
+    if not user_can_vote_articles(request.user):
+        raise Http404("Article not found")
 
     vote_value = request.POST.get("vote")
     if vote_value == "up":
@@ -215,7 +220,7 @@ def vote_article(request, article_id):
 
 
 
-@main_site_login_required
+@article_view_required
 def search_article_suggestions(request):
     """Return title/keyword matches for the search dropdown."""
     init_openkb_storage()
@@ -239,7 +244,7 @@ def search_article_suggestions(request):
 
     return JsonResponse({"results": results})
 
-@main_site_login_required
+@article_view_required
 def search_articles(request):
     """Search published articles by title and keywords only."""
     init_openkb_storage()

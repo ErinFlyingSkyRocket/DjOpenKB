@@ -24,7 +24,8 @@ from .mfa import (
     user_requires_mfa,
 )
 from .models import SiteSetting, UserProfile
-from .permissions import user_can_use_admin_tools
+from .auth_monitoring import log_auth_event
+from .permissions import user_can_use_admin_tools, user_has_disabled_role
 
 
 
@@ -213,6 +214,64 @@ def set_strict_no_cache_headers(response):
     else:
         response["Vary"] = "Cookie"
     return response
+
+
+class DisabledUserLogoutMiddleware:
+    """Immediately end any already-authenticated session for Disabled User accounts.
+
+    Admin actions already clear active sessions when the Disabled User role is
+    assigned. This middleware is a second server-side safety net: if a disabled
+    account still has a usable session cookie for any reason, the next real page
+    or form/API request is logged out before the requested view can run.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def _is_static_or_safe_asset(self, path):
+        if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
+            return True
+        return path in {"/favicon.ico", "/robots.txt"}
+
+    def _logout_disabled_user(self, request, user):
+        username = user.get_username() if user else ""
+        try:
+            log_auth_event(
+                request,
+                event_type="logout",
+                success=True,
+                user=user,
+                username=username,
+                details={"reason": "account_disabled", "source": "disabled_user_middleware"},
+            )
+        except Exception:
+            # Logging must never prevent the defensive logout.
+            pass
+
+        clear_pending_mfa_login(request)
+        clear_mfa_verified(request)
+        clear_session_started_at(request)
+        logout(request)
+        messages.error(
+            request,
+            _(
+                "Your account is currently disabled and cannot access DjOpenKB. "
+                "Please contact an administrator if you believe this is unexpected."
+            ),
+        )
+        response = redirect("root_login")
+        return set_strict_no_cache_headers(response)
+
+    def __call__(self, request):
+        path = request.path_info or request.path
+        if self._is_static_or_safe_asset(path):
+            return self.get_response(request)
+
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated and user_has_disabled_role(user):
+            return self._logout_disabled_user(request, user)
+
+        return self.get_response(request)
 
 
 class LocalMFARequiredMiddleware:

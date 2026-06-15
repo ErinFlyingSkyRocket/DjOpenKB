@@ -73,7 +73,7 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
     try:
         from django.contrib.auth.models import Group
 
-        from .permissions import assign_default_kb_role_group, sync_user_staff_flags_from_roles
+        from .permissions import assign_default_kb_role_group, enforce_disabled_user_exclusive, sync_user_staff_flags_from_roles
 
         UserModel = get_user_model()
         users = []
@@ -85,6 +85,8 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
 
         for user in users:
             if not getattr(user, "_djopenkb_syncing_role_groups", False):
+                if enforce_disabled_user_exclusive(user, clear_sessions=True):
+                    continue
                 assign_default_kb_role_group(user)
             sync_user_staff_flags_from_roles(user)
     except Exception:
