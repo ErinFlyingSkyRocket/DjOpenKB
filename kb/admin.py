@@ -1630,7 +1630,9 @@ class ArticleVoteAdmin(admin.ModelAdmin):
 
 class AuthLockoutPolicyStageInline(admin.TabularInline):
     model = AuthLockoutPolicyStage
-    extra = 1
+    # Do not show an unsaved default row by default. Admins can still use
+    # the dynamic "Add another" button to create a new stage when needed.
+    extra = 0
     fields = (
         "sort_order",
         "failure_limit",
