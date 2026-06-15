@@ -219,6 +219,42 @@ _apply_admin_translation_labels()
 
 
 
+
+def format_admin_duration(seconds):
+    """Return a readable duration for Django Admin helper displays."""
+    try:
+        seconds = max(0, int(seconds or 0))
+    except (TypeError, ValueError):
+        seconds = 0
+
+    if seconds < 60:
+        return f"{seconds} second{'s' if seconds != 1 else ''}"
+
+    if seconds % 86400 == 0:
+        days = seconds // 86400
+        return f"{days} day{'s' if days != 1 else ''}"
+
+    if seconds % 3600 == 0:
+        hours = seconds // 3600
+        return f"{hours} hour{'s' if hours != 1 else ''}"
+
+    if seconds % 60 == 0:
+        minutes = seconds // 60
+        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+
+    minutes, remaining_seconds = divmod(seconds, 60)
+    return f"{minutes} minute{'s' if minutes != 1 else ''} {remaining_seconds} second{'s' if remaining_seconds != 1 else ''}"
+
+
+def format_admin_duration_with_seconds(seconds):
+    """Return a readable duration plus exact seconds for admin clarity."""
+    readable = format_admin_duration(seconds)
+    try:
+        seconds_int = int(seconds or 0)
+    except (TypeError, ValueError):
+        seconds_int = 0
+    return f"{readable} ({seconds_int} seconds)"
+
 def get_admin_log_rows_per_page():
     """Return admin log row count from Site settings with safe bounds."""
     try:
@@ -1599,10 +1635,19 @@ class AuthLockoutPolicyStageInline(admin.TabularInline):
         "sort_order",
         "failure_limit",
         "block_seconds",
+        "block_duration_display",
         "repeat_count",
         "enabled",
     )
+    readonly_fields = ("block_duration_display",)
     ordering = ("sort_order", "id")
+
+    def block_duration_display(self, obj):
+        if not obj or obj.block_seconds in (None, ""):
+            return "-"
+        return format_admin_duration_with_seconds(obj.block_seconds)
+
+    block_duration_display.short_description = _("Block duration readable")
 
 
 @admin.register(SiteSetting)
@@ -1633,9 +1678,14 @@ class SiteSettingAdmin(admin.ModelAdmin):
             ),
         }),
         (_("Authentication lockout policy"), {
-            "fields": ("auth_lockout_policy_guide", "auth_lockout_strike_ttl_seconds"),
+            "fields": (
+                "auth_lockout_policy_guide",
+                "auth_lockout_strike_ttl_seconds",
+                "auth_lockout_strike_ttl_display",
+            ),
             "description": _(
                 "Use the inline rows below to control progressive password/MFA lockouts. "
+                "Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. "
                 "repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
             ),
         }),
@@ -1648,7 +1698,7 @@ class SiteSettingAdmin(admin.ModelAdmin):
             ),
         }),
     )
-    readonly_fields = ("updated_at", "auth_lockout_policy_guide")
+    readonly_fields = ("updated_at", "auth_lockout_policy_guide", "auth_lockout_strike_ttl_display")
     inlines = (AuthLockoutPolicyStageInline,)
 
     def auth_lockout_policy_guide(self, obj):
@@ -1676,6 +1726,13 @@ class SiteSettingAdmin(admin.ModelAdmin):
         )
 
     auth_lockout_policy_guide.short_description = _("Policy guide")
+
+    def auth_lockout_strike_ttl_display(self, obj):
+        if not obj:
+            return "-"
+        return format_admin_duration_with_seconds(obj.auth_lockout_strike_ttl_seconds)
+
+    auth_lockout_strike_ttl_display.short_description = _("Escalation memory readable")
 
     def has_add_permission(self, request):
         # Only allow creating the singleton if it does not already exist.
