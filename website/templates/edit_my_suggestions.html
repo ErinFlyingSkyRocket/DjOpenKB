@@ -115,7 +115,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             <div class="row">
                 <div class="col-xs-12">
                     <div class="edit-page-header">
-                        <h2 class="edit-page-title">{% if profile_page_title %}{{ profile_page_title }}{% else %}{% trans "Edit My Articles" %}{% endif %}{% if is_internal_space %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h2>
+                        <h2 class="edit-page-title">{% if profile_page_title %}{{ profile_page_title }}{% else %}{% trans "Edit My Articles" %}{% endif %}</h2>
                         <p class="profile-muted">{% trans "Search, edit, or delete articles you suggested in the Knowledge Repository." %}</p>
                         <div class="article-count-summary">
                             <span class="article-count-badge">{% blocktrans with count=total_user_article_count %}{{ count }} articles{% endblocktrans %}</span>
@@ -128,7 +128,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             <div class="row">
                 <div class="col-xs-12">
                     <div class="edit-actions-bar">
-                        <a class="btn btn-success editor_btn_action" href="{{ profile_new_article_url|default:'/suggest/' }}"><i class="fa fa-plus"></i> {% if is_internal_space %}{% trans "New internal article" %}{% else %}{% trans "New article" %}{% endif %}</a>
+                        <a class="btn btn-success editor_btn_action" href="{{ profile_new_article_url|default:'/suggest/' }}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
                         <a class="btn btn-default" href="{% url 'profile' %}"><i class="fa fa-user"></i> {% trans "Back to profile" %}</a>
                     </div>
 
@@ -136,17 +136,38 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="panel-heading"><strong>{% trans "Search suggested articles" %}</strong></div>
                         <div class="panel-body">
                             <form method="get" action="{{ profile_search_action|default:'/profile/articles/' }}">
-                                <div class="input-group">
-                                    <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
-                                    </span>
-                                </div>
+                                {% if profile_show_visibility_filter %}
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <select name="visibility" class="form-control">
+                                                <option value="all" {% if profile_visibility_filter == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
+                                                {% if profile_allowed_public %}<option value="public" {% if profile_visibility_filter == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
+                                                {% if profile_allowed_internal %}<option value="internal" {% if profile_visibility_filter == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-9">
+                                            <div class="input-group">
+                                                <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    {% if profile_visibility_filter != "all" %}<input type="hidden" name="visibility" value="{{ profile_visibility_filter }}">{% endif %}
+                                    <div class="input-group">
+                                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
+                                        </span>
+                                    </div>
+                                {% endif %}
                             </form>
                             {% if is_profile_search %}
                                 <p class="profile-muted" style="margin-top: 10px;">
                                     {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
-                                    <a href="{{ profile_search_action|default:'/profile/articles/' }}">{% trans "Clear search" %}</a>
+                                    <a href="{{ profile_search_action|default:'/profile/articles/' }}{% if profile_visibility_filter != 'all' %}?visibility={{ profile_visibility_filter }}{% endif %}">{% trans "Clear search" %}</a>
                                 </p>
                             {% endif %}
                         </div>
@@ -168,16 +189,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <nav class="profile-top-pagination" aria-label="{% trans 'Top article pagination' %}">
                                     <ul class="pager">
                                         {% if page_obj.has_previous %}
-                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
-                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
+                                            <li><a href="?page=1{{ profile_filter_query_suffix }}">&laquo; {% trans "First" %}</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{{ profile_filter_query_suffix }}">&lsaquo; {% trans "Previous" %}</a></li>
                                         {% else %}
                                             <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
                                             <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
                                         {% endif %}
 
                                         {% if page_obj.has_next %}
-                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
-                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
+                                            <li><a href="?page={{ page_obj.next_page_number }}{{ profile_filter_query_suffix }}">{% trans "Next" %} &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{{ profile_filter_query_suffix }}">{% trans "Last" %} &raquo;</a></li>
                                         {% else %}
                                             <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
                                             <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
@@ -243,7 +264,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% else %}
                                 {% if is_profile_search %}
                                     <p>{% trans "No matching suggested articles found." %}</p>
-                                    <a class="btn btn-default" href="{{ profile_search_action|default:'/profile/articles/' }}">{% trans "Clear search" %}</a>
+                                    <a class="btn btn-default" href="{{ profile_search_action|default:'/profile/articles/' }}{% if profile_visibility_filter != 'all' %}?visibility={{ profile_visibility_filter }}{% endif %}">{% trans "Clear search" %}</a>
                                 {% else %}
                                     <p>{% trans "You have not suggested any articles yet." %}</p>
                                     <a class="btn btn-success" href="{{ profile_new_article_url|default:'/suggest/' }}">{% trans "Create your first suggestion" %}</a>
@@ -262,8 +283,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <nav class="profile-pagination" aria-label="{% trans 'Bottom article pagination' %}">
                                     <ul class="pagination">
                                         {% if page_obj.has_previous %}
-                                            <li><a href="?page=1{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
-                                            <li><a href="?page={{ page_obj.previous_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
+                                            <li><a href="?page=1{{ profile_filter_query_suffix }}">&laquo; {% trans "First" %}</a></li>
+                                            <li><a href="?page={{ page_obj.previous_page_number }}{{ profile_filter_query_suffix }}">&lsaquo; {% trans "Previous" %}</a></li>
                                         {% else %}
                                             <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
                                             <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
@@ -272,8 +293,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <li class="active"><span>{% blocktrans with number=page_obj.number num_pages=page_obj.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}</span></li>
 
                                         {% if page_obj.has_next %}
-                                            <li><a href="?page={{ page_obj.next_page_number }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
-                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if profile_search_query %}&q={{ profile_search_query|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
+                                            <li><a href="?page={{ page_obj.next_page_number }}{{ profile_filter_query_suffix }}">{% trans "Next" %} &rsaquo;</a></li>
+                                            <li><a href="?page={{ page_obj.paginator.num_pages }}{{ profile_filter_query_suffix }}">{% trans "Last" %} &raquo;</a></li>
                                         {% else %}
                                             <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
                                             <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>

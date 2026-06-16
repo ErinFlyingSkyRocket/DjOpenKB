@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
 from django.utils.translation import gettext as _
+from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
@@ -267,18 +268,26 @@ def import_articles_zip(request):
 
 
 
-def _manage_pending_articles_for_visibility(request, *, visibility):
-    visibility = normalize_article_visibility(visibility)
-    if not user_can_manage_article_visibility(request.user, visibility):
+def _manage_pending_articles_for_allowed_visibilities(request):
+    allowed_visibilities = allowed_article_visibility_values_for_user(request.user, action="manage")
+    if not allowed_visibilities:
         raise Http404("Article not found")
 
     search_query = request.GET.get("q", "").strip()
+    requested_visibility = (request.GET.get("visibility") or "all").strip().lower()
+    if requested_visibility not in {"all", SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}:
+        requested_visibility = "all"
+    if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
+        requested_visibility = "all"
 
     article_queryset = SuggestedArticle.objects.select_related("owner").filter(
         Q(status=SuggestedArticle.Status.PENDING)
         | Q(update_status=SuggestedArticle.UpdateStatus.PENDING),
-        visibility=visibility,
+        visibility__in=allowed_visibilities,
     )
+    if requested_visibility != "all":
+        article_queryset = article_queryset.filter(visibility=requested_visibility)
+
     total_pending_article_count = article_queryset.count()
 
     if search_query:
@@ -301,7 +310,12 @@ def _manage_pending_articles_for_visibility(request, *, visibility):
 
     article_queryset = article_queryset.order_by("created_at", "updated_at")
     page_obj = paginate_articles(request, article_queryset, per_page=20)
-    is_internal = visibility == SuggestedArticle.Visibility.INTERNAL
+
+    filter_query_suffix = ""
+    if requested_visibility != "all":
+        filter_query_suffix += f"&visibility={requested_visibility}"
+    if search_query:
+        filter_query_suffix += f"&q={quote(search_query)}"
 
     return render(request, "admin_pending_articles.html", {
         "articles": page_obj.object_list,
@@ -310,21 +324,27 @@ def _manage_pending_articles_for_visibility(request, *, visibility):
         "pending_result_count": article_queryset.count(),
         "total_pending_article_count": total_pending_article_count,
         "is_pending_search": bool(search_query),
-        "pending_visibility": visibility,
-        "pending_page_title": _("Manage Internal Pending Articles") if is_internal else _("Manage Pending Articles"),
-        "pending_search_action": reverse("manage_internal_pending_articles") if is_internal else reverse("manage_pending_articles"),
-        "is_internal_space": is_internal,
+        "pending_visibility": requested_visibility,
+        "pending_page_title": _("Manage Pending Articles"),
+        "pending_search_action": reverse("manage_pending_articles"),
+        "pending_allowed_public": SuggestedArticle.Visibility.PUBLIC in allowed_visibilities,
+        "pending_allowed_internal": SuggestedArticle.Visibility.INTERNAL in allowed_visibilities,
+        "pending_show_visibility_filter": len(allowed_visibilities) > 1,
+        "pending_filter_query_suffix": filter_query_suffix,
+        "is_internal_space": requested_visibility == SuggestedArticle.Visibility.INTERNAL,
     })
 
 
-@article_management_required
+@main_site_login_required
 def manage_pending_articles(request):
-    return _manage_pending_articles_for_visibility(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+    return _manage_pending_articles_for_allowed_visibilities(request)
 
 
-@internal_article_management_required
+@main_site_login_required
 def manage_internal_pending_articles(request):
-    return _manage_pending_articles_for_visibility(request, visibility=SuggestedArticle.Visibility.INTERNAL)
+    if not user_can_manage_internal_articles(request.user):
+        raise Http404("Article not found")
+    return redirect(f"{reverse('manage_pending_articles')}?visibility=internal")
 
 
 @admin_tools_required

@@ -41,6 +41,10 @@ from ..permissions import (
     PERM_MANAGE_ARTICLES,
     PERM_USE_ADMIN_TOOLS,
     PERM_VIEW_ARTICLES,
+    ROLE_ARTICLE_APPROVER,
+    ROLE_ARTICLE_MANAGER,
+    ROLE_INTERNAL_ARTICLE_APPROVER,
+    ROLE_INTERNAL_ARTICLE_MANAGER,
     role_permissions_summary,
     user_has_disabled_role,
     user_can_add_articles,
@@ -299,6 +303,145 @@ def article_visibility_label(visibility):
     return _("Public article")
 
 
+def user_role_names_for_scope_checks(user):
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "pk", None):
+        return set()
+    try:
+        return set(user.groups.values_list("name", flat=True))
+    except Exception:
+        return set()
+
+
+def user_is_article_approver_only_for_visibility(user, visibility):
+    """Return True for review-only approvers in a visibility scope.
+
+    Public/Internal Article Manager and Admin Users are not review-only because
+    they may edit/delete existing articles in their own scope. Article Approver
+    and Internal Article Approver may approve/reject pending submissions in
+    their own scope. This helper is now mainly used to restrict their status
+    options to approve/reject and to block published-article management.
+    """
+    visibility = normalize_article_visibility(visibility)
+    if user_can_use_admin_tools(user):
+        return False
+
+    role_names = user_role_names_for_scope_checks(user)
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return (
+            ROLE_INTERNAL_ARTICLE_APPROVER in role_names
+            and ROLE_INTERNAL_ARTICLE_MANAGER not in role_names
+            and not user_can_delete_internal_articles(user)
+        )
+
+    return (
+        ROLE_ARTICLE_APPROVER in role_names
+        and ROLE_ARTICLE_MANAGER not in role_names
+        and not user_can_delete_articles(user)
+    )
+
+
+def user_is_article_manager_for_visibility(user, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if user_can_use_admin_tools(user):
+        return True
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return bool(user_can_manage_internal_articles(user) and user_can_delete_internal_articles(user))
+    return bool(user_can_manage_articles(user) and user_can_delete_articles(user))
+
+
+def user_can_edit_article_content(user, article):
+    """Return True when this user may change title/body/keywords/images.
+
+    Owners, scope managers, and Admin Users may edit according to the normal
+    workflow. Article Approver/Internal Article Approver may also adjust article
+    content while reviewing pending submissions or pending updates in their own
+    scope, but they still cannot edit already-published articles that have no
+    pending update, and they never receive delete rights from approver access.
+    """
+    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+
+    if user_can_use_admin_tools(user):
+        return True
+
+    if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
+        return True
+
+    if user_is_article_manager_for_visibility(user, visibility):
+        return True
+
+    if user_is_article_approver_only_for_visibility(user, visibility):
+        return bool(
+            article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
+            or article.update_status in {
+                SuggestedArticle.UpdateStatus.PENDING,
+                SuggestedArticle.UpdateStatus.FAILED,
+            }
+        )
+
+    return False
+
+
+def allowed_article_visibility_values_for_user(user, *, action="add"):
+    """Return visibility values the user may act on for the given action."""
+    values = []
+    if action == "manage":
+        if user_can_manage_articles(user):
+            values.append(SuggestedArticle.Visibility.PUBLIC)
+        if user_can_manage_internal_articles(user):
+            values.append(SuggestedArticle.Visibility.INTERNAL)
+    elif action == "view":
+        if user_can_view_articles(user):
+            values.append(SuggestedArticle.Visibility.PUBLIC)
+        if user_can_view_internal_articles(user):
+            values.append(SuggestedArticle.Visibility.INTERNAL)
+    else:
+        if user_can_add_articles(user):
+            values.append(SuggestedArticle.Visibility.PUBLIC)
+        if user_can_add_internal_articles(user):
+            values.append(SuggestedArticle.Visibility.INTERNAL)
+
+    return list(dict.fromkeys(values))
+
+
+def article_visibility_choices_for_user(user, *, action="add"):
+    return [
+        {"value": value, "label": article_visibility_label(value)}
+        for value in allowed_article_visibility_values_for_user(user, action=action)
+    ]
+
+
+def choose_requested_article_visibility(user, requested_value, *, action="add", default=None):
+    allowed = allowed_article_visibility_values_for_user(user, action=action)
+    if not allowed:
+        raise Http404("Article visibility not allowed")
+
+    requested = normalize_article_visibility(requested_value or default or allowed[0])
+    if requested not in allowed:
+        # Public is the safest default when it is allowed. Otherwise use the
+        # user's only available internal scope.
+        requested = SuggestedArticle.Visibility.PUBLIC if SuggestedArticle.Visibility.PUBLIC in allowed else allowed[0]
+    return requested
+
+
+def user_can_change_article_visibility(user, article):
+    """Allow visibility changes only before first publication.
+
+    Changing a published article between public/internal is intentionally not
+    offered to normal managers because it could leak or hide already-approved
+    content. Admin Users can handle exceptional cases in Django Admin.
+    """
+    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+    if user_can_use_admin_tools(user):
+        return article.status != SuggestedArticle.Status.PUBLISHED
+    if article.status == SuggestedArticle.Status.PUBLISHED:
+        return False
+    return bool(article.owner_id == user.pk and len(allowed_article_visibility_values_for_user(user, action="add")) > 1)
+
+
 def user_can_manage_article(user, article):
     """Return True when a user may edit/review this article.
 
@@ -428,15 +571,27 @@ def validate_article_edit_action(user, article, submit_action):
     return submit_action
 
 
-def allowed_article_statuses_for_admin_edit(article):
-    """Return statuses an admin may set for the current article edit flow."""
+def allowed_article_statuses_for_admin_edit(article, user=None):
+    """Return statuses available in the review/edit form.
+
+    Article Approver roles can only approve or reject. Managers and Admin Users
+    retain the broader workflow controls inside their own scope.
+    Pending-update reviews are always constrained to approve/reject so the
+    current published version is not accidentally hidden.
+    """
+    approve_reject = {SuggestedArticle.Status.PUBLISHED, SuggestedArticle.Status.FAILED}
+
     if (
         article.status == SuggestedArticle.Status.PUBLISHED
         and article.update_status == SuggestedArticle.UpdateStatus.PENDING
     ):
-        # Reviewing a pending update should only approve or reject that update.
-        # It must not accidentally hide the already-published article.
-        return {SuggestedArticle.Status.PUBLISHED, SuggestedArticle.Status.FAILED}
+        return approve_reject
+
+    if user is not None and user_is_article_approver_only_for_visibility(
+        user,
+        getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC),
+    ):
+        return approve_reject
 
     return {
         SuggestedArticle.Status.DRAFT,
@@ -446,10 +601,10 @@ def allowed_article_statuses_for_admin_edit(article):
     }
 
 
-def validate_admin_requested_article_status(article, requested_status):
-    """Raise 404 for forged/tampered admin status values."""
+def validate_admin_requested_article_status(article, requested_status, user=None):
+    """Raise 404 for forged/tampered admin/reviewer status values."""
     requested_status = (requested_status or article.status).strip()
-    if requested_status not in allowed_article_statuses_for_admin_edit(article):
+    if requested_status not in allowed_article_statuses_for_admin_edit(article, user=user):
         raise Http404("Article status not allowed")
     return requested_status
 
@@ -1655,6 +1810,37 @@ def write_article_files(article, sync_ai=False, mark_ai_stale=True):
 
     if mark_ai_stale or sync_ai:
         mark_openkb_ai_stale("Article Markdown files changed.")
+
+def delete_article_markdown_files(article):
+    """Delete only generated Markdown copies without removing uploaded images."""
+    candidates = []
+
+    if article.raw_path:
+        candidates.append((settings.OPENKB_DATA_DIR / article.raw_path, settings.OPENKB_DATA_DIR))
+        candidates.append((get_openkb_internal_data_dir() / article.raw_path, get_openkb_internal_data_dir()))
+
+    if article.filename:
+        candidates.append((settings.OPENKB_WIKI_DIR / "sources" / article.filename, settings.OPENKB_WIKI_DIR))
+        candidates.append((settings.OPENKB_RAW_DIR / article.filename, settings.OPENKB_DATA_DIR))
+        candidates.append((settings.OPENKB_RAW_DIR / "internal" / article.filename, settings.OPENKB_DATA_DIR))
+        candidates.append((get_openkb_internal_wiki_dir() / "sources" / article.filename, get_openkb_internal_wiki_dir()))
+        candidates.append((get_openkb_internal_data_dir() / "raw" / "internal" / article.filename, get_openkb_internal_data_dir()))
+
+    if article.wiki_path and not str(article.wiki_path).startswith("internal/"):
+        candidates.append((settings.OPENKB_WIKI_DIR / article.wiki_path, settings.OPENKB_WIKI_DIR))
+
+    for file_path, root_dir in candidates:
+        file_path = file_path.resolve()
+        root_dir = root_dir.resolve()
+        try:
+            file_path.relative_to(root_dir)
+        except ValueError:
+            continue
+        if file_path.exists() and file_path.is_file():
+            file_path.unlink()
+
+    mark_openkb_ai_stale("Article Markdown files changed.")
+
 
 def delete_article_files(article):
     """Delete Markdown files and image assets for a user-owned article."""

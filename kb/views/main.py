@@ -28,6 +28,20 @@ def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBL
     if active_home_tab not in {"trending", "liked", "recent"}:
         active_home_tab = "trending"
 
+    internal_articles_page_obj = None
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        internal_articles_all = sorted(
+            all_articles,
+            key=lambda item: item.get("date") or "",
+            reverse=True,
+        )
+        internal_articles_page_obj = paginate_articles(
+            request,
+            internal_articles_all,
+            per_page=article_limit,
+            page_param="page",
+        )
+
     trending_articles_all = sorted(
         all_articles,
         key=lambda item: (item.get("views") or 0, item.get("likes") or 0, item.get("date") or ""),
@@ -80,6 +94,8 @@ def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBL
         "article_visibility": visibility,
         "total_article_label": total_label,
         "is_internal_space": visibility == SuggestedArticle.Visibility.INTERNAL,
+        "internal_articles": internal_articles_page_obj.object_list if internal_articles_page_obj else [],
+        "internal_page_obj": internal_articles_page_obj,
     })
 
 

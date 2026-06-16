@@ -761,7 +761,7 @@ class UserProfileInline(admin.StackedInline):
             (
                 _("Article Approver"),
                 _(
-                    "Can review, edit during review, approve, and reject pending articles/updates. "
+                    "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. "
                     "Article Approvers cannot add new articles or delete articles by default."
                 ),
             ),
@@ -1180,7 +1180,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             (_("Disabled User"), _("Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions.")),
             (_("Regular User"), _("Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role.")),
             (_("Article Writer"), _("Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required.")),
-            (_("Article Approver"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required.")),
+            (_("Article Approver"), _("Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required.")),
             (_("Article Manager"), _("Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required.")),
             (_("Internal User"), _("Add-on role. Can view public/general articles plus internal articles.")),
             (_("Internal Article Writer"), _("Add-on role. Can create/edit own internal articles and view public/general articles.")),

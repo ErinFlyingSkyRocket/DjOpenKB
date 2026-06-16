@@ -298,6 +298,60 @@
     {% else %}
         <div class="row openkb-home-container">
             <div class="col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                {% if is_internal_space %}
+                    <div class="panel panel-default openkb-home-tabs-panel">
+                        <div class="panel-heading">
+                            <strong><i class="fa fa-lock" aria-hidden="true"></i> {% trans "Internal Articles" %}</strong>
+                        </div>
+                        <ul class="list-group openkb-home-list">
+                            {% if internal_articles %}
+                                {% for article in internal_articles %}
+                                    <li class="list-group-item">
+                                        <h4>
+                                            <a href="{{ article.url }}">{{ article.title }}</a>
+                                            <span class="label label-warning">{% trans "Internal" %}</span>
+                                            <span class="pull-right view_count">
+                                                {% if article.date %}<strong>{% trans "Date" %}:</strong> {{ article.date }}&nbsp;/&nbsp;{% endif %}
+                                                <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
+                                                &nbsp;/&nbsp;<strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
+                                            </span>
+                                        </h4>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="list-group-item openkb-empty">{% trans "No internal articles have been published yet." %}</li>
+                            {% endif %}
+                        </ul>
+                        {% if internal_page_obj %}
+                            <div class="openkb-home-tab-footer">
+                                <div class="openkb-home-tab-meta">
+                                    {% blocktrans with number=internal_page_obj.number num_pages=internal_page_obj.paginator.num_pages start=internal_page_obj.start_index end=internal_page_obj.end_index count=internal_page_obj.paginator.count %}Page {{ number }} of {{ num_pages }} · Showing {{ start }}–{{ end }} of {{ count }} internal article(s){% endblocktrans %}
+                                </div>
+                                {% if internal_page_obj.paginator.num_pages > 1 %}
+                                    <nav class="openkb-home-tab-pagination" aria-label="{% trans 'Internal article pages' %}">
+                                        <ul class="pagination pagination-sm">
+                                            {% if internal_page_obj.has_previous %}
+                                                <li><a href="?page=1">&laquo; {% trans "First" %}</a></li>
+                                                <li><a href="?page={{ internal_page_obj.previous_page_number }}">&lsaquo; {% trans "Previous" %}</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
+                                                <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
+                                            {% endif %}
+                                            <li class="active"><span>{% blocktrans with number=internal_page_obj.number num_pages=internal_page_obj.paginator.num_pages %}Page {{ number }} of {{ num_pages }}{% endblocktrans %}</span></li>
+                                            {% if internal_page_obj.has_next %}
+                                                <li><a href="?page={{ internal_page_obj.next_page_number }}">{% trans "Next" %} &rsaquo;</a></li>
+                                                <li><a href="?page={{ internal_page_obj.paginator.num_pages }}">{% trans "Last" %} &raquo;</a></li>
+                                            {% else %}
+                                                <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
+                                                <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% else %}
                 <div class="panel panel-default openkb-home-tabs-panel">
                     <div class="panel-heading openkb-home-tabs-heading">
                         <ul class="nav nav-tabs" role="tablist">
@@ -465,6 +519,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     {% endif %}

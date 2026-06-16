@@ -133,6 +133,21 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 <form method="post" id="edit_form" action="{{ suggest_form_action|default:'/suggest/' }}" data-toggle="validator">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
+                    {% if show_visibility_selector %}
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="articleVisibilitySelect">{% trans "Article visibility" %}</label>
+                                <select name="article_visibility" id="articleVisibilitySelect" class="form-control">
+                                    {% for choice in visibility_choices %}
+                                        <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-muted" style="margin-top:6px;">{% trans "Choose Public for normal wiki articles or Internal for confidential articles visible only to internal users." %}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <input type="hidden" name="article_visibility" value="{{ article_visibility|default:'public' }}">
+                    {% endif %}
                     {% if is_internal_article_form %}<div class="alert alert-warning"><i class="fa fa-lock"></i> {% trans "This article will be saved in the internal article space." %}</div>{% endif %}
                     <div id="header row">
                         <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">

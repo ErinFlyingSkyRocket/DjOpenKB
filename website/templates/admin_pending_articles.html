@@ -36,7 +36,7 @@
             {% endif %}
 
             <h2>{% if pending_page_title %}{{ pending_page_title }}{% else %}{% trans "Manage pending articles" %}{% endif %}{% if is_internal_space %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h2>
-            <p class="pending-muted">{% if is_internal_space %}{% trans "Review internal articles and pending internal updates before they become visible to internal users." %}{% else %}{% trans "Review new articles and pending updates before they become publicly visible." %}{% endif %}</p>
+            <p class="pending-muted">{% trans "Review submitted articles and pending updates within your allowed article scope." %}</p>
 
             <div class="pending-summary-card">
                 <span class="pending-summary-number">{{ total_pending_article_count }}</span>
@@ -48,12 +48,24 @@
 
             <div class="pending-toolbar">
                 <form method="get" action="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}" class="form-inline">
+                    {% if pending_show_visibility_filter %}
+                        <div class="form-group">
+                            <label class="sr-only" for="pendingVisibilityFilter">{% trans "Visibility" %}</label>
+                            <select id="pendingVisibilityFilter" name="visibility" class="form-control">
+                                <option value="all" {% if pending_visibility == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
+                                {% if pending_allowed_public %}<option value="public" {% if pending_visibility == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
+                                {% if pending_allowed_internal %}<option value="internal" {% if pending_visibility == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
+                            </select>
+                        </div>
+                    {% elif pending_visibility != "all" %}
+                        <input type="hidden" name="visibility" value="{{ pending_visibility }}">
+                    {% endif %}
                     <div class="form-group">
                         <input type="text" name="q" class="form-control" placeholder="{% trans 'Search pending articles' %}" value="{{ pending_search_query|default:'' }}">
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                     {% if is_pending_search %}
-                        <a class="btn btn-default" href="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}">{% trans "Clear search" %}</a>
+                        <a class="btn btn-default" href="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}{% if pending_visibility != 'all' %}?visibility={{ pending_visibility }}{% endif %}">{% trans "Clear search" %}</a>
                     {% endif %}
                     <a class="btn btn-default pull-right" href="{% url 'profile' %}"><i class="fa fa-arrow-left"></i> {% trans "Back to profile" %}</a>
                 </form>
@@ -63,16 +75,16 @@
                 <nav aria-label="{% trans 'Pending article pages' %}">
                     <ul class="pagination">
                         {% if page_obj.has_previous %}
-                            <li><a href="?page=1{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">&laquo; {% trans "First" %}</a></li>
-                            <li><a href="?page={{ page_obj.previous_page_number }}{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">&lsaquo; {% trans "Previous" %}</a></li>
+                            <li><a href="?page=1{{ pending_filter_query_suffix }}">&laquo; {% trans "First" %}</a></li>
+                            <li><a href="?page={{ page_obj.previous_page_number }}{{ pending_filter_query_suffix }}">&lsaquo; {% trans "Previous" %}</a></li>
                         {% else %}
                             <li class="disabled"><span>&laquo; {% trans "First" %}</span></li>
                             <li class="disabled"><span>&lsaquo; {% trans "Previous" %}</span></li>
                         {% endif %}
                         <li class="active"><span>{% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</span></li>
                         {% if page_obj.has_next %}
-                            <li><a href="?page={{ page_obj.next_page_number }}{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">{% trans "Next" %} &rsaquo;</a></li>
-                            <li><a href="?page={{ page_obj.paginator.num_pages }}{% if pending_search_query %}&q={{ pending_search_query|urlencode }}{% endif %}">{% trans "Last" %} &raquo;</a></li>
+                            <li><a href="?page={{ page_obj.next_page_number }}{{ pending_filter_query_suffix }}">{% trans "Next" %} &rsaquo;</a></li>
+                            <li><a href="?page={{ page_obj.paginator.num_pages }}{{ pending_filter_query_suffix }}">{% trans "Last" %} &raquo;</a></li>
                         {% else %}
                             <li class="disabled"><span>{% trans "Next" %} &rsaquo;</span></li>
                             <li class="disabled"><span>{% trans "Last" %} &raquo;</span></li>
@@ -114,7 +126,7 @@
                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                     <td class="text-right pending-actions">
-                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}"><i class="fa fa-pencil"></i> {% trans "Review / Edit" %}</a>
+                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}"><i class="fa fa-check-square-o"></i> {% trans "Review" %}</a>
                                     </td>
                                 </tr>
                             {% endfor %}

@@ -209,11 +209,29 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
                     {% if article.visibility == "internal" %}<div class="alert alert-warning"><i class="fa fa-lock"></i> {% trans "Internal article" %}</div>{% endif %}
+                    {% if is_review_only_article %}
+                        <div class="alert alert-info"><i class="fa fa-check-square-o"></i> {% trans "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here." %}</div>
+                    {% endif %}
+                    {% if can_change_article_visibility %}
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="articleVisibilitySelect">{% trans "Article visibility" %}</label>
+                                <select name="article_visibility" id="articleVisibilitySelect" class="form-control">
+                                    {% for choice in visibility_choices %}
+                                        <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-muted" style="margin-top:6px;">{% trans "Visibility can be changed only before the article is published." %}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <input type="hidden" name="article_visibility" value="{{ article.visibility }}">
+                    {% endif %}
                     <div id="header row">
                         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                             <div class="form-group">
                                 <label for="preview">{% trans "Article title" %} *</label><br/>
-                                <input type="text" name="frm_kb_title" id="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" required/>
+                                <input type="text" name="frm_kb_title" id="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" {% if not can_edit_article_content %}readonly{% endif %} required/>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
@@ -225,10 +243,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <option value="published" selected>{% trans "Approve update" %}</option>
                                             <option value="failed">{% trans "Reject update" %}</option>
                                         {% else %}
-                                            <option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>
-                                            <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
-                                            <option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Pending failed" %}</option>
-                                            <option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Published" %}</option>
+                                            {% if allow_status_draft %}<option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>{% endif %}
+                                            {% if allow_status_pending %}<option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>{% endif %}
+                                            {% if allow_status_failed %}<option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Reject / Pending failed" %}</option>{% endif %}
+                                            {% if allow_status_published %}<option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Approve / Publish" %}</option>{% endif %}
                                         {% endif %}
                                     </select>
                                 {% else %}
@@ -255,7 +273,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
                             {% if can_review_article %}
-                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% trans "Save" %}</button>
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if is_review_only_article %}{% trans "Save review decision" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
                                     {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
@@ -355,11 +373,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div class="form-group suggest-editor" id="editor-wrapper-suggest">
                                 <label for="editor">{% trans "Article body (Markdown)" %} *</label>
                                 <p class="text-muted" style="margin-bottom: 6px;">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %} {% blocktrans with limit=article_image_upload_limit %}Maximum {{ limit }} image(s) per article.{% endblocktrans %}</p>
-                                <p>
-                                    <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
-                                    <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
-                                </p>
-                                <textarea id="editor" minlength="5" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" class="form-control" required>{{ body_value|default:article.body }}</textarea>
+                                {% if can_edit_article_content %}
+                                    <p>
+                                        <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
+                                        <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
+                                    </p>
+                                {% endif %}
+                                <textarea id="editor" minlength="5" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" class="form-control" {% if not can_edit_article_content %}readonly{% endif %} required>{{ body_value|default:article.body }}</textarea>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
@@ -373,7 +393,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label>{% trans "Keywords" %}</label><br/>
-                                <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:article.keywords }}">
+                                <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:article.keywords }}" {% if not can_edit_article_content %}readonly{% endif %}>
                                 {% include "_keyword_suggestions.html" %}
                             </div>
                         </div>
@@ -391,6 +411,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 <script id="existingArticleImages" type="application/json">{{ existing_images_json|default:"[]"|safe }}</script>
 <script>
 (function () {
+    const isReadOnlyArticleEditor = {{ can_edit_article_content|yesno:"false,true" }};
     const statusSelect = document.getElementById("articleStatusSelect");
     const reviewGroup = document.getElementById("adminReviewNotesGroup");
     const reviewInput = document.getElementById("reviewNotesInput");
@@ -413,6 +434,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     if (statusSelect) {
         statusSelect.addEventListener("change", toggleAdminReviewNotes);
         toggleAdminReviewNotes();
+    }
+
+    if (isReadOnlyArticleEditor) {
+        window.setTimeout(function () {
+            const wrapper = document.querySelector(".CodeMirror");
+            if (wrapper && wrapper.CodeMirror) {
+                wrapper.CodeMirror.setOption("readOnly", true);
+            }
+        }, 300);
     }
 
     const uploadUrl = "{% url 'upload_article_image' %}";
