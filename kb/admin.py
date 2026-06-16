@@ -213,6 +213,7 @@ def _apply_admin_translation_labels():
             "admin_log_rows_per_page": "Admin log rows per page",
             "admin_allowed_cidrs": "Admin allowed IP ranges",
             "auth_lockout_strike_ttl_seconds": "Authentication lockout escalation memory (seconds)",
+            "admin_mfa_idle_timeout_seconds": "Admin MFA idle timeout (seconds)",
             "updated_at": "Updated at",
         },
         AuthLockoutPolicyStage: {
@@ -2356,15 +2357,26 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
             ),
         }),
         (_("Django Admin access restrictions"), {
-            "fields": ("admin_allowed_cidrs",),
+            "fields": (
+                "admin_allowed_cidrs",
+                "admin_mfa_idle_timeout_seconds",
+                "admin_mfa_idle_timeout_display",
+            ),
             "description": _(
-                "Only staff/admin users connecting from these CIDR/IP ranges can access /admin/. "
-                "Direct /admin/login/ is always hidden with 404. Use comma or newline separated values, "
+                "Only superusers connecting from these CIDR/IP ranges can access /admin/. "
+                "Django Admin also requires an extra MFA verification. The admin MFA idle timeout controls "
+                "how long the admin area may remain inactive before the admin verification is cleared. "
+                "Direct /admin/login/ is always hidden with 404. Use comma or newline separated CIDR/IP values, "
                 "for example: 10.65.0.0/16, 127.0.0.1/32."
             ),
         }),
     )
-    readonly_fields = ("updated_at", "auth_lockout_policy_guide", "auth_lockout_strike_ttl_display")
+    readonly_fields = (
+        "updated_at",
+        "auth_lockout_policy_guide",
+        "auth_lockout_strike_ttl_display",
+        "admin_mfa_idle_timeout_display",
+    )
     inlines = (AuthLockoutPolicyStageInline,)
 
     def get_admin_audit_extra_snapshot(self, obj):
@@ -2424,6 +2436,13 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         return format_admin_duration_with_seconds(obj.auth_lockout_strike_ttl_seconds)
 
     auth_lockout_strike_ttl_display.short_description = _("Escalation memory readable")
+
+    def admin_mfa_idle_timeout_display(self, obj):
+        if not obj:
+            return "-"
+        return format_admin_duration_with_seconds(obj.admin_mfa_idle_timeout_seconds)
+
+    admin_mfa_idle_timeout_display.short_description = _("Admin MFA idle timeout readable")
 
     def has_add_permission(self, request):
         # Only superusers may create the singleton, and only if it does not already exist.

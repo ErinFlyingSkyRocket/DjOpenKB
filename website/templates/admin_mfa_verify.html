@@ -1,0 +1,114 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% trans "Admin MFA verification" %}</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .admin-mfa-card {
+            width: min(420px, calc(100% - 32px));
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+            padding: 28px;
+        }
+        h1 {
+            margin: 0 0 8px;
+            font-size: 1.45rem;
+        }
+        p {
+            margin: 0 0 18px;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        button, .secondary-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 11px 16px;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            border: 0;
+            margin-top: 16px;
+            background: #1f2937;
+            color: #ffffff;
+        }
+        .secondary-link {
+            width: calc(100% - 32px);
+            margin-top: 10px;
+            background: #eef2ff;
+            color: #1f2937;
+        }
+        .messages {
+            margin: 0 0 16px;
+            padding: 0;
+            list-style: none;
+        }
+        .messages li {
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #fff7ed;
+            color: #7c2d12;
+            border: 1px solid #fed7aa;
+        }
+    </style>
+</head>
+<body>
+    <main class="admin-mfa-card" aria-labelledby="admin-mfa-heading">
+        <h1 id="admin-mfa-heading">{% trans "Admin MFA verification" %}</h1>
+        <p>{% trans "Enter your authenticator code again to access the Django admin site." %}</p>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <label for="id_code">{% trans "Authenticator code" %}</label>
+            <input id="id_code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" required autofocus>
+            <button type="submit">{% trans "Verify and continue to admin" %}</button>
+        </form>
+
+        <a class="secondary-link" href="{% url 'home' %}">{% trans "Back to Knowledge Repository" %}</a>
+    </main>
+</body>
+</html>
