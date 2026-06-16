@@ -511,8 +511,54 @@ DIRECT_PERMISSION_FIELD_MAP = {
 }
 
 
-class UserProfileInlineForm(forms.ModelForm):
-    """Expose Knowledge Repository direct user permissions as simple checkboxes.
+class UserProfileAccountFormMixin:
+    """Validate editable account type/source combinations in Django Admin."""
+
+    def _setup_account_type_help(self):
+        if "account_type" in self.fields:
+            self.fields["account_type"].help_text = _(
+                "Choose whether this profile is a local user/admin or an LDAP user/admin. "
+                "Admin account types add the Admin Users role and become Django superusers. "
+                "Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. "
+                "Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
+            )
+        if "auth_source" in self.fields:
+            self.fields["auth_source"].help_text = _(
+                "Must match Account Type. Local User/Local Admin use Local user. "
+                "LDAP user/LDAP admin use Active Directory user. "
+                "To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
+            )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        account_type = cleaned_data.get("account_type")
+        auth_source = cleaned_data.get("auth_source")
+        if not account_type or not auth_source:
+            return cleaned_data
+
+        expected_source = UserProfile.expected_auth_source_for_account_type(account_type)
+        if auth_source != expected_source:
+            if expected_source == UserProfile.AuthSource.AD:
+                self.add_error(
+                    "auth_source",
+                    _(
+                        "LDAP account types must use Active Directory user as the source. "
+                        "Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
+                    ),
+                )
+            else:
+                self.add_error(
+                    "auth_source",
+                    _(
+                        "Local account types must use Local user as the source. "
+                        "Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
+                    ),
+                )
+        return cleaned_data
+
+
+class UserProfileInlineForm(UserProfileAccountFormMixin, forms.ModelForm):
+    """Expose account recovery/source settings and direct permissions in User admin.
 
     Groups remain the standard role templates. These checkboxes add/remove only
     direct user permissions, so admins can make exceptions without creating a
@@ -553,6 +599,7 @@ class UserProfileInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._setup_account_type_help()
         user = getattr(self.instance, "user", None)
         if not user or not getattr(user, "pk", None):
             return
@@ -618,8 +665,6 @@ class UserProfileInline(admin.StackedInline):
         ),
     )
     readonly_fields = (
-        "account_type",
-        "auth_source",
         "permission_exception_guide",
         "effective_role_group",
         "effective_permissions",
@@ -1463,8 +1508,19 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         )
 
 
+class UserProfileAdminForm(UserProfileAccountFormMixin, forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._setup_account_type_help()
+
+
 @admin.register(UserProfile)
 class UserProfileAdmin(AdminAuditMixin, admin.ModelAdmin):
+    form = UserProfileAdminForm
     list_display = (
         "user",
         "profile_account_status",
@@ -1497,7 +1553,7 @@ class UserProfileAdmin(AdminAuditMixin, admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    readonly_fields = ("profile_account_status", "account_type", "auth_source", "created_at", "updated_at")
+    readonly_fields = ("profile_account_status", "created_at", "updated_at")
     actions = ("reset_auth_lockouts_for_selected_profiles",)
 
     def profile_account_status(self, obj):

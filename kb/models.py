@@ -92,6 +92,35 @@ class UserProfile(models.Model):
     def is_ad_managed(self):
         return self.auth_source == self.AuthSource.AD
 
+    @classmethod
+    def expected_auth_source_for_account_type(cls, account_type):
+        """Return the authentication source that matches a profile account type."""
+        if account_type in {cls.AccountType.LDAP_USER, cls.AccountType.LDAP_ADMIN}:
+            return cls.AuthSource.AD
+        return cls.AuthSource.LOCAL
+
+    def clean(self):
+        """Prevent confusing local/LDAP profile combinations in Django Admin.
+
+        Local account types must use the local authentication source, while
+        LDAP account types must use the Active Directory source. This keeps
+        display labels, password handling, and Admin Users role sync aligned.
+        """
+        super().clean()
+        expected_source = self.expected_auth_source_for_account_type(self.account_type)
+        if self.auth_source != expected_source:
+            if expected_source == self.AuthSource.AD:
+                raise ValidationError({
+                    "auth_source": _(
+                        "LDAP account types must use Active Directory as the authentication source."
+                    )
+                })
+            raise ValidationError({
+                "auth_source": _(
+                    "Local account types must use Local user as the authentication source."
+                )
+            })
+
     def save(self, *args, **kwargs):
         """Keep the profile label and admin role in sync.
 
