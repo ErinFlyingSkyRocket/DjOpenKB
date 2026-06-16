@@ -42,6 +42,7 @@ from .permissions import (
     ROLE_GROUP_NAMES,
     ROLE_DISABLED_USER,
     ROLE_REGULAR_USER,
+    role_group_summary,
     assign_single_role_group,
     assign_default_kb_role_group,
     enforce_disabled_user_exclusive,
@@ -698,8 +699,23 @@ class UserProfileInline(admin.StackedInline):
                     "direct_can_delete_articles",
                 ),
                 "description": _(
-                    "Use Groups as the user's standard role. Tick these boxes only when this specific user needs extra permissions "
+                    "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions "
                     "outside their group. The Disabled User group overrides these direct permission add-ons."
+                ),
+            },
+        ),
+        (
+            _("Internal article permissions"),
+            {
+                "fields": (
+                    "direct_can_view_internal_articles",
+                    "direct_can_add_internal_articles",
+                    "direct_can_manage_internal_articles",
+                    "direct_can_delete_internal_articles",
+                ),
+                "description": _(
+                    "Internal roles are add-on permissions. An internal user can still view general/public articles. "
+                    "Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
                 ),
             },
         ),
@@ -754,6 +770,22 @@ class UserProfileInline(admin.StackedInline):
                 _(
                     "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
                 ),
+            ),
+            (
+                _("Internal User"),
+                _("Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."),
+            ),
+            (
+                _("Internal Article Writer"),
+                _("Add-on role. Can view public/general articles and create/edit their own internal articles."),
+            ),
+            (
+                _("Internal Article Approver"),
+                _("Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."),
+            ),
+            (
+                _("Internal Article Manager"),
+                _("Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."),
             ),
             (
                 _("Admin Users"),
@@ -814,9 +846,9 @@ class UserProfileInline(admin.StackedInline):
     def effective_role_group(self, obj):
         if not obj or not getattr(obj, "user_id", None):
             return "-"
-        return highest_role_group_name(obj.user)
+        return role_group_summary(obj.user)
 
-    effective_role_group.short_description = _("Effective role group")
+    effective_role_group.short_description = _("Effective role groups")
 
     def effective_permissions(self, obj):
         if not obj or not getattr(obj, "user_id", None):
@@ -866,6 +898,8 @@ class GroupAdminForm(forms.ModelForm):
                 if enforce_disabled_user_exclusive(user):
                     continue
                 enforce_admin_users_exclusive(user)
+                enforce_regular_user_default_only(user)
+                assign_default_kb_role_group(user)
                 sync_user_staff_flags_from_roles(user)
 
 
@@ -1148,6 +1182,10 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             (_("Article Writer"), _("Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required.")),
             (_("Article Approver"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required.")),
             (_("Article Manager"), _("Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required.")),
+            (_("Internal User"), _("Add-on role. Can view public/general articles plus internal articles.")),
+            (_("Internal Article Writer"), _("Add-on role. Can create/edit own internal articles and view public/general articles.")),
+            (_("Internal Article Approver"), _("Add-on role. Can review internal pending articles/updates and view public/general articles.")),
+            (_("Internal Article Manager"), _("Add-on role. Can create/manage/delete internal articles and view public/general articles.")),
             (_("Admin Users"), _("Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin.")),
         )
         return format_html(
@@ -1165,8 +1203,8 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             ),
             _(
                 "The Active checkbox controls whether the account can sign in at all. "
-                "Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, or Manager is assigned. "
-                "Custom non-role groups can still be used later for notifications or department grouping."
+                "Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. "
+                "Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
             ),
         )
 
@@ -1275,9 +1313,9 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
     account_status_display.short_description = _("Account Status")
 
     def djopenkb_role_group(self, obj):
-        return highest_role_group_name(obj)
+        return role_group_summary(obj)
 
-    djopenkb_role_group.short_description = _("Knowledge Repository Role")
+    djopenkb_role_group.short_description = _("Knowledge Repository Roles")
 
     def djopenkb_permissions(self, obj):
         return role_permissions_summary(obj)

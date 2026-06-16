@@ -215,10 +215,11 @@ def user_has_kb_permission(user, codename: str) -> bool:
 
 
 def user_can_view_articles(user) -> bool:
-    """Return True for signed-in users allowed to view internal articles.
+    """Return True for signed-in users allowed to view public/general articles.
 
-    Knowledge Repository is an internal-only wiki, so anonymous visitors must not be able to
+    Knowledge Repository is login-only, so anonymous visitors must not be able to
     view published articles or their uploaded images.
+    Internal article access is handled separately by user_can_view_internal_articles().
     """
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
@@ -365,6 +366,27 @@ def role_permissions_summary(user) -> str:
         if user_has_kb_permission(user, codename):
             labels.append(str(_(label)))
     return ", ".join(labels) if labels else str(_("No Knowledge Repository role permissions"))
+
+
+
+
+def role_group_summary(user) -> str:
+    """Return all active Knowledge Repository role groups for display.
+
+    Internal roles are add-ons, so showing only the highest-priority role can be
+    misleading. This display helper keeps the authorization logic unchanged but
+    makes admin/profile screens clearer.
+    """
+    if not getattr(user, "is_authenticated", False):
+        return ""
+    role_names = user_role_group_names(user)
+    if user_has_disabled_role(user):
+        return ROLE_DISABLED_USER
+    if role_names:
+        return ", ".join(role_names)
+    if getattr(user, "is_superuser", False):
+        return ROLE_ADMIN_USERS
+    return ROLE_REGULAR_USER
 
 
 def role_descriptions_text() -> str:

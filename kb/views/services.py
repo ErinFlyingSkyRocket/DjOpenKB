@@ -1855,8 +1855,12 @@ def get_profile_account_context(user):
     mfa_device = getattr(user, "kb_mfa_device", None)
     mfa_required = user_requires_mfa(user)
 
+    user_articles = SuggestedArticle.objects.filter(owner=user)
+
     return {
-        "total_user_article_count": SuggestedArticle.objects.filter(owner=user).count(),
+        "total_user_article_count": user_articles.count(),
+        "total_user_public_article_count": user_articles.filter(visibility=SuggestedArticle.Visibility.PUBLIC).count(),
+        "total_user_internal_article_count": user_articles.filter(visibility=SuggestedArticle.Visibility.INTERNAL).count(),
         "profile_display_name": format_profile_display_name(user),
         "user_is_ldap_managed": user_is_ldap_managed,
         "account_type_display": get_account_type_display(user),
@@ -1872,7 +1876,11 @@ def get_profile_account_context(user):
         "can_manage_internal_articles": user_can_manage_internal_articles(user),
         "can_delete_internal_articles": user_can_delete_internal_articles(user),
         "can_use_admin_tools": user_can_use_admin_tools(user),
-        "can_see_article_management": user_can_create_any_article(user) or user_can_manage_any_article(user),
+        "can_see_article_management": (
+            user_can_create_any_article(user)
+            or user_can_manage_any_article(user)
+            or user_can_view_internal_articles(user)
+        ),
         "role_permissions_summary": role_permissions_summary(user),
         "profile_preferred_language": profile.preferred_language,
         "supported_languages": settings.LANGUAGES,

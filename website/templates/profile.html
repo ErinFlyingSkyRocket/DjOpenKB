@@ -236,8 +236,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="panel-body">
                             {% if can_add_articles %}
                                 <div class="profile-account-row">
-                                    <span class="profile-account-label">{% trans "Own suggested articles" %}:</span>
-                                    <span class="profile-account-value">{{ total_user_article_count }}</span>
+                                    <span class="profile-account-label">{% trans "Own public articles" %}:</span>
+                                    <span class="profile-account-value">{{ total_user_public_article_count }}</span>
                                     <div class="profile-article-buttons">
                                         <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
                                         <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my articles" %}</a>
@@ -253,6 +253,25 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">
                                         <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
                                     </a>
+                                </div>
+                            {% endif %}
+
+                            {% if can_view_internal_articles %}
+                                {% if can_add_articles or can_manage_articles %}<hr>{% endif %}
+                                <div class="profile-admin-tools">
+                                    <div><strong>{% trans "Internal articles" %}</strong> <span class="label label-warning">{% trans "Internal" %}</span></div>
+                                    <div class="profile-muted">{% trans "Private articles are visible only to users with internal article access." %}</div>
+                                    <div class="profile-muted">{% trans "Your internal articles" %}: {{ total_user_internal_article_count }}</div>
+                                    <div class="profile-article-buttons">
+                                        <a class="btn btn-default editor_btn_action" href="{% url 'internal_articles' %}"><i class="fa fa-lock"></i> {% trans "Internal Articles" %}</a>
+                                        {% if can_add_internal_articles %}
+                                            <a class="btn btn-success editor_btn_action" href="{% url 'suggest_internal' %}"><i class="fa fa-plus"></i> {% trans "New Internal Article" %}</a>
+                                            <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_internal_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my internal articles" %}</a>
+                                        {% endif %}
+                                        {% if can_manage_internal_articles %}
+                                            <a class="btn btn-warning editor_btn_action" href="{% url 'manage_internal_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage internal pending articles" %}</a>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             {% endif %}
                         </div>
@@ -375,7 +394,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 ruleLower: function (value) { return /[a-z]/.test(value); },
                 ruleNumber: function (value) { return /[0-9]/.test(value); },
                 ruleSpecial: function (value) { return /[^A-Za-z0-9]/.test(value); },
-                rule{% trans "Username" %}: function (value) {
+                ruleUsername: function (value) {
                     const lowerValue = value.toLowerCase();
                     if (username && username.length >= 3 && lowerValue.indexOf(username) !== -1) {
                         return false;
