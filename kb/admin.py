@@ -69,7 +69,7 @@ def _set_admin_field_label(model, field_name, label, help_text=None):
 
 def _apply_admin_translation_labels():
     """Keep admin labels translatable without altering database schema."""
-    _set_admin_model_label(UserProfile, "Main Site User Profile", "Main Site User Profiles")
+    _set_admin_model_label(UserProfile, "User account profile", "User account profiles")
     _set_admin_model_label(UserMFADevice, "User MFA device", "User MFA devices")
     _set_admin_model_label(AuthActivityLog, "Authentication activity log", "Authentication activity logs")
     _set_admin_model_label(AuthLockoutPolicyStage, "Authentication lockout policy stage", "Authentication lockout policy stages")
@@ -85,7 +85,7 @@ def _apply_admin_translation_labels():
             "user": "User",
             "account_type": "Account Type",
             "auth_source": "Source",
-            "can_access_main_site": "Main Site Access",
+            "can_access_main_site": "Account Active",
             "preferred_language": "Preferred language",
             "notes": "Notes",
             "created_at": "Created at",
@@ -226,8 +226,8 @@ def _apply_admin_translation_labels():
     help_texts = {
         (UserProfile, "account_type"): "Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
         (UserProfile, "auth_source"): "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory.",
-        (UserProfile, "can_access_main_site"): "Untick this to block the user from accessing the main wiki site.",
-        (UserProfile, "preferred_language"): "Preferred language for the main wiki user interface.",
+        (UserProfile, "can_access_main_site"): "Untick this to set the account inactive. Inactive accounts cannot sign in or access Knowledge Repository.",
+        (UserProfile, "preferred_language"): "Preferred language for the Knowledge Repository user interface.",
         (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
@@ -521,7 +521,7 @@ class UserProfileInlineForm(forms.ModelForm):
         required=False,
         label=_("Can view articles"),
         help_text=_(
-            "Direct user permission. Allows the user to open the main wiki and read published articles after login. "
+            "Direct user permission. Allows the user to open Knowledge Repository and read published articles after login. "
             "It does not allow creating articles, approving articles, or using admin tools. "
             "Unticked means no direct user grant; the user may still receive this permission from their group. "
             "The Disabled User group overrides direct permission add-ons."
@@ -583,7 +583,7 @@ class UserProfileInline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (
-            _("Main site profile"),
+            _("Account status"),
             {
                 "fields": (
                     "account_type",
@@ -993,7 +993,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                 "kind": "field",
             },
             "profile_main_site_access": {
-                "label": str(_("Main site access")),
+                "label": str(_("Account active")),
                 "value": bool(profile.can_access_main_site),
                 "kind": "field",
             },
@@ -1120,11 +1120,11 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             return _("Disabled User")
 
         if profile and profile.can_access_main_site:
-            return _("Allowed")
+            return _("Active")
 
-        return _("Blocked")
+        return _("Inactive")
 
-    main_site_access.short_description = _("Main Site Access")
+    main_site_access.short_description = _("Account Status")
 
     def djopenkb_role_group(self, obj):
         return highest_role_group_name(obj)
@@ -1395,7 +1395,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                 level=messages.WARNING,
             )
 
-    @admin.action(description=_("Allow selected users to access main site"))
+    @admin.action(description=_("Set selected accounts active"))
     def allow_main_site_access(self, request, queryset):
         if not can_modify_django_admin(request):
             self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
@@ -1406,12 +1406,12 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             profile.save(update_fields=["can_access_main_site", "updated_at"])
             _log_admin_explicit_action(
                 request,
-                action_label=_("Allowed main-site access for user %(username)s") % {"username": user.get_username()},
+                action_label=_("Set account active for user %(username)s") % {"username": user.get_username()},
                 target_obj=user,
                 details={"admin_action": "allow_main_site_access"},
             )
 
-    @admin.action(description=_("Block selected users from main site"))
+    @admin.action(description=_("Set selected accounts inactive"))
     def block_main_site_access(self, request, queryset):
         if not can_modify_django_admin(request):
             self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
@@ -1422,7 +1422,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             profile.save(update_fields=["can_access_main_site", "updated_at"])
             _log_admin_explicit_action(
                 request,
-                action_label=_("Blocked main-site access for user %(username)s") % {"username": user.get_username()},
+                action_label=_("Set account inactive for user %(username)s") % {"username": user.get_username()},
                 target_obj=user,
                 details={"admin_action": "block_main_site_access"},
             )
