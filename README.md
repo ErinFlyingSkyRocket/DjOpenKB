@@ -51,7 +51,7 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 | Article Manager | Local or AD / LDAPS | Full article manager | Yes | Yes | Yes | Yes, can review pending articles and pending updates | Yes, can delete articles | No by default |
 | Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes; members are automatically synced to Django superuser/staff and must still pass network/admin guards |
 
-Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the website.
+Newly created non-admin local or AD users are automatically placed in the `Regular User` group. `Regular User` is a fallback viewer role only: if the user is assigned `Article Writer`, `Article Approver`, or `Article Manager`, the redundant `Regular User` group is automatically removed. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the website.
 
 Group membership is the baseline permission model. Normal non-admin groups can be combined where appropriate, and future non-role groups such as email notification groups can be added without changing the core role model. Direct user permission checkboxes are add-on permissions only; unticking a direct permission does not remove a permission inherited from a group.
 
@@ -72,9 +72,15 @@ Admin Users
 → local accounts become Local admin; AD/LDAP accounts become LDAP admin
 → keeps custom non-role groups, such as future notification groups
 
-Regular User / Article Writer / Article Approver / Article Manager
-→ normal role groups
-→ may be combined when needed
+Regular User
+→ fallback viewer role only
+→ auto-added only when the user has no other standard Knowledge Repository role
+→ automatically removed when Article Writer / Article Approver / Article Manager is assigned
+
+Article Writer / Article Approver / Article Manager
+→ normal elevated content roles
+→ may be combined with each other when needed
+→ already include view access, so Regular User is not required
 → local accounts stay Local user; AD/LDAP accounts stay LDAP user unless promoted to Admin Users
 ```
 

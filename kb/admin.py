@@ -39,8 +39,10 @@ from .permissions import (
     ROLE_DISABLED_USER,
     ROLE_REGULAR_USER,
     assign_single_role_group,
+    assign_default_kb_role_group,
     enforce_disabled_user_exclusive,
     enforce_admin_users_exclusive,
+    enforce_regular_user_default_only,
     highest_role_group_name,
     role_permissions_summary,
     set_user_direct_kb_permission,
@@ -1112,10 +1114,10 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
     def _default_group_guide_html(self):
         rows = (
             (_("Disabled User"), _("Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions.")),
-            (_("Regular User"), _("Can view/search published articles and vote. This is the normal default role.")),
-            (_("Article Writer"), _("Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles.")),
-            (_("Article Approver"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add or delete articles by default.")),
-            (_("Article Manager"), _("Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles.")),
+            (_("Regular User"), _("Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role.")),
+            (_("Article Writer"), _("Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required.")),
+            (_("Article Approver"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required.")),
+            (_("Article Manager"), _("Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required.")),
             (_("Admin Users"), _("Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin.")),
         )
         return format_html(
@@ -1133,6 +1135,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             ),
             _(
                 "The Active checkbox controls whether the account can sign in at all. "
+                "Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, or Manager is assigned. "
                 "Custom non-role groups can still be used later for notifications or department grouping."
             ),
         )
@@ -1215,6 +1218,8 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         if enforce_disabled_user_exclusive(user):
             return
         enforce_admin_users_exclusive(user)
+        enforce_regular_user_default_only(user)
+        assign_default_kb_role_group(user)
         sync_user_staff_flags_from_roles(user)
 
     def account_status_display(self, obj):

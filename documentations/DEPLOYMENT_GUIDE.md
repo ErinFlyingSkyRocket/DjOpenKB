@@ -790,10 +790,10 @@ Default role behaviour:
 ```text
 New normal local/AD user → Regular User group
 Disabled User          → highest precedence; removes admin/role groups, clears direct permissions, unchecks staff/superuser, and redirects to the disabled-account page
-Regular User            → view published articles and vote
-Article Writer          → create and submit articles
-Article Approver        → review/manage pending articles and pending updates
-Article Manager         → create/edit/manage articles, review approvals, and delete articles
+Regular User            → fallback viewer role; view published articles and vote
+Article Writer          → create and submit articles; includes view/vote access and removes redundant Regular User
+Article Approver        → review/manage pending articles and pending updates; includes view/vote access and removes redundant Regular User
+Article Manager         → create/edit/manage articles, review approvals, and delete articles; includes view/vote access and removes redundant Regular User
 Admin Users             → full administrator source of truth; sets staff/superuser, removes normal standard role groups, and preserves account source
 ```
 
@@ -804,7 +804,7 @@ Admin setting precedence:
 ```text
 Disabled User wins over every other standard role.
 Admin Users grants full admin/superuser access unless Disabled User is also assigned.
-Regular User / Article Writer / Article Approver / Article Manager are normal content roles and may be combined.
+Regular User is the fallback viewer role and is only auto-added when no other standard role exists. Article Writer, Article Approver, and Article Manager are elevated content roles that may be combined with each other and do not need Regular User.
 Custom future groups, such as email notification groups, are preserved.
 Django Active = whether the account can sign in at all.
 Disabled User = account retained but restricted to the disabled-account page/sign-out flow.
@@ -828,7 +828,7 @@ After deployment, test these flows once:
 ```text
 1. Incognito / anonymous request to /home/ returns 404 or forces login according to the login guard.
 2. / displays the login page.
-3. A new local or AD user lands in Regular User and can view published articles.
+3. A new local or AD user lands in Regular User when no other standard role is assigned and can view published articles.
 4. A user moved to Disabled User loses staff/superuser status, cannot use functions, and is sent to the disabled-account page.
 5. A user in Admin Users becomes staff/superuser and other normal standard role groups are removed.
 6. Removing a user from Admin Users and placing them back into a normal role removes staff/superuser status.

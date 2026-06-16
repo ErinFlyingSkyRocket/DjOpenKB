@@ -76,6 +76,9 @@ def article_detail(request, article_id):
     display_markdown = prepare_article_display_markdown(raw_markdown, article.title, article)
     html_content = render_safe_markdown(display_markdown)
 
+    can_show_dislike_count = user_can_view_dislike_counts(request.user)
+    helpful_vote_count = article.votes.filter(value=ArticleVote.VoteValue.UP).count()
+
     metadata = {
         "has_details": True,
         "type": "Article",
@@ -89,16 +92,22 @@ def article_detail(request, article_id):
         "keywords": article.keyword_list,
         "permalink": request.build_absolute_uri(article.public_url),
         "view_count": article.view_count,
-        "helpful_vote_count": article.votes.filter(value=ArticleVote.VoteValue.UP).count(),
-        "unhelpful_vote_count": article.votes.filter(value=ArticleVote.VoteValue.DOWN).count(),
-        "total_vote_count": article.votes.count(),
+        "helpful_vote_count": helpful_vote_count,
+        "unhelpful_vote_count": (
+            article.votes.filter(value=ArticleVote.VoteValue.DOWN).count()
+            if can_show_dislike_count else None
+        ),
+        "total_vote_count": (
+            article.votes.count()
+            if can_show_dislike_count else helpful_vote_count
+        ),
         "user_vote": (
             article.votes.filter(user=request.user).values_list("value", flat=True).first()
             if request.user.is_authenticated else None
         ),
         "vote_url": reverse("vote_article", kwargs={"article_id": article.pk}) if article.status == SuggestedArticle.Status.PUBLISHED else "",
         "can_vote": user_can_vote_articles(request.user) and article.status == SuggestedArticle.Status.PUBLISHED,
-        "show_dislike_count": user_can_view_dislike_counts(request.user),
+        "show_dislike_count": can_show_dislike_count,
         "login_url": f'{reverse("login")}?next={request.get_full_path()}',
         "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
         "can_delete": request.user.is_authenticated and user_can_delete_article(request.user, article),

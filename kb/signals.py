@@ -1,5 +1,6 @@
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.db.models.signals import m2m_changed, post_migrate, post_save
 from django.dispatch import receiver
 
@@ -65,8 +66,10 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
     """Update staff/default-role state when Knowledge Repository group membership changes.
 
     The signal can be fired from the User side (user.groups.add/remove) or from
-    the Group side (group.user_set.add/remove). Handle both so Admin Users group
-    membership keeps Django staff access in sync no matter where it is edited.
+    the Group side (group.user_set.add/remove). Handle both so role membership
+    stays normalised after the full transaction completes. This avoids the admin
+    form temporarily clearing groups and accidentally re-adding Regular User
+    before the selected Writer/Approver/Manager role is saved.
     """
     if action not in {"post_add", "post_remove", "post_clear"}:
         return
@@ -74,23 +77,35 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
     try:
         from django.contrib.auth.models import Group
 
-        from .permissions import assign_default_kb_role_group, enforce_admin_users_exclusive, enforce_disabled_user_exclusive, sync_user_staff_flags_from_roles
+        from .permissions import (
+            assign_default_kb_role_group,
+            enforce_admin_users_exclusive,
+            enforce_disabled_user_exclusive,
+            enforce_regular_user_default_only,
+            sync_user_staff_flags_from_roles,
+        )
 
         UserModel = get_user_model()
-        users = []
+        user_ids = []
 
         if isinstance(instance, UserModel):
-            users = [instance]
+            user_ids = [instance.pk]
         elif isinstance(instance, Group) and pk_set:
-            users = list(UserModel.objects.filter(pk__in=pk_set))
+            user_ids = list(pk_set)
 
-        for user in users:
-            if not getattr(user, "_djopenkb_syncing_role_groups", False):
-                if enforce_disabled_user_exclusive(user):
-                    continue
-                enforce_admin_users_exclusive(user)
-                assign_default_kb_role_group(user)
+        def normalise_user_roles(user_pk):
+            user = UserModel.objects.filter(pk=user_pk).first()
+            if user is None or getattr(user, "_djopenkb_syncing_role_groups", False):
+                return
+            if enforce_disabled_user_exclusive(user):
+                return
+            enforce_admin_users_exclusive(user)
+            enforce_regular_user_default_only(user)
+            assign_default_kb_role_group(user)
             sync_user_staff_flags_from_roles(user)
+
+        for user_id in user_ids:
+            transaction.on_commit(lambda pk=user_id: normalise_user_roles(pk))
     except Exception:
         pass
 

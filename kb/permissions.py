@@ -56,6 +56,13 @@ ROLE_ACCESS_GROUP_NAMES = (
     ROLE_ADMIN_USERS,
 )
 
+ROLE_ELEVATED_GROUP_NAMES = (
+    ROLE_ARTICLE_WRITER,
+    ROLE_ARTICLE_APPROVER,
+    ROLE_ARTICLE_MANAGER,
+    ROLE_ADMIN_USERS,
+)
+
 ROLE_DEFINITIONS = {
     ROLE_DISABLED_USER: {
         "description": _(
@@ -65,25 +72,25 @@ ROLE_DEFINITIONS = {
     },
     ROLE_REGULAR_USER: {
         "description": _(
-            "View-only account. Can view published articles after sign-in, but cannot create, edit, review, or use admin tools."
+            "Fallback viewer account. Can view published articles after sign-in, but cannot create, edit, review, or use admin tools. Automatically removed when Article Writer, Article Approver, or Article Manager is assigned."
         ),
         "permissions": (PERM_VIEW_ARTICLES,),
     },
     ROLE_ARTICLE_WRITER: {
         "description": _(
-            "Article contributor. Can create articles, save drafts, submit for approval, and manage their own article drafts/updates."
+            "Article contributor. Can view articles, create articles, save drafts, submit for approval, and manage their own article drafts/updates. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES),
     },
     ROLE_ARTICLE_APPROVER: {
         "description": _(
-            "Article approver. Can review, edit during review, approve, and reject pending articles/updates, but cannot create new articles or delete articles by default."
+            "Article approver. Can view articles, review, edit during review, approve, and reject pending articles/updates, but cannot create new articles or delete articles by default. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_MANAGE_ARTICLES),
     },
     ROLE_ARTICLE_MANAGER: {
         "description": _(
-            "Article manager. Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
+            "Article manager. Can view articles, create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES, PERM_MANAGE_ARTICLES, PERM_DELETE_ARTICLES),
     },
@@ -200,8 +207,22 @@ def user_can_vote_articles(user) -> bool:
 
 
 def user_can_view_dislike_counts(user) -> bool:
-    """Only article managers and admins can see down-vote/dislike counts."""
-    return bool(user_can_manage_articles(user) or user_can_use_admin_tools(user))
+    """Only Article Manager and Admin Users accounts can see dislike counts.
+
+    Article Approver can review pending articles, but dislike totals are kept
+    private from approvers and normal users. Disabled User always loses access,
+    even if the account still has older direct permissions or stale groups.
+    """
+    if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
+        return False
+    if user_has_disabled_role(user):
+        return False
+    if user_can_use_admin_tools(user):
+        return True
+    try:
+        return user.groups.filter(name=ROLE_ARTICLE_MANAGER).exists()
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
 
 
 def user_can_use_admin_tools(user) -> bool:
@@ -276,8 +297,8 @@ def role_descriptions_html() -> str:
             ((name, definition["description"]) for name, definition in ROLE_DEFINITIONS.items()),
         ),
         _(
-            "Groups provide the standard role template. Direct user permissions can still be ticked for custom combinations. "
-            "Django evaluates group permissions and direct user permissions together."
+            "Regular User is the fallback viewer role and is removed when Writer, Approver, or Manager is assigned. "
+            "Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
         ),
     )
 
@@ -423,6 +444,37 @@ def sync_user_profile_type_from_roles(user):
         return
 
 
+def enforce_regular_user_default_only(user):
+    """Keep Regular User as the fallback role, not a redundant extra role.
+
+    A user may still combine elevated standard roles such as Article Writer and
+    Article Approver/Manager, and may also keep custom non-role groups for
+    future features such as notifications. Regular User is automatically removed
+    once a higher Knowledge Repository role is present. It is added back only
+    when the account has no standard Knowledge Repository role at all.
+    """
+    if not getattr(user, "pk", None):
+        return False
+
+    try:
+        if user.groups.filter(name=ROLE_DISABLED_USER).exists():
+            return False
+        if not user.groups.filter(name=ROLE_REGULAR_USER).exists():
+            return False
+        if not user.groups.filter(name__in=ROLE_ELEVATED_GROUP_NAMES).exists():
+            return False
+
+        previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
+        user._djopenkb_syncing_role_groups = True
+        try:
+            user.groups.remove(*Group.objects.filter(name=ROLE_REGULAR_USER))
+        finally:
+            user._djopenkb_syncing_role_groups = previous_syncing
+        return True
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
+
+
 def enforce_admin_users_exclusive(user):
     """Make Admin Users exclusive among Knowledge Repository role groups.
 
@@ -542,7 +594,10 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
                 )
             )
         else:
-            user.groups.remove(*Group.objects.filter(name__in=(ROLE_DISABLED_USER, ROLE_ADMIN_USERS)))
+            groups_to_remove = [ROLE_DISABLED_USER, ROLE_ADMIN_USERS]
+            if role_name in {ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER}:
+                groups_to_remove.append(ROLE_REGULAR_USER)
+            user.groups.remove(*Group.objects.filter(name__in=groups_to_remove))
         user.groups.add(role_group)
     finally:
         user._djopenkb_syncing_role_groups = previous_syncing
@@ -590,6 +645,8 @@ def assign_default_kb_role_group(user):
         if enforce_admin_users_exclusive(user):
             sync_user_staff_flags_from_roles(user)
             return
+
+        enforce_regular_user_default_only(user)
 
         existing_role_groups = user.groups.filter(name__in=ROLE_GROUP_NAMES)
         if existing_role_groups.exists():
