@@ -360,7 +360,13 @@ def find_related_openkb_articles(question, limit=5, minimum_score=None, user=Non
         if not key or key in seen_keys:
             continue
 
-        if int(item.get("search_score") or 0) < int(minimum_score):
+        # Newer title/keyword search returns already-filtered article cards and
+        # intentionally does not attach a numeric search_score. Older callers may
+        # still provide search_score, so only enforce the threshold when a score
+        # is actually present. Without this guard, all related article fallback
+        # results are filtered out because missing scores become 0.
+        score = item.get("search_score")
+        if score is not None and int(score or 0) < int(minimum_score):
             continue
 
         seen_keys.add(key)

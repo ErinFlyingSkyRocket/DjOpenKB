@@ -9,10 +9,10 @@ def _openkb_ai_user_context(request):
     }
 
 
-def _article_recommendation_response(question, related_articles=None, status=200):
+def _article_recommendation_response(question, related_articles=None, status=200, user=None):
     """Return a fallback chat response based on local published articles only."""
     if related_articles is None:
-        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
+        related_articles = find_related_openkb_articles(question, limit=5, user=user)
 
     return JsonResponse(
         {
