@@ -552,6 +552,24 @@ class ForceLoginAndAdminGuardMiddleware:
                     raise Http404()
                 if not _admin_cidr_allowed(request):
                     raise Http404()
+
+                # Defence-in-depth: /admin/ must not be reachable unless the
+                # separate admin MFA step-up session is already valid. The
+                # dedicated admin MFA verification URL is exempted so admins can
+                # actually complete the challenge. This check backs up
+                # AdminMFASessionMiddleware and prevents accidental bypass if
+                # middleware order changes later.
+                try:
+                    admin_mfa_path = reverse("admin_mfa_verify")
+                    if path != admin_mfa_path and not path.startswith(admin_mfa_path + "/"):
+                        from .admin_security import admin_mfa_is_verified
+
+                        if not admin_mfa_is_verified(request, user):
+                            from urllib.parse import urlencode
+
+                            return redirect(f"{admin_mfa_path}?{urlencode({'next': request.get_full_path()})}")
+                except NoReverseMatch:
+                    pass
             return self.get_response(request)
 
         # Anonymous users should not be able to enumerate application URLs.

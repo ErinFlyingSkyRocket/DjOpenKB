@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
@@ -33,6 +34,7 @@ ADMIN_MFA_VERIFIED_KEY = "knowledge_repo_admin_mfa_verified"
 ADMIN_MFA_USER_ID_KEY = "knowledge_repo_admin_mfa_user_id"
 ADMIN_MFA_VERIFIED_AT_KEY = "knowledge_repo_admin_mfa_verified_at"
 ADMIN_MFA_LAST_ACTIVITY_AT_KEY = "knowledge_repo_admin_mfa_last_activity_at"
+ADMIN_MFA_FORCE_PARAM = "fresh"
 
 
 def _now_ts() -> int:
@@ -138,12 +140,20 @@ def admin_mfa_verify(request):
     """Require a fresh TOTP check before entering Django Admin."""
     user = getattr(request, "user", None)
     if not _is_admin_user(user):
-        # ForceLoginAndAdminGuard normally prevents this from being reachable.
-        # Keep a safe fallback for direct calls or unusual middleware ordering.
-        messages.error(request, _("You do not have permission to access the admin site."))
-        return redirect("home")
+        # Do not expose the admin MFA form to non-admin users.
+        # ForceLoginAndAdminGuard normally handles this first; keep this
+        # fallback for direct calls or unusual middleware ordering.
+        raise Http404()
 
     next_url = _safe_next_url(request)
+
+    # A fresh challenge is used when entering Django Admin from the normal
+    # Knowledge Repository navbar. This makes the Admin link always ask for
+    # MFA again, even if an old admin-MFA flag is still present in the
+    # browser session. Direct /admin/ requests can still reuse a valid
+    # step-up token until the idle timeout or leaving-admin cleanup clears it.
+    if request.method == "GET" and request.GET.get(ADMIN_MFA_FORCE_PARAM) == "1":
+        clear_admin_mfa_session(request)
 
     if not user_requires_mfa(user):
         messages.error(request, _("Admin access requires an active MFA-protected account."))

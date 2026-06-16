@@ -36,7 +36,7 @@
                         </li>
                     {% endif %}
                     {% if user|can_use_admin_tools %}
-                        <li><a href="{% url 'admin_mfa_verify' %}?next=/admin/">{% trans "Admin" %}</a></li>
+                        <li><a href="{% url 'admin_mfa_verify' %}?next=/admin/&fresh=1">{% trans "Admin" %}</a></li>
                     {% endif %}
                     {% include "_language_selector.html" %}
                     <li class="dropdown">
