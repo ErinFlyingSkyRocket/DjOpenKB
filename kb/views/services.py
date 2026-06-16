@@ -197,11 +197,12 @@ def user_can_review_articles(user):
 
 
 def user_can_manage_article(user, article):
-    """Return True when a user may edit/delete/review this article.
+    """Return True when a user may edit or review this article.
 
-    Writers may manage only their own articles. Article Managers and Admin
-    Users may manage articles that are in an approval/review workflow. Admin
-    Users may manage all articles.
+    Writers may edit only their own articles. Article Managers may review/edit
+    articles that are in an approval/review workflow. Admin Users may manage all
+    articles. Deletion uses ``user_can_delete_article`` because reviewers should
+    not automatically be able to delete other users' submissions.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -219,6 +220,21 @@ def user_can_manage_article(user, article):
         )
 
     return False
+
+
+def user_can_delete_article(user, article):
+    """Return True when a user may delete an article.
+
+    Admin Users may delete any article. Article owners with writer permission may
+    delete their own articles. Article Managers can review/edit/approve/reject
+    pending items, but cannot delete other users' articles unless they are also
+    Admin Users.
+    """
+    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+    if user_can_use_admin_tools(user):
+        return True
+    return bool(article.owner_id == user.pk and user_can_add_articles(user))
 
 
 def user_owns_article(user, article):
@@ -249,26 +265,31 @@ def allowed_article_edit_actions_for(user, article):
     """Return the exact form actions allowed for this user/article state.
 
     This protects the edit endpoint from forged POST actions. Templates hide
-    buttons, but the view must still enforce the server-side rule.
+    buttons, but the view must still enforce the server-side rule. If a user has
+    both Article Writer and Article Manager, owner/writer actions are preserved
+    for the user's own articles instead of being swallowed by the manager role.
     """
     if not user_can_manage_article(user, article):
         return set()
 
-    if user_can_manage_articles(user):
-        # Article Managers and Admin Users review through the status dropdown
-        # and Save button. Managers reach this view from Manage pending articles.
+    if user_can_use_admin_tools(user):
         return {"save", ""}
 
-    if not user_owns_article(user, article) or not user_can_add_articles(user):
-        return set()
+    if user_owns_article(user, article) and user_can_add_articles(user):
+        if article.status == SuggestedArticle.Status.PUBLISHED:
+            # Owners cannot overwrite a published article directly. They may save a
+            # private update draft, submit it for approval, or discard it.
+            return {"save_update_draft", "submit_update", "revert_published"}
 
-    if article.status == SuggestedArticle.Status.PUBLISHED:
-        # Owners cannot overwrite a published article directly. They may save a
-        # private update draft, submit it for approval, or discard it.
-        return {"save_update_draft", "submit_update", "revert_published"}
+        # Draft/failed articles can be kept as draft or submitted for approval.
+        return {"draft", "submit"}
 
-    # Draft/failed articles can be kept as draft or submitted for approval.
-    return {"draft", "submit"}
+    if user_can_manage_articles(user):
+        # Article Managers review through the status dropdown and Save button.
+        # Managers reach this view from Manage pending articles.
+        return {"save", ""}
+
+    return set()
 
 
 def validate_article_edit_action(user, article, submit_action):
@@ -1440,7 +1461,11 @@ def get_user_profile(user):
         UserProfile.AccountType.ADMIN,
         UserProfile.AccountType.LDAP_ADMIN,
     }:
-        profile.account_type = UserProfile.AccountType.ADMIN
+        profile.account_type = (
+            UserProfile.AccountType.LDAP_ADMIN
+            if profile.auth_source == UserProfile.AuthSource.AD
+            else UserProfile.AccountType.ADMIN
+        )
         profile.save(update_fields=["account_type", "updated_at"])
 
     return profile

@@ -101,6 +101,7 @@ def article_detail(request, article_id):
         "show_dislike_count": user_can_view_dislike_counts(request.user),
         "login_url": f'{reverse("login")}?next={request.get_full_path()}',
         "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
+        "can_delete": request.user.is_authenticated and user_can_delete_article(request.user, article),
         "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),
         "delete_url": reverse("delete_suggestion", kwargs={"article_id": article.pk}),
     }

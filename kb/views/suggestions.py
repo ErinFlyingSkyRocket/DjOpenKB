@@ -541,7 +541,8 @@ def edit_suggestion(request, article_id):
 def delete_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
-    require_article_manager(request.user, article)
+    if not user_can_delete_article(request.user, article):
+        raise Http404("Article not found")
 
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
