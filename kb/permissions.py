@@ -379,25 +379,22 @@ def sync_user_profile_type_from_roles(user):
         update_fields = []
         if has_disabled_role:
             target_type = _profile_user_type_for_auth_source(profile)
-            if profile.account_type != target_type:
-                profile.account_type = target_type
-                update_fields.append("account_type")
-            if profile.can_access_main_site:
-                profile.can_access_main_site = False
-                update_fields.append("can_access_main_site")
         elif has_admin_group:
             target_type = _profile_admin_type_for_auth_source(profile)
-            if profile.account_type != target_type:
-                profile.account_type = target_type
-                update_fields.append("account_type")
-            if not profile.can_access_main_site:
-                profile.can_access_main_site = True
-                update_fields.append("can_access_main_site")
         else:
             target_type = _profile_user_type_for_auth_source(profile)
-            if profile.account_type != target_type:
-                profile.account_type = target_type
-                update_fields.append("account_type")
+
+        if profile.account_type != target_type:
+            profile.account_type = target_type
+            update_fields.append("account_type")
+
+        # ``can_access_main_site`` is kept as a legacy compatibility field only.
+        # The built-in User.is_active flag controls whether an account can sign in,
+        # while the Disabled User group controls the clean disabled-account page.
+        # Keep the legacy flag enabled so it cannot accidentally block the newer flow.
+        if not profile.can_access_main_site:
+            profile.can_access_main_site = True
+            update_fields.append("can_access_main_site")
 
         if update_fields:
             update_fields.append("updated_at")
@@ -444,13 +441,14 @@ def enforce_admin_users_exclusive(user):
 
 
 def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
-    """Make Disabled User a hard no-access override without forcing one role normally.
+    """Make Disabled User the highest-precedence no-access role.
 
-    Non-disabled users may belong to multiple groups for future combinations such
-    as article permissions plus notification groups. When the Disabled User role
-    is assigned, it must be exclusive among Knowledge Repository role groups and direct
-    Knowledge Repository permissions must be cleared so the user cannot regain access through
-    an old override.
+    Non-disabled users may belong to multiple normal/custom groups for future
+    combinations such as article permissions plus notification groups. When the
+    Disabled User role is assigned, it wins over every other Knowledge Repository
+    access role, removes direct Knowledge Repository permission overrides, and
+    immediately clears Django Admin flags so even an admin account becomes non-
+    staff/non-superuser.
 
     Existing browser sessions are intentionally not deleted here. Keeping the
     session until the next request lets DisabledUserLogoutMiddleware identify the
@@ -468,13 +466,26 @@ def enforce_disabled_user_exclusive(user, *, clear_sessions: bool = False):
         previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
         user._djopenkb_syncing_role_groups = True
         try:
+            # Disabled User must be exclusive against the normal access roles,
+            # including Admin Users. Custom non-role groups are left untouched.
             user.groups.remove(*Group.objects.filter(name__in=ROLE_ACCESS_GROUP_NAMES))
         finally:
             user._djopenkb_syncing_role_groups = previous_syncing
 
         kb_perms = Permission.objects.filter(content_type__app_label="kb")
         user.user_permissions.remove(*kb_perms)
-        sync_user_staff_flags_from_roles(user)
+
+        update_fields = []
+        if user.is_staff:
+            user.is_staff = False
+            update_fields.append("is_staff")
+        if user.is_superuser:
+            user.is_superuser = False
+            update_fields.append("is_superuser")
+        if update_fields:
+            user.save(update_fields=update_fields)
+
+        sync_user_profile_type_from_roles(user)
 
         # Do not clear sessions here. DisabledUserLogoutMiddleware handles the
         # next request and redirects the affected browser to /account-disabled/.
@@ -527,7 +538,7 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         from .models import UserProfile
 
         profile, _created = UserProfile.objects.get_or_create(user=user)
-        if role_name != ROLE_DISABLED_USER and not profile.can_access_main_site:
+        if not profile.can_access_main_site:
             profile.can_access_main_site = True
             _save_profile_without_role_side_effects(profile, update_fields=["can_access_main_site", "updated_at"])
     except (DatabaseError, OperationalError, ProgrammingError):

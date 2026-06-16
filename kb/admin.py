@@ -30,6 +30,8 @@ from .permissions import (
     PERM_VIEW_ARTICLES,
     PERMISSION_LABELS,
     ROLE_ADMIN_USERS,
+    ROLE_ARTICLE_MANAGER,
+    ROLE_ARTICLE_WRITER,
     ROLE_DEFINITIONS,
     ROLE_GROUP_NAMES,
     ROLE_DISABLED_USER,
@@ -69,7 +71,7 @@ def _set_admin_field_label(model, field_name, label, help_text=None):
 
 def _apply_admin_translation_labels():
     """Keep admin labels translatable without altering database schema."""
-    _set_admin_model_label(UserProfile, "User account profile", "User account profiles")
+    _set_admin_model_label(UserProfile, "Main Site User Profile", "Main Site User Profiles")
     _set_admin_model_label(UserMFADevice, "User MFA device", "User MFA devices")
     _set_admin_model_label(AuthActivityLog, "Authentication activity log", "Authentication activity logs")
     _set_admin_model_label(AuthLockoutPolicyStage, "Authentication lockout policy stage", "Authentication lockout policy stages")
@@ -85,7 +87,7 @@ def _apply_admin_translation_labels():
             "user": "User",
             "account_type": "Account Type",
             "auth_source": "Source",
-            "can_access_main_site": "Account Active",
+            "can_access_main_site": "Legacy main-site access",
             "preferred_language": "Preferred language",
             "notes": "Notes",
             "created_at": "Created at",
@@ -226,8 +228,8 @@ def _apply_admin_translation_labels():
     help_texts = {
         (UserProfile, "account_type"): "Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
         (UserProfile, "auth_source"): "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory.",
-        (UserProfile, "can_access_main_site"): "Untick this to set the account inactive. Inactive accounts cannot sign in or access Knowledge Repository.",
-        (UserProfile, "preferred_language"): "Preferred language for the Knowledge Repository user interface.",
+        (UserProfile, "can_access_main_site"): "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in.",
+        (UserProfile, "preferred_language"): "Preferred language for the main wiki user interface.",
         (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
@@ -521,7 +523,7 @@ class UserProfileInlineForm(forms.ModelForm):
         required=False,
         label=_("Can view articles"),
         help_text=_(
-            "Direct user permission. Allows the user to open Knowledge Repository and read published articles after login. "
+            "Direct user permission. Allows the user to open the main wiki and read published articles after login. "
             "It does not allow creating articles, approving articles, or using admin tools. "
             "Unticked means no direct user grant; the user may still receive this permission from their group. "
             "The Disabled User group overrides direct permission add-ons."
@@ -583,12 +585,11 @@ class UserProfileInline(admin.StackedInline):
     extra = 0
     fieldsets = (
         (
-            _("Account status"),
+            _("Main site profile"),
             {
                 "fields": (
                     "account_type",
                     "auth_source",
-                    "can_access_main_site",
                     "preferred_language",
                     "notes",
                 )
@@ -617,6 +618,8 @@ class UserProfileInline(admin.StackedInline):
         ),
     )
     readonly_fields = (
+        "account_type",
+        "auth_source",
         "permission_exception_guide",
         "effective_role_group",
         "effective_permissions",
@@ -932,9 +935,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         "is_active",
         "is_staff",
         "is_superuser",
-        "main_site_account_type",
-        "main_site_auth_source",
-        "main_site_access",
+        "account_status_display",
         "djopenkb_role_group",
         "djopenkb_permissions",
         "mfa_status_display",
@@ -945,7 +946,6 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         "is_superuser",
         "kb_profile__account_type",
         "kb_profile__auth_source",
-        "kb_profile__can_access_main_site",
         "kb_mfa_device__confirmed",
     )
     search_fields = (
@@ -956,12 +956,10 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
     )
     actions = (
         "set_selected_users_disabled",
-        "allow_main_site_access",
-        "block_main_site_access",
-        "make_django_user",
-        "make_django_admin",
-        "make_ldap_user",
-        "make_ldap_admin",
+        "set_selected_users_regular",
+        "set_selected_users_writer",
+        "set_selected_users_manager",
+        "set_selected_users_admin",
         "reset_mfa_for_selected_users",
         "reset_auth_lockouts_for_selected_users",
     )
@@ -992,9 +990,9 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                 "value": profile.get_auth_source_display(),
                 "kind": "field",
             },
-            "profile_main_site_access": {
-                "label": str(_("Account active")),
-                "value": bool(profile.can_access_main_site),
+            "profile_account_status": {
+                "label": str(_("Account status")),
+                "value": str(self.account_status_display(obj)),
                 "kind": "field",
             },
             "profile_preferred_language": {
@@ -1094,23 +1092,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         enforce_admin_users_exclusive(user)
         sync_user_staff_flags_from_roles(user)
 
-    def main_site_account_type(self, obj):
-        profile = getattr(obj, "kb_profile", None)
-        if not profile:
-            return "-"
-        return profile.get_account_type_display()
-
-    main_site_account_type.short_description = _("Account Type")
-
-    def main_site_auth_source(self, obj):
-        profile = getattr(obj, "kb_profile", None)
-        if not profile:
-            return "-"
-        return profile.get_auth_source_display()
-
-    main_site_auth_source.short_description = _("Source")
-
-    def main_site_access(self, obj):
+    def account_status_display(self, obj):
         profile = getattr(obj, "kb_profile", None)
 
         if not obj.is_active:
@@ -1119,12 +1101,18 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         if user_has_disabled_role(obj):
             return _("Disabled User")
 
-        if profile and profile.can_access_main_site:
-            return _("Active")
+        is_ldap = bool(profile and profile.auth_source == UserProfile.AuthSource.AD)
+        is_admin = obj.groups.filter(name=ROLE_ADMIN_USERS).exists()
 
-        return _("Inactive")
+        if is_admin and is_ldap:
+            return _("LDAP admin")
+        if is_admin:
+            return _("Local admin")
+        if is_ldap:
+            return _("LDAP user")
+        return _("Local user")
 
-    main_site_access.short_description = _("Account Status")
+    account_status_display.short_description = _("Account Status")
 
     def djopenkb_role_group(self, obj):
         return highest_role_group_name(obj)
@@ -1356,11 +1344,8 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             self.message_user(request, _("You do not have permission to assign Disabled User."), level=messages.ERROR)
             return
         count = 0
-        skipped_self = 0
+        disabled_self = False
         for user in queryset:
-            if request.user.pk == user.pk:
-                skipped_self += 1
-                continue
             assign_single_role_group(user, ROLE_DISABLED_USER, clear_direct_permissions=True)
             enforce_disabled_user_exclusive(user)
             log_auth_event(
@@ -1381,6 +1366,8 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                 target_obj=user,
                 details={"role": ROLE_DISABLED_USER, "admin_action": "set_selected_users_disabled"},
             )
+            if request.user.pk == user.pk:
+                disabled_self = True
             count += 1
         if count:
             self.message_user(
@@ -1388,125 +1375,101 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                 _("Disabled User role assigned to %(count)d selected user(s).") % {"count": count},
                 level=messages.SUCCESS,
             )
-        if skipped_self:
+        if disabled_self:
             self.message_user(
                 request,
-                _("Your own account was skipped to reduce accidental self-lockout."),
+                _("Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."),
                 level=messages.WARNING,
             )
 
-    @admin.action(description=_("Set selected accounts active"))
-    def allow_main_site_access(self, request, queryset):
+    def _set_role_for_selected_users(self, request, queryset, role_name, *, admin_action, success_template):
         if not can_modify_django_admin(request):
             self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
             return
+
+        count = 0
         for user in queryset:
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            profile.can_access_main_site = True
-            profile.save(update_fields=["can_access_main_site", "updated_at"])
+            assign_single_role_group(
+                user,
+                role_name,
+                clear_direct_permissions=role_name in {ROLE_DISABLED_USER, ROLE_ADMIN_USERS},
+            )
+            if role_name == ROLE_DISABLED_USER:
+                enforce_disabled_user_exclusive(user)
+            elif role_name == ROLE_ADMIN_USERS:
+                enforce_admin_users_exclusive(user)
+                sync_user_staff_flags_from_roles(user)
+            else:
+                sync_user_staff_flags_from_roles(user)
+
+            role_status = self.account_status_display(user)
             _log_admin_explicit_action(
                 request,
-                action_label=_("Set account active for user %(username)s") % {"username": user.get_username()},
+                action_label=_("Set role for user %(username)s to %(role)s (%(status)s)") % {
+                    "username": user.get_username(),
+                    "role": role_name,
+                    "status": role_status,
+                },
                 target_obj=user,
-                details={"admin_action": "allow_main_site_access"},
+                details={"admin_action": admin_action, "role": role_name, "account_status": str(role_status)},
+            )
+            count += 1
+
+        if count:
+            self.message_user(
+                request,
+                success_template % {"count": count},
+                level=messages.SUCCESS,
             )
 
-    @admin.action(description=_("Set selected accounts inactive"))
-    def block_main_site_access(self, request, queryset):
-        if not can_modify_django_admin(request):
-            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
-            return
-        for user in queryset:
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            profile.can_access_main_site = False
-            profile.save(update_fields=["can_access_main_site", "updated_at"])
-            _log_admin_explicit_action(
-                request,
-                action_label=_("Set account inactive for user %(username)s") % {"username": user.get_username()},
-                target_obj=user,
-                details={"admin_action": "block_main_site_access"},
-            )
+    @admin.action(description=_("Set selected users as Regular User"))
+    def set_selected_users_regular(self, request, queryset):
+        self._set_role_for_selected_users(
+            request,
+            queryset,
+            ROLE_REGULAR_USER,
+            admin_action="set_selected_users_regular",
+            success_template=_("Regular User role assigned to %(count)d selected user(s)."),
+        )
 
-    @admin.action(description=_("Set selected users as User"))
-    def make_django_user(self, request, queryset):
-        if not can_modify_django_admin(request):
-            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
-            return
-        for user in queryset:
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            profile.account_type = UserProfile.AccountType.USER
-            profile.auth_source = UserProfile.AuthSource.LOCAL
-            profile.save(update_fields=["account_type", "auth_source", "updated_at"])
-            assign_single_role_group(user, ROLE_REGULAR_USER)
-            _log_admin_explicit_action(
-                request,
-                action_label=_("Set user %(username)s as local user") % {"username": user.get_username()},
-                target_obj=user,
-                details={"admin_action": "make_django_user"},
-            )
+    @admin.action(description=_("Set selected users as Article Writer"))
+    def set_selected_users_writer(self, request, queryset):
+        self._set_role_for_selected_users(
+            request,
+            queryset,
+            ROLE_ARTICLE_WRITER,
+            admin_action="set_selected_users_writer",
+            success_template=_("Article Writer role assigned to %(count)d selected user(s)."),
+        )
 
-    @admin.action(description=_("Set selected users as Admin"))
-    def make_django_admin(self, request, queryset):
-        if not can_modify_django_admin(request):
-            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
-            return
-        for user in queryset:
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            profile.account_type = UserProfile.AccountType.ADMIN
-            profile.auth_source = UserProfile.AuthSource.LOCAL
-            profile.save(update_fields=["account_type", "auth_source", "updated_at"])
-            assign_single_role_group(user, ROLE_ADMIN_USERS, clear_direct_permissions=True)
-            _log_admin_explicit_action(
-                request,
-                action_label=_("Set user %(username)s as local admin") % {"username": user.get_username()},
-                target_obj=user,
-                details={"admin_action": "make_django_admin"},
-            )
+    @admin.action(description=_("Set selected users as Article Manager"))
+    def set_selected_users_manager(self, request, queryset):
+        self._set_role_for_selected_users(
+            request,
+            queryset,
+            ROLE_ARTICLE_MANAGER,
+            admin_action="set_selected_users_manager",
+            success_template=_("Article Manager role assigned to %(count)d selected user(s)."),
+        )
 
-    @admin.action(description=_("Set selected users as LDAP user"))
-    def make_ldap_user(self, request, queryset):
-        if not can_modify_django_admin(request):
-            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
-            return
-        for user in queryset:
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            profile.account_type = UserProfile.AccountType.LDAP_USER
-            profile.auth_source = UserProfile.AuthSource.AD
-            profile.save(update_fields=["account_type", "auth_source", "updated_at"])
-            assign_single_role_group(user, ROLE_REGULAR_USER)
-            _log_admin_explicit_action(
-                request,
-                action_label=_("Set user %(username)s as LDAP user") % {"username": user.get_username()},
-                target_obj=user,
-                details={"admin_action": "make_ldap_user"},
-            )
-
-    @admin.action(description=_("Set selected users as LDAP admin"))
-    def make_ldap_admin(self, request, queryset):
-        if not can_modify_django_admin(request):
-            self.message_user(request, _("You do not have permission to modify users."), level=messages.ERROR)
-            return
-        for user in queryset:
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            profile.account_type = UserProfile.AccountType.LDAP_ADMIN
-            profile.auth_source = UserProfile.AuthSource.AD
-            profile.save(update_fields=["account_type", "auth_source", "updated_at"])
-            assign_single_role_group(user, ROLE_ADMIN_USERS, clear_direct_permissions=True)
-            _log_admin_explicit_action(
-                request,
-                action_label=_("Set user %(username)s as LDAP admin") % {"username": user.get_username()},
-                target_obj=user,
-                details={"admin_action": "make_ldap_admin"},
-            )
+    @admin.action(description=_("Set selected users as Admin Users"))
+    def set_selected_users_admin(self, request, queryset):
+        self._set_role_for_selected_users(
+            request,
+            queryset,
+            ROLE_ADMIN_USERS,
+            admin_action="set_selected_users_admin",
+            success_template=_("Admin Users role assigned to %(count)d selected user(s)."),
+        )
 
 
 @admin.register(UserProfile)
 class UserProfileAdmin(AdminAuditMixin, admin.ModelAdmin):
     list_display = (
         "user",
+        "profile_account_status",
         "account_type",
         "auth_source",
-        "can_access_main_site",
         "preferred_language",
         "created_at",
         "updated_at",
@@ -1514,7 +1477,6 @@ class UserProfileAdmin(AdminAuditMixin, admin.ModelAdmin):
     list_filter = (
         "account_type",
         "auth_source",
-        "can_access_main_site",
         "preferred_language",
         "created_at",
         "updated_at",
@@ -1527,16 +1489,23 @@ class UserProfileAdmin(AdminAuditMixin, admin.ModelAdmin):
     )
     fields = (
         "user",
+        "profile_account_status",
         "account_type",
         "auth_source",
-        "can_access_main_site",
         "preferred_language",
         "notes",
         "created_at",
         "updated_at",
     )
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("profile_account_status", "account_type", "auth_source", "created_at", "updated_at")
     actions = ("reset_auth_lockouts_for_selected_profiles",)
+
+    def profile_account_status(self, obj):
+        if not obj or not getattr(obj, "user_id", None):
+            return "-"
+        return UserAdmin.account_status_display(self, obj.user)
+
+    profile_account_status.short_description = _("Account Status")
 
     @admin.action(description=_("Reset password/MFA lockout for selected profiles"))
     def reset_auth_lockouts_for_selected_profiles(self, request, queryset):
