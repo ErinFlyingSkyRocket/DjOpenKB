@@ -144,6 +144,7 @@ def build_bulk_export_payload(articles=None):
             "title": article.title,
             "body": article.body,
             "keywords": article.keywords,
+            "visibility": article.visibility,
             "keyword_list": article.keyword_list,
             "tags": article.keyword_list,
             "status": article.status,
@@ -437,6 +438,7 @@ def import_articles_from_zip(uploaded_zip, owner):
                     "body": item.get("body") or "",
                     "keywords": get_import_keyword_value(item, "keywords", "keyword", "keyword_list", "tags"),
                     "status": item.get("status") or SuggestedArticle.Status.PUBLISHED,
+                    "visibility": normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC),
                     "filename": item.get("filename") or "",
                     "update_status": item.get("update_status") or SuggestedArticle.UpdateStatus.NONE,
                     "pending_update_title": item.get("pending_update_title") or "",
@@ -466,6 +468,7 @@ def import_articles_from_zip(uploaded_zip, owner):
                     "body": body,
                     "keywords": keywords,
                     "status": SuggestedArticle.Status.PUBLISHED,
+                    "visibility": SuggestedArticle.Visibility.PUBLIC,
                     "filename": Path(safe_name).name,
                 })
 
@@ -479,6 +482,7 @@ def import_articles_from_zip(uploaded_zip, owner):
             body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
             keywords = normalize_import_keywords(item.get("keywords"))
             status = item.get("status") or SuggestedArticle.Status.PUBLISHED
+            visibility = normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC)
             update_status = item.get("update_status") or SuggestedArticle.UpdateStatus.NONE
             pending_update_title = (item.get("pending_update_title") or "").strip()[:200]
             pending_update_body = rewrite_uploaded_file_references(item.get("pending_update_body") or "", filename_map)
@@ -515,9 +519,10 @@ def import_articles_from_zip(uploaded_zip, owner):
                     title=title,
                     body=body,
                     keywords=keywords,
+                    visibility=visibility,
                     filename=filename,
-                    wiki_path=f"sources/{filename}",
-                    raw_path=f"raw/{filename}",
+                    wiki_path=f"internal/sources/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"sources/{filename}",
+                    raw_path=f"raw/internal/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"raw/{filename}",
                     status=status,
                     image_assets=extract_article_image_filenames(body),
                     update_status=update_status,

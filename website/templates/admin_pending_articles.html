@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>{% trans "Manage pending articles" %}</title>
+    <title>{% if pending_page_title %}{{ pending_page_title }}{% else %}{% trans "Manage pending articles" %}{% endif %}</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -35,8 +35,8 @@
                 {% endfor %}
             {% endif %}
 
-            <h2>{% trans "Manage pending articles" %}</h2>
-            <p class="pending-muted">{% trans "Review new articles and pending updates before they become publicly visible." %}</p>
+            <h2>{% if pending_page_title %}{{ pending_page_title }}{% else %}{% trans "Manage pending articles" %}{% endif %}{% if is_internal_space %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h2>
+            <p class="pending-muted">{% if is_internal_space %}{% trans "Review internal articles and pending internal updates before they become visible to internal users." %}{% else %}{% trans "Review new articles and pending updates before they become publicly visible." %}{% endif %}</p>
 
             <div class="pending-summary-card">
                 <span class="pending-summary-number">{{ total_pending_article_count }}</span>
@@ -47,13 +47,13 @@
             </div>
 
             <div class="pending-toolbar">
-                <form method="get" class="form-inline">
+                <form method="get" action="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}" class="form-inline">
                     <div class="form-group">
                         <input type="text" name="q" class="form-control" placeholder="{% trans 'Search pending articles' %}" value="{{ pending_search_query|default:'' }}">
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                     {% if is_pending_search %}
-                        <a class="btn btn-default" href="{% url 'manage_pending_articles' %}">{% trans "Clear search" %}</a>
+                        <a class="btn btn-default" href="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}">{% trans "Clear search" %}</a>
                     {% endif %}
                     <a class="btn btn-default pull-right" href="{% url 'profile' %}"><i class="fa fa-arrow-left"></i> {% trans "Back to profile" %}</a>
                 </form>
@@ -87,6 +87,7 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Article title" %}</th>
+                                <th>{% trans "Visibility" %}</th>
                                 <th>{% trans "Submitted by" %}</th>
                                 <th>{% trans "Created" %}</th>
                                 <th>{% trans "Last updated" %}</th>
@@ -105,6 +106,7 @@
                                             <span class="label label-warning">{% trans "Pending approval" %}</span>
                                         {% endif %}
                                     </td>
+                                    <td>{% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}</td>
                                     <td>
                                         {{ article.author_display }}
                                         {% if article.author_email %}<br><small class="pending-muted">{{ article.author_email }}</small>{% endif %}

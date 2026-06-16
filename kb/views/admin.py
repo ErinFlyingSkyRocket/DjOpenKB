@@ -266,13 +266,18 @@ def import_articles_zip(request):
     return redirect("admin_bulk_articles")
 
 
-@article_management_required
-def manage_pending_articles(request):
+
+def _manage_pending_articles_for_visibility(request, *, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if not user_can_manage_article_visibility(request.user, visibility):
+        raise Http404("Article not found")
+
     search_query = request.GET.get("q", "").strip()
 
     article_queryset = SuggestedArticle.objects.select_related("owner").filter(
         Q(status=SuggestedArticle.Status.PENDING)
-        | Q(update_status=SuggestedArticle.UpdateStatus.PENDING)
+        | Q(update_status=SuggestedArticle.UpdateStatus.PENDING),
+        visibility=visibility,
     )
     total_pending_article_count = article_queryset.count()
 
@@ -296,6 +301,7 @@ def manage_pending_articles(request):
 
     article_queryset = article_queryset.order_by("created_at", "updated_at")
     page_obj = paginate_articles(request, article_queryset, per_page=20)
+    is_internal = visibility == SuggestedArticle.Visibility.INTERNAL
 
     return render(request, "admin_pending_articles.html", {
         "articles": page_obj.object_list,
@@ -304,7 +310,22 @@ def manage_pending_articles(request):
         "pending_result_count": article_queryset.count(),
         "total_pending_article_count": total_pending_article_count,
         "is_pending_search": bool(search_query),
+        "pending_visibility": visibility,
+        "pending_page_title": _("Manage Internal Pending Articles") if is_internal else _("Manage Pending Articles"),
+        "pending_search_action": reverse("manage_internal_pending_articles") if is_internal else reverse("manage_pending_articles"),
+        "is_internal_space": is_internal,
     })
+
+
+@article_management_required
+def manage_pending_articles(request):
+    return _manage_pending_articles_for_visibility(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+
+
+@internal_article_management_required
+def manage_internal_pending_articles(request):
+    return _manage_pending_articles_for_visibility(request, visibility=SuggestedArticle.Visibility.INTERNAL)
+
 
 @admin_tools_required
 def manage_orphan_articles(request):

@@ -25,10 +25,14 @@ from .mfa import admin_reset_user_mfa, mfa_status_label
 from .views import delete_article_files, log_activity, slugify_title, write_article_files
 from .permissions import (
     PERM_ADD_ARTICLES,
+    PERM_ADD_INTERNAL_ARTICLES,
     PERM_MANAGE_ARTICLES,
+    PERM_MANAGE_INTERNAL_ARTICLES,
     PERM_DELETE_ARTICLES,
+    PERM_DELETE_INTERNAL_ARTICLES,
     PERM_USE_ADMIN_TOOLS,
     PERM_VIEW_ARTICLES,
+    PERM_VIEW_INTERNAL_ARTICLES,
     PERMISSION_LABELS,
     ROLE_ADMIN_USERS,
     ROLE_ARTICLE_APPROVER,
@@ -165,6 +169,7 @@ def _apply_admin_translation_labels():
             "title": "Article title",
             "body": "Article body",
             "keywords": "Keywords",
+            "visibility": "Article visibility",
             "status": "Status",
             "approved_by": "Approved by",
             "approved_at": "Approved at",
@@ -514,6 +519,10 @@ DIRECT_PERMISSION_FIELD_MAP = {
     "direct_can_add_articles": PERM_ADD_ARTICLES,
     "direct_can_manage_articles": PERM_MANAGE_ARTICLES,
     "direct_can_delete_articles": PERM_DELETE_ARTICLES,
+    "direct_can_view_internal_articles": PERM_VIEW_INTERNAL_ARTICLES,
+    "direct_can_add_internal_articles": PERM_ADD_INTERNAL_ARTICLES,
+    "direct_can_manage_internal_articles": PERM_MANAGE_INTERNAL_ARTICLES,
+    "direct_can_delete_internal_articles": PERM_DELETE_INTERNAL_ARTICLES,
 }
 
 
@@ -605,6 +614,27 @@ class UserProfileInlineForm(UserProfileAccountFormMixin, forms.ModelForm):
         help_text=_(
             "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
         ),
+    )
+
+    direct_can_view_internal_articles = forms.BooleanField(
+        required=False,
+        label=_("Can view internal articles"),
+        help_text=_("Direct user permission. Allows this user to open and read internal/private published articles."),
+    )
+    direct_can_add_internal_articles = forms.BooleanField(
+        required=False,
+        label=_("Can create internal articles"),
+        help_text=_("Direct user permission. Allows this user to create and submit internal/private articles."),
+    )
+    direct_can_manage_internal_articles = forms.BooleanField(
+        required=False,
+        label=_("Can approve/manage internal articles"),
+        help_text=_("Direct user permission. Allows this user to review and manage pending internal/private articles."),
+    )
+    direct_can_delete_internal_articles = forms.BooleanField(
+        required=False,
+        label=_("Can delete internal articles"),
+        help_text=_("Direct user permission. Allows this user to delete internal/private articles."),
     )
     class Meta:
         model = UserProfile
@@ -2125,6 +2155,7 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
         "owner",
         "author_username_snapshot",
         "author_email_snapshot",
+        "visibility",
         "status",
         "update_status",
         "approved_by",
@@ -2138,7 +2169,7 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    list_filter = ("status", "update_status", "approved_by", "approved_at", "created_at", "updated_at")
+    list_filter = ("visibility", "status", "update_status", "approved_by", "approved_at", "created_at", "updated_at")
     actions = ("approve_selected_articles", "mark_selected_articles_pending_failed")
     search_fields = (
         "title",
@@ -2177,7 +2208,7 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
     )
     fieldsets = (
         (_("Article"), {
-            "fields": ("owner", "title", "body", "keywords", "status"),
+            "fields": ("owner", "visibility", "title", "body", "keywords", "status"),
         }),
         (_("Approval / review"), {
             "fields": ("approved_by", "approved_at", "review_notes", "review_notes_history"),
@@ -2230,13 +2261,13 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
                 request,
                 ActivityLog.EventType.ARTICLE_APPROVED,
                 article=article,
-                details={"source": "django_admin_bulk_action", "action": "approve_selected_articles"},
+                details={"source": "django_admin_bulk_action", "action": "approve_selected_articles", "visibility": article.visibility},
             )
             _log_admin_explicit_action(
                 request,
                 action_label=_("Approved article %(title)s from Django Admin") % {"title": article.title},
                 target_obj=article,
-                details={"admin_action": "approve_selected_articles"},
+                details={"admin_action": "approve_selected_articles", "visibility": article.visibility},
             )
 
     @admin.action(description=_("Mark selected articles as pending failed"))

@@ -245,10 +245,10 @@
     <div class="row searchBar">
         {% include "_navbar.html" %}
 <div class="">
-            <h1>{% trans "How can we help?" %}</h1>
+            <h1>{% if is_internal_space %}{% trans "Internal Knowledge Repository" %}{% else %}{% trans "How can we help?" %}{% endif %}</h1>
         </div>
 
-        <form action="{% url 'search' %}" id="search_form" method="get">
+        <form action="{{ search_action_url|default:'/search/' }}" id="search_form" method="get">
             <div class="col-md-4 col-md-offset-4 search_bar">
                 <div class="input-group">
                     <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="{% trans 'search' %}">
@@ -256,7 +256,6 @@
                         <button class="btn btn-default btn-lg" id="btn_search" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </span>
                 </div>
-                {% url 'search_article_suggestions' as search_suggestions_url %}
                 <div id="searchResult" class="hidden openkb-search-suggestions" data-suggestions-url="{{ search_suggestions_url|default:'/search/suggestions/' }}">
                     <ul class="list-group searchResultList" role="listbox" aria-label="{% trans 'Search results' %}"></ul>
                 </div>
@@ -281,7 +280,7 @@
                         <ul class="list-group">
                             {% if featured_articles %}
                                 {% for featured in featured_articles %}
-                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a></li>
+                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a>{% if featured.visibility == "internal" %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</li>
                                 {% endfor %}
                             {% else %}
                                 <li class="list-group-item">{% trans "No related articles yet." %}</li>
@@ -292,7 +291,7 @@
             </div>
 
             <div class="col-md-8 col-lg-8">
-                <h1 style="padding-bottom: 25px;padding-top: 15px;">{{ title }}</h1>
+                <h1 style="padding-bottom: 25px;padding-top: 15px;">{{ title }} {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h1>
 
                 <div class="body_text">
                     {{ content|safe }}
@@ -348,6 +347,9 @@
                     <div class="panel-heading">{% trans "Article details" %}:</div>
                     <div class="panel-body metaData">
                         <h5 class="col-sm-12 col-lg-12">
+                            <strong>{% trans "Visibility" %}:</strong> {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
+                        </h5>
+                        <h5 class="col-sm-12 col-lg-12">
                             <strong>{% trans "Published date" %}:</strong>
                             {% if metadata.published_at %}{{ metadata.published_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}
                         </h5>
@@ -389,7 +391,7 @@
                 {% if metadata.keywords %}
                     <h5 class="keywords">
                         {% for keyword in metadata.keywords %}
-                            <a href="{% url 'search' %}?q={{ keyword|urlencode }}">{{ keyword }}</a>
+                            <a href="{{ search_action_url|default:'/search/' }}?q={{ keyword|urlencode }}">{{ keyword }}</a>
                             <span class="keywordSeporator">|</span>
                         {% endfor %}
                     </h5>

@@ -106,3 +106,6 @@ docker-compose.override.yml
 *.localhost.key
 credentials.json
 token.json
+
+# Internal/private OpenKB runtime data generated from Django articles.
+openkb-data-internal/

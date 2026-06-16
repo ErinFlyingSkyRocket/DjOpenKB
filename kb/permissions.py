@@ -19,13 +19,21 @@ PERM_VIEW_ARTICLES = "can_view_articles"
 PERM_ADD_ARTICLES = "can_add_articles"
 PERM_MANAGE_ARTICLES = "can_manage_articles"
 PERM_DELETE_ARTICLES = "can_delete_articles"
+PERM_VIEW_INTERNAL_ARTICLES = "can_view_internal_articles"
+PERM_ADD_INTERNAL_ARTICLES = "can_add_internal_articles"
+PERM_MANAGE_INTERNAL_ARTICLES = "can_manage_internal_articles"
+PERM_DELETE_INTERNAL_ARTICLES = "can_delete_internal_articles"
 PERM_USE_ADMIN_TOOLS = "can_use_admin_tools"
 
 PERMISSION_LABELS = {
-    PERM_VIEW_ARTICLES: "Can view published articles",
-    PERM_ADD_ARTICLES: "Can add/submit articles for approval",
-    PERM_MANAGE_ARTICLES: "Can approve/manage pending article reviews",
-    PERM_DELETE_ARTICLES: "Can delete articles",
+    PERM_VIEW_ARTICLES: "Can view published public articles",
+    PERM_ADD_ARTICLES: "Can add/submit public articles for approval",
+    PERM_MANAGE_ARTICLES: "Can approve/manage pending public article reviews",
+    PERM_DELETE_ARTICLES: "Can delete public articles",
+    PERM_VIEW_INTERNAL_ARTICLES: "Can view internal articles",
+    PERM_ADD_INTERNAL_ARTICLES: "Can add/submit internal articles for approval",
+    PERM_MANAGE_INTERNAL_ARTICLES: "Can approve/manage pending internal article reviews",
+    PERM_DELETE_INTERNAL_ARTICLES: "Can delete internal articles",
     PERM_USE_ADMIN_TOOLS: "Can use Knowledge Repository admin tools",
 }
 
@@ -34,6 +42,10 @@ ROLE_REGULAR_USER = "Regular User"
 ROLE_ARTICLE_WRITER = "Article Writer"
 ROLE_ARTICLE_APPROVER = "Article Approver"
 ROLE_ARTICLE_MANAGER = "Article Manager"
+ROLE_INTERNAL_USER = "Internal User"
+ROLE_INTERNAL_ARTICLE_WRITER = "Internal Article Writer"
+ROLE_INTERNAL_ARTICLE_APPROVER = "Internal Article Approver"
+ROLE_INTERNAL_ARTICLE_MANAGER = "Internal Article Manager"
 ROLE_ADMIN_USERS = "Admin Users"
 
 ROLE_GROUP_NAMES = (
@@ -42,6 +54,10 @@ ROLE_GROUP_NAMES = (
     ROLE_ARTICLE_WRITER,
     ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,
+    ROLE_INTERNAL_USER,
+    ROLE_INTERNAL_ARTICLE_WRITER,
+    ROLE_INTERNAL_ARTICLE_APPROVER,
+    ROLE_INTERNAL_ARTICLE_MANAGER,
     ROLE_ADMIN_USERS,
 )
 
@@ -53,6 +69,10 @@ ROLE_ACCESS_GROUP_NAMES = (
     ROLE_ARTICLE_WRITER,
     ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,
+    ROLE_INTERNAL_USER,
+    ROLE_INTERNAL_ARTICLE_WRITER,
+    ROLE_INTERNAL_ARTICLE_APPROVER,
+    ROLE_INTERNAL_ARTICLE_MANAGER,
     ROLE_ADMIN_USERS,
 )
 
@@ -60,7 +80,17 @@ ROLE_ELEVATED_GROUP_NAMES = (
     ROLE_ARTICLE_WRITER,
     ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,
+    ROLE_INTERNAL_ARTICLE_WRITER,
+    ROLE_INTERNAL_ARTICLE_APPROVER,
+    ROLE_INTERNAL_ARTICLE_MANAGER,
     ROLE_ADMIN_USERS,
+)
+
+ROLE_INTERNAL_GROUP_NAMES = (
+    ROLE_INTERNAL_USER,
+    ROLE_INTERNAL_ARTICLE_WRITER,
+    ROLE_INTERNAL_ARTICLE_APPROVER,
+    ROLE_INTERNAL_ARTICLE_MANAGER,
 )
 
 ROLE_DEFINITIONS = {
@@ -90,9 +120,33 @@ ROLE_DEFINITIONS = {
     },
     ROLE_ARTICLE_MANAGER: {
         "description": _(
-            "Article manager. Can view articles, create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Regular User is not required."
+            "Article manager. Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates, approve/reject submissions, and delete public articles. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES, PERM_MANAGE_ARTICLES, PERM_DELETE_ARTICLES),
+    },
+    ROLE_INTERNAL_USER: {
+        "description": _(
+            "Internal viewer add-on. Can view public articles and internal articles, but cannot create or review internal articles."
+        ),
+        "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES),
+    },
+    ROLE_INTERNAL_ARTICLE_WRITER: {
+        "description": _(
+            "Internal writer add-on. Can view public/internal articles and create or maintain their own internal article drafts and submissions."
+        ),
+        "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_ADD_INTERNAL_ARTICLES),
+    },
+    ROLE_INTERNAL_ARTICLE_APPROVER: {
+        "description": _(
+            "Internal approver add-on. Can view public/internal articles and review, approve, or reject internal pending articles/updates."
+        ),
+        "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_MANAGE_INTERNAL_ARTICLES),
+    },
+    ROLE_INTERNAL_ARTICLE_MANAGER: {
+        "description": _(
+            "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject, and delete internal articles."
+        ),
+        "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_ADD_INTERNAL_ARTICLES, PERM_MANAGE_INTERNAL_ARTICLES, PERM_DELETE_INTERNAL_ARTICLES),
     },
     ROLE_ADMIN_USERS: {
         "description": _(
@@ -103,6 +157,10 @@ ROLE_DEFINITIONS = {
             PERM_ADD_ARTICLES,
             PERM_MANAGE_ARTICLES,
             PERM_DELETE_ARTICLES,
+            PERM_VIEW_INTERNAL_ARTICLES,
+            PERM_ADD_INTERNAL_ARTICLES,
+            PERM_MANAGE_INTERNAL_ARTICLES,
+            PERM_DELETE_INTERNAL_ARTICLES,
             PERM_USE_ADMIN_TOOLS,
         ),
     },
@@ -114,7 +172,11 @@ ROLE_PRIORITY = {
     ROLE_ARTICLE_WRITER: 20,
     ROLE_ARTICLE_APPROVER: 30,
     ROLE_ARTICLE_MANAGER: 40,
-    ROLE_ADMIN_USERS: 50,
+    ROLE_INTERNAL_USER: 22,
+    ROLE_INTERNAL_ARTICLE_WRITER: 32,
+    ROLE_INTERNAL_ARTICLE_APPROVER: 42,
+    ROLE_INTERNAL_ARTICLE_MANAGER: 52,
+    ROLE_ADMIN_USERS: 60,
 }
 
 
@@ -164,8 +226,11 @@ def user_can_view_articles(user) -> bool:
         return False
     return bool(
         user_has_kb_permission(user, PERM_VIEW_ARTICLES)
+        or user_has_kb_permission(user, PERM_VIEW_INTERNAL_ARTICLES)
         or user_can_add_articles(user)
         or user_can_manage_articles(user)
+        or user_can_add_internal_articles(user)
+        or user_can_manage_internal_articles(user)
         or user_can_use_admin_tools(user)
     )
 
@@ -187,6 +252,36 @@ def user_can_manage_articles(user) -> bool:
 def user_can_delete_articles(user) -> bool:
     return bool(
         user_has_kb_permission(user, PERM_DELETE_ARTICLES)
+        or user_can_use_admin_tools(user)
+    )
+
+
+def user_can_view_internal_articles(user) -> bool:
+    return bool(
+        user_has_kb_permission(user, PERM_VIEW_INTERNAL_ARTICLES)
+        or user_can_add_internal_articles(user)
+        or user_can_manage_internal_articles(user)
+        or user_can_use_admin_tools(user)
+    )
+
+
+def user_can_add_internal_articles(user) -> bool:
+    return bool(
+        user_has_kb_permission(user, PERM_ADD_INTERNAL_ARTICLES)
+        or user_can_use_admin_tools(user)
+    )
+
+
+def user_can_manage_internal_articles(user) -> bool:
+    return bool(
+        user_has_kb_permission(user, PERM_MANAGE_INTERNAL_ARTICLES)
+        or user_can_use_admin_tools(user)
+    )
+
+
+def user_can_delete_internal_articles(user) -> bool:
+    return bool(
+        user_has_kb_permission(user, PERM_DELETE_INTERNAL_ARTICLES)
         or user_can_use_admin_tools(user)
     )
 
@@ -220,7 +315,7 @@ def user_can_view_dislike_counts(user) -> bool:
     if user_can_use_admin_tools(user):
         return True
     try:
-        return user.groups.filter(name=ROLE_ARTICLE_MANAGER).exists()
+        return user.groups.filter(name__in=(ROLE_ARTICLE_MANAGER, ROLE_INTERNAL_ARTICLE_MANAGER)).exists()
     except (DatabaseError, OperationalError, ProgrammingError):
         return False
 
@@ -297,7 +392,7 @@ def role_descriptions_html() -> str:
             ((name, definition["description"]) for name, definition in ROLE_DEFINITIONS.items()),
         ),
         _(
-            "Regular User is the fallback viewer role and is removed when Writer, Approver, or Manager is assigned. "
+            "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. "
             "Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
         ),
     )
@@ -498,7 +593,7 @@ def enforce_admin_users_exclusive(user):
         try:
             user.groups.remove(
                 *Group.objects.filter(
-                    name__in=(ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER)
+                    name__in=(ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER, ROLE_INTERNAL_USER, ROLE_INTERNAL_ARTICLE_WRITER, ROLE_INTERNAL_ARTICLE_APPROVER, ROLE_INTERNAL_ARTICLE_MANAGER)
                 )
             )
         finally:
@@ -590,7 +685,7 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         elif role_name == ROLE_ADMIN_USERS:
             user.groups.remove(
                 *Group.objects.filter(
-                    name__in=(ROLE_DISABLED_USER, ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER)
+                    name__in=(ROLE_DISABLED_USER, ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER, ROLE_INTERNAL_USER, ROLE_INTERNAL_ARTICLE_WRITER, ROLE_INTERNAL_ARTICLE_APPROVER, ROLE_INTERNAL_ARTICLE_MANAGER)
                 )
             )
         else:
@@ -716,6 +811,24 @@ def require_add_articles(user):
 def require_manage_articles(user):
     if not user_can_manage_articles(user):
         raise PermissionDenied(_("You do not have permission to manage articles."))
+    return True
+
+
+def require_view_internal_articles(user):
+    if not user_can_view_internal_articles(user):
+        raise PermissionDenied(_("You do not have permission to view internal articles."))
+    return True
+
+
+def require_add_internal_articles(user):
+    if not user_can_add_internal_articles(user):
+        raise PermissionDenied(_("You do not have permission to add internal articles."))
+    return True
+
+
+def require_manage_internal_articles(user):
+    if not user_can_manage_internal_articles(user):
+        raise PermissionDenied(_("You do not have permission to manage internal articles."))
     return True
 
 

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>{% trans "Edit My Articles" %}</title>
+    <title>{% if profile_page_title %}{{ profile_page_title }}{% else %}{% trans "Edit My Articles" %}{% endif %}</title>
     <meta property="og:title" content="Edit My Articles" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -115,7 +115,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             <div class="row">
                 <div class="col-xs-12">
                     <div class="edit-page-header">
-                        <h2 class="edit-page-title">{% trans "Edit My Articles" %}</h2>
+                        <h2 class="edit-page-title">{% if profile_page_title %}{{ profile_page_title }}{% else %}{% trans "Edit My Articles" %}{% endif %}{% if is_internal_space %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h2>
                         <p class="profile-muted">{% trans "Search, edit, or delete articles you suggested in the Knowledge Repository." %}</p>
                         <div class="article-count-summary">
                             <span class="article-count-badge">{% blocktrans with count=total_user_article_count %}{{ count }} articles{% endblocktrans %}</span>
@@ -128,14 +128,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             <div class="row">
                 <div class="col-xs-12">
                     <div class="edit-actions-bar">
-                        <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
+                        <a class="btn btn-success editor_btn_action" href="{{ profile_new_article_url|default:'/suggest/' }}"><i class="fa fa-plus"></i> {% if is_internal_space %}{% trans "New internal article" %}{% else %}{% trans "New article" %}{% endif %}</a>
                         <a class="btn btn-default" href="{% url 'profile' %}"><i class="fa fa-user"></i> {% trans "Back to profile" %}</a>
                     </div>
 
                     <div class="panel panel-default profile-search-panel">
                         <div class="panel-heading"><strong>{% trans "Search suggested articles" %}</strong></div>
                         <div class="panel-body">
-                            <form method="get" action="{% url 'edit_my_suggestions' %}">
+                            <form method="get" action="{{ profile_search_action|default:'/profile/articles/' }}">
                                 <div class="input-group">
                                     <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
                                     <span class="input-group-btn">
@@ -146,7 +146,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% if is_profile_search %}
                                 <p class="profile-muted" style="margin-top: 10px;">
                                     {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
-                                    <a href="{% url 'edit_my_suggestions' %}">{% trans "Clear search" %}</a>
+                                    <a href="{{ profile_search_action|default:'/profile/articles/' }}">{% trans "Clear search" %}</a>
                                 </p>
                             {% endif %}
                         </div>
@@ -192,6 +192,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <thead>
                                             <tr>
                                                 <th>{% trans "Article title" %}</th>
+                                                <th>{% trans "Visibility" %}</th>
                                                 <th>{% trans "Status" %}</th>
                                                 <th>{% trans "Created" %}</th>
                                                 <th>{% trans "Last updated" %}</th>
@@ -207,6 +208,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                         {% else %}
                                                             {{ article.title }}
                                                         {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
                                                     </td>
                                                     <td>
                                                         {% if article.has_pending_update %}
@@ -239,10 +243,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% else %}
                                 {% if is_profile_search %}
                                     <p>{% trans "No matching suggested articles found." %}</p>
-                                    <a class="btn btn-default" href="{% url 'edit_my_suggestions' %}">{% trans "Clear search" %}</a>
+                                    <a class="btn btn-default" href="{{ profile_search_action|default:'/profile/articles/' }}">{% trans "Clear search" %}</a>
                                 {% else %}
                                     <p>{% trans "You have not suggested any articles yet." %}</p>
-                                    <a class="btn btn-success" href="{% url 'suggest' %}">{% trans "Create your first suggestion" %}</a>
+                                    <a class="btn btn-success" href="{{ profile_new_article_url|default:'/suggest/' }}">{% trans "Create your first suggestion" %}</a>
                                 {% endif %}
                             {% endif %}
 

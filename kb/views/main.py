@@ -3,9 +3,25 @@ from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
 
-@article_view_required
-def home(request):
-    all_articles = get_openkb_wiki_articles(sort_by_views=False)
+def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
+    """Render the public or internal article landing page using the same layout."""
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        all_articles = get_openkb_wiki_articles(
+            sort_by_views=False,
+            visibility=SuggestedArticle.Visibility.INTERNAL,
+            user=request.user,
+        )
+        home_heading = _("Internal Knowledge Repository")
+        search_action_url = reverse("internal_search")
+        search_suggestions_url = reverse("internal_search_article_suggestions")
+        total_label = _("internal article")
+    else:
+        all_articles = get_openkb_wiki_articles(sort_by_views=False)
+        home_heading = _("How can we help?")
+        search_action_url = reverse("search")
+        search_suggestions_url = reverse("search_article_suggestions")
+        total_label = _("article")
+
     article_limit = get_articles_per_page()
 
     active_home_tab = request.GET.get("tab") or "trending"
@@ -57,7 +73,25 @@ def home(request):
         "active_home_tab": active_home_tab,
         "article_limit": article_limit,
         "total_article_count": len(all_articles),
+        "home_heading": home_heading,
+        "search_action_url": search_action_url,
+        "search_suggestions_url": search_suggestions_url,
+        "clear_search_url": reverse("internal_articles") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("home"),
+        "article_visibility": visibility,
+        "total_article_label": total_label,
+        "is_internal_space": visibility == SuggestedArticle.Visibility.INTERNAL,
     })
+
+
+@article_view_required
+def home(request):
+    return _render_article_home(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+
+
+@internal_article_view_required
+def internal_articles(request):
+    return _render_article_home(request, visibility=SuggestedArticle.Visibility.INTERNAL)
+
 
 @main_site_login_required
 def article_detail(request, article_id):
@@ -65,7 +99,7 @@ def article_detail(request, article_id):
     article = get_object_or_404(SuggestedArticle.objects.select_related("owner"), pk=article_id)
 
     if article.status == SuggestedArticle.Status.PUBLISHED:
-        if not user_can_view_articles(request.user):
+        if not user_can_view_article(request.user, article):
             raise Http404("Article not found")
     elif not user_can_manage_article(request.user, article):
         raise Http404("Article not found")
@@ -113,6 +147,8 @@ def article_detail(request, article_id):
         "can_delete": request.user.is_authenticated and user_can_delete_article(request.user, article),
         "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),
         "delete_url": reverse("delete_suggestion", kwargs={"article_id": article.pk}),
+        "visibility": article.visibility,
+        "visibility_label": article.visibility_label,
     }
 
     current_article_context = {
@@ -122,8 +158,12 @@ def article_detail(request, article_id):
         "keywords": article.keyword_list,
         "author": article.author_display,
         "suggested_id": article.pk,
+        "visibility": article.visibility,
     }
-    featured_articles = get_contextual_related_articles(current_article_context, limit=5)
+    featured_articles = get_contextual_related_articles(current_article_context, limit=5, user=request.user)
+
+    search_action_url = reverse("internal_search") if article.is_internal else reverse("search")
+    search_suggestions_url = reverse("internal_search_article_suggestions") if article.is_internal else reverse("search_article_suggestions")
 
     return render(request, "articles.html", {
         "title": article.title,
@@ -132,6 +172,9 @@ def article_detail(request, article_id):
         "metadata": metadata,
         "featured_articles": featured_articles,
         "can_use_admin_tools": user_can_use_admin_tools(request.user),
+        "search_action_url": search_action_url,
+        "search_suggestions_url": search_suggestions_url,
+        "is_internal_space": article.is_internal,
     })
 
 
@@ -146,7 +189,7 @@ def wiki_detail(request, wiki_path):
     """
     suggested = get_article_metadata_by_wiki_path(wiki_path)
     if suggested:
-        if not user_can_view_articles(request.user):
+        if not user_can_view_article(request.user, suggested):
             raise Http404("Wiki page not found")
         return redirect(suggested.public_url)
 
@@ -163,7 +206,7 @@ def vote_article(request, article_id):
         status=SuggestedArticle.Status.PUBLISHED,
     )
 
-    if not user_can_vote_articles(request.user):
+    if not user_can_vote_articles(request.user) or not user_can_view_article(request.user, article):
         raise Http404("Article not found")
 
     vote_value = request.POST.get("vote")
@@ -187,7 +230,7 @@ def vote_article(request, article_id):
             request,
             ActivityLog.EventType.VOTE_REMOVED,
             article=article,
-            details={"removed_vote": "up" if removed_value == ArticleVote.VoteValue.UP else "down"},
+            details={"removed_vote": "up" if removed_value == ArticleVote.VoteValue.UP else "down", "visibility": article.visibility},
         )
         messages.success(request, _("Your vote has been removed."))
     elif existing_vote:
@@ -201,6 +244,7 @@ def vote_article(request, article_id):
             details={
                 "previous_vote": "up" if previous_value == ArticleVote.VoteValue.UP else "down",
                 "new_vote": "up" if value == ArticleVote.VoteValue.UP else "down",
+                "visibility": article.visibility,
             },
         )
         messages.success(request, _("Your vote has been updated."))
@@ -214,7 +258,7 @@ def vote_article(request, article_id):
             request,
             ActivityLog.EventType.VOTE_UP if value == ArticleVote.VoteValue.UP else ActivityLog.EventType.VOTE_DOWN,
             article=article,
-            details={"vote": "up" if value == ArticleVote.VoteValue.UP else "down"},
+            details={"vote": "up" if value == ArticleVote.VoteValue.UP else "down", "visibility": article.visibility},
         )
         messages.success(request, _("Thank you. Your vote has been saved."))
 
@@ -229,17 +273,14 @@ def vote_article(request, article_id):
     return redirect(next_url)
 
 
-
-@article_view_required
-def search_article_suggestions(request):
-    """Return title/keyword matches for the search dropdown."""
+def _search_article_suggestions(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
     init_openkb_storage()
 
     query = (request.GET.get("q") or "").strip()[:80]
     if len(query) < 2:
         return JsonResponse({"results": []})
 
-    matched_articles = search_public_articles_by_title_keywords(query, limit=8)
+    matched_articles = search_public_articles_by_title_keywords(query, limit=8, visibility=visibility, user=request.user)
 
     results = []
     for article in matched_articles:
@@ -250,20 +291,34 @@ def search_article_suggestions(request):
         results.append({
             "title": article.get("title") or _("Untitled article"),
             "url": url,
+            "visibility": article.get("visibility") or SuggestedArticle.Visibility.PUBLIC,
+            "visibility_label": article.get("visibility_label") or _("General article"),
         })
 
     return JsonResponse({"results": results})
 
+
 @article_view_required
-def search_articles(request):
+def search_article_suggestions(request):
+    """Return public title/keyword matches for the search dropdown."""
+    return _search_article_suggestions(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+
+
+@internal_article_view_required
+def internal_search_article_suggestions(request):
+    """Return internal title/keyword matches for the internal search dropdown."""
+    return _search_article_suggestions(request, visibility=SuggestedArticle.Visibility.INTERNAL)
+
+
+def _search_articles(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
     """Search published articles by title and keywords only."""
     init_openkb_storage()
 
     query_original = request.GET.get("q", "").strip()
     if not query_original:
-        return redirect("home")
+        return redirect("internal_articles" if visibility == SuggestedArticle.Visibility.INTERNAL else "home")
 
-    all_articles = search_public_articles_by_title_keywords(query_original)
+    all_articles = search_public_articles_by_title_keywords(query_original, visibility=visibility, user=request.user)
 
     page_obj = paginate_articles(request, all_articles, per_page=get_articles_per_page())
 
@@ -274,4 +329,20 @@ def search_articles(request):
         "search_query": query_original,
         "is_search": bool(query_original),
         "result_count": len(all_articles),
+        "home_heading": _("Internal Knowledge Repository") if visibility == SuggestedArticle.Visibility.INTERNAL else _("How can we help?"),
+        "search_action_url": reverse("internal_search") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("search"),
+        "search_suggestions_url": reverse("internal_search_article_suggestions") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("search_article_suggestions"),
+        "clear_search_url": reverse("internal_articles") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("home"),
+        "article_visibility": visibility,
+        "is_internal_space": visibility == SuggestedArticle.Visibility.INTERNAL,
     })
+
+
+@article_view_required
+def search_articles(request):
+    return _search_articles(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+
+
+@internal_article_view_required
+def internal_search_articles(request):
+    return _search_articles(request, visibility=SuggestedArticle.Visibility.INTERNAL)

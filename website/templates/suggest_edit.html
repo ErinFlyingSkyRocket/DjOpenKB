@@ -208,6 +208,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
+                    {% if article.visibility == "internal" %}<div class="alert alert-warning"><i class="fa fa-lock"></i> {% trans "Internal article" %}</div>{% endif %}
                     <div id="header row">
                         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                             <div class="form-group">

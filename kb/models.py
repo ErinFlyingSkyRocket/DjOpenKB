@@ -313,6 +313,10 @@ class SuggestedArticle(models.Model):
         PENDING = "pending", _("Pending update")
         FAILED = "failed", _("Update pending failed")
 
+    class Visibility(models.TextChoices):
+        PUBLIC = "public", _("Public article")
+        INTERNAL = "internal", _("Internal article")
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -327,6 +331,14 @@ class SuggestedArticle(models.Model):
     title = models.CharField(max_length=200)
     body = models.TextField()
     keywords = models.CharField(max_length=500, blank=True)
+    visibility = models.CharField(
+        max_length=20,
+        choices=Visibility.choices,
+        default=Visibility.PUBLIC,
+        db_index=True,
+        verbose_name=_("Article visibility"),
+        help_text=_("Public articles are visible to normal wiki users. Internal articles are visible only to users with internal article access."),
+    )
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
@@ -481,6 +493,18 @@ class SuggestedArticle(models.Model):
         if not self.pk:
             return "#"
         return reverse("article_detail", kwargs={"article_id": self.pk})
+
+    @property
+    def is_internal(self):
+        return self.visibility == self.Visibility.INTERNAL
+
+    @property
+    def is_public(self):
+        return self.visibility == self.Visibility.PUBLIC
+
+    @property
+    def visibility_label(self):
+        return self.get_visibility_display()
 
     @property
     def keyword_list(self):

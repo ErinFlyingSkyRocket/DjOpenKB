@@ -118,12 +118,14 @@ def build_search_article_card(suggested):
         "author": suggested.author_display,
         "keywords": keywords,
         "suggested_id": suggested.pk,
+        "visibility": suggested.visibility,
+        "visibility_label": suggested.visibility_label,
     }
     card["search_excerpt"] = build_keyword_search_excerpt(card)
     return card
 
 
-def search_public_articles_by_title_keywords(query, limit=None):
+def search_public_articles_by_title_keywords(query, limit=None, visibility=None, user=None):
     """Return published articles matching title/keywords only, newest first.
 
     No relevance score is calculated and the article body is not read. The
@@ -147,6 +149,16 @@ def search_public_articles_by_title_keywords(query, limit=None):
         SuggestedArticle.objects.select_related("owner")
         .filter(status=SuggestedArticle.Status.PUBLISHED)
         .filter(final_filter)
+    )
+
+    if visibility == "all":
+        if not user_can_view_internal_articles(user):
+            queryset = queryset.filter(visibility=SuggestedArticle.Visibility.PUBLIC)
+    else:
+        queryset = queryset.filter(visibility=normalize_article_visibility(visibility) if visibility else SuggestedArticle.Visibility.PUBLIC)
+
+    queryset = (
+        queryset
         .annotate(
             db_helpful_vote_count=Count(
                 "votes",
@@ -237,7 +249,7 @@ def score_article_relationship(current_article, candidate_article):
     return score
 
 
-def get_contextual_related_articles(current_article, limit=5):
+def get_contextual_related_articles(current_article, limit=5, user=None):
     """Return genuinely related article-page links.
 
     Related articles are selected mainly by shared keywords. If there are no
@@ -248,7 +260,7 @@ def get_contextual_related_articles(current_article, limit=5):
         return []
 
     candidates = []
-    for article in get_openkb_wiki_articles(sort_by_views=True):
+    for article in get_openkb_wiki_articles(sort_by_views=True, visibility="all", user=user):
         if _article_identity_matches(current_article, article):
             continue
         candidates.append(article)

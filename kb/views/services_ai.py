@@ -11,17 +11,11 @@ def get_openkb_ai_model():
     return (model or "gemini/gemini-2.5-flash").strip()
 
 
-def scrub_openkb_runtime_log_files():
-    """Remove OpenKB runtime logs from the AI-readable wiki folder.
-
-    The OpenKB CLI keeps a wiki/log.md audit file for CLI operations. Because
-    OpenKB's query agent reads from the wiki folder, that runtime log can leak
-    internal timestamps or previous query details into chatbot answers. Knowledge Repository
-    already has Django ActivityLog/AuthActivityLog for auditing, so the chat
-    knowledge base should not include OpenKB's internal runtime log.
-    """
+def scrub_openkb_runtime_log_files(data_dir=None):
+    """Remove OpenKB runtime logs from the AI-readable wiki folder."""
+    data_dir = Path(data_dir) if data_dir else settings.OPENKB_DATA_DIR
     runtime_files = [
-        settings.OPENKB_WIKI_DIR / "log.md",
+        data_dir / "wiki" / "log.md",
     ]
 
     for path in runtime_files:
@@ -31,19 +25,24 @@ def scrub_openkb_runtime_log_files():
         except OSError:
             logger.warning("Could not remove OpenKB runtime log file %s", path)
 
-
-def ensure_openkb_config_model():
-    """Keep OpenKB's local config.yaml model aligned with Django settings.
-
-    OpenKB itself reads the model from openkb-data/.openkb/config.yaml.
-    This helper makes the general OPENKB_AI_MODEL setting actually control
-    the model used by OpenKB queries without requiring a manual config edit.
-    """
+def ensure_openkb_config_model(data_dir=None):
+    """Keep OpenKB's local config.yaml model aligned with Django settings."""
     model = get_openkb_ai_model()
     if not model:
         return
 
-    config_path = settings.OPENKB_DATA_DIR / ".openkb" / "config.yaml"
+    data_dir = Path(data_dir) if data_dir else settings.OPENKB_DATA_DIR
+    config_path = data_dir / ".openkb" / "config.yaml"
+
+    if not config_path.exists() and data_dir != settings.OPENKB_DATA_DIR:
+        public_config = settings.OPENKB_DATA_DIR / ".openkb" / "config.yaml"
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        if public_config.exists():
+            try:
+                shutil.copy2(public_config, config_path)
+            except OSError:
+                return
+
     if not config_path.exists():
         return
 
@@ -63,7 +62,6 @@ def ensure_openkb_config_model():
             config_path.write_text(new_text, encoding="utf-8")
         except OSError:
             return
-
 
 
 
@@ -101,12 +99,17 @@ def release_openkb_ai_slot(lock):
         logger.exception("Failed to release OpenKB AI concurrency lock")
 
 
-def run_openkb_query(question):
-    """Call the local bundled OpenKB CLI against the synced Django OpenKB data."""
-    init_openkb_storage()
-    ensure_openkb_config_model()
-    ensure_openkb_ai_synced()
-    scrub_openkb_runtime_log_files()
+def run_openkb_query(question, *, include_internal=False):
+    """Call the local bundled OpenKB CLI against the correct scoped OpenKB data."""
+    if include_internal:
+        query_data_dir = sync_internal_openkb_ai_index()
+    else:
+        init_openkb_storage()
+        ensure_openkb_ai_synced()
+        query_data_dir = settings.OPENKB_DATA_DIR
+
+    ensure_openkb_config_model(query_data_dir)
+    scrub_openkb_runtime_log_files(query_data_dir)
 
     lock = acquire_openkb_ai_slot()
     env = os.environ.copy()
@@ -134,7 +137,7 @@ def run_openkb_query(question):
     env["OPENKB_AI_MODEL"] = get_openkb_ai_model()
     env["LITELLM_DROP_PARAMS"] = "true"
     env["DROP_PARAMS"] = "true"
-    env["OPENKB_DIR"] = str(settings.OPENKB_DATA_DIR)
+    env["OPENKB_DIR"] = str(query_data_dir)
     env["PYTHONPATH"] = (
         str(settings.OPENKB_BASE_DIR)
         + os.pathsep
@@ -156,7 +159,7 @@ def run_openkb_query(question):
 
     try:
         result = subprocess.run(
-            [sys.executable, "-c", command, question, str(settings.OPENKB_DATA_DIR)],
+            [sys.executable, "-c", command, question, str(query_data_dir)],
             cwd=str(settings.BASE_DIR),
             env=env,
             capture_output=True,
@@ -172,7 +175,7 @@ def run_openkb_query(question):
         release_openkb_ai_slot(lock)
         # OpenKB may append the current query to wiki/log.md after execution.
         # Remove it again so the next user query cannot read internal log data.
-        scrub_openkb_runtime_log_files()
+        scrub_openkb_runtime_log_files(query_data_dir)
 
 
 OPENKB_AI_SMALL_TALK_PATTERNS = [
@@ -307,7 +310,7 @@ def normalize_openkb_article_query(question):
     return cleaned or query
 
 
-def find_related_openkb_articles(question, limit=5, minimum_score=None):
+def find_related_openkb_articles(question, limit=5, minimum_score=None, user=None):
     """Find strongly related published articles for Ask OpenKB AI.
 
     This searches Django-published articles directly instead of depending on the
@@ -324,7 +327,7 @@ def find_related_openkb_articles(question, limit=5, minimum_score=None):
 
     if is_openkb_latest_article_request(question):
         latest_articles = []
-        for item in get_openkb_wiki_articles(sort_by_views=False)[:limit]:
+        for item in get_openkb_wiki_articles(sort_by_views=False, visibility="all", user=user)[:limit]:
             latest_articles.append({
                 "title": item.get("title", "Untitled"),
                 "url": item.get("url") or "#",
@@ -340,10 +343,11 @@ def find_related_openkb_articles(question, limit=5, minimum_score=None):
     if not is_openkb_article_recommendation_request(question) and not query_words:
         return []
 
-    ranked_articles = rank_articles_for_query(get_openkb_wiki_articles(), article_query)
+    visible_articles = get_openkb_wiki_articles(visibility="all", user=user)
+    ranked_articles = rank_articles_for_query(visible_articles, article_query)
 
     if not ranked_articles and article_query != (question or ""):
-        ranked_articles = rank_articles_for_query(get_openkb_wiki_articles(), question)
+        ranked_articles = rank_articles_for_query(visible_articles, question)
 
     if minimum_score is None:
         minimum_score = 10 if is_openkb_article_recommendation_request(question) else 35

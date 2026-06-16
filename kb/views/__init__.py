@@ -16,10 +16,12 @@ from .services import (
     write_article_files,
 )
 from .auth import OpenKBLoginView, OpenKBLogoutView, root_entry, set_site_language, profile, update_profile, change_password
-from .main import home, article_detail, wiki_detail, vote_article, search_articles, search_article_suggestions
+from .main import home, internal_articles, article_detail, wiki_detail, vote_article, search_articles, internal_search_articles, search_article_suggestions, internal_search_article_suggestions
 from .suggestions import (
     suggest,
+    suggest_internal,
     edit_my_suggestions,
+    edit_my_internal_suggestions,
     edit_suggestion,
     delete_suggestion,
     upload_article_image,
@@ -32,6 +34,7 @@ from .admin import (
     export_articles_zip,
     import_articles_zip,
     manage_pending_articles,
+    manage_internal_pending_articles,
     manage_orphan_articles,
 )
 from .ai import ask_openkb_ai
@@ -46,13 +49,18 @@ __all__ = [
     "update_profile",
     "change_password",
     "home",
+    "internal_articles",
     "article_detail",
     "wiki_detail",
     "vote_article",
     "search_articles",
+    "internal_search_articles",
     "search_article_suggestions",
+    "internal_search_article_suggestions",
     "suggest",
+    "suggest_internal",
     "edit_my_suggestions",
+    "edit_my_internal_suggestions",
     "edit_suggestion",
     "delete_suggestion",
     "upload_article_image",
@@ -63,6 +71,7 @@ __all__ = [
     "export_articles_zip",
     "import_articles_zip",
     "manage_pending_articles",
+    "manage_internal_pending_articles",
     "manage_orphan_articles",
     "ask_openkb_ai",
     "mfa_setup",

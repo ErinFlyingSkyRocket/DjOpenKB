@@ -12,7 +12,7 @@ def _openkb_ai_user_context(request):
 def _article_recommendation_response(question, related_articles=None, status=200):
     """Return a fallback chat response based on local published articles only."""
     if related_articles is None:
-        related_articles = find_related_openkb_articles(question, limit=5)
+        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
 
     return JsonResponse(
         {
@@ -94,6 +94,7 @@ def ask_openkb_ai(request):
             "question_preview": redact_openkb_debug_text(question, max_chars=200),
             "identifier": get_openkb_ai_rate_identifier(request),
             "authenticated": request.user.is_authenticated,
+            "ai_scope": "internal_plus_public" if user_can_view_internal_articles(request.user) else "public",
         },
     )
 
@@ -114,8 +115,9 @@ def ask_openkb_ai(request):
         })
 
     try:
-        raw_answer = run_openkb_query(question)
-        related_articles = find_related_openkb_articles(question, limit=5)
+        include_internal = user_can_view_internal_articles(request.user)
+        raw_answer = run_openkb_query(question, include_internal=include_internal)
+        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
 
         if openkb_ai_output_indicates_error(raw_answer):
             ctx = _openkb_ai_user_context(request)
@@ -161,7 +163,7 @@ def ask_openkb_ai(request):
         })
 
     except FileNotFoundError:
-        related_articles = find_related_openkb_articles(question, limit=5)
+        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
@@ -176,7 +178,7 @@ def ask_openkb_ai(request):
             "OpenKB AI concurrency limit reached: identifier=%s ip=%s user_id=%s question_length=%s",
             ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
         )
-        related_articles = find_related_openkb_articles(question, limit=5)
+        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles, status=503)
         return JsonResponse({
@@ -191,7 +193,7 @@ def ask_openkb_ai(request):
             "OpenKB AI query timed out: identifier=%s ip=%s user_id=%s question_length=%s",
             ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
         )
-        related_articles = find_related_openkb_articles(question, limit=5)
+        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
@@ -210,7 +212,7 @@ def ask_openkb_ai(request):
             len(question),
             redact_openkb_debug_text(error),
         )
-        related_articles = find_related_openkb_articles(question, limit=5)
+        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({

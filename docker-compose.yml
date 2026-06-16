@@ -117,6 +117,7 @@ services:
       MFA_TOTP_VALID_WINDOW: "${MFA_TOTP_VALID_WINDOW:-2}"
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
+      OPENKB_INTERNAL_DATA_DIR: ${OPENKB_INTERNAL_DATA_DIR:-openkb-data-internal}
       OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
       OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-gemini/gemini-2.5-flash}
       LITELLM_DROP_PARAMS: ${LITELLM_DROP_PARAMS:-true}
@@ -213,6 +214,7 @@ services:
       MFA_TOTP_VALID_WINDOW: "${MFA_TOTP_VALID_WINDOW:-2}"
       OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
+      OPENKB_INTERNAL_DATA_DIR: ${OPENKB_INTERNAL_DATA_DIR:-openkb-data-internal}
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
       POSTGRES_USER: ${POSTGRES_USER:-djopenkb}
       POSTGRES_HOST: db

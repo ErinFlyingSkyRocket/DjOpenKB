@@ -1,45 +1,111 @@
-# Secrets / environment
-.env
-.env.*
-!.env.example
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
 
-# Vault runtime secrets
-vault/keys/
-vault/bootstrap/djopenkb.env
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
 
-# Certificates / private keys
-nginx/certs/*.key
-nginx/certs/*.crt
-ldap-certs/
-*.pem
-*.key
-*.crt
-*.cer
-
-# Runtime data
-openkb-data/
-postgres-data/
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
 media/
 staticfiles/
 
-# Python cache
-__pycache__/
-*.py[cod]
-*.pyo
+# Environment / secrets
+.env
+.env.*
+*.env
+!.env.example
+secrets.json
+secret_key.txt
 
-# Git / editor / OS
-.git/
-.gitignore
-.vscode/
-.idea/
-.DS_Store
+# Plaintext Vault bootstrap seed file
+vault/bootstrap/*.env
+!vault/bootstrap/djopenkb.env.example
+!vault/bootstrap/.gitkeep
 
-# Local virtual environments
-.venv/
-venv/
-.openkb-venv/
+# Vault persistent runtime data - keep folders only
+vault/file/*
+!vault/file/.gitkeep
 
-# Logs / temporary files
-*.log
+vault/keys/*
+!vault/keys/.gitkeep
+
+vault/logs/*
+!vault/logs/.gitkeep
+
+# PostgreSQL persistent runtime data
+# Do not track postgres-data at all. Docker/Postgres can create it locally.
+postgres-data/
+
+# OpenKB local/generated knowledge content - keep folders only
+openkb-data/*
+!openkb-data/.gitkeep
+!openkb-data/raw/
+openkb-data/raw/*
+!openkb-data/raw/.gitkeep
+!openkb-data/wiki/
+openkb-data/wiki/*
+!openkb-data/wiki/.gitkeep
+
+# Any Markdown solution/article files inside Django apps
+kb/**/*.md
+website/**/*.md
+
+# Local uploads / generated files
+uploads/
 tmp/
 temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Test/cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build/package
+build/
+dist/
+*.egg-info/
+
+# Node/npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Local certificates / private keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.localhost.crt
+*.localhost.key
+credentials.json
+token.json
+
+# Internal/private OpenKB runtime data generated from Django articles.
+openkb-data-internal/

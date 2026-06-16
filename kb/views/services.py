@@ -46,6 +46,10 @@ from ..permissions import (
     user_can_add_articles,
     user_can_manage_articles,
     user_can_delete_articles,
+    user_can_view_internal_articles as permission_user_can_view_internal_articles,
+    user_can_add_internal_articles as permission_user_can_add_internal_articles,
+    user_can_manage_internal_articles as permission_user_can_manage_internal_articles,
+    user_can_delete_internal_articles as permission_user_can_delete_internal_articles,
     user_can_use_admin_tools as permission_user_can_use_admin_tools,
     user_can_view_articles,
     user_can_view_dislike_counts,
@@ -193,30 +197,107 @@ def user_is_site_admin(user):
 
 
 def user_can_review_articles(user):
-    """Return True for users allowed to review/manage pending article approvals."""
+    """Return True for users allowed to review/manage public pending article approvals."""
     return user_can_manage_articles(user)
+
+
+def normalize_article_visibility(value):
+    valid_values = {SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}
+    return value if value in valid_values else SuggestedArticle.Visibility.PUBLIC
+
+
+def user_can_view_internal_articles(user):
+    return permission_user_can_view_internal_articles(user)
+
+
+def user_can_add_internal_articles(user):
+    return permission_user_can_add_internal_articles(user)
+
+
+def user_can_manage_internal_articles(user):
+    return permission_user_can_manage_internal_articles(user)
+
+
+def user_can_delete_internal_articles(user):
+    return permission_user_can_delete_internal_articles(user)
+
+
+def user_can_view_article_visibility(user, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return user_can_view_internal_articles(user)
+    return user_can_view_articles(user)
+
+
+def user_can_add_article_visibility(user, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return user_can_add_internal_articles(user)
+    return user_can_add_articles(user)
+
+
+def user_can_manage_article_visibility(user, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return user_can_manage_internal_articles(user)
+    return user_can_manage_articles(user)
+
+
+def user_can_delete_article_visibility(user, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return user_can_delete_internal_articles(user)
+    return user_can_delete_articles(user)
+
+
+def user_can_view_article(user, article):
+    if not article:
+        return False
+    return user_can_view_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC))
+
+
+def user_can_review_article(user, article):
+    if not article:
+        return False
+    return user_can_manage_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC))
+
+
+def user_can_create_any_article(user):
+    return user_can_add_articles(user) or user_can_add_internal_articles(user) or user_can_use_admin_tools(user)
+
+
+def user_can_manage_any_article(user):
+    return user_can_manage_articles(user) or user_can_manage_internal_articles(user) or user_can_use_admin_tools(user)
+
+
+def article_visibility_label(visibility):
+    visibility = normalize_article_visibility(visibility)
+    if visibility == SuggestedArticle.Visibility.INTERNAL:
+        return _("Internal article")
+    return _("Public article")
 
 
 def user_can_manage_article(user, article):
     """Return True when a user may edit/review this article.
 
-    Writers may manage only their own articles. Article Approvers may edit only
-    articles currently in an approval/review workflow. Article Managers and
-    Admin Users may manage articles broadly, including already-published items.
+    Public article roles apply only to public articles. Internal article roles
+    apply only to internal articles. Admin Users may manage both scopes.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
 
+    visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+
     if user_can_use_admin_tools(user):
         return True
 
-    if user_can_delete_articles(user):
+    if user_can_delete_article_visibility(user, visibility):
         return True
 
-    if article.owner_id == user.pk and user_can_add_articles(user):
+    if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
         return True
 
-    if user_can_manage_articles(user):
+    if user_can_manage_article_visibility(user, visibility):
         return bool(
             article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
             or article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
@@ -224,25 +305,24 @@ def user_can_manage_article(user, article):
 
     return False
 
-
 def user_can_delete_article(user, article):
     """Return True when a user may delete this article.
 
-    Owners with article-writing access may delete their own articles. Article
-    Managers and Admin Users may delete any article. Article Approvers can
-    review/approve/reject pending content, but cannot delete articles by default.
+    Public delete permissions do not grant internal delete rights, and internal
+    delete permissions do not grant public delete rights. Admin Users may delete both.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
 
+    visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+
     if user_can_use_admin_tools(user):
         return True
 
-    if user_can_delete_articles(user):
+    if user_can_delete_article_visibility(user, visibility):
         return True
 
-    return bool(article.owner_id == user.pk and user_can_add_articles(user))
-
+    return bool(article.owner_id == user.pk and user_can_add_article_visibility(user, visibility))
 
 def user_owns_article(user, article):
     """Return True only for the active authenticated owner of an article."""
@@ -277,9 +357,9 @@ def allowed_article_edit_actions_for(user, article):
     if not user_can_manage_article(user, article):
         return set()
 
-    if user_can_manage_articles(user):
-        # Article Approvers, Article Managers, and Admin Users review through
-        # the status dropdown and Save button.
+    if user_can_review_article(user, article):
+        # Article Approvers/Managers, Internal Approvers/Managers, and Admin Users
+        # review through the status dropdown and Save button within their own scope.
         return {"save", ""}
 
     if not user_owns_article(user, article) or not user_can_add_articles(user):
@@ -345,6 +425,47 @@ def init_openkb_storage():
             "## Explorations\n",
             encoding="utf-8",
         )
+
+
+def get_openkb_internal_data_dir():
+    return Path(getattr(settings, "OPENKB_INTERNAL_DATA_DIR", settings.BASE_DIR / "openkb-data-internal"))
+
+
+def get_openkb_internal_wiki_dir():
+    return get_openkb_internal_data_dir() / "wiki"
+
+
+def init_openkb_internal_storage():
+    data_dir = get_openkb_internal_data_dir()
+    wiki_dir = data_dir / "wiki"
+    raw_dir = data_dir / "raw"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    (wiki_dir / "sources").mkdir(parents=True, exist_ok=True)
+    (wiki_dir / "summaries").mkdir(parents=True, exist_ok=True)
+    (wiki_dir / "concepts").mkdir(parents=True, exist_ok=True)
+
+    public_config_dir = settings.OPENKB_DATA_DIR / ".openkb"
+    internal_config_dir = data_dir / ".openkb"
+    internal_config_dir.mkdir(parents=True, exist_ok=True)
+    public_config = public_config_dir / "config.yaml"
+    internal_config = internal_config_dir / "config.yaml"
+    if public_config.exists() and not internal_config.exists():
+        try:
+            shutil.copy2(public_config, internal_config)
+        except OSError:
+            pass
+
+    index_file = wiki_dir / "index.md"
+    if not index_file.exists():
+        index_file.write_text(
+            "# Internal Knowledge Base Index\n\n"
+            "## Documents\n\n"
+            "## Concepts\n\n"
+            "## Explorations\n",
+            encoding="utf-8",
+        )
+    return data_dir
 
 
 def get_openkb_uploads_dir():
@@ -613,7 +734,7 @@ def article_image_editor_required(view_func):
     @wraps(view_func)
     @main_site_login_required
     def wrapper(request, *args, **kwargs):
-        if not (user_can_add_articles(request.user) or user_can_manage_articles(request.user)):
+        if not (user_can_create_any_article(request.user) or user_can_manage_any_article(request.user)):
             raise Http404("Page not found")
         return view_func(request, *args, **kwargs)
 
@@ -621,11 +742,47 @@ def article_image_editor_required(view_func):
 
 
 def article_management_required(view_func):
-    """Require permission to review/manage pending articles."""
+    """Require permission to review/manage public pending articles."""
     @wraps(view_func)
     @main_site_login_required
     def wrapper(request, *args, **kwargs):
         if not user_can_manage_articles(request.user):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def internal_article_view_required(view_func):
+    """Require permission to view internal articles."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_view_internal_articles(request.user):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def internal_article_add_required(view_func):
+    """Require permission to create/maintain own internal article submissions."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_add_internal_articles(request.user):
+            raise Http404("Page not found")
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
+
+def internal_article_management_required(view_func):
+    """Require permission to review/manage internal pending articles."""
+    @wraps(view_func)
+    @main_site_login_required
+    def wrapper(request, *args, **kwargs):
+        if not user_can_manage_internal_articles(request.user):
             raise Http404("Page not found")
         return view_func(request, *args, **kwargs)
 
@@ -1178,6 +1335,125 @@ def sync_openkb_ai_index():
     )
 
 
+def _write_openkb_sync_state_for_data_dir(data_dir, documents, *, filename="django_sync_state.json", scope="public"):
+    state_dir = data_dir / ".openkb"
+    state_dir.mkdir(parents=True, exist_ok=True)
+    state = {
+        "generated_by": "django-openkb-sync",
+        "scope": scope,
+        "synced_at": timezone.localtime(timezone.now()).isoformat(),
+        "published_document_count": len(documents),
+        "documents": documents,
+    }
+    (state_dir / filename).write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def sync_internal_openkb_ai_index():
+    """Build a separate AI index containing public + internal published articles.
+
+    This avoids putting internal articles inside the public OpenKB data folder.
+    The OpenKB CLI can behave like a black box, so isolation is filesystem-based.
+    """
+    data_dir = init_openkb_internal_storage()
+    wiki_dir = data_dir / "wiki"
+    sources_dir = wiki_dir / "sources"
+    summaries_dir = wiki_dir / "summaries"
+    index_file = wiki_dir / "index.md"
+
+    sources_dir.mkdir(parents=True, exist_ok=True)
+    summaries_dir.mkdir(parents=True, exist_ok=True)
+
+    existing_index = ""
+    if index_file.exists():
+        existing_index = index_file.read_text(encoding="utf-8", errors="ignore")
+
+    existing_concepts = extract_index_section(existing_index, "## Concepts")
+    existing_explorations = extract_index_section(existing_index, "## Explorations")
+
+    for source_file in sources_dir.glob("*.md"):
+        if source_file.name in IGNORED_WIKI_NAMES:
+            continue
+        try:
+            source_file.unlink()
+        except OSError:
+            pass
+
+    for summary_file in summaries_dir.glob("*.md"):
+        try:
+            text = summary_file.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            text = ""
+        if "generated_by: django-openkb-sync" in text or not text:
+            try:
+                summary_file.unlink()
+            except OSError:
+                pass
+
+    documents = []
+    queryset = (
+        SuggestedArticle.objects.select_related("owner")
+        .filter(status=SuggestedArticle.Status.PUBLISHED)
+        .order_by("visibility", "title", "id")
+    )
+
+    for article in queryset:
+        ensure_article_filename(article)
+        markdown_content = build_article_markdown(article)
+        source_path = sources_dir / article.filename
+        source_path.write_text(markdown_content, encoding="utf-8")
+
+        relative_source = source_path.relative_to(wiki_dir).as_posix()
+        doc_name = source_path.stem
+        summary_relative = f"summaries/{doc_name}"
+        visibility_label = "Internal" if article.visibility == SuggestedArticle.Visibility.INTERNAL else "Public"
+        title = f"[{visibility_label}] {article.title}" if article.visibility == SuggestedArticle.Visibility.INTERNAL else article.title
+        brief = plain_markdown_excerpt(markdown_content)
+
+        summary_text = (
+            "---\n"
+            "doc_type: short\n"
+            "generated_by: django-openkb-sync\n"
+            f"visibility: {article.visibility}\n"
+            f"full_text: {relative_source}\n"
+            "---\n\n"
+            f"# {title}\n\n"
+            f"{brief}\n"
+        )
+        (summaries_dir / f"{doc_name}.md").write_text(summary_text, encoding="utf-8")
+
+        documents.append({
+            "source_relative": relative_source,
+            "summary_relative": f"{summary_relative}.md",
+            "title": title,
+            "brief": brief,
+            "visibility": article.visibility,
+            "django_managed": True,
+        })
+
+    index_lines = [
+        "# Internal Knowledge Base Index",
+        "",
+        "## Documents",
+    ]
+
+    if documents:
+        for item in documents:
+            index_lines.append(
+                f"- [[{item['summary_relative'].removesuffix('.md')}]] (short) — {item['title']}: {item['brief']}"
+            )
+    else:
+        index_lines.append("")
+
+    index_lines.extend(["", "## Concepts"])
+    index_lines.extend(existing_concepts.splitlines() if existing_concepts else [""])
+    index_lines.extend(["", "## Explorations"])
+    index_lines.extend(existing_explorations.splitlines() if existing_explorations else [""])
+
+    index_file.write_text("\n".join(index_lines).rstrip() + "\n", encoding="utf-8")
+    _write_openkb_sync_state_for_data_dir(data_dir, documents, filename="django_internal_sync_state.json", scope="internal_plus_public")
+    return data_dir
+
+
 def prepare_article_display_markdown(raw_markdown, title, suggested=None):
     """Remove Django-generated wrapper Markdown from public article display.
 
@@ -1276,32 +1552,54 @@ def render_safe_markdown(markdown_text):
 
 
 def write_article_files(article, sync_ai=False, mark_ai_stale=True):
-    """Mirror a SuggestedArticle into OpenKB raw and public wiki/source Markdown files.
+    """Mirror a SuggestedArticle into OpenKB Markdown files.
 
-    Full AI summary/index rebuilds are intentionally not done here. Article save,
-    publish, import, and delete flows should stay fast, so they only mark the AI
-    index as stale. The heavier sync runs on demand when Ask OpenKB AI is used.
-    The sync_ai argument is kept for backward compatibility with older callers.
+    Public published articles are written into the public OpenKB wiki/sources
+    folder. Internal articles are deliberately kept out of the public OpenKB
+    wiki directory so the public chatbot/index cannot retrieve confidential
+    content. Internal AI indexing is built separately on demand.
     """
     init_openkb_storage()
 
     ensure_article_filename(article)
 
-    raw_file_path = settings.OPENKB_RAW_DIR / article.filename
+    is_internal = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC) == SuggestedArticle.Visibility.INTERNAL
+    if is_internal:
+        internal_data_dir = init_openkb_internal_storage()
+        raw_dir = internal_data_dir / "raw" / "internal"
+        raw_file_path = raw_dir / article.filename
+    else:
+        raw_dir = settings.OPENKB_RAW_DIR
+        raw_file_path = raw_dir / article.filename
+
+    raw_dir.mkdir(parents=True, exist_ok=True)
     sources_dir = settings.OPENKB_WIKI_DIR / "sources"
     wiki_file_path = sources_dir / article.filename
 
     markdown_content = build_article_markdown(article)
-
     raw_file_path.write_text(markdown_content, encoding="utf-8")
 
-    if article.status == SuggestedArticle.Status.PUBLISHED:
+    if (
+        article.status == SuggestedArticle.Status.PUBLISHED
+        and getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC) == SuggestedArticle.Visibility.PUBLIC
+    ):
         wiki_file_path.write_text(markdown_content, encoding="utf-8")
     elif wiki_file_path.exists():
         wiki_file_path.unlink()
 
-    article.raw_path = raw_file_path.relative_to(settings.OPENKB_DATA_DIR).as_posix()
-    article.wiki_path = f"sources/{article.filename}"
+    if is_internal:
+        # Keep confidential article Markdown out of the public OpenKB data tree.
+        # Remove any legacy raw copies that may have existed from an older patch.
+        for legacy_raw_file in (settings.OPENKB_RAW_DIR / article.filename, settings.OPENKB_RAW_DIR / "internal" / article.filename):
+            try:
+                if legacy_raw_file.exists() and legacy_raw_file.is_file():
+                    legacy_raw_file.unlink()
+            except OSError:
+                pass
+        article.raw_path = raw_file_path.relative_to(internal_data_dir).as_posix()
+    else:
+        article.raw_path = raw_file_path.relative_to(settings.OPENKB_DATA_DIR).as_posix()
+    article.wiki_path = f"sources/{article.filename}" if not is_internal else f"internal/sources/{article.filename}"
 
     SuggestedArticle.objects.filter(pk=article.pk).update(
         filename=article.filename,
@@ -1312,15 +1610,22 @@ def write_article_files(article, sync_ai=False, mark_ai_stale=True):
     if mark_ai_stale or sync_ai:
         mark_openkb_ai_stale("Article Markdown files changed.")
 
-
 def delete_article_files(article):
     """Delete Markdown files and image assets for a user-owned article."""
     candidates = []
 
     if article.raw_path:
         candidates.append((settings.OPENKB_DATA_DIR / article.raw_path, settings.OPENKB_DATA_DIR))
+        candidates.append((get_openkb_internal_data_dir() / article.raw_path, get_openkb_internal_data_dir()))
 
-    if article.wiki_path:
+    if article.filename:
+        candidates.append((settings.OPENKB_WIKI_DIR / "sources" / article.filename, settings.OPENKB_WIKI_DIR))
+        candidates.append((settings.OPENKB_RAW_DIR / article.filename, settings.OPENKB_DATA_DIR))
+        candidates.append((settings.OPENKB_RAW_DIR / "internal" / article.filename, settings.OPENKB_DATA_DIR))
+        candidates.append((get_openkb_internal_wiki_dir() / "sources" / article.filename, get_openkb_internal_wiki_dir()))
+        candidates.append((get_openkb_internal_data_dir() / "raw" / "internal" / article.filename, get_openkb_internal_data_dir()))
+
+    if article.wiki_path and not str(article.wiki_path).startswith("internal/"):
         candidates.append((settings.OPENKB_WIKI_DIR / article.wiki_path, settings.OPENKB_WIKI_DIR))
 
     for file_path, root_dir in candidates:
@@ -1341,12 +1646,12 @@ def delete_article_files(article):
 
     mark_openkb_ai_stale("Article Markdown files deleted.")
 
-
 def get_article_metadata_by_wiki_path(wiki_path):
     try:
         return SuggestedArticle.objects.select_related("owner").get(
             wiki_path=wiki_path,
             status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
         )
     except SuggestedArticle.DoesNotExist:
         return None
@@ -1383,18 +1688,28 @@ def record_article_session_view(request, article):
     )
 
 
-def get_openkb_wiki_articles(sort_by_views=False):
-    """Return public article cards from published Django articles only.
+def get_openkb_wiki_articles(sort_by_views=False, visibility=None, user=None):
+    """Return article cards from published Django articles only.
 
-    Raw /wiki/*.md files are no longer treated as public pages. OpenKB still
-    uses wiki/sources internally for AI indexing, but the website links to the
-    safe Django article route instead of exposing Markdown file paths.
+    By default this returns public articles only. Passing visibility="internal"
+    returns internal articles only and requires the caller to have already
+    performed an internal permission check. Passing visibility="all" returns
+    public plus internal articles only when the user can view internal articles.
     """
     articles = []
 
     queryset = SuggestedArticle.objects.select_related("owner").filter(
         status=SuggestedArticle.Status.PUBLISHED,
-    ).annotate(
+    )
+
+    if visibility == "all":
+        if not user_can_view_internal_articles(user):
+            queryset = queryset.filter(visibility=SuggestedArticle.Visibility.PUBLIC)
+    else:
+        requested_visibility = normalize_article_visibility(visibility) if visibility else SuggestedArticle.Visibility.PUBLIC
+        queryset = queryset.filter(visibility=requested_visibility)
+
+    queryset = queryset.annotate(
         db_helpful_vote_count=Count(
             "votes",
             filter=Q(votes__value=ArticleVote.VoteValue.UP),
@@ -1415,6 +1730,8 @@ def get_openkb_wiki_articles(sort_by_views=False):
             "author": suggested.author_display,
             "keywords": suggested.keyword_list,
             "suggested_id": suggested.pk,
+            "visibility": suggested.visibility,
+            "visibility_label": suggested.visibility_label,
         })
 
     if sort_by_views:
@@ -1425,7 +1742,6 @@ def get_openkb_wiki_articles(sort_by_views=False):
     else:
         articles.sort(key=lambda item: item["date"], reverse=True)
     return articles
-
 
 def is_ldap_managed_user(user):
     """Return True only when the account is explicitly marked as AD-managed.
@@ -1551,8 +1867,12 @@ def get_profile_account_context(user):
         "can_add_articles": user_can_add_articles(user),
         "can_manage_articles": user_can_manage_articles(user),
         "can_delete_articles": user_can_delete_articles(user),
+        "can_view_internal_articles": user_can_view_internal_articles(user),
+        "can_add_internal_articles": user_can_add_internal_articles(user),
+        "can_manage_internal_articles": user_can_manage_internal_articles(user),
+        "can_delete_internal_articles": user_can_delete_internal_articles(user),
         "can_use_admin_tools": user_can_use_admin_tools(user),
-        "can_see_article_management": user_can_add_articles(user) or user_can_manage_articles(user),
+        "can_see_article_management": user_can_create_any_article(user) or user_can_manage_any_article(user),
         "role_permissions_summary": role_permissions_summary(user),
         "profile_preferred_language": profile.preferred_language,
         "supported_languages": settings.LANGUAGES,

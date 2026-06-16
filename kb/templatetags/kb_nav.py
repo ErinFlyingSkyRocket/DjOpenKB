@@ -2,9 +2,12 @@ from django import template
 
 from kb.permissions import (
     user_can_add_articles,
+    user_can_add_internal_articles,
     user_can_manage_articles,
+    user_can_manage_internal_articles,
     user_can_use_admin_tools,
     user_can_view_articles,
+    user_can_view_internal_articles,
     user_can_view_dislike_counts,
 )
 
@@ -30,6 +33,21 @@ def can_add_articles(user):
 @register.filter
 def can_manage_articles(user):
     return user_can_manage_articles(user)
+
+
+@register.filter
+def can_view_internal_articles(user):
+    return user_can_view_internal_articles(user)
+
+
+@register.filter
+def can_add_internal_articles(user):
+    return user_can_add_internal_articles(user)
+
+
+@register.filter
+def can_manage_internal_articles(user):
+    return user_can_manage_internal_articles(user)
 
 
 @register.filter

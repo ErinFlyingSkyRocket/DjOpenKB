@@ -18,6 +18,23 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
+                    {% if user|can_view_internal_articles or user|can_add_internal_articles or user|can_manage_internal_articles %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Internal" %} <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                {% if user|can_view_internal_articles %}
+                                    <li><a href="{% url 'internal_articles' %}"><i class="fa fa-lock"></i> {% trans "Internal Articles" %}</a></li>
+                                {% endif %}
+                                {% if user|can_add_internal_articles %}
+                                    <li><a href="{% url 'suggest_internal' %}"><i class="fa fa-plus"></i> {% trans "New Internal Article" %}</a></li>
+                                    <li><a href="{% url 'edit_my_internal_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my internal articles" %}</a></li>
+                                {% endif %}
+                                {% if user|can_manage_internal_articles %}
+                                    <li><a href="{% url 'manage_internal_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage internal pending articles" %}</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
                     {% if user|can_add_articles or user|can_manage_articles %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Article" %} <span class="caret"></span></a>

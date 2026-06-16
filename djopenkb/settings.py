@@ -126,6 +126,10 @@ OPENKB_DATA_DIR = BASE_DIR / os.getenv("OPENKB_DATA_DIR", "openkb-data")
 OPENKB_RAW_DIR = OPENKB_DATA_DIR / "raw"
 OPENKB_WIKI_DIR = OPENKB_DATA_DIR / "wiki"
 
+# Separate filesystem scope for internal AI retrieval. The public OpenKB data
+# directory must never contain internal/private article source files.
+OPENKB_INTERNAL_DATA_DIR = BASE_DIR / os.getenv("OPENKB_INTERNAL_DATA_DIR", "openkb-data-internal")
+
 OPENKB_CONTENT_DIR = BASE_DIR / "kb-content"
 OPENKB_ARTICLES_DIR = OPENKB_CONTENT_DIR / "articles"
 

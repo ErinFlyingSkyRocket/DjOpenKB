@@ -27,7 +27,7 @@ def _split_keywords_for_suggestions(value):
     return candidates
 
 
-def get_keyword_suggestion_catalog_json():
+def get_keyword_suggestion_catalog_json(visibility=SuggestedArticle.Visibility.PUBLIC, user=None):
     """Return existing manually-created keywords for the add/edit article forms.
 
     Suggestions are intentionally limited to keywords that already exist on
@@ -36,9 +36,10 @@ def get_keyword_suggestion_catalog_json():
     """
     counts = Counter()
 
+    visibility = normalize_article_visibility(visibility)
     queryset = (
         SuggestedArticle.objects
-        .filter(status=SuggestedArticle.Status.PUBLISHED)
+        .filter(status=SuggestedArticle.Status.PUBLISHED, visibility=visibility)
         .exclude(keywords="")
         .order_by("-updated_at")
         .values_list("keywords", flat=True)[:1000]
@@ -56,20 +57,40 @@ def get_keyword_suggestion_catalog_json():
     return json.dumps(catalog[:500], ensure_ascii=False)
 
 
-@article_add_required
-def suggest(request):
+
+def _render_suggest_form_for_visibility(request, *, visibility, can_publish_directly, extra_context=None):
+    is_internal = visibility == SuggestedArticle.Visibility.INTERNAL
+    context = {
+        "can_publish_directly": can_publish_directly,
+        "article_image_upload_limit": get_article_image_upload_limit(),
+        "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=visibility, user=request.user),
+        "article_visibility": visibility,
+        "article_visibility_label": article_visibility_label(visibility),
+        "is_internal_article_form": is_internal,
+        "suggest_form_action": reverse("suggest_internal") if is_internal else reverse("suggest"),
+        "suggest_page_title": _("Add Internal Article") if is_internal else _("Add Article"),
+        "suggest_submit_label": _("Submit internal article") if is_internal else _("Submit article"),
+    }
+    if extra_context:
+        context.update(extra_context)
+    return render(request, "suggest.html", context)
+
+
+def _suggest_with_visibility(request, *, visibility):
+    visibility = normalize_article_visibility(visibility)
     init_openkb_storage()
     can_publish_directly = user_can_use_admin_tools(request.user)
 
+    if not user_can_add_article_visibility(request.user, visibility):
+        raise Http404("Article not found")
+
     def render_suggest_form(extra_context=None):
-        context = {
-            "can_publish_directly": can_publish_directly,
-            "article_image_upload_limit": get_article_image_upload_limit(),
-            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(),
-        }
-        if extra_context:
-            context.update(extra_context)
-        return render(request, "suggest.html", context)
+        return _render_suggest_form_for_visibility(
+            request,
+            visibility=visibility,
+            can_publish_directly=can_publish_directly,
+            extra_context=extra_context,
+        )
 
     if request.method == "GET":
         return render_suggest_form()
@@ -127,9 +148,10 @@ def suggest(request):
         title=title,
         body=body,
         keywords=keywords_raw,
+        visibility=visibility,
         filename=filename,
-        wiki_path=f"sources/{filename}",
-        raw_path=f"raw/{filename}",
+        wiki_path=f"internal/sources/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"sources/{filename}",
+        raw_path=f"raw/internal/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"raw/{filename}",
         status=status,
         approved_by=request.user if status == SuggestedArticle.Status.PUBLISHED else None,
         approved_at=timezone.now() if status == SuggestedArticle.Status.PUBLISHED else None,
@@ -153,6 +175,7 @@ def suggest(request):
         details={
             "action": "create",
             "status": status,
+            "visibility": visibility,
             "is_admin_direct_publish": bool(can_publish_directly and status == SuggestedArticle.Status.PUBLISHED),
             "image_count": len(article.image_assets or []),
         },
@@ -164,14 +187,28 @@ def suggest(request):
         messages.success(request, _("Article published successfully."))
     else:
         messages.success(request, _("Article submitted for admin approval."))
-    return redirect("edit_my_suggestions")
+
+    return redirect("edit_my_internal_suggestions" if visibility == SuggestedArticle.Visibility.INTERNAL else "edit_my_suggestions")
 
 
 @article_add_required
-def edit_my_suggestions(request):
+def suggest(request):
+    return _suggest_with_visibility(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+
+
+@internal_article_add_required
+def suggest_internal(request):
+    return _suggest_with_visibility(request, visibility=SuggestedArticle.Visibility.INTERNAL)
+
+
+def _edit_my_suggestions_for_visibility(request, *, visibility):
+    visibility = normalize_article_visibility(visibility)
+    if not user_can_add_article_visibility(request.user, visibility):
+        raise Http404("Article not found")
+
     search_query = request.GET.get("q", "").strip()
 
-    article_queryset = SuggestedArticle.objects.filter(owner=request.user)
+    article_queryset = SuggestedArticle.objects.filter(owner=request.user, visibility=visibility)
     total_user_article_count = article_queryset.count()
 
     if search_query:
@@ -193,6 +230,7 @@ def edit_my_suggestions(request):
     article_queryset = article_queryset.order_by("-updated_at", "-created_at")
     page_obj = paginate_articles(request, article_queryset, per_page=20)
 
+    is_internal = visibility == SuggestedArticle.Visibility.INTERNAL
     return render(request, "edit_my_suggestions.html", {
         "articles": page_obj.object_list,
         "page_obj": page_obj,
@@ -201,7 +239,22 @@ def edit_my_suggestions(request):
         "total_user_article_count": total_user_article_count,
         "is_profile_search": bool(search_query),
         "profile_display_name": format_profile_display_name(request.user),
+        "article_visibility": visibility,
+        "profile_page_title": _("My Internal Articles") if is_internal else _("Edit my articles"),
+        "profile_search_action": reverse("edit_my_internal_suggestions") if is_internal else reverse("edit_my_suggestions"),
+        "profile_new_article_url": reverse("suggest_internal") if is_internal else reverse("suggest"),
+        "is_internal_space": is_internal,
     })
+
+
+@article_add_required
+def edit_my_suggestions(request):
+    return _edit_my_suggestions_for_visibility(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+
+
+@internal_article_add_required
+def edit_my_internal_suggestions(request):
+    return _edit_my_suggestions_for_visibility(request, visibility=SuggestedArticle.Visibility.INTERNAL)
 
 
 @main_site_login_required
@@ -211,11 +264,12 @@ def edit_suggestion(request, article_id):
     if not user_can_manage_article(request.user, article):
         raise Http404("Article not found")
 
-    return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
+    fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
+    return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
 
     def render_edit_form(extra_context=None):
         extra_context = extra_context or {}
-        can_review_article = user_can_manage_articles(request.user)
+        can_review_article = user_can_review_article(request.user, article)
         pending_update_review = (
             can_review_article
             and article.status == SuggestedArticle.Status.PUBLISHED
@@ -240,7 +294,7 @@ def edit_suggestion(request, article_id):
         edit_keywords = article.pending_update_keywords if use_pending_update_values else article.keywords
         edit_image_assets = article.pending_update_image_assets if use_pending_update_values else article.image_assets
 
-        back_url = return_url or reverse("edit_my_suggestions")
+        back_url = return_url or reverse(fallback_view_name)
 
         context = {
             "article": article,
@@ -250,7 +304,7 @@ def edit_suggestion(request, article_id):
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
             "article_image_upload_limit": get_article_image_upload_limit(),
-            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(),
+            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=article.visibility, user=request.user),
             "return_url": return_url,
             "back_url": back_url,
             "title_value": edit_title,
@@ -263,6 +317,9 @@ def edit_suggestion(request, article_id):
             "has_failed_update": article.has_failed_update,
             "has_update_draft": article.has_update_draft,
             "has_saved_update_draft": has_saved_update_draft,
+            "article_visibility": article.visibility,
+            "article_visibility_label": article.visibility_label,
+            "is_internal_article_form": article.is_internal,
         }
         context.update(extra_context)
         return render(request, "suggest_edit.html", context)
@@ -282,7 +339,7 @@ def edit_suggestion(request, article_id):
     previous_status = article.status
     previous_update_status = article.update_status
 
-    is_admin_action = user_can_manage_articles(request.user)
+    is_admin_action = user_can_review_article(request.user, article)
     is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
     is_admin_pending_update_review = (
         is_admin_action
@@ -306,7 +363,7 @@ def edit_suggestion(request, article_id):
             # User publish/submit means pending admin approval, never direct public publishing.
             status = SuggestedArticle.Status.PENDING
 
-    if user_can_manage_articles(request.user):
+    if is_admin_action:
         review_notes = (request.POST.get("review_notes") or "").strip()
     else:
         review_notes = article.review_notes
@@ -347,7 +404,7 @@ def edit_suggestion(request, article_id):
         "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=extract_article_image_filenames(body))),
         "article_image_upload_limit": get_article_image_upload_limit(),
         "return_url": return_url,
-        "back_url": return_url or reverse("edit_my_suggestions"),
+        "back_url": return_url or reverse(fallback_view_name),
     }
 
     if is_admin_action and status == SuggestedArticle.Status.FAILED and not review_notes:
@@ -511,6 +568,7 @@ def edit_suggestion(request, article_id):
             "is_published_update_flow": is_published_update_flow,
             "is_admin_pending_update_review": is_admin_pending_update_review,
             "update_status": article.update_status,
+            "visibility": article.visibility,
             "image_count": len(article.image_assets or []),
             "old_image_count": len(old_image_assets or []),
         },
@@ -545,7 +603,8 @@ def delete_suggestion(request, article_id):
     if not user_can_delete_article(request.user, article):
         raise Http404("Article not found")
 
-    return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
+    fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
+    return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
 
     if request.method == "POST":
         title = article.title
@@ -560,7 +619,8 @@ def delete_suggestion(request, article_id):
                 "article_id": article_id_for_log,
                 "title": title,
                 "status": article_status_for_log,
-                "is_admin_action": user_can_manage_articles(request.user) or user_can_delete_articles(request.user),
+                "is_admin_action": user_can_review_article(request.user, article) or user_can_delete_article(request.user, article),
+                "visibility": article.visibility,
             },
         )
         delete_article_files(article)
@@ -698,13 +758,12 @@ def delete_article_image(request):
 
 @main_site_login_required
 def serve_article_image(request, filename):
-    """Serve article images safely for signed-in internal users only.
+    """Serve article images with the same public/internal visibility rules as articles.
 
-    Published article images are visible to authenticated users who can view
-    internal articles. Draft/pending/failed article images are only visible to
-    the article owner or article reviewers/admins. Newly uploaded images that
-    are not saved into an article yet are visible only in the uploader's current
-    editing session.
+    Published public article images are visible to normal signed-in users.
+    Published internal article images require internal article view permission.
+    Draft/pending/failed article images remain limited to the article owner or
+    users who can review/manage that article's visibility scope.
     """
     if not is_allowed_article_image_filename(filename):
         raise Http404("Image not found")
@@ -728,29 +787,38 @@ def serve_article_image(request, filename):
     ).select_related("owner")
 
     has_reference = referenced_articles.exists()
-    is_public_image = SuggestedArticle.objects.filter(
-        status=SuggestedArticle.Status.PUBLISHED
-    ).filter(
-        Q(image_assets__contains=[filename]) | Q(body__icontains=f"/wiki/uploads/{filename}")
+
+    published_references = referenced_articles.filter(status=SuggestedArticle.Status.PUBLISHED)
+    has_public_published_reference = published_references.filter(
+        visibility=SuggestedArticle.Visibility.PUBLIC
+    ).exists()
+    has_internal_published_reference = published_references.filter(
+        visibility=SuggestedArticle.Visibility.INTERNAL
     ).exists()
 
-    if is_public_image and not user_can_view_articles(request.user):
+    if has_internal_published_reference and not user_can_view_internal_articles(request.user):
+        # Internal references are treated as private even if the same file is
+        # accidentally embedded elsewhere.
         raise Http404("Image not found")
 
-    if not is_public_image:
-        allowed = False
-
-        if request.user.is_authenticated:
-            if user_can_manage_articles(request.user):
-                allowed = True
-            else:
-                allowed = referenced_articles.filter(owner=request.user).exists()
-
-        if not allowed and not has_reference:
-            pending_uploads = request.session.get("pending_article_uploads", [])
-            allowed = filename in pending_uploads
-
-        if not allowed:
+    if has_public_published_reference or has_internal_published_reference:
+        if not any(user_can_view_article(request.user, article) for article in published_references):
             raise Http404("Image not found")
+        return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
+
+    allowed = False
+
+    if request.user.is_authenticated:
+        for article in referenced_articles:
+            if article.owner_id == request.user.id or user_can_review_article(request.user, article) or user_can_delete_article(request.user, article):
+                allowed = True
+                break
+
+    if not allowed and not has_reference:
+        pending_uploads = request.session.get("pending_article_uploads", [])
+        allowed = filename in pending_uploads
+
+    if not allowed:
+        raise Http404("Image not found")
 
     return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
