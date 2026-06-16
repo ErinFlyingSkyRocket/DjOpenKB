@@ -512,36 +512,6 @@ DIRECT_PERMISSION_FIELD_MAP = {
 }
 
 
-def _insert_readonly_field_before(fields, target_field, readonly_field):
-    """Insert a readonly helper field before a target field in admin fieldsets."""
-    if fields == readonly_field:
-        return fields, True
-    if fields == target_field:
-        return (readonly_field, target_field), True
-
-    if isinstance(fields, (list, tuple)):
-        changed = False
-        new_fields = []
-        for item in fields:
-            if item == readonly_field:
-                changed = True
-                new_fields.append(item)
-                continue
-            if item == target_field:
-                new_fields.extend([readonly_field, item])
-                changed = True
-                continue
-            if isinstance(item, (list, tuple)):
-                new_item, item_changed = _insert_readonly_field_before(item, target_field, readonly_field)
-                changed = changed or item_changed
-                new_fields.append(new_item)
-            else:
-                new_fields.append(item)
-        return type(fields)(new_fields), changed
-
-    return fields, False
-
-
 class UserProfileAccountFormMixin:
     """Validate editable account type/source combinations in Django Admin."""
 
@@ -708,15 +678,38 @@ class UserProfileInline(admin.StackedInline):
             (
                 _("Group permissions"),
                 _(
-                    "Set the normal role from the user's Groups section, for example Disabled User, Regular User, "
-                    "Article Writer, Article Manager, or Admin Users."
+                    "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
                 ),
             ),
             (
-                _("Disabled User role"),
+                _("Disabled User"),
                 _(
-                    "Use Disabled User when an account should remain in the database for audit/history, but should not be allowed "
-                    "to complete login or access Knowledge Repository. Disabled User overrides direct permission add-ons."
+                    "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. "
+                    "It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
+                ),
+            ),
+            (
+                _("Regular User"),
+                _("Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."),
+            ),
+            (
+                _("Article Writer"),
+                _(
+                    "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. "
+                    "They cannot approve or reject articles."
+                ),
+            ),
+            (
+                _("Article Manager"),
+                _(
+                    "Can review, edit during review, approve, and reject pending articles/updates. "
+                    "Article Managers cannot add new articles themselves unless Article Writer is also granted."
+                ),
+            ),
+            (
+                _("Admin Users"),
+                _(
+                    "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
                 ),
             ),
             (
@@ -1083,107 +1076,6 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             },
         }
 
-    def default_group_guide(self, obj):
-        rows = (
-            (
-                ROLE_DISABLED_USER,
-                _(
-                    "Highest precedence. Use when the account should remain for audit/history but should not access Knowledge Repository. "
-                    "On save, this removes Admin Users, Regular User, Article Writer, Article Manager, direct Knowledge Repository permissions, staff status, and superuser status."
-                ),
-            ),
-            (
-                ROLE_REGULAR_USER,
-                _(
-                    "Baseline user. Can sign in, view/search published articles, and vote, but cannot create, approve, or use Django Admin."
-                ),
-            ),
-            (
-                ROLE_ARTICLE_WRITER,
-                _(
-                    "Contributor. Includes regular user access plus article drafts, article submission, and managing the user's own drafts or pending updates."
-                ),
-            ),
-            (
-                ROLE_ARTICLE_MANAGER,
-                _(
-                    "Reviewer. Can review, edit, approve, and reject pending articles/updates. This does not grant Django Admin access by itself."
-                ),
-            ),
-            (
-                ROLE_ADMIN_USERS,
-                _(
-                    "Full administrator. This group is the source of truth for Django Admin access and automatically sets staff and superuser status. "
-                    "Admin access also requires the extra Admin MFA step-up verification."
-                ),
-            ),
-        )
-
-        note_rows = (
-            (
-                _("Active checkbox"),
-                _(
-                    "Untick Active when the account should not be able to sign in at all. This is different from Disabled User, which shows the controlled disabled-account page."
-                ),
-            ),
-            (
-                _("Staff/Superuser checkboxes"),
-                _(
-                    "These are synchronised from Admin Users and Disabled User. Prefer changing the user's group instead of manually editing these checkboxes."
-                ),
-            ),
-            (
-                _("Custom groups"),
-                _(
-                    "Custom groups can still be used later for non-role features such as email notifications. Disabled User still overrides access roles."
-                ),
-            ),
-            (
-                _("User permissions"),
-                _(
-                    "Avoid using raw Django permissions for normal users. For article-specific exceptions, use the direct Knowledge Repository permission checkboxes in the Main site profile section below."
-                ),
-            ),
-        )
-
-        return format_html(
-            "<div style='max-width:1050px;line-height:1.5;margin:8px 0 12px 0;padding:12px 14px;border:1px solid #3a3a3a;border-radius:6px;'>"
-            "<p style='margin:0 0 8px 0;'><strong>{}</strong> {}</p>"
-            "<table style='border-collapse:collapse;width:100%;margin-top:8px;'>"
-            "<thead><tr>"
-            "<th style='text-align:left;padding:6px 12px 6px 0;border-bottom:1px solid #555;white-space:nowrap;'>{}</th>"
-            "<th style='text-align:left;padding:6px 0;border-bottom:1px solid #555;'>{}</th>"
-            "</tr></thead>"
-            "<tbody>{}</tbody>"
-            "</table>"
-            "<table style='border-collapse:collapse;width:100%;margin-top:12px;'>"
-            "<tbody>{}</tbody>"
-            "</table>"
-            "</div>",
-            _("Default group guide:"),
-            _("Use these built-in groups as the user's main access role."),
-            _("Group"),
-            _("What it allows / means"),
-            format_html_join(
-                "",
-                "<tr>"
-                "<th style='text-align:left;vertical-align:top;padding:6px 12px 6px 0;border-bottom:1px solid #333;white-space:nowrap;'>{}</th>"
-                "<td style='padding:6px 0;border-bottom:1px solid #333;'>{}</td>"
-                "</tr>",
-                rows,
-            ),
-            format_html_join(
-                "",
-                "<tr>"
-                "<th style='text-align:left;vertical-align:top;padding:4px 12px 4px 0;white-space:nowrap;'>{}</th>"
-                "<td style='padding:4px 0;'>{}</td>"
-                "</tr>",
-                note_rows,
-            ),
-        )
-
-    default_group_guide.short_description = _("Default group guide")
-
     def domain_password_status(self, obj):
         return _("Domain password is managed in Active Directory and cannot be changed from Django admin.")
 
@@ -1191,8 +1083,6 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
-        if "default_group_guide" not in readonly_fields:
-            readonly_fields.append("default_group_guide")
         if obj and self._is_domain_user(obj) and "domain_password_status" not in readonly_fields:
             readonly_fields.append("domain_password_status")
         if obj:
@@ -1201,6 +1091,40 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                     readonly_fields.append(field)
         return tuple(readonly_fields)
 
+    def _default_group_guide_html(self):
+        rows = (
+            (_("Disabled User"), _("Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions.")),
+            (_("Regular User"), _("Can view/search published articles and vote. This is the normal default role.")),
+            (_("Article Writer"), _("Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles.")),
+            (_("Article Manager"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add new articles unless Article Writer is also granted.")),
+            (_("Admin Users"), _("Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin.")),
+        )
+        return format_html(
+            "<div style='max-width:980px;line-height:1.5;'>"
+            "<p class='help'><strong>{}</strong> {}</p>"
+            "<table style='border-collapse:collapse;margin-top:8px;margin-bottom:8px;'>{}</table>"
+            "<p class='help'>{}</p>"
+            "</div>",
+            _("Default Knowledge Repository groups:"),
+            _("Use these groups as the main access model. Disabled User always takes highest precedence."),
+            format_html_join(
+                "",
+                "<tr><th style='text-align:left;vertical-align:top;padding:4px 12px 4px 0;white-space:nowrap;'>{}</th><td style='padding:4px 0;'>{}</td></tr>",
+                rows,
+            ),
+            _(
+                "The Active checkbox controls whether the account can sign in at all. "
+                "Custom non-role groups can still be used later for notifications or department grouping."
+            ),
+        )
+
+    def _fieldset_contains_field(self, fields, field_name):
+        if isinstance(fields, str):
+            return fields == field_name
+        if isinstance(fields, (list, tuple)):
+            return any(self._fieldset_contains_field(item, field_name) for item in fields)
+        return False
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
 
@@ -1208,6 +1132,9 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         for title, options in fieldsets:
             options = dict(options)
             fields = options.get("fields", ())
+
+            if self._fieldset_contains_field(fields, "groups"):
+                options["description"] = self._default_group_guide_html()
 
             if obj and self._is_domain_user(obj):
                 def replace_password_field(value):
@@ -1219,23 +1146,6 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
                     return value
 
                 fields = replace_password_field(fields)
-
-            fields, inserted_group_guide = _insert_readonly_field_before(
-                fields,
-                "groups",
-                "default_group_guide",
-            )
-            if inserted_group_guide:
-                description = options.get("description")
-                group_description = _(
-                    "Use the default Knowledge Repository groups below as role templates. "
-                    "The guide explains each built-in group and the difference between disabling an account and making it inactive."
-                )
-                options["description"] = format_html(
-                    "{}{}",
-                    format_html("<p class='help'>{}</p>", description) if description else "",
-                    format_html("<p class='help'>{}</p>", group_description),
-                )
 
             options["fields"] = fields
             cleaned_fieldsets.append((title, options))

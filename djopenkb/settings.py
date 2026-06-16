@@ -302,6 +302,7 @@ MIDDLEWARE = [
     "kb.middleware.UserProfileLanguageMiddleware",
     "kb.middleware.LocalMFARequiredMiddleware",
     "kb.middleware.ForceLoginAndAdminGuardMiddleware",
+    "kb.admin_security.AdminMFASessionMiddleware",
     "kb.middleware.AdminActivityLogMiddleware",
     "kb.middleware.AuthSessionCacheControlMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",

@@ -44,9 +44,9 @@ def get_admin_mfa_idle_timeout_seconds() -> int:
 
     Site settings are the primary source so administrators can adjust this from
     Django Admin. The environment/default fallback keeps startup safe before
-    the database or migration is available. Default: 1800 seconds / 30 minutes.
+    the database or migration is available. Default: 600 seconds / 10 minutes.
     """
-    value = getattr(settings, "ADMIN_MFA_IDLE_TIMEOUT_SECONDS", 1800)
+    value = getattr(settings, "ADMIN_MFA_IDLE_TIMEOUT_SECONDS", 600)
 
     try:
         from .models import SiteSetting
@@ -54,13 +54,13 @@ def get_admin_mfa_idle_timeout_seconds() -> int:
         value = SiteSetting.load().admin_mfa_idle_timeout_seconds
     except Exception:
         # Database may not be migrated yet, or the settings row may be
-        # unavailable during startup. Keep the safe 30-minute fallback.
+        # unavailable during startup. Keep the safe 10-minute fallback.
         pass
 
     try:
         value = int(value)
     except (TypeError, ValueError):
-        value = 1800
+        value = 600
     return max(60, min(value, 86400))
 
 
@@ -267,6 +267,25 @@ class AdminMFASessionMiddleware:
     def _is_admin_path(self, path: str) -> bool:
         return path == "/admin" or path.startswith("/admin/")
 
+    def _is_static_or_safe_asset(self, path: str) -> bool:
+        if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
+            return True
+        media_url = getattr(settings, "MEDIA_URL", "")
+        if media_url and path.startswith(media_url):
+            return True
+        return path in {"/favicon.ico", "/robots.txt"}
+
+    def _clear_admin_mfa_when_leaving_admin(self, request, path: str) -> None:
+        # The admin step-up token is only valid while staying inside /admin/.
+        # When an admin clicks "View site" or otherwise moves back to the
+        # Knowledge Repository, clear the token so entering /admin/ again
+        # requires a fresh MFA code. Ignore static/media assets because Django
+        # Admin loads those while the user is still in the admin area.
+        if self._is_static_or_safe_asset(path):
+            return
+        if request.session.get(ADMIN_MFA_VERIFIED_KEY):
+            clear_admin_mfa_session(request)
+
     def _is_exempt_admin_path(self, path: str) -> bool:
         verify_path = self._reverse_or_none("admin_mfa_verify")
         exempt_paths = {
@@ -293,7 +312,12 @@ class AdminMFASessionMiddleware:
 
     def __call__(self, request):
         path = request.path_info or request.path
-        if not self._is_admin_path(path) or self._is_exempt_admin_path(path):
+
+        if not self._is_admin_path(path):
+            self._clear_admin_mfa_when_leaving_admin(request, path)
+            return self.get_response(request)
+
+        if self._is_exempt_admin_path(path):
             return self.get_response(request)
 
         user = getattr(request, "user", None)
