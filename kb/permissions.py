@@ -18,18 +18,21 @@ from django.utils.translation import gettext_lazy as _
 PERM_VIEW_ARTICLES = "can_view_articles"
 PERM_ADD_ARTICLES = "can_add_articles"
 PERM_MANAGE_ARTICLES = "can_manage_articles"
+PERM_DELETE_ARTICLES = "can_delete_articles"
 PERM_USE_ADMIN_TOOLS = "can_use_admin_tools"
 
 PERMISSION_LABELS = {
     PERM_VIEW_ARTICLES: "Can view published articles",
     PERM_ADD_ARTICLES: "Can add/submit articles for approval",
-    PERM_MANAGE_ARTICLES: "Can manage pending articles and article reviews",
+    PERM_MANAGE_ARTICLES: "Can approve/manage pending article reviews",
+    PERM_DELETE_ARTICLES: "Can delete articles",
     PERM_USE_ADMIN_TOOLS: "Can use Knowledge Repository admin tools",
 }
 
 ROLE_DISABLED_USER = "Disabled User"
 ROLE_REGULAR_USER = "Regular User"
 ROLE_ARTICLE_WRITER = "Article Writer"
+ROLE_ARTICLE_APPROVER = "Article Approver"
 ROLE_ARTICLE_MANAGER = "Article Manager"
 ROLE_ADMIN_USERS = "Admin Users"
 
@@ -37,6 +40,7 @@ ROLE_GROUP_NAMES = (
     ROLE_DISABLED_USER,
     ROLE_REGULAR_USER,
     ROLE_ARTICLE_WRITER,
+    ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,
     ROLE_ADMIN_USERS,
 )
@@ -47,6 +51,7 @@ ROLE_GROUP_NAMES = (
 ROLE_ACCESS_GROUP_NAMES = (
     ROLE_REGULAR_USER,
     ROLE_ARTICLE_WRITER,
+    ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,
     ROLE_ADMIN_USERS,
 )
@@ -70,11 +75,17 @@ ROLE_DEFINITIONS = {
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES),
     },
-    ROLE_ARTICLE_MANAGER: {
+    ROLE_ARTICLE_APPROVER: {
         "description": _(
-            "Article reviewer. Can review, edit, approve, and reject pending articles/updates, but cannot create new articles or use full admin tools by default."
+            "Article approver. Can review, edit during review, approve, and reject pending articles/updates, but cannot create new articles or delete articles by default."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_MANAGE_ARTICLES),
+    },
+    ROLE_ARTICLE_MANAGER: {
+        "description": _(
+            "Article manager. Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
+        ),
+        "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES, PERM_MANAGE_ARTICLES, PERM_DELETE_ARTICLES),
     },
     ROLE_ADMIN_USERS: {
         "description": _(
@@ -84,6 +95,7 @@ ROLE_DEFINITIONS = {
             PERM_VIEW_ARTICLES,
             PERM_ADD_ARTICLES,
             PERM_MANAGE_ARTICLES,
+            PERM_DELETE_ARTICLES,
             PERM_USE_ADMIN_TOOLS,
         ),
     },
@@ -93,8 +105,9 @@ ROLE_PRIORITY = {
     ROLE_DISABLED_USER: 100,
     ROLE_REGULAR_USER: 10,
     ROLE_ARTICLE_WRITER: 20,
-    ROLE_ARTICLE_MANAGER: 30,
-    ROLE_ADMIN_USERS: 40,
+    ROLE_ARTICLE_APPROVER: 30,
+    ROLE_ARTICLE_MANAGER: 40,
+    ROLE_ADMIN_USERS: 50,
 }
 
 
@@ -160,6 +173,13 @@ def user_can_add_articles(user) -> bool:
 def user_can_manage_articles(user) -> bool:
     return bool(
         user_has_kb_permission(user, PERM_MANAGE_ARTICLES)
+        or user_can_use_admin_tools(user)
+    )
+
+
+def user_can_delete_articles(user) -> bool:
+    return bool(
+        user_has_kb_permission(user, PERM_DELETE_ARTICLES)
         or user_can_use_admin_tools(user)
     )
 
@@ -408,8 +428,8 @@ def enforce_admin_users_exclusive(user):
 
     Normal users may still belong to multiple non-admin/custom groups, but once
     Admin Users is assigned it grants full access, so Regular User / Article
-    Writer / Article Manager and direct Knowledge Repository permission add-ons
-    become redundant and are removed.
+    Writer / Article Approver / Article Manager and direct Knowledge Repository
+    permission add-ons become redundant and are removed.
     """
     if not getattr(user, "pk", None):
         return False
@@ -426,7 +446,7 @@ def enforce_admin_users_exclusive(user):
         try:
             user.groups.remove(
                 *Group.objects.filter(
-                    name__in=(ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_MANAGER)
+                    name__in=(ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER)
                 )
             )
         finally:
@@ -518,7 +538,7 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         elif role_name == ROLE_ADMIN_USERS:
             user.groups.remove(
                 *Group.objects.filter(
-                    name__in=(ROLE_DISABLED_USER, ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_MANAGER)
+                    name__in=(ROLE_DISABLED_USER, ROLE_REGULAR_USER, ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER)
                 )
             )
         else:

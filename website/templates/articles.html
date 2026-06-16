@@ -375,11 +375,9 @@
                             {{ metadata.view_count|default:0 }}
                         </h5>
 
-                        {% if metadata.can_edit or metadata.can_delete %}
+                        {% if metadata.can_edit %}
                             <div class="col-sm-12 col-lg-12 article-admin-actions">
-                                {% if metadata.can_edit %}
-                                    <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">{% trans "Edit article" %}</a>
-                                {% endif %}
+                                <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">{% trans "Edit article" %}</a>
                                 {% if metadata.can_delete %}
                                     <a class="btn btn-xs btn-danger" href="{{ metadata.delete_url }}">{% trans "Delete article" %}</a>
                                 {% endif %}

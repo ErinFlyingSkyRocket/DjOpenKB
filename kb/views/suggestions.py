@@ -208,7 +208,8 @@ def edit_my_suggestions(request):
 def edit_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
 
-    require_article_manager(request.user, article)
+    if not user_can_manage_article(request.user, article):
+        raise Http404("Article not found")
 
     return_url = get_safe_return_url(request, fallback_view_name="edit_my_suggestions")
 
@@ -559,7 +560,7 @@ def delete_suggestion(request, article_id):
                 "article_id": article_id_for_log,
                 "title": title,
                 "status": article_status_for_log,
-                "is_admin_action": user_can_manage_articles(request.user),
+                "is_admin_action": user_can_manage_articles(request.user) or user_can_delete_articles(request.user),
             },
         )
         delete_article_files(article)

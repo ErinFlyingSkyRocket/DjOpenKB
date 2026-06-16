@@ -47,7 +47,8 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 | Disabled User | Local or AD / LDAPS | Account retained but blocked | No; stopped after valid password/MFA with a disabled-account message | No | No | No | No | No |
 | Regular User | Local or AD / LDAPS | Default internal reader | Yes, published articles after login | Yes | No | No | No | No |
 | Article Writer | Local or AD / LDAPS | Contributor | Yes | Yes | Yes; drafts and submissions go through approval | No | No | No |
-| Article Manager | Local or AD / LDAPS | Reviewer / moderator | Yes | Yes | No by group default unless also granted writer/admin permission | Yes, can review pending articles and pending updates | No | No by default |
+| Article Approver | Local or AD / LDAPS | Approval reviewer | Yes | Yes | No | Yes, can review pending articles and pending updates | No | No by default |
+| Article Manager | Local or AD / LDAPS | Full article manager | Yes | Yes | Yes | Yes, can review pending articles and pending updates | Yes, can delete articles | No by default |
 | Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes; members are automatically synced to Django superuser/staff and must still pass network/admin guards |
 
 Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the website.
@@ -59,19 +60,19 @@ Role precedence is enforced as follows:
 ```text
 Disabled User
 → highest precedence
-→ removes Admin Users / Regular User / Article Writer / Article Manager
+→ removes Admin Users / Regular User / Article Writer / Article Approver / Article Manager
 → clears direct Knowledge Repository permission add-ons
 → unchecks staff and superuser status
 → redirects authenticated sessions to the disabled-account page
 
 Admin Users
 → full administrator source of truth
-→ removes Regular User / Article Writer / Article Manager
+→ removes Regular User / Article Writer / Article Approver / Article Manager
 → sets staff=True and superuser=True
 → local accounts become Local admin; AD/LDAP accounts become LDAP admin
 → keeps custom non-role groups, such as future notification groups
 
-Regular User / Article Writer / Article Manager
+Regular User / Article Writer / Article Approver / Article Manager
 → normal role groups
 → may be combined when needed
 → local accounts stay Local user; AD/LDAP accounts stay LDAP user unless promoted to Admin Users

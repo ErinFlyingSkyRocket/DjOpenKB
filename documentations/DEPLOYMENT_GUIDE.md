@@ -792,7 +792,8 @@ New normal local/AD user → Regular User group
 Disabled User          → highest precedence; removes admin/role groups, clears direct permissions, unchecks staff/superuser, and redirects to the disabled-account page
 Regular User            → view published articles and vote
 Article Writer          → create and submit articles
-Article Manager         → review/manage pending articles and pending updates
+Article Approver        → review/manage pending articles and pending updates
+Article Manager         → create/edit/manage articles, review approvals, and delete articles
 Admin Users             → full administrator source of truth; sets staff/superuser, removes normal standard role groups, and preserves account source
 ```
 
@@ -803,7 +804,7 @@ Admin setting precedence:
 ```text
 Disabled User wins over every other standard role.
 Admin Users grants full admin/superuser access unless Disabled User is also assigned.
-Regular User / Article Writer / Article Manager are normal content roles and may be combined.
+Regular User / Article Writer / Article Approver / Article Manager are normal content roles and may be combined.
 Custom future groups, such as email notification groups, are preserved.
 Django Active = whether the account can sign in at all.
 Disabled User = account retained but restricted to the disabled-account page/sign-out flow.
@@ -833,7 +834,8 @@ After deployment, test these flows once:
 6. Removing a user from Admin Users and placing them back into a normal role removes staff/superuser status.
 7. Local users promoted to Admin Users show as Local admin; LDAP users promoted to Admin Users show as LDAP admin.
 8. Article Writer can create and submit an article.
-9. Article Manager can approve/reject pending articles.
+9. Article Approver can approve/reject pending articles.
+10. Article Manager can create, edit/manage, approve/reject, and delete articles without needing Django Admin access.
 10. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN.
 11. /admin/login/ does not expose the normal Django admin login page.
 12. Search only returns title/keyword matches.

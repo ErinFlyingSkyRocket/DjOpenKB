@@ -35,7 +35,8 @@ DjOpenKB now uses a login-only main website model. Anonymous visitors are not al
 | Disabled User | Local or AD / LDAP account in `Disabled User` group | Account record remains available for audit/history and later reassignment. Valid password/MFA does not complete login; the user receives a disabled-account message. | Cannot access the wiki, articles, voting, AI assistant, admin tools, or Django Admin through DjOpenKB permissions. |
 | Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. |
 | Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. |
-| Article Manager | Logged-in user in `Article Manager` group | Can view published articles and manage pending articles/pending updates, including approve/reject actions. | Cannot create new articles by group default unless separately granted writer/admin permission. |
+| Article Approver | Logged-in user in `Article Approver` group | Can view published articles and manage pending articles/pending updates, including review-stage editing and approve/reject actions. | Cannot create new articles or delete articles by group default. |
+| Article Manager | Logged-in user in `Article Manager` group | Can view published articles, create articles, edit/manage articles, manage pending articles/pending updates, approve/reject submissions, and delete articles. | Does not grant Django Admin access unless the user is also in `Admin Users`. |
 | Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Full administrator role. Members are automatically synced to `is_staff=True` and `is_superuser=True`, can use admin tools, and can access Django Admin when network restrictions pass. | Should be assigned only to trusted administrators. |
 
 ### 3.2 Group Baseline and Direct User Permission Add-ons
@@ -70,14 +71,14 @@ Role precedence is enforced automatically when accounts are saved or synchronise
 ```text
 1. Disabled User has the highest precedence.
 2. Admin Users is the source of truth for full administrator access.
-3. Regular User, Article Writer, and Article Manager are normal content roles.
+3. Regular User, Article Writer, Article Approver, and Article Manager are normal content roles.
 4. Direct user permissions are add-ons for content features only.
 5. Django's Active checkbox controls whether the account can sign in at all.
 ```
 
 `Disabled User` is treated as a deliberate no-access role. A disabled account may still exist in Django for ownership, audit, and historical records, but it cannot use the website. When assigned, it removes the user's standard role groups, removes `Admin Users`, clears direct Knowledge Repository permission add-ons, and unchecks `is_staff` and `is_superuser`. If a disabled user already has an authenticated browser session, the next server request redirects the user to the disabled-account page. The sign-out button on that page clears the restricted session.
 
-`Admin Users` is treated as the full administrator role. When assigned, it automatically sets `is_staff=True` and `is_superuser=True`, removes normal standard role groups such as `Regular User`, `Article Writer`, and `Article Manager`, and clears direct Knowledge Repository permission overrides because the account already has full access. Custom non-role groups, such as future notification groups, are preserved.
+`Admin Users` is treated as the full administrator role. When assigned, it automatically sets `is_staff=True` and `is_superuser=True`, removes normal standard role groups such as `Regular User`, `Article Writer`, `Article Approver`, and `Article Manager`, and clears direct Knowledge Repository permission overrides because the account already has full access. Custom non-role groups, such as future notification groups, are preserved.
 
 Account source is preserved during role sync:
 
@@ -640,6 +641,7 @@ Django Admin Groups represent the main role groups:
 Disabled User
 Regular User
 Article Writer
+Article Approver
 Article Manager
 Admin Users
 ```
@@ -1007,7 +1009,7 @@ docker compose up -d
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
-- Keep the group model simple: `Disabled User`, `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`.
+- Keep the group model simple: `Disabled User`, `Regular User`, `Article Writer`, `Article Approver`, `Article Manager`, and `Admin Users`.
 - Use direct user permission checkboxes only for one-off exceptions because they add permissions on top of group permissions.
 - Review the full-project Docker bind mount `.:/app` before final production-style deployment. It is convenient during development but should be removed where possible for hardened deployment.
 - Keep `.dockerignore` updated so secrets and runtime folders are not copied into Docker images.

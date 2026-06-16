@@ -26,10 +26,12 @@ from .views import delete_article_files, log_activity, slugify_title, write_arti
 from .permissions import (
     PERM_ADD_ARTICLES,
     PERM_MANAGE_ARTICLES,
+    PERM_DELETE_ARTICLES,
     PERM_USE_ADMIN_TOOLS,
     PERM_VIEW_ARTICLES,
     PERMISSION_LABELS,
     ROLE_ADMIN_USERS,
+    ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,
     ROLE_ARTICLE_WRITER,
     ROLE_DEFINITIONS,
@@ -509,6 +511,7 @@ DIRECT_PERMISSION_FIELD_MAP = {
     "direct_can_view_articles": PERM_VIEW_ARTICLES,
     "direct_can_add_articles": PERM_ADD_ARTICLES,
     "direct_can_manage_articles": PERM_MANAGE_ARTICLES,
+    "direct_can_delete_articles": PERM_DELETE_ARTICLES,
 }
 
 
@@ -587,11 +590,18 @@ class UserProfileInlineForm(UserProfileAccountFormMixin, forms.ModelForm):
     )
     direct_can_manage_articles = forms.BooleanField(
         required=False,
-        label=_("Can approve/manage articles"),
+        label=_("Can approve/manage pending articles"),
         help_text=_(
-            "Direct user permission. Allows access to article review/management workflows such as pending article review, "
-            "pending update review, approve/reject actions, and manager-level article moderation views. "
-            "It does not automatically allow creating new articles or full Django admin access unless another permission/group grants those."
+            "Direct user permission. Allows access to article approval workflows such as pending article review, "
+            "pending update review, approve/reject actions, and review-stage article editing. "
+            "It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
+        ),
+    )
+    direct_can_delete_articles = forms.BooleanField(
+        required=False,
+        label=_("Can delete articles"),
+        help_text=_(
+            "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
         ),
     )
     class Meta:
@@ -653,6 +663,7 @@ class UserProfileInline(admin.StackedInline):
                     "direct_can_view_articles",
                     "direct_can_add_articles",
                     "direct_can_manage_articles",
+                    "direct_can_delete_articles",
                 ),
                 "description": _(
                     "Use Groups as the user's standard role. Tick these boxes only when this specific user needs extra permissions "
@@ -700,10 +711,16 @@ class UserProfileInline(admin.StackedInline):
                 ),
             ),
             (
-                _("Article Manager"),
+                _("Article Approver"),
                 _(
                     "Can review, edit during review, approve, and reject pending articles/updates. "
-                    "Article Managers cannot add new articles themselves unless Article Writer is also granted."
+                    "Article Approvers cannot add new articles or delete articles by default."
+                ),
+            ),
+            (
+                _("Article Manager"),
+                _(
+                    "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
                 ),
             ),
             (
@@ -1027,6 +1044,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         "set_selected_users_disabled",
         "set_selected_users_regular",
         "set_selected_users_writer",
+        "set_selected_users_approver",
         "set_selected_users_manager",
         "set_selected_users_admin",
         "reset_mfa_for_selected_users",
@@ -1096,7 +1114,8 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             (_("Disabled User"), _("Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions.")),
             (_("Regular User"), _("Can view/search published articles and vote. This is the normal default role.")),
             (_("Article Writer"), _("Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles.")),
-            (_("Article Manager"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add new articles unless Article Writer is also granted.")),
+            (_("Article Approver"), _("Can review, edit during review, approve, and reject pending articles/updates. Cannot add or delete articles by default.")),
+            (_("Article Manager"), _("Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles.")),
             (_("Admin Users"), _("Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin.")),
         )
         return format_html(
@@ -1546,6 +1565,16 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             ROLE_ARTICLE_WRITER,
             admin_action="set_selected_users_writer",
             success_template=_("Article Writer role assigned to %(count)d selected user(s)."),
+        )
+
+    @admin.action(description=_("Set selected users as Article Approver"))
+    def set_selected_users_approver(self, request, queryset):
+        self._set_role_for_selected_users(
+            request,
+            queryset,
+            ROLE_ARTICLE_APPROVER,
+            admin_action="set_selected_users_approver",
+            success_template=_("Article Approver role assigned to %(count)d selected user(s)."),
         )
 
     @admin.action(description=_("Set selected users as Article Manager"))
