@@ -256,6 +256,28 @@ def user_can_view_article(user, article):
     return user_can_view_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC))
 
 
+def user_can_view_article_detail(user, article):
+    """Return True when the user may open /article/<id> directly.
+
+    Published articles follow the normal public/internal visibility rules.
+    Draft, pending, and failed workflow articles are intentionally stricter:
+    only the article owner or full Admin Users may open them by URL. Article
+    approvers/managers must use the review/edit workflow instead of ID
+    traversal, so they cannot browse other users' drafts.
+    """
+    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    if user_can_use_admin_tools(user):
+        return True
+
+    if getattr(article, "status", None) == SuggestedArticle.Status.PUBLISHED:
+        return user_can_view_article(user, article)
+
+    visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+    return bool(article.owner_id == user.pk and user_can_add_article_visibility(user, visibility))
+
+
 def user_can_review_article(user, article):
     if not article:
         return False
@@ -282,6 +304,10 @@ def user_can_manage_article(user, article):
 
     Public article roles apply only to public articles. Internal article roles
     apply only to internal articles. Admin Users may manage both scopes.
+
+    Draft articles are deliberately stricter: only the owner or Admin Users may
+    manage/view their own drafts. Reviewers/managers should not be able to
+    traverse to another user's draft by guessing /article/<id> or /suggest/edit/.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -291,17 +317,22 @@ def user_can_manage_article(user, article):
     if user_can_use_admin_tools(user):
         return True
 
-    if user_can_delete_article_visibility(user, visibility):
-        return True
-
     if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
         return True
 
-    if user_can_manage_article_visibility(user, visibility):
-        return bool(
-            article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
-            or article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
-        )
+    if not user_can_manage_article_visibility(user, visibility):
+        return False
+
+    if article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
+        return True
+
+    if article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}:
+        return True
+
+    # Article Manager/Internal Article Manager may manage already-published
+    # articles in their own scope, but drafts remain owner/Admin-only.
+    if article.status == SuggestedArticle.Status.PUBLISHED and user_can_delete_article_visibility(user, visibility):
+        return True
 
     return False
 
@@ -310,6 +341,8 @@ def user_can_delete_article(user, article):
 
     Public delete permissions do not grant internal delete rights, and internal
     delete permissions do not grant public delete rights. Admin Users may delete both.
+    Draft articles are owner/Admin-only so managers cannot remove private drafts
+    by ID traversal.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -319,10 +352,23 @@ def user_can_delete_article(user, article):
     if user_can_use_admin_tools(user):
         return True
 
-    if user_can_delete_article_visibility(user, visibility):
+    if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
         return True
 
-    return bool(article.owner_id == user.pk and user_can_add_article_visibility(user, visibility))
+    if not user_can_delete_article_visibility(user, visibility):
+        return False
+
+    return bool(
+        article.status in {
+            SuggestedArticle.Status.PUBLISHED,
+            SuggestedArticle.Status.PENDING,
+            SuggestedArticle.Status.FAILED,
+        }
+        or article.update_status in {
+            SuggestedArticle.UpdateStatus.PENDING,
+            SuggestedArticle.UpdateStatus.FAILED,
+        }
+    )
 
 def user_owns_article(user, article):
     """Return True only for the active authenticated owner of an article."""
@@ -362,7 +408,7 @@ def allowed_article_edit_actions_for(user, article):
         # review through the status dropdown and Save button within their own scope.
         return {"save", ""}
 
-    if not user_owns_article(user, article) or not user_can_add_articles(user):
+    if not user_owns_article(user, article) or not user_can_add_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)):
         return set()
 
     if article.status == SuggestedArticle.Status.PUBLISHED:
