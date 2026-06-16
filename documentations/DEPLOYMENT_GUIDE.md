@@ -780,7 +780,7 @@ https://<linux-server-ip>:8080/home/     → requires login
 normal article/search/profile/admin URLs → require login
 anonymous access to protected paths       → 404
 /admin/login/                             → hidden / 404
-/admin/                                   → allowed only after normal login, staff/admin role checks, and admin CIDR/VPN checks
+/admin/                                   → allowed only after normal login, Admin Users/superuser sync, and admin CIDR/VPN checks
 ```
 
 After login and MFA completion where applicable, users are redirected to `/home/`.
@@ -789,14 +789,36 @@ Default role behaviour:
 
 ```text
 New normal local/AD user → Regular User group
-Disabled User          → account retained but blocked after valid password/MFA
+Disabled User          → highest precedence; removes admin/role groups, clears direct permissions, unchecks staff/superuser, and redirects to the disabled-account page
 Regular User            → view published articles and vote
 Article Writer          → create and submit articles
 Article Manager         → review/manage pending articles and pending updates
-Admin Users             → admin tools and full Django Admin access through superuser status when network/admin checks pass
+Admin Users             → full administrator source of truth; sets staff/superuser, removes normal standard role groups, and preserves account source
 ```
 
-Direct user permission checkboxes in Django Admin are add-on permissions only. They grant exceptions on top of group membership and do not remove group permissions.
+Direct user permission checkboxes in Django Admin are add-on content permissions only. They grant exceptions on top of group membership and do not remove group permissions. They do not grant Django Admin access.
+
+Admin setting precedence:
+
+```text
+Disabled User wins over every other standard role.
+Admin Users grants full admin/superuser access unless Disabled User is also assigned.
+Regular User / Article Writer / Article Manager are normal content roles and may be combined.
+Custom future groups, such as email notification groups, are preserved.
+Django Active = whether the account can sign in at all.
+Disabled User = account retained but restricted to the disabled-account page/sign-out flow.
+```
+
+Account source is preserved during promotion/demotion:
+
+```text
+Local user + Admin Users  → Local admin
+LDAP user + Admin Users   → LDAP admin
+Local admin removed from Admin Users → Local user
+LDAP admin removed from Admin Users  → LDAP user
+```
+
+Admins may edit Account Type and Source in Django Admin for recovery cases, such as converting an AD/LDAP account into a local account after the AD account is deleted while preserving article ownership.
 
 ### 15.2 Quick post-login validation checklist
 
@@ -806,14 +828,17 @@ After deployment, test these flows once:
 1. Incognito / anonymous request to /home/ returns 404 or forces login according to the login guard.
 2. / displays the login page.
 3. A new local or AD user lands in Regular User and can view published articles.
-4. A user moved to Disabled User cannot complete login or access the wiki.
-5. Article Writer can create and submit an article.
-6. Article Manager can approve/reject pending articles.
-6. Admin Users are synchronised to Django superuser status and can access /admin/ from the allowed admin network/VPN. There is no separate limited Django Admin role.
-7. /admin/login/ does not expose the normal Django admin login page.
-8. Search only returns title/keyword matches.
-9. Homepage tabs paginate correctly according to the Articles per page setting.
-10. Keyword suggestion refresh only suggests existing manually-created keywords that exactly appear in the current draft title/body.
+4. A user moved to Disabled User loses staff/superuser status, cannot use functions, and is sent to the disabled-account page.
+5. A user in Admin Users becomes staff/superuser and other normal standard role groups are removed.
+6. Removing a user from Admin Users and placing them back into a normal role removes staff/superuser status.
+7. Local users promoted to Admin Users show as Local admin; LDAP users promoted to Admin Users show as LDAP admin.
+8. Article Writer can create and submit an article.
+9. Article Manager can approve/reject pending articles.
+10. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN.
+11. /admin/login/ does not expose the normal Django admin login page.
+12. Search only returns title/keyword matches.
+13. Homepage tabs paginate correctly according to the Articles per page setting.
+14. Keyword suggestion refresh only suggests existing manually-created keywords that exactly appear in the current draft title/body.
 ```
 
 ---
@@ -952,7 +977,7 @@ Compile translations after `.po` file changes.
 sudo docker compose exec web python manage.py compilemessages
 ```
 
-Clean general and Django Admin activity logs.
+Clean general activity logs.
 
 ```bash
 sudo docker compose exec web python manage.py cleanup_activity_logs --dry-run

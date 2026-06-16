@@ -21,7 +21,7 @@ The Docker Compose stack contains the following main services:
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, field-encryption key, PostgreSQL password, AI provider API keys, and LDAP bind password. |
 | `vault-init` | First-time Vault initialisation and secret seeding helper. |
 | `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment. |
-| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general/admin activity log cleanup. |
+| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general activity log cleanup. |
 
 ## 3. User Types and Permission Summary
 
@@ -36,24 +36,23 @@ DjOpenKB now uses a login-only main website model. Anonymous visitors are not al
 | Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. |
 | Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. |
 | Article Manager | Logged-in user in `Article Manager` group | Can view published articles and manage pending articles/pending updates, including approve/reject actions. | Cannot create new articles by group default unless separately granted writer/admin permission. |
-| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Can use Knowledge Repository admin tools and is synchronised to Django superuser status for full Django Admin management when network restrictions pass. | Should be assigned only to trusted administrators. |
+| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Full administrator role. Members are automatically synced to `is_staff=True` and `is_superuser=True`, can use admin tools, and can access Django Admin when network restrictions pass. | Should be assigned only to trusted administrators. |
 
 ### 3.2 Group Baseline and Direct User Permission Add-ons
 
-Groups provide the baseline role. Django Admin also shows direct user permission checkboxes for one-off exceptions:
+Groups provide the baseline role. Django Admin also shows direct user permission checkboxes for one-off content-access exceptions:
 
 ```text
 Can view articles
 Can create articles
 Can approve/manage articles
-Can use admin tools
 ```
 
-These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group. The `Disabled User` role is the exception and overrides direct add-on permissions.
+These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group. Direct permissions do not grant Django Admin access. Django Admin access is controlled by the `Admin Users` group, superuser/staff sync, and the admin network guard. The `Disabled User` role is the exception and overrides direct add-on permissions.
 
 ### 3.3 Default Group Assignment
 
-Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. Admin/staff/superuser accounts are aligned with `Admin Users` where applicable. Admins can assign `Disabled User` to retain an account while preventing login completion and wiki access.
+Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. Admins can assign `Disabled User` to retain an account while preventing login completion and website access. The `Admin Users` group is the source of truth for full Django Admin access.
 
 ### 3.4 Account Source Differences
 
@@ -64,14 +63,36 @@ The `UserProfile` model stores the account source, so the system does not guess 
 | Local account | Django | Django/local admin | Allowed with fresh MFA/OTP | Allowed with fresh MFA/OTP |
 | Active Directory account | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
 
-### 3.5 Role Enforcement
+### 3.5 Role Enforcement and Precedence
 
-`Disabled User` is treated as a deliberate no-access role. A disabled account may still exist in Django for ownership, audit, and historical records, but it cannot complete login. If the password/LDAP bind succeeds and the account has a confirmed MFA device, the user is asked to complete MFA first and then receives a general disabled-account message. If no confirmed MFA device exists, the disabled-account message is shown after the valid password check.
+Role precedence is enforced automatically when accounts are saved or synchronised. This keeps admin settings predictable and prevents conflicting combinations.
 
+```text
+1. Disabled User has the highest precedence.
+2. Admin Users is the source of truth for full administrator access.
+3. Regular User, Article Writer, and Article Manager are normal content roles.
+4. Direct user permissions are add-ons for content features only.
+5. Django's Active checkbox controls whether the account can sign in at all.
+```
 
-Main-site admin tools require explicit admin checks. A normal `staff` flag alone is not treated as sufficient for main-site admin tools unless the user also has the correct DjOpenKB admin permission or is a superuser.
+`Disabled User` is treated as a deliberate no-access role. A disabled account may still exist in Django for ownership, audit, and historical records, but it cannot use the website. When assigned, it removes the user's standard role groups, removes `Admin Users`, clears direct Knowledge Repository permission add-ons, and unchecks `is_staff` and `is_superuser`. If a disabled user already has an authenticated browser session, the next server request redirects the user to the disabled-account page. The sign-out button on that page clears the restricted session.
 
-Non-admin users receive a 404 response for protected main-site admin tools. Anonymous users also receive 404 for normal protected routes instead of being shown application content.
+`Admin Users` is treated as the full administrator role. When assigned, it automatically sets `is_staff=True` and `is_superuser=True`, removes normal standard role groups such as `Regular User`, `Article Writer`, and `Article Manager`, and clears direct Knowledge Repository permission overrides because the account already has full access. Custom non-role groups, such as future notification groups, are preserved.
+
+Account source is preserved during role sync:
+
+```text
+Local user + Admin Users  → Local admin
+LDAP user + Admin Users   → LDAP admin
+Local admin removed from Admin Users → Local user
+LDAP admin removed from Admin Users  → LDAP user
+```
+
+Admins can edit the profile `Account Type` and `Source` fields in Django Admin for recovery cases, such as converting an AD/LDAP account to a local user after the AD account has been removed but the Knowledge Repository account still owns important articles. Local account types must use the local source, and LDAP account types must use the Active Directory source.
+
+The Django `Active` checkbox is separate from `Disabled User`. Unticking `Active` prevents login entirely. Assigning `Disabled User` gives a cleaner disabled-account page flow for accounts that should remain visible for history but should not access the website.
+
+Main-site admin tools and Django Admin access require superuser access after role synchronisation. Non-admin users receive 404 responses for protected main-site admin tools. Anonymous users also receive 404 for normal protected routes instead of being shown application content.
 
 ## 4. Authentication and Account Management
 
@@ -120,7 +141,7 @@ The profile layer tracks the main account type:
 | `LDAP user` | Domain-authenticated normal user. |
 | `LDAP admin` | Domain-authenticated admin user. |
 
-Admins can also allow or block a user's main-site access through Django admin.
+Admins can edit account type/source in Django Admin for controlled recovery or conversion cases. Use Django's built-in `Active` checkbox when the account should be unable to sign in at all. Use the `Disabled User` group when the account should be retained and redirected to the disabled-account page after authentication.
 
 ## 5. Multi-Factor Authentication
 
@@ -588,7 +609,7 @@ This design keeps UI translation independent from the AI chatbot and avoids send
 
 ### 17.1 Admin Tool Restriction
 
-Admin tools are protected by explicit DjOpenKB admin checks. Staff status alone is not enough for main-site admin tools. A user must be a superuser or have the correct DjOpenKB admin permission through the `Admin Users` role group or direct add-on permission.
+Admin tools are protected by superuser/admin-role checks. `Admin Users` is the source of truth for full administrator access and automatically syncs members to `is_staff=True` and `is_superuser=True`. Staff status alone is not treated as a separate admin role. Direct user permission checkboxes do not grant Django Admin access.
 
 Non-admin users receive 404 responses for admin-only main-site tools to reduce route discovery usefulness. The Django admin login path is hidden; admins should sign in through the normal login flow and then open `/admin/`.
 
@@ -606,10 +627,9 @@ Admin tools include:
 - Review suggested articles.
 - Scan and manage orphan articles.
 - Configure site settings such as article count per page, log retention, session timeout, and authentication lockout policy stages.
-- Manage user roles and direct user permission add-ons.
+- Manage user roles, account type/source recovery, and direct content-permission add-ons.
 - View authentication activity logs through Django admin.
 - View general activity logs through Django admin.
-- View Django Admin activity logs for admin create/change/delete/actions.
 - View upload audit records through Django admin.
 
 ### 17.4 Group and User Permission Management
@@ -626,19 +646,18 @@ Admin Users
 
 The Groups admin page shows current users in each group and provides a searchable left/right selector to add or remove users from the group.
 
-The Users admin page provides direct DjOpenKB permission checkboxes for one-off exceptions:
+The Users admin page provides direct Knowledge Repository permission checkboxes for one-off content-access exceptions:
 
 ```text
 Can view articles
 Can create articles
 Can approve/manage articles
-Can use admin tools
 ```
 
-These direct user permissions are add-on only. The final permission result is:
+These direct user permissions are add-on only and do not grant Django Admin access. The final content permission result is:
 
 ```text
-final access = group permissions + direct user permissions
+final content access = group permissions + direct user permissions
 ```
 
 ### 17.5 Article Import/Export
@@ -722,7 +741,7 @@ Examples of authentication events:
 
 ### 18.2 General Activity Logs
 
-General site and content actions are logged in `ActivityLog`. Django Admin actions are logged separately in `AdminActivityLog`. This is separate from authentication logs so admins can review content/admin behaviour without mixing it with login/MFA activity.
+General site and content actions are logged in `ActivityLog`. This is separate from authentication logs so admins can review content and usage behaviour without mixing it with login/MFA activity.
 
 Examples of logged activity include:
 
@@ -737,17 +756,38 @@ Examples of logged activity include:
 | Admin tools | Orphan article assigned, orphan article deleted, pending article admin action |
 | Django admin | Admin article save/delete/bulk actions where applicable |
 
-### 18.3 Log IP Handling
+### 18.3 Admin Activity Logs
+
+Django Admin actions are recorded separately in `AdminActivityLog`. This log is intended to show administrator activity in readable wording instead of only object IDs. It records the acting admin, target object name where available, action category, request path, method, status outcome, IP address, and safe details about the change.
+
+Examples of admin activity entries include:
+
+| Admin action | Example log wording |
+|---|---|
+| User role change | Changed user `alice`: Groups added `Article Writer`; removed `Regular User` |
+| Admin promotion | Changed user `alice`: added `Admin Users`; synced staff/superuser; account type changed to `Local admin` or `LDAP admin` based on source |
+| Disabled account | Assigned `Disabled User` to `alice`; removed admin/role groups; cleared staff/superuser |
+| MFA reset | Reset MFA for user `alice` |
+| Lockout reset | Reset password/MFA lockout for user `alice` |
+| Site setting change | Changed site settings, including lockout policy or retention values |
+| Article admin action | Created, changed, approved, rejected, or deleted an article from Django Admin |
+| Group management | Changed group membership or attempted to modify a protected default group |
+
+Sensitive values such as passwords, MFA secrets, tokens, API keys, and private keys are not written to the admin activity log. Status is displayed in friendly terms such as success, redirected, permission denied, not found, or server error.
+
+Admin activity logs are append-only from Django Admin. They are not manually editable or deletable through the admin interface. Retention cleanup follows the same general activity-log retention setting so old entries can still be removed automatically according to site policy.
+
+### 18.4 Log IP Handling
 
 IP logging prefers trusted reverse proxy headers such as `X-Real-IP` from Nginx instead of blindly trusting the first value from `X-Forwarded-For`. This improves accuracy for internal deployments behind the configured reverse proxy.
 
-### 18.4 Read-Only Admin Log Views
+### 18.5 Read-Only Admin Log Views
 
-`AuthActivityLog`, general `ActivityLog`, `AdminActivityLog`, and article image upload logs are read-only in Django admin. Admin users can search and filter logs, but cannot manually add, edit, or delete them from the admin interface.
+`AuthActivityLog`, general `ActivityLog`, and `AdminActivityLog` are intended to be read-only in Django admin. Admin users can search and filter logs, but should not manually add or edit them from the admin interface.
 
-Retention/deletion is controlled through cleanup commands instead of manual editing.
+Retention/deletion is controlled through cleanup commands instead of manual editing. Manual deletion is not part of the normal admin workflow.
 
-### 18.5 Log Retention
+### 18.6 Log Retention
 
 Authentication activity log retention is controlled by site setting:
 
@@ -755,7 +795,7 @@ Authentication activity log retention is controlled by site setting:
 auth_activity_log_retention_days = 30 by default
 ```
 
-General and Django Admin activity log retention is controlled by site setting:
+General activity log retention is controlled by site setting:
 
 ```text
 activity_log_retention_days = 30 by default
@@ -763,7 +803,7 @@ activity_log_retention_days = 30 by default
 
 A value of `0` keeps logs forever. If the value is set to `30`, cleanup deletes only logs older than 30 days. If the value is increased later, future cleanup follows the new value, but logs that were already deleted cannot be restored.
 
-### 18.6 Log Cleanup
+### 18.7 Log Cleanup
 
 The scheduled cleanup service can run log cleanup automatically. Cleanup commands can also be run manually:
 
@@ -885,7 +925,7 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | LDAP | LDAPS with certificate validation for AD integration. |
 | HTTPS | Nginx HTTPS and security headers. |
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
-| Activity logs | Article, vote, upload, AI, import/export, admin-tool, and Django Admin activity logging with retention cleanup. |
+| Activity logs | Article, vote, upload, AI, import/export, and admin-tool activity logging with retention cleanup. |
 | Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
 | AI endpoint | Prompt length limit, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting for logged-in users, timeout handling, concurrency limiting, output cleanup, and redacted activity previews. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
@@ -960,14 +1000,14 @@ docker compose up -d
 - Keep `DJANGO_DEBUG=false` for deployment.
 - Keep Vault secrets out of shared packages.
 - Use LDAPS with certificate validation for AD.
-- Use the activity logs, Django Admin activity logs, and authentication logs to review suspicious behaviour.
+- Use the activity logs and authentication logs to review suspicious behaviour.
 - Keep the OpenKB AI rate limit enabled so one user or anonymous IP cannot continuously consume AI resources.
 - Keep log retention at 30 days unless longer investigation history is needed.
 - Use `--dry-run` before cleanup commands when validating behaviour.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
-- Keep the protected role groups intact: `Disabled User`, `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`. These default groups are protected from deletion.
+- Keep the group model simple: `Disabled User`, `Regular User`, `Article Writer`, `Article Manager`, and `Admin Users`.
 - Use direct user permission checkboxes only for one-off exceptions because they add permissions on top of group permissions.
 - Review the full-project Docker bind mount `.:/app` before final production-style deployment. It is convenient during development but should be removed where possible for hardened deployment.
 - Keep `.dockerignore` updated so secrets and runtime folders are not copied into Docker images.

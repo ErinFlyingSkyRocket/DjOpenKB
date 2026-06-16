@@ -48,11 +48,36 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 | Regular User | Local or AD / LDAPS | Default internal reader | Yes, published articles after login | Yes | No | No | No | No |
 | Article Writer | Local or AD / LDAPS | Contributor | Yes | Yes | Yes; drafts and submissions go through approval | No | No | No |
 | Article Manager | Local or AD / LDAPS | Reviewer / moderator | Yes | Yes | No by group default unless also granted writer/admin permission | Yes, can review pending articles and pending updates | No | No by default |
-| Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes, view-only in Django Admin by default; MFA/lockout reset actions allowed; full Django Admin edits/deletes reserved for superusers |
+| Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes; members are automatically synced to Django superuser/staff and must still pass network/admin guards |
 
-Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admin/staff/superuser accounts are aligned with the `Admin Users` group where applicable. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the wiki.
+Newly created non-admin local or AD users are automatically placed in the `Regular User` group. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the website.
 
-Group membership is the baseline permission model. Django Admin also provides direct user permission checkboxes for one-off exceptions. `Disabled User` overrides these direct permission add-ons. These direct user permissions are add-on permissions only; unticking a direct permission does not remove a permission that the user's group already provides.
+Group membership is the baseline permission model. Normal non-admin groups can be combined where appropriate, and future non-role groups such as email notification groups can be added without changing the core role model. Direct user permission checkboxes are add-on permissions only; unticking a direct permission does not remove a permission inherited from a group.
+
+Role precedence is enforced as follows:
+
+```text
+Disabled User
+→ highest precedence
+→ removes Admin Users / Regular User / Article Writer / Article Manager
+→ clears direct Knowledge Repository permission add-ons
+→ unchecks staff and superuser status
+→ redirects authenticated sessions to the disabled-account page
+
+Admin Users
+→ full administrator source of truth
+→ removes Regular User / Article Writer / Article Manager
+→ sets staff=True and superuser=True
+→ local accounts become Local admin; AD/LDAP accounts become LDAP admin
+→ keeps custom non-role groups, such as future notification groups
+
+Regular User / Article Writer / Article Manager
+→ normal role groups
+→ may be combined when needed
+→ local accounts stay Local user; AD/LDAP accounts stay LDAP user unless promoted to Admin Users
+```
+
+Django's built-in `Active` checkbox controls whether the account can sign in at all. `Disabled User` is different: it keeps the account record available but sends an already-authenticated disabled account to the clean disabled-account page with a sign-out button.
 
 Local and AD users are separated by account source metadata, not by email domain. This means a local user can use an email address such as `alice@openkb.local` without being incorrectly treated as an AD user.
 
@@ -64,7 +89,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | Anonymous access | Only the login/language/static support paths are public; normal app pages and hidden admin login return 404 when unauthenticated |
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
-| Authorization | Group-based roles, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, and restricted admin routes |
+| Authorization | Group-based roles, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, and restricted admin routes |
 | Articles | Draft/pending/pending failed/published workflow, pending-update review for published edits, duplicate title prevention, admin approval, and orphan article management |
 | Search and listing | Main search matches published article title and manually entered keywords only; homepage uses paginated tabs for trending, most liked, and most recent articles |
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body |
@@ -72,7 +97,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
 | AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
-| Logging | Separate authentication logs, general activity logs, and Django Admin activity logs |
+| Logging | Separate authentication logs, general activity logs, and admin activity logs with retention cleanup |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
 | Network | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, and optional admin CIDR/VPN restrictions |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
@@ -202,7 +227,7 @@ djopenkb/wsgi.py
 
 Contains the main Django app for the knowledge base.
 
-This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, activity logging, Django Admin activity logging, and management commands.
+This is where most application features are implemented, including article management, article suggestions, approval workflow, authentication handling, MFA, admin tools, uploads, OpenKB AI integration, activity logging, and management commands.
 
 Important areas:
 
@@ -530,7 +555,7 @@ Sync OpenKB AI article data:
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
-Clean general and Django Admin activity logs:
+Clean activity logs:
 
 ```bash
 docker compose exec web python manage.py cleanup_activity_logs --dry-run

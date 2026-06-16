@@ -312,10 +312,14 @@ New AD / LDAP user → Regular User group
 Regular User       → can view published articles and vote after login
 ```
 
-Admins can later move the user into `Article Writer`, `Article Manager`, or `Admin Users` from Django Admin → Groups. The Groups page provides a searchable left/right selector for adding and removing users.
+Admins can later move the user into `Article Writer`, `Article Manager`, or `Admin Users` from Django Admin → Groups. When an AD/LDAP user is added to `Admin Users`, the profile remains AD/LDAP-sourced and is shown as an LDAP admin. If the account is later removed from `Admin Users`, it returns to LDAP user status rather than being converted to a local user. The Groups page provides a searchable left/right selector for adding and removing users.
 
 The Users admin page also provides direct DjOpenKB permission checkboxes for one-off exceptions. These are add-on permissions only and do not remove permissions inherited from groups.
 
 MFA is still required after successful AD password authentication where MFA is enabled. AD passwords remain managed by Active Directory, so users cannot change their AD password from the DjOpenKB profile page.
 
 Because the current site is login-only, anonymous users should not be able to browse articles or use the AI chatbot. Protected paths return 404 before normal article/admin content is shown.
+
+## LDAP Account Recovery Note
+
+If an AD account is removed from Active Directory but the corresponding Knowledge Repository account owns important articles, a superuser can edit the Django-side profile in Django Admin and convert the account source/type to a local account. After conversion, set a local password and MFA status according to the organisation recovery process. This preserves article ownership and audit history without depending on the deleted AD identity.
