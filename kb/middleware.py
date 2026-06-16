@@ -515,6 +515,7 @@ class ForceLoginAndAdminGuardMiddleware:
         public_names = (
             "root_login",
             "login",
+            "logout",
             "set_site_language",
             "mfa_setup",
             "mfa_verify",
