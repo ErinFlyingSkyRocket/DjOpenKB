@@ -354,8 +354,8 @@ class LocalMFARequiredMiddleware:
         if self._path_is_public_asset(path):
             return None
 
-        logout_path = self._reverse_or_none("logout")
-        if logout_path and path == logout_path:
+        cancel_path = self._reverse_or_none("mfa_cancel")
+        if cancel_path and path == cancel_path:
             return None
 
         target_name = pending_mfa_target_name(request) or "mfa_setup"
@@ -508,14 +508,19 @@ class ForceLoginAndAdminGuardMiddleware:
             return True
         return path in {"/favicon.ico", "/robots.txt"}
 
-    def _is_public_auth_path(self, path):
+    def _is_public_auth_path(self, request, path):
         # / and /login/ are the only normal anonymous entry points.
         # MFA pages are reachable only for pending-MFA sessions; the MFA
         # middleware validates that state before allowing completion.
+        # /logout/ is intentionally not public; pending-MFA users cancel using
+        # the dedicated POST-only mfa_cancel endpoint instead.
+        cancel_path = self._reverse_or_none("mfa_cancel")
+        if cancel_path and path == cancel_path:
+            return request.method == "POST" and bool(get_pending_mfa_user(request))
+
         public_names = (
             "root_login",
             "login",
-            "logout",
             "set_site_language",
             "mfa_setup",
             "mfa_verify",
@@ -543,7 +548,7 @@ class ForceLoginAndAdminGuardMiddleware:
         if self._is_static_or_safe_asset(path):
             return self.get_response(request)
 
-        if self._is_public_auth_path(path):
+        if self._is_public_auth_path(request, path):
             return self.get_response(request)
 
         user = getattr(request, "user", None)
@@ -581,7 +586,7 @@ class ForceLoginAndAdminGuardMiddleware:
 class AuthSessionCacheControlMiddleware:
     """Apply no-store headers to login/logout/MFA and authenticated pages."""
 
-    AUTH_PATH_NAMES = ("root_login", "login", "logout", "mfa_setup", "mfa_verify", "reset_mfa")
+    AUTH_PATH_NAMES = ("root_login", "login", "logout", "mfa_setup", "mfa_verify", "mfa_cancel", "reset_mfa")
 
     def __init__(self, get_response):
         self.get_response = get_response

@@ -21,9 +21,12 @@
     <div class="container-fluid openkb-page-back-wrap" style="margin-top: 14px; margin-bottom: 10px;">
         <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
-                <a class="btn btn-default" href="{% url 'root_login' %}">
-                    <i class="fa fa-arrow-left"></i> {% trans "Back" %}
-                </a>
+                <form method="post" action="{% url 'mfa_cancel' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="btn btn-default" type="submit">
+                        <i class="fa fa-arrow-left"></i> {% trans "Back" %}
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -61,10 +64,10 @@
                     </button>
                 </form>
 
-                <form method="post" action="{% url 'logout' %}" style="margin-top: 12px;">
+                <form method="post" action="{% url 'mfa_cancel' %}" style="margin-top: 12px;">
                     {% csrf_token %}
                     <button class="btn btn-default btn-block" type="submit">
-                        <i class="fa fa-sign-out"></i> {% trans "Sign out" %}
+                        <i class="fa fa-arrow-left"></i> {% trans "Back" %}
                     </button>
                 </form>
             </div>

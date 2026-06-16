@@ -35,7 +35,7 @@ from .admin import (
     manage_orphan_articles,
 )
 from .ai import ask_openkb_ai
-from .mfa import mfa_setup, mfa_verify, reset_mfa
+from .mfa import mfa_setup, mfa_verify, reset_mfa, cancel_mfa_login
 
 __all__ = [
     "OpenKBLoginView",
@@ -68,6 +68,7 @@ __all__ = [
     "mfa_setup",
     "mfa_verify",
     "reset_mfa",
+    "cancel_mfa_login",
     "delete_article_files",
     "find_stray_uploaded_files",
     "get_openkb_uploads_dir",

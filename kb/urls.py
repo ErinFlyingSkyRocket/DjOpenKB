@@ -12,6 +12,7 @@ urlpatterns = [
     path("profile/change-password/", views.change_password, name="change_password"),
     path("mfa/setup/", views.mfa_setup, name="mfa_setup"),
     path("mfa/verify/", views.mfa_verify, name="mfa_verify"),
+    path("mfa/cancel/", views.cancel_mfa_login, name="mfa_cancel"),
     path("mfa/reset/", views.reset_mfa, name="reset_mfa"),
     path("profile/admin/clean-stray-upload-files/", views.clean_stray_upload_files, name="clean_stray_upload_files"),
     path("profile/admin/clean-stray-images/", views.clean_stray_upload_files, name="clean_stray_images"),

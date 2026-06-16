@@ -139,6 +139,44 @@ def _finish_mfa(request, user):
     return _safe_next_url(request)
 
 
+@require_POST
+def cancel_mfa_login(request):
+    """Cancel a password-authenticated pending-MFA login and return to login.
+
+    At this stage the user is not fully signed in yet, so this is intentionally
+    separate from the normal logout URL. It only clears the temporary MFA-login
+    session state and sends the browser back to the login entry page.
+    """
+    pending_user = get_pending_mfa_user(request)
+
+    if pending_user:
+        try:
+            from kb.middleware import clear_session_started_at, set_strict_no_cache_headers
+        except Exception:
+            clear_session_started_at = None
+            set_strict_no_cache_headers = None
+
+        clear_mfa_verified(request)
+        clear_pending_mfa_login(request)
+        if clear_session_started_at:
+            clear_session_started_at(request)
+
+        # The password step succeeded earlier, so rotate to a fresh anonymous
+        # session when the user cancels before completing MFA.
+        request.session.flush()
+        messages.info(request, _("MFA sign-in was cancelled. Please sign in again."))
+        response = redirect("root_login")
+        if set_strict_no_cache_headers:
+            set_strict_no_cache_headers(response)
+        response["Clear-Site-Data"] = '"cache"'
+        return response
+
+    if getattr(request, "user", None) and request.user.is_authenticated:
+        return redirect("home")
+
+    return redirect("root_login")
+
+
 def mfa_setup(request):
     user = _mfa_subject_user(request)
     if not user:
