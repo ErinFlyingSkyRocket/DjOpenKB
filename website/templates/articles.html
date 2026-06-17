@@ -280,7 +280,7 @@
                         <ul class="list-group">
                             {% if featured_articles %}
                                 {% for featured in featured_articles %}
-                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a>{% if featured.visibility == "internal" %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</li>
+                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a>{% if metadata.visibility == "internal" and featured.visibility == "internal" %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</li>
                                 {% endfor %}
                             {% else %}
                                 <li class="list-group-item">{% trans "No related articles yet." %}</li>
@@ -346,9 +346,11 @@
                 <div class="panel panel-primary" style="margin-top: 35px;">
                     <div class="panel-heading">{% trans "Article details" %}:</div>
                     <div class="panel-body metaData">
-                        <h5 class="col-sm-12 col-lg-12">
-                            <strong>{% trans "Visibility" %}:</strong> {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
-                        </h5>
+                        {% if metadata.visibility == "internal" %}
+                            <h5 class="col-sm-12 col-lg-12">
+                                <strong>{% trans "Article type" %}:</strong> <span class="label label-warning">{% trans "Internal" %}</span>
+                            </h5>
+                        {% endif %}
                         <h5 class="col-sm-12 col-lg-12">
                             <strong>{% trans "Published date" %}:</strong>
                             {% if metadata.published_at %}{{ metadata.published_at|date:"d/m/Y g:iA" }}{% else %}N/A{% endif %}

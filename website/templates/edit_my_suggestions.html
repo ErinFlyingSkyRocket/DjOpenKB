@@ -213,7 +213,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <thead>
                                             <tr>
                                                 <th>{% trans "Article title" %}</th>
-                                                <th>{% trans "Visibility" %}</th>
+                                                {% if profile_allowed_internal %}<th>{% trans "Visibility" %}</th>{% endif %}
                                                 <th>{% trans "Status" %}</th>
                                                 <th>{% trans "Created" %}</th>
                                                 <th>{% trans "Last updated" %}</th>
@@ -230,9 +230,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                             {{ article.title }}
                                                         {% endif %}
                                                     </td>
-                                                    <td>
-                                                        {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
-                                                    </td>
+                                                    {% if profile_allowed_internal %}
+                                                        <td>
+                                                            {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
+                                                        </td>
+                                                    {% endif %}
                                                     <td>
                                                         {% if article.has_pending_update %}
                                                             <span class="label label-warning">{% trans "Pending update" %}</span>

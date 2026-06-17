@@ -248,7 +248,7 @@
                                 <li class="list-group-item">
                                     <h4>
                                         <a href="{{ article.url }}">{{ article.title }}</a>
-                                        {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
+                                        {% if is_internal_space and article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
                                         <span class="pull-right view_count">
                                             <strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
                                             &nbsp;/&nbsp;<strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
@@ -381,7 +381,7 @@
                                         <li class="list-group-item">
                                             <h4>
                                                 <a href="{{ article.url }}">{{ article.title }}</a>
-                                                {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
+                                                {% if is_internal_space and article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
                                                 <span class="pull-right view_count">
                                                     <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
                                                     &nbsp;/&nbsp;<strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
@@ -429,7 +429,7 @@
                                         <li class="list-group-item">
                                             <h4>
                                                 <a href="{{ article.url }}">{{ article.title }}</a>
-                                                {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
+                                                {% if is_internal_space and article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
                                                 <span class="pull-right view_count">
                                                     <strong>{% trans "Likes" %}:</strong> {{ article.likes|default:0 }}
                                                     &nbsp;/&nbsp;<strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}
@@ -477,7 +477,7 @@
                                         <li class="list-group-item">
                                             <h4>
                                                 <a href="{{ article.url }}">{{ article.title }}</a>
-                                                {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
+                                                {% if is_internal_space and article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}
                                                 <span class="pull-right view_count">
                                                     {% if article.date %}<strong>{% trans "Date" %}:</strong> {{ article.date }}&nbsp;/&nbsp;{% endif %}
                                                     <strong>{% trans "View count" %}:</strong> {{ article.views|default:0 }}

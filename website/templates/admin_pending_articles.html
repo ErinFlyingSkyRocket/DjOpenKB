@@ -99,7 +99,7 @@
                         <thead>
                             <tr>
                                 <th>{% trans "Article title" %}</th>
-                                <th>{% trans "Visibility" %}</th>
+                                {% if pending_allowed_internal %}<th>{% trans "Visibility" %}</th>{% endif %}
                                 <th>{% trans "Submitted by" %}</th>
                                 <th>{% trans "Created" %}</th>
                                 <th>{% trans "Last updated" %}</th>
@@ -118,7 +118,9 @@
                                             <span class="label label-warning">{% trans "Pending approval" %}</span>
                                         {% endif %}
                                     </td>
-                                    <td>{% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}</td>
+                                    {% if pending_allowed_internal %}
+                                        <td>{% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}</td>
+                                    {% endif %}
                                     <td>
                                         {{ article.author_display }}
                                         {% if article.author_email %}<br><small class="pending-muted">{{ article.author_email }}</small>{% endif %}
