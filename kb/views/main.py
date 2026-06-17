@@ -5,6 +5,8 @@ from django.utils.translation import gettext as _
 
 def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
     """Render the public or internal article landing page using the same layout."""
+    can_view_internal = user_can_view_internal_articles(request.user)
+
     if visibility == SuggestedArticle.Visibility.INTERNAL:
         all_articles = get_openkb_wiki_articles(
             sort_by_views=False,
@@ -16,7 +18,14 @@ def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBL
         search_suggestions_url = reverse("internal_search_article_suggestions")
         total_label = _("internal article")
     else:
-        all_articles = get_openkb_wiki_articles(sort_by_views=False)
+        # Main homepage/search works differently by role:
+        # - normal users see/search public articles only
+        # - internal-capable users see/search public + internal articles mixed together
+        all_articles = get_openkb_wiki_articles(
+            sort_by_views=False,
+            visibility="all" if can_view_internal else SuggestedArticle.Visibility.PUBLIC,
+            user=request.user,
+        )
         home_heading = _("How can we help?")
         search_action_url = reverse("search")
         search_suggestions_url = reverse("search_article_suggestions")
@@ -94,6 +103,7 @@ def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBL
         "article_visibility": visibility,
         "total_article_label": total_label,
         "is_internal_space": visibility == SuggestedArticle.Visibility.INTERNAL,
+        "show_internal_article_tags": can_view_internal,
         "internal_articles": internal_articles_page_obj.object_list if internal_articles_page_obj else [],
         "internal_page_obj": internal_articles_page_obj,
     })
@@ -188,6 +198,7 @@ def article_detail(request, article_id):
         "search_action_url": search_action_url,
         "search_suggestions_url": search_suggestions_url,
         "is_internal_space": article.is_internal,
+        "show_internal_article_tags": user_can_view_internal_articles(request.user),
     })
 
 
@@ -313,8 +324,13 @@ def _search_article_suggestions(request, *, visibility=SuggestedArticle.Visibili
 
 @article_view_required
 def search_article_suggestions(request):
-    """Return public title/keyword matches for the search dropdown."""
-    return _search_article_suggestions(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+    """Return role-scoped title/keyword matches for the main search dropdown.
+
+    Normal users receive public article suggestions only. Internal-capable users
+    receive public + internal suggestions from the same main search box.
+    """
+    visibility = "all" if user_can_view_internal_articles(request.user) else SuggestedArticle.Visibility.PUBLIC
+    return _search_article_suggestions(request, visibility=visibility)
 
 
 @internal_article_view_required
@@ -348,12 +364,14 @@ def _search_articles(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
         "clear_search_url": reverse("internal_articles") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("home"),
         "article_visibility": visibility,
         "is_internal_space": visibility == SuggestedArticle.Visibility.INTERNAL,
+        "show_internal_article_tags": user_can_view_internal_articles(request.user),
     })
 
 
 @article_view_required
 def search_articles(request):
-    return _search_articles(request, visibility=SuggestedArticle.Visibility.PUBLIC)
+    visibility = "all" if user_can_view_internal_articles(request.user) else SuggestedArticle.Visibility.PUBLIC
+    return _search_articles(request, visibility=visibility)
 
 
 @internal_article_view_required

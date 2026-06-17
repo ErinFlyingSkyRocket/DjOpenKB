@@ -280,7 +280,7 @@
                         <ul class="list-group">
                             {% if featured_articles %}
                                 {% for featured in featured_articles %}
-                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a>{% if metadata.visibility == "internal" and featured.visibility == "internal" %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</li>
+                                    <li class="list-group-item"><a href="{{ featured.url }}">{{ featured.title }}</a>{% if show_internal_article_tags and featured.visibility == "internal" %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</li>
                                 {% endfor %}
                             {% else %}
                                 <li class="list-group-item">{% trans "No related articles yet." %}</li>
@@ -530,6 +530,14 @@
         title.className = "openkb-search-suggestion-title";
         title.textContent = article.title || "{% trans 'Untitled article' %}";
         link.appendChild(title);
+
+        if (article.visibility === "internal") {
+            const badge = document.createElement("span");
+            badge.className = "label label-warning";
+            badge.style.marginLeft = "8px";
+            badge.textContent = "{% trans 'Internal' %}";
+            link.appendChild(badge);
+        }
 
         openkbSearchSuggestionList.appendChild(link);
     }
