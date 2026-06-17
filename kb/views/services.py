@@ -285,12 +285,12 @@ def user_can_view_article_detail(user, article):
 def user_can_review_article(user, article):
     """Return True when the user may use the review/status workflow here.
 
-    Approver roles are review-only: they can edit/review pending articles and
-    pending updates in their own visibility scope, but they must not become
-    direct editors of already-published articles. If an approver is also the
-    article owner and edits their published article, the normal owner pending
-    update flow is used instead. Managers/Admin Users may still edit published
-    articles directly inside their own scope.
+    Approver-only roles may review submitted pending articles and submitted
+    pending updates in their own visibility scope. They must not be able to
+    publish their own rejected/failed article by opening the edit page, and they
+    must not approve their own submission through the reviewer dropdown.
+
+    Managers/Admin Users keep broader management rights in their own scope.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -303,15 +303,35 @@ def user_can_review_article(user, article):
     if not user_can_manage_article_visibility(user, visibility):
         return False
 
+    is_approver_only = user_is_article_approver_only_for_visibility(user, visibility)
+    is_manager = user_is_article_manager_for_visibility(user, visibility)
+
+    if is_approver_only:
+        # Separation of duties: a reviewer-only user who also owns the article
+        # must follow the normal author flow and resubmit for approval.
+        if article.owner_id == getattr(user, "pk", None):
+            return False
+        return bool(
+            article.status == SuggestedArticle.Status.PENDING
+            or (
+                article.status == SuggestedArticle.Status.PUBLISHED
+                and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+            )
+        )
+
+    if not is_manager:
+        return False
+
     if article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
         return True
 
-    if article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}:
+    if article.update_status in {
+        SuggestedArticle.UpdateStatus.PENDING,
+        SuggestedArticle.UpdateStatus.FAILED,
+    }:
         return True
 
-    # Only managers, not approver-only roles, may directly edit already-
-    # published articles with no pending update.
-    if article.status == SuggestedArticle.Status.PUBLISHED and user_is_article_manager_for_visibility(user, visibility):
+    if article.status == SuggestedArticle.Status.PUBLISHED:
         return True
 
     return False
@@ -402,12 +422,17 @@ def user_can_edit_article_content(user, article):
         return True
 
     if user_is_article_approver_only_for_visibility(user, visibility):
+        # Approver-only users can edit content only while actively reviewing a
+        # submitted pending item. Rejected/failed articles return to the author
+        # and must be resubmitted before another approval decision is possible.
+        if article.owner_id == getattr(user, "pk", None):
+            return False
         return bool(
-            article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
-            or article.update_status in {
-                SuggestedArticle.UpdateStatus.PENDING,
-                SuggestedArticle.UpdateStatus.FAILED,
-            }
+            article.status == SuggestedArticle.Status.PENDING
+            or (
+                article.status == SuggestedArticle.Status.PUBLISHED
+                and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+            )
         )
 
     return False
@@ -495,10 +520,24 @@ def user_can_manage_article(user, article):
     if not user_can_manage_article_visibility(user, visibility):
         return False
 
+    if user_is_article_approver_only_for_visibility(user, visibility):
+        if article.owner_id == getattr(user, "pk", None):
+            return False
+        return bool(
+            article.status == SuggestedArticle.Status.PENDING
+            or (
+                article.status == SuggestedArticle.Status.PUBLISHED
+                and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+            )
+        )
+
     if article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
         return True
 
-    if article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}:
+    if article.update_status in {
+        SuggestedArticle.UpdateStatus.PENDING,
+        SuggestedArticle.UpdateStatus.FAILED,
+    }:
         return True
 
     # Article Manager/Internal Article Manager may manage already-published
