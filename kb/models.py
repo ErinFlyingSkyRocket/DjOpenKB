@@ -525,6 +525,14 @@ class SuggestedArticle(models.Model):
             self.UpdateStatus.FAILED,
         }
 
+    @property
+    def has_pending_deletion_request(self):
+        return self.deletion_requests.filter(status=ArticleDeletionRequest.Status.PENDING).exists()
+
+    @property
+    def pending_deletion_request(self):
+        return self.deletion_requests.filter(status=ArticleDeletionRequest.Status.PENDING).order_by("-requested_at").first()
+
     def clear_pending_update(self):
         self.pending_update_title = ""
         self.pending_update_body = ""
@@ -615,6 +623,85 @@ class SuggestedArticle(models.Model):
     @property
     def total_vote_count(self):
         return self.votes.count()
+
+
+class ArticleDeletionRequest(models.Model):
+    """Approval workflow for deleting already-published articles.
+
+    Published articles must stay visible until a scoped approver/manager/admin
+    approves the deletion request. Draft, pending, and failed articles can still
+    be deleted directly by their allowed owner/manager/admin flow.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "pending", _("Pending deletion approval")
+        APPROVED = "approved", _("Deletion approved")
+        REJECTED = "rejected", _("Deletion rejected")
+
+    article = models.ForeignKey(
+        SuggestedArticle,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="deletion_requests",
+    )
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="article_deletion_requests",
+    )
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reviewed_article_deletion_requests",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        db_index=True,
+    )
+    reason = models.TextField(blank=True)
+    review_comment = models.TextField(blank=True)
+    article_title_snapshot = models.CharField(max_length=255, blank=True, db_index=True)
+    article_visibility_snapshot = models.CharField(max_length=20, blank=True, db_index=True)
+    article_status_snapshot = models.CharField(max_length=20, blank=True, db_index=True)
+    article_owner_username_snapshot = models.CharField(max_length=255, blank=True, db_index=True)
+    article_owner_email_snapshot = models.EmailField(blank=True)
+    requested_at = models.DateTimeField(default=timezone.now, db_index=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-requested_at"]
+        verbose_name = _("Article deletion request")
+        verbose_name_plural = _("Article deletion requests")
+        indexes = [
+            models.Index(fields=["status", "article_visibility_snapshot"], name="kb_delreq_status_vis_idx"),
+            models.Index(fields=["-requested_at", "status"], name="kb_delreq_req_status_idx"),
+        ]
+
+    def __str__(self):
+        title = self.article_title_snapshot or (self.article.title if self.article_id and self.article else "")
+        return f"{self.get_status_display()} - {title}"
+
+    def refresh_article_snapshot(self):
+        article = self.article
+        if not article:
+            return
+        self.article_title_snapshot = article.title
+        self.article_visibility_snapshot = article.visibility
+        self.article_status_snapshot = article.status
+        self.article_owner_username_snapshot = article.author_username
+        self.article_owner_email_snapshot = article.author_email
+
+    def save(self, *args, **kwargs):
+        if self.article_id:
+            self.refresh_article_snapshot()
+        super().save(*args, **kwargs)
 
 
 class ArticleVote(models.Model):
@@ -769,6 +856,8 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         ARTICLE_CREATED = "article_created", _("Article created")
         ARTICLE_UPDATED = "article_updated", _("Article updated")
         ARTICLE_DELETED = "article_deleted", _("Article deleted")
+        ARTICLE_DELETION_REQUESTED = "article_deletion_requested", _("Article deletion requested")
+        ARTICLE_DELETION_REJECTED = "article_deletion_rejected", _("Article deletion rejected")
         ARTICLE_STATUS_CHANGED = "article_status_changed", _("Article status changed")
         ARTICLE_SUBMITTED = "article_submitted", _("Article submitted for approval")
         ARTICLE_APPROVED = "article_approved", _("Article approved/published")

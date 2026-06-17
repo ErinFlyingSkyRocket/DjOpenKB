@@ -287,15 +287,117 @@ def _manage_pending_articles_for_allowed_visibilities(request):
         if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
             requested_visibility = "all"
 
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip().lower()
+        deletion_request_id = (request.POST.get("deletion_request_id") or "").strip()
+        review_comment = (request.POST.get("review_comment") or "").strip()
+
+        if action not in {"approve_delete", "reject_delete"}:
+            raise Http404("Article action not allowed")
+
+        try:
+            deletion_request = ArticleDeletionRequest.objects.select_related(
+                "article",
+                "requested_by",
+            ).get(pk=int(deletion_request_id), status=ArticleDeletionRequest.Status.PENDING)
+        except (TypeError, ValueError, ArticleDeletionRequest.DoesNotExist):
+            messages.error(request, _("The deletion request is no longer available. Please refresh and try again."))
+            return redirect(request.get_full_path())
+
+        article = deletion_request.article
+        if not article:
+            deletion_request.status = ArticleDeletionRequest.Status.REJECTED
+            deletion_request.reviewed_by = request.user
+            deletion_request.reviewed_at = timezone.now()
+            deletion_request.review_comment = review_comment or _("Article no longer exists.")
+            deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
+            messages.warning(request, _("The article was already deleted. The deletion request was closed."))
+            return redirect(request.get_full_path())
+
+        article_visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+        if article_visibility not in allowed_visibilities:
+            raise Http404("Article not found")
+        if not user_can_manage_article_visibility(request.user, article_visibility):
+            raise Http404("Article not found")
+        if deletion_request.requested_by_id == request.user.id and not user_can_use_admin_tools(request.user):
+            messages.error(request, _("You cannot approve or reject your own deletion request. Another authorised reviewer must handle it."))
+            return redirect(request.get_full_path())
+
+        if action == "reject_delete":
+            deletion_request.status = ArticleDeletionRequest.Status.REJECTED
+            deletion_request.reviewed_by = request.user
+            deletion_request.reviewed_at = timezone.now()
+            deletion_request.review_comment = review_comment
+            deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
+            log_activity(
+                request,
+                ActivityLog.EventType.ARTICLE_DELETION_REJECTED,
+                article=article,
+                details={
+                    "action": "reject_delete_request",
+                    "deletion_request_id": deletion_request.pk,
+                    "article_id": article.pk,
+                    "title": article.title,
+                    "status": article.status,
+                    "update_status": article.update_status,
+                    "visibility": article.visibility,
+                    "review_comment_provided": bool(review_comment),
+                },
+            )
+            messages.success(request, _("Deletion request rejected. The article remains published."))
+            return redirect(request.get_full_path())
+
+        title = article.title
+        article_id_for_log = article.pk
+        article_status_for_log = article.status
+        article_update_status_for_log = article.update_status
+        article_visibility_for_log = article.visibility
+
+        deletion_request.status = ArticleDeletionRequest.Status.APPROVED
+        deletion_request.reviewed_by = request.user
+        deletion_request.reviewed_at = timezone.now()
+        deletion_request.review_comment = review_comment
+        deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
+
+        log_activity(
+            request,
+            ActivityLog.EventType.ARTICLE_DELETED,
+            article=article,
+            details={
+                "action": "approve_delete_request",
+                "deletion_request_id": deletion_request.pk,
+                "article_id": article_id_for_log,
+                "title": title,
+                "status": article_status_for_log,
+                "update_status": article_update_status_for_log,
+                "visibility": article_visibility_for_log,
+                "requested_by": deletion_request.requested_by.get_username() if deletion_request.requested_by_id else "",
+                "review_comment_provided": bool(review_comment),
+            },
+        )
+        delete_article_files(article)
+        article.delete()
+        messages.success(request, _("Deletion request approved. Article deleted: %(title)s") % {"title": title})
+        return redirect(request.get_full_path())
+
     article_queryset = SuggestedArticle.objects.select_related("owner").filter(
         Q(status=SuggestedArticle.Status.PENDING)
         | Q(update_status=SuggestedArticle.UpdateStatus.PENDING),
         visibility__in=allowed_visibilities,
     )
+    deletion_request_queryset = ArticleDeletionRequest.objects.select_related(
+        "article",
+        "requested_by",
+    ).filter(
+        status=ArticleDeletionRequest.Status.PENDING,
+        article__isnull=False,
+        article__visibility__in=allowed_visibilities,
+    )
     if requested_visibility != "all":
         article_queryset = article_queryset.filter(visibility=requested_visibility)
-
-    total_pending_article_count = article_queryset.count()
+        deletion_request_queryset = deletion_request_queryset.filter(article__visibility=requested_visibility)
+    if not user_can_use_admin_tools(request.user):
+        deletion_request_queryset = deletion_request_queryset.exclude(requested_by=request.user)
 
     if search_query:
         article_queryset = article_queryset.filter(
@@ -314,8 +416,23 @@ def _manage_pending_articles_for_allowed_visibilities(request):
             | Q(author_username_snapshot__icontains=search_query)
             | Q(author_email_snapshot__icontains=search_query)
         )
+        deletion_request_queryset = deletion_request_queryset.filter(
+            Q(article__title__icontains=search_query)
+            | Q(article__body__icontains=search_query)
+            | Q(article__keywords__icontains=search_query)
+            | Q(reason__icontains=search_query)
+            | Q(requested_by__username__icontains=search_query)
+            | Q(requested_by__email__icontains=search_query)
+            | Q(article_title_snapshot__icontains=search_query)
+            | Q(article_owner_username_snapshot__icontains=search_query)
+            | Q(article_owner_email_snapshot__icontains=search_query)
+        )
 
     article_queryset = article_queryset.order_by("created_at", "updated_at")
+    deletion_request_queryset = deletion_request_queryset.order_by("requested_at")
+    total_article_review_count = article_queryset.count()
+    total_deletion_request_count = deletion_request_queryset.count()
+    total_pending_article_count = total_article_review_count + total_deletion_request_count
     page_obj = paginate_articles(request, article_queryset, per_page=20)
 
     filter_query_suffix = ""
@@ -333,10 +450,13 @@ def _manage_pending_articles_for_allowed_visibilities(request):
 
     return render(request, "admin_pending_articles.html", {
         "articles": page_obj.object_list,
+        "deletion_requests": deletion_request_queryset,
         "page_obj": page_obj,
         "pending_search_query": search_query,
         "pending_result_count": article_queryset.count(),
         "total_pending_article_count": total_pending_article_count,
+        "total_article_review_count": total_article_review_count,
+        "total_deletion_request_count": total_deletion_request_count,
         "is_pending_search": bool(search_query),
         "pending_visibility": requested_visibility,
         "pending_page_title": pending_page_title,
@@ -596,6 +716,7 @@ def manage_orphan_articles(request):
 
     return render(request, "admin_orphan_articles.html", {
         "articles": page_obj.object_list,
+        "deletion_requests": deletion_request_queryset,
         "page_obj": page_obj,
         "orphan_search_query": search_query,
         "status_filter": status_filter,

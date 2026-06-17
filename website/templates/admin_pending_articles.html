@@ -22,7 +22,10 @@
         .pending-toolbar { margin: 12px 0 16px; }
         .pending-table-wrap { overflow-x: auto; }
         .pending-actions form { display: inline-block; margin: 0 0 4px 4px; }
-        </style>
+        .deletion-review-form { margin: 0; min-width: 250px; }
+        .deletion-review-form textarea { margin-bottom: 6px; resize: vertical; }
+        .section-heading { margin-top: 24px; }
+    </style>
 </head>
 <body>
     {% include "_navbar.html" %}
@@ -36,13 +39,15 @@
             {% endif %}
 
             <h2>{% if pending_page_title %}{{ pending_page_title }}{% else %}{% trans "Manage pending articles" %}{% endif %}{% if is_internal_space %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h2>
-            <p class="pending-muted">{% trans "Review submitted articles and pending updates within your allowed article scope." %}</p>
+            <p class="pending-muted">{% trans "Review submitted articles, pending updates, and deletion requests within your allowed article scope." %}</p>
 
             <div class="pending-summary-card">
                 <span class="pending-summary-number">{{ total_pending_article_count }}</span>
-                <span>{% trans "pending article reviews" %}</span>
+                <span>{% trans "pending review item(s)" %}</span>
+                <span class="pending-muted">&middot; {{ total_article_review_count }} {% trans "article/update" %}</span>
+                <span class="pending-muted">&middot; {{ total_deletion_request_count }} {% trans "delete request" %}</span>
                 {% if is_pending_search %}
-                    <span class="pending-muted">&middot; {{ pending_result_count }} {% trans "matching" %}</span>
+                    <span class="pending-muted">&middot; {{ pending_result_count }} {% trans "matching article/update review(s)" %}</span>
                 {% endif %}
             </div>
 
@@ -94,6 +99,7 @@
             {% endif %}
 
             {% if articles %}
+                <h3 class="section-heading">{% trans "Article and update reviews" %}</h3>
                 <div class="pending-table-wrap">
                     <table class="table table-striped table-hover">
                         <thead>
@@ -135,12 +141,62 @@
                         </tbody>
                     </table>
                 </div>
-            {% else %}
+            {% endif %}
+
+            {% if deletion_requests %}
+                <h3 class="section-heading">{% trans "Deletion requests" %}</h3>
+                <div class="pending-table-wrap">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Article title" %}</th>
+                                {% if pending_allowed_internal %}<th>{% trans "Visibility" %}</th>{% endif %}
+                                <th>{% trans "Requested by" %}</th>
+                                <th>{% trans "Reason" %}</th>
+                                <th>{% trans "Requested" %}</th>
+                                <th class="text-right">{% trans "Decision" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deletion_request in deletion_requests %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ deletion_request.article.title }}</strong><br>
+                                        <span class="label label-danger">{% trans "Deletion requested" %}</span>
+                                        {% if deletion_request.article.has_pending_update %}
+                                            <br><small class="pending-muted">{% trans "Article has a pending update but remains published until deletion is approved." %}</small>
+                                        {% endif %}
+                                    </td>
+                                    {% if pending_allowed_internal %}
+                                        <td>{% if deletion_request.article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}</td>
+                                    {% endif %}
+                                    <td>
+                                        {% if deletion_request.requested_by %}{{ deletion_request.requested_by.get_username }}{% else %}{{ deletion_request.article_owner_username_snapshot }}{% endif %}
+                                    </td>
+                                    <td>{% if deletion_request.reason %}{{ deletion_request.reason }}{% else %}{% trans "No reason provided." %}{% endif %}</td>
+                                    <td>{{ deletion_request.requested_at|date:"d/m/Y g:iA" }}</td>
+                                    <td class="text-right pending-actions">
+                                        <form method="post" class="deletion-review-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="deletion_request_id" value="{{ deletion_request.id }}">
+                                            <textarea name="review_comment" class="form-control input-sm" rows="2" placeholder="{% trans 'Optional review comment' %}"></textarea>
+                                            <button type="submit" name="action" value="approve_delete" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> {% trans "Approve deletion" %}</button>
+                                            <button type="submit" name="action" value="reject_delete" class="btn btn-xs btn-default"><i class="fa fa-times"></i> {% trans "Reject" %}</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if not articles and not deletion_requests %}
                 <div class="alert alert-info">
                     {% if is_pending_search %}
-                        {% trans "No pending article reviews match your search." %}
+                        {% trans "No pending article reviews or deletion requests match your search." %}
                     {% else %}
-                        {% trans "There are no pending article reviews right now." %}
+                        {% trans "There are no pending article reviews or deletion requests right now." %}
                     {% endif %}
                 </div>
             {% endif %}

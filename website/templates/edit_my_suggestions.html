@@ -236,7 +236,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                         </td>
                                                     {% endif %}
                                                     <td>
-                                                        {% if article.has_pending_update %}
+                                                        {% if article.has_pending_deletion_request %}
+                                                            <span class="label label-danger">{% trans "Deletion requested" %}</span>
+                                                            <br><small class="text-muted">{% trans "Published version remains visible" %}</small>
+                                                        {% elif article.has_pending_update %}
                                                             <span class="label label-warning">{% trans "Pending update" %}</span>
                                                             <br><small class="text-muted">{% trans "Published version remains visible" %}</small>
                                                         {% elif article.has_failed_update %}
@@ -256,7 +259,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                                     <td class="text-right article-actions">
                                                         <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Edit" %}</a>
-                                                        <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Delete" %}</a>
+                                                        {% if article.delete_action_type == "direct" %}
+                                                            <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Delete" %}</a>
+                                                        {% elif article.delete_action_type == "request" %}
+                                                            <a class="btn btn-xs btn-warning" href="{% url 'delete_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Request deletion" %}</a>
+                                                        {% elif article.delete_action_type == "pending_request" %}
+                                                            <span class="label label-warning">{% trans "Deletion requested" %}</span>
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endfor %}

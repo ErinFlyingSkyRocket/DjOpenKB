@@ -168,6 +168,8 @@ def article_detail(request, article_id):
         "login_url": f'{reverse("login")}?next={request.get_full_path()}',
         "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
         "can_delete": request.user.is_authenticated and user_can_delete_article(request.user, article),
+        "delete_action": article_delete_action_type(request.user, article) if request.user.is_authenticated else "none",
+        "has_pending_deletion_request": article.has_pending_deletion_request,
         "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),
         "delete_url": reverse("delete_suggestion", kwargs={"article_id": article.pk}),
         "visibility": article.visibility,

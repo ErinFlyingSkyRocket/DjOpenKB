@@ -284,6 +284,8 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
 
     article_queryset = article_queryset.order_by("-updated_at", "-created_at")
     page_obj = paginate_articles(request, article_queryset, per_page=20)
+    for profile_article in page_obj.object_list:
+        profile_article.delete_action_type = article_delete_action_type(request.user, profile_article)
 
     new_article_url = reverse("suggest")
     if requested_visibility in {SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}:
@@ -742,17 +744,74 @@ def edit_suggestion(request, article_id):
 @main_site_login_required
 def delete_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
+    delete_action = article_delete_action_type(request.user, article)
 
-    if not user_can_delete_article(request.user, article):
+    if delete_action == "none":
         raise Http404("Article not found")
 
     fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
     return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
 
+    if delete_action == "pending_request":
+        if request.method == "POST":
+            messages.info(request, _("A deletion request for this published article is already waiting for approval."))
+            return redirect(return_url)
+        return render(request, "suggest_delete.html", {
+            "article": article,
+            "return_url": return_url,
+            "delete_action": delete_action,
+            "pending_deletion_request": article.pending_deletion_request,
+        })
+
     if request.method == "POST":
+        if delete_action == "request":
+            reason = (request.POST.get("reason") or "").strip()
+            deletion_request, created = ArticleDeletionRequest.objects.get_or_create(
+                article=article,
+                status=ArticleDeletionRequest.Status.PENDING,
+                defaults={
+                    "requested_by": request.user,
+                    "reason": reason,
+                },
+            )
+            if not created:
+                messages.info(request, _("A deletion request for this published article is already waiting for approval."))
+                return redirect(return_url)
+
+            log_activity(
+                request,
+                ActivityLog.EventType.ARTICLE_DELETION_REQUESTED,
+                article=article,
+                details={
+                    "action": "request_delete",
+                    "deletion_request_id": deletion_request.pk,
+                    "article_id": article.pk,
+                    "title": article.title,
+                    "status": article.status,
+                    "update_status": article.update_status,
+                    "visibility": article.visibility,
+                    "reason_provided": bool(reason),
+                },
+            )
+            messages.success(request, _("Deletion request submitted for approval. The published article remains visible until the request is approved."))
+            return redirect(return_url)
+
         title = article.title
         article_id_for_log = article.pk
         article_status_for_log = article.status
+        article_visibility_for_log = article.visibility
+
+        pending_requests = list(ArticleDeletionRequest.objects.filter(
+            article=article,
+            status=ArticleDeletionRequest.Status.PENDING,
+        ))
+        for deletion_request in pending_requests:
+            deletion_request.status = ArticleDeletionRequest.Status.APPROVED
+            deletion_request.reviewed_by = request.user
+            deletion_request.reviewed_at = timezone.now()
+            deletion_request.review_comment = deletion_request.review_comment or _("Article deleted directly by an authorised manager/admin.")
+            deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
+
         log_activity(
             request,
             ActivityLog.EventType.ARTICLE_DELETED,
@@ -762,8 +821,10 @@ def delete_suggestion(request, article_id):
                 "article_id": article_id_for_log,
                 "title": title,
                 "status": article_status_for_log,
-                "is_admin_action": user_can_review_article(request.user, article) or user_can_delete_article(request.user, article),
-                "visibility": article.visibility,
+                "update_status": article.update_status,
+                "is_admin_action": user_can_review_article(request.user, article) or user_can_direct_delete_article(request.user, article),
+                "visibility": article_visibility_for_log,
+                "approved_pending_delete_request_ids": [item.pk for item in pending_requests],
             },
         )
         delete_article_files(article)
@@ -771,7 +832,11 @@ def delete_suggestion(request, article_id):
         messages.success(request, f"Article deleted: {title}")
         return redirect(return_url)
 
-    return render(request, "suggest_delete.html", {"article": article, "return_url": return_url})
+    return render(request, "suggest_delete.html", {
+        "article": article,
+        "return_url": return_url,
+        "delete_action": delete_action,
+    })
 
 
 @article_image_editor_required

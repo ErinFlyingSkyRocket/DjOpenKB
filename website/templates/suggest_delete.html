@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
-    <title>{% trans "Delete article" %}</title>
+    <title>{% if delete_action == "request" %}{% trans "Request article deletion" %}{% else %}{% trans "Delete article" %}{% endif %}</title>
     <meta property="og:title" content="{% trans 'Delete article' %}" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,27 +17,68 @@
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
-        </style>
 </head>
 <body class="">
     {% include "_navbar.html" %}
 {% include "_page_back_button.html" %}
 <div class="container-fluid">
         <div class="col-md-6 col-md-offset-3" style="padding-top: 50px;">
-            <div class="panel panel-danger">
-                <div class="panel-heading">{% trans "Delete suggested article" %}</div>
-                <div class="panel-body">
-                    <p>{% trans "Are you sure you want to delete" %} <strong>{{ article.title }}</strong>?</p>
-                    <p class="text-muted">{% trans "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage." %}</p>
-                    <form method="post" action="{% url 'delete_suggestion' article.id %}">
-                        <input type="hidden" name="next" value="{{ return_url|default:'' }}">
-                        {% csrf_token %}
-                        <button class="btn btn-danger" type="submit">{% trans "Delete" %}</button>
-                        <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Cancel" %}</a>
-                    </form>
+            {% if delete_action == "request" %}
+                <div class="panel panel-warning">
+                    <div class="panel-heading">{% trans "Request deletion approval" %}</div>
+                    <div class="panel-body">
+                        <p>{% blocktrans with title=article.title %}Request deletion approval for <strong>{{ title }}</strong>?{% endblocktrans %}</p>
+                        <p class="text-muted">
+                            {% trans "This article is already published, so it will remain visible until an authorised approver or manager approves the deletion request." %}
+                        </p>
+                        {% if article.has_pending_update %}
+                            <div class="alert alert-info">
+                                {% trans "This article also has a pending update. It is still treated as a published article, so deletion requires approval." %}
+                            </div>
+                        {% endif %}
+                        <form method="post" action="{% url 'delete_suggestion' article.id %}">
+                            <input type="hidden" name="next" value="{{ return_url|default:'' }}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="deleteReason">{% trans "Reason for deletion" %}</label>
+                                <textarea id="deleteReason" name="reason" class="form-control" rows="4" placeholder="{% trans 'Optional reason shown to reviewers' %}"></textarea>
+                            </div>
+                            <button class="btn btn-warning" type="submit"><i class="fa fa-paper-plane"></i> {% trans "Submit deletion request" %}</button>
+                            <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Cancel" %}</a>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            {% elif delete_action == "pending_request" %}
+                <div class="panel panel-info">
+                    <div class="panel-heading">{% trans "Deletion request already pending" %}</div>
+                    <div class="panel-body">
+                        <p>{% blocktrans with title=article.title %}A deletion request for <strong>{{ title }}</strong> is already waiting for approval.{% endblocktrans %}</p>
+                        {% if pending_deletion_request and pending_deletion_request.reason %}
+                            <p><strong>{% trans "Reason" %}:</strong> {{ pending_deletion_request.reason }}</p>
+                        {% endif %}
+                        <p class="text-muted">{% trans "The published article remains visible until the deletion request is approved." %}</p>
+                        <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Back" %}</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="panel panel-danger">
+                    <div class="panel-heading">{% trans "Delete suggested article" %}</div>
+                    <div class="panel-body">
+                        <p>{% trans "Are you sure you want to delete" %} <strong>{{ article.title }}</strong>?</p>
+                        {% if article.status == "published" %}
+                            <p class="text-muted">{% trans "You are authorised to delete this published article directly. This removes the article and its generated OpenKB Markdown files." %}</p>
+                        {% else %}
+                            <p class="text-muted">{% trans "This removes the profile record and deletes the Markdown files from OpenKB raw/source storage." %}</p>
+                        {% endif %}
+                        <form method="post" action="{% url 'delete_suggestion' article.id %}">
+                            <input type="hidden" name="next" value="{{ return_url|default:'' }}">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit">{% trans "Delete" %}</button>
+                            <a class="btn btn-default" href="{{ return_url|default:'' }}">{% trans "Cancel" %}</a>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 

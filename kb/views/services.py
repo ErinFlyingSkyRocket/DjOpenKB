@@ -34,7 +34,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ActivityLog, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
+from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
 from ..mfa import user_requires_mfa
 from ..permissions import (
     PERM_ADD_ARTICLES,
@@ -548,13 +548,23 @@ def user_can_manage_article(user, article, *, review_mode=False):
 
     return False
 
-def user_can_delete_article(user, article):
-    """Return True when a user may delete this article.
+def article_has_pending_deletion_request(article):
+    if not article or not getattr(article, "pk", None):
+        return False
+    return ArticleDeletionRequest.objects.filter(
+        article=article,
+        status=ArticleDeletionRequest.Status.PENDING,
+    ).exists()
 
-    Public delete permissions do not grant internal delete rights, and internal
-    delete permissions do not grant public delete rights. Admin Users may delete both.
-    Draft articles are owner/Admin-only so managers cannot remove private drafts
-    by ID traversal.
+
+def user_can_direct_delete_article(user, article):
+    """Return True when the article can be deleted immediately.
+
+    Published articles are protected from author self-deletion because the
+    public/internal article is already live and mirrored to OpenKB data. Owners
+    may delete their own non-published workflow records directly. Published
+    records require a deletion request unless the actor is a scoped manager or
+    Admin Users account.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -564,23 +574,66 @@ def user_can_delete_article(user, article):
     if user_can_use_admin_tools(user):
         return True
 
+    if article.status == SuggestedArticle.Status.PUBLISHED:
+        # Published owner deletes must go through deletion approval, even when
+        # the owner also has a manager role. This prevents accidental/self
+        # removal of live knowledge-base content.
+        if article.owner_id == user.pk:
+            return False
+        return user_can_delete_article_visibility(user, visibility)
+
+    if user_can_delete_article_visibility(user, visibility):
+        return True
+
     if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
         return True
 
-    if not user_can_delete_article_visibility(user, visibility):
+    return False
+
+
+def user_can_request_article_deletion(user, article):
+    """Return True when an owner may request approval to delete a live article."""
+    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
 
+    visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+
+    if article.status != SuggestedArticle.Status.PUBLISHED:
+        return False
+
+    if user_can_direct_delete_article(user, article):
+        return False
+
+    if article.owner_id != user.pk:
+        return False
+
+    if not user_can_add_article_visibility(user, visibility):
+        return False
+
+    return not article_has_pending_deletion_request(article)
+
+
+def user_can_delete_article(user, article):
+    """Return True when the delete page should be available.
+
+    This includes direct deletion for non-published owner articles/manager-admin
+    scope deletes, and deletion-request creation for owners of published
+    articles. The delete view decides which mode applies server-side.
+    """
     return bool(
-        article.status in {
-            SuggestedArticle.Status.PUBLISHED,
-            SuggestedArticle.Status.PENDING,
-            SuggestedArticle.Status.FAILED,
-        }
-        or article.update_status in {
-            SuggestedArticle.UpdateStatus.PENDING,
-            SuggestedArticle.UpdateStatus.FAILED,
-        }
+        user_can_direct_delete_article(user, article)
+        or user_can_request_article_deletion(user, article)
     )
+
+
+def article_delete_action_type(user, article):
+    if user_can_direct_delete_article(user, article):
+        return "direct"
+    if user_can_request_article_deletion(user, article):
+        return "request"
+    if article_has_pending_deletion_request(article):
+        return "pending_request"
+    return "none"
 
 def user_owns_article(user, article):
     """Return True only for the active authenticated owner of an article."""

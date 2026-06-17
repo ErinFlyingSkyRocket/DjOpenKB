@@ -108,19 +108,19 @@ ROLE_DEFINITIONS = {
     },
     ROLE_ARTICLE_WRITER: {
         "description": _(
-            "Article contributor. Can view articles, create articles, save drafts, submit for approval, and manage their own article drafts/updates. Regular User is not required."
+            "Article contributor. Can view articles, create articles, save drafts, submit for approval, manage their own article drafts/updates, and request deletion of their own published articles. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES),
     },
     ROLE_ARTICLE_APPROVER: {
         "description": _(
-            "Article approver. Can view articles, review pending public articles/updates, edit content while they remain pending, keep them pending after review edits, and approve or reject them; cannot create, delete, or edit already-published articles by default. Regular User is not required."
+            "Article approver. Can view articles, review pending public articles/updates and public deletion requests, edit content while articles/updates remain pending, keep them pending after review edits, and approve or reject them; cannot create, directly delete, or edit already-published articles by default. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_MANAGE_ARTICLES),
     },
     ROLE_ARTICLE_MANAGER: {
         "description": _(
-            "Article manager. Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates, approve/reject submissions, and delete public articles. Regular User is not required."
+            "Article manager. Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates/deletion requests, approve/reject submissions, and delete public articles in scope. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_ADD_ARTICLES, PERM_MANAGE_ARTICLES, PERM_DELETE_ARTICLES),
     },
@@ -132,19 +132,19 @@ ROLE_DEFINITIONS = {
     },
     ROLE_INTERNAL_ARTICLE_WRITER: {
         "description": _(
-            "Internal writer add-on. Can view public/internal articles and create or maintain their own internal article drafts and submissions."
+            "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and request deletion of their own published internal articles."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_ADD_INTERNAL_ARTICLES),
     },
     ROLE_INTERNAL_ARTICLE_APPROVER: {
         "description": _(
-            "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
+            "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates/deletion requests. Cannot directly delete or edit already-published internal articles by default."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_MANAGE_INTERNAL_ARTICLES),
     },
     ROLE_INTERNAL_ARTICLE_MANAGER: {
         "description": _(
-            "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject, and delete internal articles."
+            "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions/deletion requests, and delete internal articles in scope."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_ADD_INTERNAL_ARTICLES, PERM_MANAGE_INTERNAL_ARTICLES, PERM_DELETE_INTERNAL_ARTICLES),
     },
