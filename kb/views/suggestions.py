@@ -595,12 +595,25 @@ def edit_suggestion(request, article_id):
                 article.add_review_note_history(review_notes, reviewer=request.user, action="update_pending_failed")
             article.review_notes = review_notes
             write_public_files = False
+        elif status == SuggestedArticle.Status.PENDING:
+            # Reviewer edited the submitted update but has not made the final
+            # approve/reject decision yet. Keep the already-published version
+            # visible and keep the update in the review queue.
+            article.pending_update_title = title
+            article.pending_update_body = body
+            article.pending_update_keywords = keywords_raw
+            article.pending_update_image_assets = new_image_assets
+            article.update_status = SuggestedArticle.UpdateStatus.PENDING
+            if not article.update_submitted_at:
+                article.update_submitted_at = timezone.now()
+            article.update_reviewed_at = None
+            write_public_files = False
         else:
-            # Keep pending update reviews constrained to approve or reject so the
-            # already-published article is not accidentally hidden.
+            # Keep pending update reviews constrained so the already-published
+            # article is not accidentally hidden.
             return render_edit_form({
                 **error_context,
-                "error": _("Pending updates can only be approved as Published or marked as Pending failed."),
+                "error": _("Pending updates can only be kept pending, approved as Published, or marked as Pending failed."),
                 "is_pending_update_review": True,
             })
     else:
@@ -684,6 +697,8 @@ def edit_suggestion(request, article_id):
         messages.success(request, _("Article update approved and published."))
     elif is_admin_pending_update_review and status == SuggestedArticle.Status.FAILED:
         messages.success(request, _("Article update marked as pending failed. The current published version remains visible."))
+    elif is_admin_pending_update_review and status == SuggestedArticle.Status.PENDING:
+        messages.success(request, _("Review edits saved. The update remains pending approval and the current published version is still visible."))
     elif status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
     elif status == SuggestedArticle.Status.PENDING:

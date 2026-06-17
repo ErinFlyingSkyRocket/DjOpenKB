@@ -642,24 +642,32 @@ def validate_article_edit_action(user, article, submit_action):
 def allowed_article_statuses_for_admin_edit(article, user=None):
     """Return statuses available in the review/edit form.
 
-    Article Approver roles can only approve or reject. Managers and Admin Users
-    retain the broader workflow controls inside their own scope.
-    Pending-update reviews are always constrained to approve/reject so the
-    current published version is not accidentally hidden.
+    Approver roles may edit a submitted pending article/update and save those
+    review edits without making a final decision yet. Therefore pending review
+    screens expose three safe choices: keep pending, approve/publish, or reject.
+
+    Managers and Admin Users retain broader workflow controls inside their own
+    scope, except pending-update reviews are also constrained so an already
+    published article is never accidentally hidden while an update is being
+    reviewed.
     """
-    approve_reject = {SuggestedArticle.Status.PUBLISHED, SuggestedArticle.Status.FAILED}
+    review_choices = {
+        SuggestedArticle.Status.PENDING,
+        SuggestedArticle.Status.PUBLISHED,
+        SuggestedArticle.Status.FAILED,
+    }
 
     if (
         article.status == SuggestedArticle.Status.PUBLISHED
         and article.update_status == SuggestedArticle.UpdateStatus.PENDING
     ):
-        return approve_reject
+        return review_choices
 
     if user is not None and user_is_article_approver_only_for_visibility(
         user,
         getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC),
     ):
-        return approve_reject
+        return review_choices
 
     return {
         SuggestedArticle.Status.DRAFT,
