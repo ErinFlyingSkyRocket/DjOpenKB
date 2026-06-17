@@ -282,13 +282,15 @@ def user_can_view_article_detail(user, article):
     return bool(article.owner_id == user.pk and user_can_add_article_visibility(user, visibility))
 
 
-def user_can_review_article(user, article):
+def user_can_review_article(user, article, *, review_mode=False):
     """Return True when the user may use the review/status workflow here.
 
-    Approver-only roles may review submitted pending articles and submitted
-    pending updates in their own visibility scope. They must not be able to
-    publish their own rejected/failed article by opening the edit page, and they
-    must not approve their own submission through the reviewer dropdown.
+    The review workflow is intentionally context-specific. A user can hold both
+    Article Writer and Article Approver, so ownership alone must not decide the
+    form behaviour. When the user clicks Manage Pending -> Review, the URL/form
+    carries review_mode=True and reviewer actions are enabled. When the same
+    user clicks Edit from My Articles, review_mode is False and the normal
+    author/edit workflow is used.
 
     Managers/Admin Users keep broader management rights in their own scope.
     """
@@ -307,9 +309,7 @@ def user_can_review_article(user, article):
     is_manager = user_is_article_manager_for_visibility(user, visibility)
 
     if is_approver_only:
-        # Separation of duties: a reviewer-only user who also owns the article
-        # must follow the normal author flow and resubmit for approval.
-        if article.owner_id == getattr(user, "pk", None):
+        if not review_mode:
             return False
         return bool(
             article.status == SuggestedArticle.Status.PENDING
@@ -398,7 +398,7 @@ def user_is_article_manager_for_visibility(user, visibility):
     return bool(user_can_manage_articles(user) and user_can_delete_articles(user))
 
 
-def user_can_edit_article_content(user, article):
+def user_can_edit_article_content(user, article, *, review_mode=False):
     """Return True when this user may change title/body/keywords/images.
 
     Owners, scope managers, and Admin Users may edit according to the normal
@@ -422,10 +422,11 @@ def user_can_edit_article_content(user, article):
         return True
 
     if user_is_article_approver_only_for_visibility(user, visibility):
-        # Approver-only users can edit content only while actively reviewing a
-        # submitted pending item. Rejected/failed articles return to the author
-        # and must be resubmitted before another approval decision is possible.
-        if article.owner_id == getattr(user, "pk", None):
+        # Approver-only users can edit content only inside the explicit review
+        # flow from Manage Pending. The same user may also be the author; in
+        # that case Edit from My Articles remains the author workflow, while
+        # Manage Pending -> Review remains the reviewer workflow.
+        if not review_mode:
             return False
         return bool(
             article.status == SuggestedArticle.Status.PENDING
@@ -496,7 +497,7 @@ def user_can_change_article_visibility(user, article):
     return bool(article.owner_id == user.pk and len(allowed_article_visibility_values_for_user(user, action="add")) > 1)
 
 
-def user_can_manage_article(user, article):
+def user_can_manage_article(user, article, *, review_mode=False):
     """Return True when a user may edit/review this article.
 
     Public article roles apply only to public articles. Internal article roles
@@ -521,7 +522,7 @@ def user_can_manage_article(user, article):
         return False
 
     if user_is_article_approver_only_for_visibility(user, visibility):
-        if article.owner_id == getattr(user, "pk", None):
+        if not review_mode:
             return False
         return bool(
             article.status == SuggestedArticle.Status.PENDING
@@ -605,16 +606,16 @@ def require_site_admin(user):
     return True
 
 
-def allowed_article_edit_actions_for(user, article):
+def allowed_article_edit_actions_for(user, article, *, review_mode=False):
     """Return the exact form actions allowed for this user/article state.
 
     This protects the edit endpoint from forged POST actions. Templates hide
     buttons, but the view must still enforce the server-side rule.
     """
-    if not user_can_manage_article(user, article):
+    if not user_can_manage_article(user, article, review_mode=review_mode):
         return set()
 
-    if user_can_review_article(user, article):
+    if user_can_review_article(user, article, review_mode=review_mode):
         # Article Approvers/Managers, Internal Approvers/Managers, and Admin Users
         # review through the status dropdown and Save button within their own scope.
         return {"save", ""}
@@ -631,10 +632,10 @@ def allowed_article_edit_actions_for(user, article):
     return {"draft", "submit"}
 
 
-def validate_article_edit_action(user, article, submit_action):
+def validate_article_edit_action(user, article, submit_action, *, review_mode=False):
     """Raise 404 for tampered edit actions that the user/role cannot perform."""
     submit_action = (submit_action or "save").strip()
-    if submit_action not in allowed_article_edit_actions_for(user, article):
+    if submit_action not in allowed_article_edit_actions_for(user, article, review_mode=review_mode):
         raise Http404("Article action not allowed")
     return submit_action
 

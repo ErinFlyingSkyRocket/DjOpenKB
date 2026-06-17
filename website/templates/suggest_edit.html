@@ -226,6 +226,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
+                <input type="hidden" name="editor_mode" value="{{ article_editor_mode|default:'edit' }}">
                     <input type="hidden" name="frm_kb_id" value="" />
                     <input type="hidden" name="article_visibility" value="{{ article.visibility }}" {% if can_change_article_visibility %}disabled{% endif %}>
                     {% if is_review_only_article %}
@@ -293,7 +294,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
                             {% if can_review_article %}
-                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if is_review_only_article %}{% trans "Save review decision" %}{% else %}{% trans "Save" %}{% endif %}</button>
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if is_article_review_mode %}{% trans "Save review action" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
                                     {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}

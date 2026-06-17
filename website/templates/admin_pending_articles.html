@@ -126,7 +126,7 @@
                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                     <td class="text-right pending-actions">
-                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}"><i class="fa fa-check-square-o"></i> {% trans "Review" %}</a>
+                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?editor_mode=review&next={{ request.get_full_path|urlencode }}"><i class="fa fa-check-square-o"></i> {% trans "Review" %}</a>
                                     </td>
                                 </tr>
                             {% endfor %}

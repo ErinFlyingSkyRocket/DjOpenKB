@@ -6,6 +6,23 @@ from django.utils.translation import gettext as _
 from urllib.parse import quote
 
 
+def _article_editor_review_mode(request):
+    """Return True when the edit form is being used as a reviewer screen.
+
+    This separates combined roles cleanly: Manage Pending -> Review uses the
+    reviewer/status workflow, while My Articles -> Edit uses the author/edit
+    workflow even if the same account also has approver rights.
+    """
+    value = (
+        request.POST.get("editor_mode")
+        or request.GET.get("editor_mode")
+        or request.POST.get("review")
+        or request.GET.get("review")
+        or ""
+    ).strip().lower()
+    return value in {"review", "1", "true", "yes"}
+
+
 def _normalise_keyword_suggestion(value):
     """Return a clean manually-entered keyword/tag value or an empty string if unsuitable."""
     value = re.sub(r"\s+", " ", (value or "").strip().lower())
@@ -316,8 +333,15 @@ def edit_my_internal_suggestions(request):
 @main_site_login_required
 def edit_suggestion(request, article_id):
     article = get_object_or_404(SuggestedArticle, pk=article_id)
+    is_review_mode = _article_editor_review_mode(request)
 
-    if not user_can_manage_article(request.user, article):
+    if not user_can_manage_article(request.user, article, review_mode=is_review_mode):
+        raise Http404("Article not found")
+
+    # A forged review-mode flag should not turn a normal edit URL into a review
+    # screen unless this user can really review the article in its visibility
+    # scope and current workflow state.
+    if is_review_mode and not user_can_review_article(request.user, article, review_mode=True):
         raise Http404("Article not found")
 
     fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
@@ -325,7 +349,7 @@ def edit_suggestion(request, article_id):
 
     def render_edit_form(extra_context=None):
         extra_context = extra_context or {}
-        can_review_article = user_can_review_article(request.user, article)
+        can_review_article = user_can_review_article(request.user, article, review_mode=is_review_mode)
         pending_update_review = (
             can_review_article
             and article.status == SuggestedArticle.Status.PUBLISHED
@@ -351,7 +375,7 @@ def edit_suggestion(request, article_id):
         edit_image_assets = article.pending_update_image_assets if use_pending_update_values else article.image_assets
 
         back_url = return_url or reverse(fallback_view_name)
-        can_edit_content = user_can_edit_article_content(request.user, article)
+        can_edit_content = user_can_edit_article_content(request.user, article, review_mode=is_review_mode)
         can_change_visibility = user_can_change_article_visibility(request.user, article)
         visibility_choices = article_visibility_choices_for_user(request.user, action="add") if can_change_visibility else []
         allowed_statuses = allowed_article_statuses_for_admin_edit(article, user=request.user) if can_review_article else set()
@@ -372,6 +396,8 @@ def edit_suggestion(request, article_id):
             "keywords_value": edit_keywords,
             "is_pending_update_review": pending_update_review,
             "can_review_article": can_review_article,
+            "article_editor_mode": "review" if is_review_mode else "edit",
+            "is_article_review_mode": is_review_mode,
             "can_edit_article_content": can_edit_content,
             "is_review_only_article": can_review_article and not can_edit_content,
             "can_change_article_visibility": can_change_visibility,
@@ -402,12 +428,13 @@ def edit_suggestion(request, article_id):
         request.user,
         article,
         request.POST.get("submit_action", "save"),
+        review_mode=is_review_mode,
     )
 
     previous_status = article.status
     previous_update_status = article.update_status
 
-    is_admin_action = user_can_review_article(request.user, article)
+    is_admin_action = user_can_review_article(request.user, article, review_mode=is_review_mode)
     is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
     is_admin_pending_update_review = (
         is_admin_action
@@ -432,7 +459,7 @@ def edit_suggestion(request, article_id):
             # User publish/submit means pending admin approval, never direct public publishing.
             status = SuggestedArticle.Status.PENDING
 
-    can_edit_content = user_can_edit_article_content(request.user, article)
+    can_edit_content = user_can_edit_article_content(request.user, article, review_mode=is_review_mode)
 
     if is_admin_action:
         review_notes = (request.POST.get("review_notes") or "").strip()
@@ -926,7 +953,7 @@ def serve_article_image(request, filename):
 
     if request.user.is_authenticated:
         for article in referenced_articles:
-            if article.owner_id == request.user.id or user_can_review_article(request.user, article) or user_can_delete_article(request.user, article):
+            if article.owner_id == request.user.id or user_can_review_article(request.user, article, review_mode=True) or user_can_delete_article(request.user, article):
                 allowed = True
                 break
 
