@@ -29,8 +29,13 @@
                                     <li><a href="{% url 'suggest' %}"><i class="fa fa-plus"></i> {% trans "New" %}</a></li>
                                     <li><a href="{% url 'edit_my_suggestions' %}"><i class="fa fa-pencil"></i> {% trans "Edit my articles" %}</a></li>
                                 {% endif %}
-                                {% if user|can_manage_articles or user|can_manage_internal_articles %}
-                                    <li><a href="{% url 'manage_pending_articles' %}"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>
+                                {% if user|can_manage_articles and user|can_manage_internal_articles %}
+                                    <li><a href="{% url 'manage_pending_articles' %}?visibility=public"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>
+                                    <li><a href="{% url 'manage_pending_articles' %}?visibility=internal"><i class="fa fa-lock"></i> {% trans "Manage internal pending articles" %}</a></li>
+                                {% elif user|can_manage_internal_articles %}
+                                    <li><a href="{% url 'manage_pending_articles' %}?visibility=internal"><i class="fa fa-lock"></i> {% trans "Manage internal pending articles" %}</a></li>
+                                {% elif user|can_manage_articles %}
+                                    <li><a href="{% url 'manage_pending_articles' %}?visibility=public"><i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}</a></li>
                                 {% endif %}
                                 {% if user|can_use_admin_tools %}
                                     <li><a href="{% url 'manage_orphan_articles' %}"><i class="fa fa-user-times"></i> {% trans "Scan orphan articles" %}</a></li>

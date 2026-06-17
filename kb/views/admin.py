@@ -274,11 +274,18 @@ def _manage_pending_articles_for_allowed_visibilities(request):
         raise Http404("Article not found")
 
     search_query = request.GET.get("q", "").strip()
-    requested_visibility = (request.GET.get("visibility") or "all").strip().lower()
-    if requested_visibility not in {"all", SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}:
-        requested_visibility = "all"
-    if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
-        requested_visibility = "all"
+
+    # Keep the shared Manage Pending page scope-specific. A public-only reviewer
+    # should not see internal controls/labels, and an internal-only reviewer
+    # should not be dropped into a generic/public-looking management page.
+    if len(allowed_visibilities) == 1:
+        requested_visibility = allowed_visibilities[0]
+    else:
+        requested_visibility = (request.GET.get("visibility") or "all").strip().lower()
+        if requested_visibility not in {"all", SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}:
+            requested_visibility = "all"
+        if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
+            requested_visibility = "all"
 
     article_queryset = SuggestedArticle.objects.select_related("owner").filter(
         Q(status=SuggestedArticle.Status.PENDING)
@@ -317,6 +324,13 @@ def _manage_pending_articles_for_allowed_visibilities(request):
     if search_query:
         filter_query_suffix += f"&q={quote(search_query)}"
 
+    if requested_visibility == SuggestedArticle.Visibility.INTERNAL:
+        pending_page_title = _("Manage Internal Pending Articles")
+    elif requested_visibility == SuggestedArticle.Visibility.PUBLIC:
+        pending_page_title = _("Manage Pending Articles")
+    else:
+        pending_page_title = _("Manage Pending Articles")
+
     return render(request, "admin_pending_articles.html", {
         "articles": page_obj.object_list,
         "page_obj": page_obj,
@@ -325,7 +339,7 @@ def _manage_pending_articles_for_allowed_visibilities(request):
         "total_pending_article_count": total_pending_article_count,
         "is_pending_search": bool(search_query),
         "pending_visibility": requested_visibility,
-        "pending_page_title": _("Manage Pending Articles"),
+        "pending_page_title": pending_page_title,
         "pending_search_action": reverse("manage_pending_articles"),
         "pending_allowed_public": SuggestedArticle.Visibility.PUBLIC in allowed_visibilities,
         "pending_allowed_internal": SuggestedArticle.Visibility.INTERNAL in allowed_visibilities,
