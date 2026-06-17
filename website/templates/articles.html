@@ -383,13 +383,7 @@
                             <div class="col-sm-12 col-lg-12 article-admin-actions">
                                 <a class="btn btn-xs btn-default" href="{{ metadata.edit_url }}">{% trans "Edit article" %}</a>
                                 {% if metadata.can_delete %}
-                                    {% if metadata.delete_action == "request" %}
-                                        <a class="btn btn-xs btn-warning" href="{{ metadata.delete_url }}">{% trans "Request deletion" %}</a>
-                                    {% else %}
-                                        <a class="btn btn-xs btn-danger" href="{{ metadata.delete_url }}">{% trans "Delete article" %}</a>
-                                    {% endif %}
-                                {% elif metadata.has_pending_deletion_request %}
-                                    <span class="label label-warning">{% trans "Deletion requested" %}</span>
+                                    <a class="btn btn-xs btn-danger" href="{{ metadata.delete_url }}">{% trans "Delete article" %}</a>
                                 {% endif %}
                             </div>
                         {% endif %}

@@ -751,56 +751,25 @@ def delete_suggestion(request, article_id):
 
     fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
     return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
-
-    if delete_action == "pending_request":
-        if request.method == "POST":
-            messages.info(request, _("A deletion request for this published article is already waiting for approval."))
-            return redirect(return_url)
-        return render(request, "suggest_delete.html", {
-            "article": article,
-            "return_url": return_url,
-            "delete_action": delete_action,
-            "pending_deletion_request": article.pending_deletion_request,
-        })
+    requires_mfa = article_requires_delete_mfa(article)
 
     if request.method == "POST":
-        if delete_action == "request":
-            reason = (request.POST.get("reason") or "").strip()
-            deletion_request, created = ArticleDeletionRequest.objects.get_or_create(
-                article=article,
-                status=ArticleDeletionRequest.Status.PENDING,
-                defaults={
-                    "requested_by": request.user,
-                    "reason": reason,
-                },
-            )
-            if not created:
-                messages.info(request, _("A deletion request for this published article is already waiting for approval."))
-                return redirect(return_url)
-
-            log_activity(
-                request,
-                ActivityLog.EventType.ARTICLE_DELETION_REQUESTED,
-                article=article,
-                details={
-                    "action": "request_delete",
-                    "deletion_request_id": deletion_request.pk,
-                    "article_id": article.pk,
-                    "title": article.title,
-                    "status": article.status,
-                    "update_status": article.update_status,
-                    "visibility": article.visibility,
-                    "reason_provided": bool(reason),
-                },
-            )
-            messages.success(request, _("Deletion request submitted for approval. The published article remains visible until the request is approved."))
-            return redirect(return_url)
+        if requires_mfa and not verify_article_delete_mfa_code(request, article):
+            return render(request, "suggest_delete.html", {
+                "article": article,
+                "return_url": return_url,
+                "delete_action": delete_action,
+                "requires_mfa": requires_mfa,
+            })
 
         title = article.title
         article_id_for_log = article.pk
         article_status_for_log = article.status
+        article_update_status_for_log = article.update_status
         article_visibility_for_log = article.visibility
 
+        # Close any historical pending deletion-request records from the older
+        # approval workflow so stale requests do not remain in admin records.
         pending_requests = list(ArticleDeletionRequest.objects.filter(
             article=article,
             status=ArticleDeletionRequest.Status.PENDING,
@@ -809,7 +778,7 @@ def delete_suggestion(request, article_id):
             deletion_request.status = ArticleDeletionRequest.Status.APPROVED
             deletion_request.reviewed_by = request.user
             deletion_request.reviewed_at = timezone.now()
-            deletion_request.review_comment = deletion_request.review_comment or _("Article deleted directly by an authorised manager/admin.")
+            deletion_request.review_comment = deletion_request.review_comment or _("Article deleted directly after MFA confirmation.")
             deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
 
         log_activity(
@@ -821,21 +790,25 @@ def delete_suggestion(request, article_id):
                 "article_id": article_id_for_log,
                 "title": title,
                 "status": article_status_for_log,
-                "update_status": article.update_status,
-                "is_admin_action": user_can_review_article(request.user, article) or user_can_direct_delete_article(request.user, article),
+                "update_status": article_update_status_for_log,
                 "visibility": article_visibility_for_log,
-                "approved_pending_delete_request_ids": [item.pk for item in pending_requests],
+                "mfa_required": requires_mfa,
+                "mfa_confirmed": requires_mfa,
+                "is_owner_action": article.owner_id == request.user.id,
+                "is_manager_or_admin_action": user_can_delete_article_visibility(request.user, article_visibility_for_log) or user_can_use_admin_tools(request.user),
+                "closed_historical_delete_request_ids": [item.pk for item in pending_requests],
             },
         )
         delete_article_files(article)
         article.delete()
-        messages.success(request, f"Article deleted: {title}")
+        messages.success(request, _("Article deleted: %(title)s") % {"title": title})
         return redirect(return_url)
 
     return render(request, "suggest_delete.html", {
         "article": article,
         "return_url": return_url,
         "delete_action": delete_action,
+        "requires_mfa": requires_mfa,
     })
 
 

@@ -35,7 +35,14 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
-from ..mfa import user_requires_mfa
+from ..mfa import user_requires_mfa, verify_totp_code
+from ..auth_monitoring import (
+    format_retry_after,
+    get_auth_lockout_status,
+    log_auth_event,
+    record_auth_failure,
+    record_auth_success,
+)
 from ..permissions import (
     PERM_ADD_ARTICLES,
     PERM_MANAGE_ARTICLES,
@@ -549,22 +556,20 @@ def user_can_manage_article(user, article, *, review_mode=False):
     return False
 
 def article_has_pending_deletion_request(article):
-    if not article or not getattr(article, "pk", None):
-        return False
-    return ArticleDeletionRequest.objects.filter(
-        article=article,
-        status=ArticleDeletionRequest.Status.PENDING,
-    ).exists()
+    # Backwards-compatible helper kept for older templates/code paths.
+    # Published articles now use fresh owner/manager/admin MFA confirmation
+    # instead of an approver deletion-request workflow.
+    return False
 
 
 def user_can_direct_delete_article(user, article):
-    """Return True when the article can be deleted immediately.
+    """Return True when the user may open the delete-confirmation page.
 
-    Published articles are protected from author self-deletion because the
-    public/internal article is already live and mirrored to OpenKB data. Owners
-    may delete their own non-published workflow records directly. Published
-    records require a deletion request unless the actor is a scoped manager or
-    Admin Users account.
+    Owners may delete their own articles in their permitted visibility scope.
+    Published articles, including published articles with pending/failed/saved
+    updates, still require a fresh MFA/OTP code at POST time before the delete
+    is performed. Managers and Admin Users may also delete articles in their
+    own scope, with the same MFA step-up for published articles.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -574,66 +579,115 @@ def user_can_direct_delete_article(user, article):
     if user_can_use_admin_tools(user):
         return True
 
-    if article.status == SuggestedArticle.Status.PUBLISHED:
-        # Published owner deletes must go through deletion approval, even when
-        # the owner also has a manager role. This prevents accidental/self
-        # removal of live knowledge-base content.
-        if article.owner_id == user.pk:
-            return False
-        return user_can_delete_article_visibility(user, visibility)
-
-    if user_can_delete_article_visibility(user, visibility):
-        return True
-
     if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
         return True
 
-    return False
+    return user_can_delete_article_visibility(user, visibility)
 
 
 def user_can_request_article_deletion(user, article):
-    """Return True when an owner may request approval to delete a live article."""
-    if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
-        return False
-
-    visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
-
-    if article.status != SuggestedArticle.Status.PUBLISHED:
-        return False
-
-    if user_can_direct_delete_article(user, article):
-        return False
-
-    if article.owner_id != user.pk:
-        return False
-
-    if not user_can_add_article_visibility(user, visibility):
-        return False
-
-    return not article_has_pending_deletion_request(article)
+    # The deletion-approval workflow has been replaced by direct deletion with
+    # MFA confirmation for published articles.
+    return False
 
 
 def user_can_delete_article(user, article):
-    """Return True when the delete page should be available.
-
-    This includes direct deletion for non-published owner articles/manager-admin
-    scope deletes, and deletion-request creation for owners of published
-    articles. The delete view decides which mode applies server-side.
-    """
-    return bool(
-        user_can_direct_delete_article(user, article)
-        or user_can_request_article_deletion(user, article)
-    )
+    return bool(user_can_direct_delete_article(user, article))
 
 
 def article_delete_action_type(user, article):
     if user_can_direct_delete_article(user, article):
         return "direct"
-    if user_can_request_article_deletion(user, article):
-        return "request"
-    if article_has_pending_deletion_request(article):
-        return "pending_request"
     return "none"
+
+
+def article_requires_delete_mfa(article):
+    """Require fresh MFA before deleting anything that is already live."""
+    return bool(article and article.status == SuggestedArticle.Status.PUBLISHED)
+
+
+def verify_article_delete_mfa_code(request, article):
+    """Validate a fresh TOTP code before deleting a published article."""
+    if not article_requires_delete_mfa(article):
+        return True
+
+    user = request.user
+    if not user_requires_mfa(user):
+        return True
+
+    device = getattr(user, "kb_mfa_device", None)
+    if not device or not device.confirmed:
+        messages.error(request, _("Set up MFA before deleting a published article."))
+        return False
+
+    locked, retry_after, identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="mfa",
+    )
+    if locked:
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={
+                "reason": "temporary_lockout",
+                "lockout_identifier": identifier,
+                "retry_after_seconds": retry_after,
+                "action": "article_delete_confirm",
+                "article_id": getattr(article, "pk", None),
+            },
+        )
+        messages.error(
+            request,
+            _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+            % {"duration": format_retry_after(retry_after)},
+        )
+        return False
+
+    code = (request.POST.get("mfa_code") or "").strip()
+    if not verify_totp_code(device, code):
+        lockout = record_auth_failure(request, user=user, purpose="mfa")
+        details = {
+            "reason": "invalid_article_delete_totp",
+            "lockout_identifier": lockout.get("identifier"),
+            "failure_count": lockout.get("failure_count"),
+            "failure_limit": lockout.get("failure_limit"),
+            "action": "article_delete_confirm",
+            "article_id": getattr(article, "pk", None),
+            "visibility": getattr(article, "visibility", ""),
+        }
+        if lockout.get("locked"):
+            details["reason"] = "temporary_lockout_created"
+            details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details=details,
+        )
+        messages.error(request, _("MFA/OTP code is incorrect."))
+        return False
+
+    record_auth_success(request, user=user, purpose="mfa")
+    device.mark_verified()
+    log_auth_event(
+        request,
+        event_type="mfa_verify_success",
+        success=True,
+        user=user,
+        username=user.get_username(),
+        details={
+            "reason": "article_delete_confirmed",
+            "article_id": getattr(article, "pk", None),
+            "visibility": getattr(article, "visibility", ""),
+        },
+    )
+    return True
 
 def user_owns_article(user, article):
     """Return True only for the active authenticated owner of an article."""
