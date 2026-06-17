@@ -29,7 +29,7 @@
                     <p>{% blocktrans with title=article.title %}Are you sure you want to delete <strong>{{ title }}</strong>?{% endblocktrans %}</p>
                     {% if requires_mfa %}
                         <div class="alert alert-warning">
-                            {% trans "This article is already published. To delete it immediately, confirm using your MFA/OTP code." %}
+                            {% trans "This article is already published. This action cannot be reversed. Confirm using your MFA/OTP code." %}
                             {% if article.has_pending_update %}
                                 <br>{% trans "This article also has a pending update, but it is still treated as a published article." %}
                             {% endif %}
@@ -44,7 +44,7 @@
                             <div class="form-group">
                                 <label for="deleteMfaCode">{% trans "MFA/OTP code" %}</label>
                                 <input id="deleteMfaCode" class="form-control" name="mfa_code" inputmode="numeric" autocomplete="one-time-code" placeholder="{% trans 'Enter your 6-digit code' %}" required>
-                                <p class="help-block">{% trans "This confirms the deletion using your own MFA device. No separate approval is required." %}</p>
+                                <p class="help-block">{% trans "Enter your MFA/OTP code to confirm this permanent deletion." %}</p>
                             </div>
                         {% endif %}
                         <button class="btn btn-danger" type="submit"><i class="fa fa-trash"></i> {% trans "Delete article" %}</button>
