@@ -114,7 +114,7 @@ ROLE_DEFINITIONS = {
     },
     ROLE_ARTICLE_APPROVER: {
         "description": _(
-            "Article approver. Can view articles, review pending articles/updates, edit content during pending review, and approve or reject them; cannot create, delete, or edit already-published articles by default. Regular User is not required."
+            "Article approver. Can view articles, review pending public articles/updates, edit content while they remain pending, keep them pending after review edits, and approve or reject them; cannot create, delete, or edit already-published articles by default. Regular User is not required."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_MANAGE_ARTICLES),
     },
@@ -138,7 +138,7 @@ ROLE_DEFINITIONS = {
     },
     ROLE_INTERNAL_ARTICLE_APPROVER: {
         "description": _(
-            "Internal approver add-on. Can view public/internal articles, edit content during internal pending review, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
+            "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
         ),
         "permissions": (PERM_VIEW_ARTICLES, PERM_VIEW_INTERNAL_ARTICLES, PERM_MANAGE_INTERNAL_ARTICLES),
     },

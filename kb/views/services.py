@@ -354,9 +354,10 @@ def user_can_edit_article_content(user, article):
 
     Owners, scope managers, and Admin Users may edit according to the normal
     workflow. Article Approver/Internal Article Approver may also adjust article
-    content while reviewing pending submissions or pending updates in their own
-    scope, but they still cannot edit already-published articles that have no
-    pending update, and they never receive delete rights from approver access.
+    content while a submission or update is actively pending review in their own
+    scope. Approver-only roles cannot edit rejected/failed articles after the
+    review is closed, cannot edit already-published articles without a pending
+    update, and never receive delete rights from approver access.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -374,11 +375,8 @@ def user_can_edit_article_content(user, article):
 
     if user_is_article_approver_only_for_visibility(user, visibility):
         return bool(
-            article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
-            or article.update_status in {
-                SuggestedArticle.UpdateStatus.PENDING,
-                SuggestedArticle.UpdateStatus.FAILED,
-            }
+            article.status == SuggestedArticle.Status.PENDING
+            or article.update_status == SuggestedArticle.UpdateStatus.PENDING
         )
 
     return False
@@ -449,8 +447,10 @@ def user_can_manage_article(user, article):
     apply only to internal articles. Admin Users may manage both scopes.
 
     Draft articles are deliberately stricter: only the owner or Admin Users may
-    manage/view their own drafts. Reviewers/managers should not be able to
-    traverse to another user's draft by guessing /article/<id> or /suggest/edit/.
+    manage/view their own drafts. Approver-only roles can enter pending review
+    records in their own scope, but cannot browse/edit rejected articles or
+    already-published articles after the review is closed. Managers keep broader
+    edit/delete rights inside their own public/internal scope.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -465,6 +465,12 @@ def user_can_manage_article(user, article):
 
     if not user_can_manage_article_visibility(user, visibility):
         return False
+
+    if user_is_article_approver_only_for_visibility(user, visibility):
+        return bool(
+            article.status == SuggestedArticle.Status.PENDING
+            or article.update_status == SuggestedArticle.UpdateStatus.PENDING
+        )
 
     if article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
         return True
@@ -574,24 +580,29 @@ def validate_article_edit_action(user, article, submit_action):
 def allowed_article_statuses_for_admin_edit(article, user=None):
     """Return statuses available in the review/edit form.
 
-    Article Approver roles can only approve or reject. Managers and Admin Users
-    retain the broader workflow controls inside their own scope.
-    Pending-update reviews are always constrained to approve/reject so the
-    current published version is not accidentally hidden.
+    Article Approver roles may keep a pending review pending while saving small
+    content edits, or they may approve/reject the pending submission/update.
+    They still cannot move articles back to Draft or manage already-published
+    articles outside an active pending update. Managers and Admin Users retain
+    the broader workflow controls inside their own scope.
     """
-    approve_reject = {SuggestedArticle.Status.PUBLISHED, SuggestedArticle.Status.FAILED}
+    review_statuses = {
+        SuggestedArticle.Status.PENDING,
+        SuggestedArticle.Status.PUBLISHED,
+        SuggestedArticle.Status.FAILED,
+    }
 
     if (
         article.status == SuggestedArticle.Status.PUBLISHED
         and article.update_status == SuggestedArticle.UpdateStatus.PENDING
     ):
-        return approve_reject
+        return review_statuses
 
     if user is not None and user_is_article_approver_only_for_visibility(
         user,
         getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC),
     ):
-        return approve_reject
+        return review_statuses
 
     return {
         SuggestedArticle.Status.DRAFT,
