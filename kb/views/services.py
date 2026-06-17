@@ -568,8 +568,12 @@ def user_can_direct_delete_article(user, article):
     Owners may delete their own articles in their permitted visibility scope.
     Published articles, including published articles with pending/failed/saved
     updates, still require a fresh MFA/OTP code at POST time before the delete
-    is performed. Managers and Admin Users may also delete articles in their
-    own scope, with the same MFA step-up for published articles.
+    is performed.
+
+    Scope managers may delete non-draft submitted/failed/published articles in
+    their own scope, but they must not be able to delete another user's private
+    draft by guessing /profile/articles/<id>/delete/. Drafts stay owner/Admin
+    only, matching the direct article view/edit traversal rules.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
@@ -581,6 +585,9 @@ def user_can_direct_delete_article(user, article):
 
     if article.owner_id == user.pk and user_can_add_article_visibility(user, visibility):
         return True
+
+    if article.status == SuggestedArticle.Status.DRAFT:
+        return False
 
     return user_can_delete_article_visibility(user, visibility)
 
