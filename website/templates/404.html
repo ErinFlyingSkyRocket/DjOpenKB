@@ -8,13 +8,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}">
     <style>
-        body { background: #f3fbff; }
+        html,
+        body {
+            min-height: 100%;
+            margin: 0;
+        }
+        body {
+            background: #f3fbff;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
         .openkb-error-wrap {
-            min-height: calc(100vh - 120px);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -75,10 +82,6 @@
     </style>
 </head>
 <body>
-    {% if request.user.is_authenticated %}
-        {% include "_navbar.html" %}
-    {% endif %}
-
     <main class="openkb-error-wrap">
         <section class="openkb-error-card" role="alert" aria-labelledby="error-title">
             <div class="openkb-error-header">
@@ -100,7 +103,5 @@
             </div>
         </section>
     </main>
-
-    {% include "_footer.html" %}
 </body>
 </html>
