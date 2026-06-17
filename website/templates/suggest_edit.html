@@ -184,6 +184,25 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             margin-top: 12px;
             margin-bottom: 20px;
         }
+        .article-meta-row {
+            clear: both;
+            margin: -2px 0 14px;
+        }
+        .article-visibility-compact {
+            max-width: 360px;
+        }
+        .article-visibility-compact label {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .article-visibility-compact .form-control {
+            height: 34px;
+            padding: 5px 10px;
+        }
+        .article-scope-hint {
+            display: inline-block;
+            margin-top: 6px;
+        }
         @media (max-width: 767px) {
             .article-action-buttons {
                 align-items: stretch;
@@ -208,24 +227,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
-                    {% if article.visibility == "internal" %}<div class="alert alert-warning"><i class="fa fa-lock"></i> {% trans "Internal article" %}</div>{% endif %}
+                    <input type="hidden" name="article_visibility" value="{{ article.visibility }}" {% if can_change_article_visibility %}disabled{% endif %}>
                     {% if is_review_only_article %}
                         <div class="alert alert-info"><i class="fa fa-check-square-o"></i> {% trans "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here." %}</div>
-                    {% endif %}
-                    {% if can_change_article_visibility %}
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="articleVisibilitySelect">{% trans "Article visibility" %}</label>
-                                <select name="article_visibility" id="articleVisibilitySelect" class="form-control">
-                                    {% for choice in visibility_choices %}
-                                        <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
-                                    {% endfor %}
-                                </select>
-                                <p class="text-muted" style="margin-top:6px;">{% trans "Visibility can be changed only before the article is published." %}</p>
-                            </div>
-                        </div>
-                    {% else %}
-                        <input type="hidden" name="article_visibility" value="{{ article.visibility }}">
                     {% endif %}
                     <div id="header row">
                         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
@@ -240,9 +244,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% if can_review_article %}
                                     <select name="status" id="articleStatusSelect" class="form-control">
                                         {% if is_pending_update_review %}
-                                            {% if allow_status_pending %}<option value="pending" selected>{% trans "Keep update pending / Save review edits" %}</option>{% endif %}
-                                            {% if allow_status_published %}<option value="published">{% trans "Approve update" %}</option>{% endif %}
-                                            {% if allow_status_failed %}<option value="failed">{% trans "Reject update" %}</option>{% endif %}
+                                            <option value="published" selected>{% trans "Approve update" %}</option>
+                                            <option value="failed">{% trans "Reject update" %}</option>
                                         {% else %}
                                             {% if allow_status_draft %}<option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>{% endif %}
                                             {% if allow_status_pending %}<option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>{% endif %}
@@ -271,10 +274,25 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% endif %}
                             </div>
                         </div>
+                        <div class="col-xs-12 article-meta-row">
+                            {% if can_change_article_visibility %}
+                                <div class="form-group article-visibility-compact">
+                                    <label for="articleVisibilitySelect">{% trans "Visibility" %}</label>
+                                    <select name="article_visibility" id="articleVisibilitySelect" class="form-control">
+                                        {% for choice in visibility_choices %}
+                                            <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <p class="text-muted" style="margin:4px 0 0;">{% trans "Visibility can be changed only before the article is published." %}</p>
+                                </div>
+                            {% elif article.visibility == "internal" %}
+                                <span class="label label-warning article-scope-hint"><i class="fa fa-lock"></i> {% trans "Internal article" %}</span>
+                            {% endif %}
+                        </div>
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
                             {% if can_review_article %}
-                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if can_review_article %}{% trans "Save review changes" %}{% else %}{% trans "Save" %}{% endif %}</button>
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if is_review_only_article %}{% trans "Save review decision" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
                                     {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
@@ -310,7 +328,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <div class="form-group" style="margin-bottom:0;">
                                     <label for="reviewNotesInput">{% trans "Pending failed comments" %}</label>
                                     <textarea id="reviewNotesInput" name="review_notes" class="form-control" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
-                                    <p class="text-muted" style="margin:6px 0 0;">{% trans "These comments are required and shown to the article owner when the article or update is marked as Pending failed." %}</p>
+                                    <p class="text-muted" style="margin:6px 0 0;">{% trans "These comments are shown to the article owner when the article or update is marked as Pending failed." %}</p>
                                 </div>
                             </div>
                         </div>

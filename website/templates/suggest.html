@@ -118,6 +118,40 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             background: #b7c8d6;
             border-radius: 4px;
         }
+        .article-meta-row {
+            clear: both;
+            margin: -4px 0 14px;
+        }
+        .article-visibility-compact {
+            max-width: 360px;
+        }
+        .article-visibility-compact label {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .article-visibility-compact .form-control {
+            height: 34px;
+            padding: 5px 10px;
+        }
+        .article-scope-hint {
+            display: inline-block;
+            margin-top: 6px;
+        }
+        .article-header-actions {
+            padding-top: 24px;
+        }
+        .article-header-actions .btn {
+            margin-bottom: 6px;
+        }
+        @media (max-width: 767px) {
+            .article-header-actions {
+                padding-top: 0;
+                text-align: left;
+            }
+            .article-visibility-compact {
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body class="">
@@ -133,31 +167,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 <form method="post" id="edit_form" action="{{ suggest_form_action|default:'/suggest/' }}" data-toggle="validator">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
-                    {% if show_visibility_selector %}
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="articleVisibilitySelect">{% trans "Article visibility" %}</label>
-                                <select name="article_visibility" id="articleVisibilitySelect" class="form-control">
-                                    {% for choice in visibility_choices %}
-                                        <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
-                                    {% endfor %}
-                                </select>
-                                <p class="text-muted" style="margin-top:6px;">{% trans "Choose Public for normal wiki articles or Internal for confidential articles visible only to internal users." %}</p>
-                            </div>
-                        </div>
-                    {% else %}
-                        <input type="hidden" name="article_visibility" value="{{ article_visibility|default:'public' }}">
-                    {% endif %}
-                    {% if is_internal_article_form %}<div class="alert alert-warning"><i class="fa fa-lock"></i> {% trans "This article will be saved in the internal article space." %}</div>{% endif %}
+                    <input type="hidden" name="article_visibility" value="{{ article_visibility|default:'public' }}" {% if show_visibility_selector %}disabled{% endif %}>
                     <div id="header row">
-                        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
                             <div class="form-group">
                                 <label for="preview">{% trans "Article title" %} *</label><br/>
                                 <input type="text" name="frm_kb_title" id="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:'' }}" required/>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 text-right">
-                            <label for="preview">&nbsp;</label><br/>
+                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 text-right article-header-actions">
                             <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
                             {% if can_publish_directly %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Publish article" %}</button>
@@ -165,6 +183,22 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
                             {% endif %}
                         </div>
+                    </div>
+
+                    <div class="col-xs-12 article-meta-row">
+                        {% if show_visibility_selector %}
+                            <div class="form-group article-visibility-compact">
+                                <label for="articleVisibilitySelect">{% trans "Visibility" %}</label>
+                                <select name="article_visibility" id="articleVisibilitySelect" class="form-control">
+                                    {% for choice in visibility_choices %}
+                                        <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="text-muted" style="margin:4px 0 0;">{% trans "Internal articles are visible only to internal users." %}</p>
+                            </div>
+                        {% elif is_internal_article_form %}
+                            <span class="label label-warning article-scope-hint"><i class="fa fa-lock"></i> {% trans "Internal article" %}</span>
+                        {% endif %}
                     </div>
 
                     <div class="col-xs-12">
