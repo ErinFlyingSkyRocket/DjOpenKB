@@ -40,3 +40,6 @@ urlpatterns = [
     # The old index page is intentionally moved to /home/.
     path("", include("kb.urls")),
 ]
+
+# Friendly error pages. Django uses this when DJANGO_DEBUG=false.
+handler404 = "kb.views.errors.page_not_found"

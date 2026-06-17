@@ -1,0 +1,102 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Page not found" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'themes/twitter/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+    <style>
+        body { background: #f5f8fa; }
+        .openkb-error-wrap {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 15px;
+        }
+        .openkb-error-card {
+            max-width: 720px;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #dce4ea;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(44, 62, 80, 0.08);
+            overflow: hidden;
+        }
+        .openkb-error-header {
+            background: #2c3e50;
+            color: #fff;
+            padding: 18px 22px;
+        }
+        .openkb-error-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .openkb-error-body {
+            padding: 28px 22px;
+        }
+        .openkb-error-code {
+            color: #899aa6;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 8px;
+        }
+        .openkb-error-message {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .openkb-error-help {
+            color: #6f8390;
+            margin-bottom: 22px;
+        }
+        .openkb-error-actions .btn { margin-right: 8px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    {% if request.user.is_authenticated %}
+        {% include "_navbar.html" %}
+    {% endif %}
+
+    <main class="openkb-error-wrap">
+        <section class="openkb-error-card" role="alert" aria-labelledby="error-title">
+            <div class="openkb-error-header">
+                <h1 id="error-title"><i class="fa fa-exclamation-circle"></i> {% trans "Page not found" %}</h1>
+            </div>
+            <div class="openkb-error-body">
+                <div class="openkb-error-code">{% trans "Error 404" %}</div>
+                <p class="openkb-error-message">
+                    {% trans "The page you requested could not be found." %}
+                </p>
+                <p class="openkb-error-help">
+                    {% trans "The link may be invalid, expired, or you may not have access to this page." %}
+                </p>
+                <div class="openkb-error-actions">
+                    <a class="btn btn-default" href="{{ safe_back_url }}">
+                        <i class="fa fa-arrow-left"></i> {% trans "Back" %}
+                    </a>
+                    {% if request.user.is_authenticated %}
+                        <a class="btn btn-primary" href="{% url 'home' %}">
+                            <i class="fa fa-home"></i> {% trans "Go to home" %}
+                        </a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'root_login' %}">
+                            <i class="fa fa-sign-in"></i> {% trans "Go to login" %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    {% include "_footer.html" %}
+</body>
+</html>
