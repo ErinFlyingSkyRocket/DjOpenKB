@@ -228,7 +228,11 @@ def _suggest_unified(request):
         messages.success(request, _("Article submitted for admin approval."))
 
     redirect_url = reverse("edit_my_suggestions")
-    if visibility == SuggestedArticle.Visibility.INTERNAL and len(visibility_choices) > 1:
+    # Keep My Articles role-scoped and combined by default. Users who can
+    # author both public and internal articles should return to the combined
+    # list after saving either type. Users with only internal authoring rights
+    # still see only their internal article list.
+    if visibility == SuggestedArticle.Visibility.INTERNAL and len(visibility_choices) == 1:
         redirect_url = f"{redirect_url}?visibility=internal"
     return redirect(redirect_url)
 
@@ -249,6 +253,10 @@ def suggest_internal(request):
 
 
 def _edit_my_suggestions_for_allowed_visibilities(request):
+    # My Articles is an author-owned workspace, not a review queue.
+    # Public writers/managers get public scope, internal writers/managers get
+    # internal scope, and users with both scopes see both together by default.
+    # Approver-only users continue to use Manage Pending instead.
     allowed_visibilities = allowed_article_visibility_values_for_user(request.user, action="add")
     if not allowed_visibilities:
         raise Http404("Article not found")
@@ -329,6 +337,10 @@ def edit_my_suggestions(request):
 def edit_my_internal_suggestions(request):
     if not user_can_add_internal_articles(request.user):
         raise Http404("Article not found")
+
+    allowed_visibilities = allowed_article_visibility_values_for_user(request.user, action="add")
+    if len(allowed_visibilities) > 1:
+        return redirect("edit_my_suggestions")
     return redirect(f"{reverse('edit_my_suggestions')}?visibility=internal")
 
 

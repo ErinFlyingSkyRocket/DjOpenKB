@@ -2279,11 +2279,16 @@ def get_profile_account_context(user):
     mfa_required = user_requires_mfa(user)
 
     user_articles = SuggestedArticle.objects.filter(owner=user)
+    authorable_visibilities = allowed_article_visibility_values_for_user(user, action="add")
+    authorable_user_articles = user_articles.filter(visibility__in=authorable_visibilities) if authorable_visibilities else user_articles.none()
 
     return {
         "total_user_article_count": user_articles.count(),
         "total_user_public_article_count": user_articles.filter(visibility=SuggestedArticle.Visibility.PUBLIC).count(),
         "total_user_internal_article_count": user_articles.filter(visibility=SuggestedArticle.Visibility.INTERNAL).count(),
+        "total_user_authorable_article_count": authorable_user_articles.count(),
+        "profile_can_author_public_articles": SuggestedArticle.Visibility.PUBLIC in authorable_visibilities,
+        "profile_can_author_internal_articles": SuggestedArticle.Visibility.INTERNAL in authorable_visibilities,
         "profile_display_name": format_profile_display_name(user),
         "user_is_ldap_managed": user_is_ldap_managed,
         "account_type_display": get_account_type_display(user),
