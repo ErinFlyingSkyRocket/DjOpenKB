@@ -256,12 +256,24 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <a class="btn btn-success editor_btn_action" href="{% url 'suggest' %}?visibility=public"><i class="fa fa-plus"></i> {% trans "New article" %}</a>
                                             <a class="btn btn-primary editor_btn_action" href="{% url 'edit_my_suggestions' %}?visibility=public"><i class="fa fa-pencil"></i> {% trans "Edit my articles" %}</a>
                                         {% endif %}
+                                        {% if can_view_internal_articles %}
+                                            <a class="btn btn-default editor_btn_action" href="{% url 'internal_articles' %}"><i class="fa fa-lock"></i> {% trans "View internal articles" %}</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% elif can_view_internal_articles %}
+                                <div class="profile-account-row">
+                                    <span class="profile-account-label">{% trans "Internal articles" %}:</span>
+                                    <span class="profile-account-value">{{ total_user_internal_article_count }}</span>
+                                    <div class="profile-muted">{% trans "Private articles are visible only to users with internal article access." %}</div>
+                                    <div class="profile-article-buttons">
+                                        <a class="btn btn-default editor_btn_action" href="{% url 'internal_articles' %}"><i class="fa fa-lock"></i> {% trans "View internal articles" %}</a>
                                     </div>
                                 </div>
                             {% endif %}
 
                             {% if can_manage_articles or can_manage_internal_articles %}
-                                {% if profile_can_author_public_articles or profile_can_author_internal_articles %}<hr>{% endif %}
+                                {% if profile_can_author_public_articles or profile_can_author_internal_articles or can_view_internal_articles %}<hr>{% endif %}
                                 <div class="profile-admin-tools">
                                     <div><strong>{% trans "Manage pending articles" %}</strong></div>
                                     {% if can_manage_articles and can_manage_internal_articles %}
@@ -280,18 +292,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
                                         </a>
                                     {% endif %}
-                                </div>
-                            {% endif %}
-
-                            {% if can_view_internal_articles %}
-                                {% if profile_can_author_public_articles or profile_can_author_internal_articles or can_manage_articles or can_manage_internal_articles %}<hr>{% endif %}
-                                <div class="profile-admin-tools">
-                                    <div><strong>{% trans "Internal articles" %}</strong> <span class="label label-warning">{% trans "Internal" %}</span></div>
-                                    <div class="profile-muted">{% trans "Private articles are visible only to users with internal article access." %}</div>
-                                    <div class="profile-muted">{% trans "Your internal articles" %}: {{ total_user_internal_article_count }}</div>
-                                    <div class="profile-article-buttons">
-                                        <a class="btn btn-default editor_btn_action" href="{% url 'internal_articles' %}"><i class="fa fa-lock"></i> {% trans "Internal Articles" %}</a>
-                                    </div>
                                 </div>
                             {% endif %}
                         </div>
