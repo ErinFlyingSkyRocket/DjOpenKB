@@ -253,10 +253,10 @@ def suggest_internal(request):
 
 
 def _edit_my_suggestions_for_allowed_visibilities(request):
-    # My Articles is the shared article workspace. Writers see their own
-    # articles, managers see managed non-draft articles in their scope, and
-    # Admin Users see all public/internal articles. Users with both scopes land
-    # on All allowed articles by default and may narrow to General/Internal.
+    # My Articles is the shared personal article workspace. Writers, Managers,
+    # Internal Managers, and Admin Users use the same page, but it only lists
+    # articles owned by the signed-in user. Broader manager/admin edits should
+    # be done from the article detail/edit controls, not this personal list.
     allowed_visibilities = article_workspace_visibility_values_for_user(request.user)
     if not allowed_visibilities:
         raise Http404("Article not found")
@@ -317,7 +317,7 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
         "is_profile_search": bool(search_query),
         "profile_display_name": format_profile_display_name(request.user),
         "article_visibility": requested_visibility,
-        "profile_page_title": _("Manage articles") if user_can_manage_any_article(request.user) else _("Edit my articles"),
+        "profile_page_title": _("Manage my articles"),
         "profile_search_action": reverse("edit_my_suggestions"),
         "profile_new_article_url": new_article_url,
         "profile_visibility_filter": requested_visibility,
@@ -325,7 +325,7 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
         "profile_allowed_internal": SuggestedArticle.Visibility.INTERNAL in allowed_visibilities,
         "profile_show_visibility_filter": len(allowed_visibilities) > 1,
         "profile_filter_query_suffix": filter_query_suffix,
-        "profile_show_owner_column": user_can_manage_any_article(request.user),
+        "profile_show_owner_column": False,
         "is_internal_space": False,
     })
 

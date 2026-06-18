@@ -476,55 +476,38 @@ def article_visibility_choices_for_user(user, *, action="add"):
 
 
 def article_workspace_visibility_values_for_user(user):
-    """Return article visibilities that should appear in the shared article workspace.
+    """Return authorable visibilities for the shared My Articles workspace.
 
-    Writers see their own articles in authorable scopes. Managers and Admin Users
-    also see managed articles in their permitted scopes. Approver-only users are
-    intentionally excluded because they should use Manage Pending instead.
+    /profile/articles/ is intentionally an owner workspace. Writers, Managers,
+    Internal Managers, and Admin Users may use the same page, but it only lists
+    articles owned by the signed-in user. Scope managers still manage other
+    users' articles from article detail pages and the pending-review workflow,
+    not from this personal workspace.
+
+    Approver-only users are intentionally excluded because they should use
+    Manage Pending instead of the author workspace.
     """
-    values = []
-    for visibility in (SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL):
-        if user_can_add_article_visibility(user, visibility) or user_is_article_manager_for_visibility(user, visibility):
-            values.append(visibility)
-    return list(dict.fromkeys(values))
+    return allowed_article_visibility_values_for_user(user, action="add")
 
 
 def article_workspace_queryset_for_user(user):
-    """Return the articles visible in /profile/articles/ for the current user.
+    """Return only the current user's own articles for /profile/articles/.
 
-    - Writer-only users see only their own articles.
-    - Scope managers see managed non-draft articles in that scope, plus their own
-      drafts/articles where they have author rights.
-    - Admin Users see all public and internal articles, including other users'
-      drafts, because admin has full article-management rights.
+    Managers/Admins keep their broader edit/delete permissions elsewhere, but
+    this page stays personal so it does not become a global article-management
+    table. Users with both public and internal authoring scopes see both of
+    their own scopes by default and may narrow with the visibility filter.
     """
     allowed_visibilities = article_workspace_visibility_values_for_user(user)
-    if not allowed_visibilities:
+    if not allowed_visibilities or not getattr(user, "is_authenticated", False):
         return SuggestedArticle.objects.none()
 
-    if user_can_use_admin_tools(user):
-        return SuggestedArticle.objects.select_related("owner").filter(visibility__in=allowed_visibilities).distinct()
-
-    authorable_visibilities = allowed_article_visibility_values_for_user(user, action="add")
-    manager_visibilities = [
-        visibility
-        for visibility in allowed_visibilities
-        if user_is_article_manager_for_visibility(user, visibility)
-    ]
-
-    article_filter = Q(pk__isnull=True)
-    if authorable_visibilities:
-        article_filter |= Q(owner=user, visibility__in=authorable_visibilities)
-    if manager_visibilities:
-        article_filter |= (
-            Q(visibility__in=manager_visibilities)
-            & (
-                ~Q(status=SuggestedArticle.Status.DRAFT)
-                | Q(owner=user)
-            )
-        )
-
-    return SuggestedArticle.objects.select_related("owner").filter(article_filter, visibility__in=allowed_visibilities).distinct()
+    return (
+        SuggestedArticle.objects
+        .select_related("owner")
+        .filter(owner=user, visibility__in=allowed_visibilities)
+        .distinct()
+    )
 
 
 def choose_requested_article_visibility(user, requested_value, *, action="add", default=None):

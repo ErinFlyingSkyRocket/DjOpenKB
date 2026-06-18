@@ -60,9 +60,9 @@
                         <div class="form-group">
                             <label class="sr-only" for="pendingVisibilityFilter">{% trans "Visibility" %}</label>
                             <select id="pendingVisibilityFilter" name="visibility" class="form-control">
-                                <option value="all" {% if pending_visibility == "all" %}selected{% endif %}>{% trans "All allowed articles" %} ({{ public_pending_count|add:internal_pending_count }})</option>
-                                {% if pending_allowed_public %}<option value="public" {% if pending_visibility == "public" %}selected{% endif %}>{% trans "General articles" %} ({{ public_pending_count }})</option>{% endif %}
-                                {% if pending_allowed_internal %}<option value="internal" {% if pending_visibility == "internal" %}selected{% endif %}>{% trans "Internal articles" %} ({{ internal_pending_count }})</option>{% endif %}
+                                <option value="all" {% if pending_visibility == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
+                                {% if pending_allowed_public %}<option value="public" {% if pending_visibility == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
+                                {% if pending_allowed_internal %}<option value="internal" {% if pending_visibility == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
                             </select>
                         </div>
                     {% elif pending_visibility != "all" %}
