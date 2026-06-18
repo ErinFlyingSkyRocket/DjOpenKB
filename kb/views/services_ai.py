@@ -310,18 +310,176 @@ def normalize_openkb_article_query(question):
     return cleaned or query
 
 
-def find_related_openkb_articles(question, limit=5, minimum_score=None, user=None):
-    """Find strongly related published articles for Ask OpenKB AI.
+OPENKB_AI_RECOMMENDATION_EXTRA_STOPWORDS = SEARCH_STOPWORDS | {
+    "about", "again", "also", "article", "articles", "assistant", "based",
+    "could", "detail", "details", "document", "documents", "find", "give",
+    "guide", "help", "information", "kb", "knowledge", "link", "links",
+    "need", "openkb", "page", "pages", "provide", "read", "recommend",
+    "recommended", "reference", "references", "related", "result", "results",
+    "search", "show", "source", "sources", "tell", "topic", "wiki", "would",
+}
 
-    This searches Django-published articles directly instead of depending on the
-    external OpenKB/Gemini answer. It is safe for anonymous users because it only
-    returns public article titles/URLs that the website already exposes.
+
+def _unique_limited_tokens(tokens, limit=80):
+    """Return unique useful tokens while preserving the original order."""
+    unique = []
+    seen = set()
+    for token in tokens:
+        token = (token or "").strip().lower()
+        if not token or token in seen:
+            continue
+        if token in OPENKB_AI_RECOMMENDATION_EXTRA_STOPWORDS:
+            continue
+        seen.add(token)
+        unique.append(token)
+        if len(unique) >= limit:
+            break
+    return unique
+
+
+def _article_search_text(value):
+    """Normalize searchable article text for phrase matching."""
+    value = strip_markdown_for_search(value or "")
+    value = re.sub(r"[^a-zA-Z0-9@._\- ]+", " ", value.lower())
+    value = re.sub(r"\s+", " ", value).strip()
+    return value
+
+
+def _build_ai_article_match_context(question, answer=None):
+    """Build weighted query data for AI article recommendations.
+
+    The public search page intentionally uses title/keyword-only matching so it
+    stays predictable. The chatbot needs a stronger helper because OpenKB may
+    answer from article body content even when the article title does not share
+    the exact user wording. This context remains safe because candidates still
+    come from permission-filtered, published Django articles only.
+    """
+    normalized_question = normalize_openkb_article_query(question)
+    question_tokens = _unique_limited_tokens(tokenize_search_query(normalized_question), limit=40)
+
+    answer_tokens = []
+    if answer and not answer_indicates_no_openkb_match(answer):
+        answer_tokens = _unique_limited_tokens(tokenize_search_query(answer), limit=50)
+
+    combined_tokens = _unique_limited_tokens(question_tokens + answer_tokens, limit=80)
+
+    phrases = []
+    for source in [normalized_question, question or ""]:
+        phrase = _article_search_text(source)
+        if phrase and len(phrase) >= 3 and phrase not in phrases:
+            phrases.append(phrase)
+
+    # Quoted text and common "about/on/for X" patterns are often the user's
+    # clearest intended article topic. Keep them as additional exact phrases.
+    raw_question = question or ""
+    for quoted in re.findall(r"[\"']([^\"']{3,80})[\"']", raw_question):
+        phrase = _article_search_text(quoted)
+        if phrase and phrase not in phrases:
+            phrases.append(phrase)
+
+    topic_match = re.search(
+        r"(?i)\b(?:about|on|for|regarding|related to)\s+([a-zA-Z0-9@._\- ][a-zA-Z0-9@._\- ]{2,80})",
+        raw_question,
+    )
+    if topic_match:
+        phrase = _article_search_text(topic_match.group(1))
+        if phrase and phrase not in phrases:
+            phrases.append(phrase)
+
+    return {
+        "normalized_question": normalized_question,
+        "question_tokens": question_tokens,
+        "answer_tokens": answer_tokens,
+        "combined_tokens": combined_tokens,
+        "phrases": phrases[:8],
+    }
+
+
+def _score_ai_related_article(article, match_context):
+    """Score how likely an article is the source/helpful link for an AI answer."""
+    title_text = _article_search_text(article.get("title") or "")
+    keyword_text = _article_search_text(" ".join(article.get("keywords") or []))
+    body_text = _article_search_text(article.get("raw_markdown") or "")
+
+    title_tokens = set(tokenize_search_query(title_text))
+    keyword_tokens = set(tokenize_search_query(keyword_text))
+    body_tokens = set(tokenize_search_query(body_text))
+
+    question_tokens = set(match_context.get("question_tokens") or [])
+    answer_tokens = set(match_context.get("answer_tokens") or [])
+    combined_tokens = set(match_context.get("combined_tokens") or [])
+
+    if not combined_tokens and not match_context.get("phrases"):
+        return 0, []
+
+    score = 0
+    matched_terms = set()
+
+    for phrase in match_context.get("phrases") or []:
+        if not phrase:
+            continue
+        if phrase in title_text:
+            score += 180
+            matched_terms.update(tokenize_search_query(phrase))
+        if phrase in keyword_text:
+            score += 140
+            matched_terms.update(tokenize_search_query(phrase))
+        if phrase in body_text:
+            score += 70
+            matched_terms.update(tokenize_search_query(phrase))
+
+    question_title_overlap = question_tokens & title_tokens
+    question_keyword_overlap = question_tokens & keyword_tokens
+    question_body_overlap = question_tokens & body_tokens
+
+    answer_title_overlap = answer_tokens & title_tokens
+    answer_keyword_overlap = answer_tokens & keyword_tokens
+    answer_body_overlap = answer_tokens & body_tokens
+
+    score += len(question_title_overlap) * 45
+    score += len(question_keyword_overlap) * 38
+    score += len(question_body_overlap) * 12
+
+    # Answer terms are useful for identifying the source article, but they are
+    # lower trust than the user's own question because AI answers may contain
+    # generic explanatory words.
+    score += len(answer_title_overlap) * 20
+    score += len(answer_keyword_overlap) * 16
+    score += len(answer_body_overlap) * 4
+
+    if question_tokens and question_tokens.issubset(title_tokens | keyword_tokens | body_tokens):
+        score += 45
+
+    if len(question_tokens & (title_tokens | keyword_tokens)) >= 2:
+        score += 55
+
+    if title_tokens and question_tokens and title_tokens.issubset(question_tokens | answer_tokens):
+        score += 35
+
+    matched_terms.update(question_title_overlap)
+    matched_terms.update(question_keyword_overlap)
+    matched_terms.update(list(question_body_overlap)[:8])
+    matched_terms.update(answer_title_overlap)
+    matched_terms.update(answer_keyword_overlap)
+
+    # Small tie-breaker only. It should not make unrelated articles appear.
+    score += min(int(article.get("views") or 0), 10)
+    score += min(int(article.get("likes") or 0), 10)
+
+    return score, list(matched_terms)
+
+
+def find_related_openkb_articles(question, limit=3, minimum_score=None, user=None, answer=None):
+    """Find permission-safe published article links for Ask OpenKB AI.
+
+    Unlike the normal search page, this helper is allowed to inspect article
+    body text because it is used after the user already asked the AI a knowledge
+    question. The candidate set still comes from get_openkb_wiki_articles(), so
+    public users only receive public article links and internal users receive
+    internal links only when their role allows it.
     """
     init_openkb_storage()
 
-    # Do not recommend articles for greetings or very short chat filler.
-    # This prevents messages like "hi there" from returning random trending
-    # articles when the external provider is unavailable.
     if is_openkb_small_talk_request(question):
         return []
 
@@ -332,48 +490,87 @@ def find_related_openkb_articles(question, limit=5, minimum_score=None, user=Non
                 "title": item.get("title", "Untitled"),
                 "url": item.get("url") or "#",
                 "snippet": item.get("date") or "",
+                "visibility": item.get("visibility") or "public",
+                "visibility_label": item.get("visibility_label") or "",
             })
         return latest_articles
 
-    article_query = normalize_openkb_article_query(question)
-    query_words = tokenize_search_query(article_query)
+    match_context = _build_ai_article_match_context(question, answer=answer)
 
-    # If the user did not clearly ask for articles and the query has no useful
-    # searchable keywords, there is nothing safe to recommend.
-    if not is_openkb_article_recommendation_request(question) and not query_words:
+    # If there are no useful searchable terms, do not recommend random articles.
+    if not is_openkb_article_recommendation_request(question) and not match_context["combined_tokens"]:
         return []
 
-    visible_articles = get_openkb_wiki_articles(visibility="all", user=user)
-    ranked_articles = rank_articles_for_query(visible_articles, article_query)
-
-    if not ranked_articles and article_query != (question or ""):
-        ranked_articles = rank_articles_for_query(visible_articles, question)
-
     if minimum_score is None:
-        minimum_score = 10 if is_openkb_article_recommendation_request(question) else 35
+        minimum_score = 22 if is_openkb_article_recommendation_request(question) else 34
+
+    visible_articles = get_openkb_wiki_articles(visibility="all", user=user)
+    scored_articles = []
+
+    for item in visible_articles:
+        score, matched_terms = _score_ai_related_article(item, match_context)
+        if score < int(minimum_score):
+            continue
+
+        article = dict(item)
+        article["ai_related_score"] = score
+        article["ai_matched_terms"] = matched_terms
+        scored_articles.append(article)
+
+    # Backward-compatible safety net: exact title/keyword matches from the old
+    # helper are still included, but body/answer scoring now decides the final
+    # ranking when both methods find results.
+    fallback_query = match_context.get("normalized_question") or question
+    for item in rank_articles_for_query(visible_articles, fallback_query):
+        key = item.get("suggested_id") or item.get("url") or item.get("path") or item.get("title")
+        if any((existing.get("suggested_id") or existing.get("url") or existing.get("path") or existing.get("title")) == key for existing in scored_articles):
+            continue
+        article = dict(item)
+        article["ai_related_score"] = max(int(minimum_score), 30)
+        article["ai_matched_terms"] = match_context.get("question_tokens") or []
+        scored_articles.append(article)
+
+    scored_articles.sort(
+        key=lambda item: (
+            item.get("ai_related_score") or 0,
+            item.get("views") or 0,
+            item.get("likes") or 0,
+            item.get("date") or "",
+        ),
+        reverse=True,
+    )
+
+    # Do not fill the chat with weak links. Keep only articles that are close
+    # enough to the best match, so the result naturally becomes 1 article when
+    # only one article is clearly relevant, and up to 3 when several are strong.
+    article_intent = is_openkb_article_recommendation_request(question)
+    top_score = int(scored_articles[0].get("ai_related_score") or 0) if scored_articles else 0
+    relative_multiplier = 0.35 if article_intent else 0.55
+    relative_floor = max(int(minimum_score), int(top_score * relative_multiplier))
 
     results = []
     seen_keys = set()
+    snippet_terms = match_context.get("question_tokens") or match_context.get("combined_tokens") or []
 
-    for item in ranked_articles:
+    for item in scored_articles:
         key = item.get("suggested_id") or item.get("url") or item.get("path") or item.get("title")
         if not key or key in seen_keys:
             continue
 
-        # Newer title/keyword search returns already-filtered article cards and
-        # intentionally does not attach a numeric search_score. Older callers may
-        # still provide search_score, so only enforce the threshold when a score
-        # is actually present. Without this guard, all related article fallback
-        # results are filtered out because missing scores become 0.
-        score = item.get("search_score")
-        if score is not None and int(score or 0) < int(minimum_score):
+        if int(item.get("ai_related_score") or 0) < relative_floor:
             continue
 
         seen_keys.add(key)
+        snippet = build_search_excerpt(item.get("raw_markdown") or "", snippet_terms)
+        if not snippet:
+            snippet = item.get("search_excerpt") or ""
+
         results.append({
             "title": item.get("title", "Untitled"),
             "url": item.get("url") or (f"/wiki/{item.get('path')}" if item.get("path") else "#"),
-            "snippet": item.get("search_excerpt") or "",
+            "snippet": snippet,
+            "visibility": item.get("visibility") or "public",
+            "visibility_label": item.get("visibility_label") or "",
         })
 
         if len(results) >= limit:

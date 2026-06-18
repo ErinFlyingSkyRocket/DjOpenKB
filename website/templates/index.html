@@ -119,8 +119,11 @@
         .openkb-ai-typing { display: inline-block; letter-spacing: 2px; }
         .openkb-ai-related { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(44,62,80,0.12); white-space: normal; }
         .openkb-ai-related-title { font-weight: bold; font-size: 12px; margin-bottom: 6px; }
-        .openkb-ai-related a { display: block; margin-bottom: 5px; }
-        .openkb-ai-related-meta { color: #777; font-size: 11px; }
+        .openkb-ai-related-card { padding: 6px 0; border-top: 1px solid rgba(44,62,80,0.08); }
+        .openkb-ai-related-card:first-of-type { border-top: 0; padding-top: 0; }
+        .openkb-ai-related a { display: block; margin-bottom: 3px; font-weight: 600; }
+        .openkb-ai-related-meta { display: inline-block; color: #777; font-size: 11px; margin-bottom: 3px; }
+        .openkb-ai-related-snippet { color: #5d6d78; font-size: 12px; line-height: 1.35; }
 
         .openkb-search-suggestions {
             position: absolute;
@@ -779,11 +782,29 @@
         wrapper.appendChild(title);
 
         selected.forEach(function(article) {
+            const card = document.createElement("div");
+            card.className = "openkb-ai-related-card";
+
             const link = document.createElement("a");
             link.href = article.url;
-            link.textContent = article.title;
-            wrapper.appendChild(link);
+            link.textContent = article.title || "{% trans 'Untitled article' %}";
+            card.appendChild(link);
 
+            if (article.visibility_label) {
+                const badge = document.createElement("span");
+                badge.className = "openkb-ai-related-meta";
+                badge.textContent = article.visibility_label;
+                card.appendChild(badge);
+            }
+
+            if (article.snippet) {
+                const snippet = document.createElement("div");
+                snippet.className = "openkb-ai-related-snippet";
+                snippet.textContent = article.snippet;
+                card.appendChild(snippet);
+            }
+
+            wrapper.appendChild(card);
         });
 
         return wrapper.outerHTML;

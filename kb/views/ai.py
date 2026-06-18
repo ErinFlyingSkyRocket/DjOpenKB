@@ -12,7 +12,7 @@ def _openkb_ai_user_context(request):
 def _article_recommendation_response(question, related_articles=None, status=200, user=None):
     """Return a fallback chat response based on local published articles only."""
     if related_articles is None:
-        related_articles = find_related_openkb_articles(question, limit=5, user=user)
+        related_articles = find_related_openkb_articles(question, limit=3, user=user)
 
     return JsonResponse(
         {
@@ -117,7 +117,7 @@ def ask_openkb_ai(request):
     try:
         include_internal = user_can_view_internal_articles(request.user)
         raw_answer = run_openkb_query(question, include_internal=include_internal)
-        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
+        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
 
         if openkb_ai_output_indicates_error(raw_answer):
             ctx = _openkb_ai_user_context(request)
@@ -143,6 +143,18 @@ def ask_openkb_ai(request):
         if answer_indicates_no_openkb_match(answer):
             answer = "The knowledge base does not contain matching information about that topic."
             related_articles = []
+        else:
+            # Re-run article suggestions with the cleaned AI answer as extra
+            # context. OpenKB can answer from article body content even when the
+            # user's words do not match the article title/keywords, so this makes
+            # the clickable article links much more reliable while still using
+            # permission-filtered Django articles only.
+            related_articles = find_related_openkb_articles(
+                question,
+                limit=3,
+                user=request.user,
+                answer=answer,
+            )
 
         if not answer:
             answer = (
@@ -163,7 +175,7 @@ def ask_openkb_ai(request):
         })
 
     except FileNotFoundError:
-        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
+        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
@@ -178,7 +190,7 @@ def ask_openkb_ai(request):
             "OpenKB AI concurrency limit reached: identifier=%s ip=%s user_id=%s question_length=%s",
             ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
         )
-        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
+        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles, status=503)
         return JsonResponse({
@@ -193,7 +205,7 @@ def ask_openkb_ai(request):
             "OpenKB AI query timed out: identifier=%s ip=%s user_id=%s question_length=%s",
             ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
         )
-        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
+        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
@@ -212,7 +224,7 @@ def ask_openkb_ai(request):
             len(question),
             redact_openkb_debug_text(error),
         )
-        related_articles = find_related_openkb_articles(question, limit=5, user=request.user)
+        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
