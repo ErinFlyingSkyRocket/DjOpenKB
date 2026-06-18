@@ -275,19 +275,15 @@ def _manage_pending_articles_for_allowed_visibilities(request):
 
     search_query = request.GET.get("q", "").strip()
 
-    # Public and internal pending queues stay scope-separated. Users with only
-    # one management scope are locked to that scope. Users who can manage both
-    # scopes get a dropdown to switch between public and internal reviews.
+    # Users with only one management scope are locked to that scope.
+    # Users who can manage both public and internal queues see all allowed
+    # pending reviews by default, with an optional dropdown to narrow the view.
     if len(allowed_visibilities) == 1:
         requested_visibility = allowed_visibilities[0]
     else:
-        requested_visibility = (request.GET.get("visibility") or "").strip().lower()
-        if requested_visibility not in allowed_visibilities:
-            requested_visibility = (
-                SuggestedArticle.Visibility.PUBLIC
-                if SuggestedArticle.Visibility.PUBLIC in allowed_visibilities
-                else allowed_visibilities[0]
-            )
+        requested_visibility = (request.GET.get("visibility") or "all").strip().lower()
+        if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
+            requested_visibility = "all"
 
     if request.method == "POST":
         # Deletion approval requests were replaced by direct MFA-confirmed
@@ -301,7 +297,10 @@ def _manage_pending_articles_for_allowed_visibilities(request):
         visibility__in=allowed_visibilities,
     )
 
-    article_queryset = base_pending_queryset.filter(visibility=requested_visibility)
+    if requested_visibility == "all":
+        article_queryset = base_pending_queryset
+    else:
+        article_queryset = base_pending_queryset.filter(visibility=requested_visibility)
 
     if search_query:
         article_queryset = article_queryset.filter(
@@ -342,9 +341,12 @@ def _manage_pending_articles_for_allowed_visibilities(request):
     if requested_visibility == SuggestedArticle.Visibility.INTERNAL:
         pending_page_title = _("Manage Internal Pending Articles")
         pending_scope_description = _("Review internal articles and internal pending updates waiting for approval.")
-    else:
+    elif requested_visibility == SuggestedArticle.Visibility.PUBLIC:
         pending_page_title = _("Manage Pending Articles")
         pending_scope_description = _("Review general articles and public pending updates waiting for approval.")
+    else:
+        pending_page_title = _("Manage Pending Articles")
+        pending_scope_description = _("Review general and internal articles or pending updates waiting for approval.")
 
     return render(request, "admin_pending_articles.html", {
         "articles": page_obj.object_list,
@@ -366,6 +368,7 @@ def _manage_pending_articles_for_allowed_visibilities(request):
         "pending_allowed_internal": SuggestedArticle.Visibility.INTERNAL in allowed_visibilities,
         "pending_show_visibility_filter": len(allowed_visibilities) > 1,
         "pending_filter_query_suffix": filter_query_suffix,
+        "pending_is_all_scope": requested_visibility == "all",
         "is_internal_space": requested_visibility == SuggestedArticle.Visibility.INTERNAL,
     })
 
