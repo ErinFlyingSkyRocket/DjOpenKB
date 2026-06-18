@@ -39,12 +39,16 @@
             {% endif %}
 
             <h2>{% if pending_page_title %}{{ pending_page_title }}{% else %}{% trans "Manage pending articles" %}{% endif %}{% if is_internal_space %} <span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h2>
-            <p class="pending-muted">{% trans "Review submitted articles and pending updates within your allowed article scope." %}</p>
+            <p class="pending-muted">{% if pending_scope_description %}{{ pending_scope_description }}{% else %}{% trans "Review submitted articles and pending updates within your allowed article scope." %}{% endif %}</p>
 
             <div class="pending-summary-card">
                 <span class="pending-summary-number">{{ total_pending_article_count }}</span>
                 <span>{% trans "pending review item(s)" %}</span>
                 <span class="pending-muted">&middot; {{ total_article_review_count }} {% trans "article/update" %}</span>
+                {% if pending_show_visibility_filter %}
+                    <span class="pending-muted">&middot; {% trans "General" %}: {{ public_pending_count }}</span>
+                    <span class="pending-muted">&middot; {% trans "Internal" %}: {{ internal_pending_count }}</span>
+                {% endif %}
                 {% if is_pending_search %}
                     <span class="pending-muted">&middot; {{ pending_result_count }} {% trans "matching article/update review(s)" %}</span>
                 {% endif %}
@@ -56,9 +60,8 @@
                         <div class="form-group">
                             <label class="sr-only" for="pendingVisibilityFilter">{% trans "Visibility" %}</label>
                             <select id="pendingVisibilityFilter" name="visibility" class="form-control">
-                                <option value="all" {% if pending_visibility == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
-                                {% if pending_allowed_public %}<option value="public" {% if pending_visibility == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
-                                {% if pending_allowed_internal %}<option value="internal" {% if pending_visibility == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
+                                {% if pending_allowed_public %}<option value="public" {% if pending_visibility == "public" %}selected{% endif %}>{% trans "General articles" %} ({{ public_pending_count }})</option>{% endif %}
+                                {% if pending_allowed_internal %}<option value="internal" {% if pending_visibility == "internal" %}selected{% endif %}>{% trans "Internal articles" %} ({{ internal_pending_count }})</option>{% endif %}
                             </select>
                         </div>
                     {% elif pending_visibility != "all" %}
@@ -69,7 +72,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                     {% if is_pending_search %}
-                        <a class="btn btn-default" href="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}{% if pending_visibility != 'all' %}?visibility={{ pending_visibility }}{% endif %}">{% trans "Clear search" %}</a>
+                        <a class="btn btn-default" href="{{ pending_search_action|default:'/profile/admin/pending-articles/' }}?visibility={{ pending_visibility }}">{% trans "Clear search" %}</a>
                     {% endif %}
                     <a class="btn btn-default pull-right" href="{% url 'profile' %}"><i class="fa fa-arrow-left"></i> {% trans "Back to profile" %}</a>
                 </form>

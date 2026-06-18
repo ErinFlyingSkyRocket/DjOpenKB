@@ -260,30 +260,37 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 </div>
                             {% endif %}
 
-                            {% if can_manage_articles %}
+                            {% if can_manage_articles or can_manage_internal_articles %}
                                 {% if profile_can_author_public_articles or profile_can_author_internal_articles %}<hr>{% endif %}
                                 <div class="profile-admin-tools">
                                     <div><strong>{% trans "Manage pending articles" %}</strong></div>
-                                    <div class="profile-muted">{% trans "Review user-submitted general articles waiting for approval." %}</div>
-                                    <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}?visibility=public">
-                                        <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
-                                    </a>
+                                    {% if can_manage_articles and can_manage_internal_articles %}
+                                        <div class="profile-muted">{% trans "Review general and internal submissions from one page. Use the scope dropdown to switch between queues." %}</div>
+                                        <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}">
+                                            <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
+                                        </a>
+                                    {% elif can_manage_internal_articles %}
+                                        <div class="profile-muted">{% trans "Review internal articles waiting for approval." %}</div>
+                                        <a class="btn btn-default editor_btn_action" href="{% url 'manage_pending_articles' %}?visibility=internal">
+                                            <i class="fa fa-lock"></i> {% trans "Manage internal pending articles" %}
+                                        </a>
+                                    {% else %}
+                                        <div class="profile-muted">{% trans "Review user-submitted general articles waiting for approval." %}</div>
+                                        <a class="btn btn-success editor_btn_action" href="{% url 'manage_pending_articles' %}?visibility=public">
+                                            <i class="fa fa-check-square-o"></i> {% trans "Manage pending articles" %}
+                                        </a>
+                                    {% endif %}
                                 </div>
                             {% endif %}
 
                             {% if can_view_internal_articles %}
-                                {% if profile_can_author_public_articles or profile_can_author_internal_articles or can_manage_articles %}<hr>{% endif %}
+                                {% if profile_can_author_public_articles or profile_can_author_internal_articles or can_manage_articles or can_manage_internal_articles %}<hr>{% endif %}
                                 <div class="profile-admin-tools">
                                     <div><strong>{% trans "Internal articles" %}</strong> <span class="label label-warning">{% trans "Internal" %}</span></div>
                                     <div class="profile-muted">{% trans "Private articles are visible only to users with internal article access." %}</div>
                                     <div class="profile-muted">{% trans "Your internal articles" %}: {{ total_user_internal_article_count }}</div>
                                     <div class="profile-article-buttons">
                                         <a class="btn btn-default editor_btn_action" href="{% url 'internal_articles' %}"><i class="fa fa-lock"></i> {% trans "Internal Articles" %}</a>
-                                        {% if can_manage_internal_articles %}
-                                            <a class="btn btn-default editor_btn_action" href="{% url 'manage_pending_articles' %}?visibility=internal">
-                                                <i class="fa fa-lock"></i> {% trans "Manage internal pending articles" %}
-                                            </a>
-                                        {% endif %}
                                     </div>
                                 </div>
                             {% endif %}
