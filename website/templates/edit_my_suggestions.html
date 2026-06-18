@@ -213,6 +213,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <thead>
                                             <tr>
                                                 <th>{% trans "Article title" %}</th>
+                                                {% if profile_show_owner_column %}<th>{% trans "Owner" %}</th>{% endif %}
                                                 {% if profile_allowed_internal %}<th>{% trans "Visibility" %}</th>{% endif %}
                                                 <th>{% trans "Status" %}</th>
                                                 <th>{% trans "Created" %}</th>
@@ -230,6 +231,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                             {{ article.title }}
                                                         {% endif %}
                                                     </td>
+                                                    {% if profile_show_owner_column %}
+                                                        <td>
+                                                            {% if article.owner %}
+                                                                {{ article.owner.get_full_name|default:article.owner.username }}
+                                                                <br><small class="text-muted">{{ article.owner.username }}</small>
+                                                            {% else %}
+                                                                <span class="text-muted">{% trans "Unassigned" %}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    {% endif %}
                                                     {% if profile_allowed_internal %}
                                                         <td>
                                                             {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
@@ -255,7 +266,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                                     <td>{{ article.created_at|date:"d/m/Y g:iA" }}</td>
                                                     <td>{{ article.updated_at|date:"d/m/Y g:iA" }}</td>
                                                     <td class="text-right article-actions">
-                                                        <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Edit" %}</a>
+                                                        {% if article.can_open_edit %}
+                                                            <a class="btn btn-xs btn-primary" href="{% url 'edit_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Edit" %}</a>
+                                                        {% endif %}
                                                         {% if article.delete_action_type == "direct" %}
                                                             <a class="btn btn-xs btn-danger" href="{% url 'delete_suggestion' article.id %}?next={{ request.get_full_path|urlencode }}">{% trans "Delete" %}</a>
                                                         {% endif %}

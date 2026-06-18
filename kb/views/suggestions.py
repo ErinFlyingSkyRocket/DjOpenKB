@@ -253,11 +253,11 @@ def suggest_internal(request):
 
 
 def _edit_my_suggestions_for_allowed_visibilities(request):
-    # My Articles is an author-owned workspace, not a review queue.
-    # Public writers/managers get public scope, internal writers/managers get
-    # internal scope, and users with both scopes see both together by default.
-    # Approver-only users continue to use Manage Pending instead.
-    allowed_visibilities = allowed_article_visibility_values_for_user(request.user, action="add")
+    # My Articles is the shared article workspace. Writers see their own
+    # articles, managers see managed non-draft articles in their scope, and
+    # Admin Users see all public/internal articles. Users with both scopes land
+    # on All allowed articles by default and may narrow to General/Internal.
+    allowed_visibilities = article_workspace_visibility_values_for_user(request.user)
     if not allowed_visibilities:
         raise Http404("Article not found")
 
@@ -268,7 +268,7 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
     if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
         requested_visibility = "all"
 
-    article_queryset = SuggestedArticle.objects.filter(owner=request.user, visibility__in=allowed_visibilities)
+    article_queryset = article_workspace_queryset_for_user(request.user)
     if requested_visibility != "all":
         article_queryset = article_queryset.filter(visibility=requested_visibility)
 
@@ -294,6 +294,7 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
     page_obj = paginate_articles(request, article_queryset, per_page=20)
     for profile_article in page_obj.object_list:
         profile_article.delete_action_type = article_delete_action_type(request.user, profile_article)
+        profile_article.can_open_edit = user_can_manage_article(request.user, profile_article, review_mode=False)
 
     new_article_url = reverse("suggest")
     if requested_visibility in {SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}:
@@ -316,7 +317,7 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
         "is_profile_search": bool(search_query),
         "profile_display_name": format_profile_display_name(request.user),
         "article_visibility": requested_visibility,
-        "profile_page_title": _("Edit my articles"),
+        "profile_page_title": _("Manage articles") if user_can_manage_any_article(request.user) else _("Edit my articles"),
         "profile_search_action": reverse("edit_my_suggestions"),
         "profile_new_article_url": new_article_url,
         "profile_visibility_filter": requested_visibility,
@@ -324,6 +325,7 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
         "profile_allowed_internal": SuggestedArticle.Visibility.INTERNAL in allowed_visibilities,
         "profile_show_visibility_filter": len(allowed_visibilities) > 1,
         "profile_filter_query_suffix": filter_query_suffix,
+        "profile_show_owner_column": user_can_manage_any_article(request.user),
         "is_internal_space": False,
     })
 

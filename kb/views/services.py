@@ -475,6 +475,58 @@ def article_visibility_choices_for_user(user, *, action="add"):
     ]
 
 
+def article_workspace_visibility_values_for_user(user):
+    """Return article visibilities that should appear in the shared article workspace.
+
+    Writers see their own articles in authorable scopes. Managers and Admin Users
+    also see managed articles in their permitted scopes. Approver-only users are
+    intentionally excluded because they should use Manage Pending instead.
+    """
+    values = []
+    for visibility in (SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL):
+        if user_can_add_article_visibility(user, visibility) or user_is_article_manager_for_visibility(user, visibility):
+            values.append(visibility)
+    return list(dict.fromkeys(values))
+
+
+def article_workspace_queryset_for_user(user):
+    """Return the articles visible in /profile/articles/ for the current user.
+
+    - Writer-only users see only their own articles.
+    - Scope managers see managed non-draft articles in that scope, plus their own
+      drafts/articles where they have author rights.
+    - Admin Users see all public and internal articles, including other users'
+      drafts, because admin has full article-management rights.
+    """
+    allowed_visibilities = article_workspace_visibility_values_for_user(user)
+    if not allowed_visibilities:
+        return SuggestedArticle.objects.none()
+
+    if user_can_use_admin_tools(user):
+        return SuggestedArticle.objects.select_related("owner").filter(visibility__in=allowed_visibilities).distinct()
+
+    authorable_visibilities = allowed_article_visibility_values_for_user(user, action="add")
+    manager_visibilities = [
+        visibility
+        for visibility in allowed_visibilities
+        if user_is_article_manager_for_visibility(user, visibility)
+    ]
+
+    article_filter = Q(pk__isnull=True)
+    if authorable_visibilities:
+        article_filter |= Q(owner=user, visibility__in=authorable_visibilities)
+    if manager_visibilities:
+        article_filter |= (
+            Q(visibility__in=manager_visibilities)
+            & (
+                ~Q(status=SuggestedArticle.Status.DRAFT)
+                | Q(owner=user)
+            )
+        )
+
+    return SuggestedArticle.objects.select_related("owner").filter(article_filter, visibility__in=allowed_visibilities).distinct()
+
+
 def choose_requested_article_visibility(user, requested_value, *, action="add", default=None):
     allowed = allowed_article_visibility_values_for_user(user, action=action)
     if not allowed:
@@ -2280,15 +2332,16 @@ def get_profile_account_context(user):
 
     user_articles = SuggestedArticle.objects.filter(owner=user)
     authorable_visibilities = allowed_article_visibility_values_for_user(user, action="add")
-    authorable_user_articles = user_articles.filter(visibility__in=authorable_visibilities) if authorable_visibilities else user_articles.none()
+    workspace_visibilities = article_workspace_visibility_values_for_user(user)
+    workspace_articles = article_workspace_queryset_for_user(user)
 
     return {
         "total_user_article_count": user_articles.count(),
         "total_user_public_article_count": user_articles.filter(visibility=SuggestedArticle.Visibility.PUBLIC).count(),
         "total_user_internal_article_count": user_articles.filter(visibility=SuggestedArticle.Visibility.INTERNAL).count(),
-        "total_user_authorable_article_count": authorable_user_articles.count(),
-        "profile_can_author_public_articles": SuggestedArticle.Visibility.PUBLIC in authorable_visibilities,
-        "profile_can_author_internal_articles": SuggestedArticle.Visibility.INTERNAL in authorable_visibilities,
+        "total_user_authorable_article_count": workspace_articles.count(),
+        "profile_can_author_public_articles": SuggestedArticle.Visibility.PUBLIC in workspace_visibilities,
+        "profile_can_author_internal_articles": SuggestedArticle.Visibility.INTERNAL in workspace_visibilities,
         "profile_display_name": format_profile_display_name(user),
         "user_is_ldap_managed": user_is_ldap_managed,
         "account_type_display": get_account_type_display(user),
