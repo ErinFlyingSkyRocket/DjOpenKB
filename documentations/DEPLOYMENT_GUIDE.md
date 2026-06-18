@@ -165,6 +165,7 @@ POSTGRES_PORT=5432
 
 OPENKB_BASE_DIR=OpenKB-main
 OPENKB_DATA_DIR=openkb-data
+OPENKB_INTERNAL_DATA_DIR=openkb-data-internal
 OPENKB_AI_PROVIDER=openkb-cli
 OPENKB_AI_MODEL=gemini/gemini-2.5-flash
 LITELLM_DROP_PARAMS=true
@@ -444,6 +445,7 @@ Do not commit or share the generated OpenKB runtime configuration folder:
 
 ```text
 openkb-data/.openkb/
+openkb-data-internal/.openkb/
 .openkb-venv/
 ```
 
@@ -775,12 +777,13 @@ Current DjOpenKB is configured as a login-only internal knowledge base.
 Expected browser behaviour:
 
 ```text
-https://<linux-server-ip>:8080/          → login page
-https://<linux-server-ip>:8080/home/     → requires login
-normal article/search/profile/admin URLs → require login
-anonymous access to protected paths       → 404
-/admin/login/                             → hidden / 404
-/admin/                                   → allowed only after normal login, Admin Users/superuser sync, and admin CIDR/VPN checks
+https://<linux-server-ip>:8080/                    -> login page
+https://<linux-server-ip>:8080/home/               -> requires login
+https://<linux-server-ip>:8080/internal/           -> requires login + internal article access
+normal article/search/profile/admin URLs           -> require login
+anonymous access to protected paths                -> 404
+/admin/login/                                      -> hidden / 404
+/admin/                                            -> allowed only after normal login, Admin Users/superuser sync, admin MFA, and admin CIDR/VPN checks
 ```
 
 After login and MFA completion where applicable, users are redirected to `/home/`.
@@ -788,23 +791,30 @@ After login and MFA completion where applicable, users are redirected to `/home/
 Default role behaviour:
 
 ```text
-New normal local/AD user → Regular User group
-Disabled User          → highest precedence; removes admin/role groups, clears direct permissions, unchecks staff/superuser, and redirects to the disabled-account page
-Regular User            → fallback viewer role; view published articles and vote
-Article Writer          → create and submit articles; includes view/vote access and removes redundant Regular User
-Article Approver        → review/manage pending articles and pending updates; includes view/vote access and removes redundant Regular User
-Article Manager         → create/edit/manage articles, review approvals, and delete articles; includes view/vote access and removes redundant Regular User
-Admin Users             → full administrator source of truth; sets staff/superuser, removes normal standard role groups, and preserves account source
+New normal local/AD user -> Regular User group
+Disabled User           -> highest precedence; removes admin/role groups, clears direct permissions, unchecks staff/superuser, and redirects to the disabled-account page
+Regular User            -> fallback public viewer role; view published public articles and vote
+Article Writer          -> create/submit public articles and submit pending updates for own public articles; includes public view/vote access
+Article Approver        -> review public pending articles/updates; can edit only in public review flow; no delete by default
+Article Manager         -> create/edit/manage/review/delete public articles; can see dislike counts; no Django Admin by default
+Internal User           -> internal viewer add-on; can view published internal articles and also public articles
+Internal Article Writer -> create/submit internal articles and submit pending updates for own internal articles
+Internal Article Approver -> review internal pending articles/updates; can edit only in internal review flow; no delete by default
+Internal Article Manager -> create/edit/manage/review/delete internal articles; can see dislike counts; no Django Admin by default
+Admin Users             -> full administrator source of truth; sets staff/superuser, covers public/internal scopes, and preserves account source
 ```
 
-Direct user permission checkboxes in Django Admin are add-on content permissions only. They grant exceptions on top of group membership and do not remove group permissions. They do not grant Django Admin access.
+Direct user permission checkboxes in Django Admin are add-on content permissions only. They grant exceptions on top of group membership and do not remove group permissions. They do not grant Django Admin access by themselves.
 
 Admin setting precedence:
 
 ```text
 Disabled User wins over every other standard role.
 Admin Users grants full admin/superuser access unless Disabled User is also assigned.
-Regular User is the fallback viewer role and is only auto-added when no other standard role exists. Article Writer, Article Approver, and Article Manager are elevated content roles that may be combined with each other and do not need Regular User.
+Regular User is the fallback public viewer role and is only auto-added when no other standard role exists.
+Public writer/approver/manager roles control public article actions.
+Internal roles are add-on roles and control internal article actions.
+Public and internal permissions are additive but checked against article visibility at runtime.
 Custom future groups, such as email notification groups, are preserved.
 Django Active = whether the account can sign in at all.
 Disabled User = account retained but restricted to the disabled-account page/sign-out flow.
@@ -813,34 +823,58 @@ Disabled User = account retained but restricted to the disabled-account page/sig
 Account source is preserved during promotion/demotion:
 
 ```text
-Local user + Admin Users  → Local admin
-LDAP user + Admin Users   → LDAP admin
-Local admin removed from Admin Users → Local user
-LDAP admin removed from Admin Users  → LDAP user
+Local user + Admin Users  -> Local admin
+LDAP user + Admin Users   -> LDAP admin
+Local admin removed from Admin Users -> Local user
+LDAP admin removed from Admin Users  -> LDAP user
 ```
 
 Admins may edit Account Type and Source in Django Admin for recovery cases, such as converting an AD/LDAP account into a local account after the AD account is deleted while preserving article ownership.
 
-### 15.2 Quick post-login validation checklist
+### 15.2 Role interaction table
+
+| Scenario | Expected result |
+|---|---|
+| New local/AD user logs in for the first time | Gets `Regular User` if not admin/disabled and can view public articles only. |
+| Assign `Article Writer` | User can create public articles; `Regular User` becomes redundant and is removed. |
+| Assign `Article Approver` | User can review public pending articles/updates only; no public delete right. |
+| Assign `Article Manager` | User can manage/delete public articles and see dislike counts; no internal access unless also given an internal role. |
+| Assign `Internal User` | User can view internal articles but cannot create/review/delete them. |
+| Assign `Internal Article Writer` | User can create internal articles; does not become public article manager. |
+| Assign `Internal Article Approver` | User can review internal pending articles/updates only; no internal delete right. |
+| Assign `Internal Article Manager` | User can manage/delete internal articles and see dislike counts; does not become public article manager. |
+| Assign public manager + internal approver | Full public management, internal review only. |
+| Assign public approver + internal manager | Public review only, full internal management. |
+| Assign `Admin Users` | User becomes staff/superuser, can access public/internal/admin areas after admin guards. |
+| Assign `Disabled User` | User loses role/admin groups and cannot use the site after authentication. |
+
+### 15.3 Quick post-login validation checklist
 
 After deployment, test these flows once:
 
 ```text
 1. Incognito / anonymous request to /home/ returns 404 or forces login according to the login guard.
 2. / displays the login page.
-3. A new local or AD user lands in Regular User when no other standard role is assigned and can view published articles.
+3. A new local or AD user lands in Regular User when no other standard role is assigned and can view published public articles.
 4. A user moved to Disabled User loses staff/superuser status, cannot use functions, and is sent to the disabled-account page.
-5. A user in Admin Users becomes staff/superuser and other normal standard role groups are removed.
+5. A user in Admin Users becomes staff/superuser and other normal standard role groups are handled by role sync.
 6. Removing a user from Admin Users and placing them back into a normal role removes staff/superuser status.
 7. Local users promoted to Admin Users show as Local admin; LDAP users promoted to Admin Users show as LDAP admin.
-8. Article Writer can create and submit an article.
-9. Article Approver can approve/reject pending articles.
-10. Article Manager can create, edit/manage, approve/reject, and delete articles without needing Django Admin access.
-10. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN.
-11. /admin/login/ does not expose the normal Django admin login page.
-12. Search only returns title/keyword matches.
-13. Homepage tabs paginate correctly according to the Articles per page setting.
-14. Keyword suggestion refresh only suggests existing manually-created keywords that exactly appear in the current draft title/body.
+8. Article Writer can create and submit a public article.
+9. Article Approver can approve/reject public pending articles and cannot delete published public articles.
+10. Article Manager can create, edit/manage, approve/reject, delete public articles, and see dislike counts without needing Django Admin access.
+11. Internal User can open /internal/ and view published internal articles, while Regular User cannot.
+12. Internal Article Writer can create and submit an internal article.
+13. Internal Article Approver can approve/reject internal pending articles and cannot delete published internal articles.
+14. Internal Article Manager can create, edit/manage, approve/reject, delete internal articles, and see dislike counts without needing Django Admin access.
+15. Public-only managers cannot access internal-only pending/review routes unless assigned an internal role.
+16. Internal-only managers cannot manage public article approvals/deletion unless assigned a public manager/admin role.
+17. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN after admin MFA.
+18. /admin/login/ does not expose the normal Django admin login page.
+19. Search only returns title/keyword matches and respects public/internal access.
+20. Homepage tabs paginate correctly according to the Articles per page setting.
+21. Keyword suggestion refresh only suggests existing manually-created keywords that exactly appear in the current draft title/body.
+22. `python manage.py check_internal_article_isolation --sync-first` passes after internal article sync.
 ```
 
 ---
@@ -1158,10 +1192,24 @@ deactivate
 rm -rf .openkb-venv
 ```
 
-After code or article changes, usually only sync published Django articles:
+After code or article changes, usually only sync published Django articles. By default, this syncs both public and internal AI indexes:
 
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
+```
+
+Scope-specific sync is also available:
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai --scope public
+sudo docker compose exec web python manage.py sync_openkb_ai --scope internal
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+```
+
+The internal sync creates/uses `openkb-data-internal/` and keeps internal article content out of the public `openkb-data/` tree. To verify isolation:
+
+```bash
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 ```
 
 ### 17.8 Confirm the update is healthy
@@ -1181,20 +1229,39 @@ https://<linux-server-ip>:8080
 
 ---
 
-## 17.9 Article workflow and bulk import/export notes
+## 17.9 Article workflow, internal articles, and bulk import/export notes
 
 ### Published article updates require approval
 
-Normal users can edit their own published articles, but the live published article is not overwritten immediately. The edited version is saved as a pending update and waits for admin review.
+Normal users can edit their own published articles, but the live published article is not overwritten immediately. The edited version is saved as a pending update and waits for review in the matching visibility scope.
 
 ```text
-Current published version: remains visible to readers
+Current published version: remains visible to authorised readers
 Edited version: stored separately as pending update
-Admin approves: pending update replaces the published article
-Admin rejects: published article remains unchanged and feedback is shown to the author
+Scope reviewer approves: pending update replaces the published article
+Scope reviewer rejects: published article remains unchanged and feedback is shown to the author
 ```
 
-Admins can review both new pending articles and pending updates from the **Manage Pending Articles** admin tool.
+Review queues are separated:
+
+| Queue | Who can review |
+|---|---|
+| Public pending articles/updates | Article Approver, Article Manager, Admin Users |
+| Internal pending articles/updates | Internal Article Approver, Internal Article Manager, Admin Users |
+
+### Internal article behaviour
+
+Internal articles use the same draft/pending/pending failed/published workflow as public articles, but they require internal access to view, search, edit, approve, delete, or serve related images.
+
+| Function | Public article | Internal article |
+|---|---|---|
+| Listing | `/home/` | `/internal/` |
+| Create | `/suggest/` | `/internal/suggest/` |
+| Owner edits | `/profile/articles/` | `/internal/profile/articles/` |
+| Pending review | `/profile/admin/pending-articles/` | `/internal/profile/admin/pending-articles/` |
+| OpenKB AI data | `openkb-data/` public index | `openkb-data-internal/` internal public+internal index |
+
+Public-only roles cannot access internal article data. Internal-only manager/approver roles do not automatically gain public article management rights.
 
 ### Bulk export/import purpose
 
@@ -1203,9 +1270,11 @@ The **Bulk import/export articles** admin tool creates article backup or migrati
 ```text
 article titles
 article body / Markdown
+article visibility: public/internal
 keywords
 article workflow status
 pending update content and pending update keywords
+pending update image references
 review comments/history where applicable
 referenced image files
 OpenKB sync metadata
@@ -1238,14 +1307,16 @@ To restore a split export:
 1. Extract the outer split package ZIP.
 2. Go to the admin Bulk import/export articles page.
 3. Import each inner part ZIP one by one.
-4. Confirm the imported published articles appear on the website.
+4. Confirm the imported published public/internal articles appear only to the correct roles.
 5. Run the OpenKB sync command if needed.
+6. Run the internal isolation check if internal articles are present.
 ```
 
 After a large import, run:
 
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 sudo docker compose exec web python manage.py check
 ```
 
@@ -1253,7 +1324,15 @@ sudo docker compose exec web python manage.py check
 
 The main search is intentionally simple. It matches only published article titles and manually entered article keywords. It does not search article body content, Markdown files, internal paths, or relevance scores.
 
-The homepage article panel uses three paginated tabs:
+Search scope depends on user role:
+
+| Search | Scope |
+|---|---|
+| Main search for normal users | Public published articles only |
+| Main search for internal-capable users | Public + internal published articles |
+| Internal search | Internal published articles only |
+
+The public homepage article panel uses three paginated tabs:
 
 ```text
 Trending Topics
@@ -1261,10 +1340,12 @@ Most Liked
 Most Recent Articles
 ```
 
+The internal article page uses a simpler internal list with pagination.
+
 The number of articles shown per page is controlled in:
 
 ```text
-Django Admin → KB → Site settings → Articles per page
+Django Admin -> KB -> Site settings -> Articles per page
 ```
 
 Valid range:
@@ -1348,6 +1429,7 @@ vault/bootstrap/djopenkb.env
 vault/keys/
 vault/file/
 openkb-data/.openkb/
+openkb-data-internal/.openkb/
 .openkb-venv/
 ldap-certs/
 nginx/certs/*.key
@@ -1360,7 +1442,7 @@ The public repository should only contain examples, scripts, and safe default co
 ---
 
 
-Bulk article export ZIP files should also be treated as sensitive because they can contain internal article content, keywords, pending updates, review notes, and uploaded images. Store them only in approved backup locations.
+Bulk article export ZIP files should also be treated as sensitive because they can contain public/internal article content, keywords, pending updates, review notes, and uploaded images. Store them only in approved backup locations.
 
 ## 19. Troubleshooting quick notes
 

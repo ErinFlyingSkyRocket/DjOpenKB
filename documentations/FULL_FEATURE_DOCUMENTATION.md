@@ -4,9 +4,9 @@ This document summarises the implemented features, security controls, deployment
 
 ## 1. Project Purpose
 
-DjOpenKB is a Django-based internal knowledge base website integrated with OpenKB AI. It allows users to browse, search, vote on, and suggest wiki articles while administrators review and publish content. The platform is designed for a controlled local server or intranet-style deployment using Docker Compose, PostgreSQL, Nginx HTTPS, HashiCorp Vault, and optional Windows Active Directory authentication over LDAPS.
+DjOpenKB is a Django-based internal knowledge base website integrated with OpenKB AI. It allows users to browse, search, vote on, and suggest public wiki articles, while a separate internal article area is available only to users with internal article roles. The platform is designed for a controlled local server or intranet-style deployment using Docker Compose, PostgreSQL, Nginx HTTPS, HashiCorp Vault, Redis, and optional Windows Active Directory authentication over LDAPS.
 
-The project focuses on secure article management, controlled user contribution, local/offline UI translation, MFA-protected account actions, audit logging, upload validation, OpenKB-compatible article synchronisation, and AI-assisted article search.
+The project focuses on secure article management, public/internal content isolation, controlled user contribution, local/offline UI translation, MFA-protected account actions, audit logging, upload validation, OpenKB-compatible article synchronisation, and role-scoped AI-assisted article search.
 
 ## 2. Main Runtime Services
 
@@ -25,37 +25,83 @@ The Docker Compose stack contains the following main services:
 
 ## 3. User Types and Permission Summary
 
-DjOpenKB now uses a login-only main website model. Anonymous visitors are not allowed to browse the wiki, search articles, use the AI chatbot, vote, upload files, or access admin tools. The root URL shows the login page. Other protected paths return 404 for anonymous users to reduce route discovery value.
+DjOpenKB uses a login-only main website model. Anonymous visitors are not allowed to browse the wiki, search articles, use the AI chatbot, vote, upload files, or access admin tools. The root URL shows the login page. Other protected paths return 404 for anonymous users to reduce route discovery value.
 
 ### 3.1 Main Website Access Levels
 
 | Access level | Applies to | Main permissions | Restrictions |
 |---|---|---|---|
-| Anonymous visitor | Not signed in | Can access only the login page, language endpoint, and required static/login support assets. | Cannot browse articles, search, vote, suggest content, use AI, access profiles, or use admin tools. Protected paths return 404. |
-| Disabled User | Local or AD / LDAP account in `Disabled User` group | Account record remains available for audit/history and later reassignment. Valid password/MFA does not complete login; the user receives a disabled-account message. | Cannot access the wiki, articles, voting, AI assistant, admin tools, or Django Admin through DjOpenKB permissions. |
-| Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published articles and vote on articles. This is the fallback viewer role. | Cannot create articles, manage approvals, or use admin tools unless direct add-on permissions are granted. Automatically removed when Writer/Approver/Manager is assigned. |
-| Article Writer | Logged-in user in `Article Writer` group | Can view published articles, create drafts, submit articles for approval, and edit/resubmit own drafts or pending failed articles. | Cannot approve/publish other users' articles by group default. Does not need Regular User because view access is included. |
-| Article Approver | Logged-in user in `Article Approver` group | Can view published articles and manage pending articles/pending updates, including review-stage editing and approve/reject actions. | Cannot create new articles or delete articles by group default. |
-| Article Manager | Logged-in user in `Article Manager` group | Can view published articles, create articles, edit/manage articles, manage pending articles/pending updates, approve/reject submissions, and delete articles. | Does not grant Django Admin access unless the user is also in `Admin Users`. |
-| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Full administrator role. Members are automatically synced to `is_staff=True` and `is_superuser=True`, can use admin tools, and can access Django Admin when network restrictions pass. | Should be assigned only to trusted administrators. |
+| Anonymous visitor | Not signed in | Can access only the login page, language endpoint, and required static/login support assets. | Cannot browse public or internal articles, search, vote, suggest content, use AI, access profiles, or use admin tools. Protected paths return 404. |
+| Disabled User | Local or AD / LDAP account in `Disabled User` group | Account record remains available for audit/history and later reassignment. Valid password/MFA does not complete usable access; the user receives a disabled-account message. | Cannot access the wiki, articles, voting, AI assistant, admin tools, or Django Admin through DjOpenKB permissions. |
+| Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published public articles and vote on public articles. This is the fallback public viewer role. | Cannot create articles, access internal articles, manage approvals, or use admin tools unless additional roles/direct permissions are granted. Automatically removed when a public elevated role is assigned. |
+| Article Writer | Logged-in user in `Article Writer` group | Can view public articles, create public drafts, submit public articles for approval, and submit pending updates for own public published articles. | Cannot access internal articles unless also given an internal role. Cannot approve/publish other users' articles by group default. |
+| Article Approver | Logged-in user in `Article Approver` group | Can view public articles and manage public pending articles/pending updates, including review-stage editing and approve/reject actions. | Cannot access internal articles unless also given an internal role. Cannot create new articles, delete articles, or freely edit already-published public articles by group default. |
+| Article Manager | Logged-in user in `Article Manager` group | Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates, approve/reject submissions, delete public articles, and see dislike counts. | Does not grant internal article access unless also given an internal role. Does not grant Django Admin access unless the user is also in `Admin Users`. |
+| Internal User | Logged-in user in `Internal User` group | Can view public articles and published internal articles, and vote where article detail access is allowed. | Cannot create, review, edit, or delete internal articles. |
+| Internal Article Writer | Logged-in user in `Internal Article Writer` group | Can view public/internal articles, create internal drafts, submit internal articles for approval, and submit pending updates for own internal published articles. | Cannot approve/publish other users' internal articles by group default. Does not grant public article management. |
+| Internal Article Approver | Logged-in user in `Internal Article Approver` group | Can view public/internal articles and manage internal pending articles/pending updates, including review-stage editing and approve/reject actions. | Cannot create new internal articles, delete internal articles, or freely edit already-published internal articles by group default. Does not grant public article management. |
+| Internal Article Manager | Logged-in user in `Internal Article Manager` group | Can view public/internal articles, create internal articles, edit/manage internal articles, review internal pending articles/updates, approve/reject submissions, delete internal articles, and see dislike counts. | Does not grant public article management unless also assigned the matching public role. Does not grant Django Admin access unless also in `Admin Users`. |
+| Admin Users | Trusted local or AD / LDAP admin in `Admin Users` group | Full administrator role. Members are automatically synced to `is_staff=True` and `is_superuser=True`, can use admin tools, and can access Django Admin when network/admin-MFA restrictions pass. | Should be assigned only to trusted administrators. |
 
-### 3.2 Group Baseline and Direct User Permission Add-ons
+### 3.2 Role Interaction Matrix
+
+| Scenario | Effective result |
+|---|---|
+| New active local/AD user with no elevated role | Receives `Regular User` as fallback public viewer. |
+| `Article Writer`, `Article Approver`, or `Article Manager` assigned | `Regular User` is removed because these public roles already include public viewing. |
+| Internal role assigned | Internal role is additive. It grants internal scope access and also includes public viewing, but it does not automatically grant public management unless the user also has a public manager/approver/writer role. |
+| Public manager + internal approver | User can fully manage public articles and only review pending internal articles/updates. |
+| Public approver + internal manager | User can review public pending items and fully manage internal articles. |
+| Public writer + internal writer | User can create/maintain own public and internal submissions, but cannot approve other users' articles. |
+| Approver-only role | Can edit article content only in the explicit pending-review flow for that visibility scope. Cannot delete or freely edit already-published articles. |
+| Manager role | Can create, edit/manage, review, approve/reject, and delete articles in that visibility scope. |
+| Admin Users | Full public/internal access, admin tools, and Django Admin access after the admin network/MFA gate. |
+| Disabled User | Overrides every other role, removes standard role/admin groups and direct Knowledge Repository permissions, clears staff/superuser, and blocks website access. |
+
+### 3.3 Permission-by-Function Matrix
+
+| Function / route area | Regular User | Public Writer | Public Approver | Public Manager | Internal User | Internal Writer | Internal Approver | Internal Manager | Admin Users |
+|---|---|---|---|---|---|---|---|---|---|
+| View published public articles | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| View published internal articles | No | No | No | No | Yes | Yes | Yes | Yes | Yes |
+| Vote on accessible published articles | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| See dislike counts | No | No | No | Yes | No | No | No | Yes | Yes |
+| Create public article | No | Yes | No | Yes | No | No | No | No | Yes |
+| Create internal article | No | No | No | No | No | Yes | No | Yes | Yes |
+| Review public pending queue | No | No | Yes | Yes | No | No | No | No | Yes |
+| Review internal pending queue | No | No | No | No | No | No | Yes | Yes | Yes |
+| Edit own draft/failed submission in allowed scope | No | Public only | No, unless also writer/owner scope | Public | No | Internal only | No, unless also writer/owner scope | Internal | All |
+| Submit pending update for own published article | No | Public only | No, unless also writer/owner scope | Public | No | Internal only | No, unless also writer/owner scope | Internal | All |
+| Freely edit already-published article | No | No; creates pending update | No | Public only | No | No; creates pending update | No | Internal only | All |
+| Delete published article | No | Own/scope owner flow only, MFA required | No | Public only, MFA required | No | Own/scope owner flow only, MFA required | No | Internal only, MFA required | All scopes, MFA where enforced |
+| Main-site admin tools | No | No | Public pending review only | Public management tools | No | No | Internal pending review only | Internal management tools | Yes |
+| Django Admin `/admin/` | No | No | No | No | No | No | No | No | Yes, after admin guards |
+
+### 3.4 Group Baseline and Direct User Permission Add-ons
 
 Groups provide the baseline role. Django Admin also shows direct user permission checkboxes for one-off content-access exceptions:
 
 ```text
-Can view articles
-Can create articles
-Can approve/manage articles
+Can view published public articles
+Can add/submit public articles for approval
+Can approve/manage pending public article reviews
+Can delete public articles
+Can view internal articles
+Can add/submit internal articles for approval
+Can approve/manage pending internal article reviews
+Can delete internal articles
+Can use Knowledge Repository admin tools
 ```
 
-These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group. Direct permissions do not grant Django Admin access. Django Admin access is controlled by the `Admin Users` group, superuser/staff sync, and the admin network guard. The `Disabled User` role is the exception and overrides direct add-on permissions.
+These direct user permissions are additive only. Ticking a checkbox grants that permission directly to the user. Unticking it removes only the direct user permission; it does not remove a permission inherited from a group. Direct permissions do not grant Django Admin access unless the account also becomes an administrator through the intended admin path. The `Disabled User` role is the exception and overrides direct add-on permissions.
 
-### 3.3 Default Group Assignment
+### 3.5 Default Group Assignment
 
-Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. `Regular User` is only the fallback viewer role: if the account is assigned `Article Writer`, `Article Approver`, or `Article Manager`, the redundant `Regular User` group is automatically removed because those elevated content roles already include view access. Admins can assign `Disabled User` to retain an account while preventing login completion and website access. The `Admin Users` group is the source of truth for full Django Admin access.
+Newly created non-admin users are automatically placed in the `Regular User` group. This applies to normal local accounts and AD/LDAP accounts created during first login. `Regular User` is only the fallback public viewer role: if the account is assigned `Article Writer`, `Article Approver`, or `Article Manager`, the redundant `Regular User` group is automatically removed because those elevated public content roles already include public article view access.
 
-### 3.4 Account Source Differences
+Internal roles are add-on roles. A user can hold a public role and an internal role at the same time, and permissions are evaluated by article visibility. Admins can assign `Disabled User` to retain an account while preventing login completion and website access. The `Admin Users` group is the source of truth for full Django Admin access.
+
+### 3.6 Account Source Differences
 
 The `UserProfile` model stores the account source, so the system does not guess whether a user is local or AD-managed based on email domain alone. This prevents a local user with an email such as `alice@openkb.local` from being incorrectly treated as an AD account.
 
@@ -64,31 +110,33 @@ The `UserProfile` model stores the account source, so the system does not guess 
 | Local account | Django | Django/local admin | Allowed with fresh MFA/OTP | Allowed with fresh MFA/OTP |
 | Active Directory account | Active Directory | Active Directory/domain admin | Blocked in Django | Blocked in Django |
 
-### 3.5 Role Enforcement and Precedence
+### 3.7 Role Enforcement and Precedence
 
 Role precedence is enforced automatically when accounts are saved or synchronised. This keeps admin settings predictable and prevents conflicting combinations.
 
 ```text
 1. Disabled User has the highest precedence.
 2. Admin Users is the source of truth for full administrator access.
-3. Regular User is the fallback viewer role. Article Writer, Article Approver, and Article Manager are elevated content roles and do not require Regular User.
-4. Direct user permissions are add-ons for content features only.
-5. Django's Active checkbox controls whether the account can sign in at all.
+3. Regular User is the fallback public viewer role.
+4. Public roles control public article creation/review/management.
+5. Internal roles are additive and control internal article creation/review/management.
+6. Direct user permissions are add-ons for content features only.
+7. Django's Active checkbox controls whether the account can sign in at all.
 ```
 
 `Disabled User` is treated as a deliberate no-access role. A disabled account may still exist in Django for ownership, audit, and historical records, but it cannot use the website. When assigned, it removes the user's standard role groups, removes `Admin Users`, clears direct Knowledge Repository permission add-ons, and unchecks `is_staff` and `is_superuser`. If a disabled user already has an authenticated browser session, the next server request redirects the user to the disabled-account page. The sign-out button on that page clears the restricted session.
 
-`Admin Users` is treated as the full administrator role. When assigned, it automatically sets `is_staff=True` and `is_superuser=True`, removes normal standard role groups such as `Regular User`, `Article Writer`, `Article Approver`, and `Article Manager`, and clears direct Knowledge Repository permission overrides because the account already has full access. Custom non-role groups, such as future notification groups, are preserved.
+`Admin Users` is treated as the full administrator role. When assigned, it automatically sets `is_staff=True` and `is_superuser=True`, removes normal standard role groups where required, and covers both public and internal scopes. Custom non-role groups, such as future notification groups, are preserved.
 
-`Regular User` is treated as a fallback viewer role only. It is auto-added when an active, non-admin, non-disabled account has no standard Knowledge Repository role. If the account is assigned `Article Writer`, `Article Approver`, or `Article Manager`, `Regular User` is removed automatically because those roles already include article viewing and voting access. Writer, Approver, and Manager may still be combined with each other if a user needs multiple elevated content capabilities.
+`Regular User` is treated as a fallback public viewer role only. It is auto-added when an active, non-admin, non-disabled account has no standard Knowledge Repository role. If the account is assigned a public elevated role, `Regular User` is removed automatically because those roles already include public article viewing and voting access.
 
 Account source is preserved during role sync:
 
 ```text
-Local user + Admin Users  → Local admin
-LDAP user + Admin Users   → LDAP admin
-Local admin removed from Admin Users → Local user
-LDAP admin removed from Admin Users  → LDAP user
+Local user + Admin Users  -> Local admin
+LDAP user + Admin Users   -> LDAP admin
+Local admin removed from Admin Users -> Local user
+LDAP admin removed from Admin Users  -> LDAP user
 ```
 
 Admins can edit the profile `Account Type` and `Source` fields in Django Admin for recovery cases, such as converting an AD/LDAP account to a local user after the AD account has been removed but the Knowledge Repository account still owns important articles. Local account types must use the local source, and LDAP account types must use the Active Directory source.
@@ -256,34 +304,45 @@ Important protections include:
 
 ## 9. Article Management
 
-### 9.1 Suggested Article Workflow
+### 9.1 Public and Internal Article Visibility
 
-Users can suggest articles through the website. Suggested articles are stored in the database and mirrored into the OpenKB data folder when needed.
+Each article has a visibility value:
+
+| Visibility | Meaning | Main access rule |
+|---|---|---|
+| `Public article` | General knowledge-base article visible to normal authenticated users. | Requires public article view access. Most logged-in active users receive this through `Regular User` or any elevated/internal role. |
+| `Internal article` | Restricted article for more sensitive internal IT documentation. | Requires `Internal User`, `Internal Article Writer`, `Internal Article Approver`, `Internal Article Manager`, direct internal permission, or `Admin Users`. |
+
+Public and internal articles share the same database model and workflow fields, but every view checks the article visibility before allowing list/detail/edit/review/delete/image access.
+
+### 9.2 Suggested Article Workflow
+
+Users can suggest articles through the website. Suggested articles are stored in the database and mirrored into the correct OpenKB data folder when needed.
 
 Article states include:
 
 | Status | Meaning |
 |---|---|
 | `Draft` | User can edit before submitting. |
-| `Pending` | Submitted for admin review. |
-| `Pending failed` | Returned by admin with review comments. |
-| `Published` | Approved and visible in the public article list. |
+| `Pending` | Submitted for review in the matching public/internal pending queue. |
+| `Pending failed` | Returned by reviewer/manager/admin with review comments. |
+| `Published` | Approved and visible to users who can access that article visibility. |
 
-Normal users cannot self-approve articles. Admins can review and publish articles through the admin workflow. Admin-created or admin-published content can bypass normal user approval flow where appropriate.
+Normal users cannot self-approve articles. Scope approvers/managers and admins review submissions through the matching review workflow. Admin-created or admin-published content can bypass normal user approval flow where appropriate.
 
-For a new normal-user article, the normal workflow is:
+For a new article, the normal workflow is:
 
 ```text
-Draft → Pending → Pending failed / Published
+Draft -> Pending -> Pending failed / Published
 ```
 
-For an already published article edited by a normal user, the live article is not overwritten immediately. The proposed update is stored separately and sent for admin review.
+For an already published article edited by an owner/writer flow, the live article is not overwritten immediately. The proposed update is stored separately and sent for review.
 
-### 9.2 Published Article Update Review
+### 9.3 Published Article Update Review
 
-When a normal user edits an already published article, the current published version remains accessible to readers. The edited version is saved as a pending update instead of immediately replacing the live article.
+When a user edits an already published article through the normal owner/writer workflow, the current published version remains accessible to readers. The edited version is saved as a pending update instead of immediately replacing the live article.
 
-Pending update data is stored separately from the public article content, including:
+Pending update data is stored separately from the published article content, including:
 
 ```text
 pending update title
@@ -299,19 +358,58 @@ The pending update workflow is:
 Published article remains visible
 Author submits edited version
 Edited version becomes Pending update
-Admin approves → pending update replaces the live published article
-Admin rejects → live published article remains unchanged and update feedback is shown to the author
+Scope approver/manager/admin approves -> pending update replaces the live published article
+Scope approver/manager/admin rejects -> live published article remains unchanged and update feedback is shown to the author
 ```
 
 This design prevents unapproved edits from replacing already approved knowledge-base content. It also allows users to continue accessing the last approved article while the update is waiting for review.
 
-### 9.3 Admin Review Notes and History
+### 9.4 Scope-Specific Review Queues
 
-When an article is returned as pending failed, admins can enter review notes. The current review note is shown to the article owner when the article is in draft or pending failed status.
+Public and internal review queues are separated:
+
+| Queue | Route area | Allowed reviewers |
+|---|---|---|
+| Public pending articles/updates | `/profile/admin/pending-articles/` | `Article Approver`, `Article Manager`, `Admin Users` |
+| Internal pending articles/updates | `/internal/profile/admin/pending-articles/` | `Internal Article Approver`, `Internal Article Manager`, `Admin Users` |
+
+Approver-only users may edit content only while using the explicit review flow and only while the article/update is pending in their scope. They do not receive delete access and cannot freely edit already-published articles outside the review context. Managers have broader edit/manage/delete access in their own scope.
+
+### 9.5 Owner Drafts, Failed Articles, and Direct Traversal Protection
+
+Owners can open and edit their own drafts, pending failed articles, and pending-update drafts when they have create permission for that article's visibility. Direct traversal to drafts, pending articles, pending failed articles, or unapproved updates is intentionally stricter than normal article viewing:
+
+```text
+Published article detail -> allowed according to public/internal visibility
+Draft/pending/failed detail -> owner or full admin only
+Review workflow -> approver/manager/admin through explicit review URLs
+```
+
+This prevents users from guessing `/articles/<id>/` values to view another user's unapproved work.
+
+### 9.6 Delete Behaviour
+
+Delete access is scope-based:
+
+| User type | Public article deletion | Internal article deletion |
+|---|---|---|
+| Public writer/owner | Can delete own public articles when allowed by owner flow; published deletion requires MFA confirmation. | No, unless also has matching internal write/delete ability. |
+| Public approver | No delete right by default. | No. |
+| Public manager | Can delete public articles; published deletion requires MFA confirmation. | No, unless also has an internal manager/delete role. |
+| Internal writer/owner | No public delete right by internal role alone. | Can delete own internal articles when allowed by owner flow; published deletion requires MFA confirmation. |
+| Internal approver | No delete right by default. | No delete right by default. |
+| Internal manager | No public delete right by internal role alone. | Can delete internal articles; published deletion requires MFA confirmation. |
+| Admin Users | Can delete all scopes; published deletion requires MFA where enforced. | Can delete all scopes; published deletion requires MFA where enforced. |
+
+The delete confirmation page warns that the action cannot be reversed. Published article deletion uses MFA confirmation instead of a separate approval workflow.
+
+### 9.7 Admin Review Notes and History
+
+When an article or pending update is returned as pending failed, reviewers can enter review notes. The current review note is shown to the article owner while the article/update is in a failed state.
 
 Review notes are also stored in history, so previous feedback rounds are preserved for audit and review tracking.
 
-### 9.4 Duplicate Article Title Protection
+### 9.8 Duplicate Article Title Protection
 
 Article titles are checked using normalised comparison:
 
@@ -329,9 +427,23 @@ password reset guide
 
 from being created as separate articles.
 
-### 9.5 Article File Sync
+### 9.9 Article File Sync and Storage Isolation
 
-Published article content is written to OpenKB-compatible Markdown files under the OpenKB data structure. Pending updates are not written as the public article version until an admin approves them. Internal generated metadata is removed from public display, search snippets, and AI output so users do not see sync markers.
+Published public article content is written to OpenKB-compatible Markdown files under the public OpenKB data structure:
+
+```text
+openkb-data/raw/
+openkb-data/wiki/sources/
+```
+
+Internal article Markdown is deliberately kept out of the public OpenKB tree and written under the internal workspace:
+
+```text
+openkb-data-internal/raw/internal/
+openkb-data-internal/wiki/sources/
+```
+
+Pending updates are not written as the live published article version until approved. Internal generated metadata is removed from public display, search snippets, and AI output so users do not see sync markers.
 
 ## 10. Orphan Article Management
 
@@ -356,9 +468,23 @@ The assign-user field supports typing/searching by username or email so the admi
 
 The main website is login protected. Published article listing, article search, article details, voting, and the AI chatbot are available only after authentication and MFA completion where applicable.
 
-Draft, pending, pending failed, and unapproved pending-update content are not publicly visible unless the current user owns the article or has the required manager/admin permission.
+The public article area is available from `/home/`. The internal article area is available from `/internal/` only to users with internal article access.
 
-### 11.2 Simple Title and Keyword Search
+Draft, pending, pending failed, and unapproved pending-update content are not visible unless the current user owns the article, is a full admin, or is using the correct explicit review workflow for that scope.
+
+### 11.2 Public/Internal Listing Behaviour
+
+| Area | Public listing | Internal listing |
+|---|---|---|
+| Route | `/home/` | `/internal/` |
+| Required access | Public article view access | Internal article view access |
+| Content shown | Published public articles | Published internal articles |
+| Tabs | Trending Topics, Most Liked, Most Recent Articles | Simple internal list with pagination |
+| Visibility labels | Internal tags shown only to users with internal access | Internal article context shown |
+
+Users with internal article access may see internal article tags and can use internal routes. Users without internal access cannot open internal article pages or internal uploaded images by guessing URLs.
+
+### 11.3 Simple Title and Keyword Search
 
 The main search intentionally stays simple and predictable. It matches only:
 
@@ -369,13 +495,21 @@ published article keywords manually entered by users/admins
 
 It does not search article body content, Markdown files, author names, OpenKB paths, internal metadata, or relevance scores. This reduces unnecessary scanning and makes search behaviour easier for users to understand.
 
-### 11.3 Search Suggestions
+Search scope is role-aware:
 
-The search bar suggestion dropdown uses the same title/keyword-only search logic. It returns clickable published article titles only and does not expose internal paths or article body excerpts.
+| Search entry point | Scope |
+|---|---|
+| Main public search by normal public users | Published public articles only |
+| Main public search by internal-capable users | Published public + internal articles |
+| Internal search | Published internal articles only |
 
-### 11.4 Homepage Article Tabs
+### 11.4 Search Suggestions
 
-The homepage article panel uses one container with tabs:
+The search bar suggestion dropdown uses the same title/keyword-only search logic. It returns clickable published article titles only and does not expose article body excerpts or raw OpenKB paths. Internal suggestions are returned only to users with internal access.
+
+### 11.5 Homepage Article Tabs
+
+The public homepage article panel uses one container with tabs:
 
 ```text
 Trending Topics
@@ -393,9 +527,11 @@ Sorting behaviour:
 | Most Liked | Highest likes first, then views, then latest update |
 | Most Recent Articles | Latest updated/published articles first |
 
-### 11.5 Article Count Site Setting
+The internal article page intentionally uses a simpler list rather than public trending/most-liked panels.
 
-Admins can configure how many articles appear per page from Django Admin → KB → Site settings.
+### 11.6 Article Count Site Setting
+
+Admins can configure how many articles appear per page from Django Admin -> KB -> Site settings.
 
 ```text
 Articles per page
@@ -406,22 +542,36 @@ Default: 10
 
 The setting is validated in admin and also clamped at runtime for safety.
 
-### 11.6 View Counts
+### 11.7 View Counts
 
-Each article stores a `view_count`. Views are tracked per user session to avoid simply refreshing the same article repeatedly to increase the count.
+Each article stores a `view_count`. Views are tracked per user session to avoid simply refreshing the same article repeatedly to increase the count. View access is still checked against the article visibility.
 
-### 11.7 Voting
+### 11.8 Voting and Dislike Count Visibility
 
-Signed-in users can vote on published articles:
+Signed-in users can vote on accessible published articles:
 
 - Helpful / thumbs up.
 - Not helpful / thumbs down.
 - One vote per user per article.
 - Users can change or remove their vote.
 
-Helpful counts are visible to users. Admins can review vote details through Django admin and through activity logging.
+Helpful counts are visible to users. Dislike/not-helpful counts are more restricted:
 
-### 11.8 Manual Existing-Keyword Suggestions
+| User type | Can see dislike counts? |
+|---|---|
+| Regular User | No |
+| Article Writer | No |
+| Article Approver | No |
+| Article Manager | Yes |
+| Internal User | No |
+| Internal Article Writer | No |
+| Internal Article Approver | No |
+| Internal Article Manager | Yes |
+| Admin Users | Yes |
+
+Admins can review vote details through Django Admin and through activity logging.
+
+### 11.9 Manual Existing-Keyword Suggestions
 
 When users add or edit an article, the suggested keyword panel uses a manual refresh button. It scans the current draft title/body in the browser and compares it against keywords that already exist on published articles.
 
@@ -531,13 +681,20 @@ The article display template can safely render the sanitised HTML because the in
 
 ### 15.1 OpenKB CLI Integration
 
-The project integrates with OpenKB through the local `OpenKB-main` folder and the `openkb-data` data folder.
+The project integrates with OpenKB through the local `OpenKB-main` folder and two OpenKB data folders:
 
-The OpenKB data folder must be initialised before the chatbot is used:
+| Folder | Purpose |
+|---|---|
+| `openkb-data/` | Public OpenKB workspace. Contains published public articles only. |
+| `openkb-data-internal/` | Internal OpenKB workspace. Contains a separate index for users with internal article access. This index includes public + internal published articles. |
+
+The public OpenKB data folder must be initialised before the chatbot is used:
 
 ```bash
 docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 ```
+
+The internal data folder is created by Django when internal sync runs. It copies the OpenKB configuration from the public data folder when available.
 
 Then articles can be synced for AI usage:
 
@@ -545,9 +702,36 @@ Then articles can be synced for AI usage:
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
+The sync command supports scopes:
+
+```bash
+docker compose exec web python manage.py sync_openkb_ai --scope public
+docker compose exec web python manage.py sync_openkb_ai --scope internal
+docker compose exec web python manage.py sync_openkb_ai --scope all
+```
+
+`--scope all` is the default. Public sync rebuilds the public index from published public articles only. Internal sync rebuilds a separate internal index containing published public + published internal articles.
+
 If OpenKB is not initialised, the chatbot may return errors because the expected OpenKB data structure is missing.
 
-### 15.2 AI Provider
+### 15.2 Internal Article AI Isolation
+
+Internal articles are not written into the public OpenKB data tree. They are stored and indexed under the separate internal OpenKB workspace. Runtime query scope is selected by the user's article permissions:
+
+| User permission | AI index used |
+|---|---|
+| Public article access only | Public index under `openkb-data/` |
+| Internal article access | Internal index under `openkb-data-internal/`, containing public + internal published articles |
+
+The project includes a verification command for internal isolation:
+
+```bash
+docker compose exec web python manage.py check_internal_article_isolation --sync-first
+```
+
+This checks that internal article files are not present in the public OpenKB data/index tree.
+
+### 15.3 AI Provider
 
 The AI provider is configured through environment settings:
 
@@ -558,7 +742,7 @@ OPENKB_AI_MODEL=gemini/gemini-2.5-flash
 
 AI API keys are stored in Vault, not directly in source code. The compatibility key `AI_API_KEY` can be kept, and provider-specific keys such as `GEMINI_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY` are supported so the model/provider can be changed later without changing source code.
 
-### 15.3 AI Endpoint Safety Limits and Rate Limiting
+### 15.4 AI Endpoint Safety Limits and Rate Limiting
 
 The Ask OpenKB AI endpoint is available only after login in the current deployment. It includes limits such as:
 
@@ -569,6 +753,7 @@ The Ask OpenKB AI endpoint is available only after login in the current deployme
 - Timeout handling for OpenKB CLI calls.
 - Error sanitisation before returning messages to users.
 - Prompt preview redaction before storing in activity logs.
+- Role-scoped public/internal AI index selection.
 
 Current defaults in settings:
 
@@ -588,13 +773,13 @@ The rate-limit identity for logged-in local and AD/LDAP users is the Django user
 
 If anonymous chatbot access is ever re-enabled in the future, IP-based limiting should be treated as a fallback and should rely on trusted Nginx reverse proxy headers.
 
-### 15.4 Related Article Recommendations
+### 15.5 Related Article Recommendations
 
 The AI endpoint can recommend relevant published articles from the local database. Related article logic avoids showing random articles for simple greetings or unrelated filler messages.
 
-Only published articles are used for public AI recommendations.
+Related article recommendations follow the same article visibility checks as normal search. Public users receive public recommendations only. Internal-capable users may receive public and internal recommendations when the question matches accessible content.
 
-### 15.5 Output Cleanup
+### 15.6 Output Cleanup
 
 OpenKB internal metadata and generated sync markers are removed before display. This prevents implementation details such as generated article metadata from leaking into article snippets or AI responses.
 
@@ -612,28 +797,31 @@ This design keeps UI translation independent from the AI chatbot and avoids send
 
 ### 17.1 Admin Tool Restriction
 
-Admin tools are protected by superuser/admin-role checks. `Admin Users` is the source of truth for full administrator access and automatically syncs members to `is_staff=True` and `is_superuser=True`. Staff status alone is not treated as a separate admin role. Direct user permission checkboxes do not grant Django Admin access.
+Admin tools are protected by superuser/admin-role checks. `Admin Users` is the source of truth for full administrator access and automatically syncs members to `is_staff=True` and `is_superuser=True`. Staff status alone is not treated as a separate admin role. Direct user permission checkboxes do not grant Django Admin access by themselves.
 
 Non-admin users receive 404 responses for admin-only main-site tools to reduce route discovery usefulness. The Django admin login path is hidden; admins should sign in through the normal login flow and then open `/admin/`.
 
-### 17.2 Admin Network Restriction
+### 17.2 Admin Network and Step-Up MFA Restriction
 
 The deployment can restrict Django Admin access by source IP/CIDR, such as a VPN or internal subnet. A correct username/password is not enough if the request source is outside the allowed admin CIDR range.
 
-### 17.3 Main Admin Tools
+Django Admin also uses an admin step-up MFA gate. A user must first complete normal login/MFA, then pass the admin gate before entering `/admin/`. The admin gate has its own idle timeout so returning to admin after the timeout requires MFA again.
 
-Admin tools include:
+### 17.3 Main Admin and Management Tools
+
+Admin/management tools include:
 
 - Clean stray upload files.
-- Bulk import/export articles.
-- Manage pending articles and pending updates.
-- Review suggested articles.
+- Bulk import/export articles, including public/internal article data.
+- Manage public pending articles and pending updates.
+- Manage internal pending articles and pending updates.
+- Review suggested articles in the correct visibility scope.
 - Scan and manage orphan articles.
 - Configure site settings such as article count per page, log retention, session timeout, and authentication lockout policy stages.
 - Manage user roles, account type/source recovery, and direct content-permission add-ons.
-- View authentication activity logs through Django admin.
-- View general activity logs through Django admin.
-- View upload audit records through Django admin.
+- View authentication activity logs through Django Admin.
+- View general activity logs through Django Admin.
+- View upload audit records through Django Admin.
 
 ### 17.4 Group and User Permission Management
 
@@ -645,6 +833,10 @@ Regular User
 Article Writer
 Article Approver
 Article Manager
+Internal User
+Internal Article Writer
+Internal Article Approver
+Internal Article Manager
 Admin Users
 ```
 
@@ -653,18 +845,39 @@ The Groups admin page shows current users in each group and provides a searchabl
 The Users admin page provides direct Knowledge Repository permission checkboxes for one-off content-access exceptions:
 
 ```text
-Can view articles
-Can create articles
-Can approve/manage articles
+Can view published public articles
+Can add/submit public articles for approval
+Can approve/manage pending public article reviews
+Can delete public articles
+Can view internal articles
+Can add/submit internal articles for approval
+Can approve/manage pending internal article reviews
+Can delete internal articles
+Can use Knowledge Repository admin tools
 ```
 
-These direct user permissions are add-on only and do not grant Django Admin access. The final content permission result is:
+These direct user permissions are add-on only. The final content permission result is:
 
 ```text
 final content access = group permissions + direct user permissions
 ```
 
-### 17.5 Article Import/Export
+Direct permissions should be used sparingly because they can create custom combinations that are harder to audit than the standard role groups. `Disabled User` still overrides direct content permissions.
+
+### 17.5 Visibility-Specific Review and Management Tools
+
+| Tool | Main route | Required access |
+|---|---|---|
+| Public pending articles | `/profile/admin/pending-articles/` | Public manage permission, public manager role, or Admin Users |
+| Internal pending articles | `/internal/profile/admin/pending-articles/` | Internal manage permission, internal manager role, or Admin Users |
+| Public owner article list | `/profile/articles/` | Public writer/owner scope or higher |
+| Internal owner article list | `/internal/profile/articles/` | Internal writer/owner scope or higher |
+| Public article creation | `/suggest/` | Public add permission, public manager, or Admin Users |
+| Internal article creation | `/internal/suggest/` | Internal add permission, internal manager, or Admin Users |
+
+Scope checks are repeated in the view layer. A user seeing a button in the UI is not the only protection; forged POSTs and direct URL access are also checked server-side.
+
+### 17.6 Article Import/Export
 
 Bulk import/export supports article content and referenced upload files. Zip member names are normalised to avoid unsafe paths. Duplicate article titles are detected during import.
 
@@ -673,9 +886,11 @@ The export package is an administrator backup/migration file. It includes the ac
 ```text
 article title
 article body / Markdown content
+article visibility: public/internal
 keywords
 published status and workflow status
 pending update title/body/keywords when present
+pending update image references when present
 review notes and review history when present
 referenced article image files
 metadata needed for OpenKB file sync
@@ -692,9 +907,9 @@ Import uncompressed safety limit: about 200 MB
 Article image upload limit: 2 MB per image
 ```
 
-When restoring from a split export, the admin should extract the outer package first and import each part ZIP one at a time. Import restores article keywords as well as article body content, and published imports are synced back into the OpenKB-compatible Markdown files.
+When restoring from a split export, the admin should extract the outer package first and import each part ZIP one at a time. Import restores article visibility, keywords, article body content, pending update fields, and referenced images. Published public imports are synced back into the public OpenKB-compatible Markdown files. Published internal imports are kept in the internal OpenKB workspace.
 
-### 17.6 Authentication Lockout Administration
+### 17.7 Authentication Lockout Administration
 
 Administrators can manage password/MFA lockout policy stages through the Site settings page. Stages are shown inline and can be added, removed, reordered, enabled, or disabled. The simplified default is 10 failures -> 5 minutes twice, then 5 failures -> 15 minutes twice, then 3 failures -> 1 hour repeatedly.
 
@@ -706,7 +921,7 @@ Django Admin -> Users -> open user -> Authentication lockout -> Reset password/M
 
 Bulk reset actions are also available on selected Users and User Profiles. Reset actions are recorded in authentication activity logs.
 
-### 17.7 Django Admin Usability
+### 17.8 Django Admin Usability
 
 Django admin pages scroll normally in the browser. For log-heavy pages:
 
@@ -923,15 +1138,15 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | CSRF | Django CSRF middleware and token-protected POST forms/endpoints. |
 | XSS | Markdown rendered then sanitised with Bleach. |
 | Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames. |
-| Access control | Article visibility checks, admin-only tools, 404 for non-admin admin-tool access. |
-| Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow. |
+| Access control | Public/internal article visibility checks, scoped writer/approver/manager roles, protected image serving, admin-only tools, and 404 for non-admin admin-tool access. |
+| Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow across article visibility scopes. |
 | Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. |
 | LDAP | LDAPS with certificate validation for AD integration. |
 | HTTPS | Nginx HTTPS and security headers. |
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
 | Activity logs | Article, vote, upload, AI, import/export, and admin-tool activity logging with retention cleanup. |
 | Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
-| AI endpoint | Prompt length limit, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting for logged-in users, timeout handling, concurrency limiting, output cleanup, and redacted activity previews. |
+| AI endpoint | Public/internal index isolation, role-scoped query index selection, prompt length limit, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting for logged-in users, timeout handling, concurrency limiting, output cleanup, and redacted activity previews. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
 
 ## 26. Files That Should Not Be Shared
@@ -946,6 +1161,7 @@ vault/bootstrap/djopenkb.env
 vault/keys/*
 vault/file/*
 openkb-data/.openkb/
+openkb-data-internal/.openkb/
 .openkb-venv/
 ldap-certs/
 nginx/certs/*.key
@@ -1011,13 +1227,13 @@ docker compose up -d
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
-- Keep the group model simple: `Disabled User`, fallback `Regular User`, elevated `Article Writer`, `Article Approver`, `Article Manager`, and `Admin Users`.
+- Keep the group model clear: `Disabled User`, fallback `Regular User`, public roles (`Article Writer`, `Article Approver`, `Article Manager`), internal add-on roles (`Internal User`, `Internal Article Writer`, `Internal Article Approver`, `Internal Article Manager`), and `Admin Users`.
 - Use direct user permission checkboxes only for one-off exceptions because they add permissions on top of group permissions.
 - Review the full-project Docker bind mount `.:/app` before final production-style deployment. It is convenient during development but should be removed where possible for hardened deployment.
 - Keep `.dockerignore` updated so secrets and runtime folders are not copied into Docker images.
 
 ## 29. Final Notes
 
-DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, article review workflow, orphan article management, role separation between local and AD users, and OpenKB AI integration.
+DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, public/internal article review workflows, orphan article management, scoped role separation between local and AD users, and role-scoped OpenKB AI integration.
 
-For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, the login-only route policy is maintained, role groups are reviewed, and cleanup/log retention settings are reviewed by administrators.
+For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, the login-only route policy is maintained, public/internal role groups are reviewed, internal OpenKB isolation is checked after major changes, and cleanup/log retention settings are reviewed by administrators.

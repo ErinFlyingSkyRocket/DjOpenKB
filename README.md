@@ -1,6 +1,6 @@
 # DjOpenKB
 
-DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, user article suggestions, admin review, Active Directory / LDAPS login, local Django login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, activity logging, and an integrated OpenKB AI chatbot.
+DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, public/internal article separation, user article suggestions, role-based review workflows, Active Directory / LDAPS login, local Django login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, activity logging, and an integrated OpenKB AI chatbot.
 
 The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required. The website can be accessed through HTTPS using the Linux server IP address or localhost, while Active Directory can use an internal lab domain such as `openkb.local`.
 
@@ -9,11 +9,16 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 ## Main Features
 
 - Internal IT wiki / knowledge base website.
-- Login-protected article browsing, title/keyword search, view tracking, voting, trending articles, most-liked articles, and most-recent articles.
-- User article suggestion workflow with admin approval and pending-update review for published article edits.
+- Login-protected public article browsing, title/keyword search, view tracking, voting, trending articles, most-liked articles, and most-recent articles.
+- Separate internal article area for users with internal article access.
+- Public/internal article visibility model with separate public and internal writer, approver, and manager roles.
+- User article suggestion workflow with approval and pending-update review for published article edits.
 - Draft, pending approval, pending failed, and published article states.
-- Published article update workflow where normal-user edits are held as pending updates while the current published version remains visible.
-- Admin review area for new pending articles, pending updates, rejected / pending failed feedback, and update rejection feedback.
+- Published article update workflow where user edits are held as pending updates while the current published version remains visible.
+- Separate public and internal pending-review queues, including internal-only pending management for internal approvers/managers.
+- Article owners can manage their own drafts, failed submissions, and pending updates within the visibility scope they are allowed to create.
+- Published article deletion uses an irreversible-action warning and MFA confirmation for users allowed to delete in that article's scope.
+- Dislike counts are limited to Article Manager, Internal Article Manager, and Admin Users. Normal users and approvers only see helpful/like counts.
 - Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, group/user role management, and site settings.
 - Local Django login support.
 - Active Directory login over LDAPS for domain users.
@@ -26,9 +31,9 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - PostgreSQL database through Docker Compose.
 - Redis-backed production cache for rate limiting, authentication lockout counters, and AI concurrency controls.
 - Nginx HTTPS reverse proxy on port `8080`.
-- OpenKB AI chatbot integration using `OpenKB-main/` and `openkb-data/`, including prompt length limits, Redis-backed user rate limiting, cooldown blocking, concurrency limits, timeout controls, related article recommendations, and activity logging.
+- OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`, including prompt length limits, Redis-backed user rate limiting, cooldown blocking, concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and activity logging.
 - Markdown article rendering with sanitization.
-- Image upload restrictions for article content.
+- Image upload restrictions for article content, including protected image serving based on article visibility and ownership/review access.
 - Multilingual UI support through Django translation files.
 - Docker cleanup scheduler for routine cleanup tasks.
 - Manual keyword suggestion refresh that scans the current title/body against existing manually created article keywords only.
@@ -39,50 +44,40 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 
 ## User Types and Rights
 
-DjOpenKB currently uses a login-only website model. The root URL displays the login page. Anonymous users should not be able to browse normal article, search, profile, admin, AI, or upload pages; protected paths return 404 instead of exposing normal application pages.
+DjOpenKB currently uses a login-only website model. The root URL displays the login page. Anonymous users should not be able to browse normal article, internal article, search, profile, admin, AI, or upload pages; protected paths return 404 instead of exposing normal application pages.
 
-| Role / group | Authentication source | Main purpose | Article browsing | Vote on articles | Add / submit articles | Manage approvals | Admin tools | Django Admin access |
+### Main role matrix
+
+| Role / group | Main purpose | Public article access | Internal article access | Create / submit | Review / approve | Edit published | Delete published | Admin tools / Django Admin |
 |---|---|---|---|---|---|---|---|---|
-| Anonymous visitor | None | Not allowed into the main site | No; only the login page and static/login support paths are public | No | No | No | No | No |
-| Disabled User | Local or AD / LDAPS | Account retained but blocked | No; stopped after valid password/MFA with a disabled-account message | No | No | No | No | No |
-| Regular User | Local or AD / LDAPS | Default internal reader | Yes, published articles after login | Yes | No | No | No | No |
-| Article Writer | Local or AD / LDAPS | Contributor | Yes | Yes | Yes; drafts and submissions go through approval | No | No | No |
-| Article Approver | Local or AD / LDAPS | Approval reviewer | Yes | Yes | No | Yes, can review pending articles and pending updates | No | No by default |
-| Article Manager | Local or AD / LDAPS | Full article manager | Yes | Yes | Yes | Yes, can review pending articles and pending updates | Yes, can delete articles | No by default |
-| Admin Users | Local or AD / LDAPS | Trusted administrator | Yes | Yes | Yes | Yes | Yes | Yes; members are automatically synced to Django superuser/staff and must still pass network/admin guards |
+| Anonymous visitor | No site access | No | No | No | No | No | No | No |
+| Disabled User | Account retained but blocked | No | No | No | No | No | No | No |
+| Regular User | Default public viewer | View published public articles and vote | No | No | No | No | No | No |
+| Article Writer | Public contributor | View/vote public articles | No, unless also given an internal role | Create public drafts, submit public articles, edit own public drafts/failed submissions, submit pending updates for own public published articles | No | Own published public edits become pending updates | Can delete own public articles when allowed by the owner flow; published deletion requires MFA | No |
+| Article Approver | Public review-only approver | View/vote public articles | No, unless also given an internal role | No by default | Review, edit during review, approve, or reject pending public articles/updates | Only during explicit public review flow; cannot freely edit already-published public articles | No | No |
+| Article Manager | Public article manager | View/vote public articles and see dislike counts | No, unless also given an internal role | Create public articles | Review/approve/reject public pending articles/updates | Yes, for public articles | Yes, for public articles; published deletion requires MFA | Main-site article management tools only; no Django Admin by default |
+| Internal User | Internal viewer add-on | View/vote public articles | View/vote published internal articles | No | No | No | No | No |
+| Internal Article Writer | Internal contributor add-on | View/vote public articles | View/vote internal articles | Create internal drafts, submit internal articles, edit own internal drafts/failed submissions, submit pending updates for own internal published articles | No | Own published internal edits become pending updates | Can delete own internal articles when allowed by the owner flow; published deletion requires MFA | No |
+| Internal Article Approver | Internal review-only approver | View/vote public articles | View/vote internal articles | No by default | Review, edit during review, approve, or reject pending internal articles/updates | Only during explicit internal review flow; cannot freely edit already-published internal articles | No | No |
+| Internal Article Manager | Internal article manager add-on | View/vote public articles and see dislike counts | View/vote internal articles and see dislike counts | Create internal articles | Review/approve/reject internal pending articles/updates | Yes, for internal articles | Yes, for internal articles; published deletion requires MFA | Internal article management tools only; no Django Admin by default |
+| Admin Users | Full administrator | Full public access | Full internal access | Can create/publish directly | Can review all scopes | Yes, all scopes | Yes, all scopes; published deletion requires MFA where enforced | Yes; members sync to staff/superuser and must still pass admin MFA/network guards |
 
-Newly created non-admin local or AD users are automatically placed in the `Regular User` group. `Regular User` is a fallback viewer role only: if the user is assigned `Article Writer`, `Article Approver`, or `Article Manager`, the redundant `Regular User` group is automatically removed. Admins can move an account to `Disabled User` when the account should remain in the database for audit/history but must not complete login or access the website.
+### Role interaction rules
 
-Group membership is the baseline permission model. Normal non-admin groups can be combined where appropriate, and future non-role groups such as email notification groups can be added without changing the core role model. Direct user permission checkboxes are add-on permissions only; unticking a direct permission does not remove a permission inherited from a group.
+| Combination / situation | Result |
+|---|---|
+| New local or AD user with no elevated role | Automatically receives `Regular User` as fallback public viewer. |
+| User receives `Article Writer`, `Article Approver`, or `Article Manager` | `Regular User` is removed because public view access is already included. |
+| User receives `Internal User`, `Internal Article Writer`, `Internal Article Approver`, or `Internal Article Manager` | Internal role acts as an add-on and also grants public article viewing. It does not automatically remove unrelated public elevated roles. |
+| Public role + internal role | Permissions are additive but scope-separated. Example: `Article Manager` + `Internal Article Approver` can fully manage public articles but only review pending internal articles. |
+| Public approver only | Can work from the public pending-review flow but cannot create/delete public articles or freely edit published public articles. |
+| Internal approver only | Can work from the internal pending-review flow but cannot create/delete internal articles or freely edit published internal articles. |
+| Public manager only | Can manage public articles but cannot access internal articles unless also given an internal role. |
+| Internal manager only | Can manage internal articles and view public articles, but does not become public article manager unless also assigned that public role. |
+| Admin Users | Full source of truth for administrator access; syncs staff/superuser and covers both public and internal scopes. |
+| Disabled User | Highest precedence; removes standard role/admin groups, clears Knowledge Repository direct permissions, unchecks staff/superuser, and blocks site access. |
 
-Role precedence is enforced as follows:
-
-```text
-Disabled User
-→ highest precedence
-→ removes Admin Users / Regular User / Article Writer / Article Approver / Article Manager
-→ clears direct Knowledge Repository permission add-ons
-→ unchecks staff and superuser status
-→ redirects authenticated sessions to the disabled-account page
-
-Admin Users
-→ full administrator source of truth
-→ removes Regular User / Article Writer / Article Approver / Article Manager
-→ sets staff=True and superuser=True
-→ local accounts become Local admin; AD/LDAP accounts become LDAP admin
-→ keeps custom non-role groups, such as future notification groups
-
-Regular User
-→ fallback viewer role only
-→ auto-added only when the user has no other standard Knowledge Repository role
-→ automatically removed when Article Writer / Article Approver / Article Manager is assigned
-
-Article Writer / Article Approver / Article Manager
-→ normal elevated content roles
-→ may be combined with each other when needed
-→ already include view access, so Regular User is not required
-→ local accounts stay Local user; AD/LDAP accounts stay LDAP user unless promoted to Admin Users
-```
+Group membership is the baseline permission model. Direct user permission checkboxes are add-on permissions only; unticking a direct permission does not remove a permission inherited from a group. Direct permissions do not grant Django Admin access.
 
 Django's built-in `Active` checkbox controls whether the account can sign in at all. `Disabled User` is different: it keeps the account record available but sends an already-authenticated disabled account to the clean disabled-account page with a sign-out button.
 
@@ -96,13 +91,13 @@ Local and AD users are separated by account source metadata, not by email domain
 | Anonymous access | Only the login/language/static support paths are public; normal app pages and hidden admin login return 404 when unauthenticated |
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
-| Authorization | Group-based roles, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, and restricted admin routes |
-| Articles | Draft/pending/pending failed/published workflow, pending-update review for published edits, duplicate title prevention, admin approval, and orphan article management |
-| Search and listing | Main search matches published article title and manually entered keywords only; homepage uses paginated tabs for trending, most liked, and most recent articles |
+| Authorization | Group-based roles, public/internal scope checks, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, protected image serving, and restricted admin routes |
+| Articles | Public/internal visibility, draft/pending/pending failed/published workflow, pending-update review for published edits, duplicate title prevention, scoped approval queues, MFA deletion confirmation, and orphan article management |
+| Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only |
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
-| AI chatbot | Login-protected chatbot endpoint, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
+| AI chatbot | Login-protected chatbot endpoint, role-scoped public/internal index selection, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, general activity logs, and admin activity logs with retention cleanup |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
@@ -111,102 +106,63 @@ Local and AD users are separated by account source metadata, not by email domain
 
 ## Article Workflow Summary
 
-DjOpenKB keeps public article content stable while still allowing controlled user updates.
+DjOpenKB keeps approved article content stable while still allowing controlled user updates. The same workflow exists for public and internal articles, but each visibility scope has its own permissions and review access.
 
 ```text
-Normal user creates a new article:
-Draft → Pending → Pending failed / Published
+New public article by Article Writer:
+Draft -> Pending -> Pending failed / Published
 
-Normal user edits an already published article:
+New internal article by Internal Article Writer:
+Draft -> Pending -> Pending failed / Published
+
+User edits an already published article:
 Published article remains visible
 Edited version is saved as a pending update
-Admin approves the update → pending update replaces the public article
-Admin rejects the update → public article stays unchanged and feedback is shown to the owner
-
-Admin-created or admin-edited article:
-Admin can publish directly when appropriate
+Scope approver/manager/admin approves -> pending update replaces the published article
+Scope approver/manager/admin rejects -> published article stays unchanged and feedback is shown to the owner
 ```
 
-Pending updates store the proposed title, body, keywords, and image references separately from the current public article. This means users can continue reading the approved version while the new version waits for review.
+Public and internal scopes are separated:
 
-## Bulk Import and Export Summary
+| Area | Public article | Internal article |
+|---|---|---|
+| Listing page | `/home/` | `/internal/` |
+| Create page | `/suggest/` | `/internal/suggest/` |
+| Owner article list | `/profile/articles/` | `/internal/profile/articles/` |
+| Pending review | `/profile/admin/pending-articles/` | `/internal/profile/admin/pending-articles/` |
+| Search | Public search; internal-capable users may also see internal results from main search | Internal-only search |
+| OpenKB storage | Public published files under `openkb-data/` | Internal files kept under `openkb-data-internal/` and kept out of public OpenKB data |
+| AI scope | Normal users query public index only | Internal users query internal index containing public + internal published articles |
 
-The admin bulk import/export tool is intended for article backup, migration, and controlled restore. Exported packages include article content, keywords, referenced images, pending-update data, and review-related metadata needed to restore the article workflow.
-
-```text
-Normal export:
-- Creates one article backup ZIP when the result is small enough.
-- Automatically creates a split package when the export becomes large.
-
-Split export:
-- Creates an outer ZIP package containing multiple importable part ZIP files.
-- Each part is targeted below the import upload limit.
-
-Import:
-- Import each ZIP part one by one if the export was split.
-- Each uploaded ZIP should be 100 MB or below.
-```
-
-Export does not remove or unpublish live articles. It only creates a downloadable backup copy for administrators.
-
----
-
-## Architecture Overview
-
-The reference architecture diagram is stored under:
-
-```text
-documentations/Djopenkb Architecture Layout Diagram.png
-```
-
-It shows the intended internal deployment path: users connect to Nginx over HTTPS on port `8080`, Nginx reverse-proxies to the Django web application, Django uses PostgreSQL for data, Vault for secrets, OpenKB for local AI knowledge-base integration, and optional LDAPS to Active Directory. Only one configured AI provider/API key is required at runtime.
-
-![DjOpenKB Architecture Layout Diagram](documentations/Djopenkb%20Architecture%20Layout%20Diagram.png)
-
-## Main Documentation
-
-| File | Purpose |
-|---|---|
-| `README.md` | Overall project overview, folder structure, feature summary, security summary, and operational notes. |
-| `documentations/DEPLOYMENT_GUIDE.md` | Linux server deployment, Git pull/update flow, Docker startup, Vault setup, Nginx certificate setup, OpenKB initialization, and troubleshooting. |
-| `documentations/FULL_FEATURE_DOCUMENTATION.md` | Full feature documentation, user rights, workflow details, security controls, and logging details. |
-| `documentations/LDAP_LDAPS_SETUP.md` | Django LDAPS configuration, CA certificate placement, and LDAPS connection testing. |
-| `documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md` | Windows Server 2022 AD DS, AD CS, LDAPS certificate, and lab testing setup. |
-
-For deployment, start with:
-
-```text
-documentations/DEPLOYMENT_GUIDE.md
-```
-
----
+Draft, pending, pending failed, and unapproved pending-update content is not exposed through article detail traversal. Owners can open their own workflow articles, full admins can open all, and approvers/managers use the explicit review/edit flows for their scope.
 
 ## Project Folder Structure
 
 ```text
 DjOpenKB/
-├── djopenkb/                    # Django project configuration
-├── kb/                          # Main Django application logic
-├── website/                     # Templates and static frontend files
-├── locale/                      # Django translation files
-├── documentations/              # Project setup, deployment, and feature guides
-├── docker/                      # Docker helper scripts
-├── nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
-├── vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
-├── redis-data/                  # Optional persistent Redis data if enabled in future deployment tuning
-├── ldap-certs/                  # AD/LDAPS CA certificate mounted into the web container
-├── OpenKB-main/                 # OpenKB source code used by the AI chatbot
-├── openkb-data/                 # OpenKB workspace and article data used by the AI chatbot
-├── postgres-data/               # PostgreSQL local persistent data folder
-├── staticfiles/                 # Django collected static files
-├── scripts/                     # Utility and testing scripts
-├── manage.py                    # Django management command entry point
-├── Dockerfile                   # Django web container build file
-├── Dockerfile.postgres-vault    # PostgreSQL image with Vault password support
-├── docker-compose.yml           # Main Docker Compose stack
-├── .env                         # Local non-secret runtime configuration
-├── .env.example                 # Example runtime configuration
-└── requirements.txt             # Python dependencies
+|-- djopenkb/                    # Django project configuration
+|-- kb/                          # Main Django application logic
+|-- website/                     # Templates and static frontend files
+|-- locale/                      # Django translation files
+|-- documentations/              # Project setup, deployment, and feature guides
+|-- docker/                      # Docker helper scripts
+|-- nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
+|-- vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
+|-- redis-data/                  # Optional persistent Redis data if enabled in future deployment tuning
+|-- ldap-certs/                  # AD/LDAPS CA certificate mounted into the web container
+|-- OpenKB-main/                 # OpenKB source code used by the AI chatbot
+|-- openkb-data/                 # Public OpenKB workspace and public article AI data
+|-- openkb-data-internal/        # Internal OpenKB workspace for internal article AI data
+|-- postgres-data/               # PostgreSQL local persistent data folder
+|-- staticfiles/                 # Django collected static files
+|-- scripts/                     # Utility and testing scripts
+|-- manage.py                    # Django management command entry point
+|-- Dockerfile                   # Django web container build file
+|-- Dockerfile.postgres-vault    # PostgreSQL image with Vault password support
+|-- docker-compose.yml           # Main Docker Compose stack
+|-- .env                         # Local non-secret runtime configuration
+|-- .env.example                 # Example runtime configuration
+`-- requirements.txt             # Python dependencies
 ```
 
 ---
@@ -308,7 +264,7 @@ Contains the main documentation files for setup, testing, and feature explanatio
 documentations/DEPLOYMENT_GUIDE.md
 documentations/FULL_FEATURE_DOCUMENTATION.md
 documentations/LDAP_LDAPS_SETUP.md
-documentations/WINDOWS_SERVER_2022_AD_TESTING_SETUP.md
+documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
 ```
 
 Use the deployment guide for Linux server setup. Use the LDAPS guide and Windows Server guide when configuring Active Directory login.
@@ -393,9 +349,9 @@ OPENKB_BASE_DIR=OpenKB-main
 
 ### `openkb-data/`
 
-Contains the OpenKB workspace used by the chatbot.
+Contains the public OpenKB workspace used by the chatbot for public article indexing.
 
-This folder stores the OpenKB data/index workspace and article files used by the AI integration.
+This folder stores the public OpenKB data/index workspace and published public article files used by the AI integration. Internal article data is not stored here.
 
 Before using the chatbot, initialize OpenKB inside this folder:
 
@@ -403,7 +359,7 @@ Before using the chatbot, initialize OpenKB inside this folder:
 docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 ```
 
-Then sync published Django articles into OpenKB:
+Then sync published Django articles into OpenKB. By default this rebuilds both the public index and the internal public+internal index:
 
 ```bash
 docker compose exec web python manage.py sync_openkb_ai
@@ -413,27 +369,34 @@ If OpenKB is not initialized, the chatbot may fail or not detect the article dat
 
 ---
 
-## OpenKB AI Chatbot Rate Limiting and Production Controls
 
-The AI chatbot is protected with production controls so users cannot continuously consume AI resources or occupy all Gunicorn workers with slow AI requests.
+### `openkb-data-internal/`
 
-Current default behaviour:
+Contains the separate internal OpenKB workspace used for internal article indexing.
 
-```text
-Maximum questions per user: 5
-Time window: 60 seconds
-Cooldown after exceeding limit: 30 minutes
-Prompt length limit: 1000 characters
-OpenKB timeout: 90 seconds
-Concurrent AI requests: 2
-Concurrency lock expiry: 120 seconds
+Internal article Markdown and generated internal AI summaries are kept here instead of being placed into the public `openkb-data/` tree. This prevents the public OpenKB index from accidentally retrieving internal-only content.
+
+The normal sync command rebuilds both public and internal indexes by default:
+
+```bash
+docker compose exec web python manage.py sync_openkb_ai
 ```
 
-In the current login-only deployment, the chatbot is a protected signed-in feature. Logged-in users are rate-limited by their Django user ID, so refreshing the browser, opening a new tab, or starting a new private session does not reset the counter for that account.
+You can also sync a specific scope:
 
-For production, these counters use Redis through `REDIS_URL`, so the limits remain consistent even when Gunicorn runs multiple workers. Local memory cache is only a development/emergency fallback and should not be used for production.
+```bash
+docker compose exec web python manage.py sync_openkb_ai --scope public
+docker compose exec web python manage.py sync_openkb_ai --scope internal
+docker compose exec web python manage.py sync_openkb_ai --scope all
+```
 
-If anonymous chatbot access is ever re-enabled in the future, the fallback rate-limit identity should be the detected client IP address behind the trusted Nginx reverse proxy.
+To check that internal articles are not present in the public OpenKB tree:
+
+```bash
+docker compose exec web python manage.py check_internal_article_isolation --sync-first
+```
+
+---
 
 ### `postgres-data/`
 
@@ -470,6 +433,35 @@ scripts/sync_locales.py
 These scripts help confirm whether the Django container can resolve and connect to the LDAPS server, or help keep translation files synchronized after new UI strings are added.
 
 ---
+
+## OpenKB AI Chatbot Rate Limiting and Production Controls
+
+The AI chatbot is protected with production controls so users cannot continuously consume AI resources or occupy all Gunicorn workers with slow AI requests.
+
+Current default behaviour:
+
+```text
+Maximum questions per user: 5
+Time window: 60 seconds
+Cooldown after exceeding limit: 30 minutes
+Prompt length limit: 1000 characters
+OpenKB timeout: 90 seconds
+Concurrent AI requests: 2
+Concurrency lock expiry: 120 seconds
+```
+
+In the current login-only deployment, the chatbot is a protected signed-in feature. Logged-in users are rate-limited by their Django user ID, so refreshing the browser, opening a new tab, or starting a new private session does not reset the counter for that account.
+
+The chatbot is role-scoped:
+
+| User access | AI data used |
+|---|---|
+| Public article access only | Public OpenKB index under `openkb-data/` |
+| Internal article access | Internal OpenKB index under `openkb-data-internal/`, containing published public + internal articles |
+
+For production, these counters use Redis through `REDIS_URL`, so the limits remain consistent even when Gunicorn runs multiple workers. Local memory cache is only a development/emergency fallback and should not be used for production.
+
+If anonymous chatbot access is ever re-enabled in the future, the fallback rate-limit identity should be the detected client IP address behind the trusted Nginx reverse proxy.
 
 ## Quick Deployment Summary
 
@@ -556,10 +548,12 @@ docker compose exec web python manage.py check
 docker compose exec web python manage.py check --deploy
 ```
 
-Sync OpenKB AI article data:
+Sync OpenKB AI article data. By default this rebuilds both the public index and the internal public+internal index:
 
 ```bash
 docker compose exec web python manage.py sync_openkb_ai
+docker compose exec web python manage.py sync_openkb_ai --scope public
+docker compose exec web python manage.py sync_openkb_ai --scope internal
 ```
 
 Clean activity logs:
@@ -600,6 +594,7 @@ PostgreSQL database
 Vault data and recovery material
 Redis data if persistence is enabled
 openkb-data/
+openkb-data-internal/
 article uploaded images
 generated OpenKB Markdown files
 .env and deployment configuration, stored securely
@@ -637,6 +632,7 @@ vault/bootstrap/djopenkb.env
 vault/keys/*
 vault/file/*
 openkb-data/.openkb/
+openkb-data-internal/.openkb/
 .openkb-venv/
 redis-data/
 ldap-certs/
