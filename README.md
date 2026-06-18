@@ -660,5 +660,5 @@ Django check --deploy has been reviewed
 Backups and restore steps are documented
 Redis-backed rate limiting/cache is enabled for production
 OpenKB AI rate limiting, concurrency control, and activity logging are enabled
-Admin-configurable password/MFA lockout stages have been reviewed
+Admin-configurable password/MFA lockout stages have been reviewed 
 ```
