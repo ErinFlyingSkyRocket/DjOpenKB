@@ -136,6 +136,37 @@ def _is_admin_user(user) -> bool:
     )
 
 
+
+def _discard_pending_messages(request) -> None:
+    """Clear unrelated site messages before showing or leaving Admin MFA.
+
+    Normal Knowledge Repository actions may add success/error messages before an
+    admin user is sent to the admin step-up MFA page.  Those messages should not
+    be displayed on the admin-MFA prompt or carried into Django Admin.  Admin MFA
+    validation messages are passed through the template context instead.
+    """
+    try:
+        storage = messages.get_messages(request)
+        for _message in storage:
+            pass
+    except Exception:
+        # Message storage should never block admin-MFA rendering.
+        pass
+
+
+def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
+    _discard_pending_messages(request)
+    response = render(
+        request,
+        "admin_mfa_verify.html",
+        {
+            "next": next_url,
+            "admin_mfa_messages": admin_mfa_messages or [],
+        },
+    )
+    return set_strict_no_cache_headers(response)
+
+
 def admin_mfa_verify(request):
     """Require a fresh TOTP check before entering Django Admin."""
     user = getattr(request, "user", None)
@@ -176,15 +207,18 @@ def admin_mfa_verify(request):
             username=user.get_username(),
             details={"reason": "unreadable_mfa_secret", "admin_step_up": True},
         )
-        messages.error(
+        return _render_admin_mfa_verify(
             request,
-            _(
-                "This MFA device cannot be verified because its secret could not be read. "
-                "Ask another administrator to reset MFA for this account."
-            ),
+            next_url,
+            [
+                _(
+                    "This MFA device cannot be verified because its secret could not be read. "
+                    "Ask another administrator to reset MFA for this account."
+                )
+            ],
         )
-        response = render(request, "admin_mfa_verify.html", {"next": next_url})
-        return set_strict_no_cache_headers(response)
+
+    admin_mfa_messages = []
 
     if request.method == "POST":
         locked, retry_after, identifier = get_auth_lockout_status(
@@ -206,10 +240,9 @@ def admin_mfa_verify(request):
                     "admin_step_up": True,
                 },
             )
-            messages.error(
-                request,
+            admin_mfa_messages.append(
                 _("Too many incorrect admin MFA codes. Please try again in %(duration)s.")
-                % {"duration": format_retry_after(retry_after)},
+                % {"duration": format_retry_after(retry_after)}
             )
         elif verify_totp_code(device, request.POST.get("code")):
             record_auth_success(request, user=user, purpose="admin_mfa")
@@ -223,7 +256,7 @@ def admin_mfa_verify(request):
                 username=user.get_username(),
                 details={"admin_step_up": True},
             )
-            messages.success(request, _("Admin MFA verification successful."))
+            _discard_pending_messages(request)
             return redirect(next_url)
         else:
             lockout = record_auth_failure(request, user=user, purpose="admin_mfa")
@@ -237,10 +270,9 @@ def admin_mfa_verify(request):
             if lockout.get("locked"):
                 details["reason"] = "temporary_lockout_created"
                 details["retry_after_seconds"] = lockout.get("retry_after_seconds")
-                messages.error(
-                    request,
+                admin_mfa_messages.append(
                     _("Too many incorrect admin MFA codes. Please try again in %(duration)s.")
-                    % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+                    % {"duration": format_retry_after(lockout.get("retry_after_seconds"))}
                 )
 
             log_auth_event(
@@ -251,10 +283,9 @@ def admin_mfa_verify(request):
                 username=user.get_username(),
                 details=details,
             )
-            messages.error(request, _("Invalid authenticator code. Please try again."))
+            admin_mfa_messages.append(_("Invalid authenticator code. Please try again."))
 
-    response = render(request, "admin_mfa_verify.html", {"next": next_url})
-    return set_strict_no_cache_headers(response)
+    return _render_admin_mfa_verify(request, next_url, admin_mfa_messages)
 
 
 class AdminMFASessionMiddleware:

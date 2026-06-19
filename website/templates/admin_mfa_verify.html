@@ -72,12 +72,12 @@
             background: #eef2ff;
             color: #1f2937;
         }
-        .messages {
+        .admin-mfa-messages {
             margin: 0 0 16px;
             padding: 0;
             list-style: none;
         }
-        .messages li {
+        .admin-mfa-messages li {
             border-radius: 10px;
             padding: 10px 12px;
             margin-bottom: 8px;
@@ -92,9 +92,9 @@
         <h1 id="admin-mfa-heading">{% trans "Admin MFA verification" %}</h1>
         <p>{% trans "Enter your authenticator code again to access the Django admin site." %}</p>
 
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
+        {% if admin_mfa_messages %}
+            <ul class="admin-mfa-messages">
+                {% for message in admin_mfa_messages %}
                     <li>{{ message }}</li>
                 {% endfor %}
             </ul>
