@@ -187,15 +187,18 @@ def admin_mfa_verify(request):
         clear_admin_mfa_session(request)
 
     if not user_requires_mfa(user):
+        _discard_pending_messages(request)
         messages.error(request, _("Admin access requires an active MFA-protected account."))
         return redirect("home")
 
     device = getattr(user, "kb_mfa_device", None) or get_or_create_mfa_device(user)
     if not device.confirmed:
+        _discard_pending_messages(request)
         messages.warning(request, _("Set up MFA before accessing the admin site."))
         return _redirect_with_next("mfa_setup", reverse("admin_mfa_verify") + "?" + urlencode({"next": next_url}))
 
     if admin_mfa_is_verified(request, user):
+        _discard_pending_messages(request)
         return redirect(next_url)
 
     if not mfa_device_secret_is_readable(device):
