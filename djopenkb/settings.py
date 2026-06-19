@@ -309,6 +309,7 @@ MIDDLEWARE = [
     "kb.admin_security.AdminMFASessionMiddleware",
     "kb.middleware.AdminActivityLogMiddleware",
     "kb.middleware.AuthSessionCacheControlMiddleware",
+    "kb.middleware.NoIndexRobotsHeaderMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 

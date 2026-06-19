@@ -19,9 +19,12 @@ from django.urls import include, path
 
 from kb.views.auth import OpenKBLoginView, OpenKBLogoutView, account_disabled, root_entry
 from kb.admin_security import admin_mfa_verify
+from kb.views.security import robots_txt
 
 
 urlpatterns = [
+    # Tell cooperative crawlers not to index or crawl this private knowledge base.
+    path("robots.txt", robots_txt, name="robots_txt"),
     # Root URL is the login entry page.
     # Anonymous users see the Knowledge Repository login form here.
     # Authenticated users are sent to /home/.

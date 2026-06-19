@@ -615,6 +615,32 @@ class AuthSessionCacheControlMiddleware:
 
         return response
 
+
+class NoIndexRobotsHeaderMiddleware:
+    """Ask search engines not to index the private Knowledge Repository.
+
+    This is defence-in-depth for public deployment. It does not replace
+    authentication or authorization; it only helps prevent cooperative search
+    engines from indexing login pages, error pages, or any page they somehow
+    receive.
+    """
+
+    HEADER_VALUE = "noindex, nofollow, noarchive, nosnippet, noimageindex"
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        path = request.path_info or request.path
+
+        # robots.txt must remain a normal text file for crawler discovery.
+        if path != "/robots.txt":
+            response["X-Robots-Tag"] = self.HEADER_VALUE
+
+        return response
+
+
 class AdminActivityLogMiddleware:
     """Append audit rows for state-changing Django Admin requests.
 
