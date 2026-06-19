@@ -186,7 +186,7 @@
                         <input type="text" name="q" class="form-control" placeholder="{% trans 'Search orphan articles' %}" value="{{ orphan_search_query|default:'' }}">
                     </div>
                     <div class="form-group">
-                        <select name="status" class="form-control">
+                        <select id="orphanStatusFilter" name="status" class="form-control auto-submit-on-change">
                             <option value="">{% trans "All statuses" %}</option>
                             {% for status_value, status_label in status_choices %}
                                 <option value="{{ status_value }}" {% if status_filter == status_value %}selected{% endif %}>{{ status_label }}</option>
@@ -417,6 +417,16 @@
                     closeSuggestions();
                 }
             });
+
+            var autoSubmitFilters = document.querySelectorAll('.auto-submit-on-change');
+            autoSubmitFilters.forEach(function (filter) {
+                filter.addEventListener('change', function () {
+                    if (filter.form) {
+                        filter.form.submit();
+                    }
+                });
+            });
+
 
 
             var messageAlerts = document.querySelectorAll('.orphan-message-alert.alert-success, .orphan-message-alert.alert-info');
