@@ -32,7 +32,11 @@
                 </div>
             {% elif action == "delete" %}
                 <div class="alert alert-danger">
-                    {% blocktrans with article_count=articles|length %}Are you sure you want to permanently delete {{ article_count }} selected orphan article(s)? This will also remove their generated OpenKB Markdown files.{% endblocktrans %}
+                    {% if published_queue_enabled %}
+                        {% blocktrans with article_count=articles|length published_count=published_delete_count immediate_count=immediate_delete_count %}Are you sure you want to delete {{ article_count }} selected orphan article(s)? Published articles ({{ published_count }}) will be hidden immediately and placed in the deletion queue for recovery. Non-published articles ({{ immediate_count }}) will be permanently deleted immediately and cannot be reversed.{% endblocktrans %}
+                    {% else %}
+                        {% blocktrans with article_count=articles|length %}Are you sure you want to delete {{ article_count }} selected orphan article(s)? This action will permanently delete the selected article(s) immediately and cannot be reversed.{% endblocktrans %}
+                    {% endif %}
                 </div>
             {% endif %}
 

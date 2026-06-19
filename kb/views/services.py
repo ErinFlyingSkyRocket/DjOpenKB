@@ -9,7 +9,7 @@ import sys
 import time
 import uuid
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from pathlib import Path
 
@@ -261,8 +261,12 @@ def user_can_delete_article_visibility(user, visibility):
     return user_can_delete_articles(user)
 
 
+def article_is_queued_for_deletion(article):
+    return bool(article and getattr(article, "status", None) == SuggestedArticle.Status.DELETE_QUEUED)
+
+
 def user_can_view_article(user, article):
-    if not article:
+    if not article or article_is_queued_for_deletion(article):
         return False
     return user_can_view_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC))
 
@@ -277,6 +281,9 @@ def user_can_view_article_detail(user, article):
     traversal, so they cannot browse other users' drafts.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    if article_is_queued_for_deletion(article):
         return False
 
     if user_can_use_admin_tools(user):
@@ -302,6 +309,9 @@ def user_can_review_article(user, article, *, review_mode=False):
     Managers/Admin Users keep broader management rights in their own scope.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    if article_is_queued_for_deletion(article):
         return False
 
     visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
@@ -417,6 +427,9 @@ def user_can_edit_article_content(user, article, *, review_mode=False):
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
 
+    if article_is_queued_for_deletion(article):
+        return False
+
     visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
 
     if user_can_use_admin_tools(user):
@@ -506,6 +519,7 @@ def article_workspace_queryset_for_user(user):
         SuggestedArticle.objects
         .select_related("owner")
         .filter(owner=user, visibility__in=allowed_visibilities)
+        .exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
         .distinct()
     )
 
@@ -550,6 +564,9 @@ def user_can_manage_article(user, article, *, review_mode=False):
     traverse to another user's draft by guessing /article/<id> or /suggest/edit/.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    if article_is_queued_for_deletion(article):
         return False
 
     visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
@@ -611,6 +628,9 @@ def user_can_direct_delete_article(user, article):
     only, matching the direct article view/edit traversal rules.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
+        return False
+
+    if article_is_queued_for_deletion(article):
         return False
 
     visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
@@ -730,6 +750,202 @@ def verify_article_delete_mfa_code(request, article):
         },
     )
     return True
+
+
+def get_article_deletion_queue_retention_days():
+    try:
+        value = SiteSetting.load().article_deletion_queue_retention_days
+    except Exception:
+        value = 7
+    try:
+        return max(int(value), 0)
+    except (TypeError, ValueError):
+        return 7
+
+
+def article_deletion_queue_immediate_delete_enabled():
+    return get_article_deletion_queue_retention_days() <= 0
+
+
+def get_article_deletion_purge_after(now=None):
+    now = now or timezone.now()
+    retention_days = get_article_deletion_queue_retention_days()
+    if retention_days <= 0:
+        return now
+    return now + timedelta(days=retention_days)
+
+
+def queue_article_for_deletion(request, article, *, actor=None, reason="", source="article_delete", mfa_required=False, mfa_confirmed=False):
+    """Hide an article immediately and keep it recoverable until the purge date.
+
+    The database row, Markdown raw copy, and upload references are retained so an
+    admin can restore the article from the deletion queue. Public/internal source
+    files are removed by write_article_files() because the status is no longer
+    published, so search and AI sync will not include the article.
+    """
+    if not article or article_is_queued_for_deletion(article):
+        return article
+
+    actor = actor or (request.user if request is not None and getattr(request, "user", None) is not None and request.user.is_authenticated else None)
+    now = timezone.now()
+    previous_status = article.status
+    purge_after = get_article_deletion_purge_after(now)
+
+    article.deletion_previous_status = previous_status
+    article.status = SuggestedArticle.Status.DELETE_QUEUED
+    article.deletion_queued_at = now
+    article.deletion_queued_by = actor if getattr(actor, "pk", None) else None
+    article.deletion_purge_after = purge_after
+    article.deletion_restored_at = None
+    article.deletion_restored_by = None
+    article.deletion_reason = reason or ""
+    article.save(update_fields=[
+        "deletion_previous_status",
+        "status",
+        "deletion_queued_at",
+        "deletion_queued_by",
+        "deletion_purge_after",
+        "deletion_restored_at",
+        "deletion_restored_by",
+        "deletion_reason",
+        "updated_at",
+    ])
+    write_article_files(article, sync_ai=False, mark_ai_stale=True)
+
+    log_activity(
+        request,
+        ActivityLog.EventType.ARTICLE_DELETE_QUEUED,
+        article=article,
+        user=actor,
+        details={
+            "action": "queue_delete",
+            "source": source,
+            "previous_status": previous_status,
+            "visibility": article.visibility,
+            "purge_after": purge_after.isoformat(),
+            "retention_days": get_article_deletion_queue_retention_days(),
+            "mfa_required": bool(mfa_required),
+            "mfa_confirmed": bool(mfa_confirmed),
+            "reason": reason or "",
+        },
+    )
+    return article
+
+
+def restore_article_from_deletion_queue(request, article, *, actor=None, source="admin_deletion_queue"):
+    if not article or not article_is_queued_for_deletion(article):
+        return False
+
+    actor = actor or (request.user if request is not None and getattr(request, "user", None) is not None and request.user.is_authenticated else None)
+    restored_status = article.deletion_original_status
+    previous_purge_after = article.deletion_purge_after
+
+    article.status = restored_status
+    article.deletion_restored_at = timezone.now()
+    article.deletion_restored_by = actor if getattr(actor, "pk", None) else None
+    article.deletion_queued_at = None
+    article.deletion_queued_by = None
+    article.deletion_purge_after = None
+    article.deletion_previous_status = ""
+    article.deletion_reason = ""
+    article.save(update_fields=[
+        "status",
+        "deletion_restored_at",
+        "deletion_restored_by",
+        "deletion_queued_at",
+        "deletion_queued_by",
+        "deletion_purge_after",
+        "deletion_previous_status",
+        "deletion_reason",
+        "updated_at",
+    ])
+    write_article_files(article, sync_ai=False, mark_ai_stale=True)
+
+    log_activity(
+        request,
+        ActivityLog.EventType.ARTICLE_DELETE_RESTORED,
+        article=article,
+        user=actor,
+        details={
+            "action": "restore_delete_queue",
+            "source": source,
+            "restored_status": restored_status,
+            "previous_purge_after": previous_purge_after.isoformat() if previous_purge_after else "",
+            "visibility": article.visibility,
+        },
+    )
+    return True
+
+
+def purge_article_from_deletion_queue(request, article, *, actor=None, automatic=False, source="admin_deletion_queue"):
+    if not article or not article_is_queued_for_deletion(article):
+        return False
+
+    actor = actor or (request.user if request is not None and getattr(request, "user", None) is not None and request.user.is_authenticated else None)
+    event_type = ActivityLog.EventType.ARTICLE_DELETE_AUTO_PURGED if automatic else ActivityLog.EventType.ARTICLE_DELETE_PURGED
+    article_id = article.pk
+    title = article.title
+
+    log_activity(
+        request,
+        event_type,
+        article=article,
+        user=actor if not automatic else None,
+        details={
+            "action": "purge_delete_queue",
+            "source": source,
+            "automatic": bool(automatic),
+            "article_id": article_id,
+            "title": title,
+            "previous_status": article.deletion_previous_status,
+            "visibility": article.visibility,
+            "queued_at": article.deletion_queued_at.isoformat() if article.deletion_queued_at else "",
+            "purge_after": article.deletion_purge_after.isoformat() if article.deletion_purge_after else "",
+            "queued_by_user_id": article.deletion_queued_by_id,
+        },
+    )
+    delete_article_files(article)
+    article.delete()
+    return True
+
+
+def delete_article_immediately(request, article, *, actor=None, reason="", source="article_delete", mfa_required=False, mfa_confirmed=False):
+    """Permanently delete an article immediately.
+
+    Draft, pending, and failed articles are always hard-deleted immediately.
+    Published articles normally use the deletion queue, unless the admin setting
+    Article deletion queue retention days is set to 0.
+    """
+    if not article or article_is_queued_for_deletion(article):
+        return False
+
+    actor = actor or (request.user if request is not None and getattr(request, "user", None) is not None and request.user.is_authenticated else None)
+    article_id = article.pk
+    title = article.title
+    status = article.status
+    visibility = article.visibility
+
+    log_activity(
+        request,
+        ActivityLog.EventType.ARTICLE_DELETED,
+        article=article,
+        user=actor,
+        details={
+            "action": "hard_delete_immediate",
+            "source": source,
+            "article_id": article_id,
+            "title": title,
+            "status": status,
+            "visibility": visibility,
+            "mfa_required": bool(mfa_required),
+            "mfa_confirmed": bool(mfa_confirmed),
+            "reason": reason or "",
+        },
+    )
+    delete_article_files(article)
+    article.delete()
+    return True
+
 
 def user_owns_article(user, article):
     """Return True only for the active authenticated owner of an article."""
@@ -2098,7 +2314,18 @@ def delete_article_files(article):
         if file_path.exists() and file_path.is_file():
             file_path.unlink()
 
-    for filename in (article.image_assets or extract_article_image_filenames(article.body)):
+    image_candidates = []
+    for source_list in (
+        article.image_assets or [],
+        extract_article_image_filenames(article.body),
+        article.pending_update_image_assets or [],
+        extract_article_image_filenames(article.pending_update_body),
+    ):
+        for filename in source_list:
+            if filename and filename not in image_candidates:
+                image_candidates.append(filename)
+
+    for filename in image_candidates:
         if not image_is_used_by_other_article(filename, current_article=article):
             delete_uploaded_image_file(filename)
 
@@ -2313,7 +2540,7 @@ def get_profile_account_context(user):
     mfa_device = getattr(user, "kb_mfa_device", None)
     mfa_required = user_requires_mfa(user)
 
-    user_articles = SuggestedArticle.objects.filter(owner=user)
+    user_articles = SuggestedArticle.objects.filter(owner=user).exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
     authorable_visibilities = allowed_article_visibility_values_for_user(user, action="add")
     workspace_visibilities = article_workspace_visibility_values_for_user(user)
     workspace_articles = article_workspace_queryset_for_user(user)

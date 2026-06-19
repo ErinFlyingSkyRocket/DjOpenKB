@@ -316,9 +316,19 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
                             <div class="profile-admin-tools">
                                 <div><strong>{% trans "Scan orphan articles" %}</strong></div>
-                                <div class="profile-muted">{% trans "Find articles with no active owner, then assign them to a user or delete them after confirmation." %}</div>
+                                <div class="profile-muted">{% trans "Find articles with no active owner, then assign them to a user or queue them for deletion after confirmation." %}</div>
                                 <a class="btn btn-warning editor_btn_action" href="{% url 'manage_orphan_articles' %}">
                                     <i class="fa fa-user-times"></i> {% trans "Scan orphan articles" %}
+                                </a>
+                            </div>
+
+                            <hr>
+
+                            <div class="profile-admin-tools">
+                                <div><strong>{% trans "Article deletion queue" %}</strong></div>
+                                <div class="profile-muted">{% trans "Restore articles before the recovery period ends, or permanently delete queued articles when required." %}</div>
+                                <a class="btn btn-danger editor_btn_action" href="{% url 'manage_article_deletion_queue' %}">
+                                    <i class="fa fa-undo"></i> {% trans "Deletion queue" %}
                                 </a>
                             </div>
 

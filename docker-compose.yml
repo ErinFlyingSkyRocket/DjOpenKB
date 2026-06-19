@@ -254,6 +254,7 @@ services:
       sleep 60 &&
       while true; do
         python manage.py cleanup_stray_upload_files --noinput;
+        python manage.py cleanup_article_deletion_queue --noinput;
         python manage.py cleanup_auth_activity_logs --noinput;
         python manage.py cleanup_activity_logs --noinput;
         sleep $${CLEANUP_INTERVAL_SECONDS:-86400};

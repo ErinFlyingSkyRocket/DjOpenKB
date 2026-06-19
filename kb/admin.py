@@ -188,6 +188,13 @@ def _apply_admin_translation_labels():
             "raw_path": "Raw path",
             "wiki_path": "Wiki path",
             "image_assets": "Image assets",
+            "deletion_previous_status": "Previous status before deletion queue",
+            "deletion_queued_at": "Deletion queued at",
+            "deletion_queued_by": "Deletion queued by",
+            "deletion_purge_after": "Permanent deletion after",
+            "deletion_restored_at": "Deletion restored at",
+            "deletion_restored_by": "Deletion restored by",
+            "deletion_reason": "Deletion reason",
             "created_at": "Created at",
             "updated_at": "Updated at",
         },
@@ -216,6 +223,7 @@ def _apply_admin_translation_labels():
         },
         SiteSetting: {
             "stray_upload_cleanup_min_age_minutes": "Stray upload cleanup minimum age (minutes)",
+            "article_deletion_queue_retention_days": "Article deletion queue retention (days)",
             "article_image_upload_limit": "Article image upload limit",
             "auth_activity_log_retention_days": "Authentication activity log retention (days)",
             "session_timeout_days": "User session timeout (days)",
@@ -242,6 +250,7 @@ def _apply_admin_translation_labels():
         (UserProfile, "can_access_main_site"): "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in.",
         (UserProfile, "preferred_language"): "Preferred language for the main wiki user interface.",
         (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
+        (SiteSetting, "article_deletion_queue_retention_days"): "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
         (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
@@ -407,6 +416,7 @@ class AdminAuditMixin:
             )
         except Exception:
             pass
+
 
     def delete_model(self, request, obj):
         target_display = str(obj)
@@ -2416,6 +2426,12 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
             },
         )
 
+    def has_delete_permission(self, request, obj=None):
+        # Articles should use the application deletion queue so they can be
+        # restored during the configured recovery period. Permanent deletion is
+        # available from My Profile → Admin tools → Article deletion queue.
+        return False
+
     def delete_model(self, request, obj):
         log_activity(
             request,
@@ -2498,6 +2514,13 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "Clean stray upload files. Use 0 to show files immediately."
             ),
         }),
+        (_("Article deletion queue"), {
+            "fields": ("article_deletion_queue_retention_days", "article_deletion_queue_retention_display"),
+            "description": _(
+                "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → "
+                "Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
+            ),
+        }),
         (_("Authentication and session settings"), {
             "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "admin_log_rows_per_page", "session_timeout_days"),
             "description": _(
@@ -2539,6 +2562,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         "auth_lockout_policy_guide",
         "auth_lockout_strike_ttl_display",
         "admin_mfa_idle_timeout_display",
+        "article_deletion_queue_retention_display",
     )
     inlines = (AuthLockoutPolicyStageInline,)
 
@@ -2606,6 +2630,19 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         return format_admin_duration_with_seconds(obj.admin_mfa_idle_timeout_seconds)
 
     admin_mfa_idle_timeout_display.short_description = _("Admin MFA idle timeout readable")
+
+    def article_deletion_queue_retention_display(self, obj):
+        if not obj:
+            return "-"
+        try:
+            days = max(int(obj.article_deletion_queue_retention_days), 0)
+        except (TypeError, ValueError):
+            days = 7
+        if days == 0:
+            return _("Immediate permanent deletion")
+        return _("%(days)s day(s)") % {"days": days}
+
+    article_deletion_queue_retention_display.short_description = _("Deletion queue retention readable")
 
     def has_add_permission(self, request):
         # Only superusers may create the singleton, and only if it does not already exist.

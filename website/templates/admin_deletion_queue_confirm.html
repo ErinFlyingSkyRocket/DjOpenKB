@@ -1,0 +1,67 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Confirm permanent deletion" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <style>
+        .confirm-wrap { max-width: 900px; margin: 0 auto; float: none; }
+        .confirm-muted { color: #899aa6; font-size: 12px; }
+    </style>
+</head>
+<body>
+    {% include "_navbar.html" %}
+{% include "_page_back_button.html" %}
+    <div class="container-fluid">
+        <div class="col-xs-12 confirm-wrap">
+            <h2>{% trans "Confirm permanent deletion" %}</h2>
+            <div class="alert alert-danger">
+                {% blocktrans with article_count=articles|length %}You are about to permanently delete {{ article_count }} queued article(s). This cannot be reversed.{% endblocktrans %}
+            </div>
+
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{% trans "Article title" %}</th>
+                        <th>{% trans "Visibility" %}</th>
+                        <th>{% trans "Previous status" %}</th>
+                        <th>{% trans "Permanent deletion after" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                        <tr>
+                            <td>{{ article.title }}</td>
+                            <td>{% if article.visibility == "internal" %}{% trans "Internal" %}{% else %}{% trans "General" %}{% endif %}</td>
+                            <td>{{ article.get_deletion_previous_status_display|default:article.deletion_previous_status }}</td>
+                            <td>{{ article.deletion_purge_after|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <form method="post" action="{% url 'manage_article_deletion_queue' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="purge">
+                <input type="hidden" name="confirm" value="yes">
+                {% for article in articles %}
+                    <input type="hidden" name="selected_articles" value="{{ article.id }}">
+                {% endfor %}
+                <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {% trans "Yes, permanently delete" %}</button>
+                <a class="btn btn-default" href="{{ return_url }}"><i class="fa fa-times"></i> {% trans "Cancel" %}</a>
+            </form>
+        </div>
+    </div>
+    {% include "_footer.html" %}
+</body>
+</html>

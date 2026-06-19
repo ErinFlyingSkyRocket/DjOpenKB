@@ -169,7 +169,7 @@
 
             <h2>{% trans "Scan orphan articles" %}</h2>
             <p class="orphan-muted">
-                {% trans "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them." %}
+                {% if published_queue_enabled %}{% trans "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them. Published articles are queued for recovery; non-published articles are deleted immediately." %}{% else %}{% trans "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them. Article deletion is currently set to immediate permanent deletion." %}{% endif %}
             </p>
 
             <div class="orphan-summary-card">
@@ -273,7 +273,7 @@
                                 <button type="submit" name="action" value="delete" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {% trans "Delete selected" %}
                                 </button>
-                                <span class="orphan-muted">{% trans "You will be asked to confirm before changes are applied." %}</span>
+                                <span class="orphan-muted">{% if published_queue_enabled %}{% trans "You will be asked to confirm before changes are applied. Published articles are queued and recoverable; draft, pending, and failed articles are deleted immediately." %}{% else %}{% trans "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately." %}{% endif %}</span>
                             </div>
                         </div>
                     </div>

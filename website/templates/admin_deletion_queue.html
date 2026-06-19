@@ -1,0 +1,214 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Article deletion queue" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <style>
+        .queue-wrap { max-width: 1180px; margin: 0 auto; float: none; }
+        .queue-muted { color: #899aa6; font-size: 12px; }
+        .queue-search-panel { margin-bottom: 15px; }
+        .queue-pagination { margin: 12px 0 8px; text-align: center; }
+        .queue-pagination .pagination { margin: 0; }
+        .queue-pagination-meta { color: #899aa6; font-size: 12px; margin-bottom: 10px; text-align: center; }
+        .queue-table-wrap { overflow-x: auto; }
+        .queue-actions .btn { margin-right: 6px; margin-bottom: 6px; }
+        .queue-summary { margin-bottom: 14px; }
+        .queue-danger-note { margin-top: 8px; }
+        .nowrap { white-space: nowrap; }
+        @media (max-width: 767px) {
+            .queue-wrap { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+    {% include "_navbar.html" %}
+{% include "_page_back_button.html" %}
+    <div class="container-fluid">
+        <div class="col-xs-12 queue-wrap">
+            <h2>{% trans "Article deletion queue" %}</h2>
+            <p class="queue-muted">
+                {% if immediate_purge_enabled %}
+                    {% trans "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion." %}
+                {% else %}
+                    {% blocktrans with days=retention_days %}Deleted articles are hidden immediately and remain recoverable here for {{ days }} day(s) before permanent deletion.{% endblocktrans %}
+                {% endif %}
+            </p>
+
+            <div class="row queue-summary">
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <strong>{{ total_queue_count }}</strong><br>
+                            <span class="queue-muted">{% trans "Queued article(s)" %}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <strong>{{ due_count }}</strong><br>
+                            <span class="queue-muted">{% trans "Ready for scheduled permanent deletion" %}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            {% if immediate_purge_enabled %}
+                                <strong>{% trans "Immediate" %}</strong><br>
+                            {% else %}
+                                <strong>{{ retention_days }}</strong><br>
+                            {% endif %}
+                            <span class="queue-muted">{% trans "Configured recovery period" %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default queue-search-panel">
+                <div class="panel-body">
+                    <form method="get" class="form-inline" action="{% url 'manage_article_deletion_queue' %}">
+                        <div class="form-group">
+                            <label class="sr-only" for="queueSearchInput">{% trans "Search queued articles" %}</label>
+                            <input id="queueSearchInput" type="text" class="form-control" name="q" value="{{ queue_search_query }}" placeholder="{% trans 'Search title, keyword, owner, or reason' %}">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
+                        {% if is_queue_search %}
+                            <a class="btn btn-default" href="{% url 'manage_article_deletion_queue' %}">{% trans "Clear search" %}</a>
+                        {% endif %}
+                    </form>
+                    <p class="queue-muted" style="margin-top:8px;">
+                        {% blocktrans with count=queue_result_count total=total_queue_count %}Showing {{ count }} of {{ total }} queued article(s).{% endblocktrans %}
+                    </p>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'manage_article_deletion_queue' %}">
+                {% csrf_token %}
+                <div class="queue-actions">
+                    <button type="submit" name="action" value="restore" class="btn btn-success">
+                        <i class="fa fa-undo"></i> {% trans "Restore selected" %}
+                    </button>
+                    <button type="submit" name="action" value="purge" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> {% trans "Permanently delete selected" %}
+                    </button>
+                </div>
+
+                <div class="alert alert-warning queue-danger-note">
+                    {% trans "Permanent deletion removes the selected article(s) from the system. This cannot be reversed." %}
+                </div>
+
+                <div class="queue-table-wrap">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width:35px;"><input type="checkbox" id="selectAllQueuedArticles"></th>
+                                <th>{% trans "Title" %}</th>
+                                <th>{% trans "Visibility" %}</th>
+                                <th>{% trans "Previous status" %}</th>
+                                <th>{% trans "Owner" %}</th>
+                                <th>{% trans "Queued by" %}</th>
+                                <th>{% trans "Queued at" %}</th>
+                                <th>{% trans "Permanent deletion after" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for article in articles %}
+                                <tr>
+                                    <td><input type="checkbox" class="queued-article-checkbox" name="selected_articles" value="{{ article.id }}"></td>
+                                    <td>
+                                        <strong>{{ article.title }}</strong>
+                                        {% if article.deletion_reason %}<div class="queue-muted">{{ article.deletion_reason|truncatechars:120 }}</div>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if article.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% else %}<span class="label label-info">{% trans "General" %}</span>{% endif %}
+                                    </td>
+                                    <td>{{ article.get_deletion_previous_status_display|default:article.deletion_previous_status }}</td>
+                                    <td>
+                                        {{ article.author_display }}
+                                        {% if article.author_email %}<div class="queue-muted">{{ article.author_email }}</div>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if article.deletion_queued_by %}
+                                            {{ article.deletion_queued_by.get_username }}
+                                        {% else %}
+                                            <span class="queue-muted">{% trans "Unknown/system" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="nowrap">{{ article.deletion_queued_at|date:"Y-m-d H:i" }}</td>
+                                    <td class="nowrap">
+                                        {{ article.deletion_purge_after|date:"Y-m-d H:i" }}
+                                        {% if article.deletion_purge_after and article.deletion_purge_after <= now %}
+                                            <div><span class="label label-danger">{% trans "Due" %}</span></div>
+                                        {% elif article.deletion_purge_after %}
+                                            <div class="queue-muted">{% blocktrans with remaining=article.deletion_purge_after|timeuntil:now %}in {{ remaining }}{% endblocktrans %}</div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center queue-muted">{% trans "No articles are currently in the deletion queue." %}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+
+            {% if page_obj.has_other_pages %}
+                <div class="queue-pagination">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?page={{ page_obj.previous_page_number }}{{ queue_filter_query_suffix }}">&laquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&laquo;</span></li>
+                        {% endif %}
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="active"><span>{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li><a href="?page={{ num }}{{ queue_filter_query_suffix }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li><a href="?page={{ page_obj.next_page_number }}{{ queue_filter_query_suffix }}">&raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><span>&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="queue-pagination-meta">
+                    {% blocktrans with page=page_obj.number total=page_obj.paginator.num_pages %}Page {{ page }} of {{ total }}{% endblocktrans %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        var selectAll = document.getElementById('selectAllQueuedArticles');
+        if (!selectAll) { return; }
+        selectAll.addEventListener('change', function () {
+            var boxes = document.querySelectorAll('.queued-article-checkbox');
+            for (var i = 0; i < boxes.length; i++) {
+                boxes[i].checked = selectAll.checked;
+            }
+        });
+    })();
+    </script>
+
+    {% include "_footer.html" %}
+</body>
+</html>

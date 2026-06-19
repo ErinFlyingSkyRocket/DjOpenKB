@@ -3,6 +3,7 @@ from .services import *
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from urllib.parse import quote
 
@@ -393,7 +394,12 @@ def manage_orphan_articles(request):
     status_filter = (request.GET.get("status") or "").strip()
 
     orphan_filter = Q(owner__isnull=True) | Q(owner__is_active=False)
-    orphan_queryset = SuggestedArticle.objects.select_related("owner").filter(orphan_filter)
+    orphan_queryset = (
+        SuggestedArticle.objects
+        .select_related("owner")
+        .filter(orphan_filter)
+        .exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
+    )
     total_orphan_article_count = orphan_queryset.count()
 
     if status_filter and status_filter in SuggestedArticle.Status.values:
@@ -439,7 +445,7 @@ def manage_orphan_articles(request):
                 SuggestedArticle.objects.select_related("owner").filter(
                     orphan_filter,
                     pk__in=clean_selected_ids,
-                ).order_by("title")
+                ).exclude(status=SuggestedArticle.Status.DELETE_QUEUED).order_by("title")
             )
 
             if not selected_articles:
@@ -558,38 +564,80 @@ def manage_orphan_articles(request):
 
             if action == "delete":
                 if request.POST.get("confirm") != "yes":
+                    published_count = sum(1 for article in selected_articles if article.status == SuggestedArticle.Status.PUBLISHED)
+                    published_queue_enabled = not article_deletion_queue_immediate_delete_enabled()
+                    immediate_count = len(selected_articles) - (published_count if published_queue_enabled else 0)
                     return render(request, "admin_orphan_articles_confirm.html", {
                         "action": "delete",
                         "articles": selected_articles,
+                        "published_delete_count": published_count,
+                        "immediate_delete_count": immediate_count,
+                        "published_queue_enabled": published_queue_enabled,
                         "return_url": reverse("manage_orphan_articles"),
                     })
 
+                queued_count = 0
                 deleted_count = 0
                 failed_titles = []
+                queued_titles = []
+                deleted_titles = []
 
                 for article in selected_articles:
                     title = article.title
                     try:
-                        delete_article_files(article)
-                        article.delete()
-                        deleted_count += 1
+                        if article.status == SuggestedArticle.Status.PUBLISHED and not article_deletion_queue_immediate_delete_enabled():
+                            queue_article_for_deletion(
+                                request,
+                                article,
+                                actor=request.user,
+                                reason=_("Queued from orphan article cleanup."),
+                                source="orphan_article_cleanup",
+                                mfa_required=False,
+                                mfa_confirmed=False,
+                            )
+                            queued_count += 1
+                            queued_titles.append(title)
+                        else:
+                            delete_article_immediately(
+                                request,
+                                article,
+                                actor=request.user,
+                                reason=_("Deleted from orphan article cleanup."),
+                                source="orphan_article_cleanup_immediate",
+                                mfa_required=False,
+                                mfa_confirmed=False,
+                            )
+                            deleted_count += 1
+                            deleted_titles.append(title)
                     except Exception:
                         logger.exception("Failed to delete orphan article '%s'.", title)
                         failed_titles.append(title)
 
-                if deleted_count:
+                if queued_count or deleted_count:
                     log_activity(
                         request,
-                        ActivityLog.EventType.ARTICLE_ORPHAN_DELETED,
+                        ActivityLog.EventType.ADMIN_TOOL_ACTION,
                         details={
-                            "deleted_count": deleted_count,
+                            "tool": "orphan_article_delete",
+                            "queued_published_count": queued_count,
+                            "immediate_deleted_count": deleted_count,
                             "failed_count": len(failed_titles),
                             "selected_article_ids": clean_selected_ids,
-                            "deleted_titles": [article.title for article in selected_articles if article.title not in failed_titles],
+                            "queued_titles": queued_titles[:20],
+                            "deleted_titles": deleted_titles[:20],
                             "failed_titles": failed_titles[:10],
                         },
                     )
-                    messages.success(request, _("Deleted %(count)s orphan article(s).") % {"count": deleted_count})
+                    if queued_count and deleted_count:
+                        messages.success(
+                            request,
+                            _("Queued %(queued)s published orphan article(s) for deletion and permanently deleted %(deleted)s other orphan article(s).")
+                            % {"queued": queued_count, "deleted": deleted_count},
+                        )
+                    elif queued_count:
+                        messages.success(request, _("Queued %(count)s published orphan article(s) for deletion. They are hidden immediately and can be restored from the deletion queue.") % {"count": queued_count})
+                    else:
+                        messages.success(request, _("Permanently deleted %(count)s orphan article(s).") % {"count": deleted_count})
 
                 if failed_titles:
                     messages.error(
@@ -599,7 +647,7 @@ def manage_orphan_articles(request):
                         },
                     )
 
-                if not deleted_count and not failed_titles:
+                if not queued_count and not deleted_count and not failed_titles:
                     messages.warning(request, _("No orphan articles were deleted. Please refresh and try again."))
 
                 return redirect("manage_orphan_articles")
@@ -624,9 +672,138 @@ def manage_orphan_articles(request):
         "page_obj": page_obj,
         "orphan_search_query": search_query,
         "status_filter": status_filter,
-        "status_choices": SuggestedArticle.Status.choices,
+        "status_choices": [choice for choice in SuggestedArticle.Status.choices if choice[0] != SuggestedArticle.Status.DELETE_QUEUED],
         "orphan_result_count": orphan_queryset.count(),
         "total_orphan_article_count": total_orphan_article_count,
         "is_orphan_search": bool(search_query or status_filter),
+        "published_queue_enabled": not article_deletion_queue_immediate_delete_enabled(),
         "active_users": active_users,
+    })
+
+
+@admin_tools_required
+def manage_article_deletion_queue(request):
+    """Admin recovery page for articles queued for delayed permanent deletion."""
+    search_query = (request.GET.get("q") or "").strip()
+    now = timezone.now()
+    retention_days = get_article_deletion_queue_retention_days()
+
+    base_queryset = (
+        SuggestedArticle.objects
+        .select_related("owner", "deletion_queued_by", "deletion_restored_by")
+        .filter(status=SuggestedArticle.Status.DELETE_QUEUED)
+    )
+
+    if request.method == "POST":
+        action = (request.POST.get("action") or "").strip().lower()
+        selected_ids = []
+        for value in request.POST.getlist("selected_articles"):
+            try:
+                selected_ids.append(int(value))
+            except (TypeError, ValueError):
+                continue
+
+        if action not in {"restore", "purge"}:
+            messages.error(request, _("Invalid deletion queue action."))
+            return redirect("manage_article_deletion_queue")
+
+        if not selected_ids:
+            messages.warning(request, _("No queued articles were selected."))
+            return redirect("manage_article_deletion_queue")
+
+        selected_articles = list(base_queryset.filter(pk__in=selected_ids).order_by("deletion_purge_after", "title"))
+        if not selected_articles:
+            messages.warning(request, _("The selected queued articles are no longer available. Please refresh and try again."))
+            return redirect("manage_article_deletion_queue")
+
+        if action == "purge" and request.POST.get("confirm") != "yes":
+            return render(request, "admin_deletion_queue_confirm.html", {
+                "action": "purge",
+                "articles": selected_articles,
+                "return_url": reverse("manage_article_deletion_queue"),
+            })
+
+        if action == "restore":
+            restored_count = 0
+            failed_titles = []
+            with transaction.atomic():
+                for article in selected_articles:
+                    try:
+                        if restore_article_from_deletion_queue(
+                            request,
+                            article,
+                            actor=request.user,
+                            source="admin_deletion_queue",
+                        ):
+                            restored_count += 1
+                    except Exception:
+                        logger.exception("Failed to restore queued article '%s'.", article.title)
+                        failed_titles.append(article.title)
+
+            if restored_count:
+                messages.success(request, _("Restored %(count)s article(s) from the deletion queue.") % {"count": restored_count})
+            if failed_titles:
+                messages.error(request, _("Some articles could not be restored: %(titles)s") % {"titles": ", ".join(failed_titles[:5])})
+            return redirect("manage_article_deletion_queue")
+
+        if action == "purge":
+            purged_count = 0
+            failed_titles = []
+            for article in selected_articles:
+                try:
+                    if purge_article_from_deletion_queue(
+                        request,
+                        article,
+                        actor=request.user,
+                        automatic=False,
+                        source="admin_deletion_queue_manual_purge",
+                    ):
+                        purged_count += 1
+                except Exception:
+                    logger.exception("Failed to permanently delete queued article '%s'.", article.title)
+                    failed_titles.append(article.title)
+
+            if purged_count:
+                messages.success(request, _("Permanently deleted %(count)s queued article(s).") % {"count": purged_count})
+            if failed_titles:
+                messages.error(request, _("Some articles could not be permanently deleted: %(titles)s") % {"titles": ", ".join(failed_titles[:5])})
+            return redirect("manage_article_deletion_queue")
+
+    article_queryset = base_queryset
+    if search_query:
+        article_queryset = article_queryset.filter(
+            Q(title__icontains=search_query)
+            | Q(body__icontains=search_query)
+            | Q(keywords__icontains=search_query)
+            | Q(filename__icontains=search_query)
+            | Q(author_username_snapshot__icontains=search_query)
+            | Q(author_email_snapshot__icontains=search_query)
+            | Q(owner__username__icontains=search_query)
+            | Q(owner__email__icontains=search_query)
+            | Q(deletion_reason__icontains=search_query)
+        )
+
+    article_queryset = article_queryset.order_by("deletion_purge_after", "deletion_queued_at", "title")
+    total_queue_count = base_queryset.count()
+    if retention_days <= 0:
+        due_count = total_queue_count
+    else:
+        due_count = base_queryset.filter(deletion_purge_after__lte=now).count()
+    page_obj = paginate_articles(request, article_queryset, per_page=20)
+    queue_filter_query_suffix = ""
+    if search_query:
+        queue_filter_query_suffix = f"&q={quote(search_query)}"
+
+    return render(request, "admin_deletion_queue.html", {
+        "articles": page_obj.object_list,
+        "page_obj": page_obj,
+        "queue_search_query": search_query,
+        "queue_result_count": article_queryset.count(),
+        "total_queue_count": total_queue_count,
+        "due_count": due_count,
+        "retention_days": retention_days,
+        "immediate_purge_enabled": retention_days <= 0,
+        "now": now,
+        "is_queue_search": bool(search_query),
+        "queue_filter_query_suffix": queue_filter_query_suffix,
     })

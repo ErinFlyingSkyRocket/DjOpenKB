@@ -307,6 +307,7 @@ class SuggestedArticle(models.Model):
         PENDING = "pending", _("Pending")
         FAILED = "failed", _("Pending failed")
         PUBLISHED = "published", _("Published")
+        DELETE_QUEUED = "delete_queued", _("Deletion queued")
 
     class UpdateStatus(models.TextChoices):
         NONE = "none", _("No pending update")
@@ -418,6 +419,52 @@ class SuggestedArticle(models.Model):
     raw_path = models.CharField(max_length=500, blank=True)
     wiki_path = models.CharField(max_length=500, blank=True)
     image_assets = models.JSONField(default=list, blank=True)
+    deletion_previous_status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Previous status before deletion queue"),
+        help_text=_("Original workflow status saved so the article can be restored from the deletion queue."),
+    )
+    deletion_queued_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Deletion queued at"),
+    )
+    deletion_queued_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="queued_article_deletions",
+        verbose_name=_("Deletion queued by"),
+    )
+    deletion_purge_after = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Permanent deletion after"),
+        help_text=_("After this time, the queued article can be permanently deleted by the scheduled cleanup."),
+    )
+    deletion_restored_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Deletion restored at"),
+    )
+    deletion_restored_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="restored_article_deletions",
+        verbose_name=_("Deletion restored by"),
+    )
+    deletion_reason = models.TextField(
+        blank=True,
+        verbose_name=_("Deletion reason"),
+    )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -505,6 +552,18 @@ class SuggestedArticle(models.Model):
     @property
     def visibility_label(self):
         return self.get_visibility_display()
+
+    @property
+    def is_deletion_queued(self):
+        return self.status == self.Status.DELETE_QUEUED
+
+    @property
+    def deletion_original_status(self):
+        status_value = self.deletion_previous_status or self.Status.DRAFT
+        valid_values = {value for value, _label in self.Status.choices}
+        if status_value == self.Status.DELETE_QUEUED or status_value not in valid_values:
+            return self.Status.DRAFT
+        return status_value
 
     @property
     def keyword_list(self):
@@ -856,6 +915,10 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         ARTICLE_CREATED = "article_created", _("Article created")
         ARTICLE_UPDATED = "article_updated", _("Article updated")
         ARTICLE_DELETED = "article_deleted", _("Article deleted")
+        ARTICLE_DELETE_QUEUED = "article_delete_queued", _("Article queued for deletion")
+        ARTICLE_DELETE_RESTORED = "article_delete_restored", _("Article restored from deletion queue")
+        ARTICLE_DELETE_PURGED = "article_delete_purged", _("Article permanently deleted")
+        ARTICLE_DELETE_AUTO_PURGED = "article_delete_auto_purged", _("Article auto-deleted from queue")
         ARTICLE_DELETION_REQUESTED = "article_deletion_requested", _("Article deletion requested")
         ARTICLE_DELETION_REJECTED = "article_deletion_rejected", _("Article deletion rejected")
         ARTICLE_STATUS_CHANGED = "article_status_changed", _("Article status changed")
@@ -1030,6 +1093,14 @@ class SiteSetting(models.Model):
             "Files newer than this many minutes are ignored by the stray upload cleanup tool. "
             "Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. "
             "Set to 0 to detect/delete stray uploads immediately."
+        ),
+    )
+    article_deletion_queue_retention_days = models.PositiveIntegerField(
+        default=7,
+        verbose_name=_("Article deletion queue retention (days)"),
+        help_text=_(
+            "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. "
+            "Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
         ),
     )
     article_image_upload_limit = models.PositiveIntegerField(

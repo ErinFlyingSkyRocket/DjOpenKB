@@ -777,11 +777,6 @@ def delete_suggestion(request, article_id):
             })
 
         title = article.title
-        article_id_for_log = article.pk
-        article_status_for_log = article.status
-        article_update_status_for_log = article.update_status
-        article_visibility_for_log = article.visibility
-
         # Close any historical pending deletion-request records from the older
         # approval workflow so stale requests do not remain in admin records.
         pending_requests = list(ArticleDeletionRequest.objects.filter(
@@ -792,30 +787,42 @@ def delete_suggestion(request, article_id):
             deletion_request.status = ArticleDeletionRequest.Status.APPROVED
             deletion_request.reviewed_by = request.user
             deletion_request.reviewed_at = timezone.now()
-            deletion_request.review_comment = deletion_request.review_comment or _("Article deleted directly after MFA confirmation.")
+            deletion_request.review_comment = deletion_request.review_comment or _("Article deletion confirmed after MFA.")
             deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
 
-        log_activity(
-            request,
-            ActivityLog.EventType.ARTICLE_DELETED,
-            article=article,
-            details={
-                "action": "delete",
-                "article_id": article_id_for_log,
-                "title": title,
-                "status": article_status_for_log,
-                "update_status": article_update_status_for_log,
-                "visibility": article_visibility_for_log,
-                "mfa_required": requires_mfa,
-                "mfa_confirmed": requires_mfa,
-                "is_owner_action": article.owner_id == request.user.id,
-                "is_manager_or_admin_action": user_can_delete_article_visibility(request.user, article_visibility_for_log) or user_can_use_admin_tools(request.user),
-                "closed_historical_delete_request_ids": [item.pk for item in pending_requests],
-            },
-        )
-        delete_article_files(article)
-        article.delete()
-        messages.success(request, _("Article deleted: %(title)s") % {"title": title})
+        if article.status == SuggestedArticle.Status.PUBLISHED:
+            if article_deletion_queue_immediate_delete_enabled():
+                delete_article_immediately(
+                    request,
+                    article,
+                    actor=request.user,
+                    reason=_("Deleted from article page with immediate deletion setting."),
+                    source="article_delete_immediate_published",
+                    mfa_required=requires_mfa,
+                    mfa_confirmed=requires_mfa,
+                )
+            else:
+                queue_article_for_deletion(
+                    request,
+                    article,
+                    actor=request.user,
+                    reason=_("Deleted from article page."),
+                    source="article_delete",
+                    mfa_required=requires_mfa,
+                    mfa_confirmed=requires_mfa,
+                )
+            messages.success(request, _("Article deletion confirmed: %(title)s.") % {"title": title})
+        else:
+            delete_article_immediately(
+                request,
+                article,
+                actor=request.user,
+                reason=_("Deleted from article page before publication."),
+                source="article_delete",
+                mfa_required=False,
+                mfa_confirmed=False,
+            )
+            messages.success(request, _("Article permanently deleted: %(title)s.") % {"title": title})
         return redirect(return_url)
 
     return render(request, "suggest_delete.html", {
@@ -974,12 +981,17 @@ def serve_article_image(request, filename):
     if not file_path.exists() or not file_path.is_file():
         raise Http404("Image not found")
 
-    referenced_articles = SuggestedArticle.objects.filter(
-        Q(image_assets__contains=[filename])
-        | Q(body__icontains=f"/wiki/uploads/{filename}")
-        | Q(pending_update_image_assets__contains=[filename])
-        | Q(pending_update_body__icontains=f"/wiki/uploads/{filename}")
-    ).select_related("owner")
+    referenced_articles = (
+        SuggestedArticle.objects
+        .filter(
+            Q(image_assets__contains=[filename])
+            | Q(body__icontains=f"/wiki/uploads/{filename}")
+            | Q(pending_update_image_assets__contains=[filename])
+            | Q(pending_update_body__icontains=f"/wiki/uploads/{filename}")
+        )
+        .exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
+        .select_related("owner")
+    )
 
     has_reference = referenced_articles.exists()
 
