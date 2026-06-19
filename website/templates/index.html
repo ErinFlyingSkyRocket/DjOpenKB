@@ -184,6 +184,9 @@
         .openkb-home-tab-pagination { text-align: center; }
         .openkb-home-tab-pagination .pagination { margin: 0; }
         .openkb-search-excerpt { margin-top: 8px; }
+        .openkb-keyword-buttons { margin-top: 9px; }
+        .openkb-keyword-label { margin-right: 5px; }
+        .openkb-keyword-search-button { margin: 0 4px 4px 0; }
         @media (max-width: 767px) {
             .openkb-home-tabs-heading .nav-tabs > li { float: none; display: block; }
             .openkb-home-tabs-heading .nav-tabs > li > a { border-right: 0; }
@@ -258,7 +261,18 @@
                                             {% if article.date %}&nbsp;/&nbsp;<strong>{% trans "Date" %}:</strong> {{ article.date }}{% endif %}
                                         </span>
                                     </h4>
-                                    {% if article.search_excerpt %}
+                                    {% if article.keywords %}
+                                        <div class="openkb-keyword-buttons" aria-label="{% trans 'Article keywords' %}">
+                                            <span class="text-muted openkb-keyword-label">{% trans "Keywords" %}:</span>
+                                            {% for keyword in article.keywords %}
+                                                <a class="btn btn-xs btn-default openkb-keyword-search-button"
+                                                   href="{{ search_action_url|default:'/search/' }}?q={{ keyword|urlencode }}"
+                                                   title="{% blocktrans with keyword=keyword %}Search for {{ keyword }}{% endblocktrans %}">
+                                                    {{ keyword }}
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif article.search_excerpt %}
                                         <p class="text-muted openkb-search-excerpt">{{ article.search_excerpt }}</p>
                                     {% endif %}
                                 </li>

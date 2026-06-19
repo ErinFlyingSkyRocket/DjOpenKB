@@ -478,9 +478,21 @@ def update_profile(request):
         if not _verify_profile_mfa_code(request, user):
             return redirect("profile")
 
+        old_email = user.email or ""
         email = request.POST.get("email", "").strip()
         user.email = email
         user.save(update_fields=["email"])
+        log_activity(
+            request,
+            ActivityLog.EventType.PROFILE_EMAIL_UPDATED,
+            details={
+                "action": "profile_email_update",
+                "old_email": old_email,
+                "new_email": email,
+                "changed": old_email != email,
+                "mfa_confirmed": True,
+            },
+        )
         messages.success(request, _("Email updated successfully."))
         return redirect("profile")
 
@@ -529,5 +541,13 @@ def change_password(request):
     user.set_password(new_password1)
     user.save(update_fields=["password"])
     update_session_auth_hash(request, user)
+    log_activity(
+        request,
+        ActivityLog.EventType.PROFILE_PASSWORD_CHANGED,
+        details={
+            "action": "profile_password_change",
+            "mfa_confirmed": True,
+        },
+    )
     messages.success(request, "Password changed successfully.")
     return redirect("profile")

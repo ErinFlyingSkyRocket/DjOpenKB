@@ -50,6 +50,9 @@
         .metaData h5 { line-height: 1.5; }
         .keywords { margin-top: 15px; margin-bottom: 35px; }
         .keywordSeporator { color: #899aa6; padding: 0 6px; }
+        .openkb-keyword-buttons { margin-top: 15px; margin-bottom: 35px; }
+        .openkb-keyword-label { margin-right: 5px; }
+        .openkb-keyword-search-button { margin: 0 4px 4px 0; }
         .article-admin-actions { margin-top: 12px; }
         .article-admin-actions .btn { margin-right: 6px; }
 
@@ -394,12 +397,16 @@
                 </div>
 
                 {% if metadata.keywords %}
-                    <h5 class="keywords">
+                    <div class="openkb-keyword-buttons" aria-label="{% trans 'Article keywords' %}">
+                        <span class="text-muted openkb-keyword-label">{% trans "Keywords" %}:</span>
                         {% for keyword in metadata.keywords %}
-                            <a href="{{ search_action_url|default:'/search/' }}?q={{ keyword|urlencode }}">{{ keyword }}</a>
-                            <span class="keywordSeporator">|</span>
+                            <a class="btn btn-xs btn-default openkb-keyword-search-button"
+                               href="{{ search_action_url|default:'/search/' }}?q={{ keyword|urlencode }}"
+                               title="{% blocktrans with keyword=keyword %}Search for {{ keyword }}{% endblocktrans %}">
+                                {{ keyword }}
+                            </a>
                         {% endfor %}
-                    </h5>
+                    </div>
                 {% endif %}
             </div>
         </div>

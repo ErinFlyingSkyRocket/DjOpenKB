@@ -874,6 +874,8 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         AI_QUESTION = "ai_question", _("OpenKB AI question")
         AI_RATE_LIMITED = "ai_rate_limited", _("OpenKB AI rate limited")
         BULK_IMPORT = "bulk_import", _("Bulk article import")
+        PROFILE_EMAIL_UPDATED = "profile_email_updated", _("Profile email updated")
+        PROFILE_PASSWORD_CHANGED = "profile_password_changed", _("Profile password changed")
         ADMIN_TOOL_ACTION = "admin_tool_action", _("Admin tool action")
 
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
