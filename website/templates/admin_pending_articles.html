@@ -59,7 +59,7 @@
                     {% if pending_show_visibility_filter %}
                         <div class="form-group">
                             <label class="sr-only" for="pendingVisibilityFilter">{% trans "Visibility" %}</label>
-                            <select id="pendingVisibilityFilter" name="visibility" class="form-control">
+                            <select id="pendingVisibilityFilter" name="visibility" class="form-control auto-submit-on-change">
                                 <option value="all" {% if pending_visibility == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
                                 {% if pending_allowed_public %}<option value="public" {% if pending_visibility == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
                                 {% if pending_allowed_internal %}<option value="internal" {% if pending_visibility == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
@@ -158,5 +158,18 @@
         </div>
     </div>
     {% include "_footer.html" %}
+
+    <script>
+(function () {
+    var filters = document.querySelectorAll('.auto-submit-on-change');
+    for (var i = 0; i < filters.length; i++) {
+        filters[i].addEventListener('change', function () {
+            if (this.form) {
+                this.form.submit();
+            }
+        });
+    }
+}());
+    </script>
 </body>
 </html>

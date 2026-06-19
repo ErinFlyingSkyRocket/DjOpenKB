@@ -139,7 +139,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% if profile_show_visibility_filter %}
                                     <div class="row">
                                         <div class="col-sm-3">
-                                            <select name="visibility" class="form-control">
+                                            <select name="visibility" class="form-control auto-submit-on-change">
                                                 <option value="all" {% if profile_visibility_filter == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
                                                 {% if profile_allowed_public %}<option value="public" {% if profile_visibility_filter == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
                                                 {% if profile_allowed_internal %}<option value="internal" {% if profile_visibility_filter == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
@@ -340,5 +340,18 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
     {% include "_footer.html" %}
+
+    <script>
+(function () {
+    var filters = document.querySelectorAll('.auto-submit-on-change');
+    for (var i = 0; i < filters.length; i++) {
+        filters[i].addEventListener('change', function () {
+            if (this.form) {
+                this.form.submit();
+            }
+        });
+    }
+}());
+    </script>
 </body>
 </html>
