@@ -24,15 +24,6 @@
             <div class="panel-heading">
                 <strong>{% trans "Ask OpenKB AI" %}</strong>
                 <button
-                    id="openkbAiClear"
-                    class="pull-right openkb-ai-clear"
-                    type="button"
-                    title="{% trans 'Delete' %}"
-                    aria-label="{% trans 'Delete' %}"
-                >
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
-                <button
                     id="openkbAiClose"
                     class="pull-right openkb-ai-close"
                     type="button"
@@ -54,7 +45,19 @@
                                 </button>
                             </span>
                         </div>
-                        <small id="openkbAiStatus" class="text-muted">{% trans "Ask one question at a time." %}</small>
+                        <div class="openkb-ai-form-footer">
+                            <small id="openkbAiStatus" class="text-muted">{% trans "Ask one question at a time." %}</small>
+                            <button
+                                id="openkbAiClear"
+                                class="openkb-ai-clear openkb-ai-clear-bottom"
+                                type="button"
+                                title="{% trans 'Delete' %}"
+                                aria-label="{% trans 'Delete' %}"
+                            >
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                <span>{% trans "Delete" %}</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

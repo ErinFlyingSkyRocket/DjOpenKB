@@ -35,8 +35,7 @@
 .openkb-ai-chat.open { display: block; }
 .openkb-ai-chat .panel { margin-bottom: 0; border: 0; border-radius: 18px; overflow: hidden; }
 .openkb-ai-chat .panel-heading { background: #2c3e50; color: #fff; border-color: #2c3e50; padding: 12px 15px; }
-.openkb-ai-close,
-.openkb-ai-clear {
+.openkb-ai-close {
     color: #fff;
     opacity: 0.85;
     background: transparent;
@@ -45,9 +44,7 @@
     margin-left: 12px;
 }
 .openkb-ai-close:hover,
-.openkb-ai-close:focus,
-.openkb-ai-clear:hover,
-.openkb-ai-clear:focus { color: #fff; opacity: 1; outline: none; }
+.openkb-ai-close:focus { color: #fff; opacity: 1; outline: none; }
 .openkb-ai-body { padding: 0; background: #eef2f5; }
 .openkb-ai-thread {
     min-height: 300px;
@@ -76,6 +73,25 @@
 .openkb-ai-welcome-list li { margin-bottom: 4px; }
 .openkb-ai-time { display: block; margin-top: 4px; font-size: 11px; opacity: 0.68; text-align: right; }
 .openkb-ai-form-wrap { padding: 12px; background: #fff; border-top: 1px solid #dde4ea; }
+.openkb-ai-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 7px;
+}
+.openkb-ai-clear-bottom {
+    flex: 0 0 auto;
+    color: #7f8c8d;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.2;
+}
+.openkb-ai-clear-bottom i { margin-right: 4px; }
+.openkb-ai-clear-bottom:hover,
+.openkb-ai-clear-bottom:focus { color: #c0392b; outline: none; }
 .openkb-ai-send[disabled],
 #openkbAiQuestion[disabled] { cursor: not-allowed; opacity: 0.65; }
 .openkb-ai-typing { display: inline-block; letter-spacing: 2px; }
@@ -89,8 +105,8 @@
 
 [dir="rtl"] .openkb-ai-fab,
 [dir="rtl"] .openkb-ai-chat { right: auto; left: 24px; }
-[dir="rtl"] .openkb-ai-close,
-[dir="rtl"] .openkb-ai-clear { margin-left: 0; margin-right: 12px; }
+[dir="rtl"] .openkb-ai-close { margin-left: 0; margin-right: 12px; }
+[dir="rtl"] .openkb-ai-clear-bottom i { margin-right: 0; margin-left: 4px; }
 [dir="rtl"] .openkb-ai-welcome-list { padding-left: 0; padding-right: 18px; }
 
 @media (max-width: 575px) {
