@@ -5884,3 +5884,7 @@ msgstr "தெரியாத பயனர்"
 #: kb/admin.py:892
 msgid "users"
 msgstr "பயனர்கள்"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "அரட்டையை அழி"

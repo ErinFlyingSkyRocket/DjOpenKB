@@ -4087,17 +4087,17 @@ msgid ""
 "Queued %(count)s published orphan article(s) for deletion. They are hidden "
 "immediately and can be restored from the deletion queue."
 msgstr ""
-"Foram colocados na fila de exclusão %(count)s artigo(s) órfão(s) "
-"publicado(s). Eles são ocultados imediatamente e podem ser restaurados da "
-"fila de exclusão."
+"%(count)s artigo(s) órfão(s) publicado(s) foi(foram) colocado(s) na fila de "
+"exclusão. Eles são ocultados imediatamente e podem ser restaurados da fila "
+"de exclusão."
 
 #: kb/views/admin.py:634
 msgid ""
 "Queued %(queued)s published orphan article(s) for deletion and permanently "
 "deleted %(deleted)s other orphan article(s)."
 msgstr ""
-"Foram colocados na fila de exclusão %(queued)s artigo(s) órfão(s) "
-"publicado(s), e %(deleted)s outro(s) artigo(s) órfão(s) foram excluído(s) "
+"%(queued)s artigo(s) órfão(s) publicado(s) foi(foram) colocado(s) na fila de"
+" exclusão, e %(deleted)s outro(s) artigo(s) órfão(s) foi(foram) excluído(s) "
 "permanentemente."
 
 #: website/templates/admin_deletion_queue.html:54
@@ -5848,3 +5848,7 @@ msgstr "usuário desconhecido"
 #: kb/admin.py:892
 msgid "users"
 msgstr "usuários"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Limpar conversa"

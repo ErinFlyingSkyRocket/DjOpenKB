@@ -5913,3 +5913,7 @@ msgstr "usuario desconocido"
 #: kb/admin.py:892
 msgid "users"
 msgstr "usuarios"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Limpiar chat"

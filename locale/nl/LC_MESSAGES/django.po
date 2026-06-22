@@ -5437,7 +5437,7 @@ msgstr "MFA-apparaten van gebruiker"
 
 #: kb/admin.py:122 kb/admin.py:138 kb/admin.py:159 kb/admin.py:1946
 msgid "User agent"
-msgstr "Gebruikersagent"
+msgstr "User agent"
 
 #: kb/admin.py:1413 kb/admin.py:1461
 msgid "User does not exist."
@@ -5878,3 +5878,7 @@ msgstr "onbekende gebruiker"
 #: kb/admin.py:892
 msgid "users"
 msgstr "gebruikers"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Chat wissen"

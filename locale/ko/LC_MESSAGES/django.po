@@ -5360,3 +5360,7 @@ msgstr "알 수 없는 사용자"
 #: kb/admin.py:892
 msgid "users"
 msgstr "사용자"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "채팅 지우기"

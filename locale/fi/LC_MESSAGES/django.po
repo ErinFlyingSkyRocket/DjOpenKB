@@ -5828,3 +5828,7 @@ msgstr "tuntematon käyttäjä"
 #: kb/admin.py:892
 msgid "users"
 msgstr "käyttäjät"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Tyhjennä keskustelu"

@@ -5246,3 +5246,7 @@ msgstr "未知用户"
 #: kb/admin.py:892
 msgid "users"
 msgstr "用户"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "清除聊天记录"

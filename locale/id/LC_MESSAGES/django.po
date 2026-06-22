@@ -5786,3 +5786,7 @@ msgstr "pengguna tidak dikenal"
 #: kb/admin.py:892
 msgid "users"
 msgstr "pengguna"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Hapus percakapan"

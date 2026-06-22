@@ -5666,3 +5666,7 @@ msgstr "ผู้ใช้ไม่ทราบชื่อ"
 #: kb/admin.py:892
 msgid "users"
 msgstr "ผู้ใช้"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "ล้างแชต"

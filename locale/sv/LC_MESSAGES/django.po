@@ -5787,3 +5787,7 @@ msgstr "okänd användare"
 #: kb/admin.py:892
 msgid "users"
 msgstr "användare"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Rensa chatt"

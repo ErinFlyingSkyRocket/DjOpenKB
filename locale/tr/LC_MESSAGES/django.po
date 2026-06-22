@@ -1481,8 +1481,8 @@ msgid ""
 "Current admin feedback shown to the article owner while the article is in "
 "Draft or Pending failed status."
 msgstr ""
-"Makale Taslak veya Onay başarısız durumundayken makale sahibine gösterilen "
-"geçerli yönetici geri bildirimi."
+"Makale Taslak veya Bekleme başarısız durumundayken makale sahibine "
+"gösterilen geçerli yönetici geri bildirimi."
 
 #: kb/admin.py:2369 kb/models.py:365
 msgid "Current pending failed comments"
@@ -3124,7 +3124,7 @@ msgstr ""
 #: kb/admin.py:2357
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr ""
-"%(title)s makalesi Django Yönetici panelinden Onay başarısız olarak "
+"%(title)s makalesi Django Yönetici panelinden bekleme başarısız olarak "
 "işaretlendi"
 
 #: kb/admin.py:2345 kb/admin.py:2410
@@ -3865,7 +3865,7 @@ msgid ""
 "as Pending failed."
 msgstr ""
 "Bekleyen güncellemeler yalnızca beklemede tutulabilir, Yayınlandı olarak "
-"onaylanabilir veya Onay başarısız olarak işaretlenebilir."
+"onaylanabilir veya Bekleme başarısız olarak işaretlenebilir."
 
 #: website/templates/articles.html:380
 msgid "Permalink"
@@ -4155,7 +4155,7 @@ msgstr "Normal Kullanıcı rolü, seçilen %(count)d kullanıcıya atandı."
 
 #: website/templates/suggest_edit.html:254
 msgid "Reject / Pending failed"
-msgstr "Reddet / Onay başarısız"
+msgstr "Reddet / Bekleme başarısız"
 
 #: website/templates/suggest_edit.html:250
 msgid "Reject update"
@@ -5816,3 +5816,7 @@ msgstr "bilinmeyen kullanıcı"
 #: kb/admin.py:892
 msgid "users"
 msgstr "kullanıcılar"
+
+#: website/templates/_openkb_ai_chat.html:48
+msgid "Clear chat"
+msgstr "Sohbeti temizle"
