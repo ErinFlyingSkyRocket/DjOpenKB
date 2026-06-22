@@ -5,6 +5,7 @@
     id="openkbAiWidget"
     class="openkb-ai-widget"
     data-endpoint="{% url 'ask_openkb_ai' %}"
+    data-poll-interval-milliseconds="{{ OPENKB_AI_POLL_INTERVAL_MILLISECONDS }}"
     data-storage-key="djopenkb.openkb-ai.v1.user-{{ user.pk }}-{% if user|can_view_internal_articles %}internal{% else %}public{% endif %}"
     data-msg-ready="{% trans 'Ready' %}"
     data-msg-thinking="{% trans 'OpenKB AI is thinking...' %}"

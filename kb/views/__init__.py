@@ -38,7 +38,7 @@ from .admin import (
     manage_orphan_articles,
     manage_article_deletion_queue,
 )
-from .ai import ask_openkb_ai
+from .ai import ask_openkb_ai, openkb_ai_job_status, cancel_openkb_ai_job
 from .mfa import mfa_setup, mfa_verify, reset_mfa, cancel_mfa_login
 
 __all__ = [
@@ -76,6 +76,8 @@ __all__ = [
     "manage_orphan_articles",
     "manage_article_deletion_queue",
     "ask_openkb_ai",
+    "openkb_ai_job_status",
+    "cancel_openkb_ai_job",
     "mfa_setup",
     "mfa_verify",
     "reset_mfa",

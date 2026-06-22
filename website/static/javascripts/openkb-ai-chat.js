@@ -19,11 +19,13 @@
         return;
     }
 
-    var storageKey = widget.dataset.storageKey || "djopenkb.openkb-ai.v1";
+    var storageKey = widget.dataset.storageKey || "djopenkb.openkb-ai.v2";
     var endpoint = widget.dataset.endpoint || "";
+    var pollIntervalMilliseconds = Math.max(500, Number(widget.dataset.pollIntervalMilliseconds || 2000));
     var maximumMessages = 24;
     var maximumMessageCharacters = 8000;
-    var isThinking = false;
+    var pollTimer = null;
+    var pollInProgress = false;
 
     var messages = {
         ready: widget.dataset.msgReady || "Ready",
@@ -40,11 +42,15 @@
         welcomeTipTwo: widget.dataset.msgWelcomeTipTwo || "Ask for related articles when you want source links."
     };
 
-    var state = { version: 1, open: false, draft: "", messages: [] };
+    var state = { version: 2, open: false, draft: "", messages: [], pendingJobs: [] };
 
     function trimText(value, maximumLength) {
         if (typeof value !== "string") { return ""; }
         return value.slice(0, maximumLength);
+    }
+
+    function isUuid(value) {
+        return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
     }
 
     function safeRelativeArticleUrl(value) {
@@ -78,8 +84,19 @@
                 sender: message.sender,
                 text: text,
                 time: trimText(message.time, 32),
+                jobId: isUuid(message.jobId) ? message.jobId : "",
                 relatedArticles: normaliseRelatedArticles(message.relatedArticles)
             };
+        }).filter(Boolean);
+    }
+
+    function normalisePendingJobs(value) {
+        if (!Array.isArray(value)) { return []; }
+        var seen = {};
+        return value.slice(-3).map(function (job) {
+            if (!job || typeof job !== "object" || !isUuid(job.id) || seen[job.id]) { return null; }
+            seen[job.id] = true;
+            return { id: job.id, createdAt: Number(job.createdAt) || Date.now() };
         }).filter(Boolean);
     }
 
@@ -88,10 +105,11 @@
             var stored = window.sessionStorage.getItem(storageKey);
             if (!stored) { return; }
             var parsed = JSON.parse(stored);
-            if (!parsed || parsed.version !== 1 || typeof parsed !== "object") { return; }
+            if (!parsed || typeof parsed !== "object" || (parsed.version !== 1 && parsed.version !== 2)) { return; }
             state.open = Boolean(parsed.open);
             state.draft = trimText(parsed.draft, maximumMessageCharacters);
             state.messages = normaliseMessages(parsed.messages);
+            state.pendingJobs = parsed.version === 2 ? normalisePendingJobs(parsed.pendingJobs) : [];
         } catch (error) {
             // Private-browser modes may deny session storage. The widget still works without persistence.
         }
@@ -100,10 +118,11 @@
     function saveState() {
         try {
             window.sessionStorage.setItem(storageKey, JSON.stringify({
-                version: 1,
+                version: 2,
                 open: Boolean(state.open),
                 draft: trimText(state.draft, maximumMessageCharacters),
-                messages: normaliseMessages(state.messages)
+                messages: normaliseMessages(state.messages),
+                pendingJobs: normalisePendingJobs(state.pendingJobs)
             }));
         } catch (error) {
             // Do not interrupt a user question if browser storage is unavailable or full.
@@ -161,6 +180,7 @@
     function createMessageRow(message) {
         var row = document.createElement("div");
         row.className = "openkb-ai-row " + message.sender;
+        if (message.jobId) { row.dataset.jobId = message.jobId; }
 
         var bubble = document.createElement("div");
         bubble.className = "openkb-ai-bubble";
@@ -218,6 +238,20 @@
         thread.appendChild(row);
     }
 
+    function createTypingRow(jobId) {
+        var row = document.createElement("div");
+        row.className = "openkb-ai-row bot openkb-ai-pending";
+        row.dataset.jobId = jobId;
+        var bubble = document.createElement("div");
+        bubble.className = "openkb-ai-bubble";
+        var dots = document.createElement("span");
+        dots.className = "openkb-ai-typing";
+        dots.textContent = "•••";
+        bubble.appendChild(dots);
+        row.appendChild(bubble);
+        return row;
+    }
+
     function renderThread() {
         thread.replaceChildren();
         if (!state.messages.length) {
@@ -227,14 +261,24 @@
                 thread.appendChild(createMessageRow(message));
             });
         }
+        state.pendingJobs.forEach(function (job) {
+            thread.appendChild(createTypingRow(job.id));
+        });
         scrollThreadToBottom();
     }
 
-    function appendMessage(sender, text, relatedArticles) {
+    function hasBotMessageForJob(jobId) {
+        return state.messages.some(function (message) {
+            return message.sender === "bot" && message.jobId === jobId;
+        });
+    }
+
+    function appendMessage(sender, text, relatedArticles, jobId) {
         var message = {
             sender: sender === "user" ? "user" : "bot",
             text: trimText(text, maximumMessageCharacters),
             time: getTime(),
+            jobId: isUuid(jobId) ? jobId : "",
             relatedArticles: normaliseRelatedArticles(relatedArticles)
         };
         if (!message.text) { return; }
@@ -245,19 +289,31 @@
         saveState();
     }
 
-    function createTypingRow() {
-        var row = document.createElement("div");
-        row.className = "openkb-ai-row bot";
-        var bubble = document.createElement("div");
-        bubble.className = "openkb-ai-bubble";
-        var dots = document.createElement("span");
-        dots.className = "openkb-ai-typing";
-        dots.textContent = "•••";
-        bubble.appendChild(dots);
-        row.appendChild(bubble);
-        thread.appendChild(row);
-        scrollThreadToBottom();
-        return row;
+    function hasPendingJobs() { return state.pendingJobs.length > 0; }
+
+    function updateInputState() {
+        var waiting = hasPendingJobs();
+        questionInput.disabled = waiting;
+        sendButton.disabled = waiting;
+        status.textContent = waiting ? messages.thinking : messages.idle;
+    }
+
+    function addPendingJob(jobId) {
+        if (!isUuid(jobId) || state.pendingJobs.some(function (job) { return job.id === jobId; })) { return; }
+        state.pendingJobs.push({ id: jobId, createdAt: Date.now() });
+        state.pendingJobs = normalisePendingJobs(state.pendingJobs);
+        saveState();
+        renderThread();
+        updateInputState();
+        startPolling();
+    }
+
+    function removePendingJob(jobId) {
+        state.pendingJobs = state.pendingJobs.filter(function (job) { return job.id !== jobId; });
+        saveState();
+        renderThread();
+        updateInputState();
+        if (!hasPendingJobs()) { stopPolling(); }
     }
 
     function setChatOpen(open) {
@@ -265,26 +321,122 @@
         chat.classList.toggle("open", state.open);
         chat.setAttribute("aria-hidden", state.open ? "false" : "true");
         saveState();
-        if (state.open && !isThinking) {
+        if (state.open && !hasPendingJobs()) {
             window.setTimeout(function () { questionInput.focus(); }, 50);
         }
     }
 
-    function setThinking(thinking) {
-        isThinking = Boolean(thinking);
-        questionInput.disabled = isThinking;
-        sendButton.disabled = isThinking;
-        status.textContent = isThinking ? messages.thinking : messages.idle;
+    function jobStatusUrl(jobId) {
+        return endpoint + "jobs/" + encodeURIComponent(jobId) + "/";
+    }
+
+    function jobCancelUrl(jobId) {
+        return endpoint + "jobs/" + encodeURIComponent(jobId) + "/cancel/";
+    }
+
+    function cancelJobInBackground(jobId) {
+        if (!endpoint || !isUuid(jobId)) { return; }
+        fetch(jobCancelUrl(jobId), {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfInput ? csrfInput.value : "",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            credentials: "same-origin",
+            keepalive: true
+        }).catch(function () {
+            // Clearing the visible chat must still work even if the request is interrupted.
+        });
     }
 
     function clearConversation() {
+        state.pendingJobs.forEach(function (job) { cancelJobInBackground(job.id); });
         state.messages = [];
+        state.pendingJobs = [];
         state.draft = "";
         questionInput.value = "";
         clearStoredState();
         renderThread();
+        updateInputState();
+        stopPolling();
         if (state.open) {
             window.setTimeout(function () { questionInput.focus(); }, 50);
+        }
+    }
+
+    function handleJobPayload(jobId, data) {
+        var jobStatus = data && typeof data.status === "string" ? data.status : "";
+        if (jobStatus === "queued" || jobStatus === "running") { return; }
+
+        if (jobStatus === "completed") {
+            if (!hasBotMessageForJob(jobId)) {
+                var answer = typeof data.answer === "string" && data.answer ? data.answer : messages.genericError;
+                var relatedArticles = data.show_related_articles ? data.related_articles : [];
+                appendMessage("bot", answer, relatedArticles, jobId);
+            }
+            removePendingJob(jobId);
+            return;
+        }
+
+        if (jobStatus === "failed" || jobStatus === "revoked") {
+            if (!hasBotMessageForJob(jobId)) {
+                appendMessage("bot", (typeof data.error === "string" && data.error) || messages.genericError, [], jobId);
+            }
+            removePendingJob(jobId);
+            return;
+        }
+
+        if (jobStatus === "cancelled" || jobStatus === "expired") {
+            removePendingJob(jobId);
+            return;
+        }
+
+        if (!hasBotMessageForJob(jobId)) {
+            appendMessage("bot", messages.genericError, [], jobId);
+        }
+        removePendingJob(jobId);
+    }
+
+    async function pollPendingJobs() {
+        if (pollInProgress || !hasPendingJobs() || !endpoint) { return; }
+        pollInProgress = true;
+        var jobs = state.pendingJobs.slice();
+
+        try {
+            await Promise.all(jobs.map(async function (job) {
+                try {
+                    var response = await fetch(jobStatusUrl(job.id), {
+                        method: "GET",
+                        headers: { "X-Requested-With": "XMLHttpRequest" },
+                        credentials: "same-origin"
+                    });
+                    var data = await response.json().catch(function () { return {}; });
+                    if (!response.ok && (!data || !data.status)) {
+                        data = { status: "expired" };
+                    }
+                    handleJobPayload(job.id, data || {});
+                } catch (error) {
+                    // Keep waiting after a transient network issue. The server job remains valid until TTL expiry.
+                }
+            }));
+        } finally {
+            pollInProgress = false;
+            if (!hasPendingJobs()) { stopPolling(); }
+        }
+    }
+
+    function startPolling() {
+        if (!hasPendingJobs() || !endpoint) { return; }
+        pollPendingJobs();
+        if (!pollTimer) {
+            pollTimer = window.setInterval(pollPendingJobs, pollIntervalMilliseconds);
+        }
+    }
+
+    function stopPolling() {
+        if (pollTimer) {
+            window.clearInterval(pollTimer);
+            pollTimer = null;
         }
     }
 
@@ -293,6 +445,8 @@
         questionInput.value = state.draft;
         renderThread();
         setChatOpen(state.open);
+        updateInputState();
+        startPolling();
     }
 
     toggle.addEventListener("click", function () { setChatOpen(!state.open); });
@@ -305,7 +459,7 @@
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
-        if (isThinking || !endpoint) { return; }
+        if (hasPendingJobs() || !endpoint) { return; }
 
         var question = questionInput.value.trim();
         if (!question) {
@@ -317,8 +471,7 @@
         state.draft = "";
         questionInput.value = "";
         saveState();
-        setThinking(true);
-        var typingRow = createTypingRow();
+
         var formData = new FormData(form);
         formData.set("question", question);
 
@@ -332,18 +485,16 @@
                 credentials: "same-origin",
                 body: formData
             });
-            var data = await response.json();
-            var answer = (data && typeof data.answer === "string" && data.answer) ||
-                (data && typeof data.error === "string" && data.error) || messages.genericError;
-            var relatedArticles = data && data.show_related_articles ? data.related_articles : [];
-            typingRow.remove();
-            appendMessage("bot", answer, relatedArticles);
+            var data = await response.json().catch(function () { return {}; });
+            if (response.ok && data && isUuid(data.job_id)) {
+                addPendingJob(data.job_id);
+                return;
+            }
+            appendMessage("bot", (data && typeof data.error === "string" && data.error) || messages.genericError, []);
         } catch (error) {
-            typingRow.remove();
             appendMessage("bot", messages.requestFailed, []);
         } finally {
-            setThinking(false);
-            if (state.open) { questionInput.focus(); }
+            if (state.open && !hasPendingJobs()) { questionInput.focus(); }
         }
     });
 

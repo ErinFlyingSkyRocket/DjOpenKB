@@ -127,7 +127,12 @@ services:
       OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS: "${OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS:-1800}"
       OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-90}"
       OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-2}"
-      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-120}"
+      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-180}"
+      OPENKB_AI_JOB_TTL_SECONDS: "${OPENKB_AI_JOB_TTL_SECONDS:-1800}"
+      OPENKB_AI_JOB_BUSY_RETRIES: "${OPENKB_AI_JOB_BUSY_RETRIES:-12}"
+      OPENKB_AI_POLL_INTERVAL_MILLISECONDS: "${OPENKB_AI_POLL_INTERVAL_MILLISECONDS:-2000}"
+      OPENKB_AI_CELERY_QUEUE: "${OPENKB_AI_CELERY_QUEUE:-openkb_ai}"
+      OPENKB_AI_CELERY_BROKER_URL: "${OPENKB_AI_CELERY_BROKER_URL:-redis://redis:6379/2}"
       GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
       GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-300}"
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
@@ -176,6 +181,68 @@ services:
       python manage.py repair_kb_schema --noinput &&
       python manage.py collectstatic --noinput &&
       gunicorn djopenkb.wsgi:application --bind 0.0.0.0:8000 --workers ${GUNICORN_WORKERS:-4} --timeout ${GUNICORN_TIMEOUT:-300}
+      "
+
+  ai-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Intentionally no container_name: Docker Compose can scale this worker
+    # safely later with `--scale ai-worker=N` when production demand grows.
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 2m
+    depends_on:
+      vault-init:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: djopenkb.settings
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,web,nginx}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/1}
+      DJANGO_ALLOW_LOCAL_CACHE_FALLBACK: "${DJANGO_ALLOW_LOCAL_CACHE_FALLBACK:-false}"
+      OPENKB_BASE_DIR: ${OPENKB_BASE_DIR:-OpenKB-main}
+      OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
+      OPENKB_INTERNAL_DATA_DIR: ${OPENKB_INTERNAL_DATA_DIR:-openkb-data-internal}
+      OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
+      OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-gemini/gemini-2.5-flash}
+      LITELLM_DROP_PARAMS: ${LITELLM_DROP_PARAMS:-true}
+      OPENKB_AI_MAX_PROMPT_CHARS: "${OPENKB_AI_MAX_PROMPT_CHARS:-1000}"
+      OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-90}"
+      OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-2}"
+      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-180}"
+      OPENKB_AI_JOB_TTL_SECONDS: "${OPENKB_AI_JOB_TTL_SECONDS:-1800}"
+      OPENKB_AI_JOB_BUSY_RETRIES: "${OPENKB_AI_JOB_BUSY_RETRIES:-12}"
+      OPENKB_AI_CELERY_QUEUE: "${OPENKB_AI_CELERY_QUEUE:-openkb_ai}"
+      OPENKB_AI_WORKER_CONCURRENCY: "${OPENKB_AI_WORKER_CONCURRENCY:-1}"
+      OPENKB_AI_CELERY_BROKER_URL: "${OPENKB_AI_CELERY_BROKER_URL:-redis://redis:6379/2}"
+      POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
+      POSTGRES_USER: ${POSTGRES_USER:-djopenkb}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      USE_SQLITE: ${USE_SQLITE:-false}
+      VAULT_ENABLED: "true"
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt
+      VAULT_KV_MOUNT: ${VAULT_KV_MOUNT:-secret}
+      VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      # The worker needs only the current OpenKB article stores and the least-
+      # privilege app token to retrieve provider/database secrets from Vault.
+      - ./openkb-data:/app/openkb-data
+      - ./openkb-data-internal:/app/openkb-data-internal
+      - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
+    command: >
+      sh -c "
+      celery -A djopenkb worker --loglevel=INFO
+      --queues $${OPENKB_AI_CELERY_QUEUE:-openkb_ai}
+      --concurrency $${OPENKB_AI_WORKER_CONCURRENCY:-1}
+      --hostname openkb-ai@%h
       "
 
   nginx:

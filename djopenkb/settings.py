@@ -197,7 +197,19 @@ OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = int_config("OPENKB_AI_RATE_LIMIT_WINDOW_SE
 OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = int_config("OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS", 1800, minimum=60, maximum=86400)
 OPENKB_AI_TIMEOUT_SECONDS = int_config("OPENKB_AI_TIMEOUT_SECONDS", 90, minimum=10, maximum=300)
 OPENKB_AI_CONCURRENCY_LIMIT = int_config("OPENKB_AI_CONCURRENCY_LIMIT", 2, minimum=1, maximum=20)
-OPENKB_AI_CONCURRENCY_LOCK_SECONDS = int_config("OPENKB_AI_CONCURRENCY_LOCK_SECONDS", OPENKB_AI_TIMEOUT_SECONDS + 30, minimum=30, maximum=600)
+# This Redis slot protects both on-disk OpenKB synchronisation and the provider
+# query. Keep it safely beyond the worker hard time limit so a long-running task
+# cannot briefly overlap another query after its slot expires.
+OPENKB_AI_CONCURRENCY_LOCK_SECONDS = max(
+    int_config("OPENKB_AI_CONCURRENCY_LOCK_SECONDS", OPENKB_AI_TIMEOUT_SECONDS + 90, minimum=30, maximum=600),
+    OPENKB_AI_TIMEOUT_SECONDS + 90,
+)
+# Short-lived background job settings. Prompt/result text is encrypted in the
+# Redis-backed cache and expires automatically; nothing is written to the DB.
+OPENKB_AI_JOB_TTL_SECONDS = int_config("OPENKB_AI_JOB_TTL_SECONDS", 1800, minimum=300, maximum=86400)
+OPENKB_AI_JOB_BUSY_RETRIES = int_config("OPENKB_AI_JOB_BUSY_RETRIES", 12, minimum=0, maximum=100)
+OPENKB_AI_POLL_INTERVAL_MILLISECONDS = int_config("OPENKB_AI_POLL_INTERVAL_MILLISECONDS", 2000, minimum=500, maximum=10000)
+OPENKB_AI_CELERY_QUEUE = config_value("OPENKB_AI_CELERY_QUEUE", "openkb_ai").strip() or "openkb_ai"
 
 # Progressive lockout for password/MFA failures.
 # Primary production policy is editable in Django Admin > Site settings.
@@ -327,6 +339,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "kb.context_processors.safe_back",
+                "kb.context_processors.openkb_ai_settings",
             ],
         },
     },
@@ -367,6 +380,32 @@ else:
         "Set REDIS_URL=redis://redis:6379/1, or set "
         "DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=true only as a temporary emergency fallback."
     )
+
+# ---------------------------------------------------------------------
+# Background OpenKB AI jobs (Celery + dedicated Redis broker database)
+# ---------------------------------------------------------------------
+# The browser receives an opaque job ID immediately, while a separate Celery
+# worker invokes OpenKB. Keep the broker isolated from Django's cache DB when
+# possible; Docker Compose defaults this to Redis DB 2.
+OPENKB_AI_CELERY_BROKER_URL = config_value("OPENKB_AI_CELERY_BROKER_URL", REDIS_URL).strip()
+if not OPENKB_AI_CELERY_BROKER_URL and not (DEBUG or DJANGO_ALLOW_LOCAL_CACHE_FALLBACK):
+    raise ImproperlyConfigured("OPENKB_AI_CELERY_BROKER_URL is required for production background OpenKB AI jobs.")
+
+CELERY_BROKER_URL = OPENKB_AI_CELERY_BROKER_URL
+CELERY_TASK_DEFAULT_QUEUE = OPENKB_AI_CELERY_QUEUE
+CELERY_TASK_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_WORKER_ENABLE_REMOTE_CONTROL = False
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    "visibility_timeout": max(3600, OPENKB_AI_JOB_TTL_SECONDS + OPENKB_AI_TIMEOUT_SECONDS + 60),
+}
+CELERY_TASK_SOFT_TIME_LIMIT = max(90, OPENKB_AI_TIMEOUT_SECONDS + 30)
+CELERY_TASK_TIME_LIMIT = max(120, OPENKB_AI_TIMEOUT_SECONDS + 60)
 
 LOGGING = {
     "version": 1,

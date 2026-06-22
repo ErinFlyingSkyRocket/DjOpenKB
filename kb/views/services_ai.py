@@ -101,64 +101,71 @@ def release_openkb_ai_slot(lock):
 
 
 def run_openkb_query(question, *, include_internal=False):
-    """Call the local bundled OpenKB CLI against the correct scoped OpenKB data."""
-    if include_internal:
-        query_data_dir = sync_internal_openkb_ai_index()
-    else:
-        init_openkb_storage()
-        ensure_openkb_ai_synced()
-        query_data_dir = settings.OPENKB_DATA_DIR
+    """Call the bundled OpenKB CLI against the correct scoped data directory.
 
-    ensure_openkb_config_model(query_data_dir)
-    scrub_openkb_runtime_log_files(query_data_dir)
-
+    The global Redis slot is acquired before synchronising/indexing the on-disk
+    OpenKB data. This prevents parallel worker processes from rebuilding the
+    same index at the same time and makes the concurrency limit cover the full
+    expensive operation, not only the final CLI subprocess.
+    """
     lock = acquire_openkb_ai_slot()
-    env = os.environ.copy()
-
-    ai_api_key = getattr(settings, "AI_API_KEY", "")
-    if ai_api_key:
-        # Development/simple-deployment fallback. Provider-specific keys below
-        # take precedence when configured in Vault/env for production.
-        env["AI_API_KEY"] = ai_api_key
-        env["LLM_API_KEY"] = ai_api_key
-        env.setdefault("GEMINI_API_KEY", ai_api_key)
-        env.setdefault("OPENAI_API_KEY", ai_api_key)
-        env.setdefault("ANTHROPIC_API_KEY", ai_api_key)
-
-    provider_keys = {
-        "OPENAI_API_KEY": getattr(settings, "OPENAI_API_KEY", ""),
-        "GEMINI_API_KEY": getattr(settings, "GEMINI_API_KEY", ""),
-        "ANTHROPIC_API_KEY": getattr(settings, "ANTHROPIC_API_KEY", ""),
-    }
-    for name, value in provider_keys.items():
-        if value:
-            env[name] = value
-
-    env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
-    env["OPENKB_AI_MODEL"] = get_openkb_ai_model()
-    env["LITELLM_DROP_PARAMS"] = "true"
-    env["DROP_PARAMS"] = "true"
-    env["OPENKB_DIR"] = str(query_data_dir)
-    env["PYTHONPATH"] = (
-        str(settings.OPENKB_BASE_DIR)
-        + os.pathsep
-        + env.get("PYTHONPATH", "")
-    )
-
-    command = (
-        "import sys; "
-        "import litellm; "
-        "litellm.drop_params = True; "
-        f"sys.path.insert(0, {str(settings.OPENKB_BASE_DIR)!r}); "
-        "from openkb.cli import cli; "
-        "cli.main("
-        "args=['--kb-dir', sys.argv[2], 'query', sys.argv[1]], "
-        "prog_name='openkb', "
-        "standalone_mode=False"
-        ")"
-    )
-
+    query_data_dir = None
     try:
+        if include_internal:
+            query_data_dir = sync_internal_openkb_ai_index()
+        else:
+            init_openkb_storage()
+            ensure_openkb_ai_synced()
+            query_data_dir = settings.OPENKB_DATA_DIR
+
+        ensure_openkb_config_model(query_data_dir)
+        scrub_openkb_runtime_log_files(query_data_dir)
+
+        env = os.environ.copy()
+
+        ai_api_key = getattr(settings, "AI_API_KEY", "")
+        if ai_api_key:
+            # Development/simple-deployment fallback. Provider-specific keys below
+            # take precedence when configured in Vault/env for production.
+            env["AI_API_KEY"] = ai_api_key
+            env["LLM_API_KEY"] = ai_api_key
+            env.setdefault("GEMINI_API_KEY", ai_api_key)
+            env.setdefault("OPENAI_API_KEY", ai_api_key)
+            env.setdefault("ANTHROPIC_API_KEY", ai_api_key)
+
+        provider_keys = {
+            "OPENAI_API_KEY": getattr(settings, "OPENAI_API_KEY", ""),
+            "GEMINI_API_KEY": getattr(settings, "GEMINI_API_KEY", ""),
+            "ANTHROPIC_API_KEY": getattr(settings, "ANTHROPIC_API_KEY", ""),
+        }
+        for name, value in provider_keys.items():
+            if value:
+                env[name] = value
+
+        env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
+        env["OPENKB_AI_MODEL"] = get_openkb_ai_model()
+        env["LITELLM_DROP_PARAMS"] = "true"
+        env["DROP_PARAMS"] = "true"
+        env["OPENKB_DIR"] = str(query_data_dir)
+        env["PYTHONPATH"] = (
+            str(settings.OPENKB_BASE_DIR)
+            + os.pathsep
+            + env.get("PYTHONPATH", "")
+        )
+
+        command = (
+            "import sys; "
+            "import litellm; "
+            "litellm.drop_params = True; "
+            f"sys.path.insert(0, {str(settings.OPENKB_BASE_DIR)!r}); "
+            "from openkb.cli import cli; "
+            "cli.main("
+            "args=['--kb-dir', sys.argv[2], 'query', sys.argv[1]], "
+            "prog_name='openkb', "
+            "standalone_mode=False"
+            ")"
+        )
+
         result = subprocess.run(
             [sys.executable, "-c", command, question, str(query_data_dir)],
             cwd=str(settings.BASE_DIR),
@@ -176,7 +183,8 @@ def run_openkb_query(question, *, include_internal=False):
         release_openkb_ai_slot(lock)
         # OpenKB may append the current query to wiki/log.md after execution.
         # Remove it again so the next user query cannot read internal log data.
-        scrub_openkb_runtime_log_files(query_data_dir)
+        if query_data_dir:
+            scrub_openkb_runtime_log_files(query_data_dir)
 
 
 OPENKB_AI_SMALL_TALK_PATTERNS = [

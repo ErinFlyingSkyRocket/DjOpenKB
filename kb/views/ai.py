@@ -1,5 +1,27 @@
-from .services import *
+"""HTTP endpoints for the persistent Ask OpenKB AI widget."""
+
+from django.conf import settings
+from django.http import JsonResponse
+from django.utils import translation
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
+
+from ..models import ActivityLog
+from ..permissions import user_can_view_internal_articles
+from .ai_jobs import (
+    cancel_openkb_ai_job as cancel_openkb_ai_job_record,
+    enqueue_openkb_ai_job,
+    get_openkb_ai_job_response,
+)
+from .services import (
+    article_view_required,
+    check_openkb_ai_rate_limit,
+    get_client_ip,
+    get_openkb_ai_rate_identifier,
+    log_activity,
+    logger,
+    redact_openkb_debug_text,
+)
 
 
 def _openkb_ai_user_context(request):
@@ -10,35 +32,14 @@ def _openkb_ai_user_context(request):
     }
 
 
-def _article_recommendation_response(question, related_articles=None, status=200, user=None):
-    """Return a fallback chat response based on local published articles only."""
-    if related_articles is None:
-        related_articles = find_related_openkb_articles(question, limit=3, user=user)
-
-    return JsonResponse(
-        {
-            "answer": build_openkb_article_recommendation_answer(question, related_articles),
-            "related_articles": related_articles,
-            "show_related_articles": bool(related_articles),
-        },
-        status=status,
-    )
-
-
 @article_view_required
 @require_POST
 def ask_openkb_ai(request):
-    """Answer questions through OpenKB/Gemini first, then attach relevant articles.
+    """Queue an OpenKB AI question and return immediately with an opaque job ID.
 
-    The chatbox should behave like an AI assistant first. Prompts such as
-    "articles about X" no longer short-circuit into a hardcoded local-only
-    article search. The AI answer is returned whenever the provider is
-    available, and relevant published article suggestions are attached below it
-    when matching articles exist.
+    Long OpenKB/Gemini work runs in the dedicated Celery worker, so this request
+    remains short and navigating away no longer cancels the query.
     """
-    if request.method != "POST":
-        return JsonResponse({"error": _("POST request required")}, status=405)
-
     allowed, retry_after = check_openkb_ai_rate_limit(request)
     if not allowed:
         log_activity(
@@ -53,40 +54,34 @@ def ask_openkb_ai(request):
             {
                 "error": _("Too many OpenKB AI questions. Please wait before trying again."),
                 "retry_after_seconds": retry_after,
-                "related_articles": [],
-                "show_related_articles": False,
             },
             status=429,
         )
 
     question = request.POST.get("question", "").strip()
-
     if not question:
-        return JsonResponse(
-            {
-                "error": _("Please type a question first."),
-                "related_articles": [],
-                "show_related_articles": False,
-            },
-            status=400,
-        )
+        return JsonResponse({"error": _("Please type a question first.")}, status=400)
 
     max_prompt_chars = settings.OPENKB_AI_MAX_PROMPT_CHARS
     if len(question) > max_prompt_chars:
         ctx = _openkb_ai_user_context(request)
         logger.info(
             "OpenKB AI prompt rejected because it is too long: identifier=%s ip=%s user_id=%s length=%s max_length=%s",
-            ctx["identifier"], ctx["ip"], ctx["user_id"], len(question), max_prompt_chars,
+            ctx["identifier"],
+            ctx["ip"],
+            ctx["user_id"],
+            len(question),
+            max_prompt_chars,
         )
         return JsonResponse(
             {
-                "error": _("Question is too long. Please keep it under %(count)d characters.") % {"count": max_prompt_chars},
-                "related_articles": [],
-                "show_related_articles": False,
+                "error": _("Question is too long. Please keep it under %(count)d characters.")
+                % {"count": max_prompt_chars},
             },
             status=400,
         )
 
+    include_internal = user_can_view_internal_articles(request.user)
     log_activity(
         request,
         ActivityLog.EventType.AI_QUESTION,
@@ -95,141 +90,55 @@ def ask_openkb_ai(request):
             "question_preview": redact_openkb_debug_text(question, max_chars=200),
             "identifier": get_openkb_ai_rate_identifier(request),
             "authenticated": request.user.is_authenticated,
-            "ai_scope": "internal_plus_public" if user_can_view_internal_articles(request.user) else "public",
+            "ai_scope": "internal_plus_public" if include_internal else "public",
+            "execution": "background_job",
         },
     )
 
-    if not settings.OPENKB_DATA_DIR.exists():
-        return JsonResponse({
-            "error": _("OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."),
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
-
-    # Keep greetings/status checks local so the OpenKB CLI does not answer from
-    # internal runtime logs or previous operation records.
-    if is_openkb_small_talk_request(question):
-        return JsonResponse({
-            "answer": build_openkb_small_talk_answer(question),
-            "related_articles": [],
-            "show_related_articles": False,
-        })
-
     try:
-        include_internal = user_can_view_internal_articles(request.user)
-        raw_answer = run_openkb_query(question, include_internal=include_internal)
-        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
-
-        if openkb_ai_output_indicates_error(raw_answer):
-            ctx = _openkb_ai_user_context(request)
-            logger.warning(
-                "OpenKB AI returned provider error output: identifier=%s ip=%s user_id=%s question_length=%s output_length=%s raw_output=%r",
-                ctx["identifier"],
-                ctx["ip"],
-                ctx["user_id"],
-                len(question),
-                len(raw_answer or ""),
-                redact_openkb_debug_text(raw_answer),
-            )
-            if related_articles:
-                return _article_recommendation_response(question, related_articles=related_articles)
-            return JsonResponse({
-                "error": clean_openkb_ai_error_message(raw_answer),
-                "related_articles": [],
-                "show_related_articles": False,
-            }, status=503)
-
-        answer = clean_openkb_ai_answer(raw_answer)
-
-        if answer_indicates_no_openkb_match(answer):
-            answer = _("The knowledge base does not contain matching information about that topic.")
-            related_articles = []
-        else:
-            # Re-run article suggestions with the cleaned AI answer as extra
-            # context. OpenKB can answer from article body content even when the
-            # user's words do not match the article title/keywords, so this makes
-            # the clickable article links much more reliable while still using
-            # permission-filtered Django articles only.
-            related_articles = find_related_openkb_articles(
-                question,
-                limit=3,
-                user=request.user,
-                answer=answer,
-            )
-
-        if not answer:
-            answer = _(
-                "OpenKB AI could not produce a clear answer for that question. "
-                "Please try rephrasing it or contact IT support if the issue persists."
-            )
-
-        show_related_articles = should_show_openkb_related_articles(
-            question,
-            answer,
-            related_articles=related_articles,
+        payload = enqueue_openkb_ai_job(
+            user=request.user,
+            question=question,
+            include_internal=include_internal,
+            language_code=translation.get_language(),
         )
-
-        return JsonResponse({
-            "answer": answer,
-            "related_articles": related_articles if show_related_articles else [],
-            "show_related_articles": show_related_articles,
-        })
-
-    except FileNotFoundError:
-        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles)
-        return JsonResponse({
-            "error": _("OpenKB CLI not found. Contact an administrator because the OpenKB service is unavailable."),
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
-
-    except OpenKBAIOverloaded:
-        ctx = _openkb_ai_user_context(request)
-        logger.warning(
-            "OpenKB AI concurrency limit reached: identifier=%s ip=%s user_id=%s question_length=%s",
-            ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
-        )
-        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles, status=503)
-        return JsonResponse({
-            "error": _("OpenKB AI is currently handling other questions. Please try again shortly."),
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=503)
-
-    except subprocess.TimeoutExpired:
-        ctx = _openkb_ai_user_context(request)
-        logger.warning(
-            "OpenKB AI query timed out: identifier=%s ip=%s user_id=%s question_length=%s",
-            ctx["identifier"], ctx["ip"], ctx["user_id"], len(question),
-        )
-        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles)
-        return JsonResponse({
-            "error": _("OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."),
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
-
     except Exception as error:
         ctx = _openkb_ai_user_context(request)
         logger.exception(
-            "OpenKB AI query failed: identifier=%s ip=%s user_id=%s question_length=%s error=%r",
+            "OpenKB AI background job could not be queued: identifier=%s ip=%s user_id=%s question_length=%s error=%r",
             ctx["identifier"],
             ctx["ip"],
             ctx["user_id"],
             len(question),
             redact_openkb_debug_text(error),
         )
-        related_articles = find_related_openkb_articles(question, limit=3, user=request.user)
-        if related_articles:
-            return _article_recommendation_response(question, related_articles=related_articles)
-        return JsonResponse({
-            "error": clean_openkb_ai_error_message(error),
-            "related_articles": [],
-            "show_related_articles": False,
-        }, status=500)
+        return JsonResponse(
+            {
+                "error": _(
+                    "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+                ),
+            },
+            status=503,
+        )
+
+    return JsonResponse(payload, status=202)
+
+
+@article_view_required
+def openkb_ai_job_status(request, job_id):
+    """Return a job status/result only to its owner after re-checking scope."""
+    payload = get_openkb_ai_job_response(job_id, request.user)
+    if payload is None:
+        # Do not reveal whether an opaque job ID belongs to another account.
+        return JsonResponse({"status": "expired"}, status=404)
+    return JsonResponse(payload)
+
+
+@article_view_required
+@require_POST
+def cancel_openkb_ai_job(request, job_id):
+    """Discard a queued/running result when the user clears the browser chat."""
+    if not cancel_openkb_ai_job_record(job_id, request.user):
+        return JsonResponse({"status": "expired"}, status=404)
+    return JsonResponse({"status": "cancelled"})
+

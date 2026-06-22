@@ -1,5 +1,6 @@
 from urllib.parse import urlsplit
 
+from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
@@ -71,4 +72,13 @@ def safe_back(request):
     return {
         "safe_back_url": safe_back_url,
         "show_global_back_button": show_global_back_button,
+    }
+
+
+def openkb_ai_settings(request):
+    """Expose safe client-side timing settings for the persistent AI widget."""
+    return {
+        "OPENKB_AI_POLL_INTERVAL_MILLISECONDS": int(
+            getattr(settings, "OPENKB_AI_POLL_INTERVAL_MILLISECONDS", 2000)
+        ),
     }
