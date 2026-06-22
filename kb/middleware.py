@@ -553,29 +553,33 @@ class ForceLoginAndAdminGuardMiddleware:
 
         user = getattr(request, "user", None)
         if user and user.is_authenticated:
-            if self._is_admin_path(path):
+            # Keep sensitive superuser maintenance routes outside /admin/ under
+            # the same CIDR and fresh-MFA boundary as Django Admin itself.
+            # This stays intentionally narrower than /profile/admin/ because
+            # article-manager review pages have their own role model.
+            try:
+                from .admin_security import admin_mfa_is_verified, is_admin_step_up_path
+
+                requires_admin_step_up = is_admin_step_up_path(path)
+                admin_mfa_path = reverse("admin_mfa_verify")
+            except NoReverseMatch:
+                requires_admin_step_up = self._is_admin_path(path)
+                admin_mfa_path = None
+
+            if requires_admin_step_up:
                 if not getattr(user, "is_superuser", False):
                     raise Http404()
                 if not _admin_cidr_allowed(request):
                     raise Http404()
 
-                # Defence-in-depth: /admin/ must not be reachable unless the
-                # separate admin MFA step-up session is already valid. The
-                # dedicated admin MFA verification URL is exempted so admins can
-                # actually complete the challenge. This check backs up
-                # AdminMFASessionMiddleware and prevents accidental bypass if
-                # middleware order changes later.
-                try:
-                    admin_mfa_path = reverse("admin_mfa_verify")
-                    if path != admin_mfa_path and not path.startswith(admin_mfa_path + "/"):
-                        from .admin_security import admin_mfa_is_verified
+                # Defence-in-depth: every protected route must have a valid
+                # short-lived admin MFA grant. The verify URL itself is exempt
+                # so the user can complete the challenge.
+                if admin_mfa_path and path != admin_mfa_path and not path.startswith(admin_mfa_path + "/"):
+                    if not admin_mfa_is_verified(request, user):
+                        from urllib.parse import urlencode
 
-                        if not admin_mfa_is_verified(request, user):
-                            from urllib.parse import urlencode
-
-                            return redirect(f"{admin_mfa_path}?{urlencode({'next': request.get_full_path()})}")
-                except NoReverseMatch:
-                    pass
+                        return redirect(f"{admin_mfa_path}?{urlencode({'next': request.get_full_path()})}")
             return self.get_response(request)
 
         # Anonymous users should not be able to enumerate application URLs.

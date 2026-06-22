@@ -83,7 +83,7 @@ services:
       VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
-      - ./vault/keys:/run/vault-keys:ro
+      - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
       - ./ldap-certs:/etc/ssl/certs/djopenkb-ldap:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-djopenkb} -d ${POSTGRES_DB:-djopenkb}"]
@@ -161,9 +161,12 @@ services:
       - "${LDAP_EXTRA_HOSTNAME:-WIN-VVCA4BIOSK7.openkb.local}:${LDAP_DC_IP:-192.168.81.128}"
       - "${LDAP_EXTRA_SHORT_HOSTNAME:-WIN-VVCA4BIOSK7}:${LDAP_DC_IP:-192.168.81.128}"
     volumes:
-      - .:/app
+      # Production image contains application code. Mount only persistent article
+      # data, generated static files, and the one Vault token this service uses.
+      - ./openkb-data:/app/openkb-data
+      - ./openkb-data-internal:/app/openkb-data-internal
       - static_volume:/app/staticfiles
-      - ./vault/keys:/run/vault-keys:ro
+      - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
       - ./ldap-certs:/etc/ssl/certs/djopenkb-ldap:ro
     expose:
       - "8000"
@@ -246,8 +249,11 @@ services:
       - "${LDAP_EXTRA_HOSTNAME:-WIN-VVCA4BIOSK7.openkb.local}:${LDAP_DC_IP:-192.168.81.128}"
       - "${LDAP_EXTRA_SHORT_HOSTNAME:-WIN-VVCA4BIOSK7}:${LDAP_DC_IP:-192.168.81.128}"
     volumes:
-      - .:/app
-      - ./vault/keys:/run/vault-keys:ro
+      # Keep scheduler access limited to the persistent article stores and its
+      # application-scoped Vault token; it must not see Vault root/unseal keys.
+      - ./openkb-data:/app/openkb-data
+      - ./openkb-data-internal:/app/openkb-data-internal
+      - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
       - ./ldap-certs:/etc/ssl/certs/djopenkb-ldap:ro
     command: >
       sh -c "

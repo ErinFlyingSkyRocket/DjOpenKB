@@ -36,6 +36,34 @@ ADMIN_MFA_VERIFIED_AT_KEY = "knowledge_repo_admin_mfa_verified_at"
 ADMIN_MFA_LAST_ACTIVITY_AT_KEY = "knowledge_repo_admin_mfa_last_activity_at"
 ADMIN_MFA_FORCE_PARAM = "fresh"
 
+# These routes are superuser-only maintenance operations outside Django's
+# /admin/ URL space. Keep this list explicit: article-manager review pages
+# intentionally remain outside the admin step-up gate.
+ADMIN_STEP_UP_ROUTE_NAMES = (
+    "clean_stray_upload_files",
+    "clean_stray_images",
+    "admin_bulk_articles",
+    "export_articles_zip",
+    "import_articles_zip",
+    "manage_orphan_articles",
+    "manage_article_deletion_queue",
+)
+
+
+def is_admin_step_up_path(path: str) -> bool:
+    """Return whether a path needs the short-lived administrator MFA grant."""
+    if path == "/admin" or path.startswith("/admin/"):
+        return True
+
+    for route_name in ADMIN_STEP_UP_ROUTE_NAMES:
+        try:
+            if path == reverse(route_name):
+                return True
+        except NoReverseMatch:
+            # URL configuration can be incomplete during early startup checks.
+            continue
+    return False
+
 
 def _now_ts() -> int:
     return int(timezone.now().timestamp())
@@ -309,7 +337,7 @@ class AdminMFASessionMiddleware:
             return None
 
     def _is_admin_path(self, path: str) -> bool:
-        return path == "/admin" or path.startswith("/admin/")
+        return is_admin_step_up_path(path)
 
     def _is_static_or_safe_asset(self, path: str) -> bool:
         if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
@@ -320,11 +348,11 @@ class AdminMFASessionMiddleware:
         return path in {"/favicon.ico", "/robots.txt"}
 
     def _clear_admin_mfa_when_leaving_admin(self, request, path: str) -> None:
-        # The admin step-up token is only valid while staying inside /admin/.
-        # When an admin clicks "View site" or otherwise moves back to the
-        # Knowledge Repository, clear the token so entering /admin/ again
-        # requires a fresh MFA code. Ignore static/media assets because Django
-        # Admin loads those while the user is still in the admin area.
+        # The admin step-up token is valid only while the user stays in Django
+        # Admin or one of the explicit superuser maintenance routes above. When
+        # the user returns to the normal Knowledge Repository, clear it so a
+        # later sensitive action requires a fresh MFA code. Ignore static/media
+        # assets because Django Admin loads those while the user stays in scope.
         if self._is_static_or_safe_asset(path):
             return
         if request.session.get(ADMIN_MFA_VERIFIED_KEY):

@@ -458,9 +458,30 @@ except (TypeError, ValueError):
 FIELD_ENCRYPTION_KEY = secret_value("DJANGO_FIELD_ENCRYPTION_KEY", SECRET_KEY)
 
 LDAP_ENABLED = config_value("LDAP_ENABLED", "false").lower() == "true"
+# Placeholder LDAP exists only for local development while an AD server is unavailable.
+# It must never silently fall back to a known shared password.
 LDAP_PLACEHOLDER_ENABLED = config_value("LDAP_PLACEHOLDER_ENABLED", "false").lower() == "true"
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS = config_value("LDAP_PLACEHOLDER_AUTO_CREATE_USERS", "false").lower() == "true"
-LDAP_PLACEHOLDER_PASSWORD = secret_value("LDAP_PLACEHOLDER_PASSWORD", "ChangeThisPlaceholderPassword123!")
+LDAP_PLACEHOLDER_PASSWORD = secret_value("LDAP_PLACEHOLDER_PASSWORD", "").strip()
+
+if LDAP_PLACEHOLDER_ENABLED:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "LDAP_PLACEHOLDER_ENABLED may only be enabled when DJANGO_DEBUG=true. "
+            "Use real LDAP/AD authentication for deployed environments."
+        )
+    if not LDAP_PLACEHOLDER_PASSWORD:
+        raise ImproperlyConfigured(
+            "LDAP_PLACEHOLDER_ENABLED=true requires a non-empty LDAP_PLACEHOLDER_PASSWORD."
+        )
+    if LDAP_PLACEHOLDER_AUTO_CREATE_USERS and not DEBUG:
+        raise ImproperlyConfigured(
+            "LDAP_PLACEHOLDER_AUTO_CREATE_USERS may only be enabled when DJANGO_DEBUG=true."
+        )
+elif LDAP_PLACEHOLDER_AUTO_CREATE_USERS:
+    raise ImproperlyConfigured(
+        "LDAP_PLACEHOLDER_AUTO_CREATE_USERS=true requires LDAP_PLACEHOLDER_ENABLED=true."
+    )
 
 # These are used by kb.backends.NextLabsLDAPBackend to normalize AD usernames.
 # Example lab values:
