@@ -509,7 +509,7 @@ def change_password(request):
     user = request.user
 
     if is_ldap_managed_user(user) or not user.has_usable_password():
-        messages.error(request, "Password syncs with your company password. Please change it through the company password system.")
+        messages.error(request, _("Password syncs with your company password. Please change it through the company password system."))
         return redirect("profile")
 
     old_password = request.POST.get("old_password", "")
@@ -517,11 +517,11 @@ def change_password(request):
     new_password2 = request.POST.get("new_password2", "")
 
     if not user.check_password(old_password):
-        messages.error(request, "Old password is incorrect.")
+        messages.error(request, _("Old password is incorrect."))
         return redirect("profile")
 
     if new_password1 != new_password2:
-        messages.error(request, "New password and confirm password do not match.")
+        messages.error(request, _("New password and confirm password do not match."))
         return redirect("profile")
 
     policy_issues = validate_profile_password_policy(new_password1, user)
@@ -549,5 +549,5 @@ def change_password(request):
             "mfa_confirmed": True,
         },
     )
-    messages.success(request, "Password changed successfully.")
+    messages.success(request, _("Password changed successfully."))
     return redirect("profile")

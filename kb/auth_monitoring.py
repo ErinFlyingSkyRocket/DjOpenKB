@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db.models import Q
+from django.utils.translation import ngettext
 
 from .models import AuthActivityLog, SiteSetting
 
@@ -349,6 +350,10 @@ def record_auth_success(request=None, username="", user=None, purpose="password"
     return identifier
 
 
+def _format_retry_after_unit(value, singular, plural):
+    return ngettext(singular, plural, value) % {"count": value}
+
+
 def format_retry_after(seconds):
     try:
         seconds = max(1, int(seconds))
@@ -356,18 +361,18 @@ def format_retry_after(seconds):
         seconds = 60
 
     if seconds < 60:
-        return f"{seconds} second{'s' if seconds != 1 else ''}"
+        return _format_retry_after_unit(seconds, "%(count)s second", "%(count)s seconds")
 
     minutes = (seconds + 59) // 60
     if minutes < 60:
-        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+        return _format_retry_after_unit(minutes, "%(count)s minute", "%(count)s minutes")
 
     hours = (minutes + 59) // 60
     if hours < 24:
-        return f"{hours} hour{'s' if hours != 1 else ''}"
+        return _format_retry_after_unit(hours, "%(count)s hour", "%(count)s hours")
 
     days = (hours + 23) // 24
-    return f"{days} day{'s' if days != 1 else ''}"
+    return _format_retry_after_unit(days, "%(count)s day", "%(count)s days")
 
 
 def log_auth_event(request=None, event_type="", success=False, user=None, username="", login_mode="", details=None):

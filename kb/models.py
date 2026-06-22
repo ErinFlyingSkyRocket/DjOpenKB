@@ -187,8 +187,8 @@ class UserMFADevice(models.Model):
         verbose_name_plural = _("User MFA devices")
 
     def __str__(self):
-        status = "confirmed" if self.confirmed else "setup pending"
-        return f"{self.user.username} MFA ({status})"
+        status = _("confirmed") if self.confirmed else _("setup pending")
+        return _("%(username)s MFA (%(status)s)") % {"username": self.user.username, "status": status}
 
     def get_secret(self):
         return decrypt_value(self.secret)
@@ -352,47 +352,47 @@ class SuggestedArticle(models.Model):
         blank=True,
         related_name="approved_articles",
         verbose_name=_("Approved by"),
-        help_text="Admin user who approved this article for public display.",
+        help_text=_("Admin user who approved this article for public display."),
     )
     approved_at = models.DateTimeField(
         verbose_name=_("Approved at"),
         null=True,
         blank=True,
-        help_text="Date and time when this article was approved for public display.",
+        help_text=_("Date and time when this article was approved for public display."),
     )
     review_notes = models.TextField(
         blank=True,
         verbose_name=_("Current pending failed comments"),
-        help_text="Current admin feedback shown to the article owner while the article is in Draft or Pending failed status.",
+        help_text=_("Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."),
     )
     review_notes_history = models.JSONField(
         default=list,
         blank=True,
         verbose_name=_("Pending failed comments history"),
-        help_text="Historical review feedback entries from previous rejection/resubmission rounds.",
+        help_text=_("Historical review feedback entries from previous rejection/resubmission rounds."),
     )
     pending_update_title = models.CharField(
         max_length=200,
         blank=True,
         verbose_name=_("Pending update title"),
-        help_text="Edited title waiting for admin approval. The published title remains unchanged until approval.",
+        help_text=_("Edited title waiting for admin approval. The published title remains unchanged until approval."),
     )
     pending_update_body = models.TextField(
         blank=True,
         verbose_name=_("Pending update body"),
-        help_text="Edited Markdown body waiting for admin approval. The published body remains unchanged until approval.",
+        help_text=_("Edited Markdown body waiting for admin approval. The published body remains unchanged until approval."),
     )
     pending_update_keywords = models.CharField(
         max_length=500,
         blank=True,
         verbose_name=_("Pending update keywords"),
-        help_text="Edited keywords waiting for admin approval.",
+        help_text=_("Edited keywords waiting for admin approval."),
     )
     pending_update_image_assets = models.JSONField(
         default=list,
         blank=True,
         verbose_name=_("Pending update image assets"),
-        help_text="Images referenced by the pending update draft.",
+        help_text=_("Images referenced by the pending update draft."),
     )
     update_status = models.CharField(
         max_length=20,
@@ -413,7 +413,7 @@ class SuggestedArticle(models.Model):
     )
     view_count = models.PositiveIntegerField(
         default=0,
-        help_text="Number of unique session views for this article.",
+        help_text=_("Number of unique session views for this article."),
     )
     filename = models.CharField(max_length=255, unique=True, blank=True)
     raw_path = models.CharField(max_length=500, blank=True)
@@ -619,7 +619,7 @@ class SuggestedArticle(models.Model):
         if profile:
             self.author_account_type_snapshot = profile.get_account_type_display()
         elif self.owner.is_superuser or self.owner.is_staff:
-            self.author_account_type_snapshot = "Admin"
+            self.author_account_type_snapshot = str(_("Admin"))
         else:
             self.author_account_type_snapshot = ""
 
@@ -667,7 +667,7 @@ class SuggestedArticle(models.Model):
                 return profile.get_account_type_display()
 
             if self.owner.is_superuser or self.owner.is_staff:
-                return "Admin"
+                return str(_("Admin"))
 
         return self.author_account_type_snapshot or ""
 
@@ -791,7 +791,7 @@ class ArticleVote(models.Model):
         verbose_name_plural = _("Article votes")
 
     def __str__(self):
-        label = "Helpful" if self.value == self.VoteValue.UP else "Not helpful"
+        label = _("Helpful") if self.value == self.VoteValue.UP else _("Not helpful")
         return f"{self.article.title} - {self.user} - {label}"
 
 
@@ -860,7 +860,7 @@ class ArticleImageUploadLog(models.Model):
 
     def __str__(self):
         uploader = self.uploader_username_snapshot or str(_("unknown user"))
-        return f"{self.filename} uploaded by {uploader}"
+        return _("%(filename)s uploaded by %(uploader)s") % {"filename": self.filename, "uploader": uploader}
 
     @property
     def uploader_display(self):

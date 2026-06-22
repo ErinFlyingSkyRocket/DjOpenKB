@@ -1,4 +1,5 @@
 from .services import *
+from django.utils.translation import gettext as _
 
 
 def _openkb_ai_user_context(request):
@@ -36,7 +37,7 @@ def ask_openkb_ai(request):
     when matching articles exist.
     """
     if request.method != "POST":
-        return JsonResponse({"error": "POST request required"}, status=405)
+        return JsonResponse({"error": _("POST request required")}, status=405)
 
     allowed, retry_after = check_openkb_ai_rate_limit(request)
     if not allowed:
@@ -50,7 +51,7 @@ def ask_openkb_ai(request):
         )
         return JsonResponse(
             {
-                "error": "Too many OpenKB AI questions. Please wait before trying again.",
+                "error": _("Too many OpenKB AI questions. Please wait before trying again."),
                 "retry_after_seconds": retry_after,
                 "related_articles": [],
                 "show_related_articles": False,
@@ -63,7 +64,7 @@ def ask_openkb_ai(request):
     if not question:
         return JsonResponse(
             {
-                "error": "Please type a question first.",
+                "error": _("Please type a question first."),
                 "related_articles": [],
                 "show_related_articles": False,
             },
@@ -79,7 +80,7 @@ def ask_openkb_ai(request):
         )
         return JsonResponse(
             {
-                "error": f"Question is too long. Please keep it under {max_prompt_chars} characters.",
+                "error": _("Question is too long. Please keep it under %(count)d characters.") % {"count": max_prompt_chars},
                 "related_articles": [],
                 "show_related_articles": False,
             },
@@ -100,7 +101,7 @@ def ask_openkb_ai(request):
 
     if not settings.OPENKB_DATA_DIR.exists():
         return JsonResponse({
-            "error": "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py.",
+            "error": _("OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."),
             "related_articles": [],
             "show_related_articles": False,
         }, status=500)
@@ -141,7 +142,7 @@ def ask_openkb_ai(request):
         answer = clean_openkb_ai_answer(raw_answer)
 
         if answer_indicates_no_openkb_match(answer):
-            answer = "The knowledge base does not contain matching information about that topic."
+            answer = _("The knowledge base does not contain matching information about that topic.")
             related_articles = []
         else:
             # Re-run article suggestions with the cleaned AI answer as extra
@@ -157,7 +158,7 @@ def ask_openkb_ai(request):
             )
 
         if not answer:
-            answer = (
+            answer = _(
                 "OpenKB AI could not produce a clear answer for that question. "
                 "Please try rephrasing it or contact IT support if the issue persists."
             )
@@ -179,7 +180,7 @@ def ask_openkb_ai(request):
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
-            "error": "OpenKB CLI not found. Run: python -m pip install -e OpenKB-main",
+            "error": _("OpenKB CLI not found. Contact an administrator because the OpenKB service is unavailable."),
             "related_articles": [],
             "show_related_articles": False,
         }, status=500)
@@ -194,7 +195,7 @@ def ask_openkb_ai(request):
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles, status=503)
         return JsonResponse({
-            "error": "OpenKB AI is currently handling other questions. Please try again shortly.",
+            "error": _("OpenKB AI is currently handling other questions. Please try again shortly."),
             "related_articles": [],
             "show_related_articles": False,
         }, status=503)
@@ -209,7 +210,7 @@ def ask_openkb_ai(request):
         if related_articles:
             return _article_recommendation_response(question, related_articles=related_articles)
         return JsonResponse({
-            "error": "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists.",
+            "error": _("OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."),
             "related_articles": [],
             "show_related_articles": False,
         }, status=500)

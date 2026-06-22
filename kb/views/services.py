@@ -1126,10 +1126,10 @@ def validate_article_image_upload(uploaded_file):
     """
     original_suffix = Path(uploaded_file.name or "").suffix.lower()
     if original_suffix and original_suffix not in ALLOWED_ARTICLE_IMAGE_EXTENSIONS:
-        raise ValidationError("Only PNG, JPG, GIF, or WEBP images are allowed.")
+        raise ValidationError(_("Only PNG, JPG, GIF, or WEBP images are allowed."))
 
     if uploaded_file.size > MAX_ARTICLE_IMAGE_SIZE_BYTES:
-        raise ValidationError("Image is too large. Maximum allowed size is 2 MB.")
+        raise ValidationError(_("Image is too large. Maximum allowed size is 2 MB."))
 
     try:
         uploaded_file.seek(0)
@@ -1138,7 +1138,7 @@ def validate_article_image_upload(uploaded_file):
             detected_format = (image.format or "").upper()
             width, height = image.size
     except (UnidentifiedImageError, OSError, ValueError):
-        raise ValidationError("The uploaded file is not a valid image.")
+        raise ValidationError(_("The uploaded file is not a valid image."))
     finally:
         try:
             uploaded_file.seek(0)
@@ -1147,10 +1147,10 @@ def validate_article_image_upload(uploaded_file):
 
     image_info = ALLOWED_ARTICLE_IMAGE_FORMATS.get(detected_format)
     if not image_info:
-        raise ValidationError("Only PNG, JPG, GIF, or WEBP images are allowed.")
+        raise ValidationError(_("Only PNG, JPG, GIF, or WEBP images are allowed."))
 
     if width * height > MAX_ARTICLE_IMAGE_PIXELS:
-        raise ValidationError("Image dimensions are too large. Please upload a smaller image.")
+        raise ValidationError(_("Image dimensions are too large. Please upload a smaller image."))
 
     return {
         "format": detected_format,
@@ -1672,7 +1672,7 @@ def plain_markdown_excerpt(markdown_text, max_length=260):
     text = re.sub(r"\s+", " ", text).strip()
 
     if not text:
-        return "Django published OpenKB article."
+        return _("Knowledge Repository article.")
 
     if len(text) > max_length:
         text = text[:max_length].rsplit(" ", 1)[0].rstrip() + "..."
@@ -2496,16 +2496,16 @@ def main_site_login_required(view_func):
 def get_account_type_display(user):
     profile = get_user_profile(user)
     if not profile:
-        return "Guest"
+        return _("Guest")
 
     if profile.account_type == UserProfile.AccountType.LDAP_USER:
-        return "Domain User"
+        return _("Domain User")
     if profile.account_type == UserProfile.AccountType.LDAP_ADMIN:
-        return "Domain Admin"
+        return _("Domain Admin")
     if profile.account_type == UserProfile.AccountType.USER:
-        return "Local User"
+        return _("Local User")
     if profile.account_type == UserProfile.AccountType.ADMIN:
-        return "Local Admin"
+        return _("Local Admin")
 
     return profile.get_account_type_display()
 
@@ -2555,7 +2555,7 @@ def get_profile_account_context(user):
         "profile_display_name": format_profile_display_name(user),
         "user_is_ldap_managed": user_is_ldap_managed,
         "account_type_display": get_account_type_display(user),
-        "auth_source_display": profile.get_auth_source_display() if hasattr(profile, "get_auth_source_display") else "Local user",
+        "auth_source_display": profile.get_auth_source_display() if hasattr(profile, "get_auth_source_display") else _("Local user"),
         "can_change_local_password": user.has_usable_password() and not user_is_ldap_managed,
         "can_confirm_profile_changes": user.has_usable_password(),
         "can_view_articles": user_can_view_articles(user),
@@ -2593,24 +2593,24 @@ def validate_profile_password_policy(password, user):
     issues = []
 
     if len(password) < 12:
-        issues.append("Password must be at least 12 characters long.")
+        issues.append(_("Password must be at least 12 characters long."))
     if not re.search(r"[A-Z]", password):
-        issues.append("Password must include at least 1 uppercase letter.")
+        issues.append(_("Password must include at least 1 uppercase letter."))
     if not re.search(r"[a-z]", password):
-        issues.append("Password must include at least 1 lowercase letter.")
+        issues.append(_("Password must include at least 1 lowercase letter."))
     if not re.search(r"[0-9]", password):
-        issues.append("Password must include at least 1 number.")
+        issues.append(_("Password must include at least 1 number."))
     if not re.search(r"[^A-Za-z0-9]", password):
-        issues.append("Password must include at least 1 special character.")
+        issues.append(_("Password must include at least 1 special character."))
 
     lower_password = password.lower()
     username = (user.get_username() or "").lower()
     email_name = (user.email or "").split("@")[0].lower()
 
     if username and len(username) >= 3 and username in lower_password:
-        issues.append("Password must not contain your username.")
+        issues.append(_("Password must not contain your username."))
     if email_name and len(email_name) >= 3 and email_name in lower_password:
-        issues.append("Password must not contain the name part of your email address.")
+        issues.append(_("Password must not contain the name part of your email address."))
 
     return issues
 

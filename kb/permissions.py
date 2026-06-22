@@ -26,15 +26,15 @@ PERM_DELETE_INTERNAL_ARTICLES = "can_delete_internal_articles"
 PERM_USE_ADMIN_TOOLS = "can_use_admin_tools"
 
 PERMISSION_LABELS = {
-    PERM_VIEW_ARTICLES: "Can view published public articles",
-    PERM_ADD_ARTICLES: "Can add/submit public articles for approval",
-    PERM_MANAGE_ARTICLES: "Can approve/manage pending public article reviews",
-    PERM_DELETE_ARTICLES: "Can delete public articles",
-    PERM_VIEW_INTERNAL_ARTICLES: "Can view internal articles",
-    PERM_ADD_INTERNAL_ARTICLES: "Can add/submit internal articles for approval",
-    PERM_MANAGE_INTERNAL_ARTICLES: "Can approve/manage pending internal article reviews",
-    PERM_DELETE_INTERNAL_ARTICLES: "Can delete internal articles",
-    PERM_USE_ADMIN_TOOLS: "Can use Knowledge Repository admin tools",
+    PERM_VIEW_ARTICLES: _("Can view published public articles"),
+    PERM_ADD_ARTICLES: _("Can add/submit public articles for approval"),
+    PERM_MANAGE_ARTICLES: _("Can approve/manage pending public article reviews"),
+    PERM_DELETE_ARTICLES: _("Can delete public articles"),
+    PERM_VIEW_INTERNAL_ARTICLES: _("Can view internal articles"),
+    PERM_ADD_INTERNAL_ARTICLES: _("Can add/submit internal articles for approval"),
+    PERM_MANAGE_INTERNAL_ARTICLES: _("Can approve/manage pending internal article reviews"),
+    PERM_DELETE_INTERNAL_ARTICLES: _("Can delete internal articles"),
+    PERM_USE_ADMIN_TOOLS: _("Can use Knowledge Repository admin tools"),
 }
 
 ROLE_DISABLED_USER = "Disabled User"
@@ -47,6 +47,25 @@ ROLE_INTERNAL_ARTICLE_WRITER = "Internal Article Writer"
 ROLE_INTERNAL_ARTICLE_APPROVER = "Internal Article Approver"
 ROLE_INTERNAL_ARTICLE_MANAGER = "Internal Article Manager"
 ROLE_ADMIN_USERS = "Admin Users"
+
+
+ROLE_DISPLAY_LABELS = {
+    ROLE_DISABLED_USER: _("Disabled User"),
+    ROLE_REGULAR_USER: _("Regular User"),
+    ROLE_ARTICLE_WRITER: _("Article Writer"),
+    ROLE_ARTICLE_APPROVER: _("Article Approver"),
+    ROLE_ARTICLE_MANAGER: _("Article Manager"),
+    ROLE_INTERNAL_USER: _("Internal User"),
+    ROLE_INTERNAL_ARTICLE_WRITER: _("Internal Article Writer"),
+    ROLE_INTERNAL_ARTICLE_APPROVER: _("Internal Article Approver"),
+    ROLE_INTERNAL_ARTICLE_MANAGER: _("Internal Article Manager"),
+    ROLE_ADMIN_USERS: _("Admin Users"),
+}
+
+
+def role_display_label(role_name) -> str:
+    """Return the translated display label while keeping the stored group name stable."""
+    return str(ROLE_DISPLAY_LABELS.get(role_name, role_name))
 
 ROLE_GROUP_NAMES = (
     ROLE_DISABLED_USER,
@@ -364,7 +383,7 @@ def role_permissions_summary(user) -> str:
     labels = []
     for codename, label in PERMISSION_LABELS.items():
         if user_has_kb_permission(user, codename):
-            labels.append(str(_(label)))
+            labels.append(str(label))
     return ", ".join(labels) if labels else str(_("No Knowledge Repository role permissions"))
 
 
@@ -381,17 +400,20 @@ def role_group_summary(user) -> str:
         return ""
     role_names = user_role_group_names(user)
     if user_has_disabled_role(user):
-        return ROLE_DISABLED_USER
+        return role_display_label(ROLE_DISABLED_USER)
     if role_names:
-        return ", ".join(role_names)
+        return ", ".join(role_display_label(name) for name in role_names)
     if getattr(user, "is_superuser", False):
-        return ROLE_ADMIN_USERS
-    return ROLE_REGULAR_USER
+        return role_display_label(ROLE_ADMIN_USERS)
+    return role_display_label(ROLE_REGULAR_USER)
 
 
 def role_descriptions_text() -> str:
     return "\n".join(
-        f"{name}: {definition['description']}"
+        _("%(role)s: %(description)s") % {
+            "role": role_display_label(name),
+            "description": definition["description"],
+        }
         for name, definition in ROLE_DEFINITIONS.items()
     )
 
@@ -411,7 +433,7 @@ def role_descriptions_html() -> str:
         format_html_join(
             "",
             "<li><strong>{}</strong>: {}</li>",
-            ((name, definition["description"]) for name, definition in ROLE_DEFINITIONS.items()),
+            ((role_display_label(name), definition["description"]) for name, definition in ROLE_DEFINITIONS.items()),
         ),
         _(
             "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. "
@@ -427,13 +449,14 @@ def create_article_permissions():
     content_type = ContentType.objects.get_for_model(SuggestedArticle)
     created_permissions = {}
     for codename, label in PERMISSION_LABELS.items():
+        label_text = str(label)
         permission, _created = Permission.objects.get_or_create(
             content_type=content_type,
             codename=codename,
-            defaults={"name": label},
+            defaults={"name": label_text},
         )
-        if permission.name != label:
-            permission.name = label
+        if permission.name != label_text:
+            permission.name = label_text
             permission.save(update_fields=["name"])
         created_permissions[codename] = permission
     return created_permissions

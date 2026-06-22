@@ -108,7 +108,7 @@ def build_search_article_card(suggested):
     keywords = suggested.keyword_list
     card = {
         "title": suggested.title,
-        "type": "Article",
+        "type": str(_("Article")),
         "date": modified_at,
         "views": suggested.view_count or 0,
         "likes": getattr(suggested, "db_helpful_vote_count", 0) or 0,

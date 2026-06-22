@@ -409,7 +409,7 @@ def import_articles_from_zip(uploaded_zip, owner):
                 if part.get("filename") in safe_names
             ]
             if not part_names:
-                raise ValueError("Split export package did not contain any importable part zip files.")
+                raise ValueError(_("Split export package did not contain any importable part zip files."))
 
             for part_name in part_names:
                 with archive.open(safe_names[part_name], "r") as part_file:
@@ -473,7 +473,7 @@ def import_articles_from_zip(uploaded_zip, owner):
                 })
 
         if not article_payloads:
-            raise ValueError("No articles found in the zip. Include manifest.json or Markdown files.")
+            raise ValueError(_("No articles found in the zip. Include manifest.json or Markdown files."))
 
         seen_import_titles = set()
 

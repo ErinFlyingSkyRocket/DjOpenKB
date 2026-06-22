@@ -77,10 +77,10 @@ def clean_stray_upload_files(request):
                 f"Cleaned up {deleted_count} selected stray upload file(s), freeing {round(deleted_size_bytes / 1024, 1)} KB."
             )
         else:
-            messages.info(request, "No selected stray upload files were deleted.")
+            messages.info(request, _("No selected stray upload files were deleted."))
 
         if skipped_count or missing_count:
-            messages.info(request, "Some selected files were skipped because they were no longer available or no longer matched the stray file scan.")
+            messages.info(request, _("Some selected files were skipped because they were no longer available or no longer matched the stray file scan."))
 
         for error in errors[:5]:
             messages.error(request, error)

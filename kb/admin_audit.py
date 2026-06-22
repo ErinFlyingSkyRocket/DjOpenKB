@@ -9,6 +9,7 @@ from django.apps import apps
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.db import DatabaseError, OperationalError, ProgrammingError
 from django.utils.text import capfirst
+from django.utils.translation import gettext as _, ngettext
 
 
 
@@ -116,22 +117,22 @@ def _human_status(status_code) -> str:
     except Exception:
         return ""
     if 200 <= status_code < 300:
-        return "successful"
+        return _("successful")
     if 300 <= status_code < 400:
-        return "redirected"
+        return _("redirected")
     if status_code in {401, 403}:
-        return "denied"
+        return _("denied")
     if status_code == 404:
-        return "not found"
+        return _("not found")
     if status_code >= 500:
-        return "server error"
+        return _("server error")
     if status_code >= 400:
-        return "failed"
+        return _("failed")
     return ""
 
 
 def build_admin_action_label(*, event_type=None, target_label="", target_repr="", action_flag=None, status_code=None, change_message="", details=None) -> str:
-    """Create a clear one-line admin audit sentence."""
+    """Create a clear one-line, translatable admin audit sentence."""
     details = details or {}
     explicit = details.get("action_label") or details.get("summary")
     if explicit:
@@ -139,31 +140,39 @@ def build_admin_action_label(*, event_type=None, target_label="", target_repr=""
 
     action_name = details.get("admin_action") or details.get("action")
     status_text = _human_status(status_code)
-    target = target_repr or details.get("target_display") or target_label or "admin area"
+    admin_area = _("admin area")
+    target = target_repr or details.get("target_display") or target_label or admin_area
 
     from .models import AdminActivityLog
 
     if event_type == AdminActivityLog.EventType.ADMIN_ADD:
-        return f"Created {target_label or 'object'}: {target}" if target_label else f"Created {target}"
+        if target_label:
+            return _("Created %(target_label)s: %(target)s") % {"target_label": target_label, "target": target}
+        return _("Created %(target)s") % {"target": target}
     if event_type == AdminActivityLog.EventType.ADMIN_CHANGE:
-        suffix = f" — {change_message}" if change_message else ""
-        return f"Changed {target_label or 'object'}: {target}{suffix}"
+        prefix = _("Changed %(target_label)s: %(target)s") % {
+            "target_label": target_label or _("object"),
+            "target": target,
+        }
+        return _("%(prefix)s — %(change_message)s") % {"prefix": prefix, "change_message": change_message} if change_message else prefix
     if event_type == AdminActivityLog.EventType.ADMIN_DELETE:
-        return f"Deleted {target_label or 'object'}: {target}" if target_label else f"Deleted {target}"
+        if target_label:
+            return _("Deleted %(target_label)s: %(target)s") % {"target_label": target_label, "target": target}
+        return _("Deleted %(target)s") % {"target": target}
     if action_name:
-        prefix = f"Ran admin action '{action_name}'"
-        if target != "admin area":
-            prefix += f" on {target}"
+        prefix = _("Ran admin action '%(action)s'") % {"action": action_name}
+        if target != admin_area:
+            prefix = _("%(prefix)s on %(target)s") % {"prefix": prefix, "target": target}
         if status_text:
-            prefix += f" ({status_text})"
+            prefix = _("%(prefix)s (%(status)s)") % {"prefix": prefix, "status": status_text}
         return prefix
-    if status_text == "denied":
-        return f"Admin request denied for {target}"
-    if status_text == "server error":
-        return f"Admin request failed for {target}"
+    if status_text == _("denied"):
+        return _("Admin request denied for %(target)s") % {"target": target}
+    if status_text == _("server error"):
+        return _("Admin request failed for %(target)s") % {"target": target}
     if status_text:
-        return f"Admin request {status_text} for {target}"
-    return f"Admin request for {target}"
+        return _("Admin request %(status)s for %(target)s") % {"status": status_text, "target": target}
+    return _("Admin request for %(target)s") % {"target": target}
 
 
 
@@ -198,9 +207,9 @@ def _display_scalar(value):
     if value is None:
         return "-"
     if value is True:
-        return "Yes"
+        return _("Yes")
     if value is False:
-        return "No"
+        return _("No")
     return _truncate(value)
 
 
@@ -209,7 +218,7 @@ def _format_field_value(obj, field):
     name = getattr(field, "name", "")
     if is_sensitive_admin_field(name):
         raw_value = getattr(obj, name, None)
-        return "set/changed (hidden)" if raw_value else "not set"
+        return _("set/changed (hidden)") if raw_value else _("not set")
 
     try:
         raw_value = getattr(obj, name)
@@ -343,35 +352,39 @@ def build_admin_change_entries(before, after):
 
 
 def describe_admin_change_entries(entries, *, limit=8):
-    """Turn changed-field entries into a readable one-line sentence fragment."""
+    """Turn changed-field entries into a readable, translatable sentence fragment."""
     parts = []
     for entry in (entries or [])[:limit]:
-        label = entry.get("label") or entry.get("field") or "Field"
+        label = entry.get("label") or entry.get("field") or _("Field")
         if entry.get("kind") == "membership":
             subparts = []
             added = entry.get("added") or []
             removed = entry.get("removed") or []
             if added:
                 extra = int(entry.get("added_count") or len(added)) - len(added)
-                text = ", ".join(added[:8])
+                item_text = ", ".join(added[:8])
                 if extra > 0:
-                    text += f", +{extra} more"
-                subparts.append(f"added {text}")
+                    item_text += _(", +%(count)d more") % {"count": extra}
+                subparts.append(_("added %(items)s") % {"items": item_text})
             if removed:
                 extra = int(entry.get("removed_count") or len(removed)) - len(removed)
-                text = ", ".join(removed[:8])
+                item_text = ", ".join(removed[:8])
                 if extra > 0:
-                    text += f", +{extra} more"
-                subparts.append(f"removed {text}")
+                    item_text += _(", +%(count)d more") % {"count": extra}
+                subparts.append(_("removed %(items)s") % {"items": item_text})
             if subparts:
-                parts.append(f"{label}: {'; '.join(subparts)}")
+                parts.append(_("%(label)s: %(changes)s") % {"label": label, "changes": "; ".join(subparts)})
             continue
 
-        parts.append(f"{label}: {entry.get('from', '-')} → {entry.get('to', '-')}")
+        parts.append(_("%(label)s: %(from_value)s → %(to_value)s") % {
+            "label": label,
+            "from_value": entry.get("from", "-"),
+            "to_value": entry.get("to", "-"),
+        })
 
     remaining = len(entries or []) - len(parts)
     if remaining > 0:
-        parts.append(f"+{remaining} more change(s)")
+        parts.append(ngettext("+%(count)d more change", "+%(count)d more changes", remaining) % {"count": remaining})
     return "; ".join(parts)
 
 
@@ -536,7 +549,7 @@ def infer_admin_request_context(request, response=None):
     if not target_repr and selected_preview:
         shown = ", ".join(selected_preview[:5])
         extra = selected_count - len(selected_preview[:5])
-        target_repr = f"{shown}, +{extra} more" if extra > 0 else shown
+        target_repr = shown + (_(", +%(count)d more") % {"count": extra} if extra > 0 else "")
 
     status_code = getattr(response, "status_code", None)
     action_label = build_admin_action_label(

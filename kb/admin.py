@@ -11,7 +11,7 @@ from django.contrib.auth.admin import GroupAdmin as DefaultGroupAdmin, UserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils import timezone
 from django.utils.html import format_html, format_html_join
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from .models import ActivityLog, AdminActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import log_auth_event, reset_user_auth_lockouts
@@ -62,206 +62,206 @@ User = get_user_model()
 
 
 def _set_admin_model_label(model, singular, plural):
-    """Translate custom Django Admin model names at runtime without migrations."""
-    model._meta.verbose_name = _(singular)
-    model._meta.verbose_name_plural = _(plural)
+    """Apply already-marked custom Django Admin model labels without migrations."""
+    model._meta.verbose_name = singular
+    model._meta.verbose_name_plural = plural
 
 
 def _set_admin_field_label(model, field_name, label, help_text=None):
-    """Translate custom Django Admin field labels at runtime without migrations."""
+    """Apply already-marked custom Django Admin field labels without migrations."""
     try:
         field = model._meta.get_field(field_name)
     except Exception:
         return
-    field.verbose_name = _(label)
+    field.verbose_name = label
     if help_text is not None:
-        field.help_text = _(help_text)
+        field.help_text = help_text
 
 
 def _apply_admin_translation_labels():
     """Keep admin labels translatable without altering database schema."""
-    _set_admin_model_label(UserProfile, "Main Site User Profile", "Main Site User Profiles")
-    _set_admin_model_label(UserMFADevice, "User MFA device", "User MFA devices")
-    _set_admin_model_label(AuthActivityLog, "Authentication activity log", "Authentication activity logs")
-    _set_admin_model_label(AuthLockoutPolicyStage, "Authentication lockout policy stage", "Authentication lockout policy stages")
-    _set_admin_model_label(SuggestedArticle, "Suggested Article", "Suggested Articles")
-    _set_admin_model_label(ArticleVote, "Article vote", "Article votes")
-    _set_admin_model_label(SiteSetting, "Site setting", "Site settings")
-    _set_admin_model_label(ArticleImageUploadLog, "Article image upload log", "Article image upload logs")
-    _set_admin_model_label(ActivityLog, "Activity log", "Activity logs")
-    _set_admin_model_label(AdminActivityLog, "Admin activity log", "Admin activity logs")
+    _set_admin_model_label(UserProfile, _("Main Site User Profile"), _("Main Site User Profiles"))
+    _set_admin_model_label(UserMFADevice, _("User MFA device"), _("User MFA devices"))
+    _set_admin_model_label(AuthActivityLog, _("Authentication activity log"), _("Authentication activity logs"))
+    _set_admin_model_label(AuthLockoutPolicyStage, _("Authentication lockout policy stage"), _("Authentication lockout policy stages"))
+    _set_admin_model_label(SuggestedArticle, _("Suggested Article"), _("Suggested Articles"))
+    _set_admin_model_label(ArticleVote, _("Article vote"), _("Article votes"))
+    _set_admin_model_label(SiteSetting, _("Site setting"), _("Site settings"))
+    _set_admin_model_label(ArticleImageUploadLog, _("Article image upload log"), _("Article image upload logs"))
+    _set_admin_model_label(ActivityLog, _("Activity log"), _("Activity logs"))
+    _set_admin_model_label(AdminActivityLog, _("Admin activity log"), _("Admin activity logs"))
 
     labels = {
         UserProfile: {
-            "user": "User",
-            "account_type": "Account Type",
-            "auth_source": "Source",
-            "can_access_main_site": "Legacy main-site access",
-            "preferred_language": "Preferred language",
-            "notes": "Notes",
-            "created_at": "Created at",
-            "updated_at": "Updated at",
+            "user": _("User"),
+            "account_type": _("Account Type"),
+            "auth_source": _("Source"),
+            "can_access_main_site": _("Legacy main-site access"),
+            "preferred_language": _("Preferred language"),
+            "notes": _("Notes"),
+            "created_at": _("Created at"),
+            "updated_at": _("Updated at"),
         },
         UserMFADevice: {
-            "user": "User",
-            "secret": "Authenticator key",
-            "confirmed": "Confirmed",
-            "created_at": "Created at",
-            "confirmed_at": "Confirmed at",
-            "last_verified_at": "Last verified at",
-            "reset_at": "Reset at",
+            "user": _("User"),
+            "secret": _("Authenticator key"),
+            "confirmed": _("Confirmed"),
+            "created_at": _("Created at"),
+            "confirmed_at": _("Confirmed at"),
+            "last_verified_at": _("Last verified at"),
+            "reset_at": _("Reset at"),
         },
         AuthActivityLog: {
-            "created_at": "Created at",
-            "event_type": "Event type",
-            "success": "Success",
-            "user": "User",
-            "username": "Username",
-            "login_mode": "Login mode",
-            "ip_address": "IP address",
-            "user_agent": "User agent",
-            "path": "Path",
-            "request_method": "Request method",
-            "details": "Details",
+            "created_at": _("Created at"),
+            "event_type": _("Event type"),
+            "success": _("Success"),
+            "user": _("User"),
+            "username": _("Username"),
+            "login_mode": _("Login mode"),
+            "ip_address": _("IP address"),
+            "user_agent": _("User agent"),
+            "path": _("Path"),
+            "request_method": _("Request method"),
+            "details": _("Details"),
         },
         AdminActivityLog: {
-            "created_at": "Created at",
-            "event_type": "Event type",
-            "admin_user": "Admin user",
-            "admin_username": "Admin username",
-            "target_app_label": "Target app",
-            "target_model": "Target model",
-            "target_object_id": "Target object ID",
-            "target_repr": "Target object",
-            "action_flag": "Django admin action flag",
-            "ip_address": "IP address",
-            "user_agent": "User agent",
-            "path": "Path",
-            "request_method": "Request method",
-            "status_code": "Status code",
-            "change_message": "Change message",
-            "details": "Details",
+            "created_at": _("Created at"),
+            "event_type": _("Event type"),
+            "admin_user": _("Admin user"),
+            "admin_username": _("Admin username"),
+            "target_app_label": _("Target app"),
+            "target_model": _("Target model"),
+            "target_object_id": _("Target object ID"),
+            "target_repr": _("Target object"),
+            "action_flag": _("Django admin action flag"),
+            "ip_address": _("IP address"),
+            "user_agent": _("User agent"),
+            "path": _("Path"),
+            "request_method": _("Request method"),
+            "status_code": _("Status code"),
+            "change_message": _("Change message"),
+            "details": _("Details"),
         },
         ActivityLog: {
-            "created_at": "Created at",
-            "event_type": "Event type",
-            "user": "User",
-            "username": "Username",
-            "article": "Article",
-            "article_title": "Article title",
-            "article_status": "Article status",
-            "article_owner_user_id_snapshot": "Article owner user ID",
-            "article_owner_username_snapshot": "Article owner username",
-            "article_owner_name_snapshot": "Article owner name",
-            "article_owner_email_snapshot": "Article owner email",
-            "article_owner_account_type_snapshot": "Article owner account type",
-            "ip_address": "IP address",
-            "user_agent": "User agent",
-            "path": "Path",
-            "request_method": "Request method",
-            "details": "Details",
+            "created_at": _("Created at"),
+            "event_type": _("Event type"),
+            "user": _("User"),
+            "username": _("Username"),
+            "article": _("Article"),
+            "article_title": _("Article title"),
+            "article_status": _("Article status"),
+            "article_owner_user_id_snapshot": _("Article owner user ID"),
+            "article_owner_username_snapshot": _("Article owner username"),
+            "article_owner_name_snapshot": _("Article owner name"),
+            "article_owner_email_snapshot": _("Article owner email"),
+            "article_owner_account_type_snapshot": _("Article owner account type"),
+            "ip_address": _("IP address"),
+            "user_agent": _("User agent"),
+            "path": _("Path"),
+            "request_method": _("Request method"),
+            "details": _("Details"),
         },
         SuggestedArticle: {
-            "owner": "Owner",
-            "author_username_snapshot": "Author username snapshot",
-            "author_name_snapshot": "Author name snapshot",
-            "author_email_snapshot": "Author email snapshot",
-            "author_account_type_snapshot": "Author account type snapshot",
-            "title": "Article title",
-            "body": "Article body",
-            "keywords": "Keywords",
-            "visibility": "Article visibility",
-            "status": "Status",
-            "approved_by": "Approved by",
-            "approved_at": "Approved at",
-            "review_notes": "Review notes",
-            "review_notes_history": "Review history",
-            "pending_update_title": "Pending update title",
-            "pending_update_body": "Pending update body",
-            "pending_update_keywords": "Pending update keywords",
-            "pending_update_image_assets": "Pending update image assets",
-            "update_status": "Update status",
-            "update_submitted_at": "Update submitted at",
-            "update_reviewed_at": "Update reviewed at",
-            "view_count": "View count",
-            "filename": "Filename",
-            "raw_path": "Raw path",
-            "wiki_path": "Wiki path",
-            "image_assets": "Image assets",
-            "deletion_previous_status": "Previous status before deletion queue",
-            "deletion_queued_at": "Deletion queued at",
-            "deletion_queued_by": "Deletion queued by",
-            "deletion_purge_after": "Permanent deletion after",
-            "deletion_restored_at": "Deletion restored at",
-            "deletion_restored_by": "Deletion restored by",
-            "deletion_reason": "Deletion reason",
-            "created_at": "Created at",
-            "updated_at": "Updated at",
+            "owner": _("Owner"),
+            "author_username_snapshot": _("Author username snapshot"),
+            "author_name_snapshot": _("Author name snapshot"),
+            "author_email_snapshot": _("Author email snapshot"),
+            "author_account_type_snapshot": _("Author account type snapshot"),
+            "title": _("Article title"),
+            "body": _("Article body"),
+            "keywords": _("Keywords"),
+            "visibility": _("Article visibility"),
+            "status": _("Status"),
+            "approved_by": _("Approved by"),
+            "approved_at": _("Approved at"),
+            "review_notes": _("Review notes"),
+            "review_notes_history": _("Review history"),
+            "pending_update_title": _("Pending update title"),
+            "pending_update_body": _("Pending update body"),
+            "pending_update_keywords": _("Pending update keywords"),
+            "pending_update_image_assets": _("Pending update image assets"),
+            "update_status": _("Update status"),
+            "update_submitted_at": _("Update submitted at"),
+            "update_reviewed_at": _("Update reviewed at"),
+            "view_count": _("View count"),
+            "filename": _("Filename"),
+            "raw_path": _("Raw path"),
+            "wiki_path": _("Wiki path"),
+            "image_assets": _("Image assets"),
+            "deletion_previous_status": _("Previous status before deletion queue"),
+            "deletion_queued_at": _("Deletion queued at"),
+            "deletion_queued_by": _("Deletion queued by"),
+            "deletion_purge_after": _("Permanent deletion after"),
+            "deletion_restored_at": _("Deletion restored at"),
+            "deletion_restored_by": _("Deletion restored by"),
+            "deletion_reason": _("Deletion reason"),
+            "created_at": _("Created at"),
+            "updated_at": _("Updated at"),
         },
         ArticleVote: {
-            "article": "Article",
-            "user": "User",
-            "value": "Vote",
-            "created_at": "Created at",
-            "updated_at": "Updated at",
+            "article": _("Article"),
+            "user": _("User"),
+            "value": _("Vote"),
+            "created_at": _("Created at"),
+            "updated_at": _("Updated at"),
         },
         ArticleImageUploadLog: {
-            "filename": "Filename",
-            "original_name": "Original name",
-            "content_type": "Content type",
-            "size_bytes": "Size bytes",
-            "uploaded_by": "Uploaded by",
-            "uploader_username_snapshot": "Uploader username snapshot",
-            "uploader_email_snapshot": "Uploader email snapshot",
-            "uploader_account_type_snapshot": "Uploader account type snapshot",
-            "upload_ip_address": "Upload IP address",
-            "upload_user_agent": "Upload user agent",
-            "uploaded_at": "Uploaded at",
-            "deleted_at": "Deleted at",
-            "deleted_by": "Deleted by",
-            "delete_reason": "Delete reason",
+            "filename": _("Filename"),
+            "original_name": _("Original name"),
+            "content_type": _("Content type"),
+            "size_bytes": _("Size bytes"),
+            "uploaded_by": _("Uploaded by"),
+            "uploader_username_snapshot": _("Uploader username snapshot"),
+            "uploader_email_snapshot": _("Uploader email snapshot"),
+            "uploader_account_type_snapshot": _("Uploader account type snapshot"),
+            "upload_ip_address": _("Upload IP address"),
+            "upload_user_agent": _("Upload user agent"),
+            "uploaded_at": _("Uploaded at"),
+            "deleted_at": _("Deleted at"),
+            "deleted_by": _("Deleted by"),
+            "delete_reason": _("Delete reason"),
         },
         SiteSetting: {
-            "stray_upload_cleanup_min_age_minutes": "Stray upload cleanup minimum age (minutes)",
-            "article_deletion_queue_retention_days": "Article deletion queue retention (days)",
-            "article_image_upload_limit": "Article image upload limit",
-            "auth_activity_log_retention_days": "Authentication activity log retention (days)",
-            "session_timeout_days": "User session timeout (days)",
-            "activity_log_retention_days": "General activity log retention (days)",
-            "admin_log_rows_per_page": "Admin log rows per page",
-            "admin_allowed_cidrs": "Admin allowed IP ranges",
-            "auth_lockout_strike_ttl_seconds": "Authentication lockout escalation memory (seconds)",
-            "admin_mfa_idle_timeout_seconds": "Admin MFA idle timeout (seconds)",
-            "updated_at": "Updated at",
+            "stray_upload_cleanup_min_age_minutes": _("Stray upload cleanup minimum age (minutes)"),
+            "article_deletion_queue_retention_days": _("Article deletion queue retention (days)"),
+            "article_image_upload_limit": _("Article image upload limit"),
+            "auth_activity_log_retention_days": _("Authentication activity log retention (days)"),
+            "session_timeout_days": _("User session timeout (days)"),
+            "activity_log_retention_days": _("General activity log retention (days)"),
+            "admin_log_rows_per_page": _("Admin log rows per page"),
+            "admin_allowed_cidrs": _("Admin allowed IP ranges"),
+            "auth_lockout_strike_ttl_seconds": _("Authentication lockout escalation memory (seconds)"),
+            "admin_mfa_idle_timeout_seconds": _("Admin MFA idle timeout (seconds)"),
+            "updated_at": _("Updated at"),
         },
         AuthLockoutPolicyStage: {
-            "site_setting": "Site setting",
-            "sort_order": "Stage order",
-            "failure_limit": "Failed attempts before block",
-            "block_seconds": "Block duration (seconds)",
-            "repeat_count": "Repeat count",
-            "enabled": "Enabled",
+            "site_setting": _("Site setting"),
+            "sort_order": _("Stage order"),
+            "failure_limit": _("Failed attempts before block"),
+            "block_seconds": _("Block duration (seconds)"),
+            "repeat_count": _("Repeat count"),
+            "enabled": _("Enabled"),
         },
     }
 
     help_texts = {
-        (UserProfile, "account_type"): "Admin/LDAP admin accounts can access Django admin when staff status is enabled.",
-        (UserProfile, "auth_source"): "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory.",
-        (UserProfile, "can_access_main_site"): "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in.",
-        (UserProfile, "preferred_language"): "Preferred language for the main wiki user interface.",
-        (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
-        (SiteSetting, "article_deletion_queue_retention_days"): "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.",
-        (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
-        (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
-        (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
-        (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
-        (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
-        (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
-        (SiteSetting, "auth_lockout_strike_ttl_seconds"): "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).",
-        (AuthLockoutPolicyStage, "sort_order"): "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later.",
-        (AuthLockoutPolicyStage, "failure_limit"): "Number of wrong password/MFA attempts required before this stage blocks the user.",
-        (AuthLockoutPolicyStage, "block_seconds"): "How long the login/MFA check is blocked after this stage triggers.",
-        (AuthLockoutPolicyStage, "repeat_count"): "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever.",
+        (UserProfile, "account_type"): _("Admin/LDAP admin accounts can access Django admin when staff status is enabled."),
+        (UserProfile, "auth_source"): _("Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."),
+        (UserProfile, "can_access_main_site"): _("Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."),
+        (UserProfile, "preferred_language"): _("Preferred language for the main wiki user interface."),
+        (SiteSetting, "stray_upload_cleanup_min_age_minutes"): _("Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."),
+        (SiteSetting, "article_deletion_queue_retention_days"): _("How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."),
+        (SiteSetting, "article_image_upload_limit"): _("Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."),
+        (SiteSetting, "auth_activity_log_retention_days"): _("Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."),
+        (SiteSetting, "session_timeout_days"): _("Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."),
+        (SiteSetting, "activity_log_retention_days"): _("Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."),
+        (SiteSetting, "admin_log_rows_per_page"): _("Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."),
+        (SiteSetting, "admin_allowed_cidrs"): _("Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."),
+        (SiteSetting, "auth_lockout_strike_ttl_seconds"): _("How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."),
+        (AuthLockoutPolicyStage, "sort_order"): _("Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."),
+        (AuthLockoutPolicyStage, "failure_limit"): _("Number of wrong password/MFA attempts required before this stage blocks the user."),
+        (AuthLockoutPolicyStage, "block_seconds"): _("How long the login/MFA check is blocked after this stage triggers."),
+        (AuthLockoutPolicyStage, "repeat_count"): _("How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."),
     }
 
     for model, field_labels in labels.items():
@@ -274,30 +274,37 @@ _apply_admin_translation_labels()
 
 
 
+def _format_admin_duration_unit(value, singular, plural):
+    return ngettext(singular, plural, value) % {"count": value}
+
+
 def format_admin_duration(seconds):
-    """Return a readable duration for Django Admin helper displays."""
+    """Return a readable, translatable duration for Django Admin helper displays."""
     try:
         seconds = max(0, int(seconds or 0))
     except (TypeError, ValueError):
         seconds = 0
 
     if seconds < 60:
-        return f"{seconds} second{'s' if seconds != 1 else ''}"
+        return _format_admin_duration_unit(seconds, "%(count)s second", "%(count)s seconds")
 
     if seconds % 86400 == 0:
         days = seconds // 86400
-        return f"{days} day{'s' if days != 1 else ''}"
+        return _format_admin_duration_unit(days, "%(count)s day", "%(count)s days")
 
     if seconds % 3600 == 0:
         hours = seconds // 3600
-        return f"{hours} hour{'s' if hours != 1 else ''}"
+        return _format_admin_duration_unit(hours, "%(count)s hour", "%(count)s hours")
 
     if seconds % 60 == 0:
         minutes = seconds // 60
-        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+        return _format_admin_duration_unit(minutes, "%(count)s minute", "%(count)s minutes")
 
     minutes, remaining_seconds = divmod(seconds, 60)
-    return f"{minutes} minute{'s' if minutes != 1 else ''} {remaining_seconds} second{'s' if remaining_seconds != 1 else ''}"
+    return _("%(minutes)s %(seconds)s") % {
+        "minutes": _format_admin_duration_unit(minutes, "%(count)s minute", "%(count)s minutes"),
+        "seconds": _format_admin_duration_unit(remaining_seconds, "%(count)s second", "%(count)s seconds"),
+    }
 
 
 def format_admin_duration_with_seconds(seconds):
@@ -307,7 +314,11 @@ def format_admin_duration_with_seconds(seconds):
         seconds_int = int(seconds or 0)
     except (TypeError, ValueError):
         seconds_int = 0
-    return f"{readable} ({seconds_int} seconds)"
+    exact_seconds = _format_admin_duration_unit(seconds_int, "%(count)s second", "%(count)s seconds")
+    return _("%(readable)s (%(exact_seconds)s)") % {
+        "readable": readable,
+        "exact_seconds": exact_seconds,
+    }
 
 
 def can_modify_django_admin(request):
@@ -444,12 +455,15 @@ class AdminAuditMixin:
         preview = [str(obj)[:120] for obj in queryset[:20]]
         count = queryset.count()
         super().delete_queryset(request, queryset)
+        preview_text = ", ".join(preview[:5])
+        if count > 5:
+            preview_text += _(", +%(count)d more") % {"count": count - 5}
         _log_admin_explicit_action(
             request,
             action_label=_("Deleted %(count)d %(target_label)s: %(preview)s") % {
                 "count": count,
                 "target_label": target_label,
-                "preview": ", ".join(preview[:5]) + (f", +{count - 5} more" if count > 5 else ""),
+                "preview": preview_text,
             },
             details={
                 "source": "admin_delete_queryset",
@@ -1013,7 +1027,7 @@ class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
 
         definition = ROLE_DEFINITIONS[obj.name]
         permissions = definition.get("permissions", ())
-        permission_labels = [str(_(PERMISSION_LABELS.get(codename, codename))) for codename in permissions]
+        permission_labels = [str(PERMISSION_LABELS.get(codename, codename)) for codename in permissions]
         permission_text = ", ".join(permission_labels) if permission_labels else str(_("No Knowledge Repository role permissions"))
 
         return format_html(
@@ -1064,7 +1078,7 @@ class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
     def role_permissions(self, obj):
         if obj.name in ROLE_DEFINITIONS:
             permissions = ROLE_DEFINITIONS[obj.name].get("permissions", ())
-            labels = [str(_(PERMISSION_LABELS.get(codename, codename))) for codename in permissions]
+            labels = [str(PERMISSION_LABELS.get(codename, codename)) for codename in permissions]
             return ", ".join(labels) if labels else _("No Knowledge Repository role permissions")
 
         permissions = [permission.name for permission in obj.permissions.all()[:6]]
@@ -1140,7 +1154,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         direct_permissions = []
         for codename in DIRECT_PERMISSION_FIELD_MAP.values():
             if user_has_direct_kb_permission(obj, codename):
-                direct_permissions.append(str(_(PERMISSION_LABELS.get(codename, codename))))
+                direct_permissions.append(str(PERMISSION_LABELS.get(codename, codename)))
 
         return {
             "profile_account_type": {
@@ -2157,7 +2171,7 @@ class AdminActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
             selected_count = int(details.get("selected_count") or len(preview))
             shown = ", ".join(str(item) for item in preview[:5])
             extra = selected_count - min(selected_count, 5)
-            return f"{shown}, +{extra} more" if extra > 0 else shown
+            return shown + (_(", +%(count)d more") % {"count": extra} if extra > 0 else "")
         if details.get("target_username"):
             return details["target_username"]
         if details.get("target_usernames"):
@@ -2640,7 +2654,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
             days = 7
         if days == 0:
             return _("Immediate permanent deletion")
-        return _("%(days)s day(s)") % {"days": days}
+        return ngettext("%(count)s day", "%(count)s days", days) % {"count": days}
 
     article_deletion_queue_retention_display.short_description = _("Deletion queue retention readable")
 

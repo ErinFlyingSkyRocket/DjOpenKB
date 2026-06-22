@@ -4,6 +4,7 @@ This module is imported back by services.py so existing imports continue to work
 """
 
 from .services import *  # noqa: F401,F403
+from django.utils.translation import gettext as _, ngettext
 
 def get_openkb_ai_model():
     """Return the configured OpenKB/LiteLLM model name."""
@@ -217,10 +218,10 @@ def build_openkb_small_talk_answer(question=None):
     """Return a normal chat response for greetings/status messages."""
     prompt = ((question or "").strip().lower())
     if "still" in prompt or "there" in prompt or "here" in prompt:
-        return "Yes, I’m here. Ask me a question about the knowledge base, or ask me to recommend published articles."
+        return _("Yes, I’m here. Ask me a question about the knowledge base, or ask me to recommend published articles.")
     if "test" in prompt:
-        return "OpenKB AI is ready. Ask me a knowledge-base question or request relevant articles."
-    return "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
+        return _("OpenKB AI is ready. Ask me a knowledge-base question or request relevant articles.")
+    return _("Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles.")
 
 
 OPENKB_AI_ARTICLE_INTENT_TERMS = [
@@ -487,7 +488,7 @@ def find_related_openkb_articles(question, limit=3, minimum_score=None, user=Non
         latest_articles = []
         for item in get_openkb_wiki_articles(sort_by_views=False, visibility="all", user=user)[:limit]:
             latest_articles.append({
-                "title": item.get("title", "Untitled"),
+                "title": item.get("title", str(_("Untitled"))),
                 "url": item.get("url") or "#",
                 "snippet": item.get("date") or "",
                 "visibility": item.get("visibility") or "public",
@@ -566,7 +567,7 @@ def find_related_openkb_articles(question, limit=3, minimum_score=None, user=Non
             snippet = item.get("search_excerpt") or ""
 
         results.append({
-            "title": item.get("title", "Untitled"),
+            "title": item.get("title", str(_("Untitled"))),
             "url": item.get("url") or (f"/wiki/{item.get('path')}" if item.get("path") else "#"),
             "snippet": snippet,
             "visibility": item.get("visibility") or "public",
@@ -582,17 +583,20 @@ def build_openkb_article_recommendation_answer(question, related_articles):
     """Create a concise chat answer for article/link requests."""
     if related_articles:
         count = len(related_articles)
-        article_word = "article" if count == 1 else "articles"
-        return f"I found {count} relevant published {article_word}."
+        return ngettext(
+            "I found %(count)d relevant published article.",
+            "I found %(count)d relevant published articles.",
+            count,
+        ) % {"count": count}
 
     cleaned_query = normalize_openkb_article_query(question)
     if cleaned_query and cleaned_query != (question or ""):
-        return (
-            f"I could not find a matching published article for '{cleaned_query}'. "
+        return _(
+            "I could not find a matching published article for ‘%(query)s’. "
             "Try another keyword or check whether the article is published."
-        )
+        ) % {"query": cleaned_query}
 
-    return "I could not find a matching published article. Try another keyword or check whether the article is published."
+    return _("I could not find a matching published article. Try another keyword or check whether the article is published.")
 
 
 def get_client_ip(request):
@@ -790,7 +794,7 @@ def clean_openkb_ai_answer(answer):
     # match, replace the whole answer with a safe user-facing message.
     if any(re.search(pattern, cleaned or "") for pattern in internal_detail_patterns):
         if answer_indicates_no_openkb_match(cleaned):
-            return "The knowledge base does not contain matching information about that topic."
+            return _("The knowledge base does not contain matching information about that topic.")
 
         cleaned = re.sub(r"`?index\.md`?", "the knowledge base", cleaned, flags=re.IGNORECASE)
         cleaned = re.sub(r"`?[a-z0-9_\-/]+\.md`?", "a knowledge-base article", cleaned, flags=re.IGNORECASE)
@@ -824,7 +828,7 @@ def clean_openkb_ai_answer(answer):
     # Last safety net: if internal markers still remain in a no-result answer,
     # do not display the original text to the user.
     if any(re.search(pattern, cleaned or "") for pattern in internal_detail_patterns) and answer_indicates_no_openkb_match(cleaned):
-        return "The knowledge base does not contain matching information about that topic."
+        return _("The knowledge base does not contain matching information about that topic.")
 
     # Collapse excess blank lines left by removed metadata.
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
@@ -885,15 +889,15 @@ def clean_openkb_ai_error_message(error):
         or "resource_exhausted" in lowered
         or "too many requests" in lowered
     ):
-        return "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
+        return _("OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists.")
 
     if "503" in lowered or "serviceunavailable" in lowered or "high demand" in lowered or "unavailable" in lowered:
-        return "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
+        return _("OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists.")
 
     if "timeout" in lowered:
-        return "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."
+        return _("OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists.")
 
-    return "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+    return _("OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists.")
 
 
 def redact_openkb_debug_text(text, max_chars=2000):
