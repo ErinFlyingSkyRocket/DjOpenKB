@@ -21,7 +21,7 @@ The Docker Compose stack contains the following main services:
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, field-encryption key, PostgreSQL password, AI provider API keys, and LDAP bind password. |
 | `vault-init` | First-time Vault initialisation and secret seeding helper. |
 | `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment. |
-| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, authentication log cleanup, and general activity log cleanup. |
+| `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, published-article deletion-queue purge, authentication log cleanup, and general/admin activity log cleanup. |
 
 ## 3. User Types and Permission Summary
 
@@ -31,7 +31,7 @@ DjOpenKB uses a login-only main website model. Anonymous visitors are not allowe
 
 | Access level | Applies to | Main permissions | Restrictions |
 |---|---|---|---|
-| Anonymous visitor | Not signed in | Can access only the login page, language endpoint, and required static/login support assets. | Cannot browse public or internal articles, search, vote, suggest content, use AI, access profiles, or use admin tools. Protected paths return 404. |
+| Anonymous visitor | Not signed in | Can access only the login page, language endpoint, required static/login support assets, and the crawler-only `/robots.txt` response. | Cannot browse public or internal articles, search, vote, suggest content, use AI, access profiles, or use admin tools. Protected paths return 404. |
 | Disabled User | Local or AD / LDAP account in `Disabled User` group | Account record remains available for audit/history and later reassignment. Valid password/MFA does not complete usable access; the user receives a disabled-account message. | Cannot access the wiki, articles, voting, AI assistant, admin tools, or Django Admin through DjOpenKB permissions. |
 | Regular User | Logged-in local or AD / LDAP user in `Regular User` group | Can view published public articles and vote on public articles. This is the fallback public viewer role. | Cannot create articles, access internal articles, manage approvals, or use admin tools unless additional roles/direct permissions are granted. Automatically removed when a public elevated role is assigned. |
 | Article Writer | Logged-in user in `Article Writer` group | Can view public articles, create public drafts, submit public articles for approval, and submit pending updates for own public published articles. | Cannot access internal articles unless also given an internal role. Cannot approve/publish other users' articles by group default. |
@@ -53,6 +53,7 @@ DjOpenKB uses a login-only main website model. Anonymous visitors are not allowe
 | Public manager + internal approver | User can fully manage public articles and only review pending internal articles/updates. |
 | Public approver + internal manager | User can review public pending items and fully manage internal articles. |
 | Public writer + internal writer | User can create/maintain own public and internal submissions, but cannot approve other users' articles. |
+| Writer plus matching approver or manager role | Roles are additive. A user deliberately assigned both roles can approve their own matching-scope submission or pending update. This is an intentional project policy, not a separation-of-duties control. |
 | Approver-only role | Can edit article content only in the explicit pending-review flow for that visibility scope. Cannot delete or freely edit already-published articles. |
 | Manager role | Can create, edit/manage, review, approve/reject, and delete articles in that visibility scope. |
 | Admin Users | Full public/internal access, admin tools, and Django Admin access after the admin network/MFA gate. |
@@ -317,7 +318,7 @@ Public and internal articles share the same database model and workflow fields, 
 
 ### 9.2 Suggested Article Workflow
 
-Users can suggest articles through the website. Suggested articles are stored in the database and mirrored into the correct OpenKB data folder when needed.
+Users can suggest articles through the website. Suggested articles are stored in the database and mirrored into the correct OpenKB data folder when published and eligible for AI indexing.
 
 Article states include:
 
@@ -327,8 +328,9 @@ Article states include:
 | `Pending` | Submitted for review in the matching public/internal pending queue. |
 | `Pending failed` | Returned by reviewer/manager/admin with review comments. |
 | `Published` | Approved and visible to users who can access that article visibility. |
+| `Deletion queued` | A previously published article is hidden while it remains recoverable in the admin deletion queue. |
 
-Normal users cannot self-approve articles. Scope approvers/managers and admins review submissions through the matching review workflow. Admin-created or admin-published content can bypass normal user approval flow where appropriate.
+A user with only a writer role cannot approve. Roles are additive, however: a user deliberately assigned the matching approver or manager role may approve their own matching-scope submission or pending update. This is an intentional project policy. It should not be described as a separation-of-duties control.
 
 For a new article, the normal workflow is:
 
@@ -393,15 +395,49 @@ Delete access is scope-based:
 
 | User type | Public article deletion | Internal article deletion |
 |---|---|---|
-| Public writer/owner | Can delete own public articles when allowed by owner flow; published deletion requires MFA confirmation. | No, unless also has matching internal write/delete ability. |
+| Public writer/owner | Can delete own public articles when allowed by owner flow; published deletion requires MFA confirmation. | No, unless also given matching internal write/delete ability. |
 | Public approver | No delete right by default. | No. |
-| Public manager | Can delete public articles; published deletion requires MFA confirmation. | No, unless also has an internal manager/delete role. |
+| Public manager | Can delete public articles; published deletion requires MFA confirmation. | No, unless also given an internal manager/delete role. |
 | Internal writer/owner | No public delete right by internal role alone. | Can delete own internal articles when allowed by owner flow; published deletion requires MFA confirmation. |
 | Internal approver | No delete right by default. | No delete right by default. |
 | Internal manager | No public delete right by internal role alone. | Can delete internal articles; published deletion requires MFA confirmation. |
 | Admin Users | Can delete all scopes; published deletion requires MFA where enforced. | Can delete all scopes; published deletion requires MFA where enforced. |
 
-The delete confirmation page warns that the action cannot be reversed. Published article deletion uses MFA confirmation instead of a separate approval workflow.
+The deletion confirmation intentionally uses a strong warning. It does not expose backend implementation or storage-path details to the end user.
+
+### Published Article Deletion Queue
+
+Draft, pending, and pending-failed articles are permanently deleted immediately when an authorised user confirms deletion. Published articles have an additional MFA-protected path:
+
+```text
+Retention setting greater than 0:
+Published -> MFA confirmation -> Deletion queued -> hidden immediately
+Admin can restore or permanently purge while the article is queued
+Cleanup scheduler auto-purges after the configured retention period
+
+Retention setting equals 0:
+Published -> MFA confirmation -> permanent deletion immediately
+```
+
+The setting is in:
+
+```text
+Django Admin -> KB -> Site settings -> Article deletion queue retention (days)
+```
+
+The default is 7 days. Setting the value to `0` deliberately disables the recovery period for future published-article deletions and also makes existing queued rows due for purge on the next cleanup run.
+
+Queued articles are removed from normal article lists, search results, normal detail access, and AI sync. The admin-only **Article deletion queue** provides restore and permanent-purge actions. Recovery actions are not available to ordinary users.
+
+The queue lifecycle is recorded in general activity logs:
+
+```text
+ARTICLE_DELETE_QUEUED
+ARTICLE_DELETE_RESTORED
+ARTICLE_DELETE_PURGED
+ARTICLE_DELETE_AUTO_PURGED
+ARTICLE_DELETED  (immediate deletion, including retention = 0)
+```
 
 ### 9.7 Admin Review Notes and History
 
@@ -462,6 +498,8 @@ The tool supports:
 
 The assign-user field supports typing/searching by username or email so the admin does not need to scroll through a very large user list.
 
+When an orphan article is published, the same published-article deletion setting is used: retention greater than `0` moves it into the recoverable deletion queue, while retention `0` permanently deletes it immediately. Draft, pending, and pending-failed orphan articles delete immediately. Orphan assignment/deletion actions are recorded in activity logs.
+
 ## 11. Article Browsing, Search, Views, Voting, and Homepage Tabs
 
 ### 11.1 Login-Protected Article Listing
@@ -493,7 +531,7 @@ published article title
 published article keywords manually entered by users/admins
 ```
 
-It does not search article body content, Markdown files, author names, OpenKB paths, internal metadata, or relevance scores. This reduces unnecessary scanning and makes search behaviour easier for users to understand.
+It does not search article body content, Markdown files, author names, OpenKB paths, internal metadata, or relevance scores. This reduces unnecessary scanning and makes search behaviour easier for users to understand. Normal matching results are ordered by most recently updated article first, not by view count or AI-derived relevance.
 
 Search scope is role-aware:
 
@@ -503,9 +541,13 @@ Search scope is role-aware:
 | Main public search by internal-capable users | Published public + internal articles |
 | Internal search | Published internal articles only |
 
-### 11.4 Search Suggestions
+### 11.4 Search Suggestions and Clickable Keywords
 
-The search bar suggestion dropdown uses the same title/keyword-only search logic. It returns clickable published article titles only and does not expose article body excerpts or raw OpenKB paths. Internal suggestions are returned only to users with internal access.
+The search bar suggestion dropdown uses the same title/keyword-only search logic. It returns clickable published article titles only and does not expose article body excerpts or raw OpenKB paths. Selecting a suggestion opens the accessible matching article directly. Internal article suggestions are only returned to users who already have internal visibility access.
+
+Displayed article keywords on homepage/listing cards and article details are also clickable. Selecting one submits that keyword to the normal title/keyword search. This is a convenience shortcut only; it does not turn on full-body indexing.
+
+Management filters use immediate form submission for the visibility/status selector on **Manage my articles**, **Manage pending articles**, and **Scan orphan articles**. Text search fields remain explicit and use the Search button.
 
 ### 11.5 Homepage Article Tabs
 
@@ -797,15 +839,17 @@ This design keeps UI translation independent from the AI chatbot and avoids send
 
 ### 17.1 Admin Tool Restriction
 
-Admin tools are protected by superuser/admin-role checks. `Admin Users` is the source of truth for full administrator access and automatically syncs members to `is_staff=True` and `is_superuser=True`. Staff status alone is not treated as a separate admin role. Direct user permission checkboxes do not grant Django Admin access by themselves.
+High-risk maintenance tools and Django Admin are protected by `Admin Users`/superuser checks. This includes the bulk import/export, orphan-management, stray-upload cleanup, deletion-queue, Site settings, user/group administration, and Django Admin surfaces. `Admin Users` is the source of truth for full administrator access and automatically syncs members to `is_staff=True` and `is_superuser=True`. Staff status alone is not treated as a separate admin role. Direct user permission checkboxes do not grant Django Admin access by themselves.
 
-Non-admin users receive 404 responses for admin-only main-site tools to reduce route discovery usefulness. The Django admin login path is hidden; admins should sign in through the normal login flow and then open `/admin/`.
+Visibility-specific review pages are narrower: matching Article Approver/Manager roles can use their scope's pending-review workflow without gaining Django Admin or the high-risk maintenance tools. Those scope rules are listed in Section 17.5.
+
+Non-admin users receive 404 responses for admin-only main-site maintenance tools to reduce route discovery usefulness. The Django admin login path is hidden; admins should sign in through the normal login flow and then open `/admin/`.
 
 ### 17.2 Admin Network and Step-Up MFA Restriction
 
 The deployment can restrict Django Admin access by source IP/CIDR, such as a VPN or internal subnet. A correct username/password is not enough if the request source is outside the allowed admin CIDR range.
 
-Django Admin also uses an admin step-up MFA gate. A user must first complete normal login/MFA, then pass the admin gate before entering `/admin/`. The admin gate has its own idle timeout so returning to admin after the timeout requires MFA again.
+Django Admin also uses an admin step-up MFA gate. A user must first complete normal login/MFA, then pass the admin gate before entering `/admin/`. The admin gate has its own configurable idle timeout so returning to admin after the timeout requires MFA again. The default is 600 seconds (10 minutes); code enforces a minimum of 60 seconds and a maximum of 86400 seconds.
 
 ### 17.3 Main Admin and Management Tools
 
@@ -817,11 +861,30 @@ Admin/management tools include:
 - Manage internal pending articles and pending updates.
 - Review suggested articles in the correct visibility scope.
 - Scan and manage orphan articles.
+- View the published-article deletion queue, restore queued articles, or permanently purge selected queued articles.
 - Configure site settings such as article count per page, log retention, session timeout, and authentication lockout policy stages.
 - Manage user roles, account type/source recovery, and direct content-permission add-ons.
 - View authentication activity logs through Django Admin.
 - View general activity logs through Django Admin.
 - View upload audit records through Django Admin.
+
+#### Site Settings Reference
+
+The singleton **Site settings** record controls the following operational limits and retention values:
+
+| Setting | Default | Important behaviour |
+|---|---:|---|
+| Stray upload cleanup minimum age | 1440 minutes | Files newer than the threshold are not treated as stray. `0` allows immediate stray-file cleanup. |
+| Article deletion queue retention | 7 days | Published articles remain recoverable in the admin queue for this many days. `0` makes published deletion immediate after MFA confirmation. |
+| Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
+| Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
+| Authentication activity-log retention | 30 days | `0` retains authentication/MFA logs indefinitely. |
+| User session timeout | 30 days | `0` means the authenticated session ends when the browser closes. |
+| General activity/admin-log retention | 30 days | `0` retains general and Django Admin activity logs indefinitely. |
+| Admin log rows per page | 200 | Recommended range is 50-500. |
+| Admin allowed CIDRs | `10.65.0.0/16`, loopback | Inner Django Admin allowlist. Nginx may enforce an additional outer allowlist. |
+| Lockout escalation memory | 604800 seconds | Failed password/MFA escalation history is retained for 7 days unless successful authentication or an admin reset clears it. |
+| Admin MFA idle timeout | 600 seconds | 10 minutes by default; code clamps values from 60 to 86400 seconds. |
 
 ### 17.4 Group and User Permission Management
 
@@ -868,12 +931,13 @@ Direct permissions should be used sparingly because they can create custom combi
 
 | Tool | Main route | Required access |
 |---|---|---|
-| Public pending articles | `/profile/admin/pending-articles/` | Public manage permission, public manager role, or Admin Users |
-| Internal pending articles | `/internal/profile/admin/pending-articles/` | Internal manage permission, internal manager role, or Admin Users |
+| Public pending articles | `/profile/admin/pending-articles/` | Public approver/manager role, matching direct review permission, or Admin Users |
+| Internal pending articles | `/internal/profile/admin/pending-articles/` | Internal approver/manager role, matching direct review permission, or Admin Users |
 | Public owner article list | `/profile/articles/` | Public writer/owner scope or higher |
 | Internal owner article list | `/internal/profile/articles/` | Internal writer/owner scope or higher |
 | Public article creation | `/suggest/` | Public add permission, public manager, or Admin Users |
 | Internal article creation | `/internal/suggest/` | Internal add permission, internal manager, or Admin Users |
+| Article deletion queue | `/profile/admin/deletion-queue/` | `Admin Users` only |
 
 Scope checks are repeated in the view layer. A user seeing a button in the UI is not the only protection; forged POSTs and direct URL access are also checked server-side.
 
@@ -960,20 +1024,24 @@ Examples of authentication events:
 
 ### 18.2 General Activity Logs
 
-General site and content actions are logged in `ActivityLog`. This is separate from authentication logs so admins can review content and usage behaviour without mixing it with login/MFA activity.
+General site and content actions are logged in `ActivityLog`. This is separate from authentication logs so admins can review content and usage behaviour without mixing it with login/MFA activity. The model is append-only for normal application and Django Admin use; retention cleanup removes old records according to the configured policy.
 
 Examples of logged activity include:
 
 | Area | Example activity |
 |---|---|
-| Articles | Article created, updated, submitted, approved, published, returned as pending failed, deleted |
+| Articles | Article created, updated, submitted, approved, published, returned as pending failed, and deleted |
+| Published deletion queue | Article queued for deletion, restored, manually permanently purged, automatically purged by scheduler, or deleted immediately when the retention setting is `0` |
 | Views | Article viewed once per browser session |
 | Votes | Vote up, vote down, vote changed, vote removed |
 | Uploads | Image uploaded, image deleted, stray upload cleanup |
-| AI | OpenKB AI question metadata, rate limit events, redacted prompt preview |
-| Imports/exports | Bulk article import, bulk article export |
-| Admin tools | Orphan article assigned, orphan article deleted, pending article admin action |
-| Django admin | Admin article save/delete/bulk actions where applicable |
+| Profile security changes | Local profile email updated; local password changed |
+| AI | OpenKB AI question metadata, rate-limit events, redacted prompt preview |
+| Imports/exports | Bulk article import and export |
+| Admin tools | Orphan article assigned/deleted, pending article administration, and other recorded tool actions |
+| Django Admin | Admin article save/delete/bulk actions where applicable |
+
+Search terms and profile language-choice changes are intentionally not stored as general activity history. This avoids collecting low-value, high-volume interaction data.
 
 ### 18.3 Admin Activity Logs
 
@@ -1024,14 +1092,17 @@ A value of `0` keeps logs forever. If the value is set to `30`, cleanup deletes 
 
 ### 18.7 Log Cleanup
 
-The scheduled cleanup service can run log cleanup automatically. Cleanup commands can also be run manually:
+The scheduled cleanup service runs stray-upload cleanup, published-article deletion-queue cleanup, authentication-log cleanup, and general/admin activity-log cleanup on its configured interval (24 hours by default). Cleanup commands can also be run manually:
 
 ```bash
+docker compose exec web python manage.py cleanup_article_deletion_queue --dry-run
+docker compose exec web python manage.py cleanup_article_deletion_queue --noinput
+
 docker compose exec web python manage.py cleanup_auth_activity_logs --dry-run
 docker compose exec web python manage.py cleanup_auth_activity_logs --noinput
 
 docker compose exec web python manage.py cleanup_activity_logs --dry-run
-docker compose exec web python manage.py cleanup_activity_logs
+docker compose exec web python manage.py cleanup_activity_logs --noinput
 ```
 
 ## 19. Secrets Management with Vault
@@ -1076,19 +1147,36 @@ Nginx serves the application over HTTPS on port `8080`. The project includes sec
 - `Permissions-Policy`
 - `Content-Security-Policy`
 
-The local lab deployment can use a locally generated Nginx certificate. For a real public deployment, a trusted certificate should be used.
+The local lab deployment can use a locally generated Nginx certificate. For a real public deployment, use a trusted certificate and configure the final host names in `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS`.
 
-## 22. Robots.txt and Sitemap Decision
+The current Content Security Policy permits `'unsafe-inline'` for scripts and styles because existing templates still contain inline JavaScript/CSS. This is a deliberate compatibility trade-off, not a claim of a strict nonce/hash-based CSP. A future hardening task is to move inline code into static files and then remove `'unsafe-inline'`.
 
-The project is intended for local server, lab, or internal intranet deployment. It does not require public search engine indexing.
+## 22. Search-Engine Crawler Controls
 
-Because of this, `robots.txt` and sitemap generation are not a core requirement. Access control is handled by Django views and authentication checks rather than relying on crawler instructions.
+DjOpenKB is a private, login-protected knowledge repository even when the host is reachable from a public network. It is not intended to appear in search engines.
+
+`GET /robots.txt` is intentionally available without login and returns:
+
+```text
+User-agent: *
+Disallow: /
+```
+
+The response is served as plain text with a short public cache lifetime. The project does not generate a sitemap because there are no public pages intended for indexing.
+
+Django also adds the following `X-Robots-Tag` to application responses other than `/robots.txt`:
+
+```text
+noindex, nofollow, noarchive, nosnippet, noimageindex
+```
+
+These mechanisms are defence in depth for cooperative crawlers only. They do not protect routes, content, or secrets. Actual protection remains login enforcement, MFA, role/public-internal scope checks, restricted admin access, and 404 responses for unauthenticated or unauthorised routes.
 
 ## 23. Dependency Pinning
 
-The project pins exact Python package versions in `requirements.txt` to reduce unexpected breakage from upstream updates.
+The project pins Python package versions/ranges in `requirements.txt` to reduce unexpected breakage from upstream updates.
 
-Current pinned versions include:
+Current dependencies are:
 
 ```text
 Django==6.0.5
@@ -1101,11 +1189,11 @@ django-auth-ldap==5.2.0
 psycopg[binary]==3.3.2
 pyotp==2.9.0
 qrcode[pil]==8.2
-django-redis==6.0.0
-redis==6.4.0
+cryptography>=42.0.0
+redis>=5.0.0,<7.0.0
 ```
 
-This helps ensure the same behaviour across developer machines and deployment servers.
+This helps ensure the same behaviour across developer machines and deployment servers. Dependency review and rebuilding should still be performed when applying security updates.
 
 ## 24. Database and Storage
 
@@ -1138,13 +1226,15 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | CSRF | Django CSRF middleware and token-protected POST forms/endpoints. |
 | XSS | Markdown rendered then sanitised with Bleach. |
 | Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames. |
-| Access control | Public/internal article visibility checks, scoped writer/approver/manager roles, protected image serving, admin-only tools, and 404 for non-admin admin-tool access. |
+| Access control | Public/internal article visibility checks, scoped writer/approver/manager roles, protected image serving, admin-only tools, recovery queue restricted to Admin Users, and 404 for non-admin admin-tool access. |
+| Article deletion recovery | Published deletion requires MFA and normally enters a configurable admin recovery queue; non-published content deletes immediately; setting `0` deliberately enables immediate published deletion. |
 | Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow across article visibility scopes. |
 | Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. |
 | LDAP | LDAPS with certificate validation for AD integration. |
-| HTTPS | Nginx HTTPS and security headers. |
+| HTTPS | Nginx HTTPS and security headers; current CSP allows inline styles/scripts for template compatibility. |
+| Crawler controls | `/robots.txt` disallows all cooperative crawling and application responses receive an `X-Robots-Tag` no-index header. This is not access control. |
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
-| Activity logs | Article, vote, upload, AI, import/export, and admin-tool activity logging with retention cleanup. |
+| Activity logs | Article, deletion queue, vote, upload, local profile email/password, AI, import/export, and admin-tool activity logging with retention cleanup. Search/language history is intentionally excluded. |
 | Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
 | AI endpoint | Public/internal index isolation, role-scoped query index selection, prompt length limit, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting for logged-in users, timeout handling, concurrency limiting, output cleanup, and redacted activity previews. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
@@ -1180,6 +1270,13 @@ docker compose exec web python manage.py check
 docker compose exec web python manage.py check --deploy
 ```
 
+Verify crawler controls through Nginx:
+
+```bash
+curl -k https://<server-ip>:8080/robots.txt
+curl -k -I https://<server-ip>:8080/login/
+```
+
 Test LDAPS from the Django container:
 
 ```bash
@@ -1202,11 +1299,28 @@ Run cleanup manually:
 
 ```bash
 docker compose exec web python manage.py cleanup_stray_upload_files --noinput
+docker compose exec web python manage.py cleanup_article_deletion_queue --dry-run
+docker compose exec web python manage.py cleanup_article_deletion_queue --noinput
 docker compose exec web python manage.py cleanup_auth_activity_logs --dry-run
 docker compose exec web python manage.py cleanup_auth_activity_logs --noinput
 docker compose exec web python manage.py cleanup_activity_logs --dry-run
-docker compose exec web python manage.py cleanup_activity_logs
+docker compose exec web python manage.py cleanup_activity_logs --noinput
 ```
+
+Useful support diagnostics:
+
+```bash
+# Diagnose MFA time/device status without displaying a TOTP secret
+docker compose exec web python manage.py diagnose_mfa <username-or-email>
+
+# Reset one user's MFA from the server when the normal admin reset path is unavailable
+docker compose exec web python manage.py reset_user_mfa <username-or-email> --yes
+
+# Test LDAP bind/search; add a username to test that lookup
+docker compose exec web python manage.py test_ldap_auth <ad-username>
+```
+
+`repair_kb_schema --noinput` runs automatically during normal web-container startup after migrations. `seed_djopenkb_roles` is a recovery/maintenance command for recreating or normalising default role groups and should be used carefully on a test or maintenance window.
 
 Build and restart after dependency or Docker Compose changes:
 
@@ -1224,6 +1338,8 @@ docker compose up -d
 - Keep the OpenKB AI rate limit enabled so one user or anonymous IP cannot continuously consume AI resources.
 - Keep log retention at 30 days unless longer investigation history is needed.
 - Use `--dry-run` before cleanup commands when validating behaviour.
+- Review the Article deletion queue retention setting. Keep the default 7-day recovery period unless immediate permanent published deletion (`0`) is genuinely intended.
+- Test `/robots.txt` and the `X-Robots-Tag` response after an Nginx/Django routing change.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
@@ -1234,6 +1350,6 @@ docker compose up -d
 
 ## 29. Final Notes
 
-DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, public/internal article review workflows, orphan article management, scoped role separation between local and AD users, and role-scoped OpenKB AI integration.
+DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, published-article deletion recovery, public/internal article review workflows, orphan article management, crawler no-index defence in depth, scoped role separation between local and AD users, and role-scoped OpenKB AI integration.
 
-For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, the login-only route policy is maintained, public/internal role groups are reviewed, internal OpenKB isolation is checked after major changes, and cleanup/log retention settings are reviewed by administrators.
+For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, the login-only route policy is maintained, public/internal role groups are reviewed, internal OpenKB isolation is checked after major changes, and cleanup/log retention/deletion-queue settings are reviewed by administrators. Crawler controls should be retained as defence in depth, while access control remains the real security boundary.

@@ -13,18 +13,18 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Separate internal article area for users with internal article access.
 - Public/internal article visibility model with separate public and internal writer, approver, and manager roles.
 - User article suggestion workflow with approval and pending-update review for published article edits.
-- Draft, pending approval, pending failed, and published article states.
+- Draft, pending approval, pending failed, published, and deletion-queued article states.
 - Published article update workflow where user edits are held as pending updates while the current published version remains visible.
 - Separate public and internal pending-review queues, including internal-only pending management for internal approvers/managers.
 - Article owners can manage their own drafts, failed submissions, and pending updates within the visibility scope they are allowed to create.
-- Published article deletion uses an irreversible-action warning and MFA confirmation for users allowed to delete in that article's scope.
+- Published article deletion requires MFA confirmation. By default, a published article is hidden and placed in a recoverable admin deletion queue for 7 days; administrators can restore or permanently purge it. The retention setting can be set to `0` for immediate permanent deletion. Draft, pending, and pending-failed articles delete immediately.
 - Dislike counts are limited to Article Manager, Internal Article Manager, and Admin Users. Normal users and approvers only see helpful/like counts.
-- Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, group/user role management, and site settings.
+- Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, published-article deletion queue recovery/purge, group/user role management, and site settings.
 - Local Django login support.
 - Active Directory login over LDAPS for domain users.
 - Clear separation between local users and AD users.
 - MFA support using authenticator-app one-time passwords.
-- Authentication and activity logging for important user, article, admin, AI, and maintenance actions.
+- Authentication and append-only activity logging for important user, article, deletion queue, profile email/password, admin, AI, and maintenance actions. Search history and language selection changes are intentionally not logged.
 - Configurable log retention and admin log display settings.
 - Admin-configurable progressive password/MFA lockout policy with reset actions for administrators.
 - Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, and AI credentials.
@@ -38,13 +38,13 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Docker cleanup scheduler for routine cleanup tasks.
 - Manual keyword suggestion refresh that scans the current title/body against existing manually created article keywords only.
 - Admin-configurable article count per page with safe limits from 5 to 100.
-- Login page is the only public entry point; normal app/admin paths return 404 to anonymous users.
+- Login page is the only normal public app entry point; normal app/admin paths return 404 to anonymous users. `/robots.txt` is publicly reachable only so cooperative crawlers can see `Disallow: /`; application responses also carry a no-index header.
 
 ---
 
 ## User Types and Rights
 
-DjOpenKB currently uses a login-only website model. The root URL displays the login page. Anonymous users should not be able to browse normal article, internal article, search, profile, admin, AI, or upload pages; protected paths return 404 instead of exposing normal application pages.
+DjOpenKB currently uses a login-only website model. The root URL displays the login page. Anonymous users should not be able to browse normal article, internal article, search, profile, admin, AI, or upload pages; protected paths return 404 instead of exposing normal application pages. `/robots.txt` is the intentional crawler-only exception and contains no application content.
 
 ### Main role matrix
 
@@ -70,6 +70,7 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 | User receives `Article Writer`, `Article Approver`, or `Article Manager` | `Regular User` is removed because public view access is already included. |
 | User receives `Internal User`, `Internal Article Writer`, `Internal Article Approver`, or `Internal Article Manager` | Internal role acts as an add-on and also grants public article viewing. It does not automatically remove unrelated public elevated roles. |
 | Public role + internal role | Permissions are additive but scope-separated. Example: `Article Manager` + `Internal Article Approver` can fully manage public articles but only review pending internal articles. |
+| Writer + matching approver or manager role | Roles are additive. A deliberately combined-role user may approve their own matching-scope submission or pending update. This is an intentional project policy, not a separation-of-duties control. |
 | Public approver only | Can work from the public pending-review flow but cannot create/delete public articles or freely edit published public articles. |
 | Internal approver only | Can work from the internal pending-review flow but cannot create/delete internal articles or freely edit published internal articles. |
 | Public manager only | Can manage public articles but cannot access internal articles unless also given an internal role. |
@@ -88,20 +89,20 @@ Local and AD users are separated by account source metadata, not by email domain
 | Area | Security controls |
 |---|---|
 | Authentication | Login-only site access, local login, AD/LDAPS login, MFA, session timeout, authentication logging |
-| Anonymous access | Only the login/language/static support paths are public; normal app pages and hidden admin login return 404 when unauthenticated |
+| Anonymous access | Only the login/language/static support paths and intentionally public `/robots.txt` are public; normal app pages and hidden admin login return 404 when unauthenticated |
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
 | Authorization | Group-based roles, public/internal scope checks, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, protected image serving, and restricted admin routes |
-| Articles | Public/internal visibility, draft/pending/pending failed/published workflow, pending-update review for published edits, duplicate title prevention, scoped approval queues, MFA deletion confirmation, and orphan article management |
-| Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only |
-| Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body |
+| Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, pending-update review for published edits, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
+| Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only; normal results are newest-updated matching articles first |
+| Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body. Displayed article keywords are clickable and run the normal title/keyword search. |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
 | AI chatbot | Login-protected chatbot endpoint, role-scoped public/internal index selection, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
-| Logging | Separate authentication logs, general activity logs, and admin activity logs with retention cleanup |
+| Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
-| Network | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, and optional admin CIDR/VPN restrictions |
+| Network and crawler controls | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, optional admin CIDR/VPN restrictions, `/robots.txt` with `Disallow: /`, and `X-Robots-Tag` no-index defence in depth for Django responses |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
 
 ## Article Workflow Summary
@@ -122,6 +123,25 @@ Scope approver/manager/admin approves -> pending update replaces the published a
 Scope approver/manager/admin rejects -> published article stays unchanged and feedback is shown to the owner
 ```
 
+Roles are additive. A user with only a writer role cannot approve; a user intentionally assigned the matching approver or manager role can approve their own matching-scope submission. This is an intended design decision for the project.
+
+### Published Article Deletion and Recovery
+
+```text
+Draft / Pending / Pending failed delete:
+Permanent deletion immediately
+
+Published article delete, retention setting > 0:
+MFA confirmation -> Deletion queued -> hidden from normal lists, search, article detail, and AI sync
+Admin can restore or permanently purge during the recovery period
+Cleanup scheduler permanently deletes it after the configured period
+
+Published article delete, retention setting = 0:
+MFA confirmation -> Permanent deletion immediately
+```
+
+The default published-article recovery period is 7 days. It is controlled in Django Admin under **Site settings -> Article deletion queue retention (days)**. The admin-only **Article deletion queue** records queued articles and provides restore and permanent-purge actions.
+
 Public and internal scopes are separated:
 
 | Area | Public article | Internal article |
@@ -134,7 +154,7 @@ Public and internal scopes are separated:
 | OpenKB storage | Public published files under `openkb-data/` | Internal files kept under `openkb-data-internal/` and kept out of public OpenKB data |
 | AI scope | Normal users query public index only | Internal users query internal index containing public + internal published articles |
 
-Draft, pending, pending failed, and unapproved pending-update content is not exposed through article detail traversal. Owners can open their own workflow articles, full admins can open all, and approvers/managers use the explicit review/edit flows for their scope.
+Draft, pending, pending failed, deletion-queued, and unapproved pending-update content is not exposed through normal article detail traversal. Owners can open their own workflow articles, full admins can open all eligible workflow items, and approvers/managers use the explicit review/edit flows for their scope.
 
 ## Project Folder Structure
 
@@ -148,11 +168,11 @@ DjOpenKB/
 |-- docker/                      # Docker helper scripts
 |-- nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
 |-- vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
-|-- redis-data/                  # Optional persistent Redis data if enabled in future deployment tuning
+|-- (Docker volume: redis_data)   # Persistent Redis data is held in a named Docker volume, not a source folder
 |-- ldap-certs/                  # AD/LDAPS CA certificate mounted into the web container
 |-- OpenKB-main/                 # OpenKB source code used by the AI chatbot
 |-- openkb-data/                 # Public OpenKB workspace and public article AI data
-|-- openkb-data-internal/        # Internal OpenKB workspace for internal article AI data
+|-- openkb-data-internal/        # Runtime-created internal OpenKB workspace for internal article AI data
 |-- postgres-data/               # PostgreSQL local persistent data folder
 |-- staticfiles/                 # Django collected static files
 |-- scripts/                     # Utility and testing scripts
@@ -160,7 +180,7 @@ DjOpenKB/
 |-- Dockerfile                   # Django web container build file
 |-- Dockerfile.postgres-vault    # PostgreSQL image with Vault password support
 |-- docker-compose.yml           # Main Docker Compose stack
-|-- .env                         # Local non-secret runtime configuration
+|-- .env                         # Local runtime configuration; do not share deployment copies
 |-- .env.example                 # Example runtime configuration
 `-- requirements.txt             # Python dependencies
 ```
@@ -196,9 +216,11 @@ Important areas:
 
 ```text
 kb/models.py                 # Database models for articles, votes, logs, MFA, site settings, and related data
-kb/forms.py                  # Django forms used by articles, profiles, MFA, and admin workflows
 kb/backends.py               # Authentication backend, including AD/LDAP login handling
 kb/admin.py                  # Django admin registration and admin display settings
+kb/admin_security.py         # Django Admin MFA gate and admin-session protection
+kb/middleware.py             # Login-only, timeout, disabled-user, cache, and no-index middleware
+kb/permissions.py            # Role, public/internal scope, and precedence checks
 kb/urls.py                   # App-level URL routes
 kb/views/                    # Main page, article, admin, auth, MFA, AI, and service views
 kb/management/commands/      # Custom Django management commands
@@ -215,6 +237,7 @@ kb/views/admin.py            # Admin-only article review and maintenance tools
 kb/views/auth.py             # Login/profile/account-related pages
 kb/views/mfa.py              # MFA setup, verification, and reset views
 kb/views/ai.py               # OpenKB AI chatbot endpoint
+kb/views/security.py         # Plain-text /robots.txt endpoint
 kb/views/services.py         # Shared helper logic and compatibility re-exports
 kb/views/services_bulk.py    # Bulk import/export, ZIP splitting, and restore helpers
 kb/views/services_search.py  # Search ranking, related articles, and suggestions
@@ -427,10 +450,11 @@ Example:
 ```text
 scripts/test_ldaps.sh
 scripts/test_ldaps_tls.py
-scripts/sync_locales.py
+scripts/apply_admin_mfa_10min_default_patch.py
+scripts/fix_admin_mfa_every_entry.py
 ```
 
-These scripts help confirm whether the Django container can resolve and connect to the LDAPS server, or help keep translation files synchronized after new UI strings are added.
+These scripts help confirm whether the Django container can resolve and connect to the LDAPS server, or apply narrowly scoped administrative maintenance patches. Translation files are maintained through Django `makemessages` / `compilemessages` workflows.
 
 ---
 
@@ -556,12 +580,30 @@ docker compose exec web python manage.py sync_openkb_ai --scope public
 docker compose exec web python manage.py sync_openkb_ai --scope internal
 ```
 
-Clean activity logs:
+Inspect or run cleanup commands:
 
 ```bash
+# General and Django Admin activity logs
 docker compose exec web python manage.py cleanup_activity_logs --dry-run
-docker compose exec web python manage.py cleanup_activity_logs
+docker compose exec web python manage.py cleanup_activity_logs --noinput
+
+# Authentication and MFA logs
+docker compose exec web python manage.py cleanup_auth_activity_logs --dry-run
+docker compose exec web python manage.py cleanup_auth_activity_logs --noinput
+
+# Published-article deletion queue
+docker compose exec web python manage.py cleanup_article_deletion_queue --dry-run
+docker compose exec web python manage.py cleanup_article_deletion_queue --noinput
 ```
+
+Verify crawler controls after deployment:
+
+```bash
+curl -k https://<server-ip>:8080/robots.txt
+curl -k -I https://<server-ip>:8080/login/
+```
+
+Expected results are `User-agent: *` plus `Disallow: /` from `/robots.txt`, and an `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex` header on the login response.
 
 Compile translations after editing `.po` files:
 
@@ -634,7 +676,6 @@ vault/file/*
 openkb-data/.openkb/
 openkb-data-internal/.openkb/
 .openkb-venv/
-redis-data/
 ldap-certs/
 nginx/certs/*.key
 postgres-data/
@@ -660,5 +701,7 @@ Django check --deploy has been reviewed
 Backups and restore steps are documented
 Redis-backed rate limiting/cache is enabled for production
 OpenKB AI rate limiting, concurrency control, and activity logging are enabled
-Admin-configurable password/MFA lockout stages have been reviewed 
+Admin-configurable password/MFA lockout stages have been reviewed
+Published article deletion queue retention has been reviewed (`7` default; `0` means immediate deletion)
+`/robots.txt` and `X-Robots-Tag` behaviour have been verified
 ```

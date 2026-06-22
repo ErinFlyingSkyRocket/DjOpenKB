@@ -11,6 +11,8 @@ __pycache__/
 venv/
 env/
 ENV/
+# Temporary host-only environment used to run OpenKB initialization.
+.openkb-venv/
 
 # Django
 *.log

@@ -1,168 +1,175 @@
-# DjOpenKB Deployment Guide
+# DjOpenKB Deployment and Operations Guide
 
-This guide explains how to deploy DjOpenKB on a Linux server using Docker Compose.
+This guide is for Linux administrators who install, run, update, back up, and troubleshoot DjOpenKB.
 
-DjOpenKB integrates with VectifyAI OpenKB for the AI knowledge base. OpenKB must be initialized locally in the `openkb-data/` folder before the Django AI sync command is run.
+It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
 
-The project can be deployed for a local/internal network without buying a public domain name. Users can access it through the Linux server IP address, for example:
+## 1. Deployment scope and command convention
 
-```text
-https://<linux-server-ip>:8080
-```
+### Assumptions
 
----
+- Ubuntu/Debian-style Linux host.
+- Project directory: `/opt/DjOpenKB`.
+- Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `web`, `nginx`, and `cleanup-scheduler`.
+- Nginx exposes HTTPS on port `8080`.
+- The initial certificate is self-signed. Use a certificate trusted by intended client devices for an internet-facing deployment.
+- The bundled OpenKB source is in `OpenKB-main/`.
 
-## 1. Prepare the Linux server
-
-Log in to the Linux server using SSH or the local terminal.
-
-Update the package list.
-
-```bash
-sudo apt update
-```
-
-Upgrade installed packages.
-
-```bash
-sudo apt upgrade -y
-```
-
-Install the required packages.
-
-```bash
-sudo apt install -y git curl ca-certificates openssl python3 python-is-python3 python3-venv nano unzip docker.io docker-compose-v2
-```
-
-Check Docker is installed.
-
-```bash
-docker --version
-docker compose version
-```
-
-If Docker gives a permission error, use `sudo docker compose`.
-
-```bash
-sudo docker compose version
-```
-
-Optional: allow your Linux user to run Docker without `sudo`.
+Commands below use `sudo docker compose`. If the Linux administrator is already in the Docker group, `sudo` may be omitted.
 
 ```bash
 sudo usermod -aG docker $USER
 ```
 
-You must log out and log back in before this takes effect. Until then, continue using:
+Log out and back in before using Docker without `sudo`.
 
-```bash
-sudo docker compose ...
+### Persistent deployment state
+
+Do not delete, commit, attach, or include the following files/folders in a public repository, issue, email, or shared project ZIP:
+
+```text
+.env
+vault/bootstrap/djopenkb.env
+vault/file/
+vault/keys/
+vault/logs/
+postgres-data/
+openkb-data/
+openkb-data-internal/
+nginx/certs/localhost.key
+exported article ZIP files
+SQL backups
 ```
+
+These items contain secrets, database data, AI index data, TLS private keys, or audit-sensitive application state. For a recovery that preserves chatbot knowledge, back up `openkb-data/` and `openkb-data-internal/` together with the database.
 
 ---
 
-## 2. Create the deployment folder
+## 2. Prepare the Linux host
 
-Create the `/opt` deployment folder if it does not already exist.
+Install system packages and enable Docker:
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y \
+  git curl ca-certificates openssl nano unzip \
+  python3 python-is-python3 python3-venv \
+  docker.io docker-compose-v2
+sudo systemctl enable --now docker
+```
+
+Verify the installation:
+
+```bash
+docker --version
+docker compose version
+sudo systemctl status docker --no-pager
+```
+
+If UFW is enabled, allow the published HTTPS port only from networks that should reach the service:
+
+```bash
+sudo ufw allow 8080/tcp
+sudo ufw status verbose
+```
+
+Use cloud firewall/security-group controls as well. Do not expose Vault port `8200`, PostgreSQL port `5432`, Redis port `6379`, or Gunicorn port `8000` to the network.
+
+---
+
+## 3. Obtain the project
+
+For a new deployment:
 
 ```bash
 sudo mkdir -p /opt
-```
-
-Move into `/opt`.
-
-```bash
 cd /opt
-```
-
-If this is a fresh deployment, clone the project from GitHub.
-
-```bash
 sudo git clone https://github.com/ErinFlyingSkyRocket/DjOpenKB.git
-```
-
-Give your Linux user ownership of the project folder.
-
-```bash
-sudo chown -R $USER:$USER /opt/DjOpenKB
-```
-
-Move into the project folder.
-
-```bash
+sudo chown -R "$USER":"$USER" /opt/DjOpenKB
 cd /opt/DjOpenKB
 ```
 
-Confirm you are in the correct folder.
-
-```bash
-pwd
-ls
-```
-
-You should see files such as:
-
-```text
-docker-compose.yml
-Dockerfile
-manage.py
-djopenkb/
-kb/
-nginx/
-vault/
-documentations/
-```
-
----
-
-## 3. Pull latest code for an existing deployment
-
-If the project folder already exists, do not clone again. Move into the existing folder.
+For an existing deployment:
 
 ```bash
 cd /opt/DjOpenKB
-```
-
-Check the current Git status.
-
-```bash
 git status
+git branch --show-current
 ```
 
-Pull the latest version.
+Confirm the main files exist:
 
 ```bash
-git pull
+ls docker-compose.yml manage.py .env.example
+ls djopenkb kb nginx vault OpenKB-main documentations
 ```
-
-If Git says there are local changes, review them before pulling. Do not overwrite local secrets such as `.env` or `vault/bootstrap/djopenkb.env`.
 
 ---
 
-## 4. Create the `.env` file
+## 4. Configure `.env` (non-secret settings)
 
-Copy the example `.env` file.
+Create the runtime environment file:
 
 ```bash
+cd /opt/DjOpenKB
 cp .env.example .env
-```
-
-Open it for editing.
-
-```bash
+chmod 600 .env
 nano .env
 ```
 
-Set the main runtime values.
+`.env` must contain **non-secret configuration only**. Put passwords, API keys, the Django secret key, and the encryption key in `vault/bootstrap/djopenkb.env` during first-time Vault seeding.
+
+### 4.1 Example public server values
+
+This example assumes users browse to `https://kb.example.com:8080` and the Linux host has IP address `198.51.100.25`.
 
 ```env
 DJANGO_DEBUG=false
+
+# Include every hostname or IP address users may enter in the browser.
+# Do not include https:// or a port here.
+DJANGO_ALLOWED_HOSTS=kb.example.com,198.51.100.25,localhost,127.0.0.1,web,nginx
+
+# Use the exact browser origins, including https:// and :8080 when users use port 8080.
+DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com:8080,https://198.51.100.25:8080,https://localhost:8080,https://127.0.0.1:8080
+
+MFA_TOTP_ISSUER=Knowledge Repository
+MFA_TOTP_VALID_WINDOW=2
 
 POSTGRES_DB=djopenkb
 POSTGRES_USER=djopenkb
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 
+REDIS_URL=redis://redis:6379/1
+DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false
+
+USE_SQLITE=false
+VAULT_KV_MOUNT=secret
+VAULT_SECRET_PATH=djopenkb
+VAULT_AUTO_UNSEAL_INTERVAL_SECONDS=15
+```
+
+Use `hostname -I` to identify the Linux host IP address:
+
+```bash
+hostname -I
+```
+
+If a reverse proxy later presents the service publicly on standard HTTPS port `443`, add that exact origin too, for example:
+
+```env
+DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com,https://kb.example.com:8080
+```
+
+Keep `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` when `DJANGO_DEBUG=false`. Redis is required for shared rate limiting, lockout handling, and AI concurrency controls across Gunicorn workers.
+
+### 4.2 OpenKB and AI runtime values
+
+Use this standard OpenKB configuration:
+
+```env
 OPENKB_BASE_DIR=OpenKB-main
 OPENKB_DATA_DIR=openkb-data
 OPENKB_INTERNAL_DATA_DIR=openkb-data-internal
@@ -170,11 +177,6 @@ OPENKB_AI_PROVIDER=openkb-cli
 OPENKB_AI_MODEL=gemini/gemini-2.5-flash
 LITELLM_DROP_PARAMS=true
 
-# Production shared cache/rate-limit backend. Required when DJANGO_DEBUG=false.
-REDIS_URL=redis://redis:6379/1
-DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false
-
-# OpenKB AI safety limits.
 OPENKB_AI_MAX_PROMPT_CHARS=1000
 OPENKB_AI_RATE_LIMIT_MAX_REQUESTS=5
 OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS=60
@@ -182,38 +184,127 @@ OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS=1800
 OPENKB_AI_TIMEOUT_SECONDS=90
 OPENKB_AI_CONCURRENCY_LIMIT=2
 OPENKB_AI_CONCURRENCY_LOCK_SECONDS=120
-
-# Fallback authentication lockout values used before Site settings are available.
-# The real production policy is managed in Django Admin -> Site settings.
-AUTH_LOCKOUT_STRIKE_TTL_SECONDS=604800
-
-USE_SQLITE=false
-
-VAULT_KV_MOUNT=secret
-VAULT_SECRET_PATH=djopenkb
-VAULT_AUTO_UNSEAL_INTERVAL_SECONDS=15
 ```
 
-Set the allowed host values for the Linux server IP address.
+The model is selected with `OPENKB_AI_MODEL`. The API key remains in Vault, not `.env`.
 
-Replace `192.168.81.50` with the actual Linux server IP.
+| Provider example | Example `OPENKB_AI_MODEL` | Bootstrap key supported by the current Vault script |
+|---|---|---|
+| Google Gemini Flash | `gemini/gemini-2.5-flash` | `AI_API_KEY=<Google AI key>` |
+| Google Gemini Pro | `gemini/gemini-2.5-pro` | `AI_API_KEY=<Google AI key>` |
+| OpenAI | `openai/gpt-5.5` | `AI_API_KEY=<OpenAI API key>` |
+| Anthropic Claude Haiku | `anthropic/claude-3-5-haiku-latest` | `AI_API_KEY=<Anthropic API key>` |
+| Anthropic Claude Sonnet | `anthropic/claude-3-5-sonnet-latest` | `AI_API_KEY=<Anthropic API key>` |
+| OpenRouter | `openrouter/openai/gpt-4o-mini` | `AI_API_KEY=<OpenRouter API key>` |
+| Groq | `groq/llama-3.1-8b-instant` | `AI_API_KEY=<Groq API key>` |
+| Mistral | `mistral/mistral-small-latest` | `AI_API_KEY=<Mistral API key>` |
+| Cohere | `cohere/command-r` | `AI_API_KEY=<Cohere API key>` |
+| Local Ollama | `ollama/llama3.1` | Provider/local-runtime-specific setup required |
+
+Use only model strings supported by the installed OpenKB/LiteLLM version and by the selected provider account. Test a model change in a controlled environment before making it available to users.
+
+**Current implementation note:** Django reads `AI_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`. However, the current `vault/scripts/init.sh` writes only `AI_API_KEY` into Vault during its normal bootstrap process. Therefore, use `AI_API_KEY` as the supported standard for all provider choices unless the Vault init script is deliberately extended and tested to store provider-specific keys.
+
+### 4.3 Optional cleanup interval
+
+The cleanup service defaults to one run every 24 hours. To change it, add this optional value to `.env`:
 
 ```env
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,web,nginx,192.168.81.50
-DJANGO_CSRF_TRUSTED_ORIGINS=https://localhost:8080,https://127.0.0.1:8080,https://192.168.81.50:8080
+CLEANUP_INTERVAL_SECONDS=86400
 ```
 
-Find your Linux server IP if needed.
+Do not set an unusually short interval on a production host unless there is a clear operational reason.
+
+---
+
+## 5. Configure Nginx host details and administrator network access
+
+Edit `nginx/nginx.conf` before exposing the service to users:
 
 ```bash
-hostname -I
+cd /opt/DjOpenKB
+nano nginx/nginx.conf
+```
+
+### 5.1 Server name
+
+Update the `server_name` line to include the intended DNS name and server IP, for example:
+
+```nginx
+server_name kb.example.com 198.51.100.25 localhost 127.0.0.1;
+```
+
+### 5.2 Django Admin network allowlist
+
+The Nginx `geo $djopenkb_admin_network_allowed` block is an outer access control for `/admin/`. Replace the sample management range with the real management subnet, for example:
+
+```nginx
+geo $djopenkb_admin_network_allowed {
+    default 0;
+    10.20.30.0/24 1;
+    127.0.0.1/32 1;
+    ::1/128 1;
+}
+```
+
+Do not use `0.0.0.0/0` for the administrator allowlist. After an Nginx change:
+
+```bash
+sudo docker compose restart nginx
+sudo docker compose logs --tail=80 nginx
 ```
 
 ---
 
-## 5. Configure LDAP or LDAPS in `.env`
+## 6. Configure Vault bootstrap secrets
 
-If Active Directory login is not needed, keep LDAP disabled.
+Vault is used for Django, database, LDAP, and AI secrets. The bootstrap file is read only during first-time setup or an intentional secret update.
+
+Create it from the example and generate strong local values:
+
+```bash
+cd /opt/DjOpenKB
+cp vault/bootstrap/djopenkb.env.example vault/bootstrap/djopenkb.env
+chmod 600 vault/bootstrap/djopenkb.env
+chmod +x vault/bootstrap/generate-secrets.sh
+./vault/bootstrap/generate-secrets.sh
+nano vault/bootstrap/djopenkb.env
+```
+
+For a Gemini example, the important values look like this. Do not copy placeholder values literally:
+
+```env
+DJANGO_SECRET_KEY=<generated-by-script>
+DJANGO_FIELD_ENCRYPTION_KEY=<generated-by-script>
+POSTGRES_PASSWORD=<generated-by-script>
+
+AI_API_KEY=<your-google-ai-api-key>
+LDAP_BIND_PASSWORD=<service-account-password>
+LDAP_PLACEHOLDER_PASSWORD=<generated-by-script>
+```
+
+For OpenAI, Anthropic, OpenRouter, Groq, Mistral, or Cohere, keep the same key name and replace only the value:
+
+```env
+AI_API_KEY=<the-api-key-for-the-model-selected-in-OPENKB_AI_MODEL>
+```
+
+Important rules:
+
+- Never store any secret in `.env`, Git, screenshots, documentation, tickets, or shared ZIP files.
+- Do not casually rotate `DJANGO_SECRET_KEY`; signed values and sessions can be affected.
+- Do not casually rotate `DJANGO_FIELD_ENCRYPTION_KEY`; existing encrypted MFA data can become unreadable.
+- Do not change `POSTGRES_PASSWORD` on an existing database unless the PostgreSQL password is rotated in a coordinated maintenance procedure.
+- The bootstrap file uses `KEY=value` format with no spaces around `=`.
+- For an LDAP password that contains shell-special characters, use single quotes, for example `LDAP_BIND_PASSWORD='Example!Password$123'`.
+
+After Vault has seeded successfully, remove `vault/bootstrap/djopenkb.env` from any source package or exported backup copy. Retain it only in a protected administrator location if local policy permits.
+
+---
+
+## 7. Configure LDAP or LDAPS (optional)
+
+When Active Directory is not used, keep LDAP disabled:
 
 ```env
 LDAP_ENABLED=false
@@ -221,984 +312,563 @@ LDAP_PLACEHOLDER_ENABLED=false
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
 ```
 
-If LDAPS is enabled, update the LDAP section based on the Windows Server / Active Directory setup.
+### 7.1 LDAPS example using a Domain Controller
 
-Example:
+This example uses:
+
+```text
+AD DNS / UPN domain: ad.example.com
+Domain Controller FQDN: dc01.ad.example.com
+Domain Controller IP: 10.20.30.10
+NetBIOS domain: AD
+Service account: svc_djopenkb@ad.example.com
+Search base: DC=ad,DC=example,DC=com
+```
+
+Add the following non-secret values to `.env`:
 
 ```env
 LDAP_ENABLED=true
 LDAP_PLACEHOLDER_ENABLED=false
 LDAP_PLACEHOLDER_AUTO_CREATE_USERS=false
 
-LDAP_SERVER_URI=ldaps://<DOMAIN_CONTROLLER_FQDN>:636
+# Use the Domain Controller FQDN, not its IP address. The FQDN must match
+# the LDAPS certificate name/SAN presented by the Domain Controller.
+LDAP_SERVER_URI=ldaps://dc01.ad.example.com:636
 LDAP_START_TLS=false
 LDAP_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 LDAP_TLS_REQUIRE_CERT=demand
 LDAP_ALLOW_INSECURE=false
+LDAP_NETWORK_TIMEOUT=5
+LDAP_OPERATION_TIMEOUT=5
 
-# Example AD domain values. Replace these with your real AD details.
-# AD DNS domain / UPN suffix example: openkb.local
-# NetBIOS domain example: OPENKB
-LDAP_AD_DOMAIN=openkb.local
-LDAP_NETBIOS_DOMAIN=OPENKB
-LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local,company.com
+# AD/UPN domain and NetBIOS domain.
+LDAP_AD_DOMAIN=ad.example.com
+LDAP_NETBIOS_DOMAIN=AD
+LDAP_ALLOWED_EMAIL_DOMAINS=ad.example.com,example.com
 
-# For openkb.local, use DC=openkb,DC=local.
-# For example.corp.local, use DC=example,DC=corp,DC=local.
-LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
-LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local)(mail=%(user)s@company.com)(userPrincipalName=%(user)s@company.com))
-LDAP_BIND_DN=svc_djopenkb@openkb.local
-LDAP_EXTRA_HOSTNAME=dc01.openkb.local
+# AD directory search location and supported username/email forms.
+LDAP_USER_SEARCH_BASE=DC=ad,DC=example,DC=com
+LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@ad.example.com)(mail=%(user)s)(mail=%(user)s@ad.example.com)(mail=%(user)s@example.com)(userPrincipalName=%(user)s@example.com))
+
+# Low-privilege service account used only to bind and search.
+LDAP_BIND_DN=svc_djopenkb@ad.example.com
+
+# Set these to the actual DC values so Docker can resolve the FQDN even where
+# internal DNS is not available inside containers.
+LDAP_EXTRA_HOSTNAME=dc01.ad.example.com
 LDAP_EXTRA_SHORT_HOSTNAME=dc01
-LDAP_DC_IP=<AD_DC_IP>
+LDAP_DC_IP=10.20.30.10
 ```
 
-Notes:
+Place only the public AD issuing CA certificate in the project. Do not copy a Domain Controller private key, PFX file, or full credential bundle into DjOpenKB.
 
-```text
-- `openkb.local` is only an example placeholder. Replace it with the organisation's real AD DNS domain, such as `corp.local` or `qapf1.qalab01.nextlabs.com`.
-- Convert an AD domain name to `LDAP_USER_SEARCH_BASE` by splitting the dots into `DC=` parts. Example: `openkb.local` becomes `DC=openkb,DC=local`.
-- `LDAP_BIND_DN` should use the actual AD service account UPN that can bind/search, for example `svc_djopenkb@openkb.local`.
-- `LDAP_ALLOWED_EMAIL_DOMAINS` can include both the public email domain and the AD UPN suffix.
-- `LDAP_EXTRA_HOSTNAME`, `LDAP_EXTRA_SHORT_HOSTNAME`, and `LDAP_DC_IP` are only needed when Docker/Linux cannot resolve the Domain Controller hostname.
-- Keep `LDAP_SERVER_URI` as the hostname/FQDN for LDAPS certificate validation.
+```bash
+cd /opt/DjOpenKB
+sudo install -d -m 755 ldap-certs
+sudo install -m 644 /path/to/ad-issuing-ca.crt ldap-certs/ad-ca.crt
+openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
 ```
 
-For full LDAPS setup, refer to:
+If the certificate export is DER/binary instead of PEM/Base-64:
+
+```bash
+cd /opt/DjOpenKB
+openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
+mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
+mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
+```
+
+Add the service-account password to `vault/bootstrap/djopenkb.env`:
+
+```env
+LDAP_BIND_PASSWORD=<password-for-svc_djopenkb@ad.example.com>
+```
+
+Start the stack, then verify TLS and search/bind connectivity without exposing a user password:
+
+```bash
+sudo docker compose exec web python scripts/test_ldaps_tls.py
+sudo docker compose exec web python manage.py test_ldap_auth alice@ad.example.com
+```
+
+To test a user sign-in interactively, use the command below only from a protected administrator terminal. It prompts for the user's AD password instead of placing it on the command line:
+
+```bash
+sudo docker compose exec -it web python manage.py test_ldap_auth alice@ad.example.com --auth
+```
+
+For Windows Server certificate setup and AD prerequisites, refer to:
 
 ```text
 documentations/LDAP_LDAPS_SETUP.md
 documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
 ```
-## 6. Generate Vault bootstrap secrets
-
-Make the secret generator executable.
-
-```bash
-chmod +x vault/bootstrap/generate-secrets.sh
-```
-
-Run it.
-
-```bash
-./vault/bootstrap/generate-secrets.sh
-```
-
-Open the generated Vault bootstrap file.
-
-```bash
-nano vault/bootstrap/djopenkb.env
-```
-
-Confirm it contains the required secrets.
-
-```env
-DJANGO_SECRET_KEY=generated-random-value
-POSTGRES_PASSWORD=generated-random-value
-DJANGO_FIELD_ENCRYPTION_KEY=generated-random-value
-
-# Use the key for the provider selected by OPENKB_AI_MODEL.
-# Keep AI_API_KEY for compatibility and set the provider-specific key as well.
-AI_API_KEY=your-selected-ai-provider-api-key
-GEMINI_API_KEY=your-gemini-api-key-if-using-gemini
-OPENAI_API_KEY=your-openai-api-key-if-using-openai
-ANTHROPIC_API_KEY=your-anthropic-api-key-if-using-claude
-
-LDAP_BIND_PASSWORD=your-ad-service-account-password
-LDAP_PLACEHOLDER_PASSWORD=generated-random-value
-```
-
-Important notes:
-
-```text
-- Do not commit or share vault/bootstrap/djopenkb.env.
-- For a fresh setup, generate POSTGRES_PASSWORD before the first startup.
-- For an existing database, do not change POSTGRES_PASSWORD unless you also update it inside Postgres.
-- Use plain `KEY=value` format with no quotes and no spaces around `=` where possible.
-- Keep DJANGO_SECRET_KEY stable after deployment. Changing it can invalidate sessions and signed data.
-- Keep DJANGO_FIELD_ENCRYPTION_KEY stable after deployment. Changing it can make encrypted MFA secrets unreadable unless data is reset or re-encrypted.
-- Keep POSTGRES_PASSWORD stable after the database is created. If Vault and Postgres passwords no longer match, Django/Postgres access can fail.
-- Keep Vault data and keys safe. If Vault data/keys are lost, Django may not be able to read the stored database, LDAP, field-encryption, and AI secrets.
-- After Vault is seeded and login works, remove vault/bootstrap/djopenkb.env from exported/shared copies.
-```
-
-Recommended practice:
-
-```text
-Save the final generated DJANGO_SECRET_KEY, DJANGO_FIELD_ENCRYPTION_KEY, and POSTGRES_PASSWORD securely in an offline password manager or protected administrator record.
-Do not regenerate these values on an existing deployment unless you intentionally rotate them and know the matching update steps.
-```
 
 ---
 
-## 7. Initialise OpenKB data locally
+## 8. Configure HTTPS certificates
 
-OpenKB must be initialized once in the local `openkb-data/` folder because Docker mounts this folder into the Django container.
-
-During first deployment, create a temporary local Python virtual environment only to run `openkb init`. After OpenKB has created `openkb-data/.openkb/`, the temporary virtual environment is no longer needed and can be removed.
-
-Initialize OpenKB locally at:
-
-```text
-/opt/DjOpenKB/openkb-data
-```
-
-Move to the project root.
+The supplied script creates a local self-signed certificate:
 
 ```bash
 cd /opt/DjOpenKB
-```
-
-Create a temporary local Python virtual environment for OpenKB initialization.
-
-```bash
-python3 -m venv .openkb-venv
-source .openkb-venv/bin/activate
-python -m pip install --upgrade pip
-```
-
-Install OpenKB. For this project, the OpenKB source is already included under `OpenKB-main/`, so install from that local folder.
-
-```bash
-pip install -e OpenKB-main
-```
-
-If preferred, the official VectifyAI OpenKB package can also be installed from PyPI.
-
-```bash
-pip install openkb
-```
-
-Create and enter the OpenKB data folder.
-
-```bash
-mkdir -p openkb-data
-cd openkb-data
-```
-
-Run OpenKB init locally.
-
-```bash
-openkb init
-```
-
-If the `openkb` command is not found, use the local Python module command instead.
-
-```bash
-PYTHONPATH=../OpenKB-main python -m openkb.cli init
-```
-
-OpenKB will ask for a model in LiteLLM format. When you see this prompt:
-
-```text
-Model (enter for default shown by your installed OpenKB version):
-```
-
-type the same model name configured in `.env` as `OPENKB_AI_MODEL`.
-
-For the current recommended setup, enter:
-
-```text
-gemini/gemini-2.5-flash
-```
-
-### Common OpenKB model inputs
-
-| Provider | Example model input |
-|---|---|
-| Gemini Flash | `gemini/gemini-2.5-flash` |
-| Gemini Pro | `gemini/gemini-2.5-pro` |
-| OpenAI model | `openai/<model-name>` or the exact model string supported by your OpenKB/LiteLLM version |
-| Anthropic Claude Haiku | `anthropic/claude-3-5-haiku-latest` |
-| Anthropic Claude Sonnet | `anthropic/claude-3-5-sonnet-latest` |
-| OpenRouter | `openrouter/openai/gpt-4o-mini` |
-| Groq | `groq/llama-3.1-8b-instant` |
-| Mistral | `mistral/mistral-small-latest` |
-| Cohere | `cohere/command-r` |
-| Ollama local model | `ollama/llama3.1` |
-
-Some OpenKB versions may not show many prompts and may silently create the configuration files. That is acceptable.
-
-Check that OpenKB created the local runtime configuration.
-
-```bash
-ls -la
-ls -la .openkb
-```
-
-If `.openkb/` exists, OpenKB init has completed.
-
-Return to the project root and deactivate the virtual environment.
-
-```bash
-cd /opt/DjOpenKB
-deactivate
-```
-
-Because `.openkb-venv` is only used for OpenKB initialization, remove it after confirming `openkb-data/.openkb/` exists.
-
-```bash
-rm -rf .openkb-venv
-```
-
-Do not commit or share the generated OpenKB runtime configuration folder:
-
-```text
-openkb-data/.openkb/
-openkb-data-internal/.openkb/
-.openkb-venv/
-```
-
-The old `openkb-data/.env` file is not required for the current DjOpenKB setup because the AI model is configured through `.env` and the AI API keys are stored in Vault as `AI_API_KEY` and provider-specific keys such as `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY`.
-
----
-
-## 8. Generate the local Nginx HTTPS certificate
-
-Make the certificate script executable.
-
-```bash
 chmod +x nginx/certs/generate-localhost-cert.sh
-```
-
-Run the script.
-
-```bash
 ./nginx/certs/generate-localhost-cert.sh
+chmod 644 nginx/certs/localhost.crt
+chmod 600 nginx/certs/localhost.key
 ```
 
-Nginx expects the certificate files at these paths inside the container:
-
-```text
-/etc/nginx/certs/localhost.crt
-/etc/nginx/certs/localhost.key
-```
-
-The Docker Compose mount maps that to these paths on the Linux host:
+The generated certificate is intended for local/lab use and will generate browser warnings for normal public DNS names. For an internet-facing service, replace these files with a certificate and private key trusted by the intended devices, keeping the paths expected by `nginx/nginx.conf`:
 
 ```text
 nginx/certs/localhost.crt
 nginx/certs/localhost.key
 ```
 
-Check that the files exist.
-
-```bash
-ls -l nginx/certs/localhost.crt nginx/certs/localhost.key
-```
-
-Set permissions.
-
-```bash
-chmod 644 nginx/certs/localhost.crt
-chmod 600 nginx/certs/localhost.key
-```
-
-This is a self-signed certificate for local/intranet testing. The browser may show a warning.
-
----
-
-## 9. Add the LDAPS CA certificate if using AD
-
-If LDAPS is enabled, the Windows Server / Active Directory CA certificate must be available to the Linux server and mounted into the Django `web` container.
-
-Recommended Windows export format:
-
-```text
-Base-64 encoded X.509 (.CER)
-```
-
-Rename or copy the exported certificate to:
-
-```text
-ldap-certs/ad-ca.crt
-```
-
-Check that the file exists on the Linux server:
-
-```bash
-ls -l ldap-certs/ad-ca.crt
-```
-
-The file should be PEM/readable text. Check it with:
-
-```bash
-head -n 5 ldap-certs/ad-ca.crt
-```
-
-Expected:
-
-```text
------BEGIN CERTIFICATE-----
-...
-```
-
-If the file shows unreadable binary characters instead, it was exported as DER/binary. Convert it on the Linux server:
-
-```bash
-openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
-mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
-mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
-```
-
-Then verify it again:
-
-```bash
-openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
-```
-
-If certificate validation still fails with `unable to get local issuer certificate`, the file is readable but the CA chain is incomplete. Export the Root CA and any Issuing/Intermediate CA certificates from Windows Server, convert them to PEM if needed, then combine them:
-
-```bash
-cat issuing-ca.crt root-ca.crt > ldap-certs/ad-ca.crt
-```
-
-If the Linux server or Docker container cannot resolve the AD hostname, make sure these fields are set in `.env`:
-
-```env
-LDAP_EXTRA_HOSTNAME=<DOMAIN_CONTROLLER_FQDN>
-LDAP_EXTRA_SHORT_HOSTNAME=<DOMAIN_CONTROLLER_SHORT_HOSTNAME>
-LDAP_DC_IP=<AD_DC_IP>
-```
-
-Replace `<AD_DC_IP>` with the actual Windows Server Domain Controller IP. Keep `LDAP_SERVER_URI` as the Domain Controller hostname/FQDN, not the IP address, so LDAPS hostname validation can work correctly.
-## 10. Start the Docker stack
-
-Start and build all containers.
-
-```bash
-sudo docker compose up -d --build
-```
-
-Check container status.
-
-```bash
-sudo docker compose ps
-```
-
-Check Vault init logs.
-
-```bash
-sudo docker compose logs -f vault-init
-```
-
-Check web logs.
-
-```bash
-sudo docker compose logs -f web
-```
-
-Check Nginx logs.
-
-```bash
-sudo docker compose logs -f nginx
-```
-
-If everything is successful, the `web`, `db`, `redis`, `vault`, `cleanup-scheduler`, and `nginx` services should be running.
-
----
-
-## 11. Fix Vault init failure during fresh testing
-
-If `vault-init` fails, check the Vault bootstrap file with line numbers.
-
-```bash
-nl -ba vault/bootstrap/djopenkb.env
-```
-
-The file should use valid `KEY=VALUE` lines.
-
-Examples:
-
-```env
-DJANGO_SECRET_KEY=randomvalue
-POSTGRES_PASSWORD=randomvalue
-LDAP_BIND_PASSWORD=password-without-quotes-when-possible
-```
-
-Do not put spaces around `=`.
-
-Correct:
-
-```env
-DJANGO_SECRET_KEY=randomvalue
-```
-
-Wrong:
-
-```env
-DJANGO_SECRET_KEY = randomvalue
-```
-
-For a fresh failed deployment only, reset Vault state and start again.
-
-```bash
-sudo docker compose down
-sudo rm -rf vault/file vault/keys
-mkdir -p vault/file vault/keys
-chmod 700 vault/keys
-sudo docker compose up -d --build
-```
-
-Do not reset Vault on a real deployment unless you understand that it removes local Vault state.
-
----
-
-## 12. Run Django setup commands
-
-Run migrations. This also creates the admin-configurable authentication lockout policy stages and seeds the default policy if it does not already exist.
-
-```bash
-sudo docker compose exec web python manage.py migrate
-```
-
-Collect static files.
-
-```bash
-sudo docker compose exec web python manage.py collectstatic --noinput
-```
-
-Create the first local Django admin account.
-
-```bash
-sudo docker compose exec web python manage.py createsuperuser
-```
-
-Run the Django deployment check.
-
-```bash
-sudo docker compose exec web python manage.py check --deploy
-```
-
-The admin account can access:
-
-```text
-https://<linux-server-ip>:8080/admin/
-```
-
-Most user, article, permission, and log management can be handled through the Django Admin site.
-
----
-
-## 13. Sync Django articles into OpenKB
-
-After Docker is running and database migrations are complete, sync published Django articles into the local OpenKB data folder.
-
-```bash
-sudo docker compose exec web python manage.py sync_openkb_ai
-```
-
-If many articles are added or changed later, run the sync command again.
-
-```bash
-sudo docker compose exec web python manage.py sync_openkb_ai
-```
-
-Check that the container can see the locally initialized OpenKB data folder.
-
-```bash
-sudo docker compose exec web ls -la /app/openkb-data
-sudo docker compose exec web ls -la /app/openkb-data/.openkb
-```
-
----
-
-## 14. Test LDAPS connection
-
-If LDAPS is enabled, test from inside the web container.
-
-First check the CA certificate mount:
-
-```bash
-sudo docker compose exec web ls -l /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-sudo docker compose exec web head -n 5 /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-```
-
-The first line should be:
-
-```text
------BEGIN CERTIFICATE-----
-```
-
-Then test LDAPS:
-
-```bash
-sudo docker compose exec web sh scripts/test_ldaps.sh
-```
-
-Expected successful output:
-
-```text
-TLS handshake OK
-LDAPS DNS + TLS certificate validation looks good.
-```
-
-You can also test manually:
-
-```bash
-sudo docker compose exec web openssl s_client \
-  -connect <DOMAIN_CONTROLLER_FQDN>:636 \
-  -servername <DOMAIN_CONTROLLER_FQDN> \
-  -CAfile /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-```
-
-Expected certificate result:
-
-```text
-Verify return code: 0 (ok)
-```
-
-If it fails, refer to:
-
-```text
-documentations/LDAP_LDAPS_SETUP.md
-documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
-```
-## 15. Access the website
-
-Open the website using the Linux server IP address.
-
-```text
-https://<linux-server-ip>:8080
-```
-
-Example:
-
-```text
-https://192.168.81.50:8080
-```
-
-If using the self-signed certificate, accept the browser warning for the lab/internal environment.
-
-### 15.1 Expected access-control behaviour
-
-Current DjOpenKB is configured as a login-only internal knowledge base.
-
-Expected browser behaviour:
-
-```text
-https://<linux-server-ip>:8080/                    -> login page
-https://<linux-server-ip>:8080/home/               -> requires login
-https://<linux-server-ip>:8080/internal/           -> requires login + internal article access
-normal article/search/profile/admin URLs           -> require login
-anonymous access to protected paths                -> 404
-/admin/login/                                      -> hidden / 404
-/admin/                                            -> allowed only after normal login, Admin Users/superuser sync, admin MFA, and admin CIDR/VPN checks
-```
-
-After login and MFA completion where applicable, users are redirected to `/home/`.
-
-Default role behaviour:
-
-```text
-New normal local/AD user -> Regular User group
-Disabled User           -> highest precedence; removes admin/role groups, clears direct permissions, unchecks staff/superuser, and redirects to the disabled-account page
-Regular User            -> fallback public viewer role; view published public articles and vote
-Article Writer          -> create/submit public articles and submit pending updates for own public articles; includes public view/vote access
-Article Approver        -> review public pending articles/updates; can edit only in public review flow; no delete by default
-Article Manager         -> create/edit/manage/review/delete public articles; can see dislike counts; no Django Admin by default
-Internal User           -> internal viewer add-on; can view published internal articles and also public articles
-Internal Article Writer -> create/submit internal articles and submit pending updates for own internal articles
-Internal Article Approver -> review internal pending articles/updates; can edit only in internal review flow; no delete by default
-Internal Article Manager -> create/edit/manage/review/delete internal articles; can see dislike counts; no Django Admin by default
-Admin Users             -> full administrator source of truth; sets staff/superuser, covers public/internal scopes, and preserves account source
-```
-
-Direct user permission checkboxes in Django Admin are add-on content permissions only. They grant exceptions on top of group membership and do not remove group permissions. They do not grant Django Admin access by themselves.
-
-Admin setting precedence:
-
-```text
-Disabled User wins over every other standard role.
-Admin Users grants full admin/superuser access unless Disabled User is also assigned.
-Regular User is the fallback public viewer role and is only auto-added when no other standard role exists.
-Public writer/approver/manager roles control public article actions.
-Internal roles are add-on roles and control internal article actions.
-Public and internal permissions are additive but checked against article visibility at runtime.
-Custom future groups, such as email notification groups, are preserved.
-Django Active = whether the account can sign in at all.
-Disabled User = account retained but restricted to the disabled-account page/sign-out flow.
-```
-
-Account source is preserved during promotion/demotion:
-
-```text
-Local user + Admin Users  -> Local admin
-LDAP user + Admin Users   -> LDAP admin
-Local admin removed from Admin Users -> Local user
-LDAP admin removed from Admin Users  -> LDAP user
-```
-
-Admins may edit Account Type and Source in Django Admin for recovery cases, such as converting an AD/LDAP account into a local account after the AD account is deleted while preserving article ownership.
-
-### 15.2 Role interaction table
-
-| Scenario | Expected result |
-|---|---|
-| New local/AD user logs in for the first time | Gets `Regular User` if not admin/disabled and can view public articles only. |
-| Assign `Article Writer` | User can create public articles; `Regular User` becomes redundant and is removed. |
-| Assign `Article Approver` | User can review public pending articles/updates only; no public delete right. |
-| Assign `Article Manager` | User can manage/delete public articles and see dislike counts; no internal access unless also given an internal role. |
-| Assign `Internal User` | User can view internal articles but cannot create/review/delete them. |
-| Assign `Internal Article Writer` | User can create internal articles; does not become public article manager. |
-| Assign `Internal Article Approver` | User can review internal pending articles/updates only; no internal delete right. |
-| Assign `Internal Article Manager` | User can manage/delete internal articles and see dislike counts; does not become public article manager. |
-| Assign public manager + internal approver | Full public management, internal review only. |
-| Assign public approver + internal manager | Public review only, full internal management. |
-| Assign `Admin Users` | User becomes staff/superuser, can access public/internal/admin areas after admin guards. |
-| Assign `Disabled User` | User loses role/admin groups and cannot use the site after authentication. |
-
-### 15.3 Quick post-login validation checklist
-
-After deployment, test these flows once:
-
-```text
-1. Incognito / anonymous request to /home/ returns 404 or forces login according to the login guard.
-2. / displays the login page.
-3. A new local or AD user lands in Regular User when no other standard role is assigned and can view published public articles.
-4. A user moved to Disabled User loses staff/superuser status, cannot use functions, and is sent to the disabled-account page.
-5. A user in Admin Users becomes staff/superuser and other normal standard role groups are handled by role sync.
-6. Removing a user from Admin Users and placing them back into a normal role removes staff/superuser status.
-7. Local users promoted to Admin Users show as Local admin; LDAP users promoted to Admin Users show as LDAP admin.
-8. Article Writer can create and submit a public article.
-9. Article Approver can approve/reject public pending articles and cannot delete published public articles.
-10. Article Manager can create, edit/manage, approve/reject, delete public articles, and see dislike counts without needing Django Admin access.
-11. Internal User can open /internal/ and view published internal articles, while Regular User cannot.
-12. Internal Article Writer can create and submit an internal article.
-13. Internal Article Approver can approve/reject internal pending articles and cannot delete published internal articles.
-14. Internal Article Manager can create, edit/manage, approve/reject, delete internal articles, and see dislike counts without needing Django Admin access.
-15. Public-only managers cannot access internal-only pending/review routes unless assigned an internal role.
-16. Internal-only managers cannot manage public article approvals/deletion unless assigned a public manager/admin role.
-17. Admin Users can access admin tools and /admin/ from the allowed admin network/VPN after admin MFA.
-18. /admin/login/ does not expose the normal Django admin login page.
-19. Search only returns title/keyword matches and respects public/internal access.
-20. Homepage tabs paginate correctly according to the Articles per page setting.
-21. Keyword suggestion refresh only suggests existing manually-created keywords that exactly appear in the current draft title/body.
-22. `python manage.py check_internal_article_isolation --sync-first` passes after internal article sync.
-```
-
----
-
-## 16. Normal Docker Compose operation commands
-
-This section is useful after the first deployment is completed.
-
-### Check service status
-
-```bash
-sudo docker compose ps
-```
-
-### Start services
-
-```bash
-sudo docker compose up -d
-```
-
-### Start and rebuild services
-
-Use this after code, dependency, Dockerfile, or Docker Compose changes.
-
-```bash
-sudo docker compose up -d --build
-```
-
-### Stop services without deleting data
-
-```bash
-sudo docker compose down
-```
-
-This stops containers but keeps normal bind-mounted project data such as PostgreSQL data, Vault data, uploaded files, and OpenKB data.
-
-### Restart only the Django web container
-
-Use this after small Python/template/config changes that do not require a rebuild.
-
-```bash
-sudo docker compose restart web
-```
-
-### Restart Nginx only
-
-Use this after changing Nginx configuration or certificates.
+Then restart Nginx:
 
 ```bash
 sudo docker compose restart nginx
 ```
 
-### Restart the cleanup scheduler only
-
-Use this after changing scheduled cleanup scripts or maintenance commands.
-
-```bash
-sudo docker compose restart cleanup-scheduler
-```
-
-### Restart multiple services
-
-```bash
-sudo docker compose restart web nginx cleanup-scheduler
-```
-
-### View logs
-
-Follow live logs.
-
-```bash
-sudo docker compose logs -f web
-sudo docker compose logs -f nginx
-sudo docker compose logs -f db
-sudo docker compose logs -f vault
-sudo docker compose logs -f cleanup-scheduler
-```
-
-Show only recent logs.
-
-```bash
-sudo docker compose logs --tail=100 web
-sudo docker compose logs --tail=100 nginx
-sudo docker compose logs --tail=100 vault
-sudo docker compose logs --tail=100 cleanup-scheduler
-```
-
-### Open a shell inside the web container
-
-```bash
-sudo docker compose exec web sh
-```
-
-Exit the shell with:
-
-```bash
-exit
-```
-
-### Run common Django commands
-
-Run migrations. This also creates the admin-configurable authentication lockout policy stages and seeds the default policy if it does not already exist.
-
-```bash
-sudo docker compose exec web python manage.py migrate
-```
-
-Collect static files.
-
-```bash
-sudo docker compose exec web python manage.py collectstatic --noinput
-```
-
-Check Django configuration.
-
-```bash
-sudo docker compose exec web python manage.py check
-sudo docker compose exec web python manage.py check --deploy
-```
-
-Create a Django superuser.
-
-```bash
-sudo docker compose exec web python manage.py createsuperuser
-```
-
-Sync published Django articles into OpenKB AI data.
-
-```bash
-sudo docker compose exec web python manage.py sync_openkb_ai
-```
-
-Compile translations after `.po` file changes.
-
-```bash
-sudo docker compose exec web python manage.py compilemessages
-```
-
-Clean general activity logs.
-
-```bash
-sudo docker compose exec web python manage.py cleanup_activity_logs --dry-run
-sudo docker compose exec web python manage.py cleanup_activity_logs
-```
-
-### Important warning about deleting volumes
-
-Do not run this on a real deployment unless you intentionally want to delete Docker-managed volumes.
-
-```bash
-sudo docker compose down -v
-```
-
-For this project, local bind-mounted folders such as `postgres-data/`, `vault/file/`, `vault/keys/`, `openkb-data/`, and uploaded files should also be protected. Do not delete them unless you are intentionally resetting the environment.
-
-### Production hardening note for the `/app` bind mount
-
-During development, the Compose bind mount below is convenient because host code changes appear immediately in the web container:
-
-```yaml
-- .:/app
-```
-
-For a final production-style deployment, remove the full-project bind mount where possible and rebuild the Docker image with:
-
-```bash
-sudo docker compose up -d --build
-```
-
-This reduces the chance that `.env`, Vault material, local certificates, `.git/`, or temporary files are visible inside the running web container. Keep `.dockerignore` updated so secrets and runtime folders are not copied into the image during build.
-
 ---
 
-## 17. Pull latest updates later
+## 9. Initialise the local OpenKB data directory (required once)
 
-Use this section when the code has been updated on GitHub and the Linux instance should follow the latest version.
+DjOpenKB packages the OpenKB source in `OpenKB-main/`, and the Docker image installs it for the running `web` and `cleanup-scheduler` services. However, a **fresh server still needs the public OpenKB data directory initialised locally** before the Django AI sync can build and query the knowledge base.
 
-### 17.1 Move into the project folder
-
-```bash
-cd /opt/DjOpenKB
-```
-
-Confirm the current branch.
-
-```bash
-git branch --show-current
-```
-
-The normal branch should be:
+This one-time host step creates the required OpenKB layout under:
 
 ```text
-main
+/opt/DjOpenKB/openkb-data/
+├── .openkb/config.yaml
+├── .openkb/hashes.json
+├── raw/
+└── wiki/
 ```
 
-Check for local changes.
+Without `openkb-data/.openkb/config.yaml`, the OpenKB chatbot may fail because there is no OpenKB knowledge-base configuration to query.
 
-```bash
-git status
-```
+> Run this section once for a new server, or again only if `openkb-data/.openkb/` is missing or deliberately rebuilt. Do not run `openkb init` over a healthy existing `openkb-data/` directory.
 
-### 17.2 Pull the latest code safely
+### 9.1 Create a temporary host virtual environment
 
-For the normal case where there are no local code changes:
-
-```bash
-git pull --ff-only origin main
-```
-
-If this works, continue to the restart/update steps below.
-
-### 17.3 If Git pull is blocked by local changes
-
-If Git says local changes would be overwritten, review the changed files first.
-
-```bash
-git status
-```
-
-Show what changed.
-
-```bash
-git diff
-```
-
-If the changes are not needed and you want the instance to follow GitHub exactly, restore only the affected tracked files.
-
-Example:
-
-```bash
-git restore nginx/certs/generate-localhost-cert.sh
-git restore vault/bootstrap/generate-secrets.sh
-```
-
-Then pull again.
-
-```bash
-git pull --ff-only origin main
-```
-
-If `.openkb-venv/` appears as an untracked folder, it is only the temporary OpenKB initialization environment. After `openkb-data/.openkb/` exists, `.openkb-venv/` can be removed.
-
-Do not blindly delete these important local files or folders:
-
-```text
-.env
-vault/bootstrap/djopenkb.env
-vault/keys/
-vault/file/
-openkb-data/
-postgres-data/
-nginx/certs/localhost.key
-```
-
-### 17.4 Quick restart after small code changes
-
-For small Python/template changes where dependencies and Dockerfile did not change:
-
-```bash
-sudo docker compose restart web
-```
-
-Then check:
-
-```bash
-sudo docker compose exec web python manage.py check
-sudo docker compose logs --tail=100 web
-```
-
-### 17.5 Normal update after pulling new code
-
-This is the recommended general update flow after `git pull`.
-
-```bash
-sudo docker compose up -d --build
-sudo docker compose exec web python manage.py migrate
-sudo docker compose exec web python manage.py collectstatic --noinput
-sudo docker compose exec web python manage.py compilemessages
-sudo docker compose exec web python manage.py sync_openkb_ai
-sudo docker compose exec web python manage.py check --deploy
-sudo docker compose ps
-```
-
-### 17.6 When to use each update command
-
-| Situation | Recommended command |
-|---|---|
-| Only template or small Python view changes | `sudo docker compose restart web` |
-| Python dependencies changed in `requirements.txt` | `sudo docker compose up -d --build` |
-| Dockerfile or Docker Compose changed | `sudo docker compose up -d --build` |
-| Database model or migration changed | `sudo docker compose exec web python manage.py migrate` |
-| Static files changed | `sudo docker compose exec web python manage.py collectstatic --noinput` |
-| Translation `.po` files changed | `sudo docker compose exec web python manage.py compilemessages` |
-| OpenKB article sync logic changed | `sudo docker compose exec web python manage.py sync_openkb_ai` |
-| Nginx config or certificate changed | `sudo docker compose restart nginx` |
-| Cleanup scheduler script changed | `sudo docker compose restart cleanup-scheduler` |
-
-### 17.7 Re-initialise OpenKB if needed
-
-Normally, you do not need to re-initialise OpenKB after every update.
-
-Only repeat the temporary OpenKB initialization steps if the `openkb-data/.openkb/` folder is missing or damaged.
+Run these commands on the Linux host, not inside a Docker container:
 
 ```bash
 cd /opt/DjOpenKB
 python3 -m venv .openkb-venv
 source .openkb-venv/bin/activate
 python -m pip install --upgrade pip
-pip install -e OpenKB-main
+python -m pip install -e ./OpenKB-main
+```
+
+The virtual environment is only used to run the initial OpenKB CLI command on the host. The runtime Docker image installs the bundled package separately through the project `Dockerfile`.
+
+### 9.2 Initialise `openkb-data`
+
+```bash
+cd /opt/DjOpenKB
 mkdir -p openkb-data
 cd openkb-data
 openkb init
-cd /opt/DjOpenKB
-deactivate
-rm -rf .openkb-venv
 ```
 
-After code or article changes, usually only sync published Django articles. By default, this syncs both public and internal AI indexes:
+OpenKB will prompt for two values:
+
+1. **Model** — enter the exact model configured in `/opt/DjOpenKB/.env` as `OPENKB_AI_MODEL`.
+2. **LLM API Key** — press **Enter** and leave it blank.
+
+For example, when `.env` contains:
+
+```env
+OPENKB_AI_MODEL=gemini/gemini-2.5-flash
+```
+
+enter:
+
+```text
+gemini/gemini-2.5-flash
+```
+
+at the model prompt, then press Enter at the API-key prompt.
+
+The production chatbot receives its API key from Vault through Django at query time. Leave the OpenKB API-key prompt blank for this deployment. If OpenKB still creates `openkb-data/.env`, it is local generated state and is ignored by Git; it does not need to be removed just to run future `git pull` updates.
+
+If the `openkb` command is not found, use the module form while the virtual environment is still active:
 
 ```bash
-sudo docker compose exec web python manage.py sync_openkb_ai
+cd /opt/DjOpenKB/openkb-data
+PYTHONPATH=/opt/DjOpenKB/OpenKB-main python -m openkb.cli init
 ```
 
-Scope-specific sync is also available:
+### 9.3 Verify the OpenKB setup and keep the local setup state
+
+Verify that the expected files/folders now exist:
+
+```bash
+cd /opt/DjOpenKB
+ls -la openkb-data
+ls -la openkb-data/.openkb
+cat openkb-data/.openkb/config.yaml
+```
+
+Expected items include:
+
+```text
+openkb-data/.openkb/config.yaml
+openkb-data/.openkb/hashes.json
+openkb-data/raw/
+openkb-data/wiki/
+```
+
+The `model:` entry in `openkb-data/.openkb/config.yaml` should match `OPENKB_AI_MODEL` in `.env`.
+
+Keep the locally generated OpenKB files and the temporary `.openkb-venv/` directory in place. They are needed only on the host for local OpenKB maintenance, but they do **not** normally affect source updates:
+
+```text
+openkb-data/.openkb/
+openkb-data/raw/
+openkb-data/wiki/
+openkb-data/.env              (if OpenKB created it)
+.openkb-venv/
+```
+
+The project `.gitignore` ignores generated `openkb-data/` content and `.openkb-venv/`, so these files do not normally appear in `git status` and are not changed by a normal `git pull`. Do not remove them merely to update the project.
+
+For security hygiene, leave the OpenKB API-key prompt blank and use the Vault-managed application key. If a provider key was intentionally entered into `openkb-data/.env`, keep that file protected with Linux permissions; its presence still does not block `git pull`.
+
+Optional hardening for the local OpenKB directory:
+
+```bash
+cd /opt/DjOpenKB
+chmod 700 openkb-data
+```
+
+### 9.4 Internal OpenKB data directory
+
+Do **not** normally run `openkb init` manually in `openkb-data-internal/`.
+
+When you run:
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai --scope internal
+```
+
+DjOpenKB creates `openkb-data-internal/` as needed and copies the public OpenKB configuration model into its internal runtime tree. This keeps the public and internal AI indexes separate while using the same selected model.
+
+After the Docker stack is running, rebuild both indexes and verify isolation:
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
+```
+
+## 10. Start the stack and complete first-time setup
+
+Build and start the services:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose up -d --build
+sudo docker compose ps
+```
+
+Expected persistent services:
+
+```text
+vault
+vault-auto-unseal
+redis
+db
+web
+nginx
+cleanup-scheduler
+```
+
+`vault-init` is a one-time container and normally exits successfully after Vault is initialized, unsealed, and seeded.
+
+Check logs before creating users:
+
+```bash
+sudo docker compose logs --tail=150 vault-init
+sudo docker compose logs --tail=150 web
+sudo docker compose logs --tail=100 nginx
+sudo docker compose logs --tail=100 db
+```
+
+Run health checks:
+
+```bash
+sudo docker compose exec web python manage.py check
+sudo docker compose exec web python manage.py check --deploy
+sudo docker compose exec web python manage.py migrate --noinput
+sudo docker compose exec web python manage.py collectstatic --noinput
+```
+
+Create the first local Django administrator:
+
+```bash
+sudo docker compose exec web python manage.py createsuperuser
+```
+
+The command prompts for username, email, and password. The administrator must complete normal MFA enrolment after first signing in through the main login page.
+
+Ensure DjOpenKB role groups are present and assign any existing users without a role group to an appropriate default role:
+
+```bash
+sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missing-users
+```
+
+After completing the one-time OpenKB initialisation in Section 9 and after published articles exist, build both AI indexes:
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
+```
+
+Basic browser/crawler checks from the host:
+
+```bash
+curl -k https://127.0.0.1:8080/robots.txt
+curl -k -I https://127.0.0.1:8080/login/
+```
+
+Expected results include:
+
+```text
+User-agent: *
+Disallow: /
+
+X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+```
+
+Open the service in a browser:
+
+```text
+https://kb.example.com:8080
+```
+
+The default Django `/admin/login/` route is intentionally hidden. Sign in through the main application login, complete MFA, then enter Django Admin from the application navigation while connected from an allowed management network.
+
+### 10.1 First administrator sign-in
+
+After the `createsuperuser` command succeeds, complete the initial administrator setup through the browser:
+
+1. Browse to `https://kb.example.com:8080` (replace with the deployed address).
+2. Sign in with the local superuser username and password created above.
+3. Complete the normal MFA enrolment and verify the code.
+4. Confirm the browser/client IP is included in the Nginx Django Admin allowlist from Section 5.2.
+5. Use the **Admin** navigation entry, complete the separate Admin MFA prompt, then open Django Admin.
+
+Do not try to browse directly to `/admin/login/`; that route is intentionally hidden. If the Admin navigation does not open, first check the Nginx administrator network allowlist and the web/nginx logs.
+
+---
+
+## 11. Normal Docker service operations
+
+Run these commands from `/opt/DjOpenKB`.
+
+### Status and logs
+
+```bash
+sudo docker compose ps
+sudo docker compose logs --tail=120 web
+sudo docker compose logs --tail=120 nginx
+sudo docker compose logs --tail=120 db
+sudo docker compose logs --tail=120 redis
+sudo docker compose logs --tail=120 vault
+sudo docker compose logs --tail=120 vault-auto-unseal
+sudo docker compose logs --tail=120 cleanup-scheduler
+```
+
+Follow a live service log:
+
+```bash
+sudo docker compose logs -f web
+```
+
+### Start, stop, rebuild, and restart
+
+```bash
+# Start existing containers.
+sudo docker compose up -d
+
+# Rebuild images and start services after Python, dependency, Docker, or Nginx changes.
+sudo docker compose up -d --build
+
+# Stop containers but preserve mounted deployment data and named volumes.
+sudo docker compose down
+
+# Restart only Django after a small template or Python change.
+sudo docker compose restart web
+
+# Restart Nginx after its configuration or certificate changes.
+sudo docker compose restart nginx
+
+# Restart scheduled cleanup after scheduler changes.
+sudo docker compose restart cleanup-scheduler
+
+# Restart both application-related services.
+sudo docker compose restart web cleanup-scheduler
+```
+
+Do **not** use `sudo docker compose down -v` as routine maintenance. Do not delete `postgres-data/`, `vault/file/`, `vault/keys/`, `openkb-data/`, or `openkb-data-internal/` unless intentionally rebuilding a disposable test deployment.
+
+### Enter a container shell
+
+```bash
+sudo docker compose exec web sh
+sudo docker compose exec db sh
+sudo docker compose exec vault sh
+```
+
+Exit with:
+
+```bash
+exit
+```
+
+---
+
+## 12. Django operational commands
+
+```bash
+# Apply migrations manually when required.
+sudo docker compose exec web python manage.py migrate --noinput
+
+# Check Django configuration and deployment settings.
+sudo docker compose exec web python manage.py check
+sudo docker compose exec web python manage.py check --deploy
+
+# Rebuild static files.
+sudo docker compose exec web python manage.py collectstatic --noinput
+
+# Compile locale files after changing .po translation files.
+sudo docker compose exec web python manage.py compilemessages
+
+# Open an interactive Django shell.
+sudo docker compose exec -it web python manage.py shell
+
+# Create another local Django administrator.
+sudo docker compose exec web python manage.py createsuperuser
+
+# Create/update the predefined DjOpenKB role groups.
+sudo docker compose exec web python manage.py seed_djopenkb_roles
+
+# Assign role groups to users that currently have none.
+sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missing-users
+
+# Inspect MFA diagnostics without printing the stored MFA secret.
+sudo docker compose exec web python manage.py diagnose_mfa <username-or-email>
+
+# Reset one user's MFA in a controlled administrator action.
+sudo docker compose exec web python manage.py reset_user_mfa <username-or-email> --yes
+```
+
+Use Django Admin or supported management commands for application data. Avoid direct database writes to Django tables unless a documented recovery procedure explicitly requires it.
+
+### 12.1 User-account maintenance in Django Admin
+
+Use Django Admin for normal account administration. This preserves the built-in Django Admin audit entry and the DjOpenKB append-only Admin activity-log record. Do not add, disable, or delete users directly in PostgreSQL.
+
+#### Open the Users page
+
+1. Sign in through the main application login and complete normal MFA.
+2. Select **Admin**, complete Admin MFA, and enter Django Admin from an allowed administrator network.
+3. Open **Authentication and Authorization → Users**.
+
+The user list supports username/email search and filters for active status, authentication source, and MFA setup state.
+
+#### Create local accounts
+
+Use `createsuperuser` for the first or emergency replacement Django administrator:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec web python manage.py createsuperuser
+```
+
+For an ordinary local user, use **Users → Add user** in Django Admin. Set the local password, save the user, then assign the required DjOpenKB group from the user change page or an approved bulk action. New non-admin local accounts receive the normal fallback role automatically.
+
+For Active Directory users, do **not** create a duplicate local Django account with the same username. The user should first sign in through the main login using Active Directory; DjOpenKB then creates/synchronises the local profile. Afterwards, use Django Admin to assign the required role groups or perform support actions such as MFA reset.
+
+Role capability descriptions are intentionally kept in `documentations/FULL_FEATURE_DOCUMENTATION.md`; this deployment guide documents only how to operate the service.
+
+#### Disable or re-enable a user
+
+For normal offboarding or temporary suspension, prefer disabling rather than deleting the account:
+
+1. In **Users**, select the account.
+2. Choose the action **Set selected users as Disabled User**.
+3. Apply the action and confirm the result in **Admin activity logs**.
+
+This retains historical ownership and audit information while blocking Knowledge Repository access. The Disabled User role also removes Django Admin access from that account.
+
+To re-enable the account, select it and assign the required normal role through an approved action or its group membership. If the account was separately marked inactive, open the user record and re-enable the **Active** checkbox as well. Do not re-enable a user until the access request has been authorised.
+
+For an LDAP/Active Directory account, disabling access inside DjOpenKB does not disable the source AD account. Disable the account in Active Directory as well when organisation policy requires complete offboarding.
+
+#### Reset MFA or clear a login lockout
+
+From the selected user change page, use the supported **Reset MFA** or **Reset password/MFA lockout** control. The matching bulk actions are also available on the Users list. These actions are logged and do not reveal the user's MFA secret.
+
+The equivalent controlled shell commands are:
+
+```bash
+sudo docker compose exec web python manage.py reset_user_mfa <username-or-email> --yes
+sudo docker compose exec web python manage.py diagnose_mfa <username-or-email>
+```
+
+#### Permanently delete a user
+
+Permanent deletion should be exceptional. Use it only after checking that a disabled account is not sufficient and after ensuring there is at least one other working administrator account.
+
+1. In **Authentication and Authorization → Users**, open the account.
+2. Select **Delete** and carefully review Django Admin's deletion confirmation page.
+3. Confirm the deletion only after checking the affected records.
+4. Review **Admin activity logs** to confirm the administrator, time, target username, and delete action were recorded.
+
+User deletion has these operational effects:
+
+- The user profile and MFA device are removed.
+- The user's article votes are removed.
+- Articles remain in the knowledge base, but their `owner` becomes empty. Author snapshot fields preserve the historical display information.
+- Article approval, deletion-queue, and deletion-request user references become empty where appropriate; the article records remain.
+- Authentication, activity, image-upload, and Admin audit logs retain their historical snapshot data for the configured log-retention period.
+
+After deleting a user who owned articles, open **My Profile → Admin tools → Scan orphan articles** and reassign the orphaned articles to an appropriate active account, or manage them according to the approved content-retention process. Do not delete a user simply to remove an article; use the application article deletion workflow instead.
+
+For LDAP/Active Directory users, deleting the DjOpenKB user record does not delete the AD account. A later successful AD login can create a new DjOpenKB profile again. Disable the account in Active Directory, or keep the DjOpenKB account as Disabled User, when the goal is to prevent future access.
+
+### 12.2 Routine service-maintenance checklist
+
+Use this small routine after important updates or when troubleshooting:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose ps
+sudo docker compose logs --tail=100 web
+sudo docker compose logs --tail=100 nginx
+sudo docker compose exec web python manage.py check --deploy
+```
+
+Also check scheduled cleanup, database backups, and disk usage at the intervals defined by local operations policy. Sections 14, 16, and 17 contain the exact PostgreSQL, scheduler, backup, and disk commands.
+
+---
+
+## 13. OpenKB AI operations
+
+### Synchronise AI indexes
+
+Use the all-scope command after published content changes, restoration from the published-article deletion queue, a model change, or an AI indexing deployment change:
+
+```bash
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+```
+
+Scope-specific commands:
 
 ```bash
 sudo docker compose exec web python manage.py sync_openkb_ai --scope public
@@ -1206,398 +876,462 @@ sudo docker compose exec web python manage.py sync_openkb_ai --scope internal
 sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 ```
 
-The internal sync creates/uses `openkb-data-internal/` and keeps internal article content out of the public `openkb-data/` tree. To verify isolation:
+Check that internal source data has not entered the public OpenKB runtime tree:
 
 ```bash
 sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 ```
 
-### 17.8 Confirm the update is healthy
+### Change the AI model or `AI_API_KEY`
 
-```bash
-sudo docker compose ps
-sudo docker compose exec web python manage.py check
-sudo docker compose logs --tail=100 web
-sudo docker compose logs --tail=100 nginx
-```
+1. Update the non-secret model value in `.env`.
 
-Open the website again:
+   ```bash
+   cd /opt/DjOpenKB
+   nano .env
+   ```
 
-```text
-https://<linux-server-ip>:8080
-```
+2. Temporarily restore the protected bootstrap file from its secure administrator location, then update only the required `AI_API_KEY` value.
 
----
+   ```bash
+   nano vault/bootstrap/djopenkb.env
+   ```
 
-## 17.9 Article workflow, internal articles, and bulk import/export notes
+3. Re-seed the Vault secret bundle and restart services that read the secrets at process startup.
 
-### Published article updates require approval
+   ```bash
+   sudo docker compose up -d --force-recreate vault-init
+   sudo docker compose restart web cleanup-scheduler
+   ```
 
-Normal users can edit their own published articles, but the live published article is not overwritten immediately. The edited version is saved as a pending update and waits for review in the matching visibility scope.
+4. Rebuild both AI indexes and verify isolation.
 
-```text
-Current published version: remains visible to authorised readers
-Edited version: stored separately as pending update
-Scope reviewer approves: pending update replaces the published article
-Scope reviewer rejects: published article remains unchanged and feedback is shown to the author
-```
+   ```bash
+   sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+   sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
+   ```
 
-Review queues are separated:
+5. Remove the temporary bootstrap file from working copies/export packages again.
 
-| Queue | Who can review |
-|---|---|
-| Public pending articles/updates | Article Approver, Article Manager, Admin Users |
-| Internal pending articles/updates | Internal Article Approver, Internal Article Manager, Admin Users |
+   ```bash
+   rm -f vault/bootstrap/djopenkb.env
+   ```
 
-### Internal article behaviour
+### Re-initialise OpenKB only when required
 
-Internal articles use the same draft/pending/pending failed/published workflow as public articles, but they require internal access to view, search, edit, approve, delete, or serve related images.
+Use this recovery procedure only when `openkb-data/.openkb/` is missing, damaged, or intentionally rebuilt. Follow the same one-time process in **Section 9**, including entering the model from `OPENKB_AI_MODEL` and pressing Enter at the OpenKB API-key prompt.
 
-| Function | Public article | Internal article |
-|---|---|---|
-| Listing | `/home/` | `/internal/` |
-| Create | `/suggest/` | `/internal/suggest/` |
-| Owner edits | `/profile/articles/` | `/internal/profile/articles/` |
-| Pending review | `/profile/admin/pending-articles/` | `/internal/profile/admin/pending-articles/` |
-| OpenKB AI data | `openkb-data/` public index | `openkb-data-internal/` internal public+internal index |
-
-Public-only roles cannot access internal article data. Internal-only manager/approver roles do not automatically gain public article management rights.
-
-### Bulk export/import purpose
-
-The **Bulk import/export articles** admin tool creates article backup or migration ZIP files. Exported ZIP files contain actual article content, not just article names. They can include:
-
-```text
-article titles
-article body / Markdown
-article visibility: public/internal
-keywords
-article workflow status
-pending update content and pending update keywords
-pending update image references
-review comments/history where applicable
-referenced image files
-OpenKB sync metadata
-```
-
-Exporting does not delete, move, or unpublish existing articles. It only downloads an administrator backup copy.
-
-### Export splitting and import limits
-
-The import upload limit is 100 MB per ZIP file. To keep exported files importable, split export targets about 95 MB per part.
-
-```text
-Recommended maximum import ZIP size: 100 MB
-Export split target: about 95 MB per part
-Uncompressed import safety limit: about 200 MB
-Article image upload limit: 2 MB per image
-```
-
-If a split export is downloaded, it is an outer package containing several inner part ZIP files, for example:
-
-```text
-djopenkb_articles_export_part_001.zip
-djopenkb_articles_export_part_002.zip
-djopenkb_articles_export_part_003.zip
-```
-
-To restore a split export:
-
-```text
-1. Extract the outer split package ZIP.
-2. Go to the admin Bulk import/export articles page.
-3. Import each inner part ZIP one by one.
-4. Confirm the imported published public/internal articles appear only to the correct roles.
-5. Run the OpenKB sync command if needed.
-6. Run the internal isolation check if internal articles are present.
-```
-
-After a large import, run:
-
-```bash
-sudo docker compose exec web python manage.py sync_openkb_ai
-sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
-sudo docker compose exec web python manage.py check
-```
-
-### Homepage search, tabs, and article count setting
-
-The main search is intentionally simple. It matches only published article titles and manually entered article keywords. It does not search article body content, Markdown files, internal paths, or relevance scores.
-
-Search scope depends on user role:
-
-| Search | Scope |
-|---|---|
-| Main search for normal users | Public published articles only |
-| Main search for internal-capable users | Public + internal published articles |
-| Internal search | Internal published articles only |
-
-The public homepage article panel uses three paginated tabs:
-
-```text
-Trending Topics
-Most Liked
-Most Recent Articles
-```
-
-The internal article page uses a simpler internal list with pagination.
-
-The number of articles shown per page is controlled in:
-
-```text
-Django Admin -> KB -> Site settings -> Articles per page
-```
-
-Valid range:
-
-```text
-Minimum: 5
-Maximum: 100
-Default: 10
-```
-
-### Manual existing-keyword suggestions
-
-When adding or editing an article, users can click **Refresh** in the Suggested keywords area. The browser scans the current title/body and shows only keywords that already exist on published articles and exactly appear in the current draft.
-
-This behaviour deliberately avoids:
-
-```text
-built-in keyword lists
-AI guessing
-similarity scores
-usage-count badges
-filler-word filtering
-```
-
-Keyword chips scroll horizontally so the article form does not grow too tall.
-
-## 17.10 Authentication lockout and production rate-limit notes
-
-### Admin-configurable password/MFA lockout policy
-
-Password and MFA lockout policy is managed from Django Admin:
-
-```text
-Django Admin -> Site settings -> Authentication lockout policy stages
-```
-
-Each stage can define:
-
-```text
-Failed attempts required
-Block duration
-Repeat count
-Sort order
-Enabled/disabled state
-```
-
-Default simplified policy after migration:
-
-| Stage | Failed attempts | Block duration | Repeat count |
-|---|---:|---:|---:|
-| 1 | 10 | 5 minutes | 2 |
-| 2 | 5 | 15 minutes | 2 |
-| 3 | 3 | 1 hour | repeat forever |
-
-`repeat_count=0` means the stage repeats forever. The last stage uses `repeat_count=0`, so repeated attacks continue receiving a 1-hour block instead of escalating to a full-day block.
-
-The policy no longer uses a separate failure time window. Failed counters stay active until successful password login/MFA verification, an administrator reset, or the lockout escalation memory expiry (`AUTH_LOCKOUT_STRIKE_TTL_SECONDS`, default 7 days).
-
-Successful password login resets the password lockout history. Successful MFA verification resets the MFA lockout history. Administrators can manually reset lockout state from the Django Admin user/profile actions.
-
-### Redis-backed AI and authentication protection
-
-Production deployments should keep Redis enabled:
-
-```env
-REDIS_URL=redis://redis:6379/1
-DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false
-```
-
-Redis is used so password/MFA lockout counters, AI rate limits, and AI concurrency counters are shared across all Gunicorn workers. Without Redis, each worker would have its own local-memory counters, which is not suitable for production.
-
-## 18. Files not to share
-
-Do not commit or share these files/folders:
-
-```text
-.env
-.env.*
-!.env.example
-vault/bootstrap/djopenkb.env
-vault/keys/
-vault/file/
-openkb-data/.openkb/
-openkb-data-internal/.openkb/
-.openkb-venv/
-ldap-certs/
-nginx/certs/*.key
-postgres-data/
-exported article ZIP backups
-```
-
-The public repository should only contain examples, scripts, and safe default configuration.
-
----
-
-
-Bulk article export ZIP files should also be treated as sensitive because they can contain public/internal article content, keywords, pending updates, review notes, and uploaded images. Store them only in approved backup locations.
-
-## 19. Troubleshooting quick notes
-
-### Docker permission denied
-
-Use:
-
-```bash
-sudo docker compose ...
-```
-
-or add the user to the Docker group and log out/in:
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-### `python: not found`
-
-Install Python alias support:
-
-```bash
-sudo apt install -y python-is-python3
-```
-
-### OpenKB command not found
-
-Create or activate the temporary OpenKB initialization virtual environment:
+After restoring `openkb-data/.openkb/config.yaml`, restart the affected services and rebuild the AI data:
 
 ```bash
 cd /opt/DjOpenKB
-source .openkb-venv/bin/activate
-```
-
-Then check:
-
-```bash
-openkb --help
-```
-
-If still missing:
-
-```bash
-pip install -e OpenKB-main
-```
-
-Or use:
-
-```bash
-cd /opt/DjOpenKB/openkb-data
-PYTHONPATH=../OpenKB-main python -m openkb.cli init
-```
-
-### OpenKB data folder not found
-
-Initialize OpenKB locally on the Linux host using a temporary virtual environment:
-
-```bash
-cd /opt/DjOpenKB
-python3 -m venv .openkb-venv
-source .openkb-venv/bin/activate
-python -m pip install --upgrade pip
-pip install -e OpenKB-main
-mkdir -p openkb-data
-cd openkb-data
-openkb init
-cd /opt/DjOpenKB
-deactivate
-rm -rf .openkb-venv
 sudo docker compose restart web cleanup-scheduler
-sudo docker compose exec web python manage.py sync_openkb_ai
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 ```
 
-### Nginx certificate file not found
-
-Nginx expects:
-
-```text
-nginx/certs/localhost.crt
-nginx/certs/localhost.key
-```
-
-Regenerate the certificate.
-
-```bash
-chmod +x nginx/certs/generate-localhost-cert.sh
-./nginx/certs/generate-localhost-cert.sh
-ls -l nginx/certs/localhost.crt nginx/certs/localhost.key
-sudo docker compose restart nginx
-```
-
-### Vault init failed because of bootstrap syntax
-
-Check the bootstrap file.
-
-```bash
-nl -ba vault/bootstrap/djopenkb.env
-```
-
-Make sure values are valid `KEY=VALUE` lines.
-
-### Postgres password changed accidentally
-
-If the database already exists, changing `POSTGRES_PASSWORD` in Vault alone is not enough. The password stored in Vault must match the real password inside PostgreSQL.
-
-Use the safest option first:
-
-```text
-1. Restore the original POSTGRES_PASSWORD value in vault/bootstrap/djopenkb.env.
-2. Re-seed Vault.
-3. Restart the web and database services.
-```
-
-Only change the PostgreSQL password inside the database if you intentionally want to rotate it.
-
-### OpenKB chatbot errors
-
-First confirm OpenKB was initialized locally:
+Inspect the runtime trees from both the host and the container:
 
 ```bash
 ls -la /opt/DjOpenKB/openkb-data
 ls -la /opt/DjOpenKB/openkb-data/.openkb
+ls -la /opt/DjOpenKB/openkb-data-internal
 sudo docker compose exec web ls -la /app/openkb-data
 sudo docker compose exec web ls -la /app/openkb-data/.openkb
+sudo docker compose exec web ls -la /app/openkb-data-internal
 ```
 
-Then sync Django articles:
+To confirm the Docker image has the bundled OpenKB CLI package available:
 
 ```bash
-sudo docker compose exec web python manage.py sync_openkb_ai
+sudo docker compose exec web sh -lc 'PYTHONPATH=/app/OpenKB-main python -m openkb.cli --help'
 ```
 
+---
 
-### Redis required in production
+## 14. PostgreSQL access and maintenance
 
-When `DJANGO_DEBUG=false`, the web container expects Redis to be available unless `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=true` is explicitly set. For production, do not enable local-cache fallback. Check Redis status with:
+Use PostgreSQL commands for inspection, backup, and recovery support. Prefer Django Admin or management commands for normal content/user changes.
+
+### Open an interactive PostgreSQL prompt
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec -it -u postgres db sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+```
+
+Useful read-only `psql` commands:
+
+```sql
+\conninfo
+\dt
+\d kb_suggestedarticle
+SELECT COUNT(*) FROM auth_user;
+SELECT COUNT(*) FROM kb_suggestedarticle;
+\q
+```
+
+Do not run ad-hoc `UPDATE`, `DELETE`, `DROP`, or schema changes in production unless following a reviewed recovery procedure.
+
+### Back up PostgreSQL
+
+Create a protected local backup folder:
+
+```bash
+sudo install -d -m 700 /var/backups/djopenkb
+```
+
+Create a timestamped SQL backup:
+
+```bash
+sudo sh -c 'cd /opt/DjOpenKB && docker compose exec -T -u postgres db sh -lc '\''pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"'\'' > /var/backups/djopenkb/postgres-$(date +%F-%H%M%S).sql'
+sudo chmod 600 /var/backups/djopenkb/postgres-*.sql
+```
+
+Verify the newest backup is non-empty:
+
+```bash
+sudo ls -lh /var/backups/djopenkb/postgres-*.sql | tail
+```
+
+Test database restoration only on a separate non-production environment. Never test destructive restore commands against the live service.
+
+---
+
+## 15. Vault access and maintenance
+
+Vault is deliberately bound to `127.0.0.1:8200` on the Linux host. Do not publish port `8200` through public firewalls.
+
+### Check Vault status
+
+No token is needed to check sealed/initialized status:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec vault vault status
+sudo docker compose logs --tail=120 vault
+sudo docker compose logs --tail=120 vault-auto-unseal
+sudo docker compose logs --tail=160 vault-init
+```
+
+### Check secret metadata without printing secret values
+
+The root token file is a break-glass administrator credential. Keep its filesystem permissions restrictive and do not paste its contents into tickets or terminals shared with others.
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec \
+  -e VAULT_TOKEN="$(sudo cat vault/keys/root-token.txt)" \
+  vault sh -lc 'vault kv metadata get secret/djopenkb'
+```
+
+### Interactive Vault administrator shell
+
+Use only from a protected administrator terminal:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec -it \
+  -e VAULT_TOKEN="$(sudo cat vault/keys/root-token.txt)" \
+  vault sh
+```
+
+Inside the Vault shell:
+
+```bash
+vault status
+vault token lookup
+vault kv metadata get secret/djopenkb
+```
+
+`vault kv get secret/djopenkb` prints the secret values to screen. Use it only when a break-glass recovery task genuinely requires viewing the values.
+
+Exit the container shell:
+
+```bash
+exit
+```
+
+### Optional local-only Vault UI access through SSH
+
+From an administrator workstation, create a local SSH tunnel:
+
+```bash
+ssh -L 8200:127.0.0.1:8200 <linux-admin-user>@kb.example.com
+```
+
+Then open this address only on the administrator workstation:
+
+```text
+http://127.0.0.1:8200
+```
+
+Do not expose the Vault UI directly to the internet. The root token remains highly sensitive even when the UI is accessed through a tunnel.
+
+### Fresh test deployment Vault reset only
+
+This is for a failed **disposable test deployment** only. It destroys Vault state and breaks access to secrets stored there. Do not run it against a live system.
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose down
+sudo rm -rf vault/file vault/keys
+mkdir -p vault/file vault/keys
+chmod 700 vault/keys
+sudo docker compose up -d --build
+```
+
+---
+
+## 16. Scheduled cleanup and retention operations
+
+The `cleanup-scheduler` service runs these Django commands on the configured interval:
+
+```text
+cleanup_stray_upload_files --noinput
+cleanup_article_deletion_queue --noinput
+cleanup_auth_activity_logs --noinput
+cleanup_activity_logs --noinput
+```
+
+Inspect the scheduler:
+
+```bash
+sudo docker compose ps cleanup-scheduler
+sudo docker compose logs --tail=160 cleanup-scheduler
+```
+
+Run safe dry-run checks manually:
+
+```bash
+sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-run
+sudo docker compose exec web python manage.py cleanup_article_deletion_queue --dry-run
+sudo docker compose exec web python manage.py cleanup_auth_activity_logs --dry-run
+sudo docker compose exec web python manage.py cleanup_activity_logs --dry-run
+```
+
+Operational retention values are maintained in Django Admin → Site settings. Relevant administrator settings include session timeout, admin MFA idle timeout, activity-log retention, authentication-log retention, upload cleanup age, article deletion-queue retention, and pagination limits.
+
+A published-article deletion retention value of `0` causes permanent deletion immediately after MFA confirmation. Use that setting only when immediate deletion is intended.
+
+---
+
+## 17. Backups and disk monitoring
+
+Create the protected backup folder if it does not already exist:
+
+```bash
+sudo install -d -m 700 /var/backups/djopenkb
+```
+
+Back up deployment runtime data to an approved secure location:
+
+```bash
+sudo tar -C /opt/DjOpenKB -czf /var/backups/djopenkb/runtime-$(date +%F-%H%M%S).tar.gz \
+  .env vault/file vault/keys vault/logs postgres-data \
+  openkb-data openkb-data-internal nginx/certs
+sudo chmod 600 /var/backups/djopenkb/runtime-*.tar.gz
+```
+
+These archives contain secrets and application data. Encrypt them and store them according to organisational backup policy.
+
+Monitor disk usage:
+
+```bash
+df -h
+du -sh /opt/DjOpenKB/postgres-data \
+       /opt/DjOpenKB/openkb-data \
+       /opt/DjOpenKB/openkb-data-internal \
+       /opt/DjOpenKB/vault/file 2>/dev/null
+sudo docker system df
+```
+
+---
+
+## 18. Update the deployment from Git
+
+For the normal day-to-day project update, these commands are enough:
+
+```bash
+cd /opt/DjOpenKB
+git pull --ff-only
+sudo docker compose up -d --build
+sudo docker compose ps
+sudo docker compose logs --tail=100 web
+```
+
+The `web` service automatically runs Django migrations, the knowledge-base schema repair, and `collectstatic` before Gunicorn starts. Therefore, do **not** run `migrate` or `collectstatic` separately after every normal `git pull`.
+
+The local runtime files below are ignored by Git and are not normally modified or deleted by `git pull`:
+
+```text
+.env
+vault/bootstrap/djopenkb.env
+vault/file/
+vault/keys/
+postgres-data/
+openkb-data/
+openkb-data-internal/
+.openkb-venv/
+nginx/certs/
+```
+
+Run `git status --short` only when you have edited project source files directly on the server, or when `git pull` reports a conflict. Ignored runtime data will not normally appear in this command.
+
+### Only when needed after an update
+
+Run these extra commands only for the related change, not after every update:
+
+```bash
+# Translation source (.po) files changed and compiled .mo files were not included.
+sudo docker compose exec web python manage.py compilemessages
+
+# Article data was imported/restored, OpenKB was repaired/re-initialised,
+# or an AI index needs to be rebuilt manually.
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+
+# Perform a deployment-security health check after an important configuration,
+# authentication, infrastructure, or dependency update.
+sudo docker compose exec web python manage.py check --deploy
+```
+
+For a documentation-only Git update, no Docker command is required. For a deliberately small template/Python update where no dependency, Docker, Compose, Nginx, or migration-related file changed, this quicker restart is also sufficient:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose restart web
+sudo docker compose logs --tail=100 web
+```
+
+If `git pull --ff-only` fails because the server contains tracked source-code changes, stop and review before resolving it:
+
+```bash
+cd /opt/DjOpenKB
+git status
+git branch --show-current
+git fetch origin
+git log --oneline HEAD..origin/main
+```
+
+Do not use `git clean -fdx`; it can remove ignored deployment state such as OpenKB data, Vault files, and local secrets.
+
+---
+
+## 19. Troubleshooting
+
+### Nginx returns `502 Bad Gateway`
+
+The Django/Gunicorn container usually failed to start or is not ready.
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose ps
+sudo docker compose logs --tail=180 web
+sudo docker compose logs --tail=120 nginx
+```
+
+Typical causes: a Python import error, a misplaced file, an unapplied migration, a missing Vault secret, a malformed `.env` value, or a failed LDAP import. Correct the reported error and rebuild:
+
+```bash
+sudo docker compose up -d --build
+```
+
+### Vault initialization fails
+
+```bash
+cd /opt/DjOpenKB
+nl -ba vault/bootstrap/djopenkb.env
+sudo docker compose logs --tail=180 vault-init
+sudo docker compose exec vault vault status
+```
+
+Check for malformed `KEY=value` lines, missing `DJANGO_SECRET_KEY`, or missing `POSTGRES_PASSWORD`.
+
+### OpenKB AI chat fails
+
+```bash
+cd /opt/DjOpenKB
+grep -E 'OPENKB_AI_(PROVIDER|MODEL)' .env
+sudo docker compose logs --tail=180 web
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
+```
+
+Confirm that the model string matches the API key stored in Vault and that the provider account permits the model.
+
+### LDAPS connection fails
+
+```bash
+cd /opt/DjOpenKB
+openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
+sudo docker compose exec web python scripts/test_ldaps_tls.py
+sudo docker compose exec web python manage.py test_ldap_auth alice@ad.example.com
+```
+
+Confirm that:
+
+- `LDAP_SERVER_URI` uses the DC FQDN, not the IP address.
+- The DC certificate matches that FQDN.
+- `ldap-certs/ad-ca.crt` is the issuing CA certificate in PEM format.
+- Docker can resolve the FQDN, either through internal DNS or the configured `LDAP_EXTRA_*` values.
+- The service account password is present in Vault.
+
+### MFA codes fail for multiple users
+
+Verify the host time first:
+
+```bash
+date -u
+timedatectl status
+```
+
+Then use the safe diagnostic:
+
+```bash
+sudo docker compose exec web python manage.py diagnose_mfa <username-or-email>
+```
+
+### Redis is unavailable in production
 
 ```bash
 sudo docker compose ps redis
-sudo docker compose logs redis --tail=80
-```
-
-If Redis is not running, restart the stack:
-
-```bash
+sudo docker compose logs --tail=120 redis
 sudo docker compose up -d redis
 sudo docker compose restart web cleanup-scheduler
 ```
 
-### User blocked by password or MFA lockout
+Keep `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` for normal production operation.
 
-If a user is blocked because of repeated wrong password or MFA attempts, an administrator can reset the lockout state from Django Admin:
+---
 
-```text
-Django Admin -> Users -> open user -> Authentication lockout -> Reset password/MFA lockout
+## 20. Quick first-install checklist
+
+```bash
+cd /opt/DjOpenKB
+cp .env.example .env
+nano .env
+
+cp vault/bootstrap/djopenkb.env.example vault/bootstrap/djopenkb.env
+chmod +x vault/bootstrap/generate-secrets.sh
+./vault/bootstrap/generate-secrets.sh
+nano vault/bootstrap/djopenkb.env
+
+# Optional: copy LDAPS CA certificate to ldap-certs/ad-ca.crt and configure LDAP values.
+# Optional: replace the self-signed Nginx certificate with a trusted certificate.
+
+sudo docker compose up -d --build
+sudo docker compose ps
+sudo docker compose logs --tail=150 vault-init
+sudo docker compose logs --tail=150 web
+
+sudo docker compose exec web python manage.py check --deploy
+sudo docker compose exec web python manage.py createsuperuser
+sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missing-users
+sudo docker compose exec web python manage.py sync_openkb_ai --scope all
+sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
+
+curl -k https://127.0.0.1:8080/robots.txt
+curl -k -I https://127.0.0.1:8080/login/
 ```
 
-Admins can also use the bulk action on selected users or profiles.
+For application functionality, security controls, user workflows, and role descriptions, use `documentations/FULL_FEATURE_DOCUMENTATION.md` rather than this deployment guide.
