@@ -89,20 +89,38 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
         user_ids = []
 
         if isinstance(instance, UserModel):
+            # Normalisation itself can add/remove groups. Do not schedule a new
+            # normalisation callback for those internal group mutations, or an
+            # on_commit callback can recursively invoke itself in autocommit
+            # mode and eventually raise RecursionError.
+            if (
+                getattr(instance, "_djopenkb_syncing_role_groups", False)
+                or getattr(instance, "_djopenkb_normalising_role_groups", False)
+            ):
+                return
             user_ids = [instance.pk]
         elif isinstance(instance, Group) and pk_set:
             user_ids = list(pk_set)
 
         def normalise_user_roles(user_pk):
             user = UserModel.objects.filter(pk=user_pk).first()
-            if user is None or getattr(user, "_djopenkb_syncing_role_groups", False):
+            if (
+                user is None
+                or getattr(user, "_djopenkb_syncing_role_groups", False)
+                or getattr(user, "_djopenkb_normalising_role_groups", False)
+            ):
                 return
-            if enforce_disabled_user_exclusive(user):
-                return
-            enforce_admin_users_exclusive(user)
-            enforce_regular_user_default_only(user)
-            assign_default_kb_role_group(user)
-            sync_user_staff_flags_from_roles(user)
+
+            user._djopenkb_normalising_role_groups = True
+            try:
+                if enforce_disabled_user_exclusive(user):
+                    return
+                enforce_admin_users_exclusive(user)
+                enforce_regular_user_default_only(user)
+                assign_default_kb_role_group(user)
+                sync_user_staff_flags_from_roles(user)
+            finally:
+                user._djopenkb_normalising_role_groups = False
 
         for user_id in user_ids:
             transaction.on_commit(lambda pk=user_id: normalise_user_roles(pk))
