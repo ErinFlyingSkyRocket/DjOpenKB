@@ -1,0 +1,69 @@
+{% load static i18n kb_nav %}
+<link rel="stylesheet" href="{% static 'stylesheets/openkb-ai-chat.css' %}">
+
+<div
+    id="openkbAiWidget"
+    class="openkb-ai-widget"
+    data-endpoint="{% url 'ask_openkb_ai' %}"
+    data-storage-key="djopenkb.openkb-ai.v1.user-{{ user.pk }}-{% if user|can_view_internal_articles %}internal{% else %}public{% endif %}"
+    data-msg-ready="{% trans 'Ready' %}"
+    data-msg-thinking="{% trans 'OpenKB AI is thinking...' %}"
+    data-msg-idle="{% trans 'Ask one question at a time.' %}"
+    data-msg-question-required="{% trans 'Please type a question first.' %}"
+    data-msg-generic-error="{% trans 'Something went wrong.' %}"
+    data-msg-request-failed="{% trans 'Request failed. Check Django terminal logs.' %}"
+    data-msg-recommended="{% trans 'Recommended articles' %}"
+    data-msg-untitled="{% trans 'Untitled article' %}"
+    data-msg-welcome-title="{% trans 'Hi, I am OpenKB AI.' %}"
+    data-msg-welcome-intro="{% trans 'I can help you find articles and answer questions from the wiki.' %}"
+    data-msg-welcome-tip-one="{% trans 'Ask questions using general keywords or article topics.' %}"
+    data-msg-welcome-tip-two="{% trans 'Ask for related articles when you want source links.' %}"
+>
+    <div id="openkbAiChat" class="openkb-ai-chat" aria-hidden="true">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong>{% trans "Ask OpenKB AI" %}</strong>
+                <button
+                    id="openkbAiClear"
+                    class="pull-right openkb-ai-clear"
+                    type="button"
+                    title="{% trans 'Delete' %}"
+                    aria-label="{% trans 'Delete' %}"
+                >
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+                <button
+                    id="openkbAiClose"
+                    class="pull-right openkb-ai-close"
+                    type="button"
+                    aria-label="{% trans 'Minimise OpenKB AI' %}"
+                >
+                    <i class="fa fa-minus" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="panel-body openkb-ai-body">
+                <div id="openkbAiThread" class="openkb-ai-thread" aria-live="polite"></div>
+                <div class="openkb-ai-form-wrap">
+                    <form id="openkbAiForm" novalidate>
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" id="openkbAiQuestion" name="question" class="form-control" autocomplete="off" placeholder="{% trans 'Ask OpenKB AI' %}">
+                            <span class="input-group-btn">
+                                <button id="openkbAiSend" class="btn btn-success openkb-ai-send" type="submit" aria-label="{% trans 'Ask OpenKB AI' %}">
+                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <small id="openkbAiStatus" class="text-muted">{% trans "Ask one question at a time." %}</small>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="openkbAiToggle" class="openkb-ai-fab" type="button" aria-label="{% trans 'Open OpenKB AI chat' %}">
+        <i class="fa fa-comments" aria-hidden="true"></i>
+    </button>
+</div>
+
+<script src="{% static 'javascripts/openkb-ai-chat.js' %}"></script>
