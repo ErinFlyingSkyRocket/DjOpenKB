@@ -18,7 +18,7 @@ from .services import *  # noqa: F401,F403
 # Per-user OpenKB AI quota. A counter is held only in Redis/cache and expires
 # automatically 24 hours after the user's first accepted prompt. Later prompts
 # increment the counter without renewing its expiry.
-OPENKB_AI_PROMPT_LIMIT_DEFAULT = 50
+OPENKB_AI_PROMPT_LIMIT_DEFAULT = 20
 OPENKB_AI_PROMPT_LIMIT_MIN = 1
 OPENKB_AI_PROMPT_LIMIT_MAX = 1000
 OPENKB_AI_PROMPT_WINDOW_SECONDS = 24 * 60 * 60
@@ -946,7 +946,7 @@ def consume_openkb_ai_prompt_quota(request):
     The first accepted prompt creates ``openkb_ai:quota24h:user:<id>`` with a
     24-hour TTL. Later accepted prompts only increment it; they never refresh
     the TTL. Once Redis expires the key, the next accepted prompt starts a new
-    50-prompt window automatically. No scheduled job, user database counter,
+    20-prompt window automatically. No scheduled job, user database counter,
     or cleanup process is needed.
     """
     limit = get_openkb_ai_prompt_limit_per_24_hours()

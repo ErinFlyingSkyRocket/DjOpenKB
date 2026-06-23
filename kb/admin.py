@@ -260,7 +260,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
         (SiteSetting, "auth_lockout_strike_ttl_seconds"): "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).",
-        (SiteSetting, "openkb_ai_prompt_limit_per_24_hours"): "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50.",
+        (SiteSetting, "openkb_ai_prompt_limit_per_24_hours"): "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20.",
         (AuthLockoutPolicyStage, "sort_order"): "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later.",
         (AuthLockoutPolicyStage, "failure_limit"): "Number of wrong password/MFA attempts required before this stage blocks the user.",
         (AuthLockoutPolicyStage, "block_seconds"): "How long the login/MFA check is blocked after this stage triggers.",

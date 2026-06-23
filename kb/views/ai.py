@@ -113,7 +113,7 @@ def ask_openkb_ai(request):
                 # receives retry_after_seconds for an optional countdown.
                 "error": _("Too many OpenKB AI questions. Please wait before trying again."),
                 "retry_after_seconds": prompt_quota.get("retry_after_seconds", 0),
-                "prompt_limit": prompt_quota.get("limit", 50),
+                "prompt_limit": prompt_quota.get("limit", 20),
                 "prompt_used": prompt_quota.get("used", 0),
             },
             status=429,

@@ -5676,8 +5676,8 @@ msgid "OpenKB AI prompts per 24 hours"
 msgstr "จำนวนพรอมต์ OpenKB AI ต่อ 24 ชั่วโมง"
 
 #: kb/models.py:1183 kb/admin.py:2548
-msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50."
-msgstr "จำนวนคำถาม Ask OpenKB AI ที่ยอมรับได้สูงสุดต่อผู้ใช้ภายในช่วงเวลา 24 ชั่วโมงแบบคงที่ คำถามแรกที่ยอมรับจะเริ่มช่วงเวลา และคำถามถัดไปจะไม่ขยายช่วงเวลาดังกล่าว ค่าเริ่มต้น: 50"
+msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
+msgstr "จำนวนคำถาม Ask OpenKB AI ที่ยอมรับได้สูงสุดต่อผู้ใช้ภายในช่วงเวลา 24 ชั่วโมงแบบคงที่ คำถามแรกที่ยอมรับจะเริ่มช่วงเวลา และคำถามถัดไปจะไม่ขยายช่วงเวลาดังกล่าว ค่าเริ่มต้น: 20"
 
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "OpenKB AI rate limits"

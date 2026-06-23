@@ -1182,12 +1182,12 @@ class SiteSetting(models.Model):
     )
 
     openkb_ai_prompt_limit_per_24_hours = models.PositiveIntegerField(
-        default=50,
+        default=20,
         validators=[MinValueValidator(1), MaxValueValidator(1000)],
         verbose_name=_("OpenKB AI prompts per 24 hours"),
         help_text=_(
             "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. "
-            "The first accepted question starts the window and later questions do not extend it. Default: 50."
+            "The first accepted question starts the window and later questions do not extend it. Default: 20."
         ),
     )
 
