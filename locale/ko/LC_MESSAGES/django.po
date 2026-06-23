@@ -5364,3 +5364,19 @@ msgstr "사용자"
 #: website/templates/_openkb_ai_chat.html:48
 msgid "Clear chat"
 msgstr "채팅 지우기"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI prompts per 24 hours"
+msgstr "24시간당 OpenKB AI 프롬프트"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50."
+msgstr "고정된 24시간 창에서 사용자당 허용되는 Ask OpenKB AI 질문의 최대 수입니다. 처음 허용된 질문이 창을 시작하며, 이후 질문은 창을 연장하지 않습니다. 기본값: 50."
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI rate limits"
+msgstr "OpenKB AI 속도 제한"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
+msgstr "각 사용자의 첫 번째 허용 질문이 고정된 24시간 창을 시작합니다. 기존의 단기 버스트 제한은 별도로 계속 적용됩니다."

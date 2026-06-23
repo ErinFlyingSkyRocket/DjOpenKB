@@ -3,8 +3,62 @@
 This module is imported back by services.py so existing imports continue to work.
 """
 
-from .services import *  # noqa: F401,F403
+import time
+import uuid
+
+from django.conf import settings
+from django.core.cache import cache
 from django.utils.translation import gettext as _, ngettext
+from redis import Redis, RedisError
+
+from ..models import SiteSetting
+from .services import *  # noqa: F401,F403
+
+
+# Per-user OpenKB AI quota. A counter is held only in Redis/cache and expires
+# automatically 24 hours after the user's first accepted prompt. Later prompts
+# increment the counter without renewing its expiry.
+OPENKB_AI_PROMPT_LIMIT_DEFAULT = 50
+OPENKB_AI_PROMPT_LIMIT_MIN = 1
+OPENKB_AI_PROMPT_LIMIT_MAX = 1000
+OPENKB_AI_PROMPT_WINDOW_SECONDS = 24 * 60 * 60
+OPENKB_AI_PROMPT_LIMIT_CACHE_KEY = "openkb_ai:quota24h:configured-limit"
+OPENKB_AI_PROMPT_LIMIT_CACHE_SECONDS = 60
+OPENKB_AI_PROMPT_QUOTA_KEY_PREFIX = "openkb_ai:quota24h:"
+
+# Redis evaluates this whole script atomically. It performs one read, one
+# possible increment, and sets EXPIRE only when a new window starts. This is
+# lower overhead and more race-resistant than a database row or a Python lock.
+_OPENKB_AI_PROMPT_QUOTA_LUA = """
+local raw = redis.call('GET', KEYS[1])
+local current = tonumber(raw)
+if raw and not current then
+    redis.call('DEL', KEYS[1])
+    current = 0
+end
+current = current or 0
+
+local ttl = redis.call('TTL', KEYS[1])
+if current >= tonumber(ARGV[1]) then
+    if ttl < 0 then
+        redis.call('EXPIRE', KEYS[1], tonumber(ARGV[2]))
+        ttl = tonumber(ARGV[2])
+    end
+    return {0, current, ttl}
+end
+
+local used = redis.call('INCR', KEYS[1])
+if used == 1 or ttl < 0 then
+    redis.call('EXPIRE', KEYS[1], tonumber(ARGV[2]))
+    ttl = tonumber(ARGV[2])
+else
+    ttl = redis.call('TTL', KEYS[1])
+end
+return {1, used, ttl}
+"""
+
+_quota_redis_client = None
+_quota_redis_client_url = None
 
 def get_openkb_ai_model():
     """Return the configured OpenKB/LiteLLM model name."""
@@ -762,6 +816,194 @@ def check_openkb_ai_rate_limit(request):
 
     return True, 0
 
+
+
+def _normalise_openkb_ai_prompt_limit(value):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        value = OPENKB_AI_PROMPT_LIMIT_DEFAULT
+    return max(OPENKB_AI_PROMPT_LIMIT_MIN, min(value, OPENKB_AI_PROMPT_LIMIT_MAX))
+
+
+def get_openkb_ai_prompt_limit_per_24_hours():
+    """Return the Admin-configured per-user fixed 24-hour prompt allowance.
+
+    The value is cached for a minute so normal prompts do not hit PostgreSQL.
+    ``SiteSetting.save()`` invalidates this key immediately when an Admin
+    changes the setting.
+    """
+    cached = cache.get(OPENKB_AI_PROMPT_LIMIT_CACHE_KEY)
+    if cached is not None:
+        return _normalise_openkb_ai_prompt_limit(cached)
+
+    try:
+        value = SiteSetting.load().openkb_ai_prompt_limit_per_24_hours
+    except Exception:
+        value = OPENKB_AI_PROMPT_LIMIT_DEFAULT
+
+    value = _normalise_openkb_ai_prompt_limit(value)
+    cache.set(
+        OPENKB_AI_PROMPT_LIMIT_CACHE_KEY,
+        value,
+        timeout=OPENKB_AI_PROMPT_LIMIT_CACHE_SECONDS,
+    )
+    return value
+
+
+def get_openkb_ai_prompt_quota_identifier(request):
+    """Return the quota owner identifier for the current account.
+
+    The production Ask OpenKB endpoint requires login. The IP fallback only
+    keeps this helper safe if an authenticated-only route is intentionally
+    reused elsewhere later.
+    """
+    if getattr(request, "user", None) and request.user.is_authenticated:
+        return f"user:{request.user.pk}"
+    return f"ip:{get_client_ip(request)}"
+
+
+def _openkb_ai_prompt_quota_counter_key(identifier):
+    return f"{OPENKB_AI_PROMPT_QUOTA_KEY_PREFIX}{identifier}"
+
+
+def _get_openkb_ai_prompt_quota_redis_client():
+    """Return one pooled Redis client for the atomic production quota path."""
+    global _quota_redis_client, _quota_redis_client_url
+
+    redis_url = (getattr(settings, "REDIS_URL", "") or "").strip()
+    if not redis_url:
+        return None
+
+    if _quota_redis_client is None or _quota_redis_client_url != redis_url:
+        _quota_redis_client = Redis.from_url(
+            redis_url,
+            decode_responses=True,
+            socket_connect_timeout=1,
+            socket_timeout=1,
+        )
+        _quota_redis_client_url = redis_url
+    return _quota_redis_client
+
+
+def _consume_openkb_ai_prompt_quota_with_cache(counter_key, limit):
+    """Development/test fallback when Redis is intentionally not configured.
+
+    Production requires Redis already. This fallback preserves the same first
+    prompt + fixed-expiry behaviour for local development and Django tests.
+    """
+    if cache.add(counter_key, 1, timeout=OPENKB_AI_PROMPT_WINDOW_SECONDS):
+        return {
+            "allowed": True,
+            "limit": limit,
+            "used": 1,
+            "remaining": max(0, limit - 1),
+            "retry_after_seconds": OPENKB_AI_PROMPT_WINDOW_SECONDS,
+        }
+
+    try:
+        used = int(cache.incr(counter_key))
+    except ValueError:
+        # The key expired between add() and incr(). Starting a new fixed window
+        # is correct and mirrors the Redis script's behaviour.
+        cache.set(counter_key, 1, timeout=OPENKB_AI_PROMPT_WINDOW_SECONDS)
+        return {
+            "allowed": True,
+            "limit": limit,
+            "used": 1,
+            "remaining": max(0, limit - 1),
+            "retry_after_seconds": OPENKB_AI_PROMPT_WINDOW_SECONDS,
+        }
+
+    # The fallback is only used outside production. Return the counter to the
+    # configured cap when a local concurrent request crossed it, so the next
+    # development/test request observes the same usage value as production.
+    if used > limit:
+        try:
+            cache.decr(counter_key)
+        except ValueError:
+            pass
+        return {
+            "allowed": False,
+            "limit": limit,
+            "used": limit,
+            "remaining": 0,
+            "retry_after_seconds": OPENKB_AI_PROMPT_WINDOW_SECONDS,
+        }
+
+    return {
+        "allowed": True,
+        "limit": limit,
+        "used": used,
+        "remaining": max(0, limit - used),
+        "retry_after_seconds": OPENKB_AI_PROMPT_WINDOW_SECONDS,
+    }
+
+
+def consume_openkb_ai_prompt_quota(request):
+    """Atomically count one accepted prompt in a fixed 24-hour user window.
+
+    The first accepted prompt creates ``openkb_ai:quota24h:user:<id>`` with a
+    24-hour TTL. Later accepted prompts only increment it; they never refresh
+    the TTL. Once Redis expires the key, the next accepted prompt starts a new
+    50-prompt window automatically. No scheduled job, user database counter,
+    or cleanup process is needed.
+    """
+    limit = get_openkb_ai_prompt_limit_per_24_hours()
+    identifier = get_openkb_ai_prompt_quota_identifier(request)
+    counter_key = _openkb_ai_prompt_quota_counter_key(identifier)
+    client = _get_openkb_ai_prompt_quota_redis_client()
+
+    if client is None:
+        # Local development/test path. Production settings require REDIS_URL.
+        return _consume_openkb_ai_prompt_quota_with_cache(counter_key, limit)
+
+    try:
+        result = client.eval(
+            _OPENKB_AI_PROMPT_QUOTA_LUA,
+            1,
+            counter_key,
+            int(limit),
+            OPENKB_AI_PROMPT_WINDOW_SECONDS,
+        )
+        allowed, used, retry_after = (int(result[0]), int(result[1]), int(result[2]))
+    except (RedisError, TypeError, ValueError, IndexError):
+        logger.exception(
+            "OpenKB AI fixed 24-hour quota is unavailable: identifier=%s user_id=%s",
+            identifier,
+            getattr(getattr(request, "user", None), "pk", "anonymous"),
+        )
+        # Fail closed: a quota outage must not make AI provider resources
+        # unlimited. The generic browser message intentionally exposes no
+        # Redis implementation detail.
+        return {
+            "allowed": False,
+            "reason": "unavailable",
+            "limit": limit,
+            "used": None,
+            "remaining": None,
+            "retry_after_seconds": 1,
+        }
+
+    retry_after = max(1, retry_after)
+    if not allowed:
+        return {
+            "allowed": False,
+            "reason": "limit_reached",
+            "limit": limit,
+            "used": used,
+            "remaining": 0,
+            "retry_after_seconds": retry_after,
+        }
+
+    return {
+        "allowed": True,
+        "reason": "",
+        "limit": limit,
+        "used": used,
+        "remaining": max(0, limit - used),
+        "retry_after_seconds": retry_after,
+    }
 
 def clean_openkb_ai_answer(answer):
     """Hide internal OpenKB/source-path details before showing AI output."""

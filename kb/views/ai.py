@@ -22,6 +22,7 @@ from .services import (
     logger,
     redact_openkb_debug_text,
 )
+from .services_ai import consume_openkb_ai_prompt_quota
 
 
 def _openkb_ai_user_context(request):
@@ -40,24 +41,6 @@ def ask_openkb_ai(request):
     Long OpenKB/Gemini work runs in the dedicated Celery worker, so this request
     remains short and navigating away no longer cancels the query.
     """
-    allowed, retry_after = check_openkb_ai_rate_limit(request)
-    if not allowed:
-        log_activity(
-            request,
-            ActivityLog.EventType.AI_RATE_LIMITED,
-            details={
-                "identifier": get_openkb_ai_rate_identifier(request),
-                "retry_after_seconds": retry_after,
-            },
-        )
-        return JsonResponse(
-            {
-                "error": _("Too many OpenKB AI questions. Please wait before trying again."),
-                "retry_after_seconds": retry_after,
-            },
-            status=429,
-        )
-
     question = request.POST.get("question", "").strip()
     if not question:
         return JsonResponse({"error": _("Please type a question first.")}, status=400)
@@ -81,20 +64,62 @@ def ask_openkb_ai(request):
             status=400,
         )
 
-    include_internal = user_can_view_internal_articles(request.user)
-    log_activity(
-        request,
-        ActivityLog.EventType.AI_QUESTION,
-        details={
-            "question_length": len(question),
-            "question_preview": redact_openkb_debug_text(question, max_chars=200),
-            "identifier": get_openkb_ai_rate_identifier(request),
-            "authenticated": request.user.is_authenticated,
-            "ai_scope": "internal_plus_public" if include_internal else "public",
-            "execution": "background_job",
-        },
-    )
+    # Keep the existing short burst/cooldown protection, then reserve one slot
+    # from the user's separate fixed 24-hour allowance. Invalid prompts do not
+    # consume either control.
+    allowed, retry_after = check_openkb_ai_rate_limit(request)
+    if not allowed:
+        log_activity(
+            request,
+            ActivityLog.EventType.AI_RATE_LIMITED,
+            details={
+                "identifier": get_openkb_ai_rate_identifier(request),
+                "limit_type": "burst",
+                "retry_after_seconds": retry_after,
+            },
+        )
+        return JsonResponse(
+            {
+                "error": _("Too many OpenKB AI questions. Please wait before trying again."),
+                "retry_after_seconds": retry_after,
+            },
+            status=429,
+        )
 
+    prompt_quota = consume_openkb_ai_prompt_quota(request)
+    if not prompt_quota.get("allowed"):
+        if prompt_quota.get("reason") == "unavailable":
+            return JsonResponse(
+                {
+                    "error": _("OpenKB AI is currently handling other questions. Please try again shortly."),
+                },
+                status=503,
+            )
+
+        log_activity(
+            request,
+            ActivityLog.EventType.AI_RATE_LIMITED,
+            details={
+                "identifier": get_openkb_ai_rate_identifier(request),
+                "limit_type": "fixed_24_hour_quota",
+                "prompt_limit": prompt_quota.get("limit"),
+                "prompt_used": prompt_quota.get("used"),
+                "retry_after_seconds": prompt_quota.get("retry_after_seconds"),
+            },
+        )
+        return JsonResponse(
+            {
+                # Reuse the existing translated rate-limit copy. The browser
+                # receives retry_after_seconds for an optional countdown.
+                "error": _("Too many OpenKB AI questions. Please wait before trying again."),
+                "retry_after_seconds": prompt_quota.get("retry_after_seconds", 0),
+                "prompt_limit": prompt_quota.get("limit", 50),
+                "prompt_used": prompt_quota.get("used", 0),
+            },
+            status=429,
+        )
+
+    include_internal = user_can_view_internal_articles(request.user)
     try:
         payload = enqueue_openkb_ai_job(
             user=request.user,
@@ -103,6 +128,9 @@ def ask_openkb_ai(request):
             language_code=translation.get_language(),
         )
     except Exception as error:
+        # The accepted prompt remains counted. This keeps the one-operation
+        # Redis quota path cheap and prevents repeated queue-outage retries
+        # from becoming a resource-abuse bypass.
         ctx = _openkb_ai_user_context(request)
         logger.exception(
             "OpenKB AI background job could not be queued: identifier=%s ip=%s user_id=%s question_length=%s error=%r",
@@ -121,6 +149,31 @@ def ask_openkb_ai(request):
             status=503,
         )
 
+    # Store only operational metadata in the long-lived audit log. The prompt
+    # itself remains only in the encrypted, expiring background job record.
+    log_activity(
+        request,
+        ActivityLog.EventType.AI_QUESTION,
+        details={
+            "question_length": len(question),
+            "identifier": get_openkb_ai_rate_identifier(request),
+            "authenticated": request.user.is_authenticated,
+            "ai_scope": "internal_plus_public" if include_internal else "public",
+            "execution": "background_job",
+            "prompt_limit": prompt_quota.get("limit"),
+            "prompt_used": prompt_quota.get("used"),
+            "prompt_remaining": prompt_quota.get("remaining"),
+            "prompt_reset_in_seconds": prompt_quota.get("retry_after_seconds"),
+        },
+    )
+
+    payload.update(
+        {
+            "prompt_limit": prompt_quota.get("limit"),
+            "prompt_remaining": prompt_quota.get("remaining"),
+            "prompt_reset_in_seconds": prompt_quota.get("retry_after_seconds"),
+        }
+    )
     return JsonResponse(payload, status=202)
 
 

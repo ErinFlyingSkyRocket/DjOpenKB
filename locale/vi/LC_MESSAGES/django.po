@@ -5756,3 +5756,19 @@ msgstr "người dùng"
 #: website/templates/_openkb_ai_chat.html:48
 msgid "Clear chat"
 msgstr "Xóa cuộc trò chuyện"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI prompts per 24 hours"
+msgstr "Số lời nhắc OpenKB AI mỗi 24 giờ"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50."
+msgstr "Số lượng tối đa câu hỏi Ask OpenKB AI được chấp nhận cho mỗi người dùng trong một khoảng thời gian cố định 24 giờ. Câu hỏi được chấp nhận đầu tiên bắt đầu khoảng thời gian này và các câu hỏi sau không gia hạn nó. Mặc định: 50."
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI rate limits"
+msgstr "Giới hạn tốc độ OpenKB AI"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
+msgstr "Câu hỏi được chấp nhận đầu tiên của mỗi người dùng bắt đầu một khoảng thời gian cố định 24 giờ. Giới hạn gửi nhanh trong thời gian ngắn hiện có vẫn được áp dụng riêng."

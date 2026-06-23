@@ -5888,3 +5888,19 @@ msgstr "பயனர்கள்"
 #: website/templates/_openkb_ai_chat.html:48
 msgid "Clear chat"
 msgstr "அரட்டையை அழி"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI prompts per 24 hours"
+msgstr "24 மணிநேரத்திற்கு OpenKB AI கேள்விகள்"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50."
+msgstr "நிலையான 24 மணிநேர காலச்சாளரத்தில் ஒவ்வொரு பயனருக்கும் ஏற்கப்படும் Ask OpenKB AI கேள்விகளின் அதிகபட்ச எண்ணிக்கை. முதல் ஏற்கப்பட்ட கேள்வி காலச்சாளரத்தைத் தொடங்கும்; பின்னர் வரும் கேள்விகள் அதை நீட்டிக்காது. இயல்புநிலை: 50."
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI rate limits"
+msgstr "OpenKB AI வீத வரம்புகள்"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
+msgstr "ஒவ்வொரு பயனரின் முதல் ஏற்கப்பட்ட கேள்வியும் நிலையான 24 மணிநேர காலச்சாளரத்தைத் தொடங்கும். தற்போதுள்ள குறுகியகால திடீர் கோரிக்கை வரம்பு தனியாக செயல்பாட்டில் தொடரும்."

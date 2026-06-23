@@ -5790,3 +5790,19 @@ msgstr "pengguna"
 #: website/templates/_openkb_ai_chat.html:48
 msgid "Clear chat"
 msgstr "Hapus percakapan"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI prompts per 24 hours"
+msgstr "Permintaan OpenKB AI per 24 jam"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50."
+msgstr "Jumlah maksimum pertanyaan Ask OpenKB AI yang diterima per pengguna dalam jendela tetap 24 jam. Pertanyaan pertama yang diterima memulai jendela, dan pertanyaan berikutnya tidak memperpanjangnya. Default: 50."
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI rate limits"
+msgstr "Batas laju OpenKB AI"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
+msgstr "Pertanyaan pertama yang diterima dari setiap pengguna memulai jendela tetap 24 jam. Batas lonjakan jangka pendek yang ada tetap aktif secara terpisah."

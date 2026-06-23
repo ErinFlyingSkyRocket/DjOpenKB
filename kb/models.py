@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -1179,6 +1181,16 @@ class SiteSetting(models.Model):
         ),
     )
 
+    openkb_ai_prompt_limit_per_24_hours = models.PositiveIntegerField(
+        default=50,
+        validators=[MinValueValidator(1), MaxValueValidator(1000)],
+        verbose_name=_("OpenKB AI prompts per 24 hours"),
+        help_text=_(
+            "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. "
+            "The first accepted question starts the window and later questions do not extend it. Default: 50."
+        ),
+    )
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -1192,6 +1204,9 @@ class SiteSetting(models.Model):
         # Keep this model singleton-like: always use primary key 1.
         self.pk = 1
         super().save(*args, **kwargs)
+        # Prompt submissions read this value through a one-minute cache. Clear
+        # it immediately after an Admin save so a new limit takes effect at once.
+        cache.delete("openkb_ai:quota24h:configured-limit")
 
     @classmethod
     def load(cls):

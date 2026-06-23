@@ -5787,3 +5787,19 @@ msgstr "brugere"
 #: website/templates/_openkb_ai_chat.html:48
 msgid "Clear chat"
 msgstr "Ryd chat"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI prompts per 24 hours"
+msgstr "OpenKB AI-prompter pr. 24 timer"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 50."
+msgstr "Maksimalt antal accepterede Ask OpenKB AI-spørgsmål pr. bruger i et fast 24-timers vindue. Det første accepterede spørgsmål starter vinduet, og senere spørgsmål forlænger det ikke. Standard: 50."
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "OpenKB AI rate limits"
+msgstr "OpenKB AI-hastighedsbegrænsninger"
+
+#: kb/models.py:1183 kb/admin.py:2548
+msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
+msgstr "Hver brugers første accepterede spørgsmål starter et fast 24-timers vindue. Den eksisterende kortvarige burstbegrænsning er fortsat aktiv separat."
