@@ -167,7 +167,7 @@ Keep `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` when `DJANGO_DEBUG=false`. Redis 
 
 ### 4.2 OpenKB and AI runtime values
 
-Use this standard OpenKB configuration:
+Use this standard OpenKB and background-worker configuration:
 
 ```env
 OPENKB_BASE_DIR=OpenKB-main
@@ -183,10 +183,28 @@ OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS=60
 OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS=1800
 OPENKB_AI_TIMEOUT_SECONDS=90
 OPENKB_AI_CONCURRENCY_LIMIT=2
-OPENKB_AI_CONCURRENCY_LOCK_SECONDS=120
+OPENKB_AI_CONCURRENCY_LOCK_SECONDS=180
+
+# Dedicated Celery worker for persistent Ask OpenKB AI jobs.
+OPENKB_AI_WORKER_CONCURRENCY=1
+OPENKB_AI_CELERY_BROKER_URL=redis://redis:6379/2
+OPENKB_AI_CELERY_QUEUE=openkb_ai
+OPENKB_AI_JOB_TTL_SECONDS=1800
+OPENKB_AI_JOB_BUSY_RETRIES=12
+OPENKB_AI_POLL_INTERVAL_MILLISECONDS=2000
 ```
 
 The model is selected with `OPENKB_AI_MODEL`. The API key remains in Vault, not `.env`.
+
+The `ai-worker` service lets an Ask OpenKB AI query continue after the user moves between normal signed-in pages. On the current single-VM deployment, keep `OPENKB_AI_WORKER_CONCURRENCY=1`. The shared query cap is an upper guard; one worker still processes only one job at a time.
+
+The short-burst limit above is only one layer of protection. The fixed per-user 24-hour allowance is managed in the application after first login:
+
+```text
+Django Admin → Site settings → OpenKB AI rate limits → OpenKB AI prompts per 24 hours
+```
+
+The default is **20**. The first accepted prompt starts a fixed 24-hour window; later prompts increase the count but do not move the reset time. This setting is stored in PostgreSQL, while each user’s short-lived counter is held efficiently in Redis.
 
 | Provider example | Example `OPENKB_AI_MODEL` | Bootstrap key supported by the current Vault script |
 |---|---|---|
@@ -594,6 +612,7 @@ Check logs before creating users:
 ```bash
 sudo docker compose logs --tail=150 vault-init
 sudo docker compose logs --tail=150 web
+sudo docker compose logs --tail=150 ai-worker
 sudo docker compose logs --tail=100 nginx
 sudo docker compose logs --tail=100 db
 ```
@@ -675,6 +694,7 @@ Run these commands from `/opt/DjOpenKB`.
 ```bash
 sudo docker compose ps
 sudo docker compose logs --tail=120 web
+sudo docker compose logs --tail=120 ai-worker
 sudo docker compose logs --tail=120 nginx
 sudo docker compose logs --tail=120 db
 sudo docker compose logs --tail=120 redis
@@ -710,8 +730,8 @@ sudo docker compose restart nginx
 # Restart scheduled cleanup after scheduler changes.
 sudo docker compose restart cleanup-scheduler
 
-# Restart both application-related services.
-sudo docker compose restart web cleanup-scheduler
+# Restart the application services after an AI/task or shared application-code change.
+sudo docker compose restart web ai-worker cleanup-scheduler
 ```
 
 Do **not** use `sudo docker compose down -v` as routine maintenance. Do not delete `postgres-data/`, `vault/file/`, `vault/keys/`, `openkb-data/`, or `openkb-data-internal/` unless intentionally rebuilding a disposable test deployment.
@@ -850,6 +870,7 @@ Use this small routine after important updates or when troubleshooting:
 cd /opt/DjOpenKB
 sudo docker compose ps
 sudo docker compose logs --tail=100 web
+sudo docker compose logs --tail=100 ai-worker
 sudo docker compose logs --tail=100 nginx
 sudo docker compose exec web python manage.py check --deploy
 ```
@@ -859,6 +880,28 @@ Also check scheduled cleanup, database backups, and disk usage at the intervals 
 ---
 
 ## 13. OpenKB AI operations
+
+### Check the background AI worker
+
+The `ai-worker` service processes queued Ask OpenKB AI requests independently of the web service. Confirm it is running after every deployment that changes AI, Celery, Redis, dependencies, or Python code:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose ps
+sudo docker compose logs --tail=160 ai-worker
+```
+
+A healthy worker connects to Redis DB 2, consumes the `openkb_ai` queue, and reports that it is ready. The default deployment starts one worker with concurrency 1. Keep this setting on a modest VM unless resource capacity and provider quotas have been assessed.
+
+### Review AI limits in Django Admin
+
+After normal sign-in, the Admin CIDR and Admin MFA gate, open:
+
+```text
+Django Admin → Site settings → OpenKB AI rate limits
+```
+
+The default per-user allowance is **20 prompts per fixed 24-hour window**. The first accepted prompt starts the timer. Later accepted prompts consume the same allowance without extending the timer. The value may be set from 1 to 1000. The short burst/cooldown values remain environment configuration in `.env`.
 
 ### Synchronise AI indexes
 
@@ -897,11 +940,11 @@ sudo docker compose exec web python manage.py check_internal_article_isolation -
    nano vault/bootstrap/djopenkb.env
    ```
 
-3. Re-seed the Vault secret bundle and restart services that read the secrets at process startup.
+3. Re-seed the Vault secret bundle and restart services that read the secret at process startup.
 
    ```bash
    sudo docker compose up -d --force-recreate vault-init
-   sudo docker compose restart web cleanup-scheduler
+   sudo docker compose restart web ai-worker cleanup-scheduler
    ```
 
 4. Rebuild both AI indexes and verify isolation.
@@ -921,11 +964,11 @@ sudo docker compose exec web python manage.py check_internal_article_isolation -
 
 Use this recovery procedure only when `openkb-data/.openkb/` is missing, damaged, or intentionally rebuilt. Follow the same one-time process in **Section 9**, including entering the model from `OPENKB_AI_MODEL` and pressing Enter at the OpenKB API-key prompt.
 
-After restoring `openkb-data/.openkb/config.yaml`, restart the affected services and rebuild the AI data:
+After restoring `openkb-data/.openkb/config.yaml`, restart the application services and rebuild the AI data:
 
 ```bash
 cd /opt/DjOpenKB
-sudo docker compose restart web cleanup-scheduler
+sudo docker compose restart web ai-worker cleanup-scheduler
 sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 ```
@@ -946,8 +989,6 @@ To confirm the Docker image has the bundled OpenKB CLI package available:
 ```bash
 sudo docker compose exec web sh -lc 'PYTHONPATH=/app/OpenKB-main python -m openkb.cli --help'
 ```
-
----
 
 ## 14. PostgreSQL access and maintenance
 
@@ -1110,7 +1151,7 @@ sudo docker compose exec web python manage.py cleanup_auth_activity_logs --dry-r
 sudo docker compose exec web python manage.py cleanup_activity_logs --dry-run
 ```
 
-Operational retention values are maintained in Django Admin → Site settings. Relevant administrator settings include session timeout, admin MFA idle timeout, activity-log retention, authentication-log retention, upload cleanup age, article deletion-queue retention, and pagination limits.
+Operational retention values are maintained in Django Admin → Site settings. Relevant administrator settings include session timeout, admin MFA idle timeout, activity-log retention, authentication-log retention, upload cleanup age, article deletion-queue retention, pagination limits, and the fixed per-user OpenKB AI prompt allowance.
 
 A published-article deletion retention value of `0` causes permanent deletion immediately after MFA confirmation. Use that setting only when immediate deletion is intended.
 
@@ -1158,6 +1199,7 @@ git pull --ff-only
 sudo docker compose up -d --build
 sudo docker compose ps
 sudo docker compose logs --tail=100 web
+sudo docker compose logs --tail=100 ai-worker
 ```
 
 The `web` service automatically runs Django migrations, the knowledge-base schema repair, and `collectstatic` before Gunicorn starts. Therefore, do **not** run `migrate` or `collectstatic` separately after every normal `git pull`.
@@ -1199,8 +1241,9 @@ For a documentation-only Git update, no Docker command is required. For a delibe
 
 ```bash
 cd /opt/DjOpenKB
-sudo docker compose restart web
+sudo docker compose restart web ai-worker
 sudo docker compose logs --tail=100 web
+sudo docker compose logs --tail=100 ai-worker
 ```
 
 If `git pull --ff-only` fails because the server contains tracked source-code changes, stop and review before resolving it:
@@ -1253,6 +1296,7 @@ Check for malformed `KEY=value` lines, missing `DJANGO_SECRET_KEY`, or missing `
 cd /opt/DjOpenKB
 grep -E 'OPENKB_AI_(PROVIDER|MODEL)' .env
 sudo docker compose logs --tail=180 web
+sudo docker compose logs --tail=180 ai-worker
 sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 ```
@@ -1297,7 +1341,7 @@ sudo docker compose exec web python manage.py diagnose_mfa <username-or-email>
 sudo docker compose ps redis
 sudo docker compose logs --tail=120 redis
 sudo docker compose up -d redis
-sudo docker compose restart web cleanup-scheduler
+sudo docker compose restart web ai-worker cleanup-scheduler
 ```
 
 Keep `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` for normal production operation.

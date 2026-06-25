@@ -29,9 +29,10 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Admin-configurable progressive password/MFA lockout policy with reset actions for administrators.
 - Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, and AI credentials.
 - PostgreSQL database through Docker Compose.
-- Redis-backed production cache for rate limiting, authentication lockout counters, and AI concurrency controls.
+- Redis-backed production cache for authentication lockouts, AI rate limits, fixed 24-hour AI quotas, background AI jobs, and query concurrency controls.
 - Nginx HTTPS reverse proxy on port `8080`.
-- OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`, including prompt length limits, Redis-backed user rate limiting, cooldown blocking, concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and activity logging.
+- Persistent OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`. Questions run as short-lived Celery jobs so they continue while a signed-in user moves between normal site pages.
+- AI resource controls: prompt length limit, short-burst rate limit and cooldown, a per-user fixed 24-hour quota, worker/query concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and privacy-safe activity metadata.
 - Markdown article rendering with sanitization.
 - Image upload restrictions for article content, including protected image serving based on article visibility and ownership/review access.
 - Multilingual UI support through Django translation files.
@@ -48,41 +49,46 @@ DjOpenKB currently uses a login-only website model. The root URL displays the lo
 
 ### Main role matrix
 
-| Role / group | Main purpose | Public article access | Internal article access | Create / submit | Review / approve | Edit published | Delete published | Admin tools / Django Admin |
-|---|---|---|---|---|---|---|---|---|
-| Anonymous visitor | No site access | No | No | No | No | No | No | No |
-| Disabled User | Account retained but blocked | No | No | No | No | No | No | No |
-| Regular User | Default public viewer | View published public articles and vote | No | No | No | No | No | No |
-| Article Writer | Public contributor | View/vote public articles | No, unless also given an internal role | Create public drafts, submit public articles, edit own public drafts/failed submissions, submit pending updates for own public published articles | No | Own published public edits become pending updates | Can delete own public articles when allowed by the owner flow; published deletion requires MFA | No |
-| Article Approver | Public review-only approver | View/vote public articles | No, unless also given an internal role | No by default | Review, edit during review, approve, or reject pending public articles/updates | Only during explicit public review flow; cannot freely edit already-published public articles | No | No |
-| Article Manager | Public article manager | View/vote public articles and see dislike counts | No, unless also given an internal role | Create public articles | Review/approve/reject public pending articles/updates | Yes, for public articles | Yes, for public articles; published deletion requires MFA | Main-site article management tools only; no Django Admin by default |
-| Internal User | Internal viewer add-on | View/vote public articles | View/vote published internal articles | No | No | No | No | No |
-| Internal Article Writer | Internal contributor add-on | View/vote public articles | View/vote internal articles | Create internal drafts, submit internal articles, edit own internal drafts/failed submissions, submit pending updates for own internal published articles | No | Own published internal edits become pending updates | Can delete own internal articles when allowed by the owner flow; published deletion requires MFA | No |
-| Internal Article Approver | Internal review-only approver | View/vote public articles | View/vote internal articles | No by default | Review, edit during review, approve, or reject pending internal articles/updates | Only during explicit internal review flow; cannot freely edit already-published internal articles | No | No |
-| Internal Article Manager | Internal article manager add-on | View/vote public articles and see dislike counts | View/vote internal articles and see dislike counts | Create internal articles | Review/approve/reject internal pending articles/updates | Yes, for internal articles | Yes, for internal articles; published deletion requires MFA | Internal article management tools only; no Django Admin by default |
-| Admin Users | Full administrator | Full public access | Full internal access | Can create/publish directly | Can review all scopes | Yes, all scopes | Yes, all scopes; published deletion requires MFA where enforced | Yes; members sync to staff/superuser and must still pass admin MFA/network guards |
+**Legend:** ✓ = included in the role; ✗ = not included. “Manage published” means direct edit/delete capability in that scope. Owner updates are handled separately through the pending-update workflow.
+
+| Role / group | Core role | Public view | Internal view | Create own public | Create own internal | Review public | Review internal | Manage published public | Manage published internal | Django Admin |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Anonymous visitor | No site access | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Disabled User | Blocked account | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Regular User | Public reader | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Article Writer | Public contributor | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Article Approver | Public reviewer | ✓ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Article Manager | Public manager | ✓ | ✗ | ✓ | ✗ | ✓ | ✗ | ✓ | ✗ | ✗ |
+| Internal User | Internal reader | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Internal Article Writer | Internal contributor | ✓ | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Internal Article Approver | Internal reviewer | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✗ |
+| Internal Article Manager | Internal manager | ✓ | ✓ | ✗ | ✓ | ✗ | ✓ | ✗ | ✓ | ✗ |
+| Admin Users | Full administrator | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+Important role notes:
+
+- Writers can edit their own drafts and returned submissions. Changes to their own published articles become pending updates; they do not directly overwrite the published version.
+- Published deletion requires an MFA confirmation. Writers use the owner workflow; managers and Admin Users manage published content within their scope.
+- Approvers can edit content only while it is in their scope’s pending-review flow.
+- Article Managers see public dislike counts; Internal Article Managers see internal dislike counts; Admin Users see both.
+- Django Admin requires normal sign-in/MFA, the allowed administrator network, and the separate Admin MFA gate.
 
 ### Role interaction rules
 
-| Combination / situation | Result |
+| Rule | Result |
 |---|---|
-| New local or AD user with no elevated role | Automatically receives `Regular User` as fallback public viewer. |
-| User receives `Article Writer`, `Article Approver`, or `Article Manager` | `Regular User` is removed because public view access is already included. |
-| User receives `Internal User`, `Internal Article Writer`, `Internal Article Approver`, or `Internal Article Manager` | Internal role acts as an add-on and also grants public article viewing. It does not automatically remove unrelated public elevated roles. |
-| Public role + internal role | Permissions are additive but scope-separated. Example: `Article Manager` + `Internal Article Approver` can fully manage public articles but only review pending internal articles. |
-| Writer + matching approver or manager role | Roles are additive. A deliberately combined-role user may approve their own matching-scope submission or pending update. This is an intentional project policy, not a separation-of-duties control. |
-| Public approver only | Can work from the public pending-review flow but cannot create/delete public articles or freely edit published public articles. |
-| Internal approver only | Can work from the internal pending-review flow but cannot create/delete internal articles or freely edit published internal articles. |
-| Public manager only | Can manage public articles but cannot access internal articles unless also given an internal role. |
-| Internal manager only | Can manage internal articles and view public articles, but does not become public article manager unless also assigned that public role. |
-| Admin Users | Full source of truth for administrator access; syncs staff/superuser and covers both public and internal scopes. |
-| Disabled User | Highest precedence; removes standard role/admin groups, clears Knowledge Repository direct permissions, unchecks staff/superuser, and blocks site access. |
+| New active local or AD user without an elevated role | Receives `Regular User` as the fallback public-viewer role. |
+| Public writer, approver, or manager assigned | `Regular User` is removed because public viewing is already included. |
+| Internal role assigned | Internal access is additive and also includes public article viewing. |
+| Public and internal roles combined | Permissions remain scope-specific. For example, a public manager plus internal approver manages published public articles and reviews pending internal articles. |
+| Writer combined with matching approver/manager | Permissions are additive; the user can approve their own matching-scope submission. This project does not enforce separation of duties for deliberately combined roles. |
+| Disabled User assigned | Highest precedence. Standard role/admin groups and direct Knowledge Repository permissions are removed, staff/superuser flags are cleared, and site access is blocked. |
 
-Group membership is the baseline permission model. Direct user permission checkboxes are add-on permissions only; unticking a direct permission does not remove a permission inherited from a group. Direct permissions do not grant Django Admin access.
+Group membership is the baseline permission model. Direct user permission checkboxes are add-on permissions only; removing a direct permission does not remove a permission inherited from a group, and direct permissions do not grant Django Admin access.
 
-Django's built-in `Active` checkbox controls whether the account can sign in at all. `Disabled User` is different: it keeps the account record available but sends an already-authenticated disabled account to the clean disabled-account page with a sign-out button.
+Django's built-in **Active** checkbox controls whether an account can sign in at all. `Disabled User` is different: it retains an auditable account record but blocks Knowledge Repository access and presents the disabled-account page to a signed-in account.
 
-Local and AD users are separated by account source metadata, not by email domain. This means a local user can use an email address such as `alice@openkb.local` without being incorrectly treated as an AD user.
+Local and AD users are identified from account-source metadata rather than email domain. A local user may therefore use an address such as `alice@openkb.local` without being treated as an AD account.
 
 ## Security Overview
 
@@ -98,7 +104,7 @@ Local and AD users are separated by account source metadata, not by email domain
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body. Displayed article keywords are clickable and run the normal title/keyword search. |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
 | Markdown | Sanitized rendered HTML to reduce XSS risk |
-| AI chatbot | Login-protected chatbot endpoint, role-scoped public/internal index selection, prompt length limits, 5 questions per 60 seconds, 30-minute cooldown after exceeding the limit, Redis-backed user-ID limiting, concurrency limits, timeout controls, safer error handling, related article recommendations, and activity logging |
+| AI chatbot | Login-protected persistent chat widget, role-scoped public/internal indexes, encrypted short-lived Redis job records, Celery background execution, 5 questions per 60 seconds, a 30-minute burst cooldown, an Admin-configurable fixed 24-hour per-user quota (default 20), query/worker concurrency controls, timeout handling, related article recommendations, and privacy-safe activity metadata |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
@@ -201,6 +207,7 @@ Main files:
 djopenkb/settings.py
 djopenkb/urls.py
 djopenkb/asgi.py
+djopenkb/celery.py              # Celery application for background OpenKB AI jobs
 djopenkb/wsgi.py
 ```
 
@@ -236,12 +243,14 @@ kb/views/suggestions.py      # User article suggestions, drafts, edits, and arti
 kb/views/admin.py            # Admin-only article review and maintenance tools
 kb/views/auth.py             # Login/profile/account-related pages
 kb/views/mfa.py              # MFA setup, verification, and reset views
-kb/views/ai.py               # OpenKB AI chatbot endpoint
+kb/views/ai.py               # Queue/cancel endpoints for the persistent OpenKB AI widget
+kb/views/ai_jobs.py          # Encrypted short-lived job records and secure status polling
+kb/tasks.py                  # Celery task that runs one background OpenKB AI job
 kb/views/security.py         # Plain-text /robots.txt endpoint
 kb/views/services.py         # Shared helper logic and compatibility re-exports
 kb/views/services_bulk.py    # Bulk import/export, ZIP splitting, and restore helpers
 kb/views/services_search.py  # Search ranking, related articles, and suggestions
-kb/views/services_ai.py      # OpenKB AI helper logic, rate limiting, and AI recommendations
+kb/views/services_ai.py      # OpenKB AI sync/query, quotas, rate limiting, and recommendations
 ```
 
 ---
@@ -458,23 +467,27 @@ These scripts help confirm whether the Django container can resolve and connect 
 
 ---
 
-## OpenKB AI Chatbot Rate Limiting and Production Controls
+## OpenKB AI Chatbot Background Jobs, Quotas, and Production Controls
 
-The AI chatbot is protected with production controls so users cannot continuously consume AI resources or occupy all Gunicorn workers with slow AI requests.
+Ask OpenKB AI is available only to signed-in users. The browser submits a question to Django, which creates an opaque job ID and places the work on the dedicated `ai-worker` Celery queue. The AI query continues if the user moves between normal site pages in the same browser tab; the widget resumes polling and displays the finished response on the page currently open.
 
-Current default behaviour:
+The widget stores only its open state, completed messages, pending job IDs, and unfinished draft text in the browser tab’s `sessionStorage`. It is not saved as chat history in PostgreSQL. Selecting **Clear chat** removes the visible thread and asks the server to discard queued/running job results; an already-running OpenKB subprocess is allowed to finish safely, but its result is not returned to the cleared chat.
 
-```text
-Maximum questions per user: 5
-Time window: 60 seconds
-Cooldown after exceeding limit: 30 minutes
-Prompt length limit: 1000 characters
-OpenKB timeout: 90 seconds
-Concurrent AI requests: 2
-Concurrency lock expiry: 120 seconds
-```
+Current production controls:
 
-In the current login-only deployment, the chatbot is a protected signed-in feature. Logged-in users are rate-limited by their Django user ID, so refreshing the browser, opening a new tab, or starting a new private session does not reset the counter for that account.
+| Control | Default behaviour |
+|---|---|
+| Short-burst limit | 5 accepted questions within 60 seconds per signed-in account |
+| Burst cooldown | 30 minutes after exceeding the short-burst limit |
+| Fixed per-user quota | 20 accepted questions in a fixed 24-hour window; editable in **Django Admin → Site settings → OpenKB AI rate limits** |
+| Quota window | The first accepted question starts the 24-hour timer. Later questions increase the counter but do not extend the expiry. Redis removes the counter automatically at expiry. |
+| Prompt length | 1000 characters |
+| OpenKB query timeout | 90 seconds |
+| Background worker | One `ai-worker` service with Celery concurrency `1` by default |
+| Job lifetime | Encrypted temporary prompt/result record expires after 30 minutes by default |
+| Polling | Browser checks pending job status every 2 seconds by default |
+
+The fixed 24-hour quota is held as one small Redis counter per user. It avoids per-prompt database writes and requires no scheduled reset task. The Admin setting accepts values from 1 to 1000 and defaults to 20.
 
 The chatbot is role-scoped:
 
@@ -483,9 +496,9 @@ The chatbot is role-scoped:
 | Public article access only | Public OpenKB index under `openkb-data/` |
 | Internal article access | Internal OpenKB index under `openkb-data-internal/`, containing published public + internal articles |
 
-For production, these counters use Redis through `REDIS_URL`, so the limits remain consistent even when Gunicorn runs multiple workers. Local memory cache is only a development/emergency fallback and should not be used for production.
+Question and answer text is Fernet-encrypted before it is placed in the temporary Redis-backed job record. Celery receives only the opaque job ID. The worker checks the owner account and current article scope before querying, and the polling endpoint checks ownership and scope again before returning a result. Long-lived activity logs record operational metadata such as question length, scope, quota usage, and outcome—not the question or answer text.
 
-If anonymous chatbot access is ever re-enabled in the future, the fallback rate-limit identity should be the detected client IP address behind the trusted Nginx reverse proxy.
+Keep `OPENKB_AI_WORKER_CONCURRENCY=1` for the current single-VM deployment unless resource capacity, provider limits, and OpenKB behaviour have been assessed for a higher setting. Redis remains required in production so job records, rate limits, quotas, and shared query controls work consistently across services.
 
 ## Quick Deployment Summary
 
@@ -512,7 +525,7 @@ docker compose exec web python manage.py createsuperuser
 docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
 docker compose exec web python manage.py sync_openkb_ai
 docker compose exec web python manage.py check --deploy
-# After first login, review Site settings → Authentication lockout policy stages.
+# After first login, review Site settings → Authentication lockout policy stages and OpenKB AI rate limits.
 ```
 
 Access the website using:
@@ -529,12 +542,11 @@ For future updates:
 
 ```bash
 cd /path/to/DjOpenKB
-git pull https://github.com/ErinFlyingSkyRocket/DjOpenKB.git main
-docker compose down
+git pull --ff-only
 docker compose up -d --build
-docker compose exec web python manage.py migrate
-docker compose exec web python manage.py collectstatic --noinput
-docker compose exec web python manage.py sync_openkb_ai
+docker compose ps
+docker compose logs --tail=100 web
+docker compose logs --tail=100 ai-worker
 docker compose exec web python manage.py check --deploy
 ```
 
@@ -560,6 +572,7 @@ View logs:
 
 ```bash
 docker compose logs --tail=100 web
+docker compose logs --tail=100 ai-worker
 docker compose logs --tail=100 nginx
 docker compose logs --tail=100 vault
 docker compose logs --tail=100 cleanup-scheduler
