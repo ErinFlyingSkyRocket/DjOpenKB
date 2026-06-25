@@ -1009,13 +1009,13 @@ def allowed_article_statuses_for_admin_edit(article, user=None):
     """Return statuses available in the review/edit form.
 
     Approver roles may edit a submitted pending article/update and save those
-    review edits without making a final decision yet. Therefore pending review
-    screens expose three safe choices: keep pending, approve/publish, or reject.
+    review edits without making a final decision yet. Therefore review screens
+    expose three safe choices: keep pending, approve/publish, or reject.
 
     Managers and Admin Users retain broader workflow controls inside their own
-    scope, except pending-update reviews are also constrained so an already
-    published article is never accidentally hidden while an update is being
-    reviewed.
+    scope, except every staged update (saved, pending, or rejected) is
+    constrained so an already-published article is never accidentally hidden
+    while its separate update copy is being resolved.
     """
     review_choices = {
         SuggestedArticle.Status.PENDING,
@@ -1023,10 +1023,10 @@ def allowed_article_statuses_for_admin_edit(article, user=None):
         SuggestedArticle.Status.FAILED,
     }
 
-    if (
-        article.status == SuggestedArticle.Status.PUBLISHED
-        and article.update_status == SuggestedArticle.UpdateStatus.PENDING
-    ):
+    if getattr(article, "has_staged_update", False):
+        # Saved, pending, and rejected updates all use the same constrained
+        # workflow. A manager must not be able to turn the underlying published
+        # article into Draft/Failed while resolving its separate update copy.
         return review_choices
 
     if user is not None and user_is_article_approver_only_for_visibility(

@@ -366,24 +366,10 @@ def edit_suggestion(request, article_id):
     def render_edit_form(extra_context=None):
         extra_context = extra_context or {}
         can_review_article = user_can_review_article(request.user, article, review_mode=is_review_mode)
-        pending_update_review = (
-            can_review_article
-            and article.status == SuggestedArticle.Status.PUBLISHED
-            and article.update_status == SuggestedArticle.UpdateStatus.PENDING
-        )
-        has_saved_update_draft = (
-            article.status == SuggestedArticle.Status.PUBLISHED
-            and article.update_status == SuggestedArticle.UpdateStatus.NONE
-            and bool(article.pending_update_body)
-        )
-        use_pending_update_values = (
-            article.status == SuggestedArticle.Status.PUBLISHED
-            and bool(article.pending_update_body)
-            and (
-                article.update_status in {SuggestedArticle.UpdateStatus.PENDING, SuggestedArticle.UpdateStatus.FAILED}
-                or has_saved_update_draft
-            )
-        )
+        has_staged_update = bool(getattr(article, "has_staged_update", False))
+        pending_update_review = can_review_article and has_staged_update
+        has_saved_update_draft = has_staged_update and article.update_status == SuggestedArticle.UpdateStatus.NONE
+        use_pending_update_values = has_staged_update
 
         edit_title = article.pending_update_title if use_pending_update_values else article.title
         edit_body = article.pending_update_body if use_pending_update_values else article.body
@@ -411,6 +397,7 @@ def edit_suggestion(request, article_id):
             "body_value": edit_body,
             "keywords_value": edit_keywords,
             "is_pending_update_review": pending_update_review,
+            "current_update_status": article.update_status,
             "can_review_article": can_review_article,
             "article_editor_mode": "review" if is_review_mode else "edit",
             "is_article_review_mode": is_review_mode,
@@ -454,8 +441,7 @@ def edit_suggestion(request, article_id):
     is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
     is_admin_pending_update_review = (
         is_admin_action
-        and article.status == SuggestedArticle.Status.PUBLISHED
-        and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+        and bool(getattr(article, "has_staged_update", False))
     )
 
     if is_admin_action:
@@ -639,17 +625,23 @@ def edit_suggestion(request, article_id):
             article.review_notes = review_notes
             write_public_files = False
         elif status == SuggestedArticle.Status.PENDING:
-            # Reviewer edited the submitted update but has not made the final
-            # approve/reject decision yet. Keep the already-published version
-            # visible and keep the update in the review queue.
+            # Reviewer edited a saved, pending, or rejected update but has not
+            # made the final approve/reject decision. Keep the approved version
+            # visible and return the staged update to the review queue.
             article.pending_update_title = title
             article.pending_update_body = body
             article.pending_update_keywords = keywords_raw
             article.pending_update_image_assets = new_image_assets
             article.update_status = SuggestedArticle.UpdateStatus.PENDING
-            if not article.update_submitted_at:
+            if (
+                previous_update_status != SuggestedArticle.UpdateStatus.PENDING
+                or not article.update_submitted_at
+            ):
                 article.update_submitted_at = timezone.now()
             article.update_reviewed_at = None
+            if article.review_notes:
+                article.archive_current_review_note(actor=request.user, action="update_reopened")
+            article.review_notes = ""
             write_public_files = False
         else:
             # Keep pending update reviews constrained so the already-published
@@ -697,7 +689,11 @@ def edit_suggestion(request, article_id):
 
     effective_status = article.status
 
-    if previous_status != effective_status:
+    if is_admin_pending_update_review and status == SuggestedArticle.Status.PUBLISHED:
+        activity_event = ActivityLog.EventType.ARTICLE_APPROVED
+    elif is_admin_pending_update_review and status == SuggestedArticle.Status.FAILED:
+        activity_event = ActivityLog.EventType.ARTICLE_REJECTED
+    elif previous_status != effective_status:
         if effective_status == SuggestedArticle.Status.PUBLISHED:
             activity_event = ActivityLog.EventType.ARTICLE_APPROVED
         elif effective_status == SuggestedArticle.Status.FAILED:

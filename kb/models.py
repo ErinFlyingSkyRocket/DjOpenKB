@@ -572,12 +572,22 @@ class SuggestedArticle(models.Model):
         return [item.strip() for item in self.keywords.split(",") if item.strip()]
 
     @property
+    def has_staged_update(self):
+        """Return True when a published article holds an editable update copy.
+
+        A staged update can be a private saved draft, a submitted pending update,
+        or a previously rejected update. Managers must resolve this copy through
+        the update workflow so a successful publish clears the temporary fields.
+        """
+        return self.status == self.Status.PUBLISHED and bool((self.pending_update_body or "").strip())
+
+    @property
     def has_pending_update(self):
-        return self.status == self.Status.PUBLISHED and self.update_status == self.UpdateStatus.PENDING
+        return self.has_staged_update and self.update_status == self.UpdateStatus.PENDING
 
     @property
     def has_failed_update(self):
-        return self.status == self.Status.PUBLISHED and self.update_status == self.UpdateStatus.FAILED
+        return self.has_staged_update and self.update_status == self.UpdateStatus.FAILED
 
     @property
     def has_update_draft(self):

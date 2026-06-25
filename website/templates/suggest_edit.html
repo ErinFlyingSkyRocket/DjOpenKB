@@ -245,9 +245,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% if can_review_article %}
                                     <select name="status" id="articleStatusSelect" class="form-control">
                                         {% if is_pending_update_review %}
-                                            <option value="pending" selected>{% trans "Keep update pending / Save review edits" %}</option>
+                                            <option value="pending" {% if current_update_status == 'pending' or current_update_status == 'none' %}selected{% endif %}>{% trans "Keep update pending / Save review edits" %}</option>
                                             <option value="published">{% trans "Approve update" %}</option>
-                                            <option value="failed">{% trans "Reject update" %}</option>
+                                            <option value="failed" {% if current_update_status == 'failed' %}selected{% endif %}>{% trans "Reject update" %}</option>
                                         {% else %}
                                             {% if allow_status_draft %}<option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>{% endif %}
                                             {% if allow_status_pending %}<option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>{% endif %}
