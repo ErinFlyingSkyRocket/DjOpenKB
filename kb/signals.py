@@ -81,6 +81,7 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
             assign_default_kb_role_group,
             enforce_admin_users_exclusive,
             enforce_disabled_user_exclusive,
+            enforce_manager_role_precedence,
             enforce_regular_user_default_only,
             sync_user_staff_flags_from_roles,
         )
@@ -116,6 +117,7 @@ def sync_user_role_flags(sender, instance, action, reverse=False, pk_set=None, *
                 if enforce_disabled_user_exclusive(user):
                     return
                 enforce_admin_users_exclusive(user)
+                enforce_manager_role_precedence(user)
                 enforce_regular_user_default_only(user)
                 assign_default_kb_role_group(user)
                 sync_user_staff_flags_from_roles(user)

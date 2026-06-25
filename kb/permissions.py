@@ -112,6 +112,19 @@ ROLE_INTERNAL_GROUP_NAMES = (
     ROLE_INTERNAL_ARTICLE_MANAGER,
 )
 
+# A Manager is the highest standard role within its own visibility scope.
+# Public and internal roles remain independent so a user may, for example, be
+# a Public Article Manager and an Internal Article Approver.
+PUBLIC_MANAGER_LOWER_ROLE_GROUP_NAMES = (
+    ROLE_ARTICLE_WRITER,
+    ROLE_ARTICLE_APPROVER,
+)
+INTERNAL_MANAGER_LOWER_ROLE_GROUP_NAMES = (
+    ROLE_INTERNAL_USER,
+    ROLE_INTERNAL_ARTICLE_WRITER,
+    ROLE_INTERNAL_ARTICLE_APPROVER,
+)
+
 ROLE_DEFINITIONS = {
     ROLE_DISABLED_USER: {
         "description": _(
@@ -584,6 +597,50 @@ def sync_user_profile_type_from_roles(user):
         return
 
 
+def enforce_manager_role_precedence(user) -> bool:
+    """Keep Manager as the highest standard role within each article scope.
+
+    Public Article Manager replaces the lower public Writer and Approver roles.
+    Internal Article Manager replaces the lower Internal User, Internal Writer,
+    and Internal Approver roles. The two scopes are intentionally independent:
+    a public Manager does not remove an internal role, and an internal Manager
+    does not remove a public role. Removed roles are not automatically restored
+    if a Manager is later removed.
+    """
+    if not getattr(user, "pk", None):
+        return False
+
+    try:
+        # Disabled User and Admin Users have higher, existing precedence rules.
+        if user.groups.filter(name__in=(ROLE_DISABLED_USER, ROLE_ADMIN_USERS)).exists():
+            return False
+
+        groups_to_remove = []
+        if user.groups.filter(name=ROLE_ARTICLE_MANAGER).exists():
+            groups_to_remove.extend(PUBLIC_MANAGER_LOWER_ROLE_GROUP_NAMES)
+        if user.groups.filter(name=ROLE_INTERNAL_ARTICLE_MANAGER).exists():
+            groups_to_remove.extend(INTERNAL_MANAGER_LOWER_ROLE_GROUP_NAMES)
+
+        if not groups_to_remove:
+            return False
+
+        removable_groups = list(
+            Group.objects.filter(name__in=tuple(dict.fromkeys(groups_to_remove)))
+        )
+        if not removable_groups:
+            return False
+
+        previous_syncing = getattr(user, "_djopenkb_syncing_role_groups", False)
+        user._djopenkb_syncing_role_groups = True
+        try:
+            user.groups.remove(*removable_groups)
+        finally:
+            user._djopenkb_syncing_role_groups = previous_syncing
+        return True
+    except (DatabaseError, OperationalError, ProgrammingError):
+        return False
+
+
 def enforce_regular_user_default_only(user):
     """Keep Regular User as the fallback role, not a redundant extra role.
 
@@ -737,7 +794,11 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
             groups_to_remove = [ROLE_DISABLED_USER, ROLE_ADMIN_USERS]
             if role_name in {ROLE_ARTICLE_WRITER, ROLE_ARTICLE_APPROVER, ROLE_ARTICLE_MANAGER}:
                 groups_to_remove.append(ROLE_REGULAR_USER)
-            user.groups.remove(*Group.objects.filter(name__in=groups_to_remove))
+            if role_name == ROLE_ARTICLE_MANAGER:
+                groups_to_remove.extend(PUBLIC_MANAGER_LOWER_ROLE_GROUP_NAMES)
+            elif role_name == ROLE_INTERNAL_ARTICLE_MANAGER:
+                groups_to_remove.extend(INTERNAL_MANAGER_LOWER_ROLE_GROUP_NAMES)
+            user.groups.remove(*Group.objects.filter(name__in=tuple(dict.fromkeys(groups_to_remove))))
         user.groups.add(role_group)
     finally:
         user._djopenkb_syncing_role_groups = previous_syncing
@@ -765,6 +826,8 @@ def assign_single_role_group(user, role_name: str, *, clear_direct_permissions: 
         enforce_admin_users_exclusive(user)
         sync_user_staff_flags_from_roles(user)
     else:
+        enforce_manager_role_precedence(user)
+        enforce_regular_user_default_only(user)
         sync_user_staff_flags_from_roles(user)
 
 
@@ -786,6 +849,7 @@ def assign_default_kb_role_group(user):
             sync_user_staff_flags_from_roles(user)
             return
 
+        enforce_manager_role_precedence(user)
         enforce_regular_user_default_only(user)
 
         existing_role_groups = user.groups.filter(name__in=ROLE_GROUP_NAMES)

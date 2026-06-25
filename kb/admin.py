@@ -47,6 +47,7 @@ from .permissions import (
     assign_default_kb_role_group,
     enforce_disabled_user_exclusive,
     enforce_admin_users_exclusive,
+    enforce_manager_role_precedence,
     enforce_regular_user_default_only,
     highest_role_group_name,
     role_permissions_summary,
@@ -677,6 +678,7 @@ class UserProfileInlineForm(UserProfileAccountFormMixin, forms.ModelForm):
             if enforce_disabled_user_exclusive(profile.user):
                 return profile
             enforce_admin_users_exclusive(profile.user)
+            enforce_manager_role_precedence(profile.user)
             sync_user_staff_flags_from_roles(profile.user)
 
         return profile
@@ -911,6 +913,7 @@ class GroupAdminForm(forms.ModelForm):
                 if enforce_disabled_user_exclusive(user):
                     continue
                 enforce_admin_users_exclusive(user)
+                enforce_manager_role_precedence(user)
                 enforce_regular_user_default_only(user)
                 assign_default_kb_role_group(user)
                 sync_user_staff_flags_from_roles(user)
@@ -1289,6 +1292,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         profile, created = UserProfile.objects.get_or_create(user=obj)
         if not enforce_disabled_user_exclusive(obj):
             enforce_admin_users_exclusive(obj)
+            enforce_manager_role_precedence(obj)
         sync_user_staff_flags_from_roles(obj)
 
     def save_related(self, request, form, formsets, change):
@@ -1299,6 +1303,7 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         if enforce_disabled_user_exclusive(user):
             return
         enforce_admin_users_exclusive(user)
+        enforce_manager_role_precedence(user)
         enforce_regular_user_default_only(user)
         assign_default_kb_role_group(user)
         sync_user_staff_flags_from_roles(user)
