@@ -5890,3 +5890,15 @@ msgstr "Ограничения частоты запросов OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Первый принятый вопрос каждого пользователя запускает фиксированное 24-часовое окно. Существующее краткосрочное ограничение всплесков продолжает действовать отдельно."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "Блокировка аутентификации сработала"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "Область блокировки"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "Длительность блокировки"

@@ -5807,3 +5807,15 @@ msgstr "Hastighetsbegränsningar för OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Varje användares första godkända fråga startar ett fast 24-timmarsfönster. Den befintliga kortsiktiga begränsningen för snabba frågor fortsätter att vara aktiv separat."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "Autentiseringsspärr utlöst"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "Spärrens omfattning"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "Spärrtid"

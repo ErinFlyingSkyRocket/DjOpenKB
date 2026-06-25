@@ -5763,3 +5763,15 @@ msgstr "محدودیت‌های نرخ OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "نخستین پرسش پذیرفته‌شده هر کاربر یک بازه ثابت ۲۴ ساعته را آغاز می‌کند. محدودیت کوتاه‌مدت فعلی برای درخواست‌های پی‌درپی همچنان جداگانه فعال است."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "قفل احراز هویت فعال شد"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "دامنه قفل"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "مدت قفل"

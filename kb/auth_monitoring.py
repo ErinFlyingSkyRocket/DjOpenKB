@@ -258,8 +258,9 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
     """Record a failed password/MFA attempt and return lockout state.
 
     Returns a dict with: locked, retry_after_seconds, identifier, failure_count,
-    failure_limit, block_seconds, policy_stage.
+    failure_limit, block_seconds, policy_stage, and lockout_created.
     """
+    purpose = (purpose or "password").strip().lower() or "password"
     locked, retry_after, identifier = get_auth_lockout_status(
         request=request,
         username=username,
@@ -280,6 +281,7 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
     if locked:
         return {
             "locked": True,
+            "lockout_created": False,
             "retry_after_seconds": retry_after,
             "identifier": identifier,
             "failure_count": cache.get(keys["failures"]) or failure_limit,
@@ -287,6 +289,7 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
             "block_seconds": retry_after,
             "policy_stage": stage,
             "strikes_so_far": strikes_so_far,
+            "strikes_now": strikes_so_far,
         }
 
     failures = cache.get(keys["failures"]) or 0
@@ -297,6 +300,8 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
     cache.set(keys["failures"], failures, counter_ttl_seconds)
 
     block_seconds = 0
+    lockout_created = False
+    strikes_now = strikes_so_far
     if failures >= failure_limit:
         block_seconds = _positive_int(stage.get("block_seconds"), 300, minimum=60)
         blocked_until = int(time.time()) + block_seconds
@@ -306,9 +311,37 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
         cache.delete(keys["failures"])
         locked = True
         retry_after = block_seconds
+        lockout_created = True
+
+        # Record one dedicated audit event at the moment the temporary block is
+        # created. Existing per-attempt failure events remain unchanged, while
+        # this event gives administrators a direct filter for 5-minute,
+        # 15-minute, 1-hour, and any future configured lockout stages.
+        resolved_user = user or _find_user_for_username(username)
+        resolved_username = username or (
+            resolved_user.get_username() if resolved_user and getattr(resolved_user, "pk", None) else ""
+        )
+        log_auth_event(
+            request,
+            event_type="auth_lockout_triggered",
+            success=False,
+            user=resolved_user,
+            username=resolved_username,
+            details={
+                "purpose": purpose,
+                "policy_stage": stage.get("stage_number"),
+                "failure_count": failures,
+                "failure_limit": failure_limit,
+                "block_seconds": block_seconds,
+                "lockout_strike": strikes_now,
+                "stage_repeat_count": stage.get("repeat_count"),
+                "admin_step_up": purpose == "admin_mfa",
+            },
+        )
 
     return {
         "locked": bool(locked),
+        "lockout_created": lockout_created,
         "retry_after_seconds": int(retry_after),
         "identifier": identifier,
         "failure_count": failures,
@@ -316,6 +349,7 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
         "block_seconds": block_seconds,
         "policy_stage": stage,
         "strikes_so_far": strikes_so_far,
+        "strikes_now": strikes_now,
     }
 
 

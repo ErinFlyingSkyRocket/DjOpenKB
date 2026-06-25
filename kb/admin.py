@@ -14,7 +14,7 @@ from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from .models import ActivityLog, AdminActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
-from .auth_monitoring import log_auth_event, reset_user_auth_lockouts
+from .auth_monitoring import format_retry_after, log_auth_event, reset_user_auth_lockouts
 from .admin_audit import (
     build_admin_change_entries,
     build_admin_object_snapshot,
@@ -1898,6 +1898,8 @@ class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         "success",
         "username",
         "user",
+        "lockout_scope_display",
+        "lockout_duration_display",
         "login_mode",
         "ip_address",
         "short_user_agent",
@@ -1932,6 +1934,31 @@ class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         # Authentication activity logs are append-only from the admin UI.
         # Retention/deletion is controlled through Site settings and the cleanup command.
         return False
+
+    def lockout_scope_display(self, obj):
+        if obj.event_type != AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED:
+            return "-"
+
+        purpose = str((obj.details or {}).get("purpose") or "").strip().lower()
+        labels = {
+            "password": _("Password"),
+            "mfa": _("MFA verification"),
+            "admin_mfa": _("Admin MFA verification"),
+        }
+        return labels.get(purpose, purpose or "-")
+
+    lockout_scope_display.short_description = _("Lockout scope")
+
+    def lockout_duration_display(self, obj):
+        if obj.event_type != AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED:
+            return "-"
+        try:
+            seconds = int((obj.details or {}).get("block_seconds") or 0)
+        except (TypeError, ValueError):
+            seconds = 0
+        return format_retry_after(seconds) if seconds > 0 else "-"
+
+    lockout_duration_display.short_description = _("Lockout duration")
 
     def short_user_agent(self, obj):
         value = obj.user_agent or "-"

@@ -256,6 +256,7 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         MFA_VERIFY_FAILURE = "mfa_verify_failure", _("MFA verify failure")
         MFA_RESET_SELF = "mfa_reset_self", _("MFA reset by user")
         MFA_RESET_ADMIN = "mfa_reset_admin", _("MFA reset by admin")
+        AUTH_LOCKOUT_TRIGGERED = "auth_lockout_triggered", _("Authentication lockout triggered")
         AUTH_LOCKOUT_RESET_ADMIN = "auth_lockout_reset_admin", _("Authentication lockout reset by admin")
         LOGOUT = "logout", _("Logout")
 

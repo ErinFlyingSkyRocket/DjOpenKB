@@ -5704,3 +5704,15 @@ msgstr "حدود معدل OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "يبدأ السؤال المقبول الأول لكل مستخدم نافذة ثابتة مدتها 24 ساعة. ويظل حد الاندفاع قصير المدى الحالي مفعلًا بشكل منفصل."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "تم تفعيل قفل المصادقة"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "نطاق القفل"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "مدة القفل"

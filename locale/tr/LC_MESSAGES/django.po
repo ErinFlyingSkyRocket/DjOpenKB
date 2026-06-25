@@ -5836,3 +5836,15 @@ msgstr "OpenKB AI hız sınırları"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Her kullanıcının ilk kabul edilen sorusu sabit bir 24 saatlik pencere başlatır. Mevcut kısa süreli ani istek sınırı ayrı olarak etkin kalır."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "Kimlik doğrulama kilidi tetiklendi"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "Kilitleme kapsamı"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "Kilitleme süresi"

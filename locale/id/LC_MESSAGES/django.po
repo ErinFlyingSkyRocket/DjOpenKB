@@ -5806,3 +5806,15 @@ msgstr "Batas laju OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Pertanyaan pertama yang diterima dari setiap pengguna memulai jendela tetap 24 jam. Batas lonjakan jangka pendek yang ada tetap aktif secara terpisah."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "Penguncian autentikasi dipicu"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "Cakupan penguncian"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "Durasi penguncian"

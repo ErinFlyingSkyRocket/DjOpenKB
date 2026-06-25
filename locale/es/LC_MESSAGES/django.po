@@ -5933,3 +5933,15 @@ msgstr "Límites de velocidad de OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "La primera pregunta aceptada de cada usuario inicia una ventana fija de 24 horas. El límite de ráfagas a corto plazo existente continúa activo por separado."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "Bloqueo de autenticación activado"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "Ámbito del bloqueo"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "Duración del bloqueo"

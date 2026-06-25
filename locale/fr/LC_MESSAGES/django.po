@@ -5997,3 +5997,15 @@ msgstr "Limites de débit d’OpenKB AI"
 #: kb/models.py:1183 kb/admin.py:2548
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "La première question acceptée de chaque utilisateur démarre une fenêtre fixe de 24 heures. La limite actuelle de rafales à court terme reste active séparément."
+
+#: kb/models.py:259
+msgid "Authentication lockout triggered"
+msgstr "Verrouillage de l’authentification déclenché"
+
+#: kb/admin.py:1950
+msgid "Lockout scope"
+msgstr "Périmètre du verrouillage"
+
+#: kb/admin.py:1962
+msgid "Lockout duration"
+msgstr "Durée du verrouillage"
