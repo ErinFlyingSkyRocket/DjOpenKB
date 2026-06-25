@@ -254,9 +254,12 @@ class AuthActivityLog(AppendOnlyAuditLogMixin, models.Model):
         MFA_SETUP_FAILURE = "mfa_setup_failure", _("MFA setup failure")
         MFA_VERIFY_SUCCESS = "mfa_verify_success", _("MFA verify success")
         MFA_VERIFY_FAILURE = "mfa_verify_failure", _("MFA verify failure")
+        ADMIN_MFA_VERIFY_SUCCESS = "admin_mfa_verify_success", _("Django Admin MFA verification success")
+        ADMIN_MFA_VERIFY_FAILURE = "admin_mfa_verify_failure", _("Django Admin MFA verification failure")
         MFA_RESET_SELF = "mfa_reset_self", _("MFA reset by user")
         MFA_RESET_ADMIN = "mfa_reset_admin", _("MFA reset by admin")
         AUTH_LOCKOUT_TRIGGERED = "auth_lockout_triggered", _("Authentication lockout triggered")
+        ADMIN_MFA_LOCKOUT_TRIGGERED = "admin_mfa_lockout_triggered", _("Django Admin MFA lockout triggered")
         AUTH_LOCKOUT_RESET_ADMIN = "auth_lockout_reset_admin", _("Authentication lockout reset by admin")
         LOGOUT = "logout", _("Logout")
 

@@ -321,9 +321,14 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
         resolved_username = username or (
             resolved_user.get_username() if resolved_user and getattr(resolved_user, "pk", None) else ""
         )
+        lockout_event_type = (
+            AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED
+            if purpose == "admin_mfa"
+            else AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED
+        )
         log_auth_event(
             request,
-            event_type="auth_lockout_triggered",
+            event_type=lockout_event_type,
             success=False,
             user=resolved_user,
             username=resolved_username,
@@ -364,13 +369,14 @@ def reset_auth_lockout(identifier):
 
 
 def reset_user_auth_lockouts(user):
-    """Clear password and MFA lockouts for a known user."""
+    """Clear password, normal MFA, and Django Admin MFA lockouts for a known user."""
     if not user or not getattr(user, "pk", None):
         return []
 
     identifiers = [
         get_auth_lockout_identifier(user=user, purpose="password"),
         get_auth_lockout_identifier(user=user, purpose="mfa"),
+        get_auth_lockout_identifier(user=user, purpose="admin_mfa"),
     ]
     for identifier in identifiers:
         reset_auth_lockout(identifier)

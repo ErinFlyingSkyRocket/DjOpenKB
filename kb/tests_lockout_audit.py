@@ -52,7 +52,7 @@ class AuthenticationLockoutAuditTests(TestCase):
         self.assertTrue(first["locked"])
         self.assertTrue(first["lockout_created"])
         event = AuthActivityLog.objects.get(
-            event_type=AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED,
+            event_type=AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED,
             user=self.user,
         )
         self.assertFalse(event.success)
@@ -74,7 +74,7 @@ class AuthenticationLockoutAuditTests(TestCase):
         self.assertFalse(blocked_retry["lockout_created"])
         self.assertEqual(
             AuthActivityLog.objects.filter(
-                event_type=AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED,
+                event_type=AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED,
                 user=self.user,
             ).count(),
             1,
@@ -93,7 +93,7 @@ class AuthenticationLockoutAuditTests(TestCase):
 
         events = list(
             AuthActivityLog.objects.filter(
-                event_type=AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED,
+                event_type=AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED,
                 user=self.user,
             ).order_by("created_at", "pk")
         )

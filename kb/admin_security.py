@@ -232,7 +232,7 @@ def admin_mfa_verify(request):
     if not mfa_device_secret_is_readable(device):
         log_auth_event(
             request,
-            event_type="mfa_verify_failure",
+            event_type="admin_mfa_verify_failure",
             success=False,
             user=user,
             username=user.get_username(),
@@ -260,7 +260,7 @@ def admin_mfa_verify(request):
         if locked:
             log_auth_event(
                 request,
-                event_type="mfa_verify_failure",
+                event_type="admin_mfa_verify_failure",
                 success=False,
                 user=user,
                 username=user.get_username(),
@@ -281,7 +281,7 @@ def admin_mfa_verify(request):
             mark_admin_mfa_verified(request, user)
             log_auth_event(
                 request,
-                event_type="mfa_verify_success",
+                event_type="admin_mfa_verify_success",
                 success=True,
                 user=user,
                 username=user.get_username(),
@@ -308,7 +308,7 @@ def admin_mfa_verify(request):
 
             log_auth_event(
                 request,
-                event_type="mfa_verify_failure",
+                event_type="admin_mfa_verify_failure",
                 success=False,
                 user=user,
                 username=user.get_username(),

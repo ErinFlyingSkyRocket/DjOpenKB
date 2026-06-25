@@ -1936,21 +1936,32 @@ class AuthActivityLogAdmin(SiteSettingLogPaginationMixin, admin.ModelAdmin):
         return False
 
     def lockout_scope_display(self, obj):
-        if obj.event_type != AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED:
+        lockout_event_types = {
+            AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED,
+            AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED,
+        }
+        if obj.event_type not in lockout_event_types:
             return "-"
+
+        if obj.event_type == AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED:
+            return _("Django Admin MFA verification")
 
         purpose = str((obj.details or {}).get("purpose") or "").strip().lower()
         labels = {
             "password": _("Password"),
             "mfa": _("MFA verification"),
-            "admin_mfa": _("Admin MFA verification"),
+            "admin_mfa": _("Django Admin MFA verification"),
         }
         return labels.get(purpose, purpose or "-")
 
     lockout_scope_display.short_description = _("Lockout scope")
 
     def lockout_duration_display(self, obj):
-        if obj.event_type != AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED:
+        lockout_event_types = {
+            AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED,
+            AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED,
+        }
+        if obj.event_type not in lockout_event_types:
             return "-"
         try:
             seconds = int((obj.details or {}).get("block_seconds") or 0)
