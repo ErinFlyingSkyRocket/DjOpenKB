@@ -108,6 +108,7 @@
                     var heading = document.getElementById('login-heading');
                     var description = document.getElementById('login-description');
                     var usernameInput = document.getElementById('id_username');
+                    var passwordInput = document.getElementById('id_password');
                     var usernameLabel = document.getElementById('username-label');
                     var adHelp = document.getElementById('ad-login-help');
                     var localHelp = document.getElementById('local-login-help');
@@ -128,7 +129,7 @@
                         localSubmit: "{% trans 'Sign in with local account' %}"
                     };
 
-                    function setMode(mode) {
+                    function setMode(mode, focusUsername) {
                         var isLocal = mode === 'local';
                         modeInput.value = isLocal ? 'local' : 'ad';
                         heading.textContent = isLocal ? text.localHeading : text.adHeading;
@@ -142,21 +143,34 @@
                         if (localHelp) { localHelp.style.display = isLocal ? '' : 'none'; }
                         localLink.style.display = isLocal ? 'none' : '';
                         adLink.style.display = isLocal ? '' : 'none';
-                        usernameInput.focus();
+                        if (focusUsername) {
+                            usernameInput.focus();
+                        }
                     }
 
                     localLink.addEventListener('click', function (event) {
                         event.preventDefault();
-                        setMode('local');
+                        setMode('local', true);
                     });
                     adLink.addEventListener('click', function (event) {
                         event.preventDefault();
-                        setMode('ad');
+                        setMode('ad', true);
                     });
 
                     // Preserve the submitted login mode after validation/authentication errors.
                     // This keeps users on the local login view if local sign-in fails.
-                    setMode((modeInput.value || 'ad').toLowerCase() === 'local' ? 'local' : 'ad');
+                    setMode((modeInput.value || 'ad').toLowerCase() === 'local' ? 'local' : 'ad', false);
+
+                    // After any submitted login attempt, keep the cursor on the password
+                    // field so the user can correct it immediately. A fresh login page still
+                    // starts at the username field.
+                    {% if request.method == "POST" %}
+                    if (passwordInput) {
+                        passwordInput.focus();
+                    }
+                    {% else %}
+                    usernameInput.focus();
+                    {% endif %}
                 }());
             </script>
         </form>
