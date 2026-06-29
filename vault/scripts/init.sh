@@ -87,6 +87,10 @@ fi
 vault policy write djopenkb-app "$POLICY_FILE" >/dev/null
 vault token create -policy=djopenkb-app -orphan -ttl=87600h -field=token > "$APP_TOKEN_FILE" \
   || vault token create -policy=djopenkb-app -orphan -field=token > "$APP_TOKEN_FILE"
-chmod 600 "$APP_TOKEN_FILE" || true
+# The Django, Celery, and scheduler containers run as UID/GID 10001.
+# Keep the token unreadable to unrelated host users, but permit that app group
+# to read the single bind-mounted token file.
+chown 0:10001 "$APP_TOKEN_FILE" || true
+chmod 0440 "$APP_TOKEN_FILE" || true
 
 log "Vault is ready for DjOpenKB."
