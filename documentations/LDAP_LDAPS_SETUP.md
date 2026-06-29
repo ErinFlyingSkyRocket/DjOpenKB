@@ -20,12 +20,12 @@ Prepare these values from the Windows Server AD lab:
 AD domain:              openkb.local
 NetBIOS domain:         OPENKB
 Domain Controller host: WIN-VVCA4BIOSK7.openkb.local
-Domain Controller IP:   192.168.81.128
+Domain Controller IP:   <DOMAIN_CONTROLLER_IP>
 Service account:        svc_djopenkb@openkb.local
 Search base:            DC=openkb,DC=local
 ```
 
-The service account should be a low-privilege AD account used only for LDAP bind/search. It should not be a Domain Admin or Enterprise Admin.
+The service account should be a low-privilege AD account used only for LDAP bind/search. It should not be a Domain Admin, Enterprise Admin, local administrator, or interactive-login account.
 
 ---
 
@@ -55,7 +55,7 @@ LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local,company.com
 LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
 LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local)(mail=%(user)s@company.com)(userPrincipalName=%(user)s@company.com))
 
-# Required when LDAP_ENABLED=true in production. Only members of this AD group can sign in.
+# Required whenever LDAP_ENABLED=true. Only members of this AD group can sign in.
 LDAP_GROUP_SEARCH_BASE=DC=openkb,DC=local
 LDAP_REQUIRED_GROUP_DN=CN=KB-Users,OU=Security Groups,DC=openkb,DC=local
 
@@ -70,7 +70,7 @@ Notes:
 - `LDAP_SERVER_URI` should use the Domain Controller hostname/FQDN, not the IP address.
 - `LDAP_EXTRA_HOSTNAME`, `LDAP_EXTRA_SHORT_HOSTNAME`, and `LDAP_DC_IP` are optional and only help Docker resolve the hostname when DNS is unavailable.
 - `LDAP_BIND_DN` must be the real AD service account login format that can bind/search, for example `svc_djopenkb@openkb.local`.
-- `LDAP_REQUIRED_GROUP_DN` is mandatory when `LDAP_ENABLED=true` and `DEBUG=false`. Create a dedicated AD security group such as `KB-Users`, add only approved users, and copy its exact distinguished name. Users outside this group are rejected even if their password is valid.
+- `LDAP_REQUIRED_GROUP_DN` is mandatory whenever `LDAP_ENABLED=true`. Create a dedicated AD security group such as `KB-Users`, add only approved users, and copy its exact distinguished name. An absent or incorrect DN fails closed during Django startup; users outside the group are rejected even if their password is valid.
 - `LDAP_GROUP_SEARCH_BASE` can usually match `LDAP_USER_SEARCH_BASE`; narrow it to the relevant OU only when your AD structure permits that.
 - The public email domain and the AD UPN suffix may be different. Include both in LDAP_ALLOWED_EMAIL_DOMAINS if both are accepted for login.
 ```

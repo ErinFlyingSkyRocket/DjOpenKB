@@ -21,7 +21,8 @@ The Docker Compose stack contains the following main services:
 | `redis` | Shared production cache for authentication lockouts, AI burst limits/cooldowns, fixed 24-hour per-user quotas, encrypted temporary AI job records, and query concurrency controls. Redis DB 2 is used as the Celery broker by default. |
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, field-encryption key, PostgreSQL password, AI provider API keys, and LDAP bind password. |
 | `vault-init` | First-time Vault initialisation and secret seeding helper. |
-| `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment. |
+| `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment and recreates the app token if it is missing. |
+| `app-permissions-init` | Short-lived, network-isolated root helper that prepares the static and OpenKB bind mounts for the unprivileged application UID/GID before application services start. It must exit successfully. |
 | `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, published-article deletion-queue purge, authentication log cleanup, and general/admin activity log cleanup. |
 
 ## 3. User Types and Permission Summary
@@ -276,7 +277,7 @@ Authenticated sessions are controlled by a site setting:
 session_timeout_hours = 8 by default
 ```
 
-If the timeout expires, the user is logged out and must sign in again. The administrator setting accepts **1 to 168 hours**; browser-close-only sessions are no longer offered because the public-facing policy uses a fixed maximum lifetime.
+If the timeout expires, the user is logged out and must sign in again. The deadline begins at the original sign-in attempt and browser activity, refreshes, or cookie renewal do not extend it. The middleware aligns the browser cookie with the remaining fixed lifetime while preserving the server-side timestamp as the authoritative guard. The administrator setting accepts **1 to 168 hours**; browser-close-only sessions are no longer offered because the public-facing policy uses a fixed maximum lifetime.
 
 ### 7.2 Secure Cookies
 
@@ -307,6 +308,9 @@ Important protections include:
 - Safe redirect validation using Django's `url_has_allowed_host_and_scheme`.
 - Secure CSRF cookie settings when debug is off.
 - `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` are passed into Docker Compose for safer deployment configuration.
+- Nginx applies POST-only per-IP edge rate limits to login, MFA, Admin MFA, AI, upload, and bulk-import submissions before they reach Django or Active Directory. Normal GET page loads are not counted.
+- Nginx rejects ordinary request bodies above 3 MB. The authorised bulk-import route alone has a 100 MB limit, matching the application ZIP validation limit.
+- Per-IP connection caps and request timeouts reduce slow or repeated request pressure at the reverse-proxy layer.
 
 ## 9. Article Management
 
@@ -879,7 +883,7 @@ The singleton **Site settings** record controls the following operational limits
 | User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |
 | General activity/admin-log retention | 30 days | `0` retains general and Django Admin activity logs indefinitely. |
 | Admin log rows per page | 200 | Recommended range is 50-500. |
-| Admin allowed CIDRs | `10.65.0.0/16`, loopback | Inner Django Admin allowlist. Nginx may enforce an additional outer allowlist. |
+| Admin allowed CIDRs | `<ADMIN_ALLOWED_CIDR>`, loopback | Inner Django Admin allowlist. Nginx may enforce an additional outer allowlist. |
 | Lockout escalation memory | 604800 seconds | Failed password/MFA escalation history is retained for 7 days unless successful authentication or an admin reset clears it. |
 | Admin MFA idle timeout | 600 seconds | 10 minutes by default; code clamps values from 60 to 86400 seconds. |
 | OpenKB AI prompts per 24 hours | 20 prompts | Per-user fixed window. The first accepted prompt starts the 24-hour expiry; later prompts do not extend it. Runtime range is 1-1000. |
@@ -1118,11 +1122,11 @@ HashiCorp Vault is used to store sensitive runtime values, including:
 
 The `.env` file should contain non-secret runtime configuration only. Passwords and API keys should be stored in `vault/bootstrap/djopenkb.env` only for first-time Vault seeding, then removed from shared/exported packages.
 
-Vault encrypts stored secrets at rest and gives the application access through the configured Vault token file. The project does not rely on hardcoded production secrets in source code. The Django PostgreSQL password fallback is disabled in production, so missing production database secrets fail startup instead of silently using a weak default.
+Vault encrypts stored secrets at rest and gives the application access through the configured Vault token file. The application token is created as owner/group `0:10001` with mode `0440`: root may manage it, while only the unprivileged application group may read the bind-mounted file. The project does not rely on hardcoded production secrets in source code. The Django PostgreSQL password fallback is disabled in production, so missing production database secrets fail startup instead of silently using a weak default.
 
 ## 20. LDAPS Security
 
-The project supports Active Directory authentication over LDAPS on port 636. LDAPS protects LDAP bind credentials in transit using TLS.
+The project supports Active Directory authentication over LDAPS on port 636. LDAPS protects LDAP bind credentials in transit using TLS. When `LDAP_ENABLED=true`, only accounts in the configured `LDAP_REQUIRED_GROUP_DN` security group may sign in; a missing or incorrect group DN fails closed during Django startup. Nested Active Directory group membership is supported.
 
 In the current lab configuration, LDAPS testing confirmed:
 
@@ -1145,7 +1149,7 @@ Nginx serves the application on host port `8080`; a perimeter firewall can safel
 - `Permissions-Policy`
 - `Content-Security-Policy`
 
-The local lab deployment can use a locally generated Nginx certificate. For a real public deployment, use a trusted certificate and configure the final host names in `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS`.
+The local lab deployment can use a self-signed certificate generated with the direct internal server IP as an IP subject-alternative name. For a real public deployment, use a trusted certificate and configure the final host names in `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS`. Nginx uses a read-only root filesystem with a writable `/tmp` `tmpfs`; its temporary request directories are intentionally configured directly below `/tmp` so uploads and proxied requests still work.
 
 The current Content Security Policy permits `'unsafe-inline'` for scripts and styles because existing templates still contain inline JavaScript/CSS and a small number of inline event handlers. This is a deliberate compatibility trade-off, not a claim of a strict nonce/hash-based CSP. Removing it without a complete template/static-assets refactor would break login, article editing, and admin tools. A future hardening task is to move inline code into static files and then remove `'unsafe-inline'`.
 
@@ -1177,7 +1181,7 @@ The project pins Python package versions/ranges in `requirements.txt` to reduce 
 Current dependencies are:
 
 ```text
-Django==6.0.5
+Django==6.0.6
 gunicorn==26.0.0
 Markdown==3.10
 bleach==6.3.0
@@ -1220,21 +1224,22 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | MFA | TOTP MFA required after password/AD authentication. |
 | Password/MFA lockout | Progressive admin-configurable lockout stages with repeat counts, Redis-backed counters, automatic reset after successful login/MFA, and admin reset actions. |
 | Sensitive profile changes | Fresh MFA/OTP required for sensitive local profile changes. AD-managed values are blocked locally. |
-| Sessions | Configurable session timeout and secure cookie settings. |
+| Sessions | Configurable fixed session timeout (8 hours by default), server-side sign-in timestamp, browser cookie aligned to the remaining lifetime, and secure cookie settings. |
 | CSRF | Django CSRF middleware and token-protected POST forms/endpoints. |
 | XSS | Markdown rendered then sanitised with Bleach. |
 | Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames. |
 | Access control | Public/internal article visibility checks, scoped writer/approver/manager roles, protected image serving, admin-only tools, recovery queue restricted to Admin Users, and 404 for non-admin admin-tool access. |
 | Article deletion recovery | Published deletion requires MFA and normally enters a configurable admin recovery queue; non-published content deletes immediately; setting `0` deliberately enables immediate published deletion. |
 | Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow across article visibility scopes. |
-| Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. |
-| LDAP | LDAPS with certificate validation for AD integration. |
-| HTTPS | Nginx HTTPS and security headers; current CSP allows inline styles/scripts for template compatibility. |
+| Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. Vault app token is readable only by root and application group `10001` (`0:10001`, mode `0440`). |
+| LDAP | LDAPS with certificate validation, low-privilege bind account guidance, connection/operation timeouts, and required approved-AD-group restriction for AD integration. |
+| HTTPS / edge protection | Nginx HTTPS and security headers; POST-only endpoint rate limits, per-IP connection limits, request timeouts, 3 MB ordinary request size limit, restricted 100 MB bulk-import route, and current CSP inline compatibility trade-off. |
 | Crawler controls | `/robots.txt` disallows all cooperative crawling and application responses receive an `X-Robots-Tag` no-index header. This is not access control. |
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
 | Activity logs | Article, deletion queue, vote, upload, local profile email/password, AI, import/export, and admin-tool activity logging with retention cleanup. Search/language history is intentionally excluded. |
 | Admin log display | Admin log pages use pagination and horizontal scrolling for wide tables. |
 | AI endpoint | Public/internal index isolation, role-scoped query selection, encrypted short-lived background jobs, owner/scope checks before execution and result delivery, prompt length limit, 5 questions per 60 seconds, 30-minute burst cooldown, Admin-configurable fixed 24-hour user quota (default 20), timeout/query controls, safe text rendering, and privacy-safe activity metadata. |
+| Container hardening | Private Compose backend networks, unprivileged web/worker/scheduler services, read-only root filesystems, temporary `tmpfs`, capability dropping, `no-new-privileges`, PID limits, and a network-isolated mount-permission helper. |
 | Dependencies | Exact package versions pinned in `requirements.txt`. |
 
 ## 26. Files That Should Not Be Shared
@@ -1266,6 +1271,10 @@ Run Django checks:
 ```bash
 docker compose exec web python manage.py check
 docker compose exec web python manage.py check --deploy
+
+# Confirm the mount-permission helper and Vault token permissions after deployment.
+docker compose logs --tail=80 app-permissions-init
+stat -c '%u:%g %a %n' vault/keys/djopenkb-app-token.txt
 ```
 
 Verify crawler controls through Nginx:
@@ -1330,7 +1339,11 @@ docker compose up -d
 ## 28. Operational Notes for Administrators
 
 - Keep `DJANGO_DEBUG=false` for deployment.
+- Match `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` to the exact browser URL: direct internal-IP access includes `:8080`; later public firewall/DNS access on 443 does not.
 - Keep Vault secrets out of shared packages.
+- Confirm `app-permissions-init` exits successfully and `vault/keys/djopenkb-app-token.txt` remains `0:10001` with mode `0440` after Vault maintenance.
+- Do not weaken Nginx read-only filesystem settings to solve temporary-path errors; retain the direct `/tmp/*_temp` paths instead.
+- Treat the worker `egress` network as structural separation, not a replacement for host/firewall egress policy.
 - Use LDAPS with certificate validation for AD.
 - Use the activity logs and authentication logs to review suspicious behaviour.
 - Keep both OpenKB AI controls enabled: the short-burst cooldown and the fixed per-user 24-hour quota. Start with the default quota of 20 prompts.

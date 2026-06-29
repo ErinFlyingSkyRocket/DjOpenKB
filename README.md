@@ -2,7 +2,7 @@
 
 DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, public/internal article separation, user article suggestions, role-based review workflows, Active Directory / LDAPS login, local Django login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, activity logging, and an integrated OpenKB AI chatbot.
 
-The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required. The website can be accessed through HTTPS using the Linux server IP address or localhost, while Active Directory can use an internal lab domain such as `openkb.local`.
+The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required during development: users on the reachable internal network can use the browser-facing server IP over HTTPS, for example `https://<INTERNAL_SERVER_IP>:8080`. Replace `<INTERNAL_SERVER_IP>` with the approved internal address for the deployment. `localhost` and `127.0.0.1` refer only to the Linux server itself and are not remote-user addresses. When a firewall and final DNS name are later introduced, publish only HTTPS and update the trusted host/origin settings to the exact public address.
 
 ---
 
@@ -21,7 +21,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Dislike counts are limited to Article Manager, Internal Article Manager, and Admin Users. Normal users and approvers only see helpful/like counts.
 - Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, published-article deletion queue recovery/purge, group/user role management, and site settings.
 - Local Django login support.
-- Active Directory login over LDAPS for domain users.
+- Active Directory login over LDAPS for domain users, restricted to an approved AD security group such as `KB-Users`.
 - Clear separation between local users and AD users.
 - MFA support using authenticator-app one-time passwords.
 - Authentication and append-only activity logging for important user, article, deletion queue, profile email/password, admin, AI, and maintenance actions. Search history and language selection changes are intentionally not logged.
@@ -30,13 +30,13 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, and AI credentials.
 - PostgreSQL database through Docker Compose.
 - Redis-backed production cache for authentication lockouts, AI rate limits, fixed 24-hour AI quotas, background AI jobs, and query concurrency controls.
-- Nginx HTTPS reverse proxy on port `8080`.
+- Nginx HTTPS reverse proxy on host port `8080` for direct internal development; a perimeter firewall may later publish public TCP `443` and translate it to this listener. Nginx applies per-IP POST rate limits to login, MFA, admin MFA, AI, upload, and bulk-import submissions.
 - Persistent OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`. Questions run as short-lived Celery jobs so they continue while a signed-in user moves between normal site pages.
 - AI resource controls: prompt length limit, short-burst rate limit and cooldown, a per-user fixed 24-hour quota, worker/query concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and privacy-safe activity metadata.
 - Markdown article rendering with sanitization.
 - Image upload restrictions for article content, including protected image serving based on article visibility and ownership/review access.
 - Multilingual UI support through Django translation files.
-- Docker cleanup scheduler for routine cleanup tasks.
+- Docker cleanup scheduler for routine cleanup tasks. The Compose stack separates the proxy, application, Vault, and worker-egress networks; application services use an unprivileged UID/GID, read-only filesystems, temporary `tmpfs` storage, capability dropping, and process limits where supported.
 - Manual keyword suggestion refresh that scans the current title/body against existing manually created article keywords only.
 - Admin-configurable article count per page with safe limits from 5 to 100.
 - Login page is the only normal public app entry point; normal app/admin paths return 404 to anonymous users. `/robots.txt` is publicly reachable only so cooperative crawlers can see `Disallow: /`; application responses also carry a no-index header.
@@ -94,7 +94,7 @@ Local and AD users are identified from account-source metadata rather than email
 
 | Area | Security controls |
 |---|---|
-| Authentication | Login-only site access, local login, AD/LDAPS login, MFA, session timeout, authentication logging |
+| Authentication | Login-only site access, local login, AD/LDAPS login restricted to an approved AD group, MFA, fixed eight-hour session lifetime, authentication logging |
 | Anonymous access | Only the login/language/static support paths and intentionally public `/robots.txt` are public; normal app pages and hidden admin login return 404 when unauthenticated |
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
@@ -107,8 +107,8 @@ Local and AD users are identified from account-source metadata rather than email
 | AI chatbot | Login-protected persistent chat widget, role-scoped public/internal indexes, encrypted short-lived Redis job records, Celery background execution, 5 questions per 60 seconds, a 30-minute burst cooldown, an Admin-configurable fixed 24-hour per-user quota (default 20), query/worker concurrency controls, timeout handling, related article recommendations, and privacy-safe activity metadata |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
-| Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets |
-| Network and crawler controls | Nginx HTTPS reverse proxy, configurable trusted hosts/origins, optional admin CIDR/VPN restrictions, `/robots.txt` with `Disallow: /`, and `X-Robots-Tag` no-index defence in depth for Django responses |
+| Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets. The bind-mounted app token is root-owned, readable only by the application group, and never stored in source control. |
+| Network and crawler controls | Nginx HTTPS reverse proxy, POST-only edge rate limits, 3 MB ordinary request limit with a 100 MB admin-import exception, configurable trusted hosts/origins, optional admin CIDR/VPN restrictions, private Compose backend networks, `/robots.txt` with `Disallow: /`, and `X-Robots-Tag` no-index defence in depth for Django responses |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
 
 ## Article Workflow Summary
@@ -307,7 +307,7 @@ Use the deployment guide for Linux server setup. Use the LDAPS guide and Windows
 
 Contains the Nginx reverse proxy configuration.
 
-Nginx provides HTTPS access to the Django web container. The project uses port `8080` by default.
+Nginx provides HTTPS access to the Django web container. The project uses host port `8080` for direct internal development. A future perimeter firewall can publish only external TCP `443` and translate it to this internal listener. Nginx uses a read-only root filesystem with a writable `/tmp` `tmpfs`; its temporary request paths are configured directly below `/tmp` so uploads and proxied requests continue to work without weakening the container filesystem.
 
 Important paths:
 
@@ -328,7 +328,7 @@ nginx/certs/localhost.key
 
 Contains HashiCorp Vault configuration and local Vault runtime folders.
 
-Vault is used to store sensitive values such as Django secret key, PostgreSQL password, field-encryption key, LDAP bind password, and AI API keys.
+Vault is used to store sensitive values such as Django secret key, PostgreSQL password, field-encryption key, LDAP bind password, and AI API keys. The app token at `vault/keys/djopenkb-app-token.txt` is created with owner/group `0:10001` and mode `0440`, allowing only root and the unprivileged application group to read it.
 
 Important paths:
 
@@ -502,7 +502,7 @@ Keep `OPENKB_AI_WORKER_CONCURRENCY=1` for the current single-VM deployment unles
 
 ## Public-Exposure Hardening
 
-Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, an eight-hour session default, and a required AD access-group check. Until a DNS name exists, configure `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` with the browser-facing public IP, not the Linux VM private address.
+Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, read-only filesystems with controlled `tmpfs` storage, an eight-hour fixed session lifetime, Vault token group permissions, and a required AD access-group check. During the current direct internal-IP phase, `DJANGO_ALLOWED_HOSTS` uses the reachable server IP and `DJANGO_CSRF_TRUSTED_ORIGINS` must include the visible `:8080` port. After a firewall publishes external `443`, use the public IP or DNS origin without `:8080`.
 
 ## Quick Deployment Summary
 
@@ -521,7 +521,7 @@ cp .env.example .env
 nano .env
 sh vault/bootstrap/generate-secrets.sh
 chmod +x nginx/certs/generate-localhost-cert.sh
-./nginx/certs/generate-localhost-cert.sh
+./nginx/certs/generate-localhost-cert.sh <DIRECT_INTERNAL_SERVER_IP>
 docker compose up -d --build
 docker compose exec web python manage.py migrate
 docker compose exec web python manage.py collectstatic --noinput
@@ -709,14 +709,16 @@ Before deploying outside a local lab, confirm:
 
 ```text
 DEBUG=False
-ALLOWED_HOSTS is set correctly
-CSRF_TRUSTED_ORIGINS is set correctly
-HTTPS is working through Nginx
-LDAPS certificate validation is working
+DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS match the exact browser URL
+HTTPS is working through Nginx and the certificate covers the direct IP or final DNS name
+LDAPS certificate validation is working and LDAP_REQUIRED_GROUP_DN is the exact approved AD group DN
 Vault is initialized and sealed/unsealed correctly
+vault/keys/djopenkb-app-token.txt shows owner/group 0:10001 and mode 440
+app-permissions-init exits successfully before application services start
 Django check --deploy has been reviewed
 Backups and restore steps are documented
 Redis-backed rate limiting/cache is enabled for production
+Nginx login/MFA/AI/upload/import rate-limit behaviour has been tested
 OpenKB AI rate limiting, concurrency control, and activity logging are enabled
 Admin-configurable password/MFA lockout stages have been reviewed
 Published article deletion queue retention has been reviewed (`7` default; `0` means immediate deletion)

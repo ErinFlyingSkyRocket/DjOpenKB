@@ -22,7 +22,7 @@ Use a host-only or NAT network where the Windows Server VM and the Docker host c
 Example:
 
 ```text
-Windows Server IP: 192.168.81.128
+Windows Server IP: <DOMAIN_CONTROLLER_IP>
 Domain:            openkb.local
 Hostname:          WIN-VVCA4BIOSK7
 FQDN:              WIN-VVCA4BIOSK7.openkb.local
@@ -305,19 +305,19 @@ LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local
 LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
 LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local))
 
-# Required in production: only members of this security group may sign in.
+# Required whenever LDAP_ENABLED=true: only members of this security group may sign in.
 LDAP_GROUP_SEARCH_BASE=DC=openkb,DC=local
 LDAP_REQUIRED_GROUP_DN=CN=KB-Users,OU=Security Groups,DC=openkb,DC=local
 
 LDAP_BIND_DN=svc_djopenkb@openkb.local
 LDAP_EXTRA_HOSTNAME=WIN-VVCA4BIOSK7.openkb.local
 LDAP_EXTRA_SHORT_HOSTNAME=WIN-VVCA4BIOSK7
-LDAP_DC_IP=192.168.81.128
+LDAP_DC_IP=<DOMAIN_CONTROLLER_IP>
 ```
 
 If the organisation has a public email domain that differs from the AD UPN suffix, include both in `LDAP_ALLOWED_EMAIL_DOMAINS` and in the search filter. Users may still be told to log in with their short username, while Django checks the actual AD UPN/mail values internally.
 
-Create a dedicated AD security group such as `KB-Users`, add only approved users, and replace `LDAP_REQUIRED_GROUP_DN` with the group’s exact distinguished name. A valid AD password is not enough unless the user belongs to this group.
+Create a dedicated AD security group such as `KB-Users`, add only approved users, and replace `LDAP_REQUIRED_GROUP_DN` with the group’s exact distinguished name. The setting is required whenever LDAP is enabled; an absent or incorrect DN prevents Django startup. A valid AD password is not enough unless the user belongs to this group.
 ## 9. Test from Docker
 
 Start DjOpenKB:

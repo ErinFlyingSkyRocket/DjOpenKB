@@ -10,8 +10,8 @@ It intentionally covers **deployment and day-to-day service operations only**. A
 
 - Ubuntu/Debian-style Linux host.
 - Project directory: `/opt/DjOpenKB`.
-- Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `web`, `nginx`, and `cleanup-scheduler`.
-- Nginx listens on host port `8080`; a perimeter firewall may translate public TCP `443` to this private service port.
+- Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `app-permissions-init`, `web`, `ai-worker`, `nginx`, and `cleanup-scheduler`.
+- Nginx listens on host port `8080` for direct internal development. A perimeter firewall may later translate public TCP `443` to this private service port.
 - The initial certificate is self-signed. Use a certificate trusted by intended client devices for an internet-facing deployment.
 - The bundled OpenKB source is in `OpenKB-main/`.
 
@@ -121,22 +121,18 @@ nano .env
 
 `.env` must contain **non-secret configuration only**. Put passwords, API keys, the Django secret key, and the encryption key in `vault/bootstrap/djopenkb.env` during first-time Vault seeding.
 
-### 4.1 Example public server values
+### 4.1 Browser address, host, and CSRF settings
 
-This example assumes users browse to `https://kb.example.com:8080` and the Linux host has IP address `198.51.100.25`.
+Choose values based on the **exact URL users open in their browser**. The direct internal-IP phase and later firewall/public-DNS phase use different CSRF origins.
 
 ```env
 DJANGO_DEBUG=false
 
-# Include every hostname or IP address users may enter in the browser.
-# Do not include https:// or a port here.
-# Only browser-facing IPs/DNS names belong here. Do not include internal
-# Docker service names such as web/nginx in production.
-DJANGO_ALLOWED_HOSTS=kb.example.com,198.51.100.25
-
-# Use the exact browser origins. When the perimeter publishes standard HTTPS
-# on TCP 443, no :443 suffix is needed even if Nginx listens internally on 8080.
-DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com,https://198.51.100.25
+# Current direct internal-IP development. Use the reachable Linux server IP,
+# not localhost/127.0.0.1 and not the AD Domain Controller IP.
+# Replace <INTERNAL_SERVER_IP> with the browser-facing internal server IP.
+DJANGO_ALLOWED_HOSTS=<INTERNAL_SERVER_IP>
+DJANGO_CSRF_TRUSTED_ORIGINS=https://<INTERNAL_SERVER_IP>:8080
 
 # Safe startup fallback; Django Admin Site settings is the runtime source of truth.
 DJANGO_SESSION_TIMEOUT_HOURS=8
@@ -164,11 +160,16 @@ Use `hostname -I` to identify the Linux host IP address:
 hostname -I
 ```
 
-When a public DNS name is later used, replace the temporary IP values with the exact public hostname and standard HTTPS origin:
+When a perimeter firewall later publishes public TCP `443` to this host’s internal TCP `8080`, browsers do not see `:8080`. Use the public IP or final DNS name exactly as seen by the browser:
 
 ```env
-DJANGO_ALLOWED_HOSTS=kb.example.com
-DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com
+# Public-IP phase before DNS
+DJANGO_ALLOWED_HOSTS=<PUBLIC_SERVER_IP>
+DJANGO_CSRF_TRUSTED_ORIGINS=https://<PUBLIC_SERVER_IP>
+
+# Final DNS phase
+DJANGO_ALLOWED_HOSTS=<PUBLIC_HOSTNAME>
+DJANGO_CSRF_TRUSTED_ORIGINS=https://<PUBLIC_HOSTNAME>
 ```
 
 Keep `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` when `DJANGO_DEBUG=false`. Redis is required for shared rate limiting, lockout handling, and AI concurrency controls across Gunicorn workers.
@@ -240,7 +241,7 @@ LDAP_GROUP_SEARCH_BASE=DC=company,DC=local
 LDAP_REQUIRED_GROUP_DN=CN=KB-Users,OU=Security Groups,DC=company,DC=local
 ```
 
-The LDAP bind account must be read-only and able to read the approved group’s membership. The application uses `django-auth-ldap` Active Directory group checks so nested membership is supported.
+The LDAP bind account must be read-only and able to read the approved group’s membership. It must not be a Domain Admin, local administrator, or interactive-login account. The application uses `django-auth-ldap` Active Directory group checks so nested membership is supported. This group configuration is required whenever `LDAP_ENABLED=true`; an absent or incorrect group DN fails closed and prevents Django startup.
 
 ### 4.4 Optional cleanup interval
 
@@ -274,7 +275,7 @@ server_name _;
 Django still enforces the browser-facing IP through `DJANGO_ALLOWED_HOSTS`. Once the public DNS name is approved, replace it with the exact hostname and add a separate default Nginx server that returns `444` for unknown host headers before making the service broadly reachable:
 
 ```nginx
-server_name kb.example.com;
+server_name <PUBLIC_HOSTNAME>;
 ```
 
 ### 5.2 Django Admin network allowlist
@@ -284,7 +285,7 @@ The Nginx `geo $djopenkb_admin_network_allowed` block is an outer access control
 ```nginx
 geo $djopenkb_admin_network_allowed {
     default 0;
-    10.20.30.0/24 1;
+    <ADMIN_ALLOWED_CIDR> 1;
     127.0.0.1/32 1;
     ::1/128 1;
 }
@@ -362,7 +363,7 @@ This example uses:
 ```text
 AD DNS / UPN domain: ad.example.com
 Domain Controller FQDN: dc01.ad.example.com
-Domain Controller IP: 10.20.30.10
+Domain Controller IP: <DOMAIN_CONTROLLER_IP>
 NetBIOS domain: AD
 Service account: svc_djopenkb@ad.example.com
 Search base: DC=ad,DC=example,DC=com
@@ -401,7 +402,7 @@ LDAP_BIND_DN=svc_djopenkb@ad.example.com
 # internal DNS is not available inside containers.
 LDAP_EXTRA_HOSTNAME=dc01.ad.example.com
 LDAP_EXTRA_SHORT_HOSTNAME=dc01
-LDAP_DC_IP=10.20.30.10
+LDAP_DC_IP=<DOMAIN_CONTROLLER_IP>
 ```
 
 Place only the public AD issuing CA certificate in the project. Do not copy a Domain Controller private key, PFX file, or full credential bundle into DjOpenKB.
@@ -452,12 +453,12 @@ documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
 
 ## 8. Configure HTTPS certificates
 
-The supplied script creates a local self-signed certificate:
+The supplied script creates a local self-signed certificate. For direct internal-IP development, pass the exact reachable server IP so it is included as a certificate IP subject-alternative name:
 
 ```bash
 cd /opt/DjOpenKB
 chmod +x nginx/certs/generate-localhost-cert.sh
-./nginx/certs/generate-localhost-cert.sh
+sudo sh nginx/certs/generate-localhost-cert.sh <INTERNAL_SERVER_IP>
 chmod 644 nginx/certs/localhost.crt
 chmod 600 nginx/certs/localhost.key
 ```
@@ -626,16 +627,18 @@ vault-auto-unseal
 redis
 db
 web
+ai-worker
 nginx
 cleanup-scheduler
 ```
 
-`vault-init` is a one-time container and normally exits successfully after Vault is initialized, unsealed, and seeded.
+`vault-init` and `app-permissions-init` are one-time helpers and must normally exit successfully. `app-permissions-init` runs without a network, prepares the static/OpenKB bind mounts for UID/GID `10001`, and should log three `Prepared ...` lines before `web`, `ai-worker`, and `cleanup-scheduler` start.
 
 Check logs before creating users:
 
 ```bash
 sudo docker compose logs --tail=150 vault-init
+sudo docker compose logs --tail=100 app-permissions-init
 sudo docker compose logs --tail=150 web
 sudo docker compose logs --tail=150 ai-worker
 sudo docker compose logs --tail=100 nginx
@@ -672,11 +675,11 @@ sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 ```
 
-Basic browser/crawler checks from the host:
+Basic browser/crawler checks using the same direct address users open:
 
 ```bash
-curl -k https://127.0.0.1:8080/robots.txt
-curl -k -I https://127.0.0.1:8080/login/
+curl -k https://<INTERNAL_SERVER_IP>:8080/robots.txt
+curl -k -I https://<INTERNAL_SERVER_IP>:8080/login/
 ```
 
 Expected results include:
@@ -691,7 +694,11 @@ X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 Open the service in a browser:
 
 ```text
-https://kb.example.com:8080
+# Current direct internal development
+https://<INTERNAL_SERVER_IP>:8080
+
+# Later, after firewall/public-DNS publication
+https://<PUBLIC_HOSTNAME>
 ```
 
 The default Django `/admin/login/` route is intentionally hidden. Sign in through the main application login, complete MFA, then enter Django Admin from the application navigation while connected from an allowed management network.
@@ -700,7 +707,7 @@ The default Django `/admin/login/` route is intentionally hidden. Sign in throug
 
 After the `createsuperuser` command succeeds, complete the initial administrator setup through the browser:
 
-1. Browse to `https://kb.example.com:8080` (replace with the deployed address).
+1. Browse to the exact deployed address: currently `https://<INTERNAL_SERVER_IP>:8080`, or later `https://<PUBLIC_HOSTNAME>` after firewall/DNS publication.
 2. Sign in with the local superuser username and password created above.
 3. Complete the normal MFA enrolment and verify the code.
 4. Confirm the browser/client IP is included in the Nginx Django Admin allowlist from Section 5.2.
@@ -725,7 +732,11 @@ sudo docker compose logs --tail=120 db
 sudo docker compose logs --tail=120 redis
 sudo docker compose logs --tail=120 vault
 sudo docker compose logs --tail=120 vault-auto-unseal
+sudo docker compose logs --tail=120 app-permissions-init
 sudo docker compose logs --tail=120 cleanup-scheduler
+
+# Confirm the unprivileged app group can read the Vault token without making it world-readable.
+sudo stat -c '%u:%g %a %n' vault/keys/djopenkb-app-token.txt
 ```
 
 Follow a live service log:
@@ -1123,7 +1134,7 @@ exit
 From an administrator workstation, create a local SSH tunnel:
 
 ```bash
-ssh -L 8200:127.0.0.1:8200 <linux-admin-user>@kb.example.com
+ssh -L 8200:127.0.0.1:8200 <linux-admin-user>@<PUBLIC_HOSTNAME>
 ```
 
 Then open this address only on the administrator workstation:
@@ -1287,18 +1298,37 @@ Do not use `git clean -fdx`; it can remove ignored deployment state such as Open
 
 ## 19. Troubleshooting
 
-### Nginx returns `502 Bad Gateway`
+### Nginx returns `502 Bad Gateway` or the site is unreachable
 
-The Django/Gunicorn container usually failed to start or is not ready.
+First confirm that Nginx, Django, and the startup helper are all healthy:
 
 ```bash
 cd /opt/DjOpenKB
 sudo docker compose ps
+sudo docker compose logs --tail=100 app-permissions-init
 sudo docker compose logs --tail=180 web
 sudo docker compose logs --tail=120 nginx
 ```
 
-Typical causes: a Python import error, a misplaced file, an unapplied migration, a missing Vault secret, a malformed `.env` value, or a failed LDAP import. Correct the reported error and rebuild:
+`app-permissions-init` must exit successfully after printing three `Prepared ...` lines. Typical Django causes are a Python import error, an unapplied migration, a missing Vault secret, a malformed `.env` value, or an incorrect LDAP group setting.
+
+If `web` or `ai-worker` reports:
+
+```text
+PermissionError: [Errno 13] Permission denied: /run/vault-keys/djopenkb-app-token.txt
+```
+
+restore the token permissions and recreate the affected services:
+
+```bash
+sudo chown 0:10001 vault/keys/djopenkb-app-token.txt
+sudo chmod 0440 vault/keys/djopenkb-app-token.txt
+sudo docker compose up -d --force-recreate web ai-worker cleanup-scheduler
+```
+
+If Nginx reports a `mkdir()` failure beneath `/tmp`, ensure `nginx/nginx.conf` uses the direct `/tmp/client_temp`, `/tmp/proxy_temp`, `/tmp/fastcgi_temp`, `/tmp/uwsgi_temp`, and `/tmp/scgi_temp` paths documented in `PUBLIC_EXPOSURE_HARDENING.md`. Do not solve this by removing Nginx’s read-only filesystem setting.
+
+After correcting the reported error, rebuild or recreate as appropriate:
 
 ```bash
 sudo docker compose up -d --build
@@ -1399,8 +1429,8 @@ sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missi
 sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 
-curl -k https://127.0.0.1:8080/robots.txt
-curl -k -I https://127.0.0.1:8080/login/
+curl -k https://<INTERNAL_SERVER_IP>:8080/robots.txt
+curl -k -I https://<INTERNAL_SERVER_IP>:8080/login/
 ```
 
 For application functionality, security controls, user workflows, and role descriptions, use `documentations/FULL_FEATURE_DOCUMENTATION.md` rather than this deployment guide.
