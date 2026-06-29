@@ -11,7 +11,7 @@ It intentionally covers **deployment and day-to-day service operations only**. A
 - Ubuntu/Debian-style Linux host.
 - Project directory: `/opt/DjOpenKB`.
 - Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `web`, `nginx`, and `cleanup-scheduler`.
-- Nginx exposes HTTPS on port `8080`.
+- Nginx listens on host port `8080`; a perimeter firewall may translate public TCP `443` to this private service port.
 - The initial certificate is self-signed. Use a certificate trusted by intended client devices for an internet-facing deployment.
 - The bundled OpenKB source is in `OpenKB-main/`.
 
@@ -67,14 +67,15 @@ docker compose version
 sudo systemctl status docker --no-pager
 ```
 
-If UFW is enabled, allow the published HTTPS port only from networks that should reach the service:
+If UFW is enabled, allow the Nginx host port only from the perimeter firewall, VPN, or corporate network that should reach the service. Do **not** use an unrestricted host firewall rule unless the system is intentionally public-facing and the external firewall/WAF is the enforcement point:
 
 ```bash
-sudo ufw allow 8080/tcp
+# Example only: replace <FIREWALL_OR_VPN_CIDR> with the real trusted source.
+sudo ufw allow from <FIREWALL_OR_VPN_CIDR> to any port 8080 proto tcp
 sudo ufw status verbose
 ```
 
-Use cloud firewall/security-group controls as well. Do not expose Vault port `8200`, PostgreSQL port `5432`, Redis port `6379`, or Gunicorn port `8000` to the network.
+Use cloud firewall/security-group controls as the primary Internet boundary. Expose only public TCP `443` at that boundary, translating it to host port `8080` if needed. Do not expose Vault port `8200`, PostgreSQL port `5432`, Redis port `6379`, or Gunicorn port `8000` to the network.
 
 ---
 
@@ -129,10 +130,16 @@ DJANGO_DEBUG=false
 
 # Include every hostname or IP address users may enter in the browser.
 # Do not include https:// or a port here.
-DJANGO_ALLOWED_HOSTS=kb.example.com,198.51.100.25,localhost,127.0.0.1,web,nginx
+# Only browser-facing IPs/DNS names belong here. Do not include internal
+# Docker service names such as web/nginx in production.
+DJANGO_ALLOWED_HOSTS=kb.example.com,198.51.100.25
 
-# Use the exact browser origins, including https:// and :8080 when users use port 8080.
-DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com:8080,https://198.51.100.25:8080,https://localhost:8080,https://127.0.0.1:8080
+# Use the exact browser origins. When the perimeter publishes standard HTTPS
+# on TCP 443, no :443 suffix is needed even if Nginx listens internally on 8080.
+DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com,https://198.51.100.25
+
+# Safe startup fallback; Django Admin Site settings is the runtime source of truth.
+DJANGO_SESSION_TIMEOUT_HOURS=8
 
 MFA_TOTP_ISSUER=Knowledge Repository
 MFA_TOTP_VALID_WINDOW=2
@@ -157,10 +164,11 @@ Use `hostname -I` to identify the Linux host IP address:
 hostname -I
 ```
 
-If a reverse proxy later presents the service publicly on standard HTTPS port `443`, add that exact origin too, for example:
+When a public DNS name is later used, replace the temporary IP values with the exact public hostname and standard HTTPS origin:
 
 ```env
-DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com,https://kb.example.com:8080
+DJANGO_ALLOWED_HOSTS=kb.example.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://kb.example.com
 ```
 
 Keep `DJANGO_ALLOW_LOCAL_CACHE_FALLBACK=false` when `DJANGO_DEBUG=false`. Redis is required for shared rate limiting, lockout handling, and AI concurrency controls across Gunicorn workers.
@@ -223,7 +231,18 @@ Use only model strings supported by the installed OpenKB/LiteLLM version and by 
 
 **Current implementation note:** Django reads `AI_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`. However, the current `vault/scripts/init.sh` writes only `AI_API_KEY` into Vault during its normal bootstrap process. Therefore, use `AI_API_KEY` as the supported standard for all provider choices unless the Vault init script is deliberately extended and tested to store provider-specific keys.
 
-### 4.3 Optional cleanup interval
+### 4.3 Required AD security group
+
+When `LDAP_ENABLED=true`, the application now refuses to start unless `LDAP_REQUIRED_GROUP_DN` is set. Create a dedicated AD security group, for example `KB-Users`, and add only approved users. Do not use Domain Admins, Enterprise Admins, or a broad company-wide group.
+
+```env
+LDAP_GROUP_SEARCH_BASE=DC=company,DC=local
+LDAP_REQUIRED_GROUP_DN=CN=KB-Users,OU=Security Groups,DC=company,DC=local
+```
+
+The LDAP bind account must be read-only and able to read the approved group’s membership. The application uses `django-auth-ldap` Active Directory group checks so nested membership is supported.
+
+### 4.4 Optional cleanup interval
 
 The cleanup service defaults to one run every 24 hours. To change it, add this optional value to `.env`:
 
@@ -246,10 +265,16 @@ nano nginx/nginx.conf
 
 ### 5.1 Server name
 
-Update the `server_name` line to include the intended DNS name and server IP, for example:
+Until a final DNS name exists, the supplied configuration deliberately uses:
 
 ```nginx
-server_name kb.example.com 198.51.100.25 localhost 127.0.0.1;
+server_name _;
+```
+
+Django still enforces the browser-facing IP through `DJANGO_ALLOWED_HOSTS`. Once the public DNS name is approved, replace it with the exact hostname and add a separate default Nginx server that returns `444` for unknown host headers before making the service broadly reachable:
+
+```nginx
+server_name kb.example.com;
 ```
 
 ### 5.2 Django Admin network allowlist

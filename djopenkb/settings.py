@@ -249,19 +249,37 @@ def _csv_config(name: str, default: str = "") -> list[str]:
     return [item.strip() for item in config_value(name, default).split(",") if item.strip()]
 
 
+# Development can use localhost by default. Production must explicitly set
+# the browser-facing public IP address or DNS name through .env; internal Docker names
+# are intentionally not accepted public Host headers.
 ALLOWED_HOSTS = _csv_config(
     "DJANGO_ALLOWED_HOSTS",
-    "localhost,127.0.0.1,web,nginx",
+    "localhost,127.0.0.1" if DEBUG else "",
 )
-
 CSRF_TRUSTED_ORIGINS = _csv_config(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "https://localhost:8080,https://127.0.0.1:8080",
+    "https://localhost:8080,https://127.0.0.1:8080" if DEBUG else "",
 )
+
+if not DEBUG and not ALLOWED_HOSTS:
+    raise ImproperlyConfigured(
+        "DJANGO_ALLOWED_HOSTS is required when DJANGO_DEBUG=false. "
+        "Set it to the browser-facing public IP or final DNS hostname in .env."
+    )
+if not DEBUG and not CSRF_TRUSTED_ORIGINS:
+    raise ImproperlyConfigured(
+        "DJANGO_CSRF_TRUSTED_ORIGINS is required when DJANGO_DEBUG=false. "
+        "Set it to the exact HTTPS browser origin in .env."
+    )
 
 # Nginx terminates HTTPS and forwards requests to Django over the internal
 # Docker network. This tells Django to trust Nginx's HTTPS forwarding header.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Safe global fallback for normal and pre-MFA session cookies. The Site setting
+# below remains the authoritative per-site lifetime after migrations are ready.
+SESSION_COOKIE_AGE = int_config("DJANGO_SESSION_TIMEOUT_HOURS", 8, minimum=1, maximum=168) * 60 * 60
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Browser/session security hardening.
 #
@@ -537,7 +555,7 @@ LDAP_ALLOWED_EMAIL_DOMAINS = [
 if LDAP_ENABLED:
     try:
         import ldap
-        from django_auth_ldap.config import LDAPSearch
+        from django_auth_ldap.config import LDAPGroupQuery, LDAPSearch, NestedActiveDirectoryGroupType
     except ImportError as exc:
         raise ImportError(
             "LDAP_ENABLED=true but LDAP packages are missing. "
@@ -636,6 +654,32 @@ if LDAP_ENABLED:
         "last_name": "sn",
         "email": "mail",
     }
+
+    # Production AD scope: only members of the explicitly approved AD security
+    # group may authenticate. This prevents every valid domain account from
+    # becoming a Knowledge Repository account merely because it knows the URL.
+    # NestedActiveDirectoryGroupType follows normal Active Directory group
+    # membership and nested group relationships.
+    LDAP_REQUIRED_GROUP_DN = config_value("LDAP_REQUIRED_GROUP_DN", "").strip()
+    LDAP_GROUP_SEARCH_BASE = config_value("LDAP_GROUP_SEARCH_BASE", LDAP_USER_SEARCH_BASE).strip()
+    if not LDAP_REQUIRED_GROUP_DN:
+        raise ImproperlyConfigured(
+            "LDAP_ENABLED=true requires LDAP_REQUIRED_GROUP_DN. "
+            "Create a dedicated AD security group such as KB-Users, add only "
+            "approved users, then set its full distinguished name in .env."
+        )
+    if not LDAP_GROUP_SEARCH_BASE:
+        raise ImproperlyConfigured(
+            "LDAP_ENABLED=true requires LDAP_GROUP_SEARCH_BASE or LDAP_USER_SEARCH_BASE."
+        )
+
+    AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+        LDAP_GROUP_SEARCH_BASE,
+        ldap.SCOPE_SUBTREE,
+        "(objectClass=group)",
+    )
+    AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
+    AUTH_LDAP_REQUIRE_GROUP = LDAPGroupQuery(LDAP_REQUIRED_GROUP_DN)
 
     AUTH_LDAP_ALWAYS_UPDATE_USER = True
     AUTH_LDAP_CREATE_USERS = True

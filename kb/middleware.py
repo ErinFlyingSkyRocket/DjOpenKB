@@ -91,11 +91,11 @@ def _admin_cidr_allowed(request):
     return any(client_ip in network for network in networks)
 
 
-def _get_session_timeout_days():
+def _get_session_timeout_hours():
     try:
-        return max(int(SiteSetting.load().session_timeout_days), 0)
+        return min(max(int(SiteSetting.load().session_timeout_hours), 1), 168)
     except Exception:
-        return 30
+        return 8
 
 
 def _get_session_started_at(request):
@@ -118,12 +118,8 @@ def _mark_session_started(request):
     return now
 
 
-def _apply_session_cookie_expiry(request, timeout_days):
-    if timeout_days > 0:
-        request.session.set_expiry(timeout_days * 24 * 60 * 60)
-    else:
-        # 0 means browser-session only: the cookie expires when the browser closes.
-        request.session.set_expiry(0)
+def _apply_session_cookie_expiry(request, timeout_hours):
+    request.session.set_expiry(timeout_hours * 60 * 60)
 
 
 def clear_session_started_at(request):
@@ -135,9 +131,9 @@ class SessionTimeoutMiddleware:
     """Expire authenticated and pending-MFA sessions by admin-defined age.
 
     The timeout is stored in Site settings so admins can configure how long a
-    signed-in session remains valid. The default is 30 days. MFA is treated as
-    part of login completion, so pending-MFA sessions are also expired.
-    A value of 0 means browser-session only, not an indefinite persistent login.
+    signed-in session remains valid. The default is 8 hours. MFA is treated as
+    part of login completion, so pending-MFA sessions use the same fixed expiry.
+    The allowed administrator setting range is 1 to 168 hours.
     """
 
     def __init__(self, get_response):
@@ -151,24 +147,22 @@ class SessionTimeoutMiddleware:
 
     def __call__(self, request):
         if self._session_subject_exists(request):
-            timeout_days = _get_session_timeout_days()
+            timeout_hours = _get_session_timeout_hours()
+            started_at = _get_session_started_at(request)
+            if started_at is None:
+                started_at = _mark_session_started(request)
 
-            if timeout_days > 0:
-                started_at = _get_session_started_at(request)
-                if started_at is None:
-                    started_at = _mark_session_started(request)
+            expires_at = started_at + timezone.timedelta(hours=timeout_hours)
+            if timezone.now() >= expires_at:
+                clear_pending_mfa_login(request)
+                clear_mfa_verified(request)
+                clear_session_started_at(request)
+                logout(request)
+                messages.warning(request, _("Your session has expired. Please sign in again."))
+                response = redirect("login")
+                return set_strict_no_cache_headers(response)
 
-                expires_at = started_at + timezone.timedelta(days=timeout_days)
-                if timezone.now() >= expires_at:
-                    clear_pending_mfa_login(request)
-                    clear_mfa_verified(request)
-                    clear_session_started_at(request)
-                    logout(request)
-                    messages.warning(request, _("Your session has expired. Please sign in again."))
-                    response = redirect("login")
-                    return set_strict_no_cache_headers(response)
-
-            _apply_session_cookie_expiry(request, timeout_days)
+            _apply_session_cookie_expiry(request, timeout_hours)
 
         return self.get_response(request)
 

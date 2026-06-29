@@ -54,6 +54,11 @@ LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local,company.com
 # For example.corp.local, use DC=example,DC=corp,DC=local.
 LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
 LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local)(mail=%(user)s@company.com)(userPrincipalName=%(user)s@company.com))
+
+# Required when LDAP_ENABLED=true in production. Only members of this AD group can sign in.
+LDAP_GROUP_SEARCH_BASE=DC=openkb,DC=local
+LDAP_REQUIRED_GROUP_DN=CN=KB-Users,OU=Security Groups,DC=openkb,DC=local
+
 LDAP_BIND_DN=svc_djopenkb@openkb.local
 ```
 
@@ -65,6 +70,8 @@ Notes:
 - `LDAP_SERVER_URI` should use the Domain Controller hostname/FQDN, not the IP address.
 - `LDAP_EXTRA_HOSTNAME`, `LDAP_EXTRA_SHORT_HOSTNAME`, and `LDAP_DC_IP` are optional and only help Docker resolve the hostname when DNS is unavailable.
 - `LDAP_BIND_DN` must be the real AD service account login format that can bind/search, for example `svc_djopenkb@openkb.local`.
+- `LDAP_REQUIRED_GROUP_DN` is mandatory when `LDAP_ENABLED=true` and `DEBUG=false`. Create a dedicated AD security group such as `KB-Users`, add only approved users, and copy its exact distinguished name. Users outside this group are rejected even if their password is valid.
+- `LDAP_GROUP_SEARCH_BASE` can usually match `LDAP_USER_SEARCH_BASE`; narrow it to the relevant OU only when your AD structure permits that.
 - The public email domain and the AD UPN suffix may be different. Include both in LDAP_ALLOWED_EMAIL_DOMAINS if both are accepted for login.
 ```
 
@@ -301,9 +308,16 @@ If it still says `unable to get local issuer certificate`, export the Root CA an
 
 ---
 
-## 7. DjOpenKB Role and MFA Behaviour After AD Login
 
-When a valid AD user signs in for the first time, DjOpenKB creates or updates the Django-side user record and assigns the default website role.
+## 7. Required AD Access Group
+
+Before enabling LDAP in production, create a dedicated AD security group such as `KB-Users`. Add only staff who are permitted to access DjOpenKB. Configure its exact distinguished name in `LDAP_REQUIRED_GROUP_DN`. The Django LDAP backend checks this membership after the user password is verified, so a valid AD account outside the group cannot sign in.
+
+The LDAP bind account only needs permission to search users and group membership. It must not be a Domain Admin, local administrator, or interactive-login account.
+
+## 8. DjOpenKB Role and MFA Behaviour After AD Login
+
+When a valid AD user who belongs to the configured required AD group signs in for the first time, DjOpenKB creates or updates the Django-side user record and assigns the default website role.
 
 Current default behaviour:
 

@@ -500,6 +500,10 @@ Question and answer text is Fernet-encrypted before it is placed in the temporar
 
 Keep `OPENKB_AI_WORKER_CONCURRENCY=1` for the current single-VM deployment unless resource capacity, provider limits, and OpenKB behaviour have been assessed for a higher setting. Redis remains required in production so job records, rate limits, quotas, and shared query controls work consistently across services.
 
+## Public-Exposure Hardening
+
+Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, an eight-hour session default, and a required AD access-group check. Until a DNS name exists, configure `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` with the browser-facing public IP, not the Linux VM private address.
+
 ## Quick Deployment Summary
 
 Full deployment steps are in:

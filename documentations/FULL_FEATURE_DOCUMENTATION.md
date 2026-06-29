@@ -273,10 +273,10 @@ When the database/site setting is unavailable during early startup or migration,
 Authenticated sessions are controlled by a site setting:
 
 ```text
-session_timeout_days = 30 by default
+session_timeout_hours = 8 by default
 ```
 
-If the timeout expires, the user is logged out and must sign in again. A value of `0` makes the browser session expire when the browser closes.
+If the timeout expires, the user is logged out and must sign in again. The administrator setting accepts **1 to 168 hours**; browser-close-only sessions are no longer offered because the public-facing policy uses a fixed maximum lifetime.
 
 ### 7.2 Secure Cookies
 
@@ -876,7 +876,7 @@ The singleton **Site settings** record controls the following operational limits
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
 | Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
 | Authentication activity-log retention | 30 days | `0` retains authentication/MFA logs indefinitely. |
-| User session timeout | 30 days | `0` means the authenticated session ends when the browser closes. |
+| User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |
 | General activity/admin-log retention | 30 days | `0` retains general and Django Admin activity logs indefinitely. |
 | Admin log rows per page | 200 | Recommended range is 50-500. |
 | Admin allowed CIDRs | `10.65.0.0/16`, loopback | Inner Django Admin allowlist. Nginx may enforce an additional outer allowlist. |
@@ -1136,7 +1136,7 @@ The encryption strength depends on the TLS cipher negotiated by the server and c
 
 ## 21. HTTPS and Nginx Security Headers
 
-Nginx serves the application over HTTPS on port `8080`. The project includes security headers such as:
+Nginx serves the application on host port `8080`; a perimeter firewall can safely publish only standard HTTPS port `443` and translate it to this private host port. The project includes security headers such as:
 
 - `Strict-Transport-Security`
 - `X-Content-Type-Options`
@@ -1147,7 +1147,7 @@ Nginx serves the application over HTTPS on port `8080`. The project includes sec
 
 The local lab deployment can use a locally generated Nginx certificate. For a real public deployment, use a trusted certificate and configure the final host names in `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS`.
 
-The current Content Security Policy permits `'unsafe-inline'` for scripts and styles because existing templates still contain inline JavaScript/CSS. This is a deliberate compatibility trade-off, not a claim of a strict nonce/hash-based CSP. A future hardening task is to move inline code into static files and then remove `'unsafe-inline'`.
+The current Content Security Policy permits `'unsafe-inline'` for scripts and styles because existing templates still contain inline JavaScript/CSS and a small number of inline event handlers. This is a deliberate compatibility trade-off, not a claim of a strict nonce/hash-based CSP. Removing it without a complete template/static-assets refactor would break login, article editing, and admin tools. A future hardening task is to move inline code into static files and then remove `'unsafe-inline'`.
 
 ## 22. Search-Engine Crawler Controls
 

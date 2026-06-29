@@ -228,7 +228,7 @@ def _apply_admin_translation_labels():
             "article_deletion_queue_retention_days": "Article deletion queue retention (days)",
             "article_image_upload_limit": "Article image upload limit",
             "auth_activity_log_retention_days": "Authentication activity log retention (days)",
-            "session_timeout_days": "User session timeout (days)",
+            "session_timeout_hours": "User session timeout (hours)",
             "activity_log_retention_days": "General activity log retention (days)",
             "admin_log_rows_per_page": "Admin log rows per page",
             "admin_allowed_cidrs": "Admin allowed IP ranges",
@@ -256,7 +256,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "article_deletion_queue_retention_days"): "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
-        (SiteSetting, "session_timeout_days"): "Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.",
+        (SiteSetting, "session_timeout_hours"): "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
@@ -2568,12 +2568,12 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
             ),
         }),
         (_("Authentication and session settings"), {
-            "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "admin_log_rows_per_page", "session_timeout_days"),
+            "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "admin_log_rows_per_page", "session_timeout_hours", "session_timeout_display"),
             "description": _(
                 "Controls authentication/MFA logs, general activity logs, admin log display rows, "
                 "and user session lifetime. Default log retention is 30 days. "
                 "Admin log tables show 200 rows per page by default. "
-                "Set session timeout to 0 to expire the session when the browser closes."
+                "Sessions default to 8 hours and can be set from 1 to 168 hours."
             ),
         }),
         (_("Authentication lockout policy"), {
@@ -2615,6 +2615,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         "auth_lockout_policy_guide",
         "auth_lockout_strike_ttl_display",
         "admin_mfa_idle_timeout_display",
+        "session_timeout_display",
         "article_deletion_queue_retention_display",
     )
     inlines = (AuthLockoutPolicyStageInline,)
@@ -2683,6 +2684,17 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         return format_admin_duration_with_seconds(obj.admin_mfa_idle_timeout_seconds)
 
     admin_mfa_idle_timeout_display.short_description = _("Admin MFA idle timeout readable")
+
+    def session_timeout_display(self, obj):
+        if not obj:
+            return "-"
+        try:
+            hours = min(max(int(obj.session_timeout_hours), 1), 168)
+        except (TypeError, ValueError):
+            hours = 8
+        return _("%(hours)s hour(s)") % {"hours": hours}
+
+    session_timeout_display.short_description = _("User session timeout readable")
 
     def article_deletion_queue_retention_display(self, obj):
         if not obj:

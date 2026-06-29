@@ -1143,12 +1143,13 @@ class SiteSetting(models.Model):
             "Use 0 to keep authentication activity logs indefinitely."
         ),
     )
-    session_timeout_days = models.PositiveIntegerField(
-        default=30,
-        verbose_name=_("User session timeout (days)"),
+    session_timeout_hours = models.PositiveIntegerField(
+        default=8,
+        validators=[MinValueValidator(1), MaxValueValidator(168)],
+        verbose_name=_("User session timeout (hours)"),
         help_text=_(
-            "Authenticated user sessions expire after this many days from sign-in. "
-            "After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes."
+            "Authenticated and pending-MFA sessions expire after this many hours from sign-in. "
+            "Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
         ),
     )
     activity_log_retention_days = models.PositiveIntegerField(
