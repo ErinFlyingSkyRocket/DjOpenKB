@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .models import SuggestedArticle
-from .views.services import ensure_article_filename
+from kb.models import SuggestedArticle
+from kb.views.services import ensure_article_filename
 
 
 class ArticleFilenameGenerationTests(TestCase):

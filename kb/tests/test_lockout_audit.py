@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import RequestFactory, TestCase
 
-from .auth_monitoring import _lockout_keys, record_auth_failure
-from .models import AuthActivityLog, AuthLockoutPolicyStage, SiteSetting
+from kb.auth_monitoring import _lockout_keys, record_auth_failure
+from kb.models import AuthActivityLog, AuthLockoutPolicyStage, SiteSetting
 
 
 class AuthenticationLockoutAuditTests(TestCase):

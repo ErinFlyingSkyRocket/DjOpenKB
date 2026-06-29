@@ -6,13 +6,13 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase, override_settings
 
-from .models import SuggestedArticle
-from .notifications import (
+from kb.models import SuggestedArticle
+from kb.notifications import (
     NOTIFICATION_KIND_NEW_SUBMISSION,
     deliver_article_review_notification,
     get_article_review_recipients,
 )
-from .permissions import (
+from kb.permissions import (
     ROLE_ADMIN_USERS,
     ROLE_ARTICLE_APPROVER,
     ROLE_ARTICLE_MANAGER,

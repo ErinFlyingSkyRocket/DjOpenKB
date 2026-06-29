@@ -6,8 +6,8 @@ from urllib.parse import parse_qs, urlsplit
 
 from django.urls import reverse
 
-from .admin_security import AdminMFASessionMiddleware, is_admin_step_up_path
-from .middleware import ForceLoginAndAdminGuardMiddleware
+from kb.admin_security import AdminMFASessionMiddleware, is_admin_step_up_path
+from kb.middleware import ForceLoginAndAdminGuardMiddleware
 
 
 @override_settings(ADMIN_MFA_IDLE_TIMEOUT_SECONDS=600)
@@ -71,13 +71,13 @@ class UserAdminResetActionTests(TestCase):
 
         from django.utils import timezone
 
-        from .admin_security import (
+        from kb.admin_security import (
             ADMIN_MFA_LAST_ACTIVITY_AT_KEY,
             ADMIN_MFA_USER_ID_KEY,
             ADMIN_MFA_VERIFIED_AT_KEY,
             ADMIN_MFA_VERIFIED_KEY,
         )
-        from .mfa import MFA_SESSION_KEY, MFA_USER_SESSION_KEY, get_or_create_mfa_device
+        from kb.mfa import MFA_SESSION_KEY, MFA_USER_SESSION_KEY, get_or_create_mfa_device
 
         self.target_device = get_or_create_mfa_device(self.target_user)
         self.target_device.confirmed = True
@@ -150,7 +150,7 @@ class OpenKBAIBackgroundJobTests(TestCase):
         from unittest.mock import patch
         from django.core.cache import cache
 
-        from .views.ai_jobs import enqueue_openkb_ai_job, get_openkb_ai_job_response
+        from kb.views.ai_jobs import enqueue_openkb_ai_job, get_openkb_ai_job_response
 
         secret_question = "internal phrase that must not be plain text in Redis"
         with patch("kb.tasks.run_openkb_ai_job.apply_async") as apply_async:
@@ -180,7 +180,7 @@ class OpenKBAIBackgroundJobTests(TestCase):
         from unittest.mock import patch
         from django.core.cache import cache
 
-        from .views.ai_jobs import (
+        from kb.views.ai_jobs import (
             enqueue_openkb_ai_job,
             execute_openkb_ai_job,
             get_openkb_ai_job_response,
@@ -210,7 +210,7 @@ class OpenKBAIBackgroundJobTests(TestCase):
     def test_cancelled_job_discards_late_worker_result(self):
         from unittest.mock import patch
 
-        from .views.ai_jobs import (
+        from kb.views.ai_jobs import (
             cancel_openkb_ai_job,
             enqueue_openkb_ai_job,
             execute_openkb_ai_job,
@@ -253,8 +253,8 @@ class OpenKBAIFixed24HourQuotaTests(TestCase):
     def setUp(self):
         from django.core.cache import cache
 
-        from .models import SiteSetting
-        from .permissions import ROLE_REGULAR_USER, assign_single_role_group
+        from kb.models import SiteSetting
+        from kb.permissions import ROLE_REGULAR_USER, assign_single_role_group
 
         cache.clear()
         self.user = get_user_model().objects.create_user(
@@ -311,8 +311,8 @@ class OpenKBAIFixed24HourQuotaTests(TestCase):
 
     def test_admin_save_invalidates_the_cached_quota_setting(self):
         from django.core.cache import cache
-        from .models import SiteSetting
-        from .views.services_ai import get_openkb_ai_prompt_limit_per_24_hours
+        from kb.models import SiteSetting
+        from kb.views.services_ai import get_openkb_ai_prompt_limit_per_24_hours
 
         self.assertEqual(get_openkb_ai_prompt_limit_per_24_hours(), 2)
         self.assertEqual(cache.get("openkb_ai:quota24h:configured-limit"), 2)
@@ -329,7 +329,7 @@ class ManagerRolePrecedenceTests(TestCase):
     """Manager is the highest standard role within its own article scope."""
 
     def setUp(self):
-        from .permissions import seed_djopenkb_role_groups
+        from kb.permissions import seed_djopenkb_role_groups
 
         seed_djopenkb_role_groups()
         self.user = get_user_model().objects.create_user(
@@ -344,7 +344,7 @@ class ManagerRolePrecedenceTests(TestCase):
     def test_public_manager_removes_public_writer_and_approver(self):
         from django.contrib.auth.models import Group
 
-        from .permissions import (
+        from kb.permissions import (
             ROLE_ARTICLE_APPROVER,
             ROLE_ARTICLE_MANAGER,
             ROLE_ARTICLE_WRITER,
@@ -367,7 +367,7 @@ class ManagerRolePrecedenceTests(TestCase):
     def test_internal_manager_removes_only_lower_internal_roles(self):
         from django.contrib.auth.models import Group
 
-        from .permissions import (
+        from kb.permissions import (
             ROLE_ARTICLE_APPROVER,
             ROLE_INTERNAL_ARTICLE_APPROVER,
             ROLE_INTERNAL_ARTICLE_MANAGER,
@@ -400,7 +400,7 @@ class ManagerRolePrecedenceTests(TestCase):
     def test_assigning_public_manager_immediately_normalises_existing_roles(self):
         from django.contrib.auth.models import Group
 
-        from .permissions import (
+        from kb.permissions import (
             ROLE_ARTICLE_APPROVER,
             ROLE_ARTICLE_MANAGER,
             ROLE_ARTICLE_WRITER,
@@ -430,7 +430,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         from django.contrib.sessions.middleware import SessionMiddleware
         from django.http import HttpResponse
 
-        from .permissions import ROLE_ARTICLE_MANAGER, assign_single_role_group, seed_djopenkb_role_groups
+        from kb.permissions import ROLE_ARTICLE_MANAGER, assign_single_role_group, seed_djopenkb_role_groups
 
         self._patch = patch
         self._fallback_storage = FallbackStorage
@@ -453,7 +453,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         )
 
     def _post_review(self, article, *, status, editor_mode="review"):
-        from .views.suggestions import edit_suggestion
+        from kb.views.suggestions import edit_suggestion
 
         request = self.factory.post(
             reverse("edit_suggestion", args=[article.pk]),
@@ -481,7 +481,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
             return edit_suggestion(request, article.pk)
 
     def test_manager_can_publish_pending_public_article(self):
-        from .models import SuggestedArticle
+        from kb.models import SuggestedArticle
 
         article = SuggestedArticle.objects.create(
             owner=self.owner,
@@ -499,7 +499,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         self.assertIsNotNone(article.approved_at)
 
     def test_manager_publish_of_failed_update_applies_and_clears_staged_state(self):
-        from .models import SuggestedArticle
+        from kb.models import SuggestedArticle
 
         article = SuggestedArticle.objects.create(
             owner=self.manager,
@@ -527,7 +527,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         self.assertEqual(article.approved_by_id, self.manager.pk)
 
     def test_manager_publish_of_saved_update_draft_clears_staged_state(self):
-        from .models import SuggestedArticle
+        from kb.models import SuggestedArticle
 
         article = SuggestedArticle.objects.create(
             owner=self.manager,
@@ -551,7 +551,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         self.assertEqual(article.approved_by_id, self.manager.pk)
 
     def test_manager_reopens_failed_update_without_hiding_published_article(self):
-        from .models import SuggestedArticle
+        from kb.models import SuggestedArticle
 
         article = SuggestedArticle.objects.create(
             owner=self.owner,

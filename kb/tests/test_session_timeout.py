@@ -7,8 +7,8 @@ from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 from django.utils import timezone
 
-from .middleware import SESSION_STARTED_AT_KEY, SessionTimeoutMiddleware
-from .models import SiteSetting
+from kb.middleware import SESSION_STARTED_AT_KEY, SessionTimeoutMiddleware
+from kb.models import SiteSetting
 
 
 class SessionTimeoutHoursTests(TestCase):
