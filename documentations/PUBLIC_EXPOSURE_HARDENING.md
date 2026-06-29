@@ -164,7 +164,7 @@ from this web server.
 
 ## 8. CSP status
 
-The Content Security Policy still includes `'unsafe-inline'` for scripts and styles because existing templates contain inline JavaScript, inline styles, and a small number of inline event handlers. It remains an explicit compatibility trade-off. Removing it now would break login, article editing, and admin workflows. The future remediation is a tested template refactor to static assets and CSP nonces/hashes.
+The application sends a strict per-response Content Security Policy with a fresh nonce and does not include `'unsafe-inline'`. Project-owned inline script and style blocks that need server-rendered values use this nonce. Inline event attributes and inline `style=` attributes are forbidden, while static JavaScript and CSS remain self-hosted. When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`.
 
 ## 9. Required verification after an update
 

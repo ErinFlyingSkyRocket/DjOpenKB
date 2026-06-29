@@ -12,6 +12,6 @@ class LdapScopeSettingsTests(SimpleTestCase):
     def test_user_search_scope_remains_configured_when_ldap_is_enabled(self):
         # This protects the LDAP user-search configuration without restricting
         # authentication to a separate AD security group.
-        source = Path(settings.__file__).read_text(encoding="utf-8")
+        source = (Path(settings.BASE_DIR) / "djopenkb" / "settings.py").read_text(encoding="utf-8")
         self.assertIn("LDAP_USER_SEARCH_BASE", source)
         self.assertIn("AUTH_LDAP_USER_SEARCH", source)

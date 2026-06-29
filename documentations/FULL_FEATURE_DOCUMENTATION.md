@@ -1151,7 +1151,7 @@ Nginx serves the application on host port `8080`; a perimeter firewall can safel
 
 The local lab deployment can use a self-signed certificate generated with the direct internal server IP as an IP subject-alternative name. For a real public deployment, use a trusted certificate and configure the final host names in `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS`. Nginx uses a read-only root filesystem with a writable `/tmp` `tmpfs`; its temporary request directories are intentionally configured directly below `/tmp` so uploads and proxied requests still work.
 
-The current Content Security Policy permits `'unsafe-inline'` for scripts and styles because existing templates still contain inline JavaScript/CSS and a small number of inline event handlers. This is a deliberate compatibility trade-off, not a claim of a strict nonce/hash-based CSP. Removing it without a complete template/static-assets refactor would break login, article editing, and admin tools. A future hardening task is to move inline code into static files and then remove `'unsafe-inline'`.
+The application sends a strict per-response Content Security Policy with a fresh cryptographic nonce. It does not permit `'unsafe-inline'`. Necessary server-generated inline script and style blocks carry the response nonce, while inline event attributes and inline `style=` attributes are forbidden. Static JavaScript and CSS remain self-hosted. This reduces the impact of an injected script or style payload; templates must preserve the nonce when adding a new dynamic inline block.
 
 ## 22. Search-Engine Crawler Controls
 
@@ -1233,7 +1233,7 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow across article visibility scopes. |
 | Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. Vault app token is readable only by root and application group `10001` (`0:10001`, mode `0440`). |
 | LDAP | LDAPS with certificate validation, low-privilege read-only bind-account guidance, connection/operation timeouts, and configurable AD user-search scope. |
-| HTTPS / edge protection | Nginx HTTPS and security headers; POST-only endpoint rate limits, per-IP connection limits, request timeouts, 3 MB ordinary request size limit, restricted 100 MB bulk-import route, and current CSP inline compatibility trade-off. |
+| HTTPS / edge protection | Nginx HTTPS and security headers; POST-only endpoint rate limits, per-IP connection limits, request timeouts, 3 MB ordinary request size limit, restricted 100 MB bulk-import route, and a strict nonce-based Content Security Policy without `'unsafe-inline'`. |
 | Crawler controls | `/robots.txt` disallows all cooperative crawling and application responses receive an `X-Robots-Tag` no-index header. This is not access control. |
 | Auth logs | Read-only auth/MFA logs with IP/user-agent details and retention cleanup. |
 | Activity logs | Article, deletion queue, vote, upload, local profile email/password, AI, import/export, and admin-tool activity logging with retention cleanup. Search/language history is intentionally excluded. |
