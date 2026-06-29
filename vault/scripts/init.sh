@@ -94,7 +94,22 @@ if [ -f "$BOOTSTRAP_FILE" ]; then
   LDAP_BIND_PASSWORD="${LDAP_BIND_PASSWORD:-$EXISTING_LDAP_BIND_PASSWORD}"
   LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-$EXISTING_LDAP_PLACEHOLDER_PASSWORD}"
   SMTP_RELAY_USERNAME="${SMTP_RELAY_USERNAME:-$EXISTING_SMTP_RELAY_USERNAME}"
-  SMTP_RELAY_PASSWORD="${SMTP_RELAY_PASSWORD:-$EXISTING_SMTP_RELAY_PASSWORD}"
+
+  # A temporary bootstrap file can safely request the SMTP password to be copied
+  # from the already stored LDAP bind secret. This avoids writing a reused
+  # service-account password into another plaintext bootstrap file.
+  case "${SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD:-false}" in
+    true)
+      SMTP_RELAY_PASSWORD="${LDAP_BIND_PASSWORD:-}"
+      ;;
+    false|"")
+      SMTP_RELAY_PASSWORD="${SMTP_RELAY_PASSWORD:-$EXISTING_SMTP_RELAY_PASSWORD}"
+      ;;
+    *)
+      log "ERROR: SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD must be true or false." >&2
+      exit 1
+      ;;
+  esac
 
   if [ -z "${DJANGO_SECRET_KEY:-}" ] || [ -z "${POSTGRES_PASSWORD:-}" ]; then
     log "ERROR: DJANGO_SECRET_KEY and POSTGRES_PASSWORD must be set for first-time Vault seeding." >&2

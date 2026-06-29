@@ -253,6 +253,9 @@ services:
     extra_hosts:
       - "${LDAP_EXTRA_HOSTNAME:-WIN-VVCA4BIOSK7.openkb.local}:${LDAP_DC_IP:-192.168.81.128}"
       - "${LDAP_EXTRA_SHORT_HOSTNAME:-WIN-VVCA4BIOSK7}:${LDAP_DC_IP:-192.168.81.128}"
+      # Keep TLS hostname validation while allowing a private Exchange relay
+      # to be mapped when Docker cannot resolve the internal DNS name.
+      - "${SMTP_RELAY_HOST:-smtp-relay.invalid}:${SMTP_RELAY_IP:-127.0.0.1}"
     volumes:
       - ./openkb-data:/app/openkb-data
       - ./openkb-data-internal:/app/openkb-data-internal
@@ -413,6 +416,9 @@ services:
     extra_hosts:
       - "${LDAP_EXTRA_HOSTNAME:-WIN-VVCA4BIOSK7.openkb.local}:${LDAP_DC_IP:-192.168.81.128}"
       - "${LDAP_EXTRA_SHORT_HOSTNAME:-WIN-VVCA4BIOSK7}:${LDAP_DC_IP:-192.168.81.128}"
+      # Keep TLS hostname validation while allowing a private Exchange relay
+      # to be mapped when Docker cannot resolve the internal DNS name.
+      - "${SMTP_RELAY_HOST:-smtp-relay.invalid}:${SMTP_RELAY_IP:-127.0.0.1}"
     volumes:
       - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
       - ./ldap-certs:/etc/ssl/certs/djopenkb-ldap:ro

@@ -1,0 +1,17 @@
+# Exchange CA certificate required
+
+Before enabling email notifications, place the Exchange issuing CA chain in this
+directory with this exact filename:
+
+    exchange-ca-chain.crt
+
+The file must be PEM/Base-64 encoded and contain the trusted issuing Root CA and
+any required intermediate CA certificates for the Exchange SMTP certificate.
+
+Do not place any of the following in this project:
+- Exchange `.pfx` files
+- private keys
+- the Exchange server certificate unless it is the only self-signed trust anchor
+
+DjOpenKB validates the Exchange SMTP certificate using the Exchange FQDN in
+`SMTP_RELAY_HOST`; it never needs the Exchange server private key.
