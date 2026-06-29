@@ -941,6 +941,22 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
         ARTICLE_SUBMITTED = "article_submitted", _("Article submitted for approval")
         ARTICLE_APPROVED = "article_approved", _("Article approved/published")
         ARTICLE_REJECTED = "article_rejected", _("Article marked pending failed")
+        ARTICLE_REVIEW_NOTIFICATION_QUEUED = (
+            "article_review_notification_queued",
+            _("Article review notification queued"),
+        )
+        ARTICLE_REVIEW_NOTIFICATION_SENT = (
+            "article_review_notification_sent",
+            _("Article review notification sent"),
+        )
+        ARTICLE_REVIEW_NOTIFICATION_FAILED = (
+            "article_review_notification_failed",
+            _("Article review notification failed"),
+        )
+        ARTICLE_REVIEW_NOTIFICATION_SKIPPED = (
+            "article_review_notification_skipped",
+            _("Article review notification skipped"),
+        )
         ARTICLE_ORPHAN_ASSIGNED = "article_orphan_assigned", _("Orphan article assigned")
         ARTICLE_ORPHAN_DELETED = "article_orphan_deleted", _("Orphan article deleted")
         ARTICLE_VIEWED = "article_viewed", _("Article viewed")

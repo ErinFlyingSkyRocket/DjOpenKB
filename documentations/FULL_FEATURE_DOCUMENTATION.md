@@ -1,5 +1,7 @@
 # DjOpenKB Full Feature Documentation
 
+> Optional SMTP article-review notifications are documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). They are disabled by default and use a dedicated worker plus Vault-stored relay credentials.
+
 This document summarises the implemented features, security controls, deployment-related components, role permissions, logging coverage, and operational behaviours of DjOpenKB. It is intended to give engineers, reviewers, and future administrators a clear overview of what the system provides and how the main surfaces are protected.
 
 ## 1. Project Purpose

@@ -13,6 +13,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Separate internal article area for users with internal article access.
 - Public/internal article visibility model with separate public and internal writer, approver, and manager roles.
 - User article suggestion workflow with approval and pending-update review for published article edits.
+- Optional SMTP relay notifications for newly submitted/re-submitted public or internal review items. Recipient resolution follows the matching Django reviewer groups, messages are sent one recipient at a time, and internal notifications omit internal titles/content.
 - Draft, pending approval, pending failed, published, and deletion-queued article states.
 - Published article update workflow where user edits are held as pending updates while the current published version remains visible.
 - Separate public and internal pending-review queues, including internal-only pending management for internal approvers/managers.
@@ -27,7 +28,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Authentication and append-only activity logging for important user, article, deletion queue, profile email/password, admin, AI, and maintenance actions. Search history and language selection changes are intentionally not logged.
 - Configurable log retention and admin log display settings.
 - Admin-configurable progressive password/MFA lockout policy with reset actions for administrators.
-- Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, and AI credentials.
+- Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, AI, and SMTP relay credentials.
 - PostgreSQL database through Docker Compose.
 - Redis-backed production cache for authentication lockouts, AI rate limits, fixed 24-hour AI quotas, background AI jobs, and query concurrency controls.
 - Nginx HTTPS reverse proxy on host port `8080` for direct internal development; a perimeter firewall may later publish public TCP `443` and translate it to this listener. Nginx applies per-IP POST rate limits to login, MFA, admin MFA, AI, upload, and bulk-import submissions.
@@ -161,6 +162,10 @@ Public and internal scopes are separated:
 | AI scope | Normal users query public index only | Internal users query internal index containing public + internal published articles |
 
 Draft, pending, pending failed, deletion-queued, and unapproved pending-update content is not exposed through normal article detail traversal. Owners can open their own workflow articles, full admins can open all eligible workflow items, and approvers/managers use the explicit review/edit flows for their scope.
+
+## SMTP Relay Review Notifications
+
+Review notifications are optional and disabled by default. They use a dedicated background worker and a Vault-stored SMTP service account. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. See [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for the configuration, deployment order, test command, and security behaviour.
 
 ## Project Folder Structure
 

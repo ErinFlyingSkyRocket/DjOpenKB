@@ -4,13 +4,15 @@ This guide is for Linux administrators who install, run, update, back up, and tr
 
 It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
 
+> **SMTP review notifications:** optional SMTP relay review-email setup is documented separately in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep it disabled until the relay, CA trust, Vault service-account credentials, and `notification-worker` test are complete.
+
 ## 1. Deployment scope and command convention
 
 ### Assumptions
 
 - Ubuntu/Debian-style Linux host.
 - Project directory: `/opt/DjOpenKB`.
-- Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `app-permissions-init`, `web`, `ai-worker`, `nginx`, and `cleanup-scheduler`.
+- Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `app-permissions-init`, `web`, `ai-worker`, `notification-worker`, `nginx`, and `cleanup-scheduler`.
 - Nginx listens on host port `8080` for direct internal development. A perimeter firewall may later translate public TCP `443` to this private service port.
 - The initial certificate is self-signed. Use a certificate trusted by intended client devices for an internet-facing deployment.
 - The bundled OpenKB source is in `OpenKB-main/`.

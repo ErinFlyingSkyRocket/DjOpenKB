@@ -9,6 +9,7 @@ import os
 import urllib.error
 import urllib.request
 from pathlib import Path
+from urllib.parse import urlparse
 
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
@@ -426,6 +427,111 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
 }
 CELERY_TASK_SOFT_TIME_LIMIT = max(90, OPENKB_AI_TIMEOUT_SECONDS + 30)
 CELERY_TASK_TIME_LIMIT = max(120, OPENKB_AI_TIMEOUT_SECONDS + 60)
+
+
+# ---------------------------------------------------------------------
+# SMTP relay article-review notifications
+# ---------------------------------------------------------------------
+# Notifications are intentionally disabled until the relay has been configured.
+# SMTP credentials are read with secret_value(), so they belong in Vault rather
+# than .env. A dedicated Celery worker sends mail outside the web request.
+EMAIL_NOTIFICATIONS_ENABLED = config_value("EMAIL_NOTIFICATIONS_ENABLED", "false").lower() == "true"
+
+SMTP_RELAY_HOST = config_value("SMTP_RELAY_HOST", "").strip()
+SMTP_RELAY_PORT = int_config("SMTP_RELAY_PORT", 587, minimum=1, maximum=65535)
+SMTP_RELAY_USE_TLS = config_value("SMTP_RELAY_USE_TLS", "true").lower() == "true"
+SMTP_RELAY_USE_SSL = config_value("SMTP_RELAY_USE_SSL", "false").lower() == "true"
+SMTP_RELAY_TIMEOUT_SECONDS = int_config("SMTP_RELAY_TIMEOUT_SECONDS", 10, minimum=1, maximum=120)
+SMTP_RELAY_CA_CERT_FILE = config_value("SMTP_RELAY_CA_CERT_FILE", "").strip()
+SMTP_RELAY_USERNAME = secret_value("SMTP_RELAY_USERNAME", "").strip()
+SMTP_RELAY_PASSWORD = secret_value("SMTP_RELAY_PASSWORD", "")
+SMTP_FROM_EMAIL = config_value("SMTP_FROM_EMAIL", "").strip()
+SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS = tuple(
+    dict.fromkeys(
+        domain.strip().casefold()
+        for domain in config_value("SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS", "").split(",")
+        if domain.strip()
+    )
+)
+SITE_BASE_URL = config_value("SITE_BASE_URL", "").strip().rstrip("/")
+EMAIL_SUBJECT_PREFIX = config_value("EMAIL_SUBJECT_PREFIX", "[Knowledge Repository]").strip()
+if EMAIL_SUBJECT_PREFIX:
+    EMAIL_SUBJECT_PREFIX = f"{EMAIL_SUBJECT_PREFIX} "
+
+# Django's SMTP backend performs the authentication after STARTTLS/implicit TLS.
+# The custom backend adds support for an internally issued relay certificate
+# through SMTP_RELAY_CA_CERT_FILE while retaining strict certificate validation.
+EMAIL_BACKEND = "kb.email_backend.ADRelayEmailBackend"
+EMAIL_HOST = SMTP_RELAY_HOST
+EMAIL_PORT = SMTP_RELAY_PORT
+EMAIL_HOST_USER = SMTP_RELAY_USERNAME
+EMAIL_HOST_PASSWORD = SMTP_RELAY_PASSWORD
+EMAIL_USE_TLS = SMTP_RELAY_USE_TLS
+EMAIL_USE_SSL = SMTP_RELAY_USE_SSL
+EMAIL_TIMEOUT = SMTP_RELAY_TIMEOUT_SECONDS
+DEFAULT_FROM_EMAIL = SMTP_FROM_EMAIL or "noreply@localhost"
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE = (
+    config_value("ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE", "article_review_notifications").strip()
+    or "article_review_notifications"
+)
+ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES = int_config(
+    "ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES",
+    3,
+    minimum=0,
+    maximum=10,
+)
+ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS = int_config(
+    "ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS",
+    30,
+    minimum=5,
+    maximum=3600,
+)
+
+if SMTP_RELAY_USE_TLS and SMTP_RELAY_USE_SSL:
+    raise ImproperlyConfigured(
+        "Configure exactly one SMTP transport: SMTP_RELAY_USE_TLS=true for STARTTLS "
+        "or SMTP_RELAY_USE_SSL=true for implicit TLS, not both."
+    )
+
+if EMAIL_NOTIFICATIONS_ENABLED:
+    missing_smtp_values = [
+        name
+        for name, value in {
+            "SMTP_RELAY_HOST": SMTP_RELAY_HOST,
+            "SMTP_RELAY_USERNAME": SMTP_RELAY_USERNAME,
+            "SMTP_RELAY_PASSWORD": SMTP_RELAY_PASSWORD,
+            "SMTP_FROM_EMAIL": SMTP_FROM_EMAIL,
+            "SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS": ",".join(SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS),
+            "SITE_BASE_URL": SITE_BASE_URL,
+        }.items()
+        if not value
+    ]
+    if missing_smtp_values:
+        raise ImproperlyConfigured(
+            "EMAIL_NOTIFICATIONS_ENABLED=true requires: " + ", ".join(missing_smtp_values)
+        )
+
+    if not (SMTP_RELAY_USE_TLS or SMTP_RELAY_USE_SSL):
+        raise ImproperlyConfigured(
+            "EMAIL_NOTIFICATIONS_ENABLED=true requires TLS. Set SMTP_RELAY_USE_TLS=true "
+            "for STARTTLS or SMTP_RELAY_USE_SSL=true for implicit TLS."
+        )
+
+    parsed_site_url = urlparse(SITE_BASE_URL)
+    if parsed_site_url.scheme != "https" or not parsed_site_url.netloc or parsed_site_url.query or parsed_site_url.fragment:
+        raise ImproperlyConfigured(
+            "SITE_BASE_URL must be the exact HTTPS browser origin, for example "
+            "https://<PUBLIC_HOSTNAME> or https://<INTERNAL_SERVER_IP>:8080."
+        )
+
+    if SMTP_RELAY_CA_CERT_FILE and not Path(SMTP_RELAY_CA_CERT_FILE).is_file():
+        raise ImproperlyConfigured(
+            "SMTP_RELAY_CA_CERT_FILE is configured but the file is not available "
+            "inside the container."
+        )
+
 
 LOGGING = {
     "version": 1,

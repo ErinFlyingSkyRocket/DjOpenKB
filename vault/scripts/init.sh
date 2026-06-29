@@ -60,11 +60,44 @@ fi
 
 if [ -f "$BOOTSTRAP_FILE" ]; then
   log "Seeding secret/djopenkb from $BOOTSTRAP_FILE ..."
+
+  # Preserve existing values when an update bootstrap file leaves a field blank.
+  # This lets an operator add/rotate SMTP credentials without having to copy
+  # unrelated production secrets back out of Vault. Blank bootstrap fields are
+  # therefore intentionally not a mechanism for deleting a stored secret.
+  existing_secret() {
+    vault kv get -field="$1" secret/djopenkb 2>/dev/null || true
+  }
+
+  EXISTING_DJANGO_SECRET_KEY="$(existing_secret DJANGO_SECRET_KEY)"
+  EXISTING_DJANGO_FIELD_ENCRYPTION_KEY="$(existing_secret DJANGO_FIELD_ENCRYPTION_KEY)"
+  EXISTING_POSTGRES_PASSWORD="$(existing_secret POSTGRES_PASSWORD)"
+  EXISTING_AI_API_KEY="$(existing_secret AI_API_KEY)"
+  EXISTING_GEMINI_API_KEY="$(existing_secret GEMINI_API_KEY)"
+  EXISTING_OPENAI_API_KEY="$(existing_secret OPENAI_API_KEY)"
+  EXISTING_ANTHROPIC_API_KEY="$(existing_secret ANTHROPIC_API_KEY)"
+  EXISTING_LDAP_BIND_PASSWORD="$(existing_secret LDAP_BIND_PASSWORD)"
+  EXISTING_LDAP_PLACEHOLDER_PASSWORD="$(existing_secret LDAP_PLACEHOLDER_PASSWORD)"
+  EXISTING_SMTP_RELAY_USERNAME="$(existing_secret SMTP_RELAY_USERNAME)"
+  EXISTING_SMTP_RELAY_PASSWORD="$(existing_secret SMTP_RELAY_PASSWORD)"
+
   # shellcheck disable=SC1090
   . "$BOOTSTRAP_FILE"
 
+  DJANGO_SECRET_KEY="${DJANGO_SECRET_KEY:-$EXISTING_DJANGO_SECRET_KEY}"
+  DJANGO_FIELD_ENCRYPTION_KEY="${DJANGO_FIELD_ENCRYPTION_KEY:-$EXISTING_DJANGO_FIELD_ENCRYPTION_KEY}"
+  POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-$EXISTING_POSTGRES_PASSWORD}"
+  AI_API_KEY="${AI_API_KEY:-$EXISTING_AI_API_KEY}"
+  GEMINI_API_KEY="${GEMINI_API_KEY:-$EXISTING_GEMINI_API_KEY}"
+  OPENAI_API_KEY="${OPENAI_API_KEY:-$EXISTING_OPENAI_API_KEY}"
+  ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-$EXISTING_ANTHROPIC_API_KEY}"
+  LDAP_BIND_PASSWORD="${LDAP_BIND_PASSWORD:-$EXISTING_LDAP_BIND_PASSWORD}"
+  LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-$EXISTING_LDAP_PLACEHOLDER_PASSWORD}"
+  SMTP_RELAY_USERNAME="${SMTP_RELAY_USERNAME:-$EXISTING_SMTP_RELAY_USERNAME}"
+  SMTP_RELAY_PASSWORD="${SMTP_RELAY_PASSWORD:-$EXISTING_SMTP_RELAY_PASSWORD}"
+
   if [ -z "${DJANGO_SECRET_KEY:-}" ] || [ -z "${POSTGRES_PASSWORD:-}" ]; then
-    log "ERROR: DJANGO_SECRET_KEY and POSTGRES_PASSWORD must be set in $BOOTSTRAP_FILE." >&2
+    log "ERROR: DJANGO_SECRET_KEY and POSTGRES_PASSWORD must be set for first-time Vault seeding." >&2
     exit 1
   fi
 
@@ -73,8 +106,13 @@ if [ -f "$BOOTSTRAP_FILE" ]; then
     DJANGO_FIELD_ENCRYPTION_KEY="${DJANGO_FIELD_ENCRYPTION_KEY:-}" \
     POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}" \
     AI_API_KEY="${AI_API_KEY:-}" \
+    GEMINI_API_KEY="${GEMINI_API_KEY:-}" \
+    OPENAI_API_KEY="${OPENAI_API_KEY:-}" \
+    ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}" \
     LDAP_BIND_PASSWORD="${LDAP_BIND_PASSWORD:-}" \
-    LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-}" >/dev/null
+    LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-}" \
+    SMTP_RELAY_USERNAME="${SMTP_RELAY_USERNAME:-}" \
+    SMTP_RELAY_PASSWORD="${SMTP_RELAY_PASSWORD:-}" >/dev/null
   log "Secret seeded. You may now remove vault/bootstrap/djopenkb.env."
 elif ! vault kv get secret/djopenkb >/dev/null 2>&1; then
   log "ERROR: secret/djopenkb does not exist and $BOOTSTRAP_FILE was not provided." >&2

@@ -1,4 +1,9 @@
 from .services import *
+from ..notifications import (
+    NOTIFICATION_KIND_NEW_SUBMISSION,
+    NOTIFICATION_KIND_UPDATE_SUBMISSION,
+    enqueue_article_review_notification,
+)
 from collections import Counter
 import json
 import re
@@ -225,6 +230,15 @@ def _suggest_unified(request):
             "image_count": len(article.image_assets or []),
         },
     )
+
+    # Only a non-admin article submission enters the reviewer queue. Direct
+    # admin publication and private drafts intentionally produce no email.
+    if status == SuggestedArticle.Status.PENDING:
+        enqueue_article_review_notification(
+            request,
+            article,
+            NOTIFICATION_KIND_NEW_SUBMISSION,
+        )
 
     if status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
@@ -732,6 +746,29 @@ def edit_suggestion(request, article_id):
             "old_image_count": len(old_image_assets or []),
         },
     )
+
+    # A reviewer saving their own pending changes must not re-notify the entire
+    # review pool. Notify only when an author newly submits or resubmits a normal
+    # article, or submits a previously saved/rejected published-article update.
+    notification_kind = None
+    if (
+        not is_admin_action
+        and is_published_update_flow
+        and submit_action != "save_update_draft"
+        and article.update_status == SuggestedArticle.UpdateStatus.PENDING
+        and previous_update_status != SuggestedArticle.UpdateStatus.PENDING
+    ):
+        notification_kind = NOTIFICATION_KIND_UPDATE_SUBMISSION
+    elif (
+        not is_admin_action
+        and not is_published_update_flow
+        and effective_status == SuggestedArticle.Status.PENDING
+        and previous_status != SuggestedArticle.Status.PENDING
+    ):
+        notification_kind = NOTIFICATION_KIND_NEW_SUBMISSION
+
+    if notification_kind:
+        enqueue_article_review_notification(request, article, notification_kind)
 
     if is_published_update_flow and submit_action == "save_update_draft":
         messages.success(request, _("Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."))
