@@ -1,29 +1,43 @@
 #!/usr/bin/env sh
 set -eu
 
-# Generate a local self-signed HTTPS certificate for DjOpenKB Nginx.
+# Generate a self-signed development TLS certificate for DjOpenKB Nginx.
 #
-# Output files:
+# Optional first argument: browser-facing server IPv4 address.  Example:
+#   sudo sh nginx/certs/generate-localhost-cert.sh 10.23.58.201
+#
+# The generated files intentionally keep the existing names used by nginx.conf:
 #   nginx/certs/localhost.crt
 #   nginx/certs/localhost.key
 #
-# These paths match nginx/nginx.conf:
-#   ssl_certificate     /etc/nginx/certs/localhost.crt;
-#   ssl_certificate_key /etc/nginx/certs/localhost.key;
-#
-# Run from the project root:
-#   chmod +x nginx/certs/generate-localhost-cert.sh
-#   ./nginx/certs/generate-localhost-cert.sh
+# This certificate is only for internal development. Before public release,
+# replace it with a certificate issued for the final public DNS hostname.
+
+TARGET_IP="${1:-}"
+
+if [ -n "$TARGET_IP" ]; then
+    case "$TARGET_IP" in
+        *[!0-9.]*|*..*|.*|*.)
+            echo "Error: provide a valid IPv4 address, for example 10.23.58.201." >&2
+            exit 2
+            ;;
+    esac
+fi
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 CERT_FILE="$SCRIPT_DIR/localhost.crt"
 KEY_FILE="$SCRIPT_DIR/localhost.key"
-OPENSSL_CNF="$SCRIPT_DIR/localhost-openssl.cnf"
+OPENSSL_CNF="$(mktemp)"
+trap 'rm -f "$OPENSSL_CNF"' EXIT
 
-echo "Generating local self-signed HTTPS certificate..."
-echo "Output folder: $SCRIPT_DIR"
+CN="localhost"
+EXTRA_IP_SAN=""
+if [ -n "$TARGET_IP" ]; then
+    CN="$TARGET_IP"
+    EXTRA_IP_SAN="IP.3 = $TARGET_IP"
+fi
 
-cat > "$OPENSSL_CNF" <<'EOF'
+cat > "$OPENSSL_CNF" <<EOF_CONF
 [req]
 default_bits = 2048
 prompt = no
@@ -35,9 +49,9 @@ x509_extensions = v3_req
 C = SG
 ST = Singapore
 L = Singapore
-O = DjOpenKB Local
-OU = Development
-CN = localhost
+O = DjOpenKB Development
+OU = Internal Development
+CN = $CN
 
 [v3_req]
 subjectAltName = @alt_names
@@ -48,12 +62,13 @@ basicConstraints = critical, CA:FALSE
 [alt_names]
 DNS.1 = localhost
 DNS.2 = nginx
-DNS.3 = djopenkb.local
 IP.1 = 127.0.0.1
 IP.2 = 0.0.0.0
-EOF
+$EXTRA_IP_SAN
+EOF_CONF
 
-openssl req -x509 -nodes -days 825 \
+echo "Generating development TLS certificate..."
+openssl req -x509 -nodes -days 365 \
     -newkey rsa:2048 \
     -keyout "$KEY_FILE" \
     -out "$CERT_FILE" \
@@ -62,19 +77,9 @@ openssl req -x509 -nodes -days 825 \
 chmod 644 "$CERT_FILE"
 chmod 600 "$KEY_FILE"
 
-rm -f "$OPENSSL_CNF"
-
 echo
-echo "Certificate generated successfully:"
-echo "  $CERT_FILE"
-echo "  $KEY_FILE"
-echo
-echo "These files match the Nginx container paths:"
-echo "  /etc/nginx/certs/localhost.crt"
-echo "  /etc/nginx/certs/localhost.key"
-echo
-echo "You can now run:"
-echo "  sudo docker compose up -d --build"
-echo
-echo "Then open:"
-echo "  https://<linux-server-ip>:8080"
+echo "Certificate generated: $CERT_FILE"
+if [ -n "$TARGET_IP" ]; then
+    echo "It is valid for: https://$TARGET_IP:8080"
+fi
+echo "Trust the certificate on the development browser to avoid its self-signed warning."
