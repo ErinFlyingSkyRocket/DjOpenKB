@@ -130,17 +130,21 @@ services:
     # `-x` intentionally makes a future permission failure visible in
     # `docker compose logs app-permissions-init`, instead of masking it.
     entrypoint: ["/bin/sh", "-euxc"]
-    command: |
-      prepare_directory() {
-        target="$1"
-        mkdir -p "$target"
-        chown -R 10001:10001 "$target"
-        chmod -R u+rwX "$target"
-        echo "Prepared $target for UID/GID 10001:10001"
-      }
-      prepare_directory /app/staticfiles
-      prepare_directory /app/openkb-data
-      prepare_directory /app/openkb-data-internal
+    # Use a one-item command list so Compose passes this entire script as the
+    # argument to /bin/sh -c.  $$ preserves shell variables for the container
+    # instead of Compose attempting to interpolate them from the host/.env.
+    command:
+      - |-
+        prepare_directory() {
+          target="$${1}"
+          mkdir -p "$${target}"
+          chown -R 10001:10001 "$${target}"
+          chmod -R u+rwX "$${target}"
+          echo "Prepared $${target} for UID/GID 10001:10001"
+        }
+        prepare_directory /app/staticfiles
+        prepare_directory /app/openkb-data
+        prepare_directory /app/openkb-data-internal
     volumes:
       - ./openkb-data:/app/openkb-data
       - ./openkb-data-internal:/app/openkb-data-internal
