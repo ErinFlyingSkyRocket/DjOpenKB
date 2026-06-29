@@ -14,7 +14,7 @@
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .admin-pending-wrap { max-width: 1100px; margin: 0 auto; float: none; }
         .pending-summary-card { border: 1px solid #e5eaee; border-radius: 4px; padding: 14px 16px; margin-bottom: 14px; background: #f8fafb; }
         .pending-summary-number { font-size: 26px; font-weight: 700; margin-right: 8px; }
@@ -26,6 +26,7 @@
         .deletion-review-form textarea { margin-bottom: 6px; resize: vertical; }
         .section-heading { margin-top: 24px; }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body>
     {% include "_navbar.html" %}
@@ -160,7 +161,7 @@
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
 (function () {
     var filters = document.querySelectorAll('.auto-submit-on-change');
     for (var i = 0; i < filters.length; i++) {

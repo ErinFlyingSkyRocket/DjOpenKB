@@ -3,7 +3,7 @@
 
 {% block extrastyle %}
 {{ block.super }}
-<style>
+<style nonce="{{ csp_nonce }}">
   #content { max-width: none; }
   .change-list #content-main { overflow-x: auto; padding-bottom: 1rem; }
   .change-list #result_list { min-width: 1100px; }
@@ -24,6 +24,24 @@
   }
   .djopenkb-admin-language label { font-weight: 600; }
   .djopenkb-admin-language select { min-width: 150px; }
+  .djopenkb-admin-guide { max-width: 920px; line-height: 1.5; }
+  .djopenkb-admin-guide-wide { max-width: 980px; }
+  .djopenkb-admin-guide-compact { max-width: 900px; }
+  .djopenkb-admin-guide-table { border-collapse: collapse; margin-top: 8px; }
+  .djopenkb-admin-guide-table-spaced { margin-bottom: 8px; }
+  .djopenkb-admin-guide-help { margin-top: 8px; }
+  .djopenkb-admin-guide-label {
+    text-align: left;
+    vertical-align: top;
+    padding: 4px 12px 4px 0;
+    white-space: nowrap;
+  }
+  .djopenkb-admin-guide-value { padding: 4px 0; }
+  .djopenkb-role-guide-list { margin-left: 18px; }
+  .djopenkb-mfa-status { font-weight: 600; }
+  .djopenkb-mfa-status-configured { color: #0a7a2f; }
+  .djopenkb-mfa-status-pending { color: #a15c00; }
+  .djopenkb-mfa-status-not-configured { color: #8a1f11; }
   @media (max-width: 1024px) {
     .change-list #result_list { min-width: 980px; }
   }

@@ -14,7 +14,7 @@
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .bulk-wrap { max-width: 1000px; margin: 0 auto; float: none; }
         .bulk-muted { color: #899aa6; font-size: 12px; }
         .bulk-card { margin-top: 15px; }
@@ -30,6 +30,8 @@
         .bulk-result-header-info { background: #3498db; color: #ffffff; border-top-left-radius: 5px; border-top-right-radius: 5px; }
         .bulk-import-modal .close { color: #ffffff; opacity: .9; text-shadow: none; }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+    <script defer src="{% static 'javascripts/csp-actions.js' %}"></script>
 </head>
 <body>
     {% include "_navbar.html" %}
@@ -77,7 +79,7 @@
                         {% trans "Imported articles will be owned by" %} <strong>{{ user.get_username }}</strong>.
                     </p>
 
-                    <form method="post" action="{% url 'import_articles_zip' %}" enctype="multipart/form-data" onsubmit="return confirm('{% trans "Import this zip? Imported articles will be assigned to your admin account." %}');">
+                    <form method="post" action="{% url 'import_articles_zip' %}" enctype="multipart/form-data" data-confirm-message="{% trans 'Import this zip? Imported articles will be assigned to your admin account.' %}">
                         {% csrf_token %}
                         <div class="form-group">
                             <label>{% trans "Import zip file" %}</label>
@@ -187,7 +189,7 @@ parts/djopenkb-export-part003-of-003.zip</pre>
             </div>
         </div>
     </div>
-    <script>
+    <script nonce="{{ csp_nonce }}">
         $(function () {
             $('#bulkImportResultModal').modal('show');
         });

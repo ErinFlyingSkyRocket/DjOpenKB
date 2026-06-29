@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
 (function (root) {
 /* -- Data -- */
 root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
@@ -46,7 +46,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .profile-muted { color: #899aa6; font-size: 12px; }
         .article-actions a { margin-right: 4px; }
         .profile-search-panel { margin-bottom: 15px; }
@@ -104,6 +104,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             .profile-suggest-side { min-height: auto; display: block; text-align: left; padding-bottom: 15px; }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body class="">
 
@@ -165,7 +166,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% endif %}
                             </form>
                             {% if is_profile_search %}
-                                <p class="profile-muted" style="margin-top: 10px;">
+                                <p class="profile-muted profile-muted-spaced">
                                     {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
                                     <a href="{{ profile_search_action|default:'/profile/articles/' }}{% if profile_visibility_filter != 'all' %}?visibility={{ profile_visibility_filter }}{% endif %}">{% trans "Clear search" %}</a>
                                 </p>
@@ -342,7 +343,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
 (function () {
     var filters = document.querySelectorAll('.auto-submit-on-change');
     for (var i = 0; i < filters.length; i++) {

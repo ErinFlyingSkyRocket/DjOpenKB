@@ -14,7 +14,7 @@
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .admin-orphan-wrap { max-width: 1200px; margin: 0 auto; float: none; }
         .orphan-summary-card { border: 1px solid #e5eaee; border-radius: 4px; padding: 14px 16px; margin-bottom: 14px; background: #f8fafb; }
         .orphan-summary-number { font-size: 26px; font-weight: 700; margin-right: 8px; }
@@ -148,6 +148,7 @@
             display: block;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body>
     {% include "_navbar.html" %}
@@ -266,7 +267,7 @@
                                 </div>
                                 <small class="orphan-muted">{% trans "Enter an active local or AD username/email, then tick articles and click Assign selected." %}</small>
                             </div>
-                            <div class="col-sm-7" style="padding-top: 25px;">
+                            <div class="col-sm-7 orphan-assignment-column">
                                 <button type="submit" name="action" value="assign" class="btn btn-success">
                                     <i class="fa fa-user-plus"></i> {% trans "Assign selected" %}
                                 </button>
@@ -333,7 +334,7 @@
     </div>
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (function () {
             var assignLookup = document.getElementById('target_user_lookup');
             var suggestionsBox = document.getElementById('targetUserSuggestions');
@@ -364,7 +365,7 @@
                 suggestionItems.forEach(function (item) {
                     var haystack = item.getAttribute('data-search') || '';
                     var matches = !query || haystack.indexOf(query) !== -1;
-                    item.style.display = matches ? 'block' : 'none';
+                    item.classList.toggle('csp-is-hidden', !matches);
                     item.classList.remove('is-active');
                     if (matches) {
                         visibleCount += 1;

@@ -27,7 +27,7 @@
     <link rel="icon" href="{% static 'favicon.png' %}" />
 
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (function (root) {
             root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
         }(this));
@@ -47,19 +47,20 @@
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body class="show_footer">
 {% include "_navbar.html" %}
 <div class="container-fluid">
-    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 90px">
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 login-wrap">
         <form class="form-signin" action="{% url 'login' %}" method="post" role="form" data-toggle="validator">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
 
             <input type="hidden" id="id_login_mode" name="login_mode" value="{{ request.POST.login_mode|default:'ad' }}">
 
-            <h2 id="login-heading" class="form-signin-heading" style="margin-bottom: 8px;">{% trans "Sign in to Knowledge Repository" %}</h2>
-            <p id="login-description" class="text-muted" style="margin-bottom: 20px;">
+            <h2 id="login-heading" class="form-signin-heading login-heading-spacing">{% trans "Sign in to Knowledge Repository" %}</h2>
+            <p id="login-description" class="text-muted login-description-spacing">
                 {% trans "Please sign in using your NextLabs AD email account to access the knowledge repository." %}
             </p>
 
@@ -80,10 +81,10 @@
             <div class="form-group">
                 <label id="username-label" class="sr-only" for="id_username">{% trans "NextLabs AD email or username" %}</label>
                 <input id="id_username" type="text" name="username" class="form-control" placeholder="{% trans 'NextLabs AD email or username' %}" value="{{ form.username.value|default:'' }}" required autofocus>
-                <p id="ad-login-help" class="help-block" style="font-size: 12px; margin-bottom: 0;">
+                <p id="ad-login-help" class="help-block login-help">
                     {% trans "Example:" %} <code>&lt;username&gt;@nextlabs.com</code>, <code>&lt;username&gt;</code>, {% trans "or" %} <code>NEXTLABS\&lt;username&gt;</code>.
                 </p>
-                <p id="local-login-help" class="help-block" style="font-size: 12px; margin-bottom: 0; display: none;">
+                <p id="local-login-help" class="help-block login-help csp-is-hidden">
                     {% trans "Local accounts require authenticator verification after password sign-in." %}
                 </p>
             </div>
@@ -97,12 +98,12 @@
                 <span id="login-submit-text">{% trans "Sign in with NextLabs AD" %}</span>
             </button>
 
-            <p class="help-block text-center" style="font-size: 12px; margin-top: 14px;">
+            <p class="help-block text-center login-switch-help">
                 <a href="#" id="switch-to-local-login">{% trans "Local account access" %}</a>
-                <a href="#" id="switch-to-ad-login" style="display: none;">{% trans "Back to NextLabs AD sign-in" %}</a>
+                <a href="#" id="switch-to-ad-login" class="csp-is-hidden">{% trans "Back to NextLabs AD sign-in" %}</a>
             </p>
 
-            <script>
+            <script nonce="{{ csp_nonce }}">
                 (function () {
                     var modeInput = document.getElementById('id_login_mode');
                     var heading = document.getElementById('login-heading');
@@ -139,10 +140,10 @@
                         submitText.textContent = isLocal ? text.localSubmit : text.adSubmit;
                         submitButton.className = isLocal ? 'btn btn-lg btn-default btn-block' : 'btn btn-lg btn-primary btn-block';
                         submitIcon.className = isLocal ? 'fa fa-user' : 'fa fa-windows';
-                        adHelp.style.display = isLocal ? 'none' : '';
-                        if (localHelp) { localHelp.style.display = isLocal ? '' : 'none'; }
-                        localLink.style.display = isLocal ? 'none' : '';
-                        adLink.style.display = isLocal ? '' : 'none';
+                        adHelp.classList.toggle('csp-is-hidden', isLocal);
+                        if (localHelp) { localHelp.classList.toggle('csp-is-hidden', !isLocal); }
+                        localLink.classList.toggle('csp-is-hidden', isLocal);
+                        adLink.classList.toggle('csp-is-hidden', !isLocal);
                         if (focusUsername) {
                             usernameInput.focus();
                         }

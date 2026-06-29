@@ -435,9 +435,9 @@ def role_descriptions_html() -> str:
     from django.utils.html import format_html, format_html_join
 
     return format_html(
-        "<div style='max-width:900px;'>"
+        "<div class='djopenkb-admin-guide djopenkb-admin-guide-compact'>"
         "<p><strong>{}</strong></p>"
-        "<ul style='margin-left:18px;'>" 
+        "<ul class='djopenkb-role-guide-list'>" 
         "{}"
         "</ul>"
         "<p class='help'>{}</p>"

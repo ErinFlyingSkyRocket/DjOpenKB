@@ -24,7 +24,7 @@
     <link rel="icon" href="{% static 'favicon.png' %}">
 
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (function (root) {
             root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
         }(this));
@@ -42,7 +42,7 @@
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
 
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .openkb-meta { color: #899aa6; font-size: 12px; }
         .openkb-empty { padding: 20px; color: #899aa6; }
         .openkb-pagination { margin: 20px 0 5px; text-align: center; }
@@ -126,6 +126,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 
 <body class="show_footer">
@@ -169,7 +170,7 @@
         <div class="row featuredArticles"><div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2"></div></div>
 
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-            <div class="panel panel-default" style="margin-top: 30px;">
+            <div class="panel panel-default home-results-panel">
                 <div class="panel-heading">{% blocktrans with query=search_query %}::: SEARCH RESULTS FOR "{{ query }}" :::{% endblocktrans %}</div>
                 <div class="panel-body">
                     <p class="openkb-meta">{% blocktrans with count=result_count %}{{ count }} result(s) found by matching article title and keywords.{% endblocktrans %}</p>
@@ -478,7 +479,7 @@
 
 {% include "_footer.html" %}
 
-<script>
+<script nonce="{{ csp_nonce }}">
     const openkbSearchInput = document.getElementById("frm_search");
     const openkbSearchDropdown = document.getElementById("searchResult");
     const openkbSearchSuggestionList = openkbSearchDropdown ? openkbSearchDropdown.querySelector(".searchResultList") : null;
@@ -524,8 +525,7 @@
 
         if (article.visibility === "internal") {
             const badge = document.createElement("span");
-            badge.className = "label label-warning";
-            badge.style.marginLeft = "8px";
+            badge.className = "label label-warning openkb-search-suggestion-badge";
             badge.textContent = "{% trans 'Internal' %}";
             link.appendChild(badge);
         }

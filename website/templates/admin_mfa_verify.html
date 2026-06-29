@@ -1,11 +1,11 @@
-{% load i18n %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% trans "Admin MFA verification" %}</title>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         :root {
             color-scheme: light;
             font-family: Arial, sans-serif;
@@ -86,6 +86,7 @@
             border: 1px solid #fed7aa;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body>
     <main class="admin-mfa-card" aria-labelledby="admin-mfa-heading">

@@ -1,5 +1,5 @@
 {% load i18n %}
-<style>
+<style nonce="{{ csp_nonce }}">
     .openkb-keyword-suggestions {
         margin-top: 10px;
         padding: 10px 12px;
@@ -92,8 +92,8 @@
     <div class="openkb-keyword-scroll-hint">{% trans "Scroll sideways to view more matching keywords." %}</div>
 </div>
 
-<script id="openkbKeywordSuggestionCatalog" type="application/json">{{ keyword_suggestion_catalog_json|default:"[]"|safe }}</script>
-<script>
+<script nonce="{{ csp_nonce }}" id="openkbKeywordSuggestionCatalog" type="application/json">{{ keyword_suggestion_catalog_json|default:"[]"|safe }}</script>
+<script nonce="{{ csp_nonce }}">
 (function () {
     const titleInput = document.getElementById("frm_kb_title");
     const keywordInput = document.getElementById("frm_kb_keywords");

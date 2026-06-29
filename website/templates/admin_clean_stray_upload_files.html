@@ -14,7 +14,7 @@
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .cleanup-wrap { max-width: 1000px; margin: 0 auto; float: none; }
         .cleanup-muted { color: #899aa6; font-size: 12px; }
         .cleanup-summary { margin-bottom: 15px; }
@@ -32,6 +32,8 @@
         .cleanup-check { width: 36px; text-align: center; vertical-align: middle !important; }
         .cleanup-check input[type=checkbox] { cursor: pointer; }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+    <script defer src="{% static 'javascripts/csp-actions.js' %}"></script>
 </head>
 <body>
     {% include "_navbar.html" %}
@@ -69,16 +71,16 @@
                         <p>
                             {% trans "These files appear unused. Check the uploader details, then delete only the files that are no longer needed." %}
                         </p>
-                        <form method="post" onsubmit="return confirm('{% trans 'Delete the selected stray upload files? This cannot be undone.' %}');">
+                        <form method="post" data-confirm-message="{% trans 'Delete the selected stray upload files? This cannot be undone.' %}">
                             {% csrf_token %}
                             <div class="cleanup-actions">
                                 <button class="btn btn-danger" type="submit">
                                     <i class="fa fa-trash"></i> {% trans "Delete selected stray files" %}
                                 </button>
-                                <button class="btn btn-default" type="button" onclick="$('.cleanup-file-checkbox').prop('checked', true);">
+                                <button class="btn btn-default" type="button" data-checkboxes-action="select" data-checkboxes-target=".cleanup-file-checkbox" data-checkboxes-select-all="cleanup-select-all">
                                     {% trans "Select all" %}
                                 </button>
-                                <button class="btn btn-default" type="button" onclick="$('.cleanup-file-checkbox').prop('checked', false); $('#cleanup-select-all').prop('checked', false);">
+                                <button class="btn btn-default" type="button" data-checkboxes-action="clear" data-checkboxes-target=".cleanup-file-checkbox" data-checkboxes-select-all="cleanup-select-all">
                                     {% trans "Unselect all" %}
                                 </button>
                                 <a class="btn btn-default" href="{% url 'profile' %}">{% trans "Back to profile" %}</a>
@@ -89,7 +91,7 @@
                                     <thead>
                                         <tr>
                                             <th class="cleanup-check">
-                                                <input id="cleanup-select-all" type="checkbox" checked aria-label="{% trans 'Select all stray files' %}" onclick="$('.cleanup-file-checkbox').prop('checked', this.checked);">
+                                                <input id="cleanup-select-all" type="checkbox" checked aria-label="{% trans 'Select all stray files' %}" data-checkboxes-toggle=".cleanup-file-checkbox">
                                             </th>
                                             <th>{% trans "Preview / Open" %}</th>
                                             <th>{% trans "Filename" %}</th>

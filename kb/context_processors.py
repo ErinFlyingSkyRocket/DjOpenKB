@@ -82,3 +82,9 @@ def openkb_ai_settings(request):
             getattr(settings, "OPENKB_AI_POLL_INTERVAL_MILLISECONDS", 2000)
         ),
     }
+
+
+
+def csp_nonce(request):
+    """Expose the nonce created by ContentSecurityPolicyMiddleware."""
+    return {"csp_nonce": getattr(request, "csp_nonce", "")}

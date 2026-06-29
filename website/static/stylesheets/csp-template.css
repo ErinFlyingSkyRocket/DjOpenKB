@@ -1,0 +1,47 @@
+/* Strict-CSP layout utilities. These replace static style="..." attributes. */
+.csp-is-hidden { display: none !important; }
+.openkb-page-back-wrap { margin-top: 14px; margin-bottom: 10px; }
+.csp-inline-form { display: inline; }
+.csp-inline-block-form { display: inline-block; }
+
+.openkb-disabled-page { padding-top: 110px; }
+.openkb-disabled-card { border-radius: 8px; }
+.openkb-disabled-card .panel-body { padding: 32px 26px; }
+.openkb-disabled-icon { font-size: 42px; margin-bottom: 12px; }
+.openkb-disabled-title { margin-top: 0; margin-bottom: 12px; }
+.openkb-disabled-message { margin-bottom: 24px; }
+
+.queue-muted-spaced { margin-top: 8px; }
+.queue-select-column { width: 35px; }
+.orphan-assignment-column { padding-top: 25px; }
+
+.article-detail-heading-wrap { margin-top: 20px; margin-bottom: 10px; }
+.article-detail-panel { margin-top: 30px; }
+.article-detail-heading { padding-top: 15px; padding-bottom: 25px; }
+.article-vote-panel { margin-top: 35px; }
+.profile-muted-spaced { margin-top: 10px; }
+.home-results-panel { margin-top: 30px; }
+
+.login-wrap { padding-top: 90px; }
+.login-heading-spacing { margin-bottom: 8px; }
+.login-description-spacing { margin-bottom: 20px; }
+.login-help { font-size: 12px; margin-bottom: 0; }
+.login-switch-help { font-size: 12px; margin-top: 14px; }
+
+.mfa-setup-wrap { padding-top: 70px; }
+.mfa-verify-wrap { padding-top: 90px; }
+.mfa-heading-spacing { margin-bottom: 8px; }
+.mfa-description-spacing { margin-bottom: 20px; }
+.mfa-qr-wrap { margin: 18px 0; }
+.mfa-qr-image { max-width: 240px; width: 100%; height: auto; border: 1px solid #e5eaee; padding: 8px; background: #fff; }
+.mfa-secret-value { word-break: break-all; }
+.mfa-cancel-form { margin-top: 12px; }
+
+.article-visibility-help { margin: 4px 0 0; }
+.article-upload-help { margin-bottom: 8px; }
+.article-upload-limit-help { margin-bottom: 6px; }
+.article-image-upload-input { display: none; }
+.suggest-delete-wrap { padding-top: 50px; }
+.admin-review-notes-group { margin-bottom: 0; }
+.admin-review-notes-help { margin: 6px 0 0; }
+.openkb-search-suggestion-badge { margin-left: 8px; }

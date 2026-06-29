@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
 (function (root) {
 /* -- Data -- */
 root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
@@ -45,7 +45,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .profile-muted { color: #899aa6; font-size: 12px; }
         .article-actions a { margin-right: 4px; }
         .profile-search-panel { margin-bottom: 15px; }
@@ -90,6 +90,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             .profile-account-label { display: block; min-width: 0; margin-bottom: 4px; }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+    <script defer src="{% static 'javascripts/csp-actions.js' %}"></script>
 </head>
 <body class="">
     <!-- Static navbar -->
@@ -170,7 +172,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
                             <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Language" %}:</span>
-                                <form class="form-inline" method="post" action="{% url 'update_profile' %}" style="display: inline-block;">
+                                <form class="form-inline csp-inline-block-form" method="post" action="{% url 'update_profile' %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="profile_action" value="language">
                                     {% configured_language_choices as RAW_AVAILABLE_LANGUAGES %}
@@ -201,7 +203,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% endif %}
                                 <div class="profile-account-actions">
                                     {% if mfa_enabled %}
-                                        <form method="post" action="{% url 'reset_mfa' %}" style="display:inline;" onsubmit="return confirm('{% trans 'Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?' %}');">
+                                        <form method="post" action="{% url 'reset_mfa' %}" class="csp-inline-form" data-confirm-message="{% trans 'Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?' %}">
                                             {% csrf_token %}
                                             <button class="btn btn-warning" type="submit">{% trans "Reset MFA" %}</button>
                                         </form>
@@ -395,7 +397,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
 
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (function () {
             const passwordInput = document.getElementById("newPassword1");
             const confirmInput = document.getElementById("newPassword2");

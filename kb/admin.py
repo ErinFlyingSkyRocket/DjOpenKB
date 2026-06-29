@@ -832,12 +832,12 @@ class UserProfileInline(admin.StackedInline):
             ),
         )
         return format_html(
-            "<div style='max-width:920px;line-height:1.5;'>"
+            "<div class='djopenkb-admin-guide'>"
             "<p class='help'><strong>{}</strong> {}</p>"
-            "<table style='border-collapse:collapse;margin-top:8px;'>"
+            "<table class='djopenkb-admin-guide-table'>"
             "{}"
             "</table>"
-            "<p class='help' style='margin-top:8px;'>{}</p>"
+            "<p class='help djopenkb-admin-guide-help'>{}</p>"
             "</div>",
             _("How to use these permissions:"),
             _(
@@ -847,8 +847,8 @@ class UserProfileInline(admin.StackedInline):
             format_html_join(
                 "",
                 "<tr>"
-                "<th style='text-align:left;vertical-align:top;padding:4px 12px 4px 0;white-space:nowrap;'>{}</th>"
-                "<td style='padding:4px 0;'>{}</td>"
+                "<th class='djopenkb-admin-guide-label'>{}</th>"
+                "<td class='djopenkb-admin-guide-value'>{}</td>"
                 "</tr>",
                 rows,
             ),
@@ -1024,7 +1024,7 @@ class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
         permission_text = ", ".join(permission_labels) if permission_labels else str(_("No Knowledge Repository role permissions"))
 
         return format_html(
-            "<div style='max-width:920px;line-height:1.5;'>"
+            "<div class='djopenkb-admin-guide'>"
             "<p><strong>{}</strong></p>"
             "<p>{}</p>"
             "<p><strong>{}</strong> {}</p>"
@@ -1206,16 +1206,16 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
             (_("Admin Users"), _("Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin.")),
         )
         return format_html(
-            "<div style='max-width:980px;line-height:1.5;'>"
+            "<div class='djopenkb-admin-guide djopenkb-admin-guide-wide'>"
             "<p class='help'><strong>{}</strong> {}</p>"
-            "<table style='border-collapse:collapse;margin-top:8px;margin-bottom:8px;'>{}</table>"
+            "<table class='djopenkb-admin-guide-table djopenkb-admin-guide-table-spaced'>{}</table>"
             "<p class='help'>{}</p>"
             "</div>",
             _("Default Knowledge Repository groups:"),
             _("Use these groups as the main access model. Disabled User always takes highest precedence."),
             format_html_join(
                 "",
-                "<tr><th style='text-align:left;vertical-align:top;padding:4px 12px 4px 0;white-space:nowrap;'>{}</th><td style='padding:4px 0;'>{}</td></tr>",
+                "<tr><th class='djopenkb-admin-guide-label'>{}</th><td class='djopenkb-admin-guide-value'>{}</td></tr>",
                 rows,
             ),
             _(
@@ -1346,10 +1346,10 @@ class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
         status = mfa_status_label(obj)
         status_text = str(status)
         if status_text == str(_("Configured")):
-            return format_html('<span style="color:#0a7a2f;font-weight:600;">{}</span>', status)
+            return format_html('<span class="djopenkb-mfa-status djopenkb-mfa-status-configured">{}</span>', status)
         if status_text == str(_("Setup pending")):
-            return format_html('<span style="color:#a15c00;font-weight:600;">{}</span>', status)
-        return format_html('<span style="color:#8a1f11;font-weight:600;">{}</span>', status)
+            return format_html('<span class="djopenkb-mfa-status djopenkb-mfa-status-pending">{}</span>', status)
+        return format_html('<span class="djopenkb-mfa-status djopenkb-mfa-status-not-configured">{}</span>', status)
 
     mfa_status_display.short_description = _("MFA Status")
 
@@ -2651,7 +2651,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
 
     def auth_lockout_policy_guide(self, obj):
         return format_html(
-            "<div style='max-width:900px;line-height:1.5;'>"
+            "<div class='djopenkb-admin-guide djopenkb-admin-guide-compact'>"
             "<p>{}</p>"
             "<ol>"
             "<li>{}</li>"

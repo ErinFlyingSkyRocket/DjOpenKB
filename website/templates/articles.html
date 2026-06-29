@@ -25,7 +25,7 @@
     <link rel="icon" href="{% static 'favicon.png' %}">
 
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
         (function (root) {
             root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
         }(this));
@@ -43,7 +43,7 @@
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
 
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .body_text img { max-width: 100%; height: auto; }
         .body_text table { width: 100%; margin-bottom: 20px; }
         .body_text pre { background: #f7f7f7; border: 1px solid #ddd; }
@@ -169,6 +169,7 @@
             color: #2c3e50;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 
 <body class="show_footer">
@@ -197,7 +198,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             {% if show_global_back_button %}
-                <div class="col-xs-12 col-md-12 col-lg-12" style="margin-top: 20px; margin-bottom: 10px;">
+                <div class="col-xs-12 col-md-12 col-lg-12 article-detail-heading-wrap">
                     <a class="btn btn-default" href="{{ safe_back_url }}">
                         <i class="fa fa-arrow-left"></i> {% trans "Back" %}
                     </a>
@@ -205,7 +206,7 @@
             {% endif %}
 
             <div class="col-md-3 col-lg-3">
-                <div class="panel panel-default" style="margin-top: 30px;">
+                <div class="panel panel-default article-detail-panel">
                     <div class="panel-heading">{% trans "Related articles" %}</div>
                     <div class="panel-body">
                         <ul class="list-group">
@@ -222,7 +223,7 @@
             </div>
 
             <div class="col-md-8 col-lg-8">
-                <h1 style="padding-bottom: 25px;padding-top: 15px;">{{ title }} {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h1>
+                <h1 class="article-detail-heading">{{ title }} {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h1>
 
                 <div class="body_text">
                     {{ content|safe }}
@@ -274,7 +275,7 @@
                     </div>
                 {% endif %}
 
-                <div class="panel panel-primary" style="margin-top: 35px;">
+                <div class="panel panel-primary article-vote-panel">
                     <div class="panel-heading">{% trans "Article details" %}:</div>
                     <div class="panel-body metaData">
                         {% if metadata.visibility == "internal" %}
@@ -349,7 +350,7 @@
 
 {% include "_footer.html" %}
 
-<script>
+<script nonce="{{ csp_nonce }}">
     const guestVoteButtons = document.querySelectorAll(".js-guest-vote");
     const guestVoteHint = document.getElementById("articleVoteGuestHint");
     let guestVoteHintTimer = null;
@@ -415,8 +416,7 @@
 
         if (article.visibility === "internal") {
             const badge = document.createElement("span");
-            badge.className = "label label-warning";
-            badge.style.marginLeft = "8px";
+            badge.className = "label label-warning openkb-search-suggestion-badge";
             badge.textContent = "{% trans 'Internal' %}";
             link.appendChild(badge);
         }

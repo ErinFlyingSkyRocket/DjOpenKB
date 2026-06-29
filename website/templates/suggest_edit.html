@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
 (function (root) {
 /* -- Data -- */
 root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
@@ -47,7 +47,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .suggest-preview { min-height: 390px; height: auto; overflow: auto; background: #fff; }
         .CodeMirror { min-height: 360px; }
 
@@ -212,6 +212,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+    <script defer src="{% static 'javascripts/csp-actions.js' %}"></script>
 </head>
 <body class="">
     <!-- Static navbar -->
@@ -285,7 +287,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
                                         {% endfor %}
                                     </select>
-                                    <p class="text-muted" style="margin:4px 0 0;">{% trans "Visibility can be changed only before the article is published." %}</p>
+                                    <p class="text-muted article-visibility-help">{% trans "Visibility can be changed only before the article is published." %}</p>
                                 </div>
                             {% elif article.visibility == "internal" %}
                                 <span class="label label-warning article-scope-hint"><i class="fa fa-lock"></i> {% trans "Internal article" %}</span>
@@ -298,21 +300,21 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
                                     {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update again" %}</button>
                                 {% elif has_pending_update %}
                                     {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                 {% elif has_saved_update_draft %}
                                     {% trans "Discard your saved update draft and reload the last published version?" as revert_confirm_text %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                                 {% else %}
                                     {% trans "Discard your current edits and reload the last published version?" as revert_confirm_text %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate onclick="return confirm('{{ revert_confirm_text|escapejs }}');">{% trans "Revert to last published version" %}</button>
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                                 {% endif %}
@@ -326,11 +328,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
                     {% if can_review_article %}
                         <div class="col-xs-12">
-                            <div id="adminReviewNotesGroup" class="admin-review-notes" {% if current_status != 'failed' %}style="display:none;"{% endif %}>
-                                <div class="form-group" style="margin-bottom:0;">
+                            <div id="adminReviewNotesGroup" class="admin-review-notes{% if current_status != 'failed' %} csp-is-hidden{% endif %}">
+                                <div class="form-group admin-review-notes-group">
                                     <label for="reviewNotesInput">{% trans "Pending failed comments" %}</label>
                                     <textarea id="reviewNotesInput" name="review_notes" class="form-control" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
-                                    <p class="text-muted" style="margin:6px 0 0;">{% trans "These comments are shown to the article owner when the article or update is marked as Pending failed." %}</p>
+                                    <p class="text-muted admin-review-notes-help">{% trans "These comments are shown to the article owner when the article or update is marked as Pending failed." %}</p>
                                 </div>
                             </div>
                         </div>
@@ -384,7 +386,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div class="col-xs-12">
                         <div id="pastedImagePanel" class="pasted-image-panel">
                             <div class="pasted-image-panel-title">{% trans "Pasted images" %}</div>
-                            <p class="text-muted" style="margin-bottom: 8px;">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
+                            <p class="text-muted article-upload-help">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
                             <div id="pastedImageList" class="pasted-image-list"></div>
                         </div>
                     </div>
@@ -393,11 +395,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group suggest-editor" id="editor-wrapper-suggest">
                                 <label for="editor">{% trans "Article body (Markdown)" %} *</label>
-                                <p class="text-muted" style="margin-bottom: 6px;">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %} {% blocktrans with limit=article_image_upload_limit %}Maximum {{ limit }} image(s) per article.{% endblocktrans %}</p>
+                                <p class="text-muted article-upload-limit-help">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %} {% blocktrans with limit=article_image_upload_limit %}Maximum {{ limit }} image(s) per article.{% endblocktrans %}</p>
                                 {% if can_edit_article_content %}
                                     <p>
                                         <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
-                                        <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
+                                        <input id="articleImageUploadInput" class="article-image-upload-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp">
                                     </p>
                                 {% endif %}
                                 <textarea id="editor" minlength="5" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" class="form-control" {% if not can_edit_article_content %}readonly{% endif %} required>{{ body_value|default:article.body }}</textarea>
@@ -429,8 +431,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
 
-<script id="existingArticleImages" type="application/json">{{ existing_images_json|default:"[]"|safe }}</script>
-<script>
+<script nonce="{{ csp_nonce }}" id="existingArticleImages" type="application/json">{{ existing_images_json|default:"[]"|safe }}</script>
+<script nonce="{{ csp_nonce }}">
 (function () {
     const isReadOnlyArticleEditor = {{ can_edit_article_content|yesno:"false,true" }};
     const statusSelect = document.getElementById("articleStatusSelect");
@@ -442,7 +444,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             return;
         }
         const isFailed = statusSelect.value === "failed";
-        reviewGroup.style.display = isFailed ? "block" : "none";
+        reviewGroup.classList.toggle("csp-is-hidden", !isFailed);
         if (reviewInput) {
             if (isFailed) {
                 reviewInput.setAttribute("required", "required");
@@ -594,7 +596,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     function ensureImagePanelVisible() {
         const panel = document.getElementById("pastedImagePanel");
         if (panel) {
-            panel.style.display = uploadedImages.size ? "block" : "none";
+            panel.classList.toggle("csp-is-hidden", !uploadedImages.size);
         }
     }
 

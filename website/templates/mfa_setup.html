@@ -15,13 +15,14 @@
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body class="show_footer">
 <div class="container-fluid">
-    <div class="container-fluid openkb-page-back-wrap" style="margin-top: 14px; margin-bottom: 10px;">
+    <div class="container-fluid openkb-page-back-wrap">
         <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
-                <form method="post" action="{% url 'mfa_cancel' %}" style="display:inline;">
+                <form method="post" action="{% url 'mfa_cancel' %}" class="csp-inline-form">
                     {% csrf_token %}
                     <button class="btn btn-default" type="submit">
                         <i class="fa fa-arrow-left"></i> {% trans "Back" %}
@@ -30,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 70px">
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 mfa-setup-wrap">
         <div class="panel panel-default">
             <div class="panel-heading"><strong>{% trans "Set up MFA" %}</strong></div>
             <div class="panel-body">
@@ -44,11 +45,11 @@
 
                 <p class="text-muted">{% trans "Scan the QR code with your authenticator app, then enter the MFA/OTP code." %}</p>
 
-                <div class="text-center" style="margin: 18px 0;">
-                    <img src="{{ qr_code_data_uri }}" alt="{% trans 'MFA QR code' %}" style="max-width: 240px; width: 100%; height: auto; border: 1px solid #e5eaee; padding: 8px; background: #fff;">
+                <div class="text-center mfa-qr-wrap">
+                    <img src="{{ qr_code_data_uri }}" alt="{% trans 'MFA QR code' %}" class="mfa-qr-image">
                 </div>
 
-                <p class="help-block" style="word-break: break-all;">
+                <p class="help-block mfa-secret-value">
                     {% trans "Manual setup key" %}: <code>{{ manual_secret }}</code>
                 </p>
 
@@ -64,7 +65,7 @@
                     </button>
                 </form>
 
-                <form method="post" action="{% url 'mfa_cancel' %}" style="margin-top: 12px;">
+                <form method="post" action="{% url 'mfa_cancel' %}" class="mfa-cancel-form">
                     {% csrf_token %}
                     <button class="btn btn-default btn-block" type="submit">
                         <i class="fa fa-arrow-left"></i> {% trans "Back" %}

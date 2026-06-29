@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}">
-    <style>
+    <style nonce="{{ csp_nonce }}">
         html,
         body {
             min-height: 100%;
@@ -80,6 +80,7 @@
             color: #fff;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body>
     <main class="openkb-error-wrap">

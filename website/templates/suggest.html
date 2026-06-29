@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{% static 'stylesheets/jpushmenu.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
-    <script>
+    <script nonce="{{ csp_nonce }}">
 (function (root) {
 /* -- Data -- */
 root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":true,"typeahead_search":true,"enable_spellchecker":true,"mermaid":false,"mermaid_options":undefined,"mermaid_auto_update":true};
@@ -46,7 +46,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .suggest-preview { min-height: 390px; height: auto; overflow: auto; background: #fff; }
         .CodeMirror { min-height: 360px; }
 
@@ -153,6 +153,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             }
         }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body class="">
     <!-- Static navbar -->
@@ -194,7 +195,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
                                     {% endfor %}
                                 </select>
-                                <p class="text-muted" style="margin:4px 0 0;">{% trans "Internal articles are visible only to internal users." %}</p>
+                                <p class="text-muted article-visibility-help">{% trans "Internal articles are visible only to internal users." %}</p>
                             </div>
                         {% elif is_internal_article_form %}
                             <span class="label label-warning article-scope-hint"><i class="fa fa-lock"></i> {% trans "Internal article" %}</span>
@@ -204,7 +205,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div class="col-xs-12">
                         <div id="pastedImagePanel" class="pasted-image-panel">
                             <div class="pasted-image-panel-title">{% trans "Pasted images" %}</div>
-                            <p class="text-muted" style="margin-bottom: 8px;">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
+                            <p class="text-muted article-upload-help">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
                             <div id="pastedImageList" class="pasted-image-list"></div>
                         </div>
                     </div>
@@ -213,10 +214,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group suggest-editor" id="editor-wrapper-suggest">
                                 <label for="editor">{% trans "Article body (Markdown)" %} *</label>
-                                <p class="text-muted" style="margin-bottom: 6px;">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %} {% blocktrans with limit=article_image_upload_limit %}Maximum {{ limit }} image(s) per article.{% endblocktrans %}</p>
+                                <p class="text-muted article-upload-limit-help">{% trans "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each." %} {% blocktrans with limit=article_image_upload_limit %}Maximum {{ limit }} image(s) per article.{% endblocktrans %}</p>
                                 <p>
                                     <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
-                                    <input id="articleImageUploadInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none;">
+                                    <input id="articleImageUploadInput" class="article-image-upload-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp">
                                 </p>
                                 <textarea id="editor" minlength="5" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" class="form-control" required>{{ body_value|default:'' }}</textarea>
                             </div>
@@ -247,8 +248,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <input type="hidden" value="true" id="blank_links">
     <div id="notify_message"></div>
 
-<script id="existingArticleImages" type="application/json">{{ existing_images_json|default:"[]"|safe }}</script>
-<script>
+<script nonce="{{ csp_nonce }}" id="existingArticleImages" type="application/json">{{ existing_images_json|default:"[]"|safe }}</script>
+<script nonce="{{ csp_nonce }}">
 (function () {
     const uploadUrl = "{% url 'upload_article_image' %}";
     const deleteUrl = "{% url 'delete_article_image' %}";
@@ -378,7 +379,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     function ensureImagePanelVisible() {
         const panel = document.getElementById("pastedImagePanel");
         if (panel) {
-            panel.style.display = uploadedImages.size ? "block" : "none";
+            panel.classList.toggle("csp-is-hidden", !uploadedImages.size);
         }
     }
 

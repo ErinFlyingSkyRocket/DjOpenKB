@@ -1,5 +1,6 @@
 import ipaddress
 import re
+import secrets
 
 from django.conf import settings
 from django.contrib import messages
@@ -132,6 +133,56 @@ def _apply_session_cookie_expiry(request, remaining_seconds):
 def clear_session_started_at(request):
     request.session.pop(SESSION_STARTED_AT_KEY, None)
     request.session.modified = True
+
+
+
+
+def _build_content_security_policy(nonce):
+    """Return the strict per-response CSP used by HTML views.
+
+    A fresh nonce authorises only the project-owned inline template blocks that
+    cannot be static because they contain server-generated URLs, translations,
+    or initial editor data. Inline event attributes and style attributes are
+    deliberately forbidden instead of relying on ``unsafe-inline``.
+    """
+    return "; ".join(
+        (
+            "default-src 'self'",
+            "base-uri 'self'",
+            "object-src 'none'",
+            "frame-src 'none'",
+            "frame-ancestors 'none'",
+            "form-action 'self'",
+            "img-src 'self' data:",
+            "font-src 'self'",
+            "media-src 'self'",
+            "connect-src 'self'",
+            f"script-src 'self' 'nonce-{nonce}'",
+            "script-src-attr 'none'",
+            f"style-src 'self' 'nonce-{nonce}'",
+            "style-src-attr 'none'",
+        )
+    )
+
+
+class ContentSecurityPolicyMiddleware:
+    """Attach a fresh CSP nonce before templates render and send strict CSP.
+
+    The nonce is stored only on the active request and exposed to templates by
+    ``kb.context_processors.csp_nonce``. Static assets are served by Nginx and
+    do not need this HTML response header.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.csp_nonce = secrets.token_urlsafe(24)
+        response = self.get_response(request)
+        response["Content-Security-Policy"] = _build_content_security_policy(
+            request.csp_nonce
+        )
+        return response
 
 
 class SessionTimeoutMiddleware:

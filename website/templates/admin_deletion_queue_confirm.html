@@ -14,10 +14,11 @@
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-    <style>
+    <style nonce="{{ csp_nonce }}">
         .confirm-wrap { max-width: 900px; margin: 0 auto; float: none; }
         .confirm-muted { color: #899aa6; font-size: 12px; }
     </style>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body>
     {% include "_navbar.html" %}

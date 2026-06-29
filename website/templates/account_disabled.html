@@ -13,18 +13,19 @@
     <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
     <link rel="icon" href="{% static 'favicon.png' %}" />
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body class="show_footer">
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 110px;">
-            <div class="panel panel-default" style="border-radius: 8px;">
-                <div class="panel-body text-center" style="padding: 32px 26px;">
-                    <div style="font-size: 42px; margin-bottom: 12px;">
+        <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 openkb-disabled-page">
+            <div class="panel panel-default openkb-disabled-card">
+                <div class="panel-body text-center">
+                    <div class="openkb-disabled-icon">
                         <i class="fa fa-user-times" aria-hidden="true"></i>
                     </div>
-                    <h2 style="margin-top: 0; margin-bottom: 12px;">{% trans "Account currently disabled" %}</h2>
-                    <p class="text-muted" style="margin-bottom: 24px;">
+                    <h2 class="openkb-disabled-title">{% trans "Account currently disabled" %}</h2>
+                    <p class="text-muted openkb-disabled-message">
                         {% trans "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected." %}
                     </p>
                     <form method="post" action="{% url 'logout' %}">

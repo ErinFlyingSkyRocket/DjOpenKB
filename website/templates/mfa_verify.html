@@ -15,13 +15,14 @@
     <link rel="icon" href="{% static 'favicon.png' %}" />
     <script src="{% static 'jquery/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
 <body class="show_footer">
 <div class="container-fluid">
-    <div class="container-fluid openkb-page-back-wrap" style="margin-top: 14px; margin-bottom: 10px;">
+    <div class="container-fluid openkb-page-back-wrap">
         <div class="row">
             <div class="col-xs-12 col-md-10 col-md-offset-1">
-                <form method="post" action="{% url 'mfa_cancel' %}" style="display:inline;">
+                <form method="post" action="{% url 'mfa_cancel' %}" class="csp-inline-form">
                     {% csrf_token %}
                     <button class="btn btn-default" type="submit">
                         <i class="fa fa-arrow-left"></i> {% trans "Back" %}
@@ -30,12 +31,12 @@
             </div>
         </div>
     </div>
-    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4" style="padding-top: 90px">
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 mfa-verify-wrap">
         <form class="form-signin" method="post" action="{% url 'mfa_verify' %}">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
-            <h2 class="form-signin-heading" style="margin-bottom: 8px;">{% trans "MFA verification" %}</h2>
-            <p class="text-muted" style="margin-bottom: 20px;">{% trans "Please enter your MFA/OTP code to continue." %}</p>
+            <h2 class="form-signin-heading mfa-heading-spacing">{% trans "MFA verification" %}</h2>
+            <p class="text-muted mfa-description-spacing">{% trans "Please enter your MFA/OTP code to continue." %}</p>
 
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
@@ -50,7 +51,7 @@
             </button>
         </form>
 
-        <form method="post" action="{% url 'mfa_cancel' %}" style="margin-top: 12px;">
+        <form method="post" action="{% url 'mfa_cancel' %}" class="mfa-cancel-form">
             {% csrf_token %}
             <button class="btn btn-default btn-block" type="submit">
                 <i class="fa fa-arrow-left"></i> {% trans "Back" %}
