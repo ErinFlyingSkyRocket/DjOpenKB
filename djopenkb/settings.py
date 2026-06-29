@@ -325,7 +325,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "kb.middleware.ContentSecurityPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -359,7 +358,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "kb.context_processors.safe_back",
                 "kb.context_processors.openkb_ai_settings",
-                "kb.context_processors.csp_nonce",
             ],
         },
     },
@@ -557,7 +555,7 @@ LDAP_ALLOWED_EMAIL_DOMAINS = [
 if LDAP_ENABLED:
     try:
         import ldap
-        from django_auth_ldap.config import LDAPGroupQuery, LDAPSearch, NestedActiveDirectoryGroupType
+        from django_auth_ldap.config import LDAPSearch
     except ImportError as exc:
         raise ImportError(
             "LDAP_ENABLED=true but LDAP packages are missing. "
@@ -657,31 +655,9 @@ if LDAP_ENABLED:
         "email": "mail",
     }
 
-    # Production AD scope: only members of the explicitly approved AD security
-    # group may authenticate. This prevents every valid domain account from
-    # becoming a Knowledge Repository account merely because it knows the URL.
-    # NestedActiveDirectoryGroupType follows normal Active Directory group
-    # membership and nested group relationships.
-    LDAP_REQUIRED_GROUP_DN = config_value("LDAP_REQUIRED_GROUP_DN", "").strip()
-    LDAP_GROUP_SEARCH_BASE = config_value("LDAP_GROUP_SEARCH_BASE", LDAP_USER_SEARCH_BASE).strip()
-    if not LDAP_REQUIRED_GROUP_DN:
-        raise ImproperlyConfigured(
-            "LDAP_ENABLED=true requires LDAP_REQUIRED_GROUP_DN. "
-            "Create a dedicated AD security group such as KB-Users, add only "
-            "approved users, then set its full distinguished name in .env."
-        )
-    if not LDAP_GROUP_SEARCH_BASE:
-        raise ImproperlyConfigured(
-            "LDAP_ENABLED=true requires LDAP_GROUP_SEARCH_BASE or LDAP_USER_SEARCH_BASE."
-        )
-
-    AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-        LDAP_GROUP_SEARCH_BASE,
-        ldap.SCOPE_SUBTREE,
-        "(objectClass=group)",
-    )
-    AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
-    AUTH_LDAP_REQUIRE_GROUP = LDAPGroupQuery(LDAP_REQUIRED_GROUP_DN)
+    # All valid AD users found by AUTH_LDAP_USER_SEARCH may authenticate.
+    # The LDAP bind account remains a low-privilege, read-only search account;
+    # it is not used to grant or modify permissions in Active Directory.
 
     AUTH_LDAP_ALWAYS_UPDATE_USER = True
     AUTH_LDAP_CREATE_USERS = True

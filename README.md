@@ -21,7 +21,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Dislike counts are limited to Article Manager, Internal Article Manager, and Admin Users. Normal users and approvers only see helpful/like counts.
 - Admin tools for bulk article backup import/export, split exports, stray upload cleanup, orphan article management, published-article deletion queue recovery/purge, group/user role management, and site settings.
 - Local Django login support.
-- Active Directory login over LDAPS for domain users, restricted to an approved AD security group such as `KB-Users`.
+- Active Directory login over LDAPS for valid domain users returned by the configured AD search base and user filter.
 - Clear separation between local users and AD users.
 - MFA support using authenticator-app one-time passwords.
 - Authentication and append-only activity logging for important user, article, deletion queue, profile email/password, admin, AI, and maintenance actions. Search history and language selection changes are intentionally not logged.
@@ -711,7 +711,7 @@ Before deploying outside a local lab, confirm:
 DEBUG=False
 DJANGO_ALLOWED_HOSTS and DJANGO_CSRF_TRUSTED_ORIGINS match the exact browser URL
 HTTPS is working through Nginx and the certificate covers the direct IP or final DNS name
-LDAPS certificate validation is working and LDAP_REQUIRED_GROUP_DN is the exact approved AD group DN
+LDAPS certificate validation is working and LDAP_USER_SEARCH_BASE / LDAP_USER_FILTER are restricted to the intended AD scope
 Vault is initialized and sealed/unsealed correctly
 vault/keys/djopenkb-app-token.txt shows owner/group 0:10001 and mode 440
 app-permissions-init exits successfully before application services start

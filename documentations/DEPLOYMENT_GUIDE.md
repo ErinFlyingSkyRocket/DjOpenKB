@@ -232,16 +232,21 @@ Use only model strings supported by the installed OpenKB/LiteLLM version and by 
 
 **Current implementation note:** Django reads `AI_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`. However, the current `vault/scripts/init.sh` writes only `AI_API_KEY` into Vault during its normal bootstrap process. Therefore, use `AI_API_KEY` as the supported standard for all provider choices unless the Vault init script is deliberately extended and tested to store provider-specific keys.
 
-### 4.3 Required AD security group
+### 4.3 AD user search scope
 
-When `LDAP_ENABLED=true`, the application now refuses to start unless `LDAP_REQUIRED_GROUP_DN` is set. Create a dedicated AD security group, for example `KB-Users`, and add only approved users. Do not use Domain Admins, Enterprise Admins, or a broad company-wide group.
+When `LDAP_ENABLED=true`, every valid AD account returned by the configured
+`LDAP_USER_SEARCH_BASE` and `LDAP_USER_FILTER` may authenticate. Limit these
+values to the intended AD domain or organisational unit when appropriate.
 
 ```env
-LDAP_GROUP_SEARCH_BASE=DC=company,DC=local
-LDAP_REQUIRED_GROUP_DN=CN=KB-Users,OU=Security Groups,DC=company,DC=local
+LDAP_USER_SEARCH_BASE=DC=company,DC=local
+LDAP_USER_FILTER=(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))
 ```
 
-The LDAP bind account must be read-only and able to read the approved group’s membership. It must not be a Domain Admin, local administrator, or interactive-login account. The application uses `django-auth-ldap` Active Directory group checks so nested membership is supported. This group configuration is required whenever `LDAP_ENABLED=true`; an absent or incorrect group DN fails closed and prevents Django startup.
+The LDAP bind account is used only to search for the user and must remain
+low-privilege and read-only. It must not be a Domain Admin, local
+administrator, or interactive-login account. Do not allow privileged AD
+accounts to use the site.
 
 ### 4.4 Optional cleanup interval
 

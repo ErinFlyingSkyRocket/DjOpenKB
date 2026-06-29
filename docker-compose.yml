@@ -227,8 +227,6 @@ services:
       LDAP_ALLOWED_EMAIL_DOMAINS: "${LDAP_ALLOWED_EMAIL_DOMAINS:-}"
       LDAP_USER_SEARCH_BASE: "${LDAP_USER_SEARCH_BASE:-}"
       LDAP_USER_FILTER: "${LDAP_USER_FILTER:-(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))}"
-      LDAP_GROUP_SEARCH_BASE: "${LDAP_GROUP_SEARCH_BASE:-}"
-      LDAP_REQUIRED_GROUP_DN: "${LDAP_REQUIRED_GROUP_DN:-}"
       LDAP_BIND_DN: "${LDAP_BIND_DN:-}"
       VAULT_ENABLED: "true"
       VAULT_ADDR: http://vault:8200
