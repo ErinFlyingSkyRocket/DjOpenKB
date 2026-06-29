@@ -1718,14 +1718,15 @@ def ensure_article_filename(article):
 
     timestamp_slug = timezone.localtime(article.created_at or timezone.now()).strftime("%Y%m%d-%H%M%S")
     base_slug = slugify_title(article.title)
-    candidate = f"{timestamp_slug}-{base_slug}.md"
-    counter = 2
-    while SuggestedArticle.objects.filter(filename=candidate).exclude(pk=article.pk).exists():
-        candidate = f"{timestamp_slug}-{base_slug}-{counter}.md"
-        counter += 1
 
-    article.filename = candidate
-    return article.filename
+    # Titles can normalise to the same slug (for example, ``Alpha & Beta`` and
+    # ``Alpha -- Beta``). Add a random suffix to every new filename so concurrent
+    # submissions cannot violate the database's unique filename constraint.
+    while True:
+        candidate = f"{timestamp_slug}-{base_slug}-{uuid.uuid4().hex[:10]}.md"
+        if not SuggestedArticle.objects.filter(filename=candidate).exclude(pk=article.pk).exists():
+            article.filename = candidate
+            return article.filename
 
 
 def source_file_is_django_managed(path):

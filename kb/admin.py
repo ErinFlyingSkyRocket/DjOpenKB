@@ -22,7 +22,8 @@ from .admin_audit import (
     log_admin_activity,
 )
 from .mfa import admin_reset_user_mfa, mfa_status_label
-from .views import delete_article_files, log_activity, slugify_title, write_article_files
+from .views import delete_article_files, log_activity, write_article_files
+from .views.services import ensure_article_filename
 from .permissions import (
     PERM_ADD_ARTICLES,
     PERM_ADD_INTERNAL_ARTICLES,
@@ -2425,10 +2426,13 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
                 previous_review_notes = previous_article.review_notes
 
         if not obj.filename:
-            timestamp_slug = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
-            obj.filename = f"{timestamp_slug}-{slugify_title(obj.title)}.md"
-            obj.raw_path = f"raw/{obj.filename}"
-            obj.wiki_path = f"sources/{obj.filename}"
+            filename = ensure_article_filename(obj)
+            if obj.visibility == SuggestedArticle.Visibility.INTERNAL:
+                obj.raw_path = f"raw/internal/{filename}"
+                obj.wiki_path = f"internal/sources/{filename}"
+            else:
+                obj.raw_path = f"raw/{filename}"
+                obj.wiki_path = f"sources/{filename}"
 
         if obj.status == SuggestedArticle.Status.PUBLISHED and not obj.approved_by:
             obj.approved_by = request.user

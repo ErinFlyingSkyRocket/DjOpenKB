@@ -124,10 +124,23 @@ services:
     network_mode: "none"
     security_opt:
       - no-new-privileges:true
-    entrypoint: ["/bin/sh", "-ec"]
-    command: >
-      mkdir -p /app/staticfiles /app/openkb-data /app/openkb-data-internal &&
-      chown -R 10001:10001 /app/staticfiles /app/openkb-data /app/openkb-data-internal
+    # Keep this helper isolated from every network. It has one purpose: make
+    # first-run bind mounts and the named static-files volume writable by the
+    # non-root Django/worker account before application services start.
+    # `-x` intentionally makes a future permission failure visible in
+    # `docker compose logs app-permissions-init`, instead of masking it.
+    entrypoint: ["/bin/sh", "-euxc"]
+    command: |
+      prepare_directory() {
+        target="$1"
+        mkdir -p "$target"
+        chown -R 10001:10001 "$target"
+        chmod -R u+rwX "$target"
+        echo "Prepared $target for UID/GID 10001:10001"
+      }
+      prepare_directory /app/staticfiles
+      prepare_directory /app/openkb-data
+      prepare_directory /app/openkb-data-internal
     volumes:
       - ./openkb-data:/app/openkb-data
       - ./openkb-data-internal:/app/openkb-data-internal

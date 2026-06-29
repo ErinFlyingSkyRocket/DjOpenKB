@@ -110,4 +110,6 @@ credentials.json
 token.json
 
 # Internal/private OpenKB runtime data generated from Django articles.
-openkb-data-internal/
+# Keep only the empty directory marker so first deployment has a valid bind-mount source.
+openkb-data-internal/*
+!openkb-data-internal/.gitkeep

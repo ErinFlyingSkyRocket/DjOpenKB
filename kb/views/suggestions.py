@@ -179,23 +179,29 @@ def _suggest_unified(request):
             "existing_images_json": json.dumps(get_article_image_cards_from_filenames(new_image_assets)),
         })
 
-    timestamp_slug = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
-    filename = f"{timestamp_slug}-{slugify_title(title)}.md"
-
-    article = SuggestedArticle.objects.create(
+    article = SuggestedArticle(
         owner=request.user,
         title=title,
         body=body,
         keywords=keywords_raw,
         visibility=visibility,
-        filename=filename,
-        wiki_path=f"internal/sources/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"sources/{filename}",
-        raw_path=f"raw/internal/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"raw/{filename}",
         status=status,
         approved_by=request.user if status == SuggestedArticle.Status.PUBLISHED else None,
         approved_at=timezone.now() if status == SuggestedArticle.Status.PUBLISHED else None,
         image_assets=new_image_assets,
     )
+    filename = ensure_article_filename(article)
+    article.wiki_path = (
+        f"internal/sources/{filename}"
+        if visibility == SuggestedArticle.Visibility.INTERNAL
+        else f"sources/{filename}"
+    )
+    article.raw_path = (
+        f"raw/internal/{filename}"
+        if visibility == SuggestedArticle.Visibility.INTERNAL
+        else f"raw/{filename}"
+    )
+    article.save()
     write_article_files(article)
     sync_article_image_assets(article, old_assets=[])
     clear_committed_pending_uploads(request, article.image_assets)

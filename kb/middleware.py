@@ -118,8 +118,15 @@ def _mark_session_started(request):
     return now
 
 
-def _apply_session_cookie_expiry(request, timeout_hours):
-    request.session.set_expiry(timeout_hours * 60 * 60)
+def _apply_session_cookie_expiry(request, remaining_seconds):
+    """Set the cookie expiry to the remaining fixed session lifetime.
+
+    This intentionally receives the remaining lifetime, not the configured full
+    lifetime. Calling ``set_expiry(8 hours)`` on every request would refresh the
+    browser cookie even though the server-side fixed-sign-in deadline still
+    blocks the user at eight hours.
+    """
+    request.session.set_expiry(max(1, int(remaining_seconds)))
 
 
 def clear_session_started_at(request):
@@ -153,7 +160,8 @@ class SessionTimeoutMiddleware:
                 started_at = _mark_session_started(request)
 
             expires_at = started_at + timezone.timedelta(hours=timeout_hours)
-            if timezone.now() >= expires_at:
+            now = timezone.now()
+            if now >= expires_at:
                 clear_pending_mfa_login(request)
                 clear_mfa_verified(request)
                 clear_session_started_at(request)
@@ -162,7 +170,10 @@ class SessionTimeoutMiddleware:
                 response = redirect("login")
                 return set_strict_no_cache_headers(response)
 
-            _apply_session_cookie_expiry(request, timeout_hours)
+            # Keep the browser cookie aligned with the absolute sign-in deadline.
+            # The server-side timestamp remains the authoritative guard.
+            remaining_seconds = int((expires_at - now).total_seconds())
+            _apply_session_cookie_expiry(request, remaining_seconds)
 
         return self.get_response(request)
 

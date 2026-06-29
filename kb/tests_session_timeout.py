@@ -44,3 +44,17 @@ class SessionTimeoutHoursTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/login/")
+
+    def test_cookie_expiry_uses_remaining_time_not_a_new_eight_hours(self):
+        request = self._authenticated_request()
+        request.session[SESSION_STARTED_AT_KEY] = (
+            timezone.now() - timedelta(hours=2)
+        ).isoformat()
+        request.session.save()
+
+        response = SessionTimeoutMiddleware(lambda req: HttpResponse("ok"))(request)
+
+        self.assertEqual(response.status_code, 200)
+        # A small timing allowance avoids a flaky assertion around the current second.
+        self.assertGreater(request.session.get_expiry_age(), (6 * 60 * 60) - 10)
+        self.assertLessEqual(request.session.get_expiry_age(), 6 * 60 * 60)
