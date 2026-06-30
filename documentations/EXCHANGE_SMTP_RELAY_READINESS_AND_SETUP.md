@@ -5,7 +5,7 @@
 **Target flow:**
 
 ```text
-DjOpenKB notification-worker
+DjOpenKB web service
   → SMTP AUTH + STARTTLS on TCP 587
   → Exchange Client Frontend Receive connector
   → Exchange transport and recipient mailboxes
@@ -326,7 +326,7 @@ Apply the configuration:
 
 ```bash
 cd /opt/DjOpenKB
-sudo docker compose up -d --force-recreate web notification-worker
+sudo docker compose up -d --force-recreate --remove-orphans web
 ```
 
 ---
@@ -359,7 +359,7 @@ PY
 Run this from `/opt/DjOpenKB`:
 
 ```bash
-sudo docker compose exec notification-worker python - <<'PY'
+sudo docker compose exec web python - <<'PY'
 import os
 import smtplib
 import ssl
@@ -392,7 +392,7 @@ TLS handshake and hostname validation succeeded
 Use a test mailbox inside an allowed recipient domain:
 
 ```bash
-sudo docker compose exec notification-worker \
+sudo docker compose exec web \
   python manage.py test_smtp_relay <TEST_RECIPIENT_EMAIL>
 ```
 
@@ -401,12 +401,12 @@ Confirm the message arrives and shows the expected sender address.
 ### 9.4 Test the business workflow
 
 1. Submit one **Public** article for approval.
-2. Confirm individual notifications are sent only to enabled users with email addresses in:
+2. Confirm one Bcc notification is sent to enabled users with email addresses in:
    - Public Article Approver
    - Public Article Manager
    - Admin Users
 3. Submit one **Internal** article for approval.
-4. Confirm individual notifications are sent only to enabled users with email addresses in:
+4. Confirm one Bcc notification is sent to enabled users with email addresses in:
    - Internal Article Approver
    - Internal Article Manager
    - Admin Users
@@ -420,7 +420,7 @@ Confirm the message arrives and shows the expected sender address.
 
 ```bash
 cd /opt/DjOpenKB
-sudo docker compose logs --tail=150 notification-worker
+sudo docker compose logs --tail=150 web
 ```
 
 Useful outcomes:
@@ -432,7 +432,7 @@ Useful outcomes:
 | STARTTLS not advertised | TLS not enabled on connector or no matching certificate | Connector `AuthMechanism`; `Fqdn`; `TlsCertificateName`; Exchange Application log |
 | Authentication failed | Account cannot authenticate, password stale, wrong connector settings | Service account; `BasicAuthRequireTLS`; Exchange protocol logs |
 | Sender rejected | From address differs from authenticated mailbox without Send As | `SMTP_FROM_EMAIL`; mailbox permissions |
-| No recipients receive a workflow email | Reviewer accounts inactive, disabled, no email, wrong role scope, or domain allowlist | Django users/groups, email fields, notification-worker logs |
+| No recipients receive a workflow email | Reviewer accounts inactive, disabled, no email, wrong role scope, or domain allowlist | Django users/groups, email fields, web service logs |
 
 ### Exchange checks
 
@@ -471,7 +471,7 @@ If testing fails or must be paused:
 
    ```bash
    cd /opt/DjOpenKB
-   sudo docker compose up -d --force-recreate web notification-worker
+   sudo docker compose up -d --force-recreate --remove-orphans web
    ```
 
 3. Do not remove or overwrite Exchange certificates without the Exchange administrator's approval.

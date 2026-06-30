@@ -434,7 +434,7 @@ CELERY_TASK_TIME_LIMIT = max(120, OPENKB_AI_TIMEOUT_SECONDS + 60)
 # ---------------------------------------------------------------------
 # Notifications are intentionally disabled until the relay has been configured.
 # SMTP credentials are read with secret_value(), so they belong in Vault rather
-# than .env. A dedicated Celery worker sends mail outside the web request.
+# than .env. The web service sends one Bcc notification after a submission commits.
 EMAIL_NOTIFICATIONS_ENABLED = config_value("EMAIL_NOTIFICATIONS_ENABLED", "false").lower() == "true"
 
 SMTP_RELAY_HOST = config_value("SMTP_RELAY_HOST", "").strip()
@@ -471,23 +471,6 @@ EMAIL_USE_SSL = SMTP_RELAY_USE_SSL
 EMAIL_TIMEOUT = SMTP_RELAY_TIMEOUT_SECONDS
 DEFAULT_FROM_EMAIL = SMTP_FROM_EMAIL or "noreply@localhost"
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
-ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE = (
-    config_value("ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE", "article_review_notifications").strip()
-    or "article_review_notifications"
-)
-ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES = int_config(
-    "ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES",
-    3,
-    minimum=0,
-    maximum=10,
-)
-ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS = int_config(
-    "ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS",
-    30,
-    minimum=5,
-    maximum=3600,
-)
 
 if SMTP_RELAY_USE_TLS and SMTP_RELAY_USE_SSL:
     raise ImproperlyConfigured(

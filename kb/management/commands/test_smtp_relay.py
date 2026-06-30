@@ -59,13 +59,13 @@ class Command(BaseCommand):
             # Do not print configuration, credentials, or full relay debugging data.
             raise CommandError(
                 f"SMTP relay test failed ({type(exc).__name__}). "
-                "Check the notification-worker logs and the relay configuration."
+                "Check the web service logs and the relay configuration."
             ) from exc
 
         if delivered != 1:
             raise CommandError(
                 "SMTP relay did not report delivery of the test message. "
-                "Check the notification-worker logs and the relay configuration."
+                "Check the web service logs and the relay configuration."
             )
 
         self.stdout.write(

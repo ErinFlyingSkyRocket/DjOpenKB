@@ -1,4 +1,4 @@
-"""Celery tasks for short-lived background work."""
+"""Celery tasks for short-lived OpenKB AI background work."""
 
 from __future__ import annotations
 
@@ -12,11 +12,6 @@ from .views.ai_jobs import (
     mark_openkb_ai_job_retry_exhausted,
 )
 from .views.services_ai import OpenKBAIOverloaded
-from .notifications import (
-    SMTPRelayConnectionError,
-    deliver_article_review_notification,
-    record_article_review_notification_connection_failure,
-)
 
 
 logger = logging.getLogger(__name__)
@@ -48,65 +43,3 @@ def run_openkb_ai_job(self, job_id: str):
             retry_delay,
         )
         raise self.retry(exc=exc, countdown=retry_delay, max_retries=max_retries)
-
-
-@shared_task(
-    bind=True,
-    name="kb.tasks.send_article_review_notification",
-    queue="article_review_notifications",
-    ignore_result=True,
-    acks_late=True,
-    reject_on_worker_lost=True,
-)
-def send_article_review_notification(
-    self,
-    article_id: int,
-    notification_kind: str,
-    submitted_by_user_id: int | None = None,
-):
-    """Send reviewer mail outside the web request; retry only unsafe relay outages."""
-    try:
-        return deliver_article_review_notification(
-            article_id,
-            notification_kind,
-            submitted_by_user_id,
-        )
-    except SMTPRelayConnectionError as exc:
-        max_retries = max(
-            0,
-            int(getattr(settings, "ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES", 3)),
-        )
-        if self.request.retries >= max_retries:
-            logger.error(
-                "SMTP relay unavailable after all article-review notification retries: "
-                "article_id=%s notification_kind=%s",
-                article_id,
-                notification_kind,
-            )
-            record_article_review_notification_connection_failure(
-                article_id,
-                notification_kind,
-                submitted_by_user_id,
-            )
-            return {"status": "relay_unavailable"}
-
-        base_delay = max(
-            5,
-            int(
-                getattr(
-                    settings,
-                    "ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS",
-                    30,
-                )
-            ),
-        )
-        retry_delay = min(3600, base_delay * (self.request.retries + 1))
-        logger.warning(
-            "SMTP relay connection unavailable; retrying article review notification: "
-            "article_id=%s retry=%s delay=%ss",
-            article_id,
-            self.request.retries + 1,
-            retry_delay,
-        )
-        raise self.retry(exc=exc, countdown=retry_delay, max_retries=max_retries)
-

@@ -2,7 +2,7 @@ from .services import *
 from ..notifications import (
     NOTIFICATION_KIND_NEW_SUBMISSION,
     NOTIFICATION_KIND_UPDATE_SUBMISSION,
-    enqueue_article_review_notification,
+    send_article_review_notification_after_commit,
 )
 from collections import Counter
 import json
@@ -234,7 +234,7 @@ def _suggest_unified(request):
     # Only a non-admin article submission enters the reviewer queue. Direct
     # admin publication and private drafts intentionally produce no email.
     if status == SuggestedArticle.Status.PENDING:
-        enqueue_article_review_notification(
+        send_article_review_notification_after_commit(
             request,
             article,
             NOTIFICATION_KIND_NEW_SUBMISSION,
@@ -768,7 +768,7 @@ def edit_suggestion(request, article_id):
         notification_kind = NOTIFICATION_KIND_NEW_SUBMISSION
 
     if notification_kind:
-        enqueue_article_review_notification(request, article, notification_kind)
+        send_article_review_notification_after_commit(request, article, notification_kind)
 
     if is_published_update_flow and submit_action == "save_update_draft":
         messages.success(request, _("Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."))

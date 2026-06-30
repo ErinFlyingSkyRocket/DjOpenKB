@@ -13,7 +13,7 @@ The project is designed for a local VM, lab, or intranet-style deployment. A pai
 - Separate internal article area for users with internal article access.
 - Public/internal article visibility model with separate public and internal writer, approver, and manager roles.
 - User article suggestion workflow with approval and pending-update review for published article edits.
-- Optional SMTP relay notifications for newly submitted/re-submitted public or internal review items. Recipient resolution follows the matching Django reviewer groups, messages are sent one recipient at a time, and internal notifications omit internal titles/content.
+- Optional SMTP relay notifications for newly submitted/re-submitted public or internal review items. Recipient resolution follows the matching Django reviewer groups, one Bcc-only message is sent per review event, and internal notifications omit internal titles/content.
 - Draft, pending approval, pending failed, published, and deletion-queued article states.
 - Published article update workflow where user edits are held as pending updates while the current published version remains visible.
 - Separate public and internal pending-review queues, including internal-only pending management for internal approvers/managers.
@@ -165,7 +165,7 @@ Draft, pending, pending failed, deletion-queued, and unapproved pending-update c
 
 ## SMTP Relay Review Notifications
 
-Review notifications are optional and disabled by default. They use a dedicated background worker and a Vault-stored SMTP service account. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. See [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for the configuration, deployment order, test command, and security behaviour.
+Review notifications are optional and disabled by default. After a qualifying submission commits, the Django web service resolves the eligible role-group recipients and sends one Bcc-only SMTP message using a Vault-stored service account. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. See [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for configuration, deployment, testing, and security behaviour.
 
 ## Project Folder Structure
 

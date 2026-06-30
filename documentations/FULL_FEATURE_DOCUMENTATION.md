@@ -1,6 +1,6 @@
 # DjOpenKB Full Feature Documentation
 
-> Optional SMTP article-review notifications are documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). They are disabled by default and use a dedicated worker plus Vault-stored relay credentials.
+> Optional SMTP article-review notifications are documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). They are disabled by default and use direct post-commit SMTP delivery from the Django web service with Vault-stored relay credentials.
 
 This document summarises the implemented features, security controls, deployment-related components, role permissions, logging coverage, and operational behaviours of DjOpenKB. It is intended to give engineers, reviewers, and future administrators a clear overview of what the system provides and how the main surfaces are protected.
 
@@ -16,7 +16,7 @@ The Docker Compose stack contains the following main services:
 
 | Service | Purpose |
 |---|---|
-| `web` | Django application served by Gunicorn. Handles website requests, article workflow, authentication, MFA, queue submission/status endpoints, logging, and admin tools. |
+| `web` | Django application served by Gunicorn. Handles website requests, article workflow, direct post-commit SMTP review notifications, authentication, MFA, queue submission/status endpoints, logging, and admin tools. |
 | `ai-worker` | Dedicated Celery worker for OpenKB AI jobs. Runs OpenKB/provider work outside Gunicorn so an AI response can continue while the user navigates the normal site. |
 | `nginx` | Reverse proxy that serves HTTPS on port `8080`, forwards requests to Django, and serves collected static files. |
 | `db` | PostgreSQL database used by Django. The database password is loaded from Vault. |

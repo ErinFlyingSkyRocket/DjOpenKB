@@ -216,9 +216,6 @@ services:
       SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS: "${SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS:-}"
       SITE_BASE_URL: "${SITE_BASE_URL:-}"
       EMAIL_SUBJECT_PREFIX: "${EMAIL_SUBJECT_PREFIX:-[Knowledge Repository]}"
-      ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE: "${ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE:-article_review_notifications}"
-      ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES: "${ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES:-3}"
-      ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS: "${ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS:-30}"
       GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
       GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-300}"
       POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
@@ -265,6 +262,8 @@ services:
       - frontend
       - app_backend
       - vault_backend
+      # Direct SMTP review notifications use the authenticated Exchange relay.
+      - egress
     command: >
       sh -c "
       python manage.py migrate --noinput &&
@@ -348,84 +347,6 @@ services:
       --queues $${OPENKB_AI_CELERY_QUEUE:-openkb_ai}
       --concurrency $${OPENKB_AI_WORKER_CONCURRENCY:-1}
       --hostname openkb-ai@%h
-      "
-
-  notification-worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: djopenkb-notification-worker
-    user: "10001:10001"
-    restart: unless-stopped
-    read_only: true
-    init: true
-    pids_limit: 128
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,size=64m
-    depends_on:
-      vault-init:
-        condition: service_completed_successfully
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      DJANGO_SETTINGS_MODULE: djopenkb.settings
-      DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
-      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:?Set DJANGO_ALLOWED_HOSTS in .env to the browser-facing public IP or final DNS name.}"
-      DJANGO_CSRF_TRUSTED_ORIGINS: "${DJANGO_CSRF_TRUSTED_ORIGINS:?Set DJANGO_CSRF_TRUSTED_ORIGINS in .env to the exact HTTPS browser origin.}"
-      DJANGO_SESSION_TIMEOUT_HOURS: "${DJANGO_SESSION_TIMEOUT_HOURS:-8}"
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/1}
-      DJANGO_ALLOW_LOCAL_CACHE_FALLBACK: "${DJANGO_ALLOW_LOCAL_CACHE_FALLBACK:-false}"
-      OPENKB_AI_CELERY_BROKER_URL: "${OPENKB_AI_CELERY_BROKER_URL:-redis://redis:6379/2}"
-      EMAIL_NOTIFICATIONS_ENABLED: "${EMAIL_NOTIFICATIONS_ENABLED:-false}"
-      SMTP_RELAY_HOST: "${SMTP_RELAY_HOST:-}"
-      SMTP_RELAY_PORT: "${SMTP_RELAY_PORT:-587}"
-      SMTP_RELAY_USE_TLS: "${SMTP_RELAY_USE_TLS:-true}"
-      SMTP_RELAY_USE_SSL: "${SMTP_RELAY_USE_SSL:-false}"
-      SMTP_RELAY_TIMEOUT_SECONDS: "${SMTP_RELAY_TIMEOUT_SECONDS:-10}"
-      SMTP_RELAY_CA_CERT_FILE: "${SMTP_RELAY_CA_CERT_FILE:-/etc/ssl/certs/djopenkb-ldap/ad-ca.crt}"
-      SMTP_FROM_EMAIL: "${SMTP_FROM_EMAIL:-}"
-      SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS: "${SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS:-}"
-      SITE_BASE_URL: "${SITE_BASE_URL:-}"
-      EMAIL_SUBJECT_PREFIX: "${EMAIL_SUBJECT_PREFIX:-[Knowledge Repository]}"
-      ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE: "${ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE:-article_review_notifications}"
-      ARTICLE_REVIEW_NOTIFICATION_WORKER_CONCURRENCY: "${ARTICLE_REVIEW_NOTIFICATION_WORKER_CONCURRENCY:-1}"
-      ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES: "${ARTICLE_REVIEW_NOTIFICATION_MAX_RETRIES:-3}"
-      ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS: "${ARTICLE_REVIEW_NOTIFICATION_RETRY_DELAY_SECONDS:-30}"
-      POSTGRES_DB: ${POSTGRES_DB:-djopenkb}
-      POSTGRES_USER: ${POSTGRES_USER:-djopenkb}
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      USE_SQLITE: ${USE_SQLITE:-false}
-      VAULT_ENABLED: "true"
-      VAULT_ADDR: http://vault:8200
-      VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt
-      VAULT_KV_MOUNT: ${VAULT_KV_MOUNT:-secret}
-      VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}
-      PYTHONUNBUFFERED: "1"
-      HOME: /tmp
-      TMPDIR: /tmp
-    extra_hosts:
-      - "${LDAP_EXTRA_HOSTNAME:-WIN-VVCA4BIOSK7.openkb.local}:${LDAP_DC_IP:-192.168.81.128}"
-      - "${LDAP_EXTRA_SHORT_HOSTNAME:-WIN-VVCA4BIOSK7}:${LDAP_DC_IP:-192.168.81.128}"
-    volumes:
-      - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
-      - ./ldap-certs:/etc/ssl/certs/djopenkb-ldap:ro
-    networks:
-      - app_backend
-      - vault_backend
-      - egress
-    command: >
-      sh -c "
-      celery -A djopenkb worker --loglevel=INFO
-      --queues $${ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE:-article_review_notifications}
-      --concurrency $${ARTICLE_REVIEW_NOTIFICATION_WORKER_CONCURRENCY:-1}
-      --hostname openkb-notify@%h
       "
 
   nginx:
@@ -532,9 +453,9 @@ networks:
   # Vault is isolated from both public Nginx and the AI provider egress path.
   vault_backend:
     internal: true
-  # The AI and notification workers need outbound access for their external
-  # provider/SMTP connections. The web service reaches LDAPS through `frontend`;
-  # no database or Vault service can initiate arbitrary outbound connections.
+  # The web service uses this network only for authenticated SMTP submission to
+  # the internal Exchange relay; the AI worker uses it for its configured AI
+  # provider. Database and Vault services have no arbitrary outbound path.
   egress:
     driver: bridge
 

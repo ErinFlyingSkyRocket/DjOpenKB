@@ -1,16 +1,19 @@
-"""Regression tests for role-scoped SMTP review notifications."""
+"""Regression tests for direct, role-scoped SMTP review notifications."""
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 
 from kb.models import SuggestedArticle
 from kb.notifications import (
     NOTIFICATION_KIND_NEW_SUBMISSION,
     deliver_article_review_notification,
     get_article_review_recipients,
+    send_article_review_notification_after_commit,
 )
 from kb.permissions import (
     ROLE_ADMIN_USERS,
@@ -33,7 +36,7 @@ from kb.permissions import (
     EMAIL_SUBJECT_PREFIX="[Knowledge Repository] ",
 )
 class ArticleReviewNotificationTests(TestCase):
-    """Public and internal reviewer pools must remain strictly separated."""
+    """Public and internal recipient pools remain strictly separated."""
 
     def setUp(self):
         seed_djopenkb_role_groups()
@@ -94,7 +97,15 @@ class ArticleReviewNotificationTests(TestCase):
         values.update(overrides)
         return SuggestedArticle.objects.create(**values)
 
-    def test_public_submission_notifies_only_public_reviewer_roles_and_admins(self):
+    def _assert_single_bcc_message(self, expected_recipients):
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [])
+        self.assertEqual(message.cc, [])
+        self.assertSetEqual(set(message.bcc), set(expected_recipients))
+        self.assertNotIn("Bcc", message.message().as_string())
+
+    def test_public_submission_sends_one_bcc_message_to_public_reviewers_and_admins(self):
         article = self._article()
         response = deliver_article_review_notification(
             article.pk,
@@ -104,25 +115,18 @@ class ArticleReviewNotificationTests(TestCase):
 
         self.assertEqual(response["status"], "sent")
         self.assertEqual(response["recipient_count"], 3)
-        self.assertEqual(len(mail.outbox), 3)
-
-        recipients = {message.to[0] for message in mail.outbox}
-        self.assertSetEqual(
-            recipients,
+        self.assertEqual(response["relay_accepted_count"], 3)
+        self._assert_single_bcc_message(
             {
                 self.public_approver.email,
                 self.public_manager.email,
                 self.admin.email,
-            },
+            }
         )
-        self.assertTrue(
-            all(message.to == [message.to[0]] for message in mail.outbox),
-            "Each reviewer must receive a separate message.",
-        )
-        self.assertNotIn(self.internal_approver.email, recipients)
-        self.assertNotIn(self.disabled_public_approver.email, recipients)
+        self.assertNotIn(self.internal_approver.email, mail.outbox[0].bcc)
+        self.assertNotIn(self.disabled_public_approver.email, mail.outbox[0].bcc)
 
-    def test_internal_submission_notifies_only_internal_reviewer_roles_and_admins(self):
+    def test_internal_submission_sends_one_bcc_message_to_internal_reviewers_and_admins(self):
         secret_internal_title = "Private identity migration plan"
         article = self._article(
             visibility=SuggestedArticle.Visibility.INTERNAL,
@@ -136,18 +140,14 @@ class ArticleReviewNotificationTests(TestCase):
         )
 
         self.assertEqual(response["status"], "sent")
-        recipients = {message.to[0] for message in mail.outbox}
-        self.assertSetEqual(
-            recipients,
+        self._assert_single_bcc_message(
             {
                 self.internal_approver.email,
                 self.internal_manager.email,
                 self.admin.email,
-            },
+            }
         )
-        rendered_mail = "\n".join(
-            f"{message.subject}\n{message.body}" for message in mail.outbox
-        )
+        rendered_mail = f"{mail.outbox[0].subject}\n{mail.outbox[0].body}"
         self.assertNotIn(secret_internal_title, rendered_mail)
         self.assertNotIn("This is test content", rendered_mail)
         self.assertIn("/internal/profile/admin/pending-articles/", rendered_mail)
@@ -159,7 +159,6 @@ class ArticleReviewNotificationTests(TestCase):
             email="legacy-superuser@example.invalid",
             password="safe-test-password",
         )
-        # Simulate an older account that has not yet been normalised into Admin Users.
         legacy_superuser.groups.clear()
 
         article = self._article()
@@ -179,4 +178,43 @@ class ArticleReviewNotificationTests(TestCase):
         )
 
         self.assertEqual(response["status"], "no_longer_pending")
+        self.assertEqual(mail.outbox, [])
+
+    def test_submission_schedules_direct_delivery_after_commit_without_a_celery_task(self):
+        article = self._article()
+        request = RequestFactory().post("/suggest/")
+        request.user = self.author
+
+        with patch("kb.notifications.deliver_article_review_notification") as deliver, patch(
+            "kb.notifications.transaction.on_commit",
+            side_effect=lambda callback: callback(),
+        ) as on_commit:
+            scheduled = send_article_review_notification_after_commit(
+                request,
+                article,
+                NOTIFICATION_KIND_NEW_SUBMISSION,
+            )
+
+        self.assertTrue(scheduled)
+        self.assertEqual(on_commit.call_count, 1)
+        deliver.assert_called_once_with(
+            article.pk,
+            NOTIFICATION_KIND_NEW_SUBMISSION,
+            self.author.pk,
+        )
+        self.assertEqual(mail.outbox, [])
+
+    def test_relay_failure_is_recorded_without_raising_into_the_article_workflow(self):
+        article = self._article()
+
+        with patch("kb.notifications._send_bcc_message", side_effect=OSError("relay unavailable")):
+            response = deliver_article_review_notification(
+                article.pk,
+                NOTIFICATION_KIND_NEW_SUBMISSION,
+                self.author.pk,
+            )
+
+        self.assertEqual(response["status"], "failed")
+        self.assertEqual(response["recipient_count"], 3)
+        self.assertEqual(response["relay_accepted_count"], 0)
         self.assertEqual(mail.outbox, [])

@@ -1,15 +1,15 @@
-"""Asynchronous, role-scoped article review notification helpers.
+"""Direct, role-scoped article review notification helpers.
 
-This module never trusts a user-supplied recipient address. Recipients are
-resolved from the project's Django role groups at delivery time and each person
-receives a separate message so reviewer membership is not disclosed.
+Notifications are sent after the article transaction commits. Recipient addresses
+are resolved from the current Django role groups, never from a request payload.
+Each review event uses one SMTP message with recipients in Bcc, so reviewer
+membership is not exposed in message headers.
 """
 
 from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Iterable
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -41,13 +41,9 @@ _VALID_NOTIFICATION_KINDS = {
 }
 
 
-class SMTPRelayConnectionError(RuntimeError):
-    """Raised only when no SMTP connection was opened and retry is safe."""
-
-
 @dataclass(frozen=True)
 class ReviewRecipient:
-    """Minimal recipient data required to send an individual email."""
+    """Minimal recipient data required for the Bcc envelope."""
 
     user_id: int
     email: str
@@ -85,14 +81,12 @@ def _allowed_recipient_domains() -> set[str]:
 
 
 def get_article_review_recipients(article: SuggestedArticle) -> list[ReviewRecipient]:
-    """Return active, enabled reviewer accounts with a valid email address.
+    """Return active, enabled reviewers with an allowed organisation email.
 
-    Admin Users are included through their role group and direct superusers are
-    included defensively in case an older account has not yet been normalised
-    into the Admin Users group. Disabled or main-site-blocked accounts are
-    excluded even if a stale role or superuser flag remains. The configured
-    recipient-domain allowlist prevents a role holder with an unexpected
-    external address from receiving review links.
+    The application role groups are the source of truth. A direct superuser is
+    included defensively for legacy accounts that pre-date the Admin Users group.
+    The query returns only IDs and email values, avoiding a per-recipient AD or
+    application-profile lookup during a submission.
     """
     User = get_user_model()
     reviewer_roles = _reviewer_group_names(article)
@@ -105,14 +99,14 @@ def get_article_review_recipients(article: SuggestedArticle) -> list[ReviewRecip
         .exclude(kb_profile__can_access_main_site=False)
         .exclude(email="")
         .distinct()
-        .only("id", "email")
+        .values_list("id", "email")
     )
 
     recipients: list[ReviewRecipient] = []
     seen_emails: set[str] = set()
 
-    for user in candidates:
-        email = (user.email or "").strip()
+    for user_id, raw_email in candidates:
+        email = (raw_email or "").strip()
         normalised_email = email.casefold()
         if not email or normalised_email in seen_emails:
             continue
@@ -121,7 +115,7 @@ def get_article_review_recipients(article: SuggestedArticle) -> list[ReviewRecip
         except ValidationError:
             logger.warning(
                 "Skipping article review notification recipient with invalid email: user_id=%s",
-                user.pk,
+                user_id,
             )
             continue
 
@@ -129,12 +123,12 @@ def get_article_review_recipients(article: SuggestedArticle) -> list[ReviewRecip
         if not email_domain or email_domain not in allowed_domains:
             logger.warning(
                 "Skipping article review notification recipient outside the configured domain allowlist: user_id=%s",
-                user.pk,
+                user_id,
             )
             continue
 
         seen_emails.add(normalised_email)
-        recipients.append(ReviewRecipient(user_id=user.pk, email=email))
+        recipients.append(ReviewRecipient(user_id=user_id, email=email))
 
     return recipients
 
@@ -175,7 +169,7 @@ def _build_message(article: SuggestedArticle, notification_kind: str) -> tuple[s
         f"A {scope} {item} is awaiting review in Knowledge Repository.",
     ]
     if article.is_internal:
-        # Internal article titles/content stay out of email inboxes and relay logs.
+        # Internal titles/content stay out of inboxes and relay logs.
         lines.append(
             "The title and content are intentionally omitted because this is an internal submission."
         )
@@ -201,7 +195,7 @@ def _safe_activity_log(
     user_id: int | None,
     details: dict,
 ) -> None:
-    """Record only counts/statuses, never recipient email addresses."""
+    """Record counts/statuses only; never record addresses or SMTP secrets."""
     try:
         from .views.services import log_activity
 
@@ -225,116 +219,41 @@ def _safe_activity_log(
         )
 
 
-def enqueue_article_review_notification(
-    request,
-    article: SuggestedArticle,
-    notification_kind: str,
+def _send_bcc_message(
+    *,
+    subject: str,
+    body: str,
+    recipient_emails: list[str],
 ) -> bool:
-    """Queue a notification after the submission's database transaction commits.
+    """Send one Bcc-only SMTP message using a single relay connection.
 
-    Failure to publish a Celery task does not undo a valid article submission.
-    The problem is logged/audited so administrators can diagnose a broker
-    outage, and the user-facing article workflow remains available.
+    Django supplies the Bcc values as SMTP envelope recipients but does not put
+    them in the message headers. The relay can report acceptance of the message,
+    not final mailbox delivery, so callers record this as relay acceptance.
     """
-    if not article_review_notifications_enabled():
+    if not recipient_emails:
         return False
-    if notification_kind not in _VALID_NOTIFICATION_KINDS:
-        raise ValueError("Unsupported article review notification kind.")
-    if not _article_is_still_awaiting_review(article, notification_kind):
-        return False
-
-    article_id = article.pk
-    actor_id = (
-        request.user.pk
-        if request is not None
-        and getattr(request, "user", None) is not None
-        and getattr(request.user, "is_authenticated", False)
-        else None
-    )
-
-    def _enqueue_after_commit() -> None:
-        try:
-            from .tasks import send_article_review_notification
-
-            send_article_review_notification.apply_async(
-                args=[article_id, notification_kind, actor_id],
-                queue=settings.ARTICLE_REVIEW_NOTIFICATION_CELERY_QUEUE,
-            )
-        except Exception:
-            logger.exception(
-                "Could not queue article review notification: article_id=%s kind=%s",
-                article_id,
-                notification_kind,
-            )
-            _safe_activity_log(
-                ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_FAILED,
-                article=article,
-                user_id=actor_id,
-                details={
-                    "notification_kind": notification_kind,
-                    "visibility": article.visibility,
-                    "reason": "celery_queue_unavailable",
-                },
-            )
-            return
-
-        _safe_activity_log(
-            ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_QUEUED,
-            article=article,
-            user_id=actor_id,
-            details={
-                "notification_kind": notification_kind,
-                "visibility": article.visibility,
-            },
-        )
-
-    transaction.on_commit(_enqueue_after_commit)
-    return True
-
-
-def _send_messages_individually(
-    messages: Iterable[EmailMessage],
-) -> tuple[int, int]:
-    """Send messages through one relay connection without disclosing recipients.
-
-    A connection failure before the first message is retryable. Once a
-    connection exists, individual failures are recorded but not retried because
-    SMTP can fail after accepting a message and a retry could duplicate email.
-    """
-    message_list = list(messages)
-    if not message_list:
-        return 0, 0
 
     connection = get_connection(fail_silently=False)
     try:
         opened = connection.open()
         if opened is False and getattr(connection, "connection", None) is None:
             raise RuntimeError("SMTP backend did not open a relay connection.")
-    except Exception as exc:
-        raise SMTPRelayConnectionError("Unable to open the SMTP relay connection.") from exc
 
-    delivered = 0
-    failed = 0
-    try:
-        for message in message_list:
-            try:
-                # EmailMessage.send() otherwise opens a new backend per message.
-                # Reuse the TLS-authenticated relay connection established above.
-                message.connection = connection
-                delivered += int(bool(message.send(fail_silently=False)))
-            except Exception as exc:
-                failed += 1
-                logger.error(
-                    "Article review notification delivery failed after SMTP connection opened: %s",
-                    type(exc).__name__,
-                )
+        message = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[],
+            bcc=recipient_emails,
+            connection=connection,
+        )
+        return bool(message.send(fail_silently=False))
     finally:
         try:
             connection.close()
         except Exception:
             logger.warning("Could not close SMTP relay connection cleanly.")
-
-    return delivered, failed
 
 
 def deliver_article_review_notification(
@@ -342,7 +261,7 @@ def deliver_article_review_notification(
     notification_kind: str,
     submitted_by_user_id: int | None = None,
 ) -> dict:
-    """Resolve recipients and deliver one private notification per reviewer."""
+    """Resolve recipients and send one privacy-preserving Bcc notification."""
     if not article_review_notifications_enabled():
         return {"status": "disabled"}
 
@@ -354,17 +273,11 @@ def deliver_article_review_notification(
         )
         return {"status": "invalid_kind"}
 
-    article = (
-        SuggestedArticle.objects.select_related("owner")
-        .filter(pk=article_id)
-        .first()
-    )
+    article = SuggestedArticle.objects.select_related("owner").filter(pk=article_id).first()
     if article is None:
         return {"status": "article_missing"}
 
     if not _article_is_still_awaiting_review(article, notification_kind):
-        # An approver may have resolved the article before the background worker
-        # gets to it. Sending that late notification would be misleading.
         return {"status": "no_longer_pending"}
 
     recipients = get_article_review_recipients(article)
@@ -387,20 +300,44 @@ def deliver_article_review_notification(
         return {"status": "no_recipients"}
 
     subject, body = _build_message(article, notification_kind)
-    messages = [
-        EmailMessage(
+    recipient_emails = [recipient.email for recipient in recipients]
+
+    try:
+        accepted = _send_bcc_message(
             subject=subject,
             body=body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[recipient.email],
+            recipient_emails=recipient_emails,
         )
-        for recipient in recipients
-    ]
-    delivered, failed = _send_messages_individually(messages)
+    except Exception as exc:
+        logger.error(
+            "Article review notification relay submission failed: article_id=%s error=%s",
+            article.pk,
+            type(exc).__name__,
+        )
+        _safe_activity_log(
+            ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_FAILED,
+            article=article,
+            user_id=submitted_by_user_id,
+            details={
+                "notification_kind": notification_kind,
+                "visibility": article.visibility,
+                "recipient_count": len(recipients),
+                "relay_accepted_count": 0,
+                "transport": "single_bcc_message",
+                "reason": "smtp_send_failed",
+                "error_type": type(exc).__name__,
+            },
+        )
+        return {
+            "status": "failed",
+            "recipient_count": len(recipients),
+            "relay_accepted_count": 0,
+        }
 
+    relay_accepted_count = len(recipients) if accepted else 0
     event_type = (
         ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_SENT
-        if delivered
+        if accepted
         else ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_FAILED
     )
     _safe_activity_log(
@@ -411,37 +348,74 @@ def deliver_article_review_notification(
             "notification_kind": notification_kind,
             "visibility": article.visibility,
             "recipient_count": len(recipients),
-            "delivered_count": delivered,
-            "failed_count": failed,
+            "relay_accepted_count": relay_accepted_count,
+            "transport": "single_bcc_message",
+            "reason": "relay_did_not_accept_message" if not accepted else "",
         },
     )
 
     return {
-        "status": "sent" if delivered else "failed",
+        "status": "sent" if accepted else "failed",
         "recipient_count": len(recipients),
-        "delivered_count": delivered,
-        "failed_count": failed,
+        "relay_accepted_count": relay_accepted_count,
     }
 
 
-def record_article_review_notification_connection_failure(
-    article_id: int,
+def send_article_review_notification_after_commit(
+    request,
+    article: SuggestedArticle,
     notification_kind: str,
-    submitted_by_user_id: int | None = None,
-) -> None:
-    """Audit the final relay-connection failure after Celery retries are exhausted."""
-    article = SuggestedArticle.objects.filter(pk=article_id).first()
-    if article is None:
-        return
+) -> bool:
+    """Send a review notification only after the article transaction commits.
 
-    _safe_activity_log(
-        ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_FAILED,
-        article=article,
-        user_id=submitted_by_user_id,
-        details={
-            "notification_kind": notification_kind,
-            "visibility": article.visibility,
-            "reason": "smtp_connection_unavailable_after_retries",
-        },
+    Direct SMTP keeps the deployment lightweight: no notification Celery queue or
+    worker is required. A relay failure is caught and audited; it never reverses
+    a valid pending submission or turns the author response into a 500 error.
+    """
+    if not article_review_notifications_enabled():
+        return False
+    if notification_kind not in _VALID_NOTIFICATION_KINDS:
+        raise ValueError("Unsupported article review notification kind.")
+    if not _article_is_still_awaiting_review(article, notification_kind):
+        return False
+
+    article_id = article.pk
+    actor_id = (
+        request.user.pk
+        if request is not None
+        and getattr(request, "user", None) is not None
+        and getattr(request.user, "is_authenticated", False)
+        else None
     )
 
+    def _send_after_commit() -> None:
+        try:
+            deliver_article_review_notification(
+                article_id,
+                notification_kind,
+                actor_id,
+            )
+        except Exception as exc:
+            # This is a final safety net for unexpected programming/database
+            # errors. The email path must never undo or mask a valid submission.
+            logger.exception(
+                "Unexpected article review notification failure: article_id=%s kind=%s",
+                article_id,
+                notification_kind,
+            )
+            committed_article = SuggestedArticle.objects.filter(pk=article_id).first()
+            if committed_article is not None:
+                _safe_activity_log(
+                    ActivityLog.EventType.ARTICLE_REVIEW_NOTIFICATION_FAILED,
+                    article=committed_article,
+                    user_id=actor_id,
+                    details={
+                        "notification_kind": notification_kind,
+                        "visibility": committed_article.visibility,
+                        "reason": "unexpected_notification_error",
+                        "error_type": type(exc).__name__,
+                    },
+                )
+
+    transaction.on_commit(_send_after_commit)
+    return True
