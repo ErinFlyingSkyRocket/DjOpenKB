@@ -2,6 +2,11 @@ from .services import *
 from ..notifications import (
     NOTIFICATION_KIND_NEW_SUBMISSION,
     NOTIFICATION_KIND_UPDATE_SUBMISSION,
+    OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED,
+    OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED,
+    OWNER_NOTIFICATION_KIND_UPDATE_APPROVED,
+    OWNER_NOTIFICATION_KIND_UPDATE_PENDING_FAILED,
+    send_article_owner_notification_after_commit,
     send_article_review_notification_after_commit,
 )
 from collections import Counter
@@ -769,6 +774,34 @@ def edit_suggestion(request, article_id):
 
     if notification_kind:
         send_article_review_notification_after_commit(request, article, notification_kind)
+
+    # A review decision has a different audience from a submission: notify only
+    # the current article owner after a real final outcome. Keeping review edits
+    # pending does not email the owner, and self-review does not create a
+    # redundant notification because the delivery helper safely skips it.
+    owner_notification_kind = None
+    if is_admin_pending_update_review:
+        if status == SuggestedArticle.Status.PUBLISHED:
+            owner_notification_kind = OWNER_NOTIFICATION_KIND_UPDATE_APPROVED
+        elif (
+            status == SuggestedArticle.Status.FAILED
+            and previous_update_status != SuggestedArticle.UpdateStatus.FAILED
+        ):
+            # Avoid repeated emails when a reviewer only revises comments on an
+            # update that was already marked Pending failed.
+            owner_notification_kind = OWNER_NOTIFICATION_KIND_UPDATE_PENDING_FAILED
+    elif is_admin_action:
+        if effective_status == SuggestedArticle.Status.PUBLISHED and previous_status != SuggestedArticle.Status.PUBLISHED:
+            owner_notification_kind = OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED
+        elif effective_status == SuggestedArticle.Status.FAILED and previous_status != SuggestedArticle.Status.FAILED:
+            owner_notification_kind = OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED
+
+    if owner_notification_kind:
+        send_article_owner_notification_after_commit(
+            request,
+            article,
+            owner_notification_kind,
+        )
 
     if is_published_update_flow and submit_action == "save_update_draft":
         messages.success(request, _("Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."))

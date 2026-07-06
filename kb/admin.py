@@ -22,6 +22,11 @@ from .admin_audit import (
     log_admin_activity,
 )
 from .mfa import admin_reset_user_mfa, mfa_status_label
+from .notifications import (
+    OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED,
+    OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED,
+    send_article_owner_notification_after_commit,
+)
 from .views import delete_article_files, log_activity, write_article_files
 from .views.services import ensure_article_filename
 from .permissions import (
@@ -2344,6 +2349,7 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
             self.message_user(request, _("You do not have permission to approve articles from Django Admin."), level=messages.ERROR)
             return
         for article in queryset:
+            previous_status = article.status
             if article.review_notes:
                 article.archive_current_review_note(actor=request.user, action="approved")
             article.review_notes = ""
@@ -2364,6 +2370,12 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
                 target_obj=article,
                 details={"admin_action": "approve_selected_articles", "visibility": article.visibility},
             )
+            if previous_status != SuggestedArticle.Status.PUBLISHED:
+                send_article_owner_notification_after_commit(
+                    request,
+                    article,
+                    OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED,
+                )
 
     @admin.action(description=_("Mark selected articles as pending failed"))
     def mark_selected_articles_pending_failed(self, request, queryset):
@@ -2371,6 +2383,7 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
             self.message_user(request, _("You do not have permission to reject articles from Django Admin."), level=messages.ERROR)
             return
         for article in queryset:
+            previous_status = article.status
             article.status = SuggestedArticle.Status.FAILED
             article.approved_by = None
             article.approved_at = None
@@ -2391,6 +2404,12 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
                 target_obj=article,
                 details={"admin_action": "mark_selected_articles_pending_failed"},
             )
+            if previous_status != SuggestedArticle.Status.FAILED:
+                send_article_owner_notification_after_commit(
+                    request,
+                    article,
+                    OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED,
+                )
 
 
 
@@ -2475,6 +2494,20 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "new_status": obj.status,
             },
         )
+
+        if change and previous_status != obj.status:
+            if obj.status == SuggestedArticle.Status.PUBLISHED:
+                send_article_owner_notification_after_commit(
+                    request,
+                    obj,
+                    OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED,
+                )
+            elif obj.status == SuggestedArticle.Status.FAILED:
+                send_article_owner_notification_after_commit(
+                    request,
+                    obj,
+                    OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED,
+                )
 
     def has_delete_permission(self, request, obj=None):
         # Articles should use the application deletion queue so they can be

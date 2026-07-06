@@ -152,7 +152,7 @@ class ArticleReviewNotificationTests(TestCase):
         self.assertNotIn("This is test content", rendered_mail)
         self.assertIn("/internal/profile/admin/pending-articles/", rendered_mail)
 
-    def test_direct_superuser_is_included_once_even_without_group(self):
+    def test_direct_superuser_without_admin_users_role_is_not_a_reviewer_recipient(self):
         User = get_user_model()
         legacy_superuser = User.objects.create_superuser(
             username="notification-legacy-superuser",
@@ -165,7 +165,7 @@ class ArticleReviewNotificationTests(TestCase):
         recipients = get_article_review_recipients(article)
         addresses = [recipient.email for recipient in recipients]
 
-        self.assertIn(legacy_superuser.email, addresses)
+        self.assertNotIn(legacy_superuser.email, addresses)
         self.assertEqual(addresses.count(self.admin.email), 1)
 
     def test_resolved_article_does_not_send_a_late_notification(self):

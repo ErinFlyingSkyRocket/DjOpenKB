@@ -957,6 +957,22 @@ class ActivityLog(AppendOnlyAuditLogMixin, models.Model):
             "article_review_notification_skipped",
             _("Article review notification skipped"),
         )
+        ARTICLE_OWNER_NOTIFICATION_QUEUED = (
+            "article_owner_notification_queued",
+            _("Article owner notification queued"),
+        )
+        ARTICLE_OWNER_NOTIFICATION_SENT = (
+            "article_owner_notification_sent",
+            _("Article owner notification sent"),
+        )
+        ARTICLE_OWNER_NOTIFICATION_FAILED = (
+            "article_owner_notification_failed",
+            _("Article owner notification failed"),
+        )
+        ARTICLE_OWNER_NOTIFICATION_SKIPPED = (
+            "article_owner_notification_skipped",
+            _("Article owner notification skipped"),
+        )
         ARTICLE_ORPHAN_ASSIGNED = "article_orphan_assigned", _("Orphan article assigned")
         ARTICLE_ORPHAN_DELETED = "article_orphan_deleted", _("Orphan article deleted")
         ARTICLE_VIEWED = "article_viewed", _("Article viewed")

@@ -33,7 +33,9 @@ The application uses the existing **Django role groups**, not Active Directory s
 | Public new article or public published-article update | `Article Approver`, `Article Manager`, `Admin Users` |
 | Internal new article or internal published-article update | `Internal Article Approver`, `Internal Article Manager`, `Admin Users` |
 
-A duplicate email address receives only one message. Inactive, disabled, main-site-blocked, blank-email, invalid-email, and non-allowlisted accounts are excluded. A direct Django superuser is included defensively for older administrative accounts that have not yet been normalised into `Admin Users`.
+A duplicate email address receives only one message. Only users who currently hold one of the matching Django role groups in the table can receive reviewer email. Inactive, disabled, main-site-blocked, blank-email, invalid-email, and non-allowlisted accounts are excluded. A direct Django superuser without the `Admin Users` role is not an eligible recipient.
+
+For an approval or Pending-failed outcome, DjOpenKB sends a direct message only to the current article owner. The owner is skipped when the account is inactive, assigned to `Disabled User`, blocked from the main site, missing a valid allowed-domain email address, or is the reviewer who completed their own review. The owner does not need an approver or manager role to receive the outcome for their own article.
 
 ## Privacy and Security Behaviour
 
@@ -59,7 +61,7 @@ A duplicate email address receives only one message. Inactive, disabled, main-si
 | Writer edits an already-pending item | No |
 | Reviewer saves edits while keeping an item pending | No |
 | Admin publishes directly | No |
-| Admin approves or rejects an item | No |
+| Admin approves or marks an item Pending failed | Yes — direct message to the currently eligible article owner |
 
 ## Prerequisites
 
@@ -213,7 +215,9 @@ When enabling SMTP on an already-running deployment, add the SMTP credentials to
 - Public submissions notify only public approvers, public managers, and admins.
 - Internal submissions notify only internal approvers, internal managers, and admins.
 - One SMTP message is submitted per event with all eligible recipients in Bcc.
+- Only matching current reviewer roles receive a submission notification; direct Django superuser status alone is not enough.
 - Missing or invalid reviewer email addresses do not stop the article workflow; those accounts are skipped.
+- Approval and Pending-failed owner email is skipped for disabled, inactive, main-site-blocked, or otherwise ineligible owners.
 - When there are no eligible recipients, the item remains pending and an audit event records the skip.
 - When SMTP is unavailable, the item remains pending and an audit event records the failure.
 

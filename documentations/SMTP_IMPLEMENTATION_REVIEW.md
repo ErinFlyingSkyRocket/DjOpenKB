@@ -28,7 +28,9 @@ No notification Celery queue or standalone `notification-worker` is used. The se
 | Public | Article Approver, Article Manager, Admin Users | Internal-only reviewers, disabled users, inactive users, main-site-blocked users, blank/invalid addresses, domains outside the allowlist |
 | Internal | Internal Article Approver, Internal Article Manager, Admin Users | Public-only reviewers, disabled users, inactive users, main-site-blocked users, blank/invalid addresses, domains outside the allowlist |
 
-A direct Django superuser is retained as an administrative fallback for older accounts that are not yet in `Admin Users`.
+Recipient eligibility is strict: direct Django superuser status alone is not enough. An administrator receives reviewer notifications only through the current `Admin Users` role, which is the source of truth for DjOpenKB administrator access.
+
+Approval and Pending-failed outcome email is direct to the current article owner only. It is skipped when the owner is inactive, assigned to `Disabled User`, blocked from the main site, missing a valid allowed-domain address, or is the reviewer who completed their own review.
 
 ## Security Controls
 
@@ -37,7 +39,8 @@ A direct Django superuser is retained as an administrative fallback for older ac
 | Vault-only credentials | SMTP username/password are not in `.env`, Compose, source code, or logs. |
 | TLS required | Startup rejects enabled notifications unless STARTTLS or implicit TLS is configured. |
 | Certificate validation | The SMTP backend validates the relay certificate and hostname. It begins with the web container's normal trust store and can add one mounted public trust certificate from `SMTP_RELAY_CA_CERT_FILE`. |
-| Recipient domain allowlist | A reviewer email must be within `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`. |
+| Strict role validation | Reviewer notification recipients must hold the matching current DjOpenKB role: public approver/manager/admin for public items, or internal approver/manager/admin for internal items. |
+| Recipient domain allowlist | A reviewer or article-owner email must be within `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`. |
 | Bcc-only group message | One relay message is submitted per review event without exposing reviewer membership in headers. |
 | Internal-email minimisation | Internal notification emails omit internal titles and content. |
 | Post-commit execution | Email is attempted only after a valid submission has committed. |
