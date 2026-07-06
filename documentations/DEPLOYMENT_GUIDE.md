@@ -4,7 +4,7 @@ This guide is for Linux administrators who install, run, update, back up, and tr
 
 It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
 
-> **SMTP review notifications:** optional SMTP relay review-email setup is documented separately in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep it disabled until the relay, CA trust, Vault service-account credentials, and web-service SMTP test are complete.
+> **SMTP review notifications:** optional SMTP relay review-email setup is documented separately in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep it disabled until the relay, TLS validation, Vault service-account credentials, and web-service SMTP test are complete.
 
 ## 1. Deployment scope and command convention
 

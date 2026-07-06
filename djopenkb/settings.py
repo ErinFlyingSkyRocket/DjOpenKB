@@ -442,7 +442,6 @@ SMTP_RELAY_PORT = int_config("SMTP_RELAY_PORT", 587, minimum=1, maximum=65535)
 SMTP_RELAY_USE_TLS = config_value("SMTP_RELAY_USE_TLS", "true").lower() == "true"
 SMTP_RELAY_USE_SSL = config_value("SMTP_RELAY_USE_SSL", "false").lower() == "true"
 SMTP_RELAY_TIMEOUT_SECONDS = int_config("SMTP_RELAY_TIMEOUT_SECONDS", 10, minimum=1, maximum=120)
-SMTP_RELAY_CA_CERT_FILE = config_value("SMTP_RELAY_CA_CERT_FILE", "").strip()
 SMTP_RELAY_USERNAME = secret_value("SMTP_RELAY_USERNAME", "").strip()
 SMTP_RELAY_PASSWORD = secret_value("SMTP_RELAY_PASSWORD", "")
 SMTP_FROM_EMAIL = config_value("SMTP_FROM_EMAIL", "").strip()
@@ -458,10 +457,10 @@ EMAIL_SUBJECT_PREFIX = config_value("EMAIL_SUBJECT_PREFIX", "[Knowledge Reposito
 if EMAIL_SUBJECT_PREFIX:
     EMAIL_SUBJECT_PREFIX = f"{EMAIL_SUBJECT_PREFIX} "
 
-# Django's SMTP backend performs the authentication after STARTTLS/implicit TLS.
-# The custom backend adds support for an internally issued relay certificate
-# through SMTP_RELAY_CA_CERT_FILE while retaining strict certificate validation.
-EMAIL_BACKEND = "kb.email_backend.ADRelayEmailBackend"
+# Django's standard SMTP backend authenticates after STARTTLS/implicit TLS and
+# validates the relay certificate and hostname against the container's normal
+# operating-system trust store.
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = SMTP_RELAY_HOST
 EMAIL_PORT = SMTP_RELAY_PORT
 EMAIL_HOST_USER = SMTP_RELAY_USERNAME
@@ -507,12 +506,6 @@ if EMAIL_NOTIFICATIONS_ENABLED:
         raise ImproperlyConfigured(
             "SITE_BASE_URL must be the exact HTTPS browser origin, for example "
             "https://<PUBLIC_HOSTNAME> or https://<INTERNAL_SERVER_IP>:8080."
-        )
-
-    if SMTP_RELAY_CA_CERT_FILE and not Path(SMTP_RELAY_CA_CERT_FILE).is_file():
-        raise ImproperlyConfigured(
-            "SMTP_RELAY_CA_CERT_FILE is configured but the file is not available "
-            "inside the container."
         )
 
 

@@ -1,4 +1,4 @@
-# DjOpenKB — Exchange SMTP Relay Readiness, TLS Certificate and Testing Guide
+# DjOpenKB — Exchange SMTP Relay Readiness, TLS and Testing Guide
 
 **Purpose:** Prepare an on-premises Microsoft Exchange server to act as DjOpenKB's authenticated SMTP submission endpoint for article-review notifications.
 
@@ -15,26 +15,25 @@ This guide is deliberately limited to the Exchange relay integration. It does **
 
 ---
 
-## 1. Important certificate clarification
+## 1. TLS certificate clarification
 
-A different Exchange server IP address does **not**, by itself, require a new CA certificate for DjOpenKB.
+A different Exchange server IP address does **not**, by itself, require a new certificate configuration in DjOpenKB. DjOpenKB connects by a **DNS hostname**, not an IP address. The certificate presented by Exchange must contain that DNS hostname in its Subject Alternative Name (SAN) or Subject/CN, have a private key on the Exchange server, and be enabled for Exchange SMTP.
 
-DjOpenKB connects by a **DNS hostname**, not an IP address. The certificate presented by Exchange must contain that DNS hostname in its Subject Alternative Name (SAN) or Subject/CN. The certificate also needs a private key on the Exchange server and must be enabled for Exchange SMTP.
+DjOpenKB uses Django's standard SMTP backend and the web container's normal operating-system trust store for SMTP TLS.
 
 | Situation | What is needed on Exchange | What DjOpenKB needs |
 |---|---|---|
-| Existing Exchange certificate already contains `<EXCHANGE_SMTP_FQDN>`, is valid, has a private key, and is SMTP-enabled | Reuse the existing Exchange certificate | Reuse the existing AD Root CA file if that certificate chains to the same AD CA |
-| Existing Exchange certificate does not contain `<EXCHANGE_SMTP_FQDN>` | Request/install a **new Exchange server certificate** containing the FQDN | Still reuse the existing AD Root CA file if the new certificate is issued by the same AD CA |
-| Exchange certificate chains to a different internal CA | Use the Exchange certificate that matches the FQDN | Export that CA root/intermediate chain in PEM format and use it as `SMTP_RELAY_CA_CERT_FILE` |
+| Existing Exchange certificate already contains `<EXCHANGE_SMTP_FQDN>`, is valid, has a private key, and is SMTP-enabled | Reuse the existing Exchange certificate | Use the hostname and pass the SMTP TLS test with the container standard trust store. |
+| Existing Exchange certificate does not contain `<EXCHANGE_SMTP_FQDN>` | Request/install a **new Exchange server certificate** containing the FQDN | Use the hostname and pass the SMTP TLS test with the container standard trust store. |
+| Exchange certificate chains to a private CA not trusted by the container | Use a valid certificate with the correct FQDN | The platform team must make the issuing CA available through the container image's standard trust store; do not disable validation. |
 
 ### Never copy these items to DjOpenKB
 
 - The Exchange certificate private key.
 - A `.pfx` / `.p12` bundle containing a private key.
-- The Exchange server certificate as a trust anchor when a CA certificate/chain is available.
 - Service-account passwords in `.env`, documentation, Git, or chat.
 
-The Linux application needs only the trusted **CA certificate or CA chain** for server validation.
+Keep TLS certificate and hostname validation enabled for SMTP authentication.
 
 ---
 
@@ -93,7 +92,7 @@ Choose a certificate only when all of the following are true:
 - `HasPrivateKey` is true.
 - `CertificateDomains` or `Subject` contains `<EXCHANGE_SMTP_FQDN>`.
 - `Services` includes `SMTP`, or the certificate can be safely enabled for SMTP by the Exchange administrator.
-- The issuer chains to a CA that DjOpenKB trusts.
+- The issuer chains to a CA trusted by the web container's standard operating-system trust store.
 
 ### 3.3 Confirm the service account is suitable
 
@@ -253,49 +252,17 @@ Do not use Docker bridge/container addresses as the source allowlist unless the 
 
 ---
 
-## 7. Certificate trust decision for DjOpenKB
+## 7. SMTP TLS validation in DjOpenKB
 
-### 7.1 Exchange certificate issued by the same AD Root CA as LDAPS
+The web container uses its normal operating-system trust store for SMTP TLS.
 
-Reuse the existing CA trust file already mounted in DjOpenKB:
-
-```dotenv
-SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-```
-
-No additional `.crt` is needed on Linux.
-
-### 7.2 Exchange certificate issued by another internal CA
-
-Export the issuing Root CA and any required intermediate CA certificates **without private keys**. Create a PEM chain file and store it in the already protected certificate directory, for example:
-
-```text
-ldap-certs/exchange-ca-chain.crt
-```
-
-Then update the application configuration:
-
-```dotenv
-SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-ca-chain.crt
-```
-
-If the exported CA file is DER encoded, convert it on an authorised administrative workstation before copying it to the protected project certificate directory:
-
-```bash
-openssl x509 -inform DER -in exchange-ca.cer -out exchange-ca.crt
-```
-
-If it is already Base-64/PEM encoded, it should begin with:
-
-```text
------BEGIN CERTIFICATE-----
-```
+Use the exact Exchange certificate hostname in `SMTP_RELAY_HOST`, then run the TLS test in section 9. If the test reports `CERTIFICATE_VERIFY_FAILED`, correct the Exchange certificate chain or have the platform team add the issuing CA to the container image's standard trust store and rebuild the image. Do **not** disable TLS, hostname validation, or certificate validation.
 
 ---
 
 ## 8. DjOpenKB configuration changes
 
-Only the SMTP relay endpoint and, if necessary, CA file change. Keep all LDAP settings pointed to the AD/LDAPS server.
+Only the SMTP relay endpoint changes. Keep all LDAP settings and the LDAPS CA configuration pointed to the AD/LDAPS server.
 
 In `/opt/DjOpenKB/.env`:
 
@@ -308,7 +275,6 @@ SMTP_RELAY_USE_TLS=true
 SMTP_RELAY_USE_SSL=false
 SMTP_RELAY_TIMEOUT_SECONDS=10
 
-SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 SMTP_FROM_EMAIL=<SERVICE_ACCOUNT_EMAIL>
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=<APPROVED_DOMAIN_1>,<APPROVED_DOMAIN_2>
 ```
@@ -366,8 +332,7 @@ import ssl
 
 host = os.environ["SMTP_RELAY_HOST"]
 port = int(os.environ.get("SMTP_RELAY_PORT", "587"))
-cafile = os.environ["SMTP_RELAY_CA_CERT_FILE"]
-context = ssl.create_default_context(cafile=cafile)
+context = ssl.create_default_context()
 
 with smtplib.SMTP(host, port, timeout=10) as client:
     client.ehlo()
@@ -428,7 +393,7 @@ Useful outcomes:
 | Symptom | Likely cause | First check |
 |---|---|---|
 | Connection timeout/refused | Firewall, DNS, wrong listener, Exchange service issue | DNS resolution; TCP 587 firewall; connector bindings |
-| `CERTIFICATE_VERIFY_FAILED` | Wrong CA file, missing intermediate, FQDN/SAN mismatch | `SMTP_RELAY_HOST`; Exchange certificate SAN; CA chain |
+| `CERTIFICATE_VERIFY_FAILED` | Certificate chain is not trusted by the container standard trust store, or FQDN/SAN mismatch | `SMTP_RELAY_HOST`; Exchange certificate SAN; trusted chain in the container image |
 | STARTTLS not advertised | TLS not enabled on connector or no matching certificate | Connector `AuthMechanism`; `Fqdn`; `TlsCertificateName`; Exchange Application log |
 | Authentication failed | Account cannot authenticate, password stale, wrong connector settings | Service account; `BasicAuthRequireTLS`; Exchange protocol logs |
 | Sender rejected | From address differs from authenticated mailbox without Send As | `SMTP_FROM_EMAIL`; mailbox permissions |
@@ -487,7 +452,7 @@ If testing fails or must be paused:
 - [ ] Client Frontend connector is configured for TCP 587, STARTTLS, and authenticated Exchange users.
 - [ ] Network/firewall access to TCP 587 is limited to the DjOpenKB host.
 - [ ] No anonymous relay is enabled for DjOpenKB.
-- [ ] DjOpenKB trusts the issuing CA chain, not an Exchange private key/PFX.
+- [ ] The Exchange certificate chain is trusted by the web container standard trust store.
 - [ ] SMTP credentials are in Vault only.
 - [ ] Service account can send from `SMTP_FROM_EMAIL`.
 - [ ] A controlled SMTP test succeeds.

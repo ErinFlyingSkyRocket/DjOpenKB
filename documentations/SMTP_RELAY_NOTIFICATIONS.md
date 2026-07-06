@@ -39,7 +39,7 @@ A duplicate email address receives only one message. Inactive, disabled, main-si
 
 - SMTP username and password are read only from Vault as `SMTP_RELAY_USERNAME` and `SMTP_RELAY_PASSWORD`.
 - The web service opens TLS before SMTP authentication. `SMTP_RELAY_USE_TLS=true` is the normal STARTTLS configuration for port `587`.
-- Certificate and hostname validation remain enabled. An enterprise CA file can be mounted under `ldap-certs/` and referenced by `SMTP_RELAY_CA_CERT_FILE`.
+- Certificate and hostname validation remain enabled through the web container's standard operating-system trust store.
 - DjOpenKB sends **one Bcc-only message** per review event. Reviewer email addresses are not exposed to other reviewers in `To`, `Cc`, or message headers.
 - Public notifications include only the public article title, never article content.
 - Internal notifications omit both internal title and internal content because inboxes and relay logs are outside the internal article access-control boundary.
@@ -82,7 +82,6 @@ SMTP_RELAY_PORT=587
 SMTP_RELAY_USE_TLS=true
 SMTP_RELAY_USE_SSL=false
 SMTP_RELAY_TIMEOUT_SECONDS=10
-SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-ca-chain.crt
 SMTP_FROM_EMAIL=knowledge-repository@company.example
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=company.example
 SITE_BASE_URL=https://<PUBLIC_HOSTNAME>
@@ -107,24 +106,11 @@ SMTP_RELAY_USE_TLS=false
 SMTP_RELAY_USE_SSL=true
 ```
 
-### 2. Make the issuing CA available
+### 2. Verify standard TLS trust
 
-Place the trusted Exchange issuing CA certificate or complete chain on the host:
+DjOpenKB uses the web container's normal operating-system trust store for SMTP TLS.
 
-```bash
-sudo install -d -m 0755 ldap-certs
-sudo install -m 0644 <EXCHANGE_CA_CHAIN_ON_HOST> ldap-certs/exchange-ca-chain.crt
-```
-
-The directory is mounted read-only into the Django web container at `/etc/ssl/certs/djopenkb-ldap/`.
-
-When Exchange uses the same issuing CA as LDAPS, use the existing path instead:
-
-```dotenv
-SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-```
-
-Do not copy an Exchange `.pfx`, server private key, or leaf server certificate to DjOpenKB.
+Use the Exchange certificate hostname in `SMTP_RELAY_HOST` and run the controlled SMTP test. If certificate validation fails, correct the Exchange certificate chain or have the platform team make its issuing CA available through the container image's standard trust store. Do not disable certificate or hostname validation.
 
 ### 3. Store only SMTP credentials in Vault
 
@@ -190,7 +176,7 @@ sudo rm -f vault/bootstrap/djopenkb.env
 | Symptom | First checks |
 |---|---|
 | Relay test cannot connect | Relay DNS name, internal DNS, firewall to TCP 587, Exchange receive connector |
-| `CERTIFICATE_VERIFY_FAILED` | `SMTP_RELAY_HOST` must match certificate SAN/CN; confirm CA chain path and contents |
+| `CERTIFICATE_VERIFY_FAILED` | `SMTP_RELAY_HOST` must match certificate SAN/CN; confirm the Exchange chain is trusted by the container standard trust store |
 | STARTTLS unavailable | Exchange connector TLS settings and assigned SMTP certificate |
 | Authentication fails | Vault SMTP credentials, account status, Exchange authenticated SMTP settings |
 | Sender rejected | `SMTP_FROM_EMAIL` and the service account's Send As / mailbox permissions |

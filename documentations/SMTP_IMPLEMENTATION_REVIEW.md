@@ -36,7 +36,7 @@ A direct Django superuser is retained as an administrative fallback for older ac
 |---|---|
 | Vault-only credentials | SMTP username/password are not in `.env`, Compose, source code, or logs. |
 | TLS required | Startup rejects enabled notifications unless STARTTLS or implicit TLS is configured. |
-| Certificate validation | The SMTP backend uses normal system trust plus an optional mounted enterprise CA file. |
+| Certificate validation | Django validates the relay certificate and hostname using the web container's normal operating-system trust store. |
 | Recipient domain allowlist | A reviewer email must be within `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`. |
 | Bcc-only group message | One relay message is submitted per review event without exposing reviewer membership in headers. |
 | Internal-email minimisation | Internal notification emails omit internal titles and content. |
@@ -48,7 +48,7 @@ A direct Django superuser is retained as an administrative fallback for older ac
 
 - The Exchange relay requires TLS and permits the SMTP service account to send as `SMTP_FROM_EMAIL`.
 - `SMTP_RELAY_HOST` is the certificate hostname, not an IP address.
-- The configured issuing CA chain is mounted under `ldap-certs/`.
+- The Exchange certificate chains to a CA trusted by the web container's standard operating-system trust store.
 - The Django web service can resolve and reach the Exchange SMTP endpoint.
 - Intended reviewer accounts have valid organisation-domain values in `User.email` and correct DjOpenKB role groups.
 
@@ -63,7 +63,7 @@ A live SMTP test remains environment-specific and must be run against the author
 
 ## Deployment Validation
 
-1. Keep `EMAIL_NOTIFICATIONS_ENABLED=false` while the Exchange endpoint and CA chain are prepared.
+1. Keep `EMAIL_NOTIFICATIONS_ENABLED=false` while the Exchange endpoint and standard TLS validation are prepared.
 2. Store `SMTP_RELAY_USERNAME` and `SMTP_RELAY_PASSWORD` only in Vault.
 3. Deploy with `docker compose up -d --build --remove-orphans` to remove the retired worker container.
 4. Run `python manage.py test_smtp_relay <TEST_RECIPIENT_EMAIL>` inside `web`.
