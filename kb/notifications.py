@@ -534,7 +534,7 @@ def _auth_lockout_subject_and_body(event: AuthActivityLog) -> tuple[str, str]:
     username = (canonical_username or event.username or "").strip() or "(account unavailable)"
     source_ip = str(event.ip_address or "unavailable")
 
-    subject = f"{settings.EMAIL_SUBJECT_PREFIX}Account temporarily locked"
+    subject = f"{settings.EMAIL_SUBJECT_PREFIX}{username} account temporarily locked"
     lines = [
         "A recognised Knowledge Repository account has been temporarily locked after repeated failed attempts.",
         "",
