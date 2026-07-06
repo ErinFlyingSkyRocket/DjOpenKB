@@ -1,517 +1,437 @@
-# DjOpenKB — Exchange SMTP Relay Readiness, TLS and Testing Guide
+# DjOpenKB — Exchange SMTP Certificate Setup (Windows GUI + Linux Server)
 
-**Purpose:** Prepare an on-premises Microsoft Exchange server to act as DjOpenKB's authenticated SMTP submission endpoint for article-review notifications.
+## Purpose
 
-**Target flow:**
+This guide prepares the Exchange SMTP TLS certificate that DjOpenKB trusts for article-review email notifications.
 
-```text
-DjOpenKB web service
-  → SMTP AUTH + STARTTLS on TCP 587
-  → Exchange Client Frontend Receive connector
-  → Exchange transport and recipient mailboxes
-```
+DjOpenKB connects to Exchange by DNS name over authenticated SMTP with STARTTLS on TCP `587`. TLS certificate and hostname validation remain enabled. For the current lab, Exchange presents a self-signed certificate, so DjOpenKB needs a copy of its **public certificate only**.
 
-This guide is deliberately limited to the Exchange relay integration. It does **not** configure legacy IIS SMTP on the Active Directory/LDAPS server.
+The Exchange certificate work uses the **Exchange Admin Center** and **Windows Certificate Manager**. The final Linux commands validate and prepare the exported public certificate for the DjOpenKB Docker container.
 
 ---
 
-## 1. TLS certificate clarification
+## Before you start
 
-A different Exchange server IP address does **not**, by itself, require a new certificate configuration in DjOpenKB. DjOpenKB connects by a **DNS hostname**, not an IP address. The certificate presented by Exchange must contain that exact hostname in its Subject Alternative Name (SAN) or Subject/CN, have a private key on the Exchange server, and be enabled for Exchange SMTP.
+### Current lab configuration
 
-DjOpenKB performs normal certificate-chain and hostname validation. It starts with the web container's normal operating-system trust store and can additionally load one public PEM/CRT trust certificate from `SMTP_RELAY_CA_CERT_FILE`. This is required when the Exchange SMTP certificate is self-signed or chains to an internal CA that is not already trusted by the container.
+The current Exchange SMTP service presents this self-signed certificate:
 
-| Situation | What is needed on Exchange | What DjOpenKB needs |
-|---|---|---|
-| Existing Exchange certificate already contains `<EXCHANGE_SMTP_FQDN>`, is valid, has a private key, and is SMTP-enabled | Reuse the existing Exchange certificate | Set `SMTP_RELAY_HOST` to the matching certificate name. If the chain is already trusted, the optional trust-certificate setting can remain blank. |
-| Existing Exchange certificate does not contain `<EXCHANGE_SMTP_FQDN>` | Request/install a **new Exchange server certificate** containing the FQDN | Use the hostname shown in the new certificate and provide the public issuing CA/chain when the container does not trust it already. |
-| Exchange currently presents a self-signed SMTP certificate | Prefer replacing it with an internally CA-issued certificate containing the intended FQDN | As a temporary lab path, export the exact **public** self-signed certificate as `exchange-smtp.crt` and configure it as the trust certificate. |
-| Exchange certificate chains to a private CA not trusted by the container | Keep the Exchange certificate and export the public issuing CA certificate or complete CA chain | Copy the public PEM/CRT to `ldap-certs/exchange-smtp.crt` and set `SMTP_RELAY_CA_CERT_FILE`. |
+```text
+Subject: CN=qapf1-exch
+Issuer:  CN=qapf1-exch
+```
 
-### Never copy these items to DjOpenKB
+For this current certificate, DjOpenKB must use this SMTP hostname:
 
-- The Exchange certificate private key.
-- A `.pfx` / `.p12` bundle containing a private key.
-- Service-account passwords in `.env`, documentation, Git, or chat.
+```dotenv
+SMTP_RELAY_HOST=qapf1-exch
+```
 
-Keep TLS certificate and hostname validation enabled for SMTP authentication.
+Do not use the Exchange IP address. Do not use the full FQDN unless the certificate contains that FQDN in its Common Name (CN) or Subject Alternative Name (SAN).
+
+### Decide which path applies
+
+| Situation | What to do |
+|---|---|
+| A valid SMTP certificate already exists and is assigned to SMTP | Export its public certificate using the GUI steps in **Section 2**. This is the current lab path. |
+| No suitable SMTP certificate exists, or a new hostname is needed | Create a new self-signed certificate in Exchange Admin Center using **Section 3**, assign it to SMTP, then export it using **Section 2**. |
+| A long-lived production deployment is planned | Prefer an organisation-CA-issued certificate that contains the final Exchange SMTP FQDN. See **Section 8**. |
+
+Do not delete, replace, or unassign an existing Exchange certificate unless you know it is safe for the server’s other Exchange services.
 
 ---
 
-## 2. Decide the SMTP hostname first
+## 1. Confirm which certificate Exchange uses for SMTP
 
-Choose one internal DNS name for DjOpenKB to use, for example:
+1. Sign in to the **Exchange Admin Center** with an account permitted to manage Exchange certificates.
+2. Go to **Servers** → **Certificates**.
+3. Select the Exchange server from the server list.
+4. Select the certificate that shows the SMTP-related name or matches `qapf1-exch`.
+5. Choose **Edit** and open the **Services** tab.
+6. Confirm that **SMTP** is selected for the certificate.
+7. Open the certificate details and confirm that the certificate is valid and not expired.
+
+For the current lab certificate, the certificate subject should show:
 
 ```text
-<EXCHANGE_SMTP_FQDN>
+CN=qapf1-exch
 ```
 
-Requirements:
-
-1. It resolves from the DjOpenKB Linux host to the Exchange server's internal address.
-2. The name appears in the Exchange SMTP certificate SAN or Subject/CN.
-3. DjOpenKB uses this exact name in `SMTP_RELAY_HOST`.
-4. Do **not** configure an IP address in `SMTP_RELAY_HOST`.
-5. Do **not** expose TCP 587 to the public Internet for this internal application.
-
-On a DNS server or authorised administration workstation, create/confirm an internal DNS record for `<EXCHANGE_SMTP_FQDN>` that points to the Exchange server. Do not continue until this hostname resolves correctly from the DjOpenKB server.
+If that certificate is valid and SMTP is assigned, continue to the export steps.
 
 ---
 
-## 3. Pre-flight information to collect on Exchange
+## 2. Export the existing SMTP certificate as a public `.crt` file
 
-Open the **Exchange Management Shell** as an Exchange administrator.
+This exports only the public certificate that DjOpenKB needs. It does not export the Exchange private key.
 
-### 3.1 Inspect the current Client Frontend connector
-
-```powershell
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Format-List Identity,Bindings,RemoteIPRanges,Fqdn,AuthMechanism,PermissionGroups,TlsCertificateName,ProtocolLoggingLevel
-```
-
-For this use case, the relevant connector should be the default **Client Frontend** Receive connector. Exchange documents the Client usage type as the authenticated SMTP endpoint on TCP 587, with TLS, Basic authentication, Basic authentication only after TLS, and Exchange user permissions. Do not create another connector or change existing connector bindings unless the Exchange administrator confirms there is no overlap with existing connectors.
-
-Expected high-level properties:
+1. On the Exchange server, press **Windows + R**.
+2. Enter:
 
 ```text
-Bindings:          <EXCHANGE_LOCAL_IP>:587 or 0.0.0.0:587
-Fqdn:              <EXCHANGE_SMTP_FQDN>
-AuthMechanism:     TLS, BasicAuth, BasicAuthRequireTLS, Integrated
-PermissionGroups:  ExchangeUsers
+certlm.msc
 ```
 
-### 3.2 Inspect existing certificates
+3. Open:
 
-```powershell
-Get-ExchangeCertificate |
-    Format-List Thumbprint,Subject,CertificateDomains,Services,NotAfter,Status,RootCAType,HasPrivateKey
+```text
+Certificates (Local Computer)
+→ Personal
+→ Certificates
 ```
 
-Choose a certificate only when all of the following are true:
+4. Find the certificate whose **Issued To** value is:
 
-- `Status` is valid and `NotAfter` is in the future.
-- `HasPrivateKey` is true.
-- `CertificateDomains` or `Subject` contains `<EXCHANGE_SMTP_FQDN>`.
-- `Services` includes `SMTP`, or the certificate can be safely enabled for SMTP by the Exchange administrator.
-- The issuer is trusted by the web container, either through its standard trust store or a configured public PEM/CRT trust certificate.
-
-### 3.3 Export the public trust certificate for DjOpenKB
-
-Only export a public certificate; do not export or transfer a private key.
-
-**CA-issued Exchange certificate:** export the public issuing CA certificate or complete CA chain in PEM/CRT format.
-
-**Current self-signed Exchange certificate:** export the exact public server certificate from Exchange. After selecting the SMTP certificate thumbprint from `Get-ExchangeCertificate`, run this in Exchange Management Shell:
-
-```powershell
-$cert = Get-ExchangeCertificate -Thumbprint <EXCHANGE_SMTP_CERT_THUMBPRINT>
-$pem = @(
-    "-----BEGIN CERTIFICATE-----"
-    [Convert]::ToBase64String(
-        $cert.Certificate.RawData,
-        [System.Base64FormattingOptions]::InsertLineBreaks
-    )
-    "-----END CERTIFICATE-----"
-) -join "`r`n"
-[System.IO.File]::WriteAllText("C:\Temp\exchange-smtp.crt", $pem)
+```text
+qapf1-exch
 ```
 
-Transfer only that public `.crt` file to the DjOpenKB host and store it as:
+5. Double-click the certificate and confirm the **Subject** value contains:
+
+```text
+CN = qapf1-exch
+```
+
+6. Close the certificate details window.
+7. Right-click the certificate → **All Tasks** → **Export**.
+8. In the Certificate Export Wizard, click **Next**.
+9. Select:
+
+```text
+No, do not export the private key
+```
+
+10. Select:
+
+```text
+Base-64 encoded X.509 (.CER)
+```
+
+11. Save the file as:
+
+```text
+C:\Temp\exchange-smtp.cer
+```
+
+12. Complete the wizard. Windows should show that the export was successful.
+13. In File Explorer, rename the file to:
+
+```text
+exchange-smtp.crt
+```
+
+The **Base-64** export is already PEM-compatible. Renaming the extension from `.cer` to `.crt` is enough; no Windows conversion command is required.
+
+### Important export rules
+
+- Select **No, do not export the private key**.
+- Do **not** export a `.pfx` or `.p12` file.
+- Do **not** share a private key or certificate password.
+- The exported file must contain only the public certificate.
+
+---
+
+## 3. Create a new self-signed SMTP certificate in the Exchange Admin Center (only if needed)
+
+Use this section only when no usable SMTP certificate exists, the existing certificate is expired, or you want a new certificate with the full Exchange FQDN.
+
+For the current lab, use these two DNS names:
+
+```text
+qapf1-exch.qapf1.qalab01.nextlabs.com
+qapf1-exch
+```
+
+The full FQDN should be the Common Name. The short name should also be included so existing short-hostname connections continue to work.
+
+1. Open the **Exchange Admin Center**.
+2. Go to **Servers** → **Certificates**.
+3. Select the Exchange server.
+4. Click **Add** (`+`).
+5. Select:
+
+```text
+Create a self-signed certificate
+```
+
+6. Enter a clear friendly name, for example:
+
+```text
+DjOpenKB SMTP TLS
+```
+
+7. Select the Exchange server that will use the certificate, then select **Next**.
+8. On the domain-name pages, add these names:
+
+```text
+qapf1-exch.qapf1.qalab01.nextlabs.com
+qapf1-exch
+```
+
+9. Select:
+
+```text
+qapf1-exch.qapf1.qalab01.nextlabs.com
+```
+
+and choose **Set as common name**. It should appear in bold in the domain list.
+10. Confirm both names remain listed, then click **Finish**.
+11. Return to **Servers** → **Certificates** and wait until the new certificate status is **Valid**.
+12. Select the new certificate → **Edit** → **Services**.
+13. Select **SMTP**, then click **Save**.
+
+Exchange may ask whether to replace the current default SMTP certificate. Proceed only when you intentionally want DjOpenKB SMTP to use the new certificate and no other Exchange integration depends on the old SMTP certificate. Do not delete the previous certificate.
+
+After creating the new certificate, export its public certificate using **Section 2**. Then use this host in DjOpenKB:
+
+```dotenv
+SMTP_RELAY_HOST=qapf1-exch.qapf1.qalab01.nextlabs.com
+```
+
+---
+
+## 4. Place the exported certificate in DjOpenKB
+
+Use your approved secure file-transfer method to place the exported public certificate on the DjOpenKB server at:
 
 ```text
 /opt/DjOpenKB/ldap-certs/exchange-smtp.crt
 ```
 
-On the DjOpenKB host, verify it is a certificate and contains no private key:
+The filename and path must be exactly as shown.
+
+Do not copy a `.pfx`, private key, password, or any other Exchange certificate file into this folder.
+
+---
+
+## 5. Prepare and validate the certificate on the Linux server
+
+These commands run on the DjOpenKB Linux server after `exchange-smtp.crt` has been copied into the folder above.
+
+### 5.1 Confirm that the file is PEM/Base-64 text
 
 ```bash
-openssl x509 -in /opt/DjOpenKB/ldap-certs/exchange-smtp.crt \
-  -noout -subject -issuer -ext subjectAltName
+cd /opt/DjOpenKB
+
+sudo head -n 1 ldap-certs/exchange-smtp.crt
+sudo tail -n 1 ldap-certs/exchange-smtp.crt
 ```
 
-Then add this non-secret setting to `.env`:
+Expected output:
+
+```text
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----
+```
+
+When those two lines appear, the Windows GUI export is already in the correct PEM format. **No Linux conversion is needed.**
+
+### 5.2 Convert only if the file is not Base-64/PEM
+
+If the first line does not show `-----BEGIN CERTIFICATE-----`, the certificate was likely exported as binary DER instead of **Base-64 encoded X.509 (.CER)**.
+
+The preferred fix is to repeat the GUI export in **Section 2** and select **Base-64 encoded X.509 (.CER)**.
+
+Only if you must convert an already-copied binary certificate, keep the original as `exchange-smtp.cer` and run:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo openssl x509 -inform DER \
+  -in ldap-certs/exchange-smtp.cer \
+  -out ldap-certs/exchange-smtp.crt
+```
+
+Then run the checks in **Section 5.1** again.
+
+### 5.3 Validate the certificate contents
+
+```bash
+cd /opt/DjOpenKB
+
+sudo openssl x509 \
+  -in ldap-certs/exchange-smtp.crt \
+  -noout -subject -issuer -dates
+```
+
+For the current lab certificate, the output should show a subject and issuer similar to:
+
+```text
+subject=CN = qapf1-exch
+issuer=CN = qapf1-exch
+```
+
+This confirms Linux can read the public certificate file. It does not expose or require a private key.
+
+### 5.4 Set safe read permissions
+
+```bash
+cd /opt/DjOpenKB
+
+sudo chown root:root ldap-certs/exchange-smtp.crt
+sudo chmod 644 ldap-certs/exchange-smtp.crt
+```
+
+The certificate is public information. Read access is required so the non-root process inside the DjOpenKB `web` container can use it.
+
+---
+
+## 6. Configure DjOpenKB and make the Docker container use the certificate
+
+Confirm that `/opt/DjOpenKB/.env` contains the correct values.
+
+For the current self-signed certificate (`CN=qapf1-exch`):
+
+```dotenv
+SMTP_RELAY_HOST=qapf1-exch
+SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+SMTP_RELAY_PORT=587
+SMTP_RELAY_USE_TLS=true
+SMTP_RELAY_USE_SSL=false
+```
+
+The Docker Compose configuration mounts the host folder:
+
+```text
+/opt/DjOpenKB/ldap-certs
+```
+
+inside the `web` container as:
+
+```text
+/etc/ssl/certs/djopenkb-ldap
+```
+
+Restart the `web` service so Django reloads the SMTP certificate setting:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo docker compose up -d --force-recreate web
+```
+
+Confirm that the running container can read the certificate:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo docker compose exec web \
+  sh -c 'test -r /etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt && echo "Exchange SMTP certificate is available inside the web container."'
+```
+
+Expected output:
+
+```text
+Exchange SMTP certificate is available inside the web container.
+```
+
+### Important hostname check
+
+The current certificate name is only `qapf1-exch`. The web container must be able to resolve that short hostname:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo docker compose exec web getent hosts qapf1-exch
+```
+
+If this does not return the Exchange server IP address, do not change `SMTP_RELAY_HOST` to an IP address. Instead, ask the DNS administrator to make `qapf1-exch` resolvable from the DjOpenKB server and Docker containers, or issue a new Exchange SMTP certificate containing the full FQDN and then use that FQDN as the SMTP host.
+
+---
+
+## 7. Test SMTP notification delivery
+
+Send one controlled test message after the certificate is visible inside the container:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo docker compose exec web \
+  python manage.py test_smtp_relay john.tyler@qapf1.qalab01.nextlabs.com
+```
+
+Use a valid recipient mailbox that belongs to a domain allowed by `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`.
+
+If the command succeeds, check the recipient mailbox in Outlook.
+
+If it fails, inspect the web service log:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo docker compose logs --tail=150 web
+```
+
+### Common errors
+
+| Error | Likely cause | Correct action |
+|---|---|---|
+| `SSLCertVerificationError` | Wrong certificate, missing `.crt`, or certificate changed on Exchange | Re-export the current public SMTP certificate and repeat Sections 4–6. |
+| Hostname mismatch | `SMTP_RELAY_HOST` does not match the certificate CN/SAN | Use `qapf1-exch` for the current certificate, or issue a certificate that includes the FQDN. |
+| Hostname cannot resolve | The Docker container cannot find `qapf1-exch` through DNS | Add or fix the internal DNS record; do not use a raw IP address. |
+| Authentication failed | SMTP username or password is wrong, or authenticated SMTP is unavailable for the mailbox | Confirm the Exchange mailbox credentials and SMTP settings. |
+
+Do not disable TLS certificate verification to bypass any error in this table.
+
+---
+
+## 8. Recommended production improvement: use an organisation-CA-issued certificate
+
+For a long-lived deployment, use an organisation-issued certificate instead of a self-signed certificate. The certificate should contain the final Exchange SMTP name, for example:
+
+```text
+qapf1-exch.qapf1.qalab01.nextlabs.com
+```
+
+In the Exchange Admin Center, go to **Servers** → **Certificates** → **Add** and select:
+
+```text
+Create a request for a certificate from a certification authority
+```
+
+Use the intended SMTP FQDN as the Common Name and add other required Exchange names as SANs. After the certificate authority issues the certificate, complete the pending request in Exchange Admin Center, assign the certificate to **SMTP**, and export the public issuing CA certificate or CA chain through the Windows Certificate Manager GUI.
+
+For DjOpenKB, place that public CA certificate or chain at the same project location:
+
+```text
+/opt/DjOpenKB/ldap-certs/exchange-smtp.crt
+```
+
+Then keep the existing Docker path in `.env`:
 
 ```dotenv
 SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
 ```
 
-The certificate's SAN/CN must still match `SMTP_RELAY_HOST`. A self-signed certificate whose CN is only a short hostname can be used only with that same short hostname and a working internal DNS record. The recommended permanent fix is a CA-issued certificate containing the Exchange FQDN.
+---
 
-### 3.4 Confirm the service account is suitable
+## 9. Quick checklist
 
-The SMTP service account should:
+Before testing DjOpenKB notifications, confirm all of the following:
 
-- Be an enabled AD/Exchange user with a mailbox or a mail-enabled identity supported by the Exchange administrator.
-- Authenticate using its full UPN: `<SERVICE_ACCOUNT_UPN>`.
-- Send from its own mailbox address by default.
-- Have **Send As** permission if `SMTP_FROM_EMAIL` will use a different shared mailbox or no-reply address.
-- Be dedicated to DjOpenKB in production, rather than shared with LDAPS. Reusing the existing account is acceptable only for this development transition.
+- [ ] The Exchange certificate is valid and assigned to **SMTP**.
+- [ ] The certificate contains the same DNS name configured in `SMTP_RELAY_HOST`.
+- [ ] The certificate was exported with **No, do not export the private key**.
+- [ ] The exported format was **Base-64 encoded X.509 (.CER)**.
+- [ ] The file is named `exchange-smtp.crt`.
+- [ ] The file begins with `-----BEGIN CERTIFICATE-----` and ends with `-----END CERTIFICATE-----`.
+- [ ] Linux validates the file with `openssl x509 -in ... -noout -subject -issuer -dates`.
+- [ ] The file is stored at `/opt/DjOpenKB/ldap-certs/exchange-smtp.crt`.
+- [ ] `SMTP_RELAY_CA_CERT_FILE` points to `/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt`.
+- [ ] SMTP uses TCP `587` with STARTTLS enabled.
+- [ ] The web container can read the certificate file.
+- [ ] No PFX, private key, or password was copied into DjOpenKB.
 
 ---
 
-## 4. Reuse an existing Exchange certificate, if it already matches
+## 10. When the certificate changes later
 
-If the pre-flight checks show that an existing Exchange certificate meets every requirement, do not request another one.
+If the Exchange SMTP certificate is renewed or replaced:
 
-Set the Client Frontend connector FQDN to the exact hostname that clients will use:
+1. Export the new public certificate again through **Section 2**.
+2. Replace `/opt/DjOpenKB/ldap-certs/exchange-smtp.crt` with the new public file.
+3. Repeat Sections **5** and **6**.
+4. Keep `SMTP_RELAY_HOST` aligned with the new certificate CN/SAN.
+5. Recreate the DjOpenKB `web` service and run the SMTP relay test.
 
-```powershell
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Set-ReceiveConnector -Fqdn <EXCHANGE_SMTP_FQDN>
-```
-
-Point the connector at the selected certificate:
-
-```powershell
-$TLSCert = Get-ExchangeCertificate -Thumbprint <EXCHANGE_CERT_THUMBPRINT>
-$TLSCertName = "<I>$($TLSCert.Issuer)<S>$($TLSCert.Subject)"
-
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Set-ReceiveConnector -TlsCertificateName $TLSCertName
-```
-
-Verify:
-
-```powershell
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Format-List Identity,Fqdn,TlsCertificateName,AuthMechanism,PermissionGroups
-
-Get-ExchangeCertificate -Thumbprint <EXCHANGE_CERT_THUMBPRINT> |
-    Format-List Thumbprint,Subject,CertificateDomains,Services,NotAfter,Status,HasPrivateKey
-```
-
-Do not run a broad certificate change against unrelated Exchange services without reviewing the current configuration. A certificate assigned to SMTP can affect Exchange's existing SMTP TLS selection.
-
----
-
-## 5. Request a new Exchange server certificate when needed
-
-Request a new certificate only when no current Exchange certificate contains `<EXCHANGE_SMTP_FQDN>` or when the current certificate is unsuitable.
-
-### 5.1 Certificate requirements
-
-Request from the internal AD Certificate Services CA using an approved server-certificate template with:
-
-```text
-Subject/SAN DNS name:  <EXCHANGE_SMTP_FQDN>
-Enhanced Key Usage:    Server Authentication
-Private key:           created and retained only on Exchange
-Key size:              2048 bits or organisation standard
-Issuer:                the internal CA trusted by DjOpenKB, where possible
-```
-
-Use a DNS name, not an IP address, in the certificate request. A DNS SAN is normally sufficient for this DjOpenKB SMTP endpoint.
-
-### 5.2 Create the request in Exchange Admin Center (where available)
-
-For Exchange versions that support certificate management in EAC:
-
-1. Open **Exchange admin center**.
-2. Go to **Servers → Certificates**.
-3. Select the Exchange server.
-4. Choose **Add** and select **Create a request for a certificate from a certification authority**.
-5. Use a friendly name such as:
-
-   ```text
-   DjOpenKB SMTP submission TLS
-   ```
-
-6. Choose a SAN or single-host request, not a self-signed certificate.
-7. Include `<EXCHANGE_SMTP_FQDN>` in the hostname list.
-8. Save the certificate request file to an authorised location.
-9. Submit the request to the internal CA using the approved server-certificate template.
-10. Download the issued certificate and complete/import it back into Exchange.
-
-### 5.3 Create the request using Exchange Management Shell
-
-Use this route when the Exchange version does not offer certificate request management in EAC, or when the Exchange administrator prefers the shell.
-
-```powershell
-$csr = New-ExchangeCertificate `
-    -GenerateRequest `
-    -FriendlyName "DjOpenKB SMTP submission TLS" `
-    -SubjectName "CN=<EXCHANGE_SMTP_FQDN>" `
-    -DomainName <EXCHANGE_SMTP_FQDN> `
-    -KeySize 2048
-
-[System.IO.File]::WriteAllBytes(
-    "C:\Temp\DjOpenKB-SMTP-Exchange.req",
-    [System.Text.Encoding]::Unicode.GetBytes($csr)
-)
-```
-
-Submit `C:\Temp\DjOpenKB-SMTP-Exchange.req` to the internal CA. Once it has been issued, import/complete it in Exchange through EAC or the Exchange Management Shell according to the Exchange administrator's standard certificate procedure.
-
-### 5.4 Enable and select the certificate for SMTP
-
-After the certificate is installed and its thumbprint is known:
-
-```powershell
-Enable-ExchangeCertificate -Thumbprint <NEW_CERT_THUMBPRINT> -Services SMTP
-
-$TLSCert = Get-ExchangeCertificate -Thumbprint <NEW_CERT_THUMBPRINT>
-$TLSCertName = "<I>$($TLSCert.Issuer)<S>$($TLSCert.Subject)"
-
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Set-ReceiveConnector -Fqdn <EXCHANGE_SMTP_FQDN> -TlsCertificateName $TLSCertName
-```
-
-When Exchange asks whether to replace an existing SMTP certificate, stop and have the Exchange administrator review the prompt. Do not replace an existing certificate blindly, because that can affect other Exchange SMTP TLS flows.
-
----
-
-## 6. Confirm authenticated SMTP submission on port 587
-
-The Client Frontend connector should require TLS before Basic authentication and allow authenticated Exchange users.
-
-Inspect it first:
-
-```powershell
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Format-List Identity,Bindings,Fqdn,AuthMechanism,PermissionGroups,TlsCertificateName
-```
-
-The intended security model is:
-
-```text
-TCP port:             587
-Encryption:           STARTTLS
-Authentication:       SMTP AUTH using the service-account UPN/password
-Authentication rule:  Basic authentication offered only after TLS
-Permission group:     ExchangeUsers
-```
-
-Do not enable anonymous relay or broad relay permissions for DjOpenKB. Do not use an IP-based anonymous relay as a shortcut when the application is configured for SMTP AUTH.
-
-### Network restriction
-
-At the Exchange host firewall and any network firewall, allow inbound TCP 587 only from:
-
-```text
-<DJOPENKB_LINUX_HOST_IP>
-```
-
-Do not use Docker bridge/container addresses as the source allowlist unless the network team has explicitly confirmed that Exchange sees those addresses. In most deployments, Exchange sees the Linux Docker host address.
-
----
-
-## 7. SMTP TLS validation in DjOpenKB
-
-The web container uses its normal operating-system trust store for SMTP TLS.
-
-Use the exact Exchange certificate hostname in `SMTP_RELAY_HOST`, then run the TLS test in section 9. If the test reports `CERTIFICATE_VERIFY_FAILED`, correct the Exchange certificate chain or have the platform team add the issuing CA to the container image's standard trust store and rebuild the image. Do **not** disable TLS, hostname validation, or certificate validation.
-
----
-
-## 8. DjOpenKB configuration changes
-
-Only the SMTP relay endpoint changes. Keep all LDAP settings and the LDAPS CA configuration pointed to the AD/LDAPS server.
-
-In `/opt/DjOpenKB/.env`:
-
-```dotenv
-EMAIL_NOTIFICATIONS_ENABLED=true
-
-SMTP_RELAY_HOST=<EXCHANGE_SMTP_FQDN>
-SMTP_RELAY_PORT=587
-SMTP_RELAY_USE_TLS=true
-SMTP_RELAY_USE_SSL=false
-SMTP_RELAY_TIMEOUT_SECONDS=10
-
-SMTP_FROM_EMAIL=<SERVICE_ACCOUNT_EMAIL>
-SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=<APPROVED_DOMAIN_1>,<APPROVED_DOMAIN_2>
-```
-
-Keep the credentials in Vault only:
-
-```text
-SMTP_RELAY_USERNAME
-SMTP_RELAY_PASSWORD
-```
-
-Do not place these passwords in `.env`, source code, Git, tickets, or documentation.
-
-Apply the configuration:
-
-```bash
-cd /opt/DjOpenKB
-sudo docker compose up -d --force-recreate --remove-orphans web
-```
-
----
-
-## 9. Test in the correct order
-
-### 9.1 DNS and network reachability from the DjOpenKB host
-
-```bash
-getent hosts <EXCHANGE_SMTP_FQDN>
-```
-
-The returned address must be the internal Exchange address.
-
-Test TCP reachability without sending email:
-
-```bash
-python3 - <<'PY'
-import socket
-host = "<EXCHANGE_SMTP_FQDN>"
-port = 587
-with socket.create_connection((host, port), timeout=10) as sock:
-    print(f"Connected to {host}:{port}")
-    print(sock.recv(1024).decode(errors="replace").strip())
-PY
-```
-
-### 9.2 Verify STARTTLS and the certificate from the worker container
-
-Run this from `/opt/DjOpenKB`:
-
-```bash
-sudo docker compose exec web python - <<'PY'
-import os
-import smtplib
-import ssl
-
-host = os.environ["SMTP_RELAY_HOST"]
-port = int(os.environ.get("SMTP_RELAY_PORT", "587"))
-trust_cert_file = os.environ.get("SMTP_RELAY_CA_CERT_FILE", "").strip()
-context = ssl.create_default_context()
-if trust_cert_file:
-    context.load_verify_locations(cafile=trust_cert_file)
-
-with smtplib.SMTP(host, port, timeout=10) as client:
-    client.ehlo()
-    print("STARTTLS advertised:", client.has_extn("starttls"))
-    if not client.has_extn("starttls"):
-        raise SystemExit("Exchange did not advertise STARTTLS")
-    client.starttls(context=context)
-    client.ehlo()
-    print("TLS handshake and hostname validation succeeded")
-PY
-```
-
-Expected result:
-
-```text
-STARTTLS advertised: True
-TLS handshake and hostname validation succeeded
-```
-
-### 9.3 Send one controlled SMTP test email
-
-Use a test mailbox inside an allowed recipient domain:
-
-```bash
-sudo docker compose exec web \
-  python manage.py test_smtp_relay <TEST_RECIPIENT_EMAIL>
-```
-
-Confirm the message arrives and shows the expected sender address.
-
-### 9.4 Test the business workflow
-
-1. Submit one **Public** article for approval.
-2. Confirm one Bcc notification is sent to enabled users with email addresses in:
-   - Public Article Approver
-   - Public Article Manager
-   - Admin Users
-3. Submit one **Internal** article for approval.
-4. Confirm one Bcc notification is sent to enabled users with email addresses in:
-   - Internal Article Approver
-   - Internal Article Manager
-   - Admin Users
-5. Confirm internal notification emails do not disclose the internal article title or body.
-
----
-
-## 10. Logs and troubleshooting
-
-### DjOpenKB worker logs
-
-```bash
-cd /opt/DjOpenKB
-sudo docker compose logs --tail=150 web
-```
-
-Useful outcomes:
-
-| Symptom | Likely cause | First check |
-|---|---|---|
-| Connection timeout/refused | Firewall, DNS, wrong listener, Exchange service issue | DNS resolution; TCP 587 firewall; connector bindings |
-| `CERTIFICATE_VERIFY_FAILED` | SMTP trust certificate is missing/wrong, or hostname/SAN mismatch | `SMTP_RELAY_HOST`; Exchange certificate SAN/CN; `SMTP_RELAY_CA_CERT_FILE`; contents of `ldap-certs/exchange-smtp.crt` |
-| STARTTLS not advertised | TLS not enabled on connector or no matching certificate | Connector `AuthMechanism`; `Fqdn`; `TlsCertificateName`; Exchange Application log |
-| Authentication failed | Account cannot authenticate, password stale, wrong connector settings | Service account; `BasicAuthRequireTLS`; Exchange protocol logs |
-| Sender rejected | From address differs from authenticated mailbox without Send As | `SMTP_FROM_EMAIL`; mailbox permissions |
-| No recipients receive a workflow email | Reviewer accounts inactive, disabled, no email, wrong role scope, or domain allowlist | Django users/groups, email fields, web service logs |
-
-### Exchange checks
-
-```powershell
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Format-List Identity,Bindings,Fqdn,AuthMechanism,PermissionGroups,TlsCertificateName,ProtocolLoggingLevel
-
-Get-ExchangeCertificate |
-    Format-List Thumbprint,Subject,CertificateDomains,Services,NotAfter,Status,HasPrivateKey
-```
-
-If Exchange cannot find a certificate matching the connector's FQDN or `TlsCertificateName`, it may not advertise STARTTLS and can log Event ID 12014 in the Windows Application log.
-
-For protocol logs, check the connector's configured protocol-log path:
-
-```powershell
-Get-ReceiveConnector -Identity "Client Frontend*" |
-    Format-List Identity,ProtocolLoggingLevel,ProtocolLogPath
-```
-
-Enable verbose logging only for a controlled test window and return it to the organisation standard afterwards.
-
----
-
-## 11. Rollback plan
-
-If testing fails or must be paused:
-
-1. Disable DjOpenKB notifications:
-
-   ```dotenv
-   EMAIL_NOTIFICATIONS_ENABLED=false
-   ```
-
-2. Recreate the application containers:
-
-   ```bash
-   cd /opt/DjOpenKB
-   sudo docker compose up -d --force-recreate --remove-orphans web
-   ```
-
-3. Do not remove or overwrite Exchange certificates without the Exchange administrator's approval.
-4. Restore the Client Frontend connector's documented previous `Fqdn` and `TlsCertificateName` values only if a change was made specifically for this integration.
-
----
-
-## 12. Production readiness checklist
-
-- [ ] `<EXCHANGE_SMTP_FQDN>` resolves internally to Exchange.
-- [ ] DjOpenKB uses the FQDN, never an IP address.
-- [ ] Exchange certificate is valid, has a private key, contains the FQDN, and is SMTP-enabled.
-- [ ] Client Frontend connector is configured for TCP 587, STARTTLS, and authenticated Exchange users.
-- [ ] Network/firewall access to TCP 587 is limited to the DjOpenKB host.
-- [ ] No anonymous relay is enabled for DjOpenKB.
-- [ ] The Exchange certificate chain is trusted by the web container standard trust store or by the configured public `SMTP_RELAY_CA_CERT_FILE` file.
-- [ ] SMTP credentials are in Vault only.
-- [ ] Service account can send from `SMTP_FROM_EMAIL`.
-- [ ] A controlled SMTP test succeeds.
-- [ ] Public and internal notification routing has been tested separately.
-- [ ] Logs have been reviewed and no passwords or sensitive internal content are logged.
-- [ ] A separate SMTP-only service account and a password rotation plan are scheduled for production.
-
----
-
-## References
-
-- Microsoft Learn — Configure authenticated SMTP settings for POP3 and IMAP4 clients in Exchange Server: https://learn.microsoft.com/en-us/exchange/clients/pop3-and-imap4/configure-authenticated-smtp
-- Microsoft Learn — Receive connectors in Exchange Server: https://learn.microsoft.com/en-us/exchange/mail-flow/connectors/receive-connectors
-- Microsoft Learn — Selection of inbound STARTTLS certificates: https://learn.microsoft.com/en-us/exchange/mail-flow/mail-routing/inbound-starttls-certificates-selection
-- Microsoft Learn — Create an Exchange Server certificate request for a certification authority: https://learn.microsoft.com/en-us/exchange/architecture/client-access/create-ca-certificate-requests
-- Microsoft Learn — Assign certificates to Exchange Server services: https://learn.microsoft.com/en-us/exchange/architecture/client-access/assign-certificates-to-services
+Do not disable TLS certificate verification to work around a changed or untrusted certificate.
