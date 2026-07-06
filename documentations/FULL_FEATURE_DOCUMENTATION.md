@@ -1121,10 +1121,16 @@ HashiCorp Vault is used to store sensitive runtime values, including:
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 - `LDAP_BIND_PASSWORD`
+- `SMTP_RELAY_USERNAME`
+- `SMTP_RELAY_PASSWORD`
 
 The `.env` file should contain non-secret runtime configuration only. Passwords and API keys should be stored in `vault/bootstrap/djopenkb.env` only for first-time Vault seeding, then removed from shared/exported packages.
 
 Vault encrypts stored secrets at rest and gives the application access through the configured Vault token file. The application token is created as owner/group `0:10001` with mode `0440`: root may manage it, while only the unprivileged application group may read the bind-mounted file. The project does not rely on hardcoded production secrets in source code. The Django PostgreSQL password fallback is disabled in production, so missing production database secrets fail startup instead of silently using a weak default.
+
+### SMTP relay certificate trust
+
+SMTP review notifications require TLS. The SMTP backend verifies the Exchange certificate and hostname before SMTP authentication. For Exchange certificates that chain to a private CA or are temporarily self-signed, the administrator can mount one public PEM/CRT trust certificate through `SMTP_RELAY_CA_CERT_FILE`, normally as `/opt/DjOpenKB/ldap-certs/exchange-smtp.crt` on the host. The file may contain the issuing CA/chain or the exact public self-signed Exchange certificate. It must never contain a private key or PFX/P12 bundle. `SMTP_RELAY_HOST` must still match a certificate SAN/CN; the trust certificate does not bypass hostname validation.
 
 ## 20. LDAPS Security
 

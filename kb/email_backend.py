@@ -1,9 +1,9 @@
-"""SMTP backend for the internal AD relay.
+"""SMTP backend with optional private Exchange trust certificate support.
 
-Django's standard SMTP backend validates certificates using the operating system
-trust store. This subclass additionally supports a private AD/enterprise CA file
-mounted into the container, while preserving normal hostname and certificate
-validation for both STARTTLS and implicit TLS.
+Django's standard SMTP backend validates certificates against the operating
+system trust store. This subclass can additionally load one mounted public
+trust certificate for an internal Exchange relay, while preserving normal
+certificate-chain and hostname validation for STARTTLS and implicit TLS.
 """
 
 from __future__ import annotations
@@ -15,16 +15,20 @@ from django.core.mail.backends.smtp import EmailBackend as DjangoSMTPEmailBacken
 from django.utils.functional import cached_property
 
 
-class ADRelayEmailBackend(DjangoSMTPEmailBackend):
-    """Django SMTP backend with optional strict trust of a private relay CA."""
+class TrustedRelayEmailBackend(DjangoSMTPEmailBackend):
+    """Django SMTP backend with an optional, strictly validated trust anchor."""
 
     @cached_property
     def ssl_context(self):
-        # Start with the OS trust store, then add the enterprise/AD CA when one
-        # is configured. This preserves hostname/certificate verification while
-        # supporting a private relay certificate chain.
+        # Start with the operating-system trust store. When an internal relay
+        # uses a private CA or a self-signed server certificate, add the public
+        # certificate configured by SMTP_RELAY_CA_CERT_FILE as an additional
+        # trust anchor. ssl.create_default_context() keeps hostname checking and
+        # certificate verification enabled.
         context = ssl.create_default_context()
-        ca_cert_file = (getattr(settings, "SMTP_RELAY_CA_CERT_FILE", "") or "").strip()
-        if ca_cert_file:
-            context.load_verify_locations(cafile=ca_cert_file)
+        trust_cert_file = (
+            getattr(settings, "SMTP_RELAY_CA_CERT_FILE", "") or ""
+        ).strip()
+        if trust_cert_file:
+            context.load_verify_locations(cafile=trust_cert_file)
         return context

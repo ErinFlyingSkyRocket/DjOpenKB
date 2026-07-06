@@ -442,6 +442,10 @@ SMTP_RELAY_PORT = int_config("SMTP_RELAY_PORT", 587, minimum=1, maximum=65535)
 SMTP_RELAY_USE_TLS = config_value("SMTP_RELAY_USE_TLS", "true").lower() == "true"
 SMTP_RELAY_USE_SSL = config_value("SMTP_RELAY_USE_SSL", "false").lower() == "true"
 SMTP_RELAY_TIMEOUT_SECONDS = int_config("SMTP_RELAY_TIMEOUT_SECONDS", 10, minimum=1, maximum=120)
+# Optional PEM/CRT trust certificate mounted into the web container. This can be
+# an issuing CA/chain or, for a temporary lab self-signed relay, the relay's
+# public certificate. The custom backend keeps normal hostname validation.
+SMTP_RELAY_CA_CERT_FILE = config_value("SMTP_RELAY_CA_CERT_FILE", "").strip()
 SMTP_RELAY_USERNAME = secret_value("SMTP_RELAY_USERNAME", "").strip()
 SMTP_RELAY_PASSWORD = secret_value("SMTP_RELAY_PASSWORD", "")
 SMTP_FROM_EMAIL = config_value("SMTP_FROM_EMAIL", "").strip()
@@ -457,10 +461,11 @@ EMAIL_SUBJECT_PREFIX = config_value("EMAIL_SUBJECT_PREFIX", "[Knowledge Reposito
 if EMAIL_SUBJECT_PREFIX:
     EMAIL_SUBJECT_PREFIX = f"{EMAIL_SUBJECT_PREFIX} "
 
-# Django's standard SMTP backend authenticates after STARTTLS/implicit TLS and
-# validates the relay certificate and hostname against the container's normal
-# operating-system trust store.
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# Django authenticates only after STARTTLS/implicit TLS. This backend starts
+# with the container's normal trust store and optionally adds a mounted public
+# certificate for a private Exchange relay. Certificate and hostname validation
+# remain enabled.
+EMAIL_BACKEND = "kb.email_backend.TrustedRelayEmailBackend"
 EMAIL_HOST = SMTP_RELAY_HOST
 EMAIL_PORT = SMTP_RELAY_PORT
 EMAIL_HOST_USER = SMTP_RELAY_USERNAME
@@ -506,6 +511,12 @@ if EMAIL_NOTIFICATIONS_ENABLED:
         raise ImproperlyConfigured(
             "SITE_BASE_URL must be the exact HTTPS browser origin, for example "
             "https://<PUBLIC_HOSTNAME> or https://<INTERNAL_SERVER_IP>:8080."
+        )
+
+    if SMTP_RELAY_CA_CERT_FILE and not Path(SMTP_RELAY_CA_CERT_FILE).is_file():
+        raise ImproperlyConfigured(
+            "SMTP_RELAY_CA_CERT_FILE is configured but the public trust certificate "
+            "is not available inside the web container."
         )
 
 

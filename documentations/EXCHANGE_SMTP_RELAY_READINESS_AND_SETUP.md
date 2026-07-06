@@ -17,15 +17,16 @@ This guide is deliberately limited to the Exchange relay integration. It does **
 
 ## 1. TLS certificate clarification
 
-A different Exchange server IP address does **not**, by itself, require a new certificate configuration in DjOpenKB. DjOpenKB connects by a **DNS hostname**, not an IP address. The certificate presented by Exchange must contain that DNS hostname in its Subject Alternative Name (SAN) or Subject/CN, have a private key on the Exchange server, and be enabled for Exchange SMTP.
+A different Exchange server IP address does **not**, by itself, require a new certificate configuration in DjOpenKB. DjOpenKB connects by a **DNS hostname**, not an IP address. The certificate presented by Exchange must contain that exact hostname in its Subject Alternative Name (SAN) or Subject/CN, have a private key on the Exchange server, and be enabled for Exchange SMTP.
 
-DjOpenKB uses Django's standard SMTP backend and the web container's normal operating-system trust store for SMTP TLS.
+DjOpenKB performs normal certificate-chain and hostname validation. It starts with the web container's normal operating-system trust store and can additionally load one public PEM/CRT trust certificate from `SMTP_RELAY_CA_CERT_FILE`. This is required when the Exchange SMTP certificate is self-signed or chains to an internal CA that is not already trusted by the container.
 
 | Situation | What is needed on Exchange | What DjOpenKB needs |
 |---|---|---|
-| Existing Exchange certificate already contains `<EXCHANGE_SMTP_FQDN>`, is valid, has a private key, and is SMTP-enabled | Reuse the existing Exchange certificate | Use the hostname and pass the SMTP TLS test with the container standard trust store. |
-| Existing Exchange certificate does not contain `<EXCHANGE_SMTP_FQDN>` | Request/install a **new Exchange server certificate** containing the FQDN | Use the hostname and pass the SMTP TLS test with the container standard trust store. |
-| Exchange certificate chains to a private CA not trusted by the container | Use a valid certificate with the correct FQDN | The platform team must make the issuing CA available through the container image's standard trust store; do not disable validation. |
+| Existing Exchange certificate already contains `<EXCHANGE_SMTP_FQDN>`, is valid, has a private key, and is SMTP-enabled | Reuse the existing Exchange certificate | Set `SMTP_RELAY_HOST` to the matching certificate name. If the chain is already trusted, the optional trust-certificate setting can remain blank. |
+| Existing Exchange certificate does not contain `<EXCHANGE_SMTP_FQDN>` | Request/install a **new Exchange server certificate** containing the FQDN | Use the hostname shown in the new certificate and provide the public issuing CA/chain when the container does not trust it already. |
+| Exchange currently presents a self-signed SMTP certificate | Prefer replacing it with an internally CA-issued certificate containing the intended FQDN | As a temporary lab path, export the exact **public** self-signed certificate as `exchange-smtp.crt` and configure it as the trust certificate. |
+| Exchange certificate chains to a private CA not trusted by the container | Keep the Exchange certificate and export the public issuing CA certificate or complete CA chain | Copy the public PEM/CRT to `ldap-certs/exchange-smtp.crt` and set `SMTP_RELAY_CA_CERT_FILE`. |
 
 ### Never copy these items to DjOpenKB
 
@@ -92,9 +93,51 @@ Choose a certificate only when all of the following are true:
 - `HasPrivateKey` is true.
 - `CertificateDomains` or `Subject` contains `<EXCHANGE_SMTP_FQDN>`.
 - `Services` includes `SMTP`, or the certificate can be safely enabled for SMTP by the Exchange administrator.
-- The issuer chains to a CA trusted by the web container's standard operating-system trust store.
+- The issuer is trusted by the web container, either through its standard trust store or a configured public PEM/CRT trust certificate.
 
-### 3.3 Confirm the service account is suitable
+### 3.3 Export the public trust certificate for DjOpenKB
+
+Only export a public certificate; do not export or transfer a private key.
+
+**CA-issued Exchange certificate:** export the public issuing CA certificate or complete CA chain in PEM/CRT format.
+
+**Current self-signed Exchange certificate:** export the exact public server certificate from Exchange. After selecting the SMTP certificate thumbprint from `Get-ExchangeCertificate`, run this in Exchange Management Shell:
+
+```powershell
+$cert = Get-ExchangeCertificate -Thumbprint <EXCHANGE_SMTP_CERT_THUMBPRINT>
+$pem = @(
+    "-----BEGIN CERTIFICATE-----"
+    [Convert]::ToBase64String(
+        $cert.Certificate.RawData,
+        [System.Base64FormattingOptions]::InsertLineBreaks
+    )
+    "-----END CERTIFICATE-----"
+) -join "`r`n"
+[System.IO.File]::WriteAllText("C:\Temp\exchange-smtp.crt", $pem)
+```
+
+Transfer only that public `.crt` file to the DjOpenKB host and store it as:
+
+```text
+/opt/DjOpenKB/ldap-certs/exchange-smtp.crt
+```
+
+On the DjOpenKB host, verify it is a certificate and contains no private key:
+
+```bash
+openssl x509 -in /opt/DjOpenKB/ldap-certs/exchange-smtp.crt \
+  -noout -subject -issuer -ext subjectAltName
+```
+
+Then add this non-secret setting to `.env`:
+
+```dotenv
+SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+```
+
+The certificate's SAN/CN must still match `SMTP_RELAY_HOST`. A self-signed certificate whose CN is only a short hostname can be used only with that same short hostname and a working internal DNS record. The recommended permanent fix is a CA-issued certificate containing the Exchange FQDN.
+
+### 3.4 Confirm the service account is suitable
 
 The SMTP service account should:
 
@@ -332,7 +375,10 @@ import ssl
 
 host = os.environ["SMTP_RELAY_HOST"]
 port = int(os.environ.get("SMTP_RELAY_PORT", "587"))
+trust_cert_file = os.environ.get("SMTP_RELAY_CA_CERT_FILE", "").strip()
 context = ssl.create_default_context()
+if trust_cert_file:
+    context.load_verify_locations(cafile=trust_cert_file)
 
 with smtplib.SMTP(host, port, timeout=10) as client:
     client.ehlo()
@@ -393,7 +439,7 @@ Useful outcomes:
 | Symptom | Likely cause | First check |
 |---|---|---|
 | Connection timeout/refused | Firewall, DNS, wrong listener, Exchange service issue | DNS resolution; TCP 587 firewall; connector bindings |
-| `CERTIFICATE_VERIFY_FAILED` | Certificate chain is not trusted by the container standard trust store, or FQDN/SAN mismatch | `SMTP_RELAY_HOST`; Exchange certificate SAN; trusted chain in the container image |
+| `CERTIFICATE_VERIFY_FAILED` | SMTP trust certificate is missing/wrong, or hostname/SAN mismatch | `SMTP_RELAY_HOST`; Exchange certificate SAN/CN; `SMTP_RELAY_CA_CERT_FILE`; contents of `ldap-certs/exchange-smtp.crt` |
 | STARTTLS not advertised | TLS not enabled on connector or no matching certificate | Connector `AuthMechanism`; `Fqdn`; `TlsCertificateName`; Exchange Application log |
 | Authentication failed | Account cannot authenticate, password stale, wrong connector settings | Service account; `BasicAuthRequireTLS`; Exchange protocol logs |
 | Sender rejected | From address differs from authenticated mailbox without Send As | `SMTP_FROM_EMAIL`; mailbox permissions |
@@ -452,7 +498,7 @@ If testing fails or must be paused:
 - [ ] Client Frontend connector is configured for TCP 587, STARTTLS, and authenticated Exchange users.
 - [ ] Network/firewall access to TCP 587 is limited to the DjOpenKB host.
 - [ ] No anonymous relay is enabled for DjOpenKB.
-- [ ] The Exchange certificate chain is trusted by the web container standard trust store.
+- [ ] The Exchange certificate chain is trusted by the web container standard trust store or by the configured public `SMTP_RELAY_CA_CERT_FILE` file.
 - [ ] SMTP credentials are in Vault only.
 - [ ] Service account can send from `SMTP_FROM_EMAIL`.
 - [ ] A controlled SMTP test succeeds.

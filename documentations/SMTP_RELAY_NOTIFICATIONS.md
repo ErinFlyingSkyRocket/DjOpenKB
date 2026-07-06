@@ -39,7 +39,7 @@ A duplicate email address receives only one message. Inactive, disabled, main-si
 
 - SMTP username and password are read only from Vault as `SMTP_RELAY_USERNAME` and `SMTP_RELAY_PASSWORD`.
 - The web service opens TLS before SMTP authentication. `SMTP_RELAY_USE_TLS=true` is the normal STARTTLS configuration for port `587`.
-- Certificate and hostname validation remain enabled through the web container's standard operating-system trust store.
+- Certificate and hostname validation remain enabled. The SMTP backend starts with the web container's normal trust store and can add one read-only public certificate from `SMTP_RELAY_CA_CERT_FILE` for a private CA or self-signed Exchange relay.
 - DjOpenKB sends **one Bcc-only message** per review event. Reviewer email addresses are not exposed to other reviewers in `To`, `Cc`, or message headers.
 - Public notifications include only the public article title, never article content.
 - Internal notifications omit both internal title and internal content because inboxes and relay logs are outside the internal article access-control boundary.
@@ -66,8 +66,9 @@ A duplicate email address receives only one message. Inactive, disabled, main-si
 1. The SMTP relay must permit the dedicated service account to authenticate and send using `SMTP_FROM_EMAIL`.
 2. The relay must provide TLS, usually STARTTLS on TCP `587`.
 3. Configure the relay DNS hostname shown on its TLS certificate. Do not use a raw IP address for a TLS connection.
-4. The `web` container must be able to resolve and reach the relay hostname on its configured port.
-5. Each intended reviewer must have a valid Django `User.email` address within the configured recipient-domain allowlist. Active Directory users normally receive their email value from the existing LDAP mapping during login.
+4. For a private-CA or self-signed relay certificate, place its public trust certificate in `ldap-certs/exchange-smtp.crt` and configure `SMTP_RELAY_CA_CERT_FILE`. For a CA-issued relay already trusted by the container, leave the setting blank.
+5. The `web` container must be able to resolve and reach the relay hostname on its configured port.
+6. Each intended reviewer must have a valid Django `User.email` address within the configured recipient-domain allowlist. Active Directory users normally receive their email value from the existing LDAP mapping during login.
 
 ## Configuration
 
@@ -82,6 +83,9 @@ SMTP_RELAY_PORT=587
 SMTP_RELAY_USE_TLS=true
 SMTP_RELAY_USE_SSL=false
 SMTP_RELAY_TIMEOUT_SECONDS=10
+# Public PEM/CRT trust certificate. Use a CA/chain or the exact self-signed
+# server certificate; never use a PFX or private key.
+SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
 SMTP_FROM_EMAIL=knowledge-repository@company.example
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=company.example
 SITE_BASE_URL=https://<PUBLIC_HOSTNAME>
@@ -106,11 +110,30 @@ SMTP_RELAY_USE_TLS=false
 SMTP_RELAY_USE_SSL=true
 ```
 
-### 2. Verify standard TLS trust
+### 2. Provide the Exchange public trust certificate when required
 
-DjOpenKB uses the web container's normal operating-system trust store for SMTP TLS.
+The SMTP backend always begins with the web container's normal operating-system trust store. When Exchange uses a private CA or a self-signed certificate that the container does not already trust, copy a **public PEM/CRT** file into the mounted project directory:
 
-Use the Exchange certificate hostname in `SMTP_RELAY_HOST` and run the controlled SMTP test. If certificate validation fails, correct the Exchange certificate chain or have the platform team make its issuing CA available through the container image's standard trust store. Do not disable certificate or hostname validation.
+```text
+/opt/DjOpenKB/ldap-certs/exchange-smtp.crt
+```
+
+Then set:
+
+```dotenv
+SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+```
+
+For a CA-issued Exchange certificate, use the public issuing CA certificate or full CA chain. For a temporary self-signed Exchange certificate, use the exact public Exchange server certificate. Do not use a PFX/P12, a private key, or the unrelated LDAPS CA certificate unless it actually issued the Exchange SMTP certificate.
+
+Verify the file is PEM/CRT and does not contain a private key:
+
+```bash
+openssl x509 -in /opt/DjOpenKB/ldap-certs/exchange-smtp.crt \
+  -noout -subject -issuer -ext subjectAltName
+```
+
+`SMTP_RELAY_HOST` must exactly match a DNS name in the certificate SAN/CN. Do not disable certificate or hostname validation.
 
 ### 3. Store only SMTP credentials in Vault
 
@@ -141,10 +164,10 @@ sudo rm -f vault/bootstrap/djopenkb.env
    sudo docker compose up -d --build --remove-orphans
    ```
 
-2. Recreate the web service after changing SMTP configuration:
+2. Rebuild the web image after restoring the SMTP trust-certificate backend, then recreate the web service after configuration changes:
 
    ```bash
-   sudo docker compose up -d --force-recreate web
+   sudo docker compose up -d --build --force-recreate web
    ```
 
 3. Send one controlled relay test from the web service:
@@ -176,7 +199,7 @@ sudo rm -f vault/bootstrap/djopenkb.env
 | Symptom | First checks |
 |---|---|
 | Relay test cannot connect | Relay DNS name, internal DNS, firewall to TCP 587, Exchange receive connector |
-| `CERTIFICATE_VERIFY_FAILED` | `SMTP_RELAY_HOST` must match certificate SAN/CN; confirm the Exchange chain is trusted by the container standard trust store |
+| `CERTIFICATE_VERIFY_FAILED` | `SMTP_RELAY_HOST` must match certificate SAN/CN; confirm `SMTP_RELAY_CA_CERT_FILE` points to a readable PEM/CRT that issued or is the Exchange certificate |
 | STARTTLS unavailable | Exchange connector TLS settings and assigned SMTP certificate |
 | Authentication fails | Vault SMTP credentials, account status, Exchange authenticated SMTP settings |
 | Sender rejected | `SMTP_FROM_EMAIL` and the service account's Send As / mailbox permissions |

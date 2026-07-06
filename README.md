@@ -165,7 +165,7 @@ Draft, pending, pending failed, deletion-queued, and unapproved pending-update c
 
 ## SMTP Relay Review Notifications
 
-Review notifications are optional and disabled by default. After a qualifying submission commits, the Django web service resolves the eligible role-group recipients and sends one Bcc-only SMTP message using a Vault-stored service account. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. See [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for configuration, deployment, testing, and security behaviour.
+Review notifications are optional and disabled by default. After a qualifying submission commits, the Django web service resolves the eligible role-group recipients and sends one Bcc-only SMTP message using a Vault-stored service account. TLS certificate and hostname validation remain enabled. Private-CA or self-signed Exchange relays can use one mounted public PEM/CRT trust certificate configured through `SMTP_RELAY_CA_CERT_FILE`; private keys and PFX/P12 bundles are never used. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. See [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for configuration, deployment, testing, and security behaviour.
 
 ## Project Folder Structure
 
@@ -180,7 +180,7 @@ DjOpenKB/
 |-- nginx/                       # Nginx HTTPS reverse proxy configuration and cert scripts
 |-- vault/                       # Vault configuration, bootstrap files, and local Vault runtime data
 |-- (Docker volume: redis_data)   # Persistent Redis data is held in a named Docker volume, not a source folder
-|-- ldap-certs/                  # AD/LDAPS CA certificate mounted into the web container
+|-- ldap-certs/                  # Public LDAPS and optional Exchange SMTP trust certificates mounted read-only into the web container
 |-- OpenKB-main/                 # OpenKB source code used by the AI chatbot
 |-- openkb-data/                 # Public OpenKB workspace and public article AI data
 |-- openkb-data-internal/        # Runtime-created internal OpenKB workspace for internal article AI data

@@ -211,6 +211,9 @@ services:
       SMTP_RELAY_USE_TLS: "${SMTP_RELAY_USE_TLS:-true}"
       SMTP_RELAY_USE_SSL: "${SMTP_RELAY_USE_SSL:-false}"
       SMTP_RELAY_TIMEOUT_SECONDS: "${SMTP_RELAY_TIMEOUT_SECONDS:-10}"
+      # Optional public PEM/CRT trust certificate for an internal Exchange relay.
+      # It is mounted read-only from ./ldap-certs; do not put a PFX or private key here.
+      SMTP_RELAY_CA_CERT_FILE: "${SMTP_RELAY_CA_CERT_FILE:-}"
       SMTP_FROM_EMAIL: "${SMTP_FROM_EMAIL:-}"
       SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS: "${SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS:-}"
       SITE_BASE_URL: "${SITE_BASE_URL:-}"

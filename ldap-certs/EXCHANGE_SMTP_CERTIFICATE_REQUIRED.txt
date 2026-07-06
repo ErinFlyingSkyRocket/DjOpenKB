@@ -1,0 +1,23 @@
+DjOpenKB Exchange SMTP trust certificate
+===========================================
+
+Place one public PEM/CRT certificate at this exact path:
+
+    ldap-certs/exchange-smtp.crt
+
+Set the matching runtime value in .env:
+
+    SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+
+Accepted contents:
+- The issuing CA certificate or CA chain for a CA-issued Exchange SMTP certificate; or
+- The exact public self-signed Exchange SMTP certificate, only while that self-signed
+  certificate remains in use.
+
+Never place any of the following in this folder:
+- Exchange private keys;
+- .pfx or .p12 bundles;
+- credentials, passwords, or full server backups.
+
+The application keeps TLS certificate verification and hostname verification enabled.
+The SMTP_RELAY_HOST value must match a name in the Exchange certificate's SAN/CN.

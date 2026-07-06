@@ -4,7 +4,7 @@ This guide is for Linux administrators who install, run, update, back up, and tr
 
 It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
 
-> **SMTP review notifications:** optional SMTP relay review-email setup is documented separately in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep it disabled until the relay, TLS validation, Vault service-account credentials, and web-service SMTP test are complete.
+> **SMTP review notifications:** optional SMTP relay review-email setup is documented separately in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep it disabled until the relay, TLS certificate hostname/trust, Vault service-account credentials, and web-service SMTP test are complete.
 
 ## 1. Deployment scope and command convention
 
@@ -259,6 +259,22 @@ CLEANUP_INTERVAL_SECONDS=86400
 ```
 
 Do not set an unusually short interval on a production host unless there is a clear operational reason.
+
+### 4.5 Optional Exchange SMTP trust certificate
+
+When review notifications use an Exchange relay with a private CA or self-signed certificate, copy only the public PEM/CRT trust certificate to:
+
+```text
+/opt/DjOpenKB/ldap-certs/exchange-smtp.crt
+```
+
+Then set this non-secret `.env` value:
+
+```dotenv
+SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+```
+
+Do not copy a PFX/P12 bundle, private key, or SMTP password. The application continues to validate the certificate hostname; `SMTP_RELAY_HOST` must match a SAN/CN in the Exchange certificate. Full steps are in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md).
 
 ---
 
