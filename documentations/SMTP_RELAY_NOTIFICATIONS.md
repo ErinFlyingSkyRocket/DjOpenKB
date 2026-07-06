@@ -1,67 +1,78 @@
-# SMTP Relay Article-Review Notifications
+# SMTP Relay Workflow and Lockout Notifications
 
 ## Purpose
 
-DjOpenKB sends an email when a writer submits an article for review or submits a published-article update for review. It uses the organisation SMTP relay and one Vault-stored SMTP service account.
+DjOpenKB uses the organisation SMTP relay and one Vault-stored SMTP service account for workflow and security notifications. The Django `web` service sends the email directly; no notification Celery queue or `notification-worker` container is required.
 
-The Django `web` service sends the message **after the article database transaction commits**. There is no separate notification Celery queue or `notification-worker` container. The Exchange certificate export and Linux trust-file process are in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
+The Exchange certificate export and Linux trust-file process are in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
 
 ```text
-Writer submits an article
-        |
-        v
-Django commits the pending article/update
-        |
-        v
-Django resolves eligible current role-group users
-        |
-        v
-One SMTP message with all recipients in Bcc
-        |
-        v
-Exchange / SMTP relay delivers the message
+Article submission or outcome                     New password/MFA lockout
+              |                                                |
+              v                                                v
+Django commits workflow change                  Django writes the lockout audit row
+              |                                                |
+              v                                                v
+Resolve current eligible recipients              Resolve current eligible Admin Users
+              |                                                |
+              +---------------------+--------------------------+
+                                    v
+                    SMTP relay sends one privacy-preserving email
 ```
 
-A relay problem never rolls back a valid article submission. DjOpenKB records the failure in the append-only activity log and the item remains pending for review.
+A relay problem never reverses a valid article workflow decision and never removes or shortens an account lockout. The original workflow or lockout audit event remains available to administrators.
 
 ## Recipient Matrix
 
-The application uses the existing **Django role groups**, not Active Directory security groups, so email delivery matches the permissions that control each review queue.
+The application uses the current **DjOpenKB Django role groups**, not Active Directory security groups. This keeps email delivery aligned with the permissions that control the relevant workflow or administration surface.
 
-| Submitted item | Eligible recipients |
-|---|---|
-| Public new article or public published-article update | `Article Approver`, `Article Manager`, `Admin Users` |
-| Internal new article or internal published-article update | `Internal Article Approver`, `Internal Article Manager`, `Admin Users` |
+| Event | Eligible recipients | Delivery style |
+|---|---|---|
+| Public new article or public published-article update submitted/resubmitted | Active, non-disabled `Article Approver`, `Article Manager`, or `Admin Users` | One Bcc message |
+| Internal new article or internal published-article update submitted/resubmitted | Active, non-disabled `Internal Article Approver`, `Internal Article Manager`, or `Admin Users` | One Bcc message |
+| Public/internal article or pending update approved | Current eligible article owner only | One direct `To` message |
+| Public/internal article or pending update marked Pending failed | Current eligible article owner only | One direct `To` message |
+| New temporary password, normal MFA, or Django Admin MFA lockout for a recognised account | Active, non-disabled `Admin Users` | One Bcc message |
 
-A duplicate email address receives only one message. Only users who currently hold one of the matching Django role groups in the table can receive reviewer email. Inactive, disabled, main-site-blocked, blank-email, invalid-email, and non-allowlisted accounts are excluded. A direct Django superuser without the `Admin Users` role is not an eligible recipient.
+A recipient must also be main-site enabled, have a valid `User.email`, and use a domain listed in `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`. Duplicate addresses receive only one Bcc recipient entry. A standalone Django superuser is **not** a recipient unless they also belong to `Admin Users`.
 
-For an approval or Pending-failed outcome, DjOpenKB sends a direct message only to the current article owner. The owner is skipped when the account is inactive, assigned to `Disabled User`, blocked from the main site, missing a valid allowed-domain email address, or is the reviewer who completed their own review. The owner does not need an approver or manager role to receive the outcome for their own article.
+For owner outcome messages, the owner does not need an approver, manager, or admin role. They must simply remain active, non-disabled, main-site enabled, and have a valid allowlisted address.
+
+## Lockout Alert Behaviour
+
+A lockout alert is created only when the progressive lockout policy creates a **new** temporary block, such as the configured 5-minute, 15-minute, or 1-hour stage. Attempts made while that same block is still active do not send another email.
+
+Known-account password, normal MFA, and Django Admin MFA lockouts all use this rule. Failed attempts against an **unknown username** remain recorded in `AuthActivityLog`, but do not email administrators. This prevents arbitrary login names from being used to flood administrator inboxes.
+
+The email includes only the account username, lockout type, temporary duration, policy stage, lockout strike, source IP, and a protected Django Admin authentication-log link. It never includes a password, MFA code, SMTP secret, or user agent.
 
 ## Privacy and Security Behaviour
 
 - SMTP username and password are read only from Vault as `SMTP_RELAY_USERNAME` and `SMTP_RELAY_PASSWORD`.
 - The web service opens TLS before SMTP authentication. `SMTP_RELAY_USE_TLS=true` is the normal STARTTLS configuration for port `587`.
 - Certificate and hostname validation remain enabled. The SMTP backend starts with the web container's normal trust store and can add one read-only public certificate from `SMTP_RELAY_CA_CERT_FILE` for a private CA or self-signed Exchange relay.
-- DjOpenKB sends **one Bcc-only message** per review event. Reviewer email addresses are not exposed to other reviewers in `To`, `Cc`, or message headers.
-- Public notifications include only the public article title, never article content.
-- Internal notifications omit both internal title and internal content because inboxes and relay logs are outside the internal article access-control boundary.
+- Bcc delivery is used for reviewer pools and lockout alerts. Recipient addresses are not exposed in `To`, `Cc`, or email headers.
+- Public article notifications include only the public article title, never article content. Internal article notifications omit the internal title, content, and review comments.
+- Owner outcome messages send only to the current eligible owner. The direct link requires normal DjOpenKB sign-in; Pending-failed review comments remain inside DjOpenKB.
 - Recipient addresses must use a domain listed in `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`.
-- Audit entries contain only status, counts, scope, and reason codes. They never contain recipient addresses, passwords, or SMTP protocol details.
-- The direct path has no automatic retry. This avoids duplicate review email when an SMTP relay accepts a message but reports an error afterwards. A relay failure is logged and can be addressed by resubmitting an eligible item or by using the administrator workflow after the relay is restored.
+- Authentication lockout events are always recorded in append-only `AuthActivityLog` before the optional email is sent.
+- The direct path has no automatic retry. This avoids duplicate email when an SMTP relay accepts a message but later reports an error. SMTP failures are written to the application log and never change the workflow or lockout state.
 
 ## When Email Is Sent
 
-| Workflow action | Email sent? |
+| Workflow or security action | Email sent? |
 |---|---:|
 | Writer saves a new draft | No |
-| Writer submits a new article | Yes |
-| Writer resubmits a draft or pending-failed article | Yes |
+| Writer submits/resubmits a new article | Yes, matching reviewer pool |
 | Writer saves a private draft of a published-article update | No |
-| Writer submits a published-article update | Yes |
-| Writer edits an already-pending item | No |
+| Writer submits/resubmits a published-article update | Yes, matching reviewer pool |
 | Reviewer saves edits while keeping an item pending | No |
-| Admin publishes directly | No |
-| Admin approves or marks an item Pending failed | Yes — direct message to the currently eligible article owner |
+| Reviewer approves an article or pending update | Yes, current eligible owner |
+| Reviewer marks an article or pending update Pending failed | Yes, current eligible owner |
+| Admin publishes their own article directly | No redundant owner email |
+| A recognised account triggers a new password/MFA/Admin MFA temporary lockout | Yes, active eligible `Admin Users` |
+| Retry while an existing temporary lockout is still active | No |
+| Unknown username triggers a temporary password lockout | No email; append-only authentication log only |
 
 ## Prerequisites
 
@@ -212,14 +223,14 @@ When enabling SMTP on an already-running deployment, add the SMTP credentials to
 
 ## Expected Workflow Results
 
-- Public submissions notify only public approvers, public managers, and admins.
-- Internal submissions notify only internal approvers, internal managers, and admins.
-- One SMTP message is submitted per event with all eligible recipients in Bcc.
-- Only matching current reviewer roles receive a submission notification; direct Django superuser status alone is not enough.
-- Missing or invalid reviewer email addresses do not stop the article workflow; those accounts are skipped.
-- Approval and Pending-failed owner email is skipped for disabled, inactive, main-site-blocked, or otherwise ineligible owners.
-- When there are no eligible recipients, the item remains pending and an audit event records the skip.
-- When SMTP is unavailable, the item remains pending and an audit event records the failure.
+- Public and internal reviewer pools remain strictly separated, except that `Admin Users` receive both scopes.
+- Approved and Pending-failed outcomes notify only the current eligible article owner.
+- A recognised user triggering a new password/MFA/Admin MFA temporary lockout sends one Bcc alert to current eligible `Admin Users`.
+- Bcc is used for reviewer pools and administrator lockout alerts; direct `To` is used only for the single article owner outcome message.
+- Inactive, disabled, main-site-blocked, blank-email, invalid-email, or non-allowlisted recipients are skipped without interrupting the article or lockout workflow.
+- A direct Django superuser without `Admin Users` does not receive reviewer or lockout messages.
+- Unknown-user password lockouts remain visible in the authentication activity log but intentionally do not send email.
+- When SMTP is unavailable, the article state and lockout state remain unchanged. Review the application logs and the original append-only audit record.
 
 ## Troubleshooting
 
@@ -230,6 +241,7 @@ When enabling SMTP on an already-running deployment, add the SMTP credentials to
 | STARTTLS unavailable | Exchange connector TLS settings and assigned SMTP certificate |
 | Authentication fails | Vault SMTP credentials, account status, Exchange authenticated SMTP settings |
 | Sender rejected | `SMTP_FROM_EMAIL` and the service account's Send As / mailbox permissions |
-| No workflow recipients | Reviewer role groups, active/disabled status, Django `User.email`, recipient-domain allowlist |
+| No workflow recipients | Matching reviewer role groups, article-owner status, active/disabled status, Django `User.email`, recipient-domain allowlist |
+| No lockout alert | Confirm a **recognised** account triggered a new temporary block, then check active `Admin Users` group membership, recipient-domain allowlist, and application logs |
 
 Historical `article_review_notification_queued` audit records are retained for existing data, but new direct delivery does not create queue events.

@@ -4,7 +4,7 @@ This guide is for Linux administrators who install, run, update, back up, and tr
 
 It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
 
-> **SMTP review notifications:** optional SMTP relay review-email setup is documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). For Exchange certificate export, Linux certificate preparation, and the first relay test, use [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md). Keep notifications disabled until the relay, TLS certificate hostname/trust, Vault mailbox credentials, and web-service SMTP test are complete.
+> **SMTP workflow and lockout notifications:** optional SMTP relay setup is documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). The same relay sends article-workflow email and alert email when a recognised account reaches a new temporary password/MFA lockout. For Exchange certificate export, Linux certificate preparation, and the first relay test, use [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md). Keep notifications disabled until the relay, TLS certificate hostname/trust, Vault mailbox credentials, and web-service SMTP test are complete.
 
 ## 1. Deployment scope and command convention
 
@@ -260,9 +260,11 @@ CLEANUP_INTERVAL_SECONDS=86400
 
 Do not set an unusually short interval on a production host unless there is a clear operational reason.
 
-### 4.5 Optional Exchange SMTP review notifications
+### 4.5 Optional Exchange SMTP workflow and lockout notifications
 
-SMTP review notifications are optional. They are sent directly by the Django `web` service after a writer submits an article or a published-article update for review. There is no notification queue or separate notification worker.
+SMTP notifications are optional. The Django `web` service sends them directly after a writer submits an article or published-article update for review, after an article outcome is decided, and after a recognised account reaches a new temporary password/MFA lockout. Reviewer and lockout alerts use Bcc; a single owner outcome uses direct `To`. There is no notification queue or separate notification worker.
+
+The existing `EMAIL_NOTIFICATIONS_ENABLED` switch controls all of these events. No extra environment variable is required for lockout email alerts.
 
 For the current Exchange lab certificate, which has `CN=qapf1-exch`, complete the Windows GUI export and Linux certificate preparation in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md) before enabling notifications. The exported **public** certificate belongs at:
 

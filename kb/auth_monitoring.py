@@ -326,7 +326,7 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
             if purpose == "admin_mfa"
             else AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED
         )
-        log_auth_event(
+        lockout_event = log_auth_event(
             request,
             event_type=lockout_event_type,
             success=False,
@@ -343,6 +343,23 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
                 "admin_step_up": purpose == "admin_mfa",
             },
         )
+
+        # Notify the current Admin Users role group only after a genuinely new
+        # temporary lockout is written. Unknown usernames still create the
+        # audit record but do not mail administrators, preventing arbitrary
+        # login names from being used to flood administrator inboxes.
+        if lockout_event is not None and getattr(lockout_event, "user_id", None):
+            try:
+                from .notifications import send_auth_lockout_admin_notification_after_commit
+
+                send_auth_lockout_admin_notification_after_commit(lockout_event.pk)
+            except Exception:
+                # The lockout and its audit record must never be undone or
+                # hidden because the optional SMTP-alert path has an issue.
+                logger.exception(
+                    "Unable to schedule authentication lockout notification: auth_activity_log_id=%s",
+                    getattr(lockout_event, "pk", None),
+                )
 
     return {
         "locked": bool(locked),

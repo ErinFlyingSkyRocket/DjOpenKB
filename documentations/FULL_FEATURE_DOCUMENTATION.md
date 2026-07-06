@@ -269,6 +269,16 @@ Django Admin -> Site settings -> Authentication lockout policy stages
 
 When the database/site setting is unavailable during early startup or migration, the `.env` value `AUTH_LOCKOUT_POLICY_STAGES` acts only as the fallback policy. The fallback format is `failed_attempts:block_seconds:repeat_count`, for example `10:300:2,5:900:2,3:3600:0`. Production deployments should rely on the admin-managed policy after migration.
 
+### 6.1 Administrator Lockout Email Alerts
+
+When a recognised account reaches a new temporary password, normal MFA, or Django Admin MFA lockout stage, DjOpenKB sends one Bcc-only SMTP alert to the current eligible `Admin Users` role group. The alert happens only for a newly created block. Retries during the same 5-minute, 15-minute, 1-hour, or other configured temporary block do not create duplicate email.
+
+The recipient query is strict: recipients must currently hold `Admin Users`, be active, non-disabled, main-site enabled, have a valid email, and use an allowlisted organisation domain. A direct Django superuser without the `Admin Users` group is not enough. The locked account does not need any special role for the alert to occur.
+
+Unknown usernames remain in append-only authentication activity logs but do not send lockout email. This avoids turning arbitrary username guesses into administrator-inbox spam. The alert includes the account username, lockout type, configured duration, policy stage, strike number, source IP, and a protected authentication-log link. It does not contain passwords, MFA codes, SMTP secrets, or full user-agent strings.
+
+The existing global `EMAIL_NOTIFICATIONS_ENABLED` SMTP control applies to these alerts as well as article workflow notifications; no additional environment setting, user preference, or notification worker is needed.
+
 ## 7. Session and Cookie Security
 
 ### 7.1 Session Timeout
@@ -1023,8 +1033,8 @@ Examples of authentication events:
 | Password login | Success, failure, invalid local credentials, invalid AD credentials |
 | MFA | Setup success/failure, verify success/failure, pending MFA created |
 | Session/security | Logout, session invalidation, forced MFA reset |
-| Password/MFA lockout | Lockout applied, blocked attempt, lockout reset |
-| Admin MFA/lockout management | Admin MFA reset and admin password/MFA lockout reset |
+| Password/MFA lockout | Lockout applied, blocked attempt, lockout reset; a new recognised-account temporary lockout can also trigger a Bcc alert to eligible `Admin Users` |
+| Admin MFA/lockout management | Admin MFA reset, Django Admin MFA lockout, and admin password/MFA lockout reset |
 
 ### 18.2 General Activity Logs
 
