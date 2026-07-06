@@ -1,6 +1,6 @@
 # DjOpenKB Full Feature Documentation
 
-> Optional SMTP article-review notifications are documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). They are disabled by default and use direct post-commit SMTP delivery from the Django web service with Vault-stored relay credentials.
+> Optional SMTP article-review notifications are documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). They are disabled by default and use direct post-commit SMTP delivery from the Django web service with Vault-stored relay credentials. The Exchange Windows GUI export and Linux trust-certificate process are in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
 
 This document summarises the implemented features, security controls, deployment-related components, role permissions, logging coverage, and operational behaviours of DjOpenKB. It is intended to give engineers, reviewers, and future administrators a clear overview of what the system provides and how the main surfaces are protected.
 
@@ -1130,7 +1130,7 @@ Vault encrypts stored secrets at rest and gives the application access through t
 
 ### SMTP relay certificate trust
 
-SMTP review notifications require TLS. The SMTP backend verifies the Exchange certificate and hostname before SMTP authentication. For Exchange certificates that chain to a private CA or are temporarily self-signed, the administrator can mount one public PEM/CRT trust certificate through `SMTP_RELAY_CA_CERT_FILE`, normally as `/opt/DjOpenKB/ldap-certs/exchange-smtp.crt` on the host. The file may contain the issuing CA/chain or the exact public self-signed Exchange certificate. It must never contain a private key or PFX/P12 bundle. `SMTP_RELAY_HOST` must still match a certificate SAN/CN; the trust certificate does not bypass hostname validation.
+SMTP review notifications require TLS. The SMTP backend verifies the Exchange certificate and hostname before SMTP authentication. For Exchange certificates that chain to a private CA or are temporarily self-signed, the administrator can mount one public PEM/CRT trust certificate through `SMTP_RELAY_CA_CERT_FILE`, normally as `/opt/DjOpenKB/ldap-certs/exchange-smtp.crt` on the host. The file may contain the issuing CA/chain or the exact public self-signed Exchange certificate. It must never contain a private key or PFX/P12 bundle. `SMTP_RELAY_HOST` must still match a certificate SAN/CN; the trust certificate does not bypass hostname validation. The complete fresh-deployment procedure is in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
 
 ## 20. LDAPS Security
 

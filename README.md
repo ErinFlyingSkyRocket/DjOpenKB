@@ -4,6 +4,8 @@ DjOpenKB is a Docker-based internal IT knowledge base built with Django. It prov
 
 The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required during development: users on the reachable internal network can use the browser-facing server IP over HTTPS, for example `https://<INTERNAL_SERVER_IP>:8080`. Replace `<INTERNAL_SERVER_IP>` with the approved internal address for the deployment. `localhost` and `127.0.0.1` refer only to the Linux server itself and are not remote-user addresses. When a firewall and final DNS name are later introduced, publish only HTTPS and update the trusted host/origin settings to the exact public address.
 
+For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GUIDE.md). Optional Exchange SMTP review notifications use [SMTP Relay Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md) and the Windows GUI/Linux certificate process in [Exchange SMTP Certificate Setup](documentations/EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
+
 ---
 
 ## Main Features
@@ -165,7 +167,7 @@ Draft, pending, pending failed, deletion-queued, and unapproved pending-update c
 
 ## SMTP Relay Review Notifications
 
-Review notifications are optional and disabled by default. After a qualifying submission commits, the Django web service resolves the eligible role-group recipients and sends one Bcc-only SMTP message using a Vault-stored service account. TLS certificate and hostname validation remain enabled. Private-CA or self-signed Exchange relays can use one mounted public PEM/CRT trust certificate configured through `SMTP_RELAY_CA_CERT_FILE`; private keys and PFX/P12 bundles are never used. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. See [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for configuration, deployment, testing, and security behaviour.
+Review notifications are optional and disabled by default. After a qualifying submission commits, the Django web service resolves the eligible role-group recipients and sends one Bcc-only SMTP message using a Vault-stored service account. TLS certificate and hostname validation remain enabled. Private-CA or self-signed Exchange relays can use one mounted public PEM/CRT trust certificate configured through `SMTP_RELAY_CA_CERT_FILE`; private keys and PFX/P12 bundles are never used. Public review submissions notify Public Article Approver/Manager/Admin Users; internal review submissions notify Internal Article Approver/Manager/Admin Users. Follow [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for configuration and testing, and [Exchange SMTP Certificate Setup](documentations/EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md) for the Windows GUI export and Linux certificate process.
 
 ## Project Folder Structure
 

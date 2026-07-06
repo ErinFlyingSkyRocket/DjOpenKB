@@ -8,6 +8,10 @@ DjOpenKB connects to Exchange by DNS name over authenticated SMTP with STARTTLS 
 
 The Exchange certificate work uses the **Exchange Admin Center** and **Windows Certificate Manager**. The final Linux commands validate and prepare the exported public certificate for the DjOpenKB Docker container.
 
+### Fresh deployment order
+
+For a fresh DjOpenKB deployment, complete this guide before enabling SMTP notifications: export the public Exchange certificate, copy it to `ldap-certs/exchange-smtp.crt`, validate it on Linux, add the non-secret SMTP values to `.env`, add the mailbox credentials to the temporary Vault bootstrap file, deploy the stack, then run the controlled SMTP test. The wider application setup is in [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md).
+
 ---
 
 ## Before you start
@@ -302,11 +306,19 @@ inside the `web` container as:
 /etc/ssl/certs/djopenkb-ldap
 ```
 
-Restart the `web` service so Django reloads the SMTP certificate setting:
+For a fresh installation, the certificate mount is available when the stack starts. For an existing installation where the SMTP certificate path or `.env` values have just changed, recreate `web` so Django reloads them:
 
 ```bash
 cd /opt/DjOpenKB
 
+sudo docker compose up -d --force-recreate web
+```
+
+If SMTP mailbox credentials were just added or changed in Vault, seed the temporary bootstrap file first, remove it afterwards, then recreate `web`:
+
+```bash
+sudo docker compose up -d --force-recreate vault-init
+sudo rm -f vault/bootstrap/djopenkb.env
 sudo docker compose up -d --force-recreate web
 ```
 

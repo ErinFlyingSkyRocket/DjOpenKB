@@ -4,7 +4,7 @@ This guide is for Linux administrators who install, run, update, back up, and tr
 
 It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
 
-> **SMTP review notifications:** optional SMTP relay review-email setup is documented separately in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep it disabled until the relay, TLS certificate hostname/trust, Vault service-account credentials, and web-service SMTP test are complete.
+> **SMTP review notifications:** optional SMTP relay review-email setup is documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). For Exchange certificate export, Linux certificate preparation, and the first relay test, use [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md). Keep notifications disabled until the relay, TLS certificate hostname/trust, Vault mailbox credentials, and web-service SMTP test are complete.
 
 ## 1. Deployment scope and command convention
 
@@ -260,21 +260,42 @@ CLEANUP_INTERVAL_SECONDS=86400
 
 Do not set an unusually short interval on a production host unless there is a clear operational reason.
 
-### 4.5 Optional Exchange SMTP trust certificate
+### 4.5 Optional Exchange SMTP review notifications
 
-When review notifications use an Exchange relay with a private CA or self-signed certificate, copy only the public PEM/CRT trust certificate to:
+SMTP review notifications are optional. They are sent directly by the Django `web` service after a writer submits an article or a published-article update for review. There is no notification queue or separate notification worker.
+
+For the current Exchange lab certificate, which has `CN=qapf1-exch`, complete the Windows GUI export and Linux certificate preparation in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md) before enabling notifications. The exported **public** certificate belongs at:
 
 ```text
 /opt/DjOpenKB/ldap-certs/exchange-smtp.crt
 ```
 
-Then set this non-secret `.env` value:
+Add the following non-secret SMTP values to `.env`. Keep `EMAIL_NOTIFICATIONS_ENABLED=false` until the first controlled test succeeds; change it to `true` only after the certificate and Vault credentials are ready.
 
 ```dotenv
+EMAIL_NOTIFICATIONS_ENABLED=false
+
+# Use the exact DNS name in the Exchange SMTP certificate, never a raw IP address.
+# Current lab self-signed certificate: CN=qapf1-exch
+SMTP_RELAY_HOST=qapf1-exch
+SMTP_RELAY_PORT=587
+SMTP_RELAY_USE_TLS=true
+SMTP_RELAY_USE_SSL=false
+SMTP_RELAY_TIMEOUT_SECONDS=10
+
+# Public trust certificate only. Do not use a PFX/P12, private key, or password.
 SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+
+# The address Exchange permits the SMTP mailbox to send as.
+SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
+SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=qapf1.qalab01.nextlabs.com
+SITE_BASE_URL=https://<INTERNAL_SERVER_IP>:8080
+EMAIL_SUBJECT_PREFIX=[Knowledge Repository]
 ```
 
-Do not copy a PFX/P12 bundle, private key, or SMTP password. The application continues to validate the certificate hostname; `SMTP_RELAY_HOST` must match a SAN/CN in the Exchange certificate. Full steps are in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md).
+`SITE_BASE_URL` must exactly match the HTTPS address users open in the browser and must have no trailing slash. The SMTP certificate trust file does not bypass hostname validation: `SMTP_RELAY_HOST` must match a SAN/CN in the Exchange certificate.
+
+For a new Exchange certificate that includes the full FQDN, replace only `SMTP_RELAY_HOST` with that FQDN after assigning the certificate to Exchange SMTP. Do not use an IP address for TLS SMTP.
 
 ---
 
@@ -348,6 +369,12 @@ POSTGRES_PASSWORD=<generated-by-script>
 AI_API_KEY=<your-google-ai-api-key>
 LDAP_BIND_PASSWORD=<service-account-password>
 LDAP_PLACEHOLDER_PASSWORD=<generated-by-script>
+
+# Optional SMTP review-notification mailbox. Keep this separate from the LDAP
+# bind account unless the same account is deliberately used for both services.
+SMTP_RELAY_USERNAME=<SMTP_MAILBOX_UPN>
+SMTP_RELAY_PASSWORD=<SMTP_MAILBOX_PASSWORD>
+SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false
 ```
 
 For OpenAI, Anthropic, OpenRouter, Groq, Mistral, or Cohere, keep the same key name and replace only the value:
@@ -363,7 +390,9 @@ Important rules:
 - Do not casually rotate `DJANGO_FIELD_ENCRYPTION_KEY`; existing encrypted MFA data can become unreadable.
 - Do not change `POSTGRES_PASSWORD` on an existing database unless the PostgreSQL password is rotated in a coordinated maintenance procedure.
 - The bootstrap file uses `KEY=value` format with no spaces around `=`.
-- For an LDAP password that contains shell-special characters, use single quotes, for example `LDAP_BIND_PASSWORD='Example!Password$123'`.
+- For any manually entered password that contains shell-special characters, use single quotes, for example `LDAP_BIND_PASSWORD='Example!Password$123'` or `SMTP_RELAY_PASSWORD='Example!Password$123'`.
+- `SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false` is the normal setting when Exchange uses a separate SMTP mailbox. Set it to `true` only when the SMTP sender intentionally uses the exact same password as `LDAP_BIND_PASSWORD`.
+- The SMTP username and password are Vault secrets. Do not add either one to `.env`.
 
 After Vault has seeded successfully, remove `vault/bootstrap/djopenkb.env` from any source package or exported backup copy. Retain it only in a protected administrator location if local policy permits.
 
@@ -726,7 +755,46 @@ https://<PUBLIC_HOSTNAME>
 
 The default Django `/admin/login/` route is intentionally hidden. Sign in through the main application login, complete MFA, then enter Django Admin from the application navigation while connected from an allowed management network.
 
-### 10.1 First administrator sign-in
+### 10.1 Optional SMTP relay validation
+
+Run this only when the SMTP values in Section 4.5 are configured, the public Exchange certificate is in `ldap-certs/exchange-smtp.crt`, the mailbox credentials were seeded into Vault, and `EMAIL_NOTIFICATIONS_ENABLED=true`.
+
+First confirm that the running `web` container can read the mounted certificate and resolve the certificate hostname:
+
+```bash
+cd /opt/DjOpenKB
+
+sudo docker compose exec web \
+  sh -c 'test -r /etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt && echo "Exchange SMTP certificate is available inside the web container."'
+
+sudo docker compose exec web getent hosts qapf1-exch
+```
+
+Then send one operator-selected test message to an allowed organisation mailbox:
+
+```bash
+sudo docker compose exec web \
+  python manage.py test_smtp_relay <TEST_RECIPIENT_EMAIL>
+```
+
+Expected result:
+
+```text
+SMTP relay accepted one test message. Check the recipient mailbox.
+```
+
+If SMTP configuration is completed after the initial deployment, seed the SMTP Vault values, remove the temporary bootstrap file, recreate `web`, then run this test:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose up -d --force-recreate vault-init
+sudo rm -f vault/bootstrap/djopenkb.env
+sudo docker compose up -d --force-recreate web
+```
+
+For certificate, hostname, authentication, or recipient-domain failures, see [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
+
+### 10.2 First administrator sign-in
 
 After the `createsuperuser` command succeeds, complete the initial administrator setup through the browser:
 

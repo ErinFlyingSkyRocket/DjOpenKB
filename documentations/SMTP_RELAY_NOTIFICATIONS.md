@@ -4,7 +4,7 @@
 
 DjOpenKB sends an email when a writer submits an article for review or submits a published-article update for review. It uses the organisation SMTP relay and one Vault-stored SMTP service account.
 
-The Django `web` service sends the message **after the article database transaction commits**. There is no separate notification Celery queue or `notification-worker` container.
+The Django `web` service sends the message **after the article database transaction commits**. There is no separate notification Celery queue or `notification-worker` container. The Exchange certificate export and Linux trust-file process are in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
 
 ```text
 Writer submits an article
@@ -66,7 +66,7 @@ A duplicate email address receives only one message. Inactive, disabled, main-si
 1. The SMTP relay must permit the dedicated service account to authenticate and send using `SMTP_FROM_EMAIL`.
 2. The relay must provide TLS, usually STARTTLS on TCP `587`.
 3. Configure the relay DNS hostname shown on its TLS certificate. Do not use a raw IP address for a TLS connection.
-4. For a private-CA or self-signed relay certificate, place its public trust certificate in `ldap-certs/exchange-smtp.crt` and configure `SMTP_RELAY_CA_CERT_FILE`. For a CA-issued relay already trusted by the container, leave the setting blank.
+4. For a private-CA or self-signed relay certificate, place its public trust certificate in `ldap-certs/exchange-smtp.crt` and configure `SMTP_RELAY_CA_CERT_FILE`. For the current Exchange lab, export the certificate through the Windows GUI and prepare it on Linux using [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md). For a CA-issued relay already trusted by the container, leave the setting blank.
 5. The `web` container must be able to resolve and reach the relay hostname on its configured port.
 6. Each intended reviewer must have a valid Django `User.email` address within the configured recipient-domain allowlist. Active Directory users normally receive their email value from the existing LDAP mapping during login.
 
@@ -74,25 +74,30 @@ A duplicate email address receives only one message. Inactive, disabled, main-si
 
 ### 1. Add non-secret values to `.env`
 
-Keep notifications disabled until the controlled relay test succeeds.
+Keep notifications disabled until the controlled relay test succeeds. Add only non-secret values to `.env`:
 
 ```dotenv
 EMAIL_NOTIFICATIONS_ENABLED=false
-SMTP_RELAY_HOST=<EXCHANGE_SMTP_FQDN>
+
+# Use the exact DNS name in the SMTP certificate. Never use an IP address.
+# Current lab self-signed certificate: CN=qapf1-exch
+SMTP_RELAY_HOST=qapf1-exch
 SMTP_RELAY_PORT=587
 SMTP_RELAY_USE_TLS=true
 SMTP_RELAY_USE_SSL=false
 SMTP_RELAY_TIMEOUT_SECONDS=10
+
 # Public PEM/CRT trust certificate. Use a CA/chain or the exact self-signed
 # server certificate; never use a PFX or private key.
 SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
-SMTP_FROM_EMAIL=knowledge-repository@company.example
-SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=company.example
-SITE_BASE_URL=https://<PUBLIC_HOSTNAME>
+
+SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
+SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=qapf1.qalab01.nextlabs.com
+SITE_BASE_URL=https://<INTERNAL_SERVER_IP>:8080
 EMAIL_SUBJECT_PREFIX=[Knowledge Repository]
 ```
 
-`SITE_BASE_URL` must be the exact HTTPS browser origin, without a path, query string, fragment, or trailing slash.
+`SITE_BASE_URL` must be the exact HTTPS browser origin, without a path, query string, fragment, or trailing slash. For a newly issued Exchange certificate that contains the full FQDN, use that exact FQDN in `SMTP_RELAY_HOST` instead of `qapf1-exch`.
 
 Configure exactly one TLS mode:
 
@@ -144,9 +149,14 @@ sudo nano vault/bootstrap/djopenkb.env
 ```
 
 ```dotenv
-SMTP_RELAY_USERNAME=svc_djopenkb_mail@ad.example.com
-SMTP_RELAY_PASSWORD=<SMTP_SERVICE_ACCOUNT_PASSWORD>
+# Use the mail-enabled Exchange account that is permitted to send as
+# SMTP_FROM_EMAIL. A dedicated mailbox is recommended for a long-lived service.
+SMTP_RELAY_USERNAME=<SMTP_MAILBOX_UPN>
+SMTP_RELAY_PASSWORD=<SMTP_MAILBOX_PASSWORD>
+SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false
 ```
+
+Do not put either credential in `.env`. The `false` value keeps the SMTP mailbox password separate from the LDAP bind password. Use `true` only when both services deliberately use the exact same account password.
 
 Seed the values and remove the temporary bootstrap file:
 
@@ -155,35 +165,48 @@ sudo docker compose up -d --force-recreate vault-init
 sudo rm -f vault/bootstrap/djopenkb.env
 ```
 
-## Deployment and Testing
+## Fresh Deployment and Testing
 
-1. Deploy the direct-SMTP patch. The first update removes the retired worker container:
+For a fresh deployment, complete the configuration in this order:
+
+1. Complete the Exchange certificate export and Linux certificate validation in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md). The public file must be available at `ldap-certs/exchange-smtp.crt` before `web` starts.
+2. Add the non-secret SMTP values to `.env` and the mailbox credentials to `vault/bootstrap/djopenkb.env` before the initial `sudo docker compose up -d --build`.
+3. Keep `EMAIL_NOTIFICATIONS_ENABLED=false` until the site starts successfully and the SMTP trust file is confirmed readable. Then change it to `true` and recreate `web`:
 
    ```bash
    cd /opt/DjOpenKB
-   sudo docker compose up -d --build --remove-orphans
+   sudo docker compose up -d --force-recreate web
    ```
 
-2. Rebuild the web image after restoring the SMTP trust-certificate backend, then recreate the web service after configuration changes:
+4. Confirm the running container can read the certificate and resolve the SMTP hostname:
 
    ```bash
-   sudo docker compose up -d --build --force-recreate web
+   sudo docker compose exec web \
+     sh -c 'test -r /etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt && echo "Exchange SMTP certificate is available inside the web container."'
+
+   sudo docker compose exec web getent hosts qapf1-exch
    ```
 
-3. Send one controlled relay test from the web service:
+5. Send one controlled test to a mailbox in `SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS`:
 
    ```bash
    sudo docker compose exec web \
      python manage.py test_smtp_relay <TEST_RECIPIENT_EMAIL>
    ```
 
-4. When the test succeeds, set `EMAIL_NOTIFICATIONS_ENABLED=true` and recreate `web` again.
+   Expected result:
 
-5. Check application logs if needed:
+   ```text
+   SMTP relay accepted one test message. Check the recipient mailbox.
+   ```
+
+6. Check application logs if needed:
 
    ```bash
    sudo docker compose logs --tail=120 web
    ```
+
+When enabling SMTP on an already-running deployment, add the SMTP credentials to a temporary Vault bootstrap file, run `sudo docker compose up -d --force-recreate vault-init`, remove the plaintext bootstrap file, then recreate `web` before testing.
 
 ## Expected Workflow Results
 
