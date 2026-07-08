@@ -5775,3 +5775,77 @@ msgstr "دامنه قفل"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "مدت قفل"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "تأیید MFA مدیر Django"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "گزارش‌های احراز هویت/MFA، گزارش‌های عمومی فعالیت، ردیف‌های نمایش گزارش مدیر و طول عمر نشست کاربر را کنترل می‌کند. مدت نگهداری پیش‌فرض گزارش‌ها ۳۰ روز است. جدول‌های گزارش مدیر به‌طور پیش‌فرض ۲۰۰ ردیف در هر صفحه نشان می‌دهند. نشست‌ها به‌طور پیش‌فرض ۸ ساعت هستند و می‌توانند از ۱ تا ۱۶۸ ساعت تنظیم شوند."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s ساعت"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "زمان پایان نشست کاربر به‌صورت خوانا"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s روز"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "تأیید MFA مدیر Django موفق بود"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "تأیید MFA مدیر Django ناموفق بود"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "قفل MFA مدیر Django فعال شد"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "اعلان بررسی مقاله در صف قرار گرفت"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "اعلان بررسی مقاله ارسال شد"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "اعلان بررسی مقاله ناموفق بود"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "اعلان بررسی مقاله نادیده گرفته شد"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "اعلان مالک مقاله در صف قرار گرفت"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "اعلان مالک مقاله ارسال شد"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "اعلان مالک مقاله ناموفق بود"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "اعلان مالک مقاله نادیده گرفته شد"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "زمان پایان نشست کاربر (ساعت)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "نشست‌های احراز هویت‌شده و در انتظار MFA پس از این تعداد ساعت از زمان ورود منقضی می‌شوند. مقدار پیش‌فرض ۸ ساعت است. بازه مجاز: ۱ تا ۱۶۸ ساعت (۷ روز)."
+

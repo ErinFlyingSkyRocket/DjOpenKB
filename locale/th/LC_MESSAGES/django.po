@@ -5698,3 +5698,77 @@ msgstr "ขอบเขตการล็อก"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "ระยะเวลาการล็อก"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "การยืนยัน MFA ของผู้ดูแล Django"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "ควบคุมบันทึกการยืนยันตัวตน/MFA บันทึกกิจกรรมทั่วไป จำนวนแถวที่แสดงในบันทึกผู้ดูแล และอายุเซสชันของผู้ใช้ ระยะเวลาเก็บบันทึกเริ่มต้นคือ 30 วัน ตารางบันทึกผู้ดูแลแสดง 200 แถวต่อหน้าโดยค่าเริ่มต้น เซสชันมีค่าเริ่มต้น 8 ชั่วโมงและสามารถตั้งค่าได้ตั้งแต่ 1 ถึง 168 ชั่วโมง"
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s ชั่วโมง"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "หมดเวลาเซสชันผู้ใช้แบบอ่านง่าย"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s วัน"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "การยืนยัน MFA ของผู้ดูแล Django สำเร็จ"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "การยืนยัน MFA ของผู้ดูแล Django ล้มเหลว"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "มีการทริกเกอร์การล็อก MFA ของผู้ดูแล Django"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "การแจ้งเตือนการตรวจทานบทความถูกเพิ่มเข้าคิวแล้ว"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "ส่งการแจ้งเตือนการตรวจทานบทความแล้ว"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "การแจ้งเตือนการตรวจทานบทความล้มเหลว"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "ข้ามการแจ้งเตือนการตรวจทานบทความแล้ว"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "การแจ้งเตือนเจ้าของบทความถูกเพิ่มเข้าคิวแล้ว"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "ส่งการแจ้งเตือนเจ้าของบทความแล้ว"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "การแจ้งเตือนเจ้าของบทความล้มเหลว"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "ข้ามการแจ้งเตือนเจ้าของบทความแล้ว"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "หมดเวลาเซสชันผู้ใช้ (ชั่วโมง)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "เซสชันที่ยืนยันตัวตนแล้วและเซสชันที่รอ MFA จะหมดอายุหลังจากจำนวนชั่วโมงนี้นับจากการลงชื่อเข้าใช้ ค่าเริ่มต้นคือ 8 ชั่วโมง ช่วงที่อนุญาต: 1 ถึง 168 ชั่วโมง (7 วัน)"
+

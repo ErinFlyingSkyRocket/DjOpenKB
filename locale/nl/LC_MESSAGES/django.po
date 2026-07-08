@@ -5910,3 +5910,77 @@ msgstr "Bereik van de vergrendeling"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "Duur van de vergrendeling"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Django Admin MFA-verificatie"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "Beheert authenticatie-/MFA-logboeken, algemene activiteitenlogboeken, weergaveregels voor adminlogs en de levensduur van gebruikerssessies. De standaard bewaartermijn voor logs is 30 dagen. Adminlogtabellen tonen standaard 200 rijen per pagina. Sessies duren standaard 8 uur en kunnen worden ingesteld van 1 tot 168 uur."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s uur"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "Leesbare time-out van gebruikerssessie"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s dag(en)"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Django Admin MFA-verificatie geslaagd"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Django Admin MFA-verificatie mislukt"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Django Admin MFA-blokkering geactiveerd"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "Melding voor artikelbeoordeling in wachtrij geplaatst"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "Melding voor artikelbeoordeling verzonden"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "Melding voor artikelbeoordeling mislukt"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "Melding voor artikelbeoordeling overgeslagen"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "Melding aan artikeleigenaar in wachtrij geplaatst"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "Melding aan artikeleigenaar verzonden"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "Melding aan artikeleigenaar mislukt"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "Melding aan artikeleigenaar overgeslagen"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "Time-out van gebruikerssessie (uren)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "Geverifieerde en op MFA wachtende sessies verlopen na dit aantal uren sinds het aanmelden. Standaard is 8 uur. Toegestaan bereik: 1 tot 168 uur (7 dagen)."
+

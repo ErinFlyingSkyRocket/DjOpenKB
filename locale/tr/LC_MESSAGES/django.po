@@ -5848,3 +5848,77 @@ msgstr "Kilitleme kapsamı"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "Kilitleme süresi"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Django Admin MFA doğrulaması"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "Kimlik doğrulama/MFA günlüklerini, genel etkinlik günlüklerini, yönetici günlüğü görüntü satırlarını ve kullanıcı oturum ömrünü kontrol eder. Varsayılan günlük saklama süresi 30 gündür. Yönetici günlük tabloları varsayılan olarak sayfa başına 200 satır gösterir. Oturumlar varsayılan olarak 8 saattir ve 1 ile 168 saat arasında ayarlanabilir."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s saat"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "Kullanıcı oturumu zaman aşımı okunabilir"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s gün"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Django Admin MFA doğrulaması başarılı"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Django Admin MFA doğrulaması başarısız"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Django Admin MFA kilitlemesi tetiklendi"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "Makale inceleme bildirimi kuyruğa alındı"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "Makale inceleme bildirimi gönderildi"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "Makale inceleme bildirimi başarısız oldu"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "Makale inceleme bildirimi atlandı"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "Makale sahibi bildirimi kuyruğa alındı"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "Makale sahibi bildirimi gönderildi"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "Makale sahibi bildirimi başarısız oldu"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "Makale sahibi bildirimi atlandı"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "Kullanıcı oturumu zaman aşımı (saat)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "Kimliği doğrulanmış ve MFA bekleyen oturumlar, oturum açıldıktan sonra bu saat sayısı sonunda sona erer. Varsayılan 8 saattir. İzin verilen aralık: 1 ila 168 saat (7 gün)."
+

@@ -5784,3 +5784,77 @@ msgstr "Phạm vi khóa"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "Thời lượng khóa"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Xác minh MFA của quản trị Django"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "Kiểm soát nhật ký xác thực/MFA, nhật ký hoạt động chung, số dòng hiển thị nhật ký quản trị và thời lượng phiên người dùng. Thời gian lưu nhật ký mặc định là 30 ngày. Bảng nhật ký quản trị mặc định hiển thị 200 dòng mỗi trang. Phiên mặc định là 8 giờ và có thể đặt từ 1 đến 168 giờ."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s giờ"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "Thời gian chờ phiên người dùng dạng dễ đọc"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s ngày"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Xác minh MFA của quản trị Django thành công"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Xác minh MFA của quản trị Django thất bại"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Đã kích hoạt khóa MFA của quản trị Django"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "Thông báo xét duyệt bài viết đã được đưa vào hàng đợi"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "Thông báo xét duyệt bài viết đã gửi"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "Thông báo xét duyệt bài viết thất bại"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "Thông báo xét duyệt bài viết đã bỏ qua"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "Thông báo cho chủ sở hữu bài viết đã được đưa vào hàng đợi"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "Thông báo cho chủ sở hữu bài viết đã gửi"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "Thông báo cho chủ sở hữu bài viết thất bại"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "Thông báo cho chủ sở hữu bài viết đã bỏ qua"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "Thời gian chờ phiên người dùng (giờ)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "Các phiên đã xác thực và đang chờ MFA sẽ hết hạn sau số giờ này kể từ khi đăng nhập. Mặc định là 8 giờ. Phạm vi cho phép: 1 đến 168 giờ (7 ngày)."
+

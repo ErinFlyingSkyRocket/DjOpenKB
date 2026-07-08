@@ -5818,3 +5818,77 @@ msgstr "Cakupan penguncian"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "Durasi penguncian"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Verifikasi MFA Admin Django"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "Mengontrol log autentikasi/MFA, log aktivitas umum, baris tampilan log admin, dan masa berlaku sesi pengguna. Retensi log bawaan adalah 30 hari. Tabel log admin menampilkan 200 baris per halaman secara bawaan. Sesi bawaan adalah 8 jam dan dapat diatur dari 1 hingga 168 jam."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s jam"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "Batas waktu sesi pengguna yang mudah dibaca"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s hari"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Verifikasi MFA Admin Django berhasil"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Verifikasi MFA Admin Django gagal"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Penguncian MFA Admin Django dipicu"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "Notifikasi peninjauan artikel dimasukkan ke antrean"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "Notifikasi peninjauan artikel dikirim"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "Notifikasi peninjauan artikel gagal"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "Notifikasi peninjauan artikel dilewati"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "Notifikasi pemilik artikel dimasukkan ke antrean"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "Notifikasi pemilik artikel dikirim"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "Notifikasi pemilik artikel gagal"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "Notifikasi pemilik artikel dilewati"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "Batas waktu sesi pengguna (jam)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "Sesi yang telah diautentikasi dan sesi yang menunggu MFA kedaluwarsa setelah jumlah jam ini sejak masuk. Bawaan adalah 8 jam. Rentang yang diizinkan: 1 hingga 168 jam (7 hari)."
+

@@ -5916,3 +5916,77 @@ msgstr "பூட்டல் வரம்பு"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "பூட்டல் காலம்"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Django நிர்வாக MFA சரிபார்ப்பு"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "அங்கீகாரம்/MFA பதிவுகள், பொது செயல்பாட்டு பதிவுகள், நிர்வாக பதிவு காட்சி வரிகள் மற்றும் பயனர் அமர்வு ஆயுட்காலத்தை கட்டுப்படுத்துகிறது. இயல்புநிலை பதிவு வைத்திருப்பு 30 நாட்கள். நிர்வாக பதிவு அட்டவணைகள் இயல்பாக ஒரு பக்கத்திற்கு 200 வரிகளை காட்டும். அமர்வுகள் இயல்பாக 8 மணி நேரம்; 1 முதல் 168 மணி நேரம் வரை அமைக்கலாம்."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s மணி நேரம்"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "படிக்கக்கூடிய பயனர் அமர்வு நேரக்கெடு"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s நாள்(கள்)"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Django நிர்வாக MFA சரிபார்ப்பு வெற்றி"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Django நிர்வாக MFA சரிபார்ப்பு தோல்வி"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Django நிர்வாக MFA பூட்டல் செயல்படுத்தப்பட்டது"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு வரிசையில் சேர்க்கப்பட்டது"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு அனுப்பப்பட்டது"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு தோல்வியடைந்தது"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு தவிர்க்கப்பட்டது"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு வரிசையில் சேர்க்கப்பட்டது"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு அனுப்பப்பட்டது"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு தோல்வியடைந்தது"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு தவிர்க்கப்பட்டது"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "பயனர் அமர்வு நேரக்கெடு (மணி நேரம்)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "அங்கீகரிக்கப்பட்ட மற்றும் MFA நிலுவையில் உள்ள அமர்வுகள் உள்நுழைந்ததிலிருந்து இந்த எண்ணிக்கை மணி நேரத்திற்கு பிறகு காலாவதியாகும். இயல்புநிலை 8 மணி நேரம். அனுமதிக்கப்பட்ட வரம்பு: 1 முதல் 168 மணி நேரம் (7 நாட்கள்)."
+

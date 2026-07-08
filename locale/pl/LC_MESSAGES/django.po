@@ -5888,3 +5888,77 @@ msgstr "Zakres blokady"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "Czas blokady"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Weryfikacja MFA administratora Django"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "Kontroluje dzienniki uwierzytelniania/MFA, ogólne dzienniki aktywności, liczbę wierszy wyświetlanych w dzienniku administratora oraz czas życia sesji użytkownika. Domyślny czas przechowywania dzienników to 30 dni. Tabele dziennika administratora domyślnie pokazują 200 wierszy na stronę. Sesje domyślnie trwają 8 godzin i można je ustawić od 1 do 168 godzin."
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s godz."
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "Czytelny limit czasu sesji użytkownika"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s dzień/dni"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Weryfikacja MFA administratora Django powiodła się"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Weryfikacja MFA administratora Django nie powiodła się"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Wyzwolono blokadę MFA administratora Django"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "Powiadomienie o przeglądzie artykułu dodane do kolejki"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "Powiadomienie o przeglądzie artykułu wysłane"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "Powiadomienie o przeglądzie artykułu nie powiodło się"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "Powiadomienie o przeglądzie artykułu pominięte"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "Powiadomienie właściciela artykułu dodane do kolejki"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "Powiadomienie właściciela artykułu wysłane"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "Powiadomienie właściciela artykułu nie powiodło się"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "Powiadomienie właściciela artykułu pominięte"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "Limit czasu sesji użytkownika (godziny)"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "Uwierzytelnione i oczekujące na MFA sesje wygasają po tej liczbie godzin od zalogowania. Domyślnie jest to 8 godzin. Dozwolony zakres: od 1 do 168 godzin (7 dni)."
+

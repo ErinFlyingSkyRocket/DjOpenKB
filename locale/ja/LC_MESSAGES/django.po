@@ -5359,3 +5359,77 @@ msgstr "ロックアウトの対象"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "ロックアウト期間"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Django 管理画面 MFA 認証"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "認証/MFAログ、一般アクティビティログ、管理ログの表示行数、ユーザーセッションの有効期間を制御します。ログ保持期間の既定値は30日です。管理ログテーブルは既定で1ページあたり200行を表示します。セッションの既定値は8時間で、1〜168時間に設定できます。"
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s 時間"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "ユーザーセッションタイムアウト（読みやすい表示）"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s 日"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Django 管理画面 MFA 認証成功"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Django 管理画面 MFA 認証失敗"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Django 管理画面 MFA ロックアウトが発生しました"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "記事レビュー通知をキューに追加しました"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "記事レビュー通知を送信しました"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "記事レビュー通知に失敗しました"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "記事レビュー通知をスキップしました"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "記事所有者通知をキューに追加しました"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "記事所有者通知を送信しました"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "記事所有者通知に失敗しました"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "記事所有者通知をスキップしました"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "ユーザーセッションタイムアウト（時間）"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "認証済みセッションおよび MFA 保留中のセッションは、サインインからこの時間数が経過すると期限切れになります。既定値は8時間です。許可範囲: 1〜168時間（7日）。"
+

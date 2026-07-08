@@ -5278,3 +5278,77 @@ msgstr "锁定范围"
 #: kb/admin.py:1962
 msgid "Lockout duration"
 msgstr "锁定时长"
+
+# Added during DjOpenKB locale refresh for project version 77.
+#: kb/admin.py:1953 kb/admin.py:1959
+msgid "Django Admin MFA verification"
+msgstr "Django 管理后台 MFA 验证"
+
+#: kb/admin.py:2609
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
+msgstr "控制身份验证/MFA 日志、常规活动日志、管理日志显示行数以及用户会话生命周期。默认日志保留期为 30 天。管理日志表默认每页显示 200 行。会话默认持续 8 小时，可设置为 1 到 168 小时。"
+
+#: kb/admin.py:2732
+msgid "%(hours)s hour(s)"
+msgstr "%(hours)s 小时"
+
+#: kb/admin.py:2734
+msgid "User session timeout readable"
+msgstr "用户会话超时（可读）"
+
+#: kb/admin.py:2745
+msgid "%(days)s day(s)"
+msgstr "%(days)s 天"
+
+#: kb/models.py:257
+msgid "Django Admin MFA verification success"
+msgstr "Django 管理后台 MFA 验证成功"
+
+#: kb/models.py:258
+msgid "Django Admin MFA verification failure"
+msgstr "Django 管理后台 MFA 验证失败"
+
+#: kb/models.py:262
+msgid "Django Admin MFA lockout triggered"
+msgstr "Django 管理后台 MFA 锁定已触发"
+
+#: kb/models.py:946
+msgid "Article review notification queued"
+msgstr "文章审核通知已加入队列"
+
+#: kb/models.py:950
+msgid "Article review notification sent"
+msgstr "文章审核通知已发送"
+
+#: kb/models.py:954
+msgid "Article review notification failed"
+msgstr "文章审核通知发送失败"
+
+#: kb/models.py:958
+msgid "Article review notification skipped"
+msgstr "文章审核通知已跳过"
+
+#: kb/models.py:962
+msgid "Article owner notification queued"
+msgstr "文章所有者通知已加入队列"
+
+#: kb/models.py:966
+msgid "Article owner notification sent"
+msgstr "文章所有者通知已发送"
+
+#: kb/models.py:970
+msgid "Article owner notification failed"
+msgstr "文章所有者通知发送失败"
+
+#: kb/models.py:974
+msgid "Article owner notification skipped"
+msgstr "文章所有者通知已跳过"
+
+#: kb/models.py:1181
+msgid "User session timeout (hours)"
+msgstr "用户会话超时（小时）"
+
+#: kb/models.py:1182
+msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "已认证会话和待 MFA 会话会在登录后的指定小时数后过期。默认值为 8 小时。允许范围：1 到 168 小时（7 天）。"
+
