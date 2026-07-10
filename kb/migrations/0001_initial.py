@@ -4,6 +4,7 @@ import django.db.models.deletion
 import django.utils.timezone
 import kb.models
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import migrations, models
 
 
@@ -11,6 +12,7 @@ AUDIT_TABLES = [
     "kb_authactivitylog",
     "kb_activitylog",
     "kb_articleimageuploadlog",
+    "kb_adminactivitylog",
 ]
 
 UPDATE_FUNCTION_SQL = r"""
@@ -135,14 +137,17 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('stray_upload_cleanup_min_age_minutes', models.PositiveIntegerField(default=1440, help_text='Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.', verbose_name='Stray upload cleanup minimum age (minutes)')),
+                ('article_deletion_queue_retention_days', models.PositiveIntegerField(default=7, help_text='How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.', verbose_name='Article deletion queue retention (days)')),
                 ('article_image_upload_limit', models.PositiveIntegerField(default=50, help_text='Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.', verbose_name='Article image upload limit')),
                 ('articles_per_page', models.PositiveIntegerField(default=10, help_text='Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10.', verbose_name='Articles per page')),
                 ('auth_activity_log_retention_days', models.PositiveIntegerField(default=30, help_text='Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.', verbose_name='Authentication activity log retention (days)')),
-                ('session_timeout_days', models.PositiveIntegerField(default=30, help_text='Authenticated user sessions expire after this many days from sign-in. After expiry, users are signed out and must log in again. Set to 0 to expire the session when the browser closes.', verbose_name='User session timeout (days)')),
-                ('activity_log_retention_days', models.PositiveIntegerField(default=30, help_text='Article/vote/image/admin-tool activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general activity logs indefinitely.', verbose_name='General activity log retention (days)')),
+                ('session_timeout_hours', models.PositiveIntegerField(default=8, help_text='Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).', validators=[MinValueValidator(1), MaxValueValidator(168)], verbose_name='User session timeout (hours)')),
+                ('activity_log_retention_days', models.PositiveIntegerField(default=30, help_text='Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.', verbose_name='General activity log retention (days)')),
                 ('admin_log_rows_per_page', models.PositiveIntegerField(default=200, help_text='Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.', verbose_name='Admin log rows per page')),
                 ('admin_allowed_cidrs', models.TextField(default='10.65.0.0/16,127.0.0.1/32,::1/128', help_text='Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.', verbose_name='Admin allowed IP ranges')),
-                ('auth_lockout_strike_ttl_seconds', models.PositiveIntegerField(default=604800, help_text='How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).', verbose_name='Authentication lockout escalation memory (seconds)')),
+                ('auth_lockout_strike_ttl_seconds', models.PositiveIntegerField(default=604800, help_text='How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days).', verbose_name='Authentication lockout escalation memory (seconds)')),
+                ('admin_mfa_idle_timeout_seconds', models.PositiveIntegerField(default=600, help_text='How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds.', verbose_name='Admin MFA idle timeout (seconds)')),
+                ('openkb_ai_prompt_limit_per_24_hours', models.PositiveIntegerField(default=20, help_text='Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20.', validators=[MinValueValidator(1), MaxValueValidator(1000)], verbose_name='OpenKB AI prompts per 24 hours')),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],
             options={
@@ -178,7 +183,8 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=200)),
                 ('body', models.TextField()),
                 ('keywords', models.CharField(blank=True, max_length=500)),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('pending', 'Pending'), ('failed', 'Pending failed'), ('published', 'Published')], default='draft', max_length=20)),
+                ('visibility', models.CharField(choices=[('public', 'Public article'), ('internal', 'Internal article')], db_index=True, default='public', help_text='Public articles are visible to normal wiki users. Internal articles are visible only to users with internal article access.', max_length=20, verbose_name='Article visibility')),
+                ('status', models.CharField(choices=[('draft', 'Draft'), ('pending', 'Pending'), ('failed', 'Pending failed'), ('published', 'Published'), ('delete_queued', 'Deletion queued')], default='draft', max_length=20)),
                 ('approved_at', models.DateTimeField(blank=True, help_text='Date and time when this article was approved for public display.', null=True, verbose_name='Approved at')),
                 ('review_notes', models.TextField(blank=True, help_text='Current admin feedback shown to the article owner while the article is in Draft or Pending failed status.', verbose_name='Current pending failed comments')),
                 ('review_notes_history', models.JSONField(blank=True, default=list, help_text='Historical review feedback entries from previous rejection/resubmission rounds.', verbose_name='Pending failed comments history')),
@@ -194,15 +200,47 @@ class Migration(migrations.Migration):
                 ('raw_path', models.CharField(blank=True, max_length=500)),
                 ('wiki_path', models.CharField(blank=True, max_length=500)),
                 ('image_assets', models.JSONField(blank=True, default=list)),
+                ('deletion_previous_status', models.CharField(blank=True, choices=[('draft', 'Draft'), ('pending', 'Pending'), ('failed', 'Pending failed'), ('published', 'Published'), ('delete_queued', 'Deletion queued')], db_index=True, help_text='Original workflow status saved so the article can be restored from the deletion queue.', max_length=20, verbose_name='Previous status before deletion queue')),
+                ('deletion_queued_at', models.DateTimeField(blank=True, db_index=True, null=True, verbose_name='Deletion queued at')),
+                ('deletion_purge_after', models.DateTimeField(blank=True, db_index=True, help_text='After this time, the queued article can be permanently deleted by the scheduled cleanup.', null=True, verbose_name='Permanent deletion after')),
+                ('deletion_restored_at', models.DateTimeField(blank=True, null=True, verbose_name='Deletion restored at')),
+                ('deletion_reason', models.TextField(blank=True, verbose_name='Deletion reason')),
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('approved_by', models.ForeignKey(blank=True, help_text='Admin user who approved this article for public display.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='approved_articles', to=settings.AUTH_USER_MODEL, verbose_name='Approved by')),
+                ('deletion_queued_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='queued_article_deletions', to=settings.AUTH_USER_MODEL, verbose_name='Deletion queued by')),
+                ('deletion_restored_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='restored_article_deletions', to=settings.AUTH_USER_MODEL, verbose_name='Deletion restored by')),
                 ('owner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='suggested_articles', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Suggested Article',
                 'verbose_name_plural': 'Suggested Articles',
                 'ordering': ['-updated_at', '-created_at'],
+            },
+        ),
+        migrations.CreateModel(
+            name='ArticleDeletionRequest',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('status', models.CharField(choices=[('pending', 'Pending deletion approval'), ('approved', 'Deletion approved'), ('rejected', 'Deletion rejected')], db_index=True, default='pending', max_length=20)),
+                ('reason', models.TextField(blank=True)),
+                ('review_comment', models.TextField(blank=True)),
+                ('article_title_snapshot', models.CharField(blank=True, db_index=True, max_length=255)),
+                ('article_visibility_snapshot', models.CharField(blank=True, db_index=True, max_length=20)),
+                ('article_status_snapshot', models.CharField(blank=True, db_index=True, max_length=20)),
+                ('article_owner_username_snapshot', models.CharField(blank=True, db_index=True, max_length=255)),
+                ('article_owner_email_snapshot', models.EmailField(blank=True, max_length=254)),
+                ('requested_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
+                ('reviewed_at', models.DateTimeField(blank=True, null=True)),
+                ('article', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='deletion_requests', to='kb.suggestedarticle')),
+                ('requested_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='article_deletion_requests', to=settings.AUTH_USER_MODEL)),
+                ('reviewed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reviewed_article_deletion_requests', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Article deletion request',
+                'verbose_name_plural': 'Article deletion requests',
+                'ordering': ['-requested_at'],
+                'indexes': [models.Index(fields=['status', 'article_visibility_snapshot'], name='kb_delreq_status_vis_idx'), models.Index(fields=['-requested_at', 'status'], name='kb_delreq_req_status_idx')],
             },
         ),
         migrations.CreateModel(
@@ -271,7 +309,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('event_type', models.CharField(choices=[('password_success', 'Password login success'), ('password_failure', 'Password login failure'), ('pending_mfa', 'Pending MFA created'), ('mfa_setup_success', 'MFA setup success'), ('mfa_setup_failure', 'MFA setup failure'), ('mfa_verify_success', 'MFA verify success'), ('mfa_verify_failure', 'MFA verify failure'), ('mfa_reset_self', 'MFA reset by user'), ('mfa_reset_admin', 'MFA reset by admin'), ('auth_lockout_reset_admin', 'Authentication lockout reset by admin'), ('logout', 'Logout')], db_index=True, max_length=40)),
+                ('event_type', models.CharField(choices=[('password_success', 'Password login success'), ('password_failure', 'Password login failure'), ('pending_mfa', 'Pending MFA created'), ('mfa_setup_success', 'MFA setup success'), ('mfa_setup_failure', 'MFA setup failure'), ('mfa_verify_success', 'MFA verify success'), ('mfa_verify_failure', 'MFA verify failure'), ('admin_mfa_verify_success', 'Django Admin MFA verification success'), ('admin_mfa_verify_failure', 'Django Admin MFA verification failure'), ('mfa_reset_self', 'MFA reset by user'), ('mfa_reset_admin', 'MFA reset by admin'), ('auth_lockout_triggered', 'Authentication lockout triggered'), ('admin_mfa_lockout_triggered', 'Django Admin MFA lockout triggered'), ('auth_lockout_reset_admin', 'Authentication lockout reset by admin'), ('logout', 'Logout')], db_index=True, max_length=40)),
                 ('success', models.BooleanField(db_index=True, default=False)),
                 ('username', models.CharField(blank=True, db_index=True, max_length=255)),
                 ('login_mode', models.CharField(blank=True, db_index=True, max_length=30)),
@@ -312,7 +350,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
-                ('event_type', models.CharField(choices=[('article_created', 'Article created'), ('article_updated', 'Article updated'), ('article_deleted', 'Article deleted'), ('article_status_changed', 'Article status changed'), ('article_submitted', 'Article submitted for approval'), ('article_approved', 'Article approved/published'), ('article_rejected', 'Article marked pending failed'), ('article_orphan_assigned', 'Orphan article assigned'), ('article_orphan_deleted', 'Orphan article deleted'), ('article_viewed', 'Article viewed'), ('vote_up', 'Article vote up'), ('vote_down', 'Article vote down'), ('vote_updated', 'Article vote changed'), ('vote_removed', 'Article vote removed'), ('image_uploaded', 'Article image uploaded'), ('image_deleted', 'Article image deleted'), ('ai_question', 'OpenKB AI question'), ('ai_rate_limited', 'OpenKB AI rate limited'), ('bulk_import', 'Bulk article import'), ('admin_tool_action', 'Admin tool action')], db_index=True, max_length=60)),
+                ('event_type', models.CharField(choices=[('article_created', 'Article created'), ('article_updated', 'Article updated'), ('article_deleted', 'Article deleted'), ('article_delete_queued', 'Article queued for deletion'), ('article_delete_restored', 'Article restored from deletion queue'), ('article_delete_purged', 'Article permanently deleted'), ('article_delete_auto_purged', 'Article auto-deleted from queue'), ('article_deletion_requested', 'Article deletion requested'), ('article_deletion_rejected', 'Article deletion rejected'), ('article_status_changed', 'Article status changed'), ('article_submitted', 'Article submitted for approval'), ('article_approved', 'Article approved/published'), ('article_rejected', 'Article marked pending failed'), ('article_review_notification_queued', 'Article review notification queued'), ('article_review_notification_sent', 'Article review notification sent'), ('article_review_notification_failed', 'Article review notification failed'), ('article_review_notification_skipped', 'Article review notification skipped'), ('article_owner_notification_queued', 'Article owner notification queued'), ('article_owner_notification_sent', 'Article owner notification sent'), ('article_owner_notification_failed', 'Article owner notification failed'), ('article_owner_notification_skipped', 'Article owner notification skipped'), ('article_orphan_assigned', 'Orphan article assigned'), ('article_orphan_deleted', 'Orphan article deleted'), ('article_viewed', 'Article viewed'), ('vote_up', 'Article vote up'), ('vote_down', 'Article vote down'), ('vote_updated', 'Article vote changed'), ('vote_removed', 'Article vote removed'), ('image_uploaded', 'Article image uploaded'), ('image_deleted', 'Article image deleted'), ('ai_question', 'OpenKB AI question'), ('ai_rate_limited', 'OpenKB AI rate limited'), ('bulk_import', 'Bulk article import'), ('profile_email_updated', 'Profile email updated'), ('profile_password_changed', 'Profile password changed'), ('admin_tool_action', 'Admin tool action')], db_index=True, max_length=60)),
                 ('username', models.CharField(blank=True, db_index=True, max_length=255)),
                 ('article_title', models.CharField(blank=True, db_index=True, max_length=255)),
                 ('article_status', models.CharField(blank=True, db_index=True, max_length=40)),
@@ -334,6 +372,35 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Activity logs',
                 'ordering': ['-created_at'],
                 'indexes': [models.Index(fields=['-created_at', 'event_type'], name='kb_activity_created_34f83d_idx'), models.Index(fields=['username', '-created_at'], name='kb_activity_usernam_e4c3d4_idx'), models.Index(fields=['article_title', '-created_at'], name='kb_activity_article_0387e8_idx'), models.Index(fields=['article_owner_username_snapshot', '-created_at'], name='kb_act_owner_cr_idx'), models.Index(fields=['ip_address', '-created_at'], name='kb_activity_ip_addr_709e8b_idx')],
+            },
+            bases=(kb.models.AppendOnlyAuditLogMixin, models.Model),
+        ),
+        migrations.CreateModel(
+            name='AdminActivityLog',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(db_index=True, default=django.utils.timezone.now)),
+                ('event_type', models.CharField(choices=[('admin_add', 'Admin object created'), ('admin_change', 'Admin object changed'), ('admin_delete', 'Admin object deleted'), ('admin_action', 'Admin action/request')], db_index=True, max_length=40)),
+                ('admin_username', models.CharField(blank=True, db_index=True, max_length=255)),
+                ('target_app_label', models.CharField(blank=True, db_index=True, max_length=100)),
+                ('target_model', models.CharField(blank=True, db_index=True, max_length=100)),
+                ('target_object_id', models.CharField(blank=True, db_index=True, max_length=255)),
+                ('target_repr', models.CharField(blank=True, max_length=500)),
+                ('action_flag', models.PositiveSmallIntegerField(blank=True, db_index=True, null=True)),
+                ('ip_address', models.GenericIPAddressField(blank=True, db_index=True, null=True)),
+                ('user_agent', models.TextField(blank=True)),
+                ('path', models.CharField(blank=True, max_length=500)),
+                ('request_method', models.CharField(blank=True, max_length=10)),
+                ('status_code', models.PositiveSmallIntegerField(blank=True, db_index=True, null=True)),
+                ('change_message', models.TextField(blank=True)),
+                ('details', models.JSONField(blank=True, default=dict)),
+                ('admin_user', models.ForeignKey(blank=True, db_constraint=False, help_text='Historical admin user snapshot only. This relation intentionally does not enforce a database constraint because admin audit logs must remain immutable when users are deleted.', null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='admin_activity_logs', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Admin activity log',
+                'verbose_name_plural': 'Admin activity logs',
+                'ordering': ['-created_at'],
+                'indexes': [models.Index(fields=['-created_at', 'event_type'], name='kb_adminlog_created_idx'), models.Index(fields=['admin_username', '-created_at'], name='kb_adminlog_user_idx'), models.Index(fields=['target_app_label', 'target_model', '-created_at'], name='kb_adminlog_target_idx'), models.Index(fields=['ip_address', '-created_at'], name='kb_adminlog_ip_idx')],
             },
             bases=(kb.models.AppendOnlyAuditLogMixin, models.Model),
         ),
