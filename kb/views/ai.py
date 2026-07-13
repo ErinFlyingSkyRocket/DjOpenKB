@@ -143,7 +143,7 @@ def ask_openkb_ai(request):
         return JsonResponse(
             {
                 "error": _(
-                    "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+                    "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
                 ),
             },
             status=503,

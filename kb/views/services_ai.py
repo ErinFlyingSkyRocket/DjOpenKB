@@ -1131,6 +1131,9 @@ def clean_openkb_ai_error_message(error):
     text = str(error or "")
     lowered = text.lower()
 
+    if answer_indicates_no_openkb_match(text):
+        return _("The knowledge base does not contain matching information about that topic.")
+
     if (
         "429" in lowered
         or "ratelimit" in lowered
@@ -1147,7 +1150,7 @@ def clean_openkb_ai_error_message(error):
     if "timeout" in lowered:
         return _("OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists.")
 
-    return _("OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists.")
+    return _("OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists.")
 
 
 def redact_openkb_debug_text(text, max_chars=2000):

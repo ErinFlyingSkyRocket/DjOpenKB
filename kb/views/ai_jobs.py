@@ -315,7 +315,7 @@ def _complete_with_article_fallback(job_id: str, question: str, user, *, status:
         "failed",
         {
             "error": _(
-                "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+                "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
             ),
             "related_articles": [],
             "show_related_articles": False,
@@ -356,7 +356,7 @@ def execute_openkb_ai_job(job_id: str) -> dict[str, Any]:
                 "failed",
                 {
                     "error": _(
-                        "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
+                        "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
                     ),
                     "related_articles": [],
                     "show_related_articles": False,
@@ -416,10 +416,7 @@ def execute_openkb_ai_job(job_id: str) -> dict[str, Any]:
                 )
 
             if not answer:
-                answer = _(
-                    "OpenKB AI could not produce a clear answer for that question. "
-                    "Please try rephrasing it or contact IT support if the issue persists."
-                )
+                answer = _("The knowledge base does not contain matching information about that topic.")
 
             show_related_articles = should_show_openkb_related_articles(
                 question,
