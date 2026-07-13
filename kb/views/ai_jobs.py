@@ -297,6 +297,14 @@ def _get_currently_authorised_job_user(job: dict[str, Any]):
 
 
 def _complete_with_article_fallback(job_id: str, question: str, user, *, status: str = "completed") -> None:
+    """Finish with a permission-safe article result before showing an AI error.
+
+    OpenKB/provider failures can occur after the knowledge search has already
+    determined that no matching article exists. In that case, returning a
+    service-unavailable error is misleading. Prefer a normal no-match answer
+    when no permission-visible article matches the question. If matching
+    articles do exist, return the local article recommendation fallback.
+    """
     related_articles = find_related_openkb_articles(question, limit=3, user=user)
     if related_articles:
         _set_terminal_result(
@@ -312,11 +320,9 @@ def _complete_with_article_fallback(job_id: str, question: str, user, *, status:
 
     _set_terminal_result(
         job_id,
-        "failed",
+        "completed",
         {
-            "error": _(
-                "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
-            ),
+            "answer": _("The knowledge base does not contain matching information about that topic."),
             "related_articles": [],
             "show_related_articles": False,
         },
@@ -461,11 +467,14 @@ def execute_openkb_ai_job(job_id: str) -> dict[str, Any]:
                     },
                 )
             else:
+                # No permission-visible article matched the question. Prefer a
+                # normal no-result answer instead of presenting every provider
+                # or retrieval exception as an AI service outage.
                 _set_terminal_result(
                     job_id,
-                    "failed",
+                    "completed",
                     {
-                        "error": clean_openkb_ai_error_message(error),
+                        "answer": _("The knowledge base does not contain matching information about that topic."),
                         "related_articles": [],
                         "show_related_articles": False,
                     },
