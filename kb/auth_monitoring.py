@@ -3,6 +3,7 @@
 import hashlib
 import logging
 import re
+import secrets
 import time
 
 from django.conf import settings
@@ -14,6 +15,9 @@ from django.utils.translation import ngettext
 from .models import AuthActivityLog, SiteSetting
 
 logger = logging.getLogger(__name__)
+
+
+AUTH_BROWSER_LOCKOUT_SESSION_KEY = "_djopenkb_auth_browser_lockout"
 
 
 DEFAULT_AUTH_LOCKOUT_POLICY_STAGES = [
@@ -242,31 +246,86 @@ def _get_strike_ttl_seconds(stage=None):
     return max(env_ttl, site_ttl, block_seconds + 3600)
 
 
-def get_auth_lockout_status(request=None, username="", user=None, purpose="password"):
-    """Return (is_locked, retry_after_seconds, identifier)."""
-    identifier = get_auth_lockout_identifier(request=request, username=username, user=user, purpose=purpose)
+def _get_or_create_browser_lockout_token(request):
+    """Return an opaque identifier stored in the current browser session.
+
+    This deliberately avoids using the client IP. Users behind the same office
+    proxy therefore keep independent browser cooldowns. Clearing browser site
+    data creates a new identifier, so the existing Nginx request limiter and
+    per-account lockout remain the stronger outer protections.
+    """
+    session = getattr(request, "session", None) if request is not None else None
+    if session is None:
+        return ""
+
+    try:
+        token = str(session.get(AUTH_BROWSER_LOCKOUT_SESSION_KEY) or "").strip()
+        if not token:
+            token = secrets.token_urlsafe(32)
+            session[AUTH_BROWSER_LOCKOUT_SESSION_KEY] = token
+        return token
+    except Exception:
+        logger.exception("Unable to create browser authentication lockout token")
+        return ""
+
+
+def get_browser_auth_lockout_identifier(request=None, purpose="password"):
+    """Return a lockout identifier shared by login attempts in one browser."""
+    token = _get_or_create_browser_lockout_token(request)
+    if not token:
+        return ""
+    purpose = (purpose or "password").strip().lower() or "password"
+    return f"{purpose}:browser:{_safe_cache_piece(token)}"
+
+
+def _get_lockout_status_for_identifier(identifier):
+    if not identifier:
+        return False, 0
+
     keys = _lockout_keys(identifier)
     blocked_until = cache.get(keys["block"])
     if blocked_until:
         now = int(time.time())
         retry_after = max(1, int(blocked_until) - now)
-        return True, retry_after, identifier
-    return False, 0, identifier
+        return True, retry_after
+    return False, 0
 
 
-def record_auth_failure(request=None, username="", user=None, purpose="password"):
-    """Record a failed password/MFA attempt and return lockout state.
+def get_auth_lockout_status(request=None, username="", user=None, purpose="password"):
+    """Return (is_locked, retry_after_seconds, identifier)."""
+    identifier = get_auth_lockout_identifier(request=request, username=username, user=user, purpose=purpose)
+    locked, retry_after = _get_lockout_status_for_identifier(identifier)
+    return locked, retry_after, identifier
 
-    Returns a dict with: locked, retry_after_seconds, identifier, failure_count,
-    failure_limit, block_seconds, policy_stage, and lockout_created.
-    """
-    purpose = (purpose or "password").strip().lower() or "password"
-    locked, retry_after, identifier = get_auth_lockout_status(
-        request=request,
-        username=username,
-        user=user,
-        purpose=purpose,
-    )
+
+def get_browser_auth_lockout_status(request=None, purpose="password"):
+    """Return the active cooldown for the current anonymous browser session."""
+    identifier = get_browser_auth_lockout_identifier(request=request, purpose=purpose)
+    locked, retry_after = _get_lockout_status_for_identifier(identifier)
+    return locked, retry_after, identifier
+
+
+def _empty_lockout_result(identifier=""):
+    return {
+        "locked": False,
+        "lockout_created": False,
+        "retry_after_seconds": 0,
+        "identifier": identifier,
+        "failure_count": 0,
+        "failure_limit": 0,
+        "block_seconds": 0,
+        "policy_stage": None,
+        "strikes_so_far": 0,
+        "strikes_now": 0,
+    }
+
+
+def _record_lockout_failure(identifier):
+    """Update one lockout bucket without creating audit or email events."""
+    if not identifier:
+        return _empty_lockout_result(identifier)
+
+    locked, retry_after = _get_lockout_status_for_identifier(identifier)
     keys = _lockout_keys(identifier)
     strikes_so_far = cache.get(keys["strikes"]) or 0
     try:
@@ -313,54 +372,6 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
         retry_after = block_seconds
         lockout_created = True
 
-        # Record one dedicated audit event at the moment the temporary block is
-        # created. Existing per-attempt failure events remain unchanged, while
-        # this event gives administrators a direct filter for 5-minute,
-        # 15-minute, 1-hour, and any future configured lockout stages.
-        resolved_user = user or _find_user_for_username(username)
-        resolved_username = username or (
-            resolved_user.get_username() if resolved_user and getattr(resolved_user, "pk", None) else ""
-        )
-        lockout_event_type = (
-            AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED
-            if purpose == "admin_mfa"
-            else AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED
-        )
-        lockout_event = log_auth_event(
-            request,
-            event_type=lockout_event_type,
-            success=False,
-            user=resolved_user,
-            username=resolved_username,
-            details={
-                "purpose": purpose,
-                "policy_stage": stage.get("stage_number"),
-                "failure_count": failures,
-                "failure_limit": failure_limit,
-                "block_seconds": block_seconds,
-                "lockout_strike": strikes_now,
-                "stage_repeat_count": stage.get("repeat_count"),
-                "admin_step_up": purpose == "admin_mfa",
-            },
-        )
-
-        # Notify the current Admin Users role group only after a genuinely new
-        # temporary lockout is written. Unknown usernames still create the
-        # audit record but do not mail administrators, preventing arbitrary
-        # login names from being used to flood administrator inboxes.
-        if lockout_event is not None and getattr(lockout_event, "user_id", None):
-            try:
-                from .notifications import send_auth_lockout_admin_notification_after_commit
-
-                send_auth_lockout_admin_notification_after_commit(lockout_event.pk)
-            except Exception:
-                # The lockout and its audit record must never be undone or
-                # hidden because the optional SMTP-alert path has an issue.
-                logger.exception(
-                    "Unable to schedule authentication lockout notification: auth_activity_log_id=%s",
-                    getattr(lockout_event, "pk", None),
-                )
-
     return {
         "locked": bool(locked),
         "lockout_created": lockout_created,
@@ -373,6 +384,99 @@ def record_auth_failure(request=None, username="", user=None, purpose="password"
         "strikes_so_far": strikes_so_far,
         "strikes_now": strikes_now,
     }
+
+
+def record_auth_failure(request=None, username="", user=None, purpose="password"):
+    """Record a failed password/MFA attempt and return lockout state.
+
+    Returns a dict with: locked, retry_after_seconds, identifier, failure_count,
+    failure_limit, block_seconds, policy_stage, and lockout_created.
+    """
+    purpose = (purpose or "password").strip().lower() or "password"
+    identifier = get_auth_lockout_identifier(
+        request=request,
+        username=username,
+        user=user,
+        purpose=purpose,
+    )
+    result = _record_lockout_failure(identifier)
+
+    if not result.get("lockout_created"):
+        return result
+
+    stage = result.get("policy_stage") or {}
+    failures = result.get("failure_count")
+    failure_limit = result.get("failure_limit")
+    block_seconds = result.get("block_seconds")
+    strikes_now = result.get("strikes_now")
+
+    # Record one dedicated audit event at the moment the temporary block is
+    # created. Existing per-attempt failure events remain unchanged, while
+    # this event gives administrators a direct filter for 5-minute,
+    # 15-minute, 1-hour, and any future configured lockout stages.
+    resolved_user = user or _find_user_for_username(username)
+    resolved_username = username or (
+        resolved_user.get_username() if resolved_user and getattr(resolved_user, "pk", None) else ""
+    )
+    lockout_event_type = (
+        AuthActivityLog.EventType.ADMIN_MFA_LOCKOUT_TRIGGERED
+        if purpose == "admin_mfa"
+        else AuthActivityLog.EventType.AUTH_LOCKOUT_TRIGGERED
+    )
+    lockout_event = log_auth_event(
+        request,
+        event_type=lockout_event_type,
+        success=False,
+        user=resolved_user,
+        username=resolved_username,
+        details={
+            "purpose": purpose,
+            "policy_stage": stage.get("stage_number"),
+            "failure_count": failures,
+            "failure_limit": failure_limit,
+            "block_seconds": block_seconds,
+            "lockout_strike": strikes_now,
+            "stage_repeat_count": stage.get("repeat_count"),
+            "admin_step_up": purpose == "admin_mfa",
+        },
+    )
+
+    # Notify the current Admin Users role group only after a genuinely new
+    # temporary lockout is written. Unknown usernames still create the
+    # audit record but do not mail administrators, preventing arbitrary
+    # login names from being used to flood administrator inboxes.
+    if lockout_event is not None and getattr(lockout_event, "user_id", None):
+        try:
+            from .notifications import send_auth_lockout_admin_notification_after_commit
+
+            send_auth_lockout_admin_notification_after_commit(lockout_event.pk)
+        except Exception:
+            # The lockout and its audit record must never be undone or
+            # hidden because the optional SMTP-alert path has an issue.
+            logger.exception(
+                "Unable to schedule authentication lockout notification: auth_activity_log_id=%s",
+                getattr(lockout_event, "pk", None),
+            )
+
+    return result
+
+
+def record_browser_auth_failure(request=None, purpose="password"):
+    """Count a failed login against only the current browser session.
+
+    Browser-level lockouts intentionally do not create separate administrator
+    emails or dedicated lockout audit records. The normal account/username
+    failure path remains the authoritative audited security event.
+    """
+    identifier = get_browser_auth_lockout_identifier(request=request, purpose=purpose)
+    return _record_lockout_failure(identifier)
+
+
+def record_browser_auth_success(request=None, purpose="password"):
+    """Clear browser-level failure history after valid password credentials."""
+    identifier = get_browser_auth_lockout_identifier(request=request, purpose=purpose)
+    reset_auth_lockout(identifier)
+    return identifier
 
 
 def reset_auth_lockout(identifier):

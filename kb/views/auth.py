@@ -6,9 +6,12 @@ from .services import *
 from ..auth_monitoring import (
     format_retry_after,
     get_auth_lockout_status,
+    get_browser_auth_lockout_status,
     log_auth_event,
     record_auth_failure,
     record_auth_success,
+    record_browser_auth_failure,
+    record_browser_auth_success,
 )
 from ..mfa import (
     begin_pending_mfa_login,
@@ -131,12 +134,24 @@ class OpenKBLoginView(LoginView):
 
         if request.method == "POST":
             username = (request.POST.get("username") or "").strip()
-            locked, retry_after, identifier = get_auth_lockout_status(
+            account_locked, account_retry_after, account_identifier = get_auth_lockout_status(
                 request,
                 username=username,
                 purpose="password",
             )
-            if locked:
+            browser_locked, browser_retry_after, browser_identifier = get_browser_auth_lockout_status(
+                request,
+                purpose="password",
+            )
+            if account_locked or browser_locked:
+                retry_after = max(account_retry_after, browser_retry_after)
+                if account_locked and browser_locked:
+                    lockout_scope = "account_and_browser"
+                elif browser_locked:
+                    lockout_scope = "browser"
+                else:
+                    lockout_scope = "account"
+
                 log_auth_event(
                     request,
                     event_type="password_failure",
@@ -145,7 +160,9 @@ class OpenKBLoginView(LoginView):
                     login_mode=(request.POST.get("login_mode") or "").strip().lower(),
                     details={
                         "reason": "temporary_lockout",
-                        "lockout_identifier": identifier,
+                        "lockout_scope": lockout_scope,
+                        "lockout_identifier": account_identifier,
+                        "browser_lockout_identifier": browser_identifier,
                         "retry_after_seconds": retry_after,
                     },
                 )
@@ -167,19 +184,31 @@ class OpenKBLoginView(LoginView):
                 username=username,
                 purpose="password",
             )
+            browser_lockout = record_browser_auth_failure(
+                self.request,
+                purpose="password",
+            )
             details = {
                 "reason": "invalid_credentials",
                 "lockout_identifier": lockout.get("identifier"),
                 "failure_count": lockout.get("failure_count"),
                 "failure_limit": lockout.get("failure_limit"),
+                "browser_lockout_identifier": browser_lockout.get("identifier"),
+                "browser_failure_count": browser_lockout.get("failure_count"),
+                "browser_failure_limit": browser_lockout.get("failure_limit"),
             }
-            if lockout.get("locked"):
+            if lockout.get("locked") or browser_lockout.get("locked"):
+                retry_after = max(
+                    int(lockout.get("retry_after_seconds") or 0),
+                    int(browser_lockout.get("retry_after_seconds") or 0),
+                )
                 details["reason"] = "temporary_lockout_created"
-                details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+                details["retry_after_seconds"] = retry_after
+                details["browser_lockout_created"] = bool(browser_lockout.get("lockout_created"))
                 messages.error(
                     self.request,
                     _("Too many failed sign-in attempts. Please try again in %(duration)s.")
-                    % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+                    % {"duration": format_retry_after(retry_after)},
                 )
 
             log_auth_event(
@@ -200,6 +229,10 @@ class OpenKBLoginView(LoginView):
             self.request,
             username=user.get_username(),
             user=user,
+            purpose="password",
+        )
+        record_browser_auth_success(
+            self.request,
             purpose="password",
         )
 
