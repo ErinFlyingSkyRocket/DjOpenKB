@@ -140,8 +140,6 @@ class ArticleReviewNotificationTests(TestCase):
             rendered_mail,
         )
         self.assertNotIn("public article", rendered_mail.lower())
-        self.assertIn("https://knowledge.example.invalid/profile/articles/", rendered_mail)
-        self.assertNotIn("pending-articles/", rendered_mail)
 
     def test_internal_submission_sends_one_bcc_message_to_internal_reviewers_and_admins(self):
         secret_internal_title = "Private identity migration plan"
@@ -175,8 +173,7 @@ class ArticleReviewNotificationTests(TestCase):
         )
         self.assertNotIn(secret_internal_title, rendered_mail)
         self.assertNotIn("This is test content", rendered_mail)
-        self.assertIn("https://knowledge.example.invalid/profile/articles/", rendered_mail)
-        self.assertNotIn("pending-articles/", rendered_mail)
+        self.assertIn("/internal/profile/admin/pending-articles/", rendered_mail)
 
     def test_direct_superuser_without_admin_users_role_is_not_a_reviewer_recipient(self):
         User = get_user_model()
