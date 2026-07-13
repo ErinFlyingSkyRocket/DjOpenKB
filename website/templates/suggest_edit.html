@@ -473,6 +473,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     const uploadUrl = "{% url 'upload_article_image' %}";
     const deleteUrl = "{% url 'delete_article_image' %}";
     const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
+    const maxArticleImageSizeBytes = 2 * 1024 * 1024;
     const csrfToken = "{{ csrf_token }}";
     const articleImageUploadLimit = parseInt("{{ article_image_upload_limit|default:50 }}", 10) || 0;
     const uploadedImages = new Map();
@@ -600,6 +601,43 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }).join("");
     }
 
+    async function readImageUploadResponse(response) {
+        const contentType = (response.headers.get("content-type") || "").toLowerCase();
+        if (contentType.indexOf("application/json") === -1) {
+            return {};
+        }
+        try {
+            return await response.json();
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function getImageUploadErrorMessage(response, data) {
+        if (data && typeof data.error === "string" && data.error.trim()) {
+            return data.error.trim();
+        }
+        if (response.redirected || response.status === 401) {
+            return "{% trans 'Your session has expired. Please sign in again before uploading the image.' %}";
+        }
+        if (response.status === 413) {
+            return "{% trans 'Image is too large. Maximum allowed size is 2 MB.' %}";
+        }
+        if (response.status === 429) {
+            return "{% trans 'Too many image upload attempts. Please wait a moment and try again.' %}";
+        }
+        if (response.status === 403) {
+            return "{% trans 'The image upload was not authorised. Refresh the page and try again.' %}";
+        }
+        if (response.status === 400) {
+            return "{% trans 'The selected file is not a valid supported image.' %}";
+        }
+        if (response.status >= 500) {
+            return "{% trans 'Image upload is temporarily unavailable. Please try again later.' %}";
+        }
+        return "{% trans 'The image could not be uploaded. Please try again.' %}";
+    }
+
     function ensureImagePanelVisible() {
         const panel = document.getElementById("pastedImagePanel");
         if (panel) {
@@ -678,12 +716,25 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             showPasteMessage("{% trans 'Only PNG, JPG, GIF, or WEBP images are allowed.' %}", "danger");
             return;
         }
+        if (!file.size) {
+            showPasteMessage("{% trans 'The selected image is empty. Please choose a different image.' %}", "danger");
+            return;
+        }
+        if (file.size > maxArticleImageSizeBytes) {
+            showPasteMessage("{% trans 'Image is too large. Maximum allowed size is 2 MB.' %}", "danger");
+            return;
+        }
         if (articleImageUploadLimit <= 0 || uploadedImages.size >= articleImageUploadLimit) {
             showPasteMessage("{% blocktrans %}This article has reached the image upload limit. Please remove an image before uploading another one.{% endblocktrans %}", "danger");
             return;
         }
 
-        const hash = await fileHash(file);
+        let hash;
+        try {
+            hash = await fileHash(file);
+        } catch (error) {
+            hash = [file.name, file.size, file.type, file.lastModified].join(":");
+        }
         if (uploadedHashes.has(hash)) {
             showPasteMessage("{% trans 'This image is already uploaded in this draft. Use the X preview button to remove it first.' %}", "warning");
             return;
@@ -701,11 +752,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 headers: { "X-CSRFToken": csrfToken },
                 body: formData
             });
-            const data = await response.json();
+            const data = await readImageUploadResponse(response);
 
-            if (!response.ok) {
+            if (!response.ok || !data.markdown || !data.filename || !data.url) {
                 removeMarkdown(placeholder);
-                showPasteMessage(data.error || "{% trans 'Image upload failed.' %}", "danger");
+                showPasteMessage(getImageUploadErrorMessage(response, data), "danger");
                 return;
             }
 
@@ -722,7 +773,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             showPasteMessage("{% trans 'Image uploaded and inserted into the article.' %}", "success");
         } catch (error) {
             removeMarkdown(placeholder);
-            showPasteMessage("{% trans 'Image upload failed. Check Django terminal logs.' %}", "danger");
+            showPasteMessage("{% trans 'The image upload could not connect to the server. Please check your connection and try again.' %}", "danger");
         }
     }
 
