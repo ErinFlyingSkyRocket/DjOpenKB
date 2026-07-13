@@ -202,12 +202,15 @@ def _article_is_still_awaiting_review(article: SuggestedArticle, notification_ki
 
 
 def _review_url(article: SuggestedArticle) -> str:
-    route_name = (
-        "manage_internal_pending_articles"
-        if article.is_internal
-        else "manage_pending_articles"
-    )
-    return f"{settings.SITE_BASE_URL}{reverse(route_name)}"
+    """Return the common authenticated article-management page.
+
+    Approvers, managers, and Admin users reach their available review tools
+    through different role-specific navigation. Using the shared articles page
+    avoids emailing a queue URL that may be unsuitable for another eligible
+    reviewer role or article scope.
+    """
+    del article  # The common destination does not depend on visibility scope.
+    return f"{settings.SITE_BASE_URL}{reverse('edit_my_suggestions')}"
 
 
 def _clean_public_article_title(article: SuggestedArticle) -> str:
@@ -220,7 +223,7 @@ def _build_message(article: SuggestedArticle, notification_kind: str) -> tuple[s
     Public submissions use neutral wording because normal platform articles do
     not need to be labelled as ``Public`` in user-facing email. Internal
     submissions remain explicitly labelled so reviewers can recognise the
-    restricted article scope before opening the review queue.
+    restricted article scope before opening the article-management page.
     """
     is_update = notification_kind == NOTIFICATION_KIND_UPDATE_SUBMISSION
     item = "article update" if is_update else "article"
@@ -243,7 +246,7 @@ def _build_message(article: SuggestedArticle, notification_kind: str) -> tuple[s
     lines.extend(
         [
             "",
-            "Sign in and open the pending-review page:",
+            "Sign in and open the articles page:",
             _review_url(article),
             "",
             "This is an automated Knowledge Repository notification.",
