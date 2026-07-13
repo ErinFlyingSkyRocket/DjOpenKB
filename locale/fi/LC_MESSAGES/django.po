@@ -1160,7 +1160,7 @@ msgstr "Vahvista orpojen artikkelien toiminto"
 msgid "Confirm password"
 msgstr "Vahvista salasana"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Vahvistussalasana on virheellinen."
 
@@ -1596,7 +1596,7 @@ msgstr "Tehokkaat rooliryhmät"
 msgid "Email"
 msgstr "Sähköpostiosoite"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "Sähköposti päivitettiin onnistuneesti."
 
@@ -2094,7 +2094,7 @@ msgstr "Virheellinen kuvatiedoston nimi."
 msgid "Invalid image path."
 msgstr "Virheellinen kuvapolku."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Virheellinen kieli valittu."
 
@@ -2102,7 +2102,7 @@ msgstr "Virheellinen kieli valittu."
 msgid "Invalid orphan article action."
 msgstr "Virheellinen orvon artikkelin toiminto."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Virheellinen profiilin päivityspyyntö."
 
@@ -2190,7 +2190,7 @@ msgstr "LDAP-käyttäjä"
 msgid "Language"
 msgstr "Kieli"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Kieliasetus päivitettiin onnistuneesti."
 
@@ -2358,10 +2358,6 @@ msgstr "MFA-kirjautuminen peruutettiin. Kirjaudu sisään uudelleen."
 msgid "MFA verification"
 msgstr "MFA-vahvistus"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA-vahvistus onnistui."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA-vahvistus epäonnistui"
@@ -2378,7 +2374,7 @@ msgstr "MFA nollattiin käyttäjälle %(username)s. Käyttäjän on määritett�
 msgid "MFA/OTP code"
 msgstr "MFA/OTP-koodi"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP-koodi on virheellinen."
 
@@ -2538,7 +2534,7 @@ msgstr "Uusi sisäinen artikkeli"
 msgid "New password"
 msgstr "Uusi salasana"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Uusi salasana ja salasanan vahvistus eivät täsmää."
 
@@ -2738,7 +2734,7 @@ msgstr "Objektitunnus %(object_id)s"
 msgid "Old password"
 msgstr "Vanha salasana"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Vanha salasana on virheellinen."
 
@@ -2870,7 +2866,7 @@ msgstr "Salasana"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Salasana- ja MFA-laskurit nollataan erikseen, mutta tämä toiminto tyhjentää ne molemmat."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Salasana vaihdettiin onnistuneesti."
 
@@ -2918,7 +2914,7 @@ msgstr "Salasanavaatimukset"
 msgid "Password syncs with your company password."
 msgstr "Salasana synkronoituu yrityksen salasanan kanssa."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Salasanasi synkronoidaan yrityksesi salasanan kanssa. Vaihda se yrityksen salasanajärjestelmän kautta."
 
@@ -3610,7 +3606,7 @@ msgstr "Määritä MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Määritä MFA ennen ylläpitosivuston käyttöä."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Ota MFA käyttöön ennen arkaluonteisten tilitietojen muuttamista."
 
@@ -3998,7 +3994,7 @@ msgstr "Tämä artikkeli on jo julkaistu. Tätä toimintoa ei voi perua. Vahvist
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Tämä poistaa tämän käyttäjän tilapäiset estot, epäonnistuneiden yritysten laskurit ja porrastetun lukituksen historian. Se ei muuta käyttäjän salasanaa, MFA-laitetta, ryhmiä, käyttöoikeuksia tai aktiivisia istuntoja."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Tätä sähköpostiosoitetta hallitaan toimialuetililläsi eikä sitä voi muuttaa täällä."
 
@@ -4058,11 +4054,11 @@ msgstr "Vaihda navigointi"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "OpenKB AI -kysymyksiä on liian paljon. Odota ennen kuin yrität uudelleen."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Liian monta epäonnistunutta kirjautumisyritystä. Yritä uudelleen %(duration)s kuluttua."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Liian monta virheellistä MFA-koodia. Yritä uudelleen %(duration)s kuluttua."
 
@@ -4270,7 +4266,7 @@ msgstr "Käyttäjäistunnon aikakatkaisu luettavassa muodossa"
 msgid "Username"
 msgstr "Käyttäjänimi"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Käyttäjänimen muutoksia hallitsevat ylläpitäjät."
 
@@ -4325,6 +4321,11 @@ msgstr "Varoitukset / virheet"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Oliko tästä artikkelista apua?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Tervetuloa takaisin, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4434,7 +4435,7 @@ msgstr "Sinua pyydetään vahvistamaan ennen muutosten toteuttamista. Valitut ar
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA:si nollattiin. Suorita todennussovelluksen määritys nyt, jotta voit jatkaa Tietovaraston käyttöä."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Tilisi on tällä hetkellä poistettu käytöstä, eikä se voi käyttää Tietovarastoa. Ota yhteyttä ylläpitäjään, jos tämä on mielestäsi odottamatonta."
 

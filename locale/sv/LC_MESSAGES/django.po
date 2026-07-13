@@ -1160,7 +1160,7 @@ msgstr "Bekräfta åtgärd för föräldralös artikel"
 msgid "Confirm password"
 msgstr "Bekräfta lösenord"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Bekräftelselösenordet är felaktigt."
 
@@ -1596,7 +1596,7 @@ msgstr "Effektiva rollgrupper"
 msgid "Email"
 msgstr "E-postadress"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "E-post uppdaterad."
 
@@ -2094,7 +2094,7 @@ msgstr "Ogiltigt bildfilnamn."
 msgid "Invalid image path."
 msgstr "Ogiltig bildsökväg."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Ogiltigt språk valt."
 
@@ -2102,7 +2102,7 @@ msgstr "Ogiltigt språk valt."
 msgid "Invalid orphan article action."
 msgstr "Ogiltig åtgärd för föräldralös artikel."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Ogiltig begäran om profiluppdatering."
 
@@ -2190,7 +2190,7 @@ msgstr "LDAP-användare"
 msgid "Language"
 msgstr "Språk"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Språkinställning uppdaterad."
 
@@ -2358,10 +2358,6 @@ msgstr "MFA-inloggningen avbröts. Logga in igen."
 msgid "MFA verification"
 msgstr "MFA-verifiering"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA-verifiering slutförd."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA-verifiering misslyckades"
@@ -2378,7 +2374,7 @@ msgstr "MFA återställdes för %(username)s. Användaren måste konfigurera en 
 msgid "MFA/OTP code"
 msgstr "MFA/OTP-kod"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP-koden är felaktig."
 
@@ -2538,7 +2534,7 @@ msgstr "Ny intern artikel"
 msgid "New password"
 msgstr "Nytt lösenord"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Nytt lösenord och bekräfta lösenord stämmer inte överens."
 
@@ -2738,7 +2734,7 @@ msgstr "Objekt-ID %(object_id)s"
 msgid "Old password"
 msgstr "Gammalt lösenord"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Det gamla lösenordet är felaktigt."
 
@@ -2870,7 +2866,7 @@ msgstr "Lösenord"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Räknarna för lösenord och MFA återställs separat, men båda rensas av denna åtgärd."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Lösenordet har ändrats."
 
@@ -2918,7 +2914,7 @@ msgstr "Lösenordskrav"
 msgid "Password syncs with your company password."
 msgstr "Lösenordet synkroniseras med ditt företagslösenord."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Lösenordet synkroniseras med ditt företagslösenord. Ändra det via företagets lösenordssystem."
 
@@ -3610,7 +3606,7 @@ msgstr "Konfigurera MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Konfigurera MFA innan du öppnar adminwebbplatsen."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Konfigurera MFA innan du ändrar känsliga kontouppgifter."
 
@@ -3998,7 +3994,7 @@ msgstr "Den här artikeln är redan publicerad. Den här åtgärden kan inte ån
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Detta rensar tillfälliga spärrar, räknare för misslyckade försök och historiken för progressiv eskalering för denna användare. Det ändrar inte användarens lösenord, MFA-enhet, grupper, behörigheter eller aktiva sessioner."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Denna e-postadress hanteras av ditt domänkonto och kan inte ändras här."
 
@@ -4058,11 +4054,11 @@ msgstr "Växla navigering"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "För många frågor till OpenKB AI. Vänta innan du försöker igen."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "För många misslyckade inloggningsförsök. Försök igen om %(duration)s."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "För många felaktiga MFA-koder. Försök igen om %(duration)s."
 
@@ -4270,7 +4266,7 @@ msgstr "Läsbar tidsgräns för användarsession"
 msgid "Username"
 msgstr "Användarnamn"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Ändringar av användarnamn hanteras av administratörer."
 
@@ -4325,6 +4321,11 @@ msgstr "Varningar / fel"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Var den här artikeln hjälpsam?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Välkommen tillbaka, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4434,7 +4435,7 @@ msgstr "Du blir ombedd att bekräfta innan ändringarna tillämpas. Valda artikl
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "Din MFA återställdes. Slutför konfigurationen av autentiseringsappen nu för att fortsätta använda kunskapsarkivet."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Ditt konto är för närvarande inaktiverat och kan inte komma åt kunskapsarkivet. Kontakta en administratör om du anser att detta är oväntat."
 

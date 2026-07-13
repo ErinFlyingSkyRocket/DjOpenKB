@@ -1155,7 +1155,7 @@ msgstr "Xác nhận thao tác bài viết mồ côi"
 msgid "Confirm password"
 msgstr "Xác nhận mật khẩu"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Mật khẩu xác nhận không đúng."
 
@@ -1591,7 +1591,7 @@ msgstr "Nhóm vai trò có hiệu lực"
 msgid "Email"
 msgstr "Địa chỉ email"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "Email đã được cập nhật thành công."
 
@@ -2088,7 +2088,7 @@ msgstr "Tên tệp ảnh không hợp lệ."
 msgid "Invalid image path."
 msgstr "Đường dẫn ảnh không hợp lệ."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Ngôn ngữ đã chọn không hợp lệ."
 
@@ -2096,7 +2096,7 @@ msgstr "Ngôn ngữ đã chọn không hợp lệ."
 msgid "Invalid orphan article action."
 msgstr "Thao tác bài viết mồ côi không hợp lệ."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Yêu cầu cập nhật hồ sơ không hợp lệ."
 
@@ -2184,7 +2184,7 @@ msgstr "Người dùng LDAP"
 msgid "Language"
 msgstr "Ngôn ngữ"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Tùy chọn ngôn ngữ đã được cập nhật thành công."
 
@@ -2352,10 +2352,6 @@ msgstr "Đăng nhập MFA đã bị hủy. Vui lòng đăng nhập lại."
 msgid "MFA verification"
 msgstr "Xác minh MFA"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "Xác minh MFA thành công."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "Xác minh MFA thất bại"
@@ -2372,7 +2368,7 @@ msgstr "MFA của %(username)s đã được đặt lại. Người dùng phải
 msgid "MFA/OTP code"
 msgstr "Mã MFA/OTP"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "Mã MFA/OTP không đúng."
 
@@ -2532,7 +2528,7 @@ msgstr "Bài viết nội bộ mới"
 msgid "New password"
 msgstr "Mật khẩu mới"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Mật khẩu mới và xác nhận mật khẩu không khớp."
 
@@ -2732,7 +2728,7 @@ msgstr "ID đối tượng %(object_id)s"
 msgid "Old password"
 msgstr "Mật khẩu cũ"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Mật khẩu cũ không đúng."
 
@@ -2864,7 +2860,7 @@ msgstr "Mật khẩu"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Bộ đếm mật khẩu và MFA được đặt lại riêng biệt nhưng cả hai đều được xóa bằng thao tác này."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Đã thay đổi mật khẩu thành công."
 
@@ -2912,7 +2908,7 @@ msgstr "Yêu cầu mật khẩu"
 msgid "Password syncs with your company password."
 msgstr "Mật khẩu đồng bộ với mật khẩu công ty của bạn."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Mật khẩu đồng bộ với mật khẩu công ty của bạn. Vui lòng thay đổi qua hệ thống mật khẩu của công ty."
 
@@ -3604,7 +3600,7 @@ msgstr "Thiết lập MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Thiết lập MFA trước khi truy cập trang quản trị."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Thiết lập MFA trước khi thay đổi chi tiết tài khoản nhạy cảm."
 
@@ -3992,7 +3988,7 @@ msgstr "Bài viết này đã được xuất bản. Thao tác này không thể
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Thao tác này xóa các lần chặn tạm thời, bộ đếm lần thử sai và lịch sử tăng dần của người dùng này. Thao tác không thay đổi mật khẩu, thiết bị MFA, nhóm, quyền hoặc phiên hoạt động của người dùng."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Địa chỉ email này được quản lý bởi tài khoản miền của bạn và không thể thay đổi ở đây."
 
@@ -4052,11 +4048,11 @@ msgstr "Bật/tắt điều hướng"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Có quá nhiều câu hỏi cho OpenKB AI. Vui lòng chờ trước khi thử lại."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Có quá nhiều lần đăng nhập không thành công. Vui lòng thử lại sau %(duration)s."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Có quá nhiều mã MFA không chính xác. Vui lòng thử lại sau %(duration)s."
 
@@ -4264,7 +4260,7 @@ msgstr "Thời gian chờ phiên người dùng dạng dễ đọc"
 msgid "Username"
 msgstr "Tên người dùng"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Thay đổi tên người dùng do quản trị viên quản lý."
 
@@ -4319,6 +4315,11 @@ msgstr "Cảnh báo / lỗi"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Bài viết này có hữu ích không?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Chào mừng bạn trở lại, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4428,7 +4429,7 @@ msgstr "Bạn sẽ được yêu cầu xác nhận trước khi áp dụng thay 
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA của bạn đã được đặt lại. Hãy hoàn tất thiết lập trình xác thực ngay để tiếp tục sử dụng Kho tri thức."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Tài khoản của bạn hiện bị vô hiệu hóa và không thể truy cập Kho tri thức. Vui lòng liên hệ quản trị viên nếu bạn cho rằng điều này không mong đợi."
 

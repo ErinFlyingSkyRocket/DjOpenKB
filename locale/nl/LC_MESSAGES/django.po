@@ -1160,7 +1160,7 @@ msgstr "Actie voor weesartikelen bevestigen"
 msgid "Confirm password"
 msgstr "Wachtwoord bevestigen"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Bevestigingswachtwoord is onjuist."
 
@@ -1596,7 +1596,7 @@ msgstr "Effectieve rolgroepen"
 msgid "Email"
 msgstr "E-mail"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "E-mail succesvol bijgewerkt."
 
@@ -2094,7 +2094,7 @@ msgstr "Ongeldige afbeeldingsbestandsnaam."
 msgid "Invalid image path."
 msgstr "Ongeldig afbeeldingspad."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Ongeldige taal geselecteerd."
 
@@ -2102,7 +2102,7 @@ msgstr "Ongeldige taal geselecteerd."
 msgid "Invalid orphan article action."
 msgstr "Ongeldige actie voor weesartikel."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Ongeldig verzoek voor profielupdate."
 
@@ -2190,7 +2190,7 @@ msgstr "LDAP-gebruiker"
 msgid "Language"
 msgstr "Taal"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Taalvoorkeur succesvol bijgewerkt."
 
@@ -2358,10 +2358,6 @@ msgstr "MFA-aanmelding is geannuleerd. Meld je opnieuw aan."
 msgid "MFA verification"
 msgstr "MFA-verificatie"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA-verificatie gelukt."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA-verificatie mislukt"
@@ -2378,7 +2374,7 @@ msgstr "MFA is gereset voor %(username)s. De gebruiker moet bij de volgende aanm
 msgid "MFA/OTP code"
 msgstr "MFA/OTP-code"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "De MFA/OTP-code is onjuist."
 
@@ -2538,7 +2534,7 @@ msgstr "Nieuw intern artikel"
 msgid "New password"
 msgstr "Nieuw wachtwoord"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Nieuw wachtwoord en wachtwoordbevestiging komen niet overeen."
 
@@ -2738,7 +2734,7 @@ msgstr "Object-ID %(object_id)s"
 msgid "Old password"
 msgstr "Oud wachtwoord"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Oud wachtwoord is onjuist."
 
@@ -2870,7 +2866,7 @@ msgstr "Wachtwoord"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Tellers voor wachtwoord en MFA worden afzonderlijk gereset, maar beide worden door deze actie gewist."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Wachtwoord is succesvol gewijzigd."
 
@@ -2918,7 +2914,7 @@ msgstr "Wachtwoordvereisten"
 msgid "Password syncs with your company password."
 msgstr "Het wachtwoord synchroniseert met je bedrijfswachtwoord."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Wachtwoord wordt gesynchroniseerd met je bedrijfswachtwoord. Wijzig het via het wachtwoordsysteem van het bedrijf."
 
@@ -3610,7 +3606,7 @@ msgstr "MFA instellen"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Stel MFA in voordat je de beheersite opent."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Stel MFA in voordat je gevoelige accountgegevens wijzigt."
 
@@ -3998,7 +3994,7 @@ msgstr "Dit artikel is al gepubliceerd. Deze actie kan niet worden teruggedraaid
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Hiermee worden tijdelijke blokkeringen, tellers voor mislukte pogingen en de geschiedenis van progressieve escalatie voor deze gebruiker gewist. Het wachtwoord, MFA-apparaat, de groepen, machtigingen of actieve sessies van de gebruiker worden niet gewijzigd."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Dit e-mailadres wordt beheerd door je domeinaccount en kan hier niet worden gewijzigd."
 
@@ -4058,11 +4054,11 @@ msgstr "Navigatie wisselen"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Te veel vragen aan OpenKB AI. Wacht voordat je het opnieuw probeert."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Te veel mislukte aanmeldingspogingen. Probeer het opnieuw over %(duration)s."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Te veel onjuiste MFA-codes. Probeer het opnieuw over %(duration)s."
 
@@ -4270,7 +4266,7 @@ msgstr "Leesbare time-out van gebruikerssessie"
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Wijzigingen aan gebruikersnamen worden beheerd door beheerders."
 
@@ -4325,6 +4321,11 @@ msgstr "Waarschuwingen / fouten"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Was dit artikel nuttig?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Welkom terug, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4434,7 +4435,7 @@ msgstr "Je wordt gevraagd om te bevestigen voordat wijzigingen worden toegepast.
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "Je MFA is gereset. Voltooi nu de instelling van de authenticator om Kennisrepository te blijven gebruiken."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Je account is momenteel uitgeschakeld en heeft geen toegang tot Kennisrepository. Neem contact op met een beheerder als je denkt dat dit onverwacht is."
 

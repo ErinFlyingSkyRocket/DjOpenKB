@@ -1160,7 +1160,7 @@ msgstr "Sahipsiz makale işlemini onayla"
 msgid "Confirm password"
 msgstr "Şifreyi onayla"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Onay şifresi yanlış."
 
@@ -1596,7 +1596,7 @@ msgstr "Etkili rol grupları"
 msgid "Email"
 msgstr "E-posta"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "E-posta başarıyla güncellendi."
 
@@ -2094,7 +2094,7 @@ msgstr "Geçersiz görsel dosya adı."
 msgid "Invalid image path."
 msgstr "Geçersiz görsel yolu."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Geçersiz dil seçildi."
 
@@ -2102,7 +2102,7 @@ msgstr "Geçersiz dil seçildi."
 msgid "Invalid orphan article action."
 msgstr "Geçersiz sahipsiz makale işlemi."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Geçersiz profil güncelleme isteği."
 
@@ -2190,7 +2190,7 @@ msgstr "LDAP kullanıcısı"
 msgid "Language"
 msgstr "Dil"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Dil tercihi başarıyla güncellendi."
 
@@ -2358,10 +2358,6 @@ msgstr "MFA ile oturum açma iptal edildi. Lütfen yeniden oturum açın."
 msgid "MFA verification"
 msgstr "MFA doğrulaması"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA doğrulaması başarılı."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA doğrulaması başarısız"
@@ -2378,7 +2374,7 @@ msgstr "%(username)s için MFA sıfırlandı. Kullanıcı bir sonraki oturum aç
 msgid "MFA/OTP code"
 msgstr "MFA/OTP kodu"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP kodu yanlış."
 
@@ -2538,7 +2534,7 @@ msgstr "Yeni iç makale"
 msgid "New password"
 msgstr "Yeni şifre"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Yeni parola ve parola onayı eşleşmiyor."
 
@@ -2738,7 +2734,7 @@ msgstr "Nesne kimliği %(object_id)s"
 msgid "Old password"
 msgstr "Eski şifre"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Eski parola yanlış."
 
@@ -2870,7 +2866,7 @@ msgstr "Parola"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Parola ve MFA sayaçları ayrı ayrı sıfırlanır; ancak bu işlem ikisini de temizler."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Parola başarıyla değiştirildi."
 
@@ -2918,7 +2914,7 @@ msgstr "Şifre gereksinimleri"
 msgid "Password syncs with your company password."
 msgstr "Parola şirket parolanızla eşitlenir."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Parolanız şirket parolanızla eşitlenir. Lütfen parolanızı şirket parola sistemi üzerinden değiştirin."
 
@@ -3610,7 +3606,7 @@ msgstr "MFA'yı ayarla"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Yönetici sitesine erişmeden önce MFA'yı kurun."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Hassas hesap ayrıntılarını değiştirmeden önce MFA kurun."
 
@@ -3998,7 +3994,7 @@ msgstr "Bu makale zaten yayımlandı. Bu işlem geri alınamaz. MFA/OTP kodunuzu
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Bu işlem bu kullanıcı için geçici engellemeleri, başarısız deneme sayaçlarını ve aşamalı yükseltme geçmişini temizler. Kullanıcının parolasını, MFA cihazını, gruplarını, izinlerini veya etkin oturumlarını değiştirmez."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Bu e-posta adresi alan hesabınız tarafından yönetilir ve burada değiştirilemez."
 
@@ -4058,11 +4054,11 @@ msgstr "Gezinmeyi aç/kapat"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Çok fazla OpenKB AI sorusu. Lütfen yeniden denemeden önce bekleyin."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonra yeniden deneyin."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Çok fazla yanlış MFA kodu. Lütfen %(duration)s sonra yeniden deneyin."
 
@@ -4270,7 +4266,7 @@ msgstr "Kullanıcı oturumu zaman aşımı okunabilir"
 msgid "Username"
 msgstr "Kullanıcı adı"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Kullanıcı adı değişiklikleri yöneticiler tarafından yönetilir."
 
@@ -4325,6 +4321,11 @@ msgstr "Uyarılar / hatalar"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Bu makale faydalı oldu mu?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Tekrar hoş geldiniz, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4434,7 +4435,7 @@ msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Seçilen makale
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA'nız sıfırlandı. Bilgi Deposunu kullanmaya devam etmek için şimdi kimlik doğrulayıcı kurulumunu tamamlayın."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Hesabınız şu anda devre dışı ve Bilgi Deposuna erişemez. Bunun beklenmedik olduğunu düşünüyorsanız lütfen bir yöneticiyle iletişime geçin."
 

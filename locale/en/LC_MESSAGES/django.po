@@ -1160,7 +1160,7 @@ msgstr "Confirm orphan article action"
 msgid "Confirm password"
 msgstr "Confirm password"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Confirm password is incorrect."
 
@@ -1596,7 +1596,7 @@ msgstr "Effective role groups"
 msgid "Email"
 msgstr "Email"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "Email updated successfully."
 
@@ -2094,7 +2094,7 @@ msgstr "Invalid image filename."
 msgid "Invalid image path."
 msgstr "Invalid image path."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Invalid language selected."
 
@@ -2102,7 +2102,7 @@ msgstr "Invalid language selected."
 msgid "Invalid orphan article action."
 msgstr "Invalid orphan article action."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Invalid profile update request."
 
@@ -2190,7 +2190,7 @@ msgstr "LDAP user"
 msgid "Language"
 msgstr "Language"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Language preference updated successfully."
 
@@ -2358,10 +2358,6 @@ msgstr "MFA sign-in was cancelled. Please sign in again."
 msgid "MFA verification"
 msgstr "MFA verification"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA verification successful."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA verify failure"
@@ -2378,7 +2374,7 @@ msgstr "MFA was reset for %(username)s. The user must set up a new authenticator
 msgid "MFA/OTP code"
 msgstr "MFA/OTP code"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP code is incorrect."
 
@@ -2538,7 +2534,7 @@ msgstr "New internal article"
 msgid "New password"
 msgstr "New password"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "New password and confirm password do not match."
 
@@ -2738,7 +2734,7 @@ msgstr "Object ID %(object_id)s"
 msgid "Old password"
 msgstr "Old password"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Old password is incorrect."
 
@@ -2870,7 +2866,7 @@ msgstr "Password"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Password and MFA counters are reset separately but both are cleared by this action."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Password changed successfully."
 
@@ -2918,7 +2914,7 @@ msgstr "Password requirements"
 msgid "Password syncs with your company password."
 msgstr "Password syncs with your company password."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Password syncs with your company password. Please change it through the company password system."
 
@@ -3610,7 +3606,7 @@ msgstr "Set up MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Set up MFA before accessing the admin site."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Set up MFA before changing sensitive account details."
 
@@ -3998,7 +3994,7 @@ msgstr "This article is already published. This action cannot be reversed. Confi
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "This email address is managed by your domain account and cannot be changed here."
 
@@ -4058,11 +4054,11 @@ msgstr "Toggle navigation"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Too many OpenKB AI questions. Please wait before trying again."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Too many failed sign-in attempts. Please try again in %(duration)s."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Too many incorrect MFA codes. Please try again in %(duration)s."
 
@@ -4270,7 +4266,7 @@ msgstr "User session timeout readable"
 msgid "Username"
 msgstr "Username"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Username changes are managed by administrators."
 
@@ -4325,6 +4321,11 @@ msgstr "Warnings / errors"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Was this article helpful?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Welcome back, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4434,7 +4435,7 @@ msgstr "You will be asked to confirm before changes are applied. Selected articl
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 

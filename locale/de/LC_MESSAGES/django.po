@@ -1160,7 +1160,7 @@ msgstr "Aktion für verwaiste Artikel bestätigen"
 msgid "Confirm password"
 msgstr "Passwort bestätigen"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Das Bestätigungspasswort ist falsch."
 
@@ -1596,7 +1596,7 @@ msgstr "Effektive Rollengruppen"
 msgid "Email"
 msgstr "E-Mail"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "E-Mail erfolgreich aktualisiert."
 
@@ -2094,7 +2094,7 @@ msgstr "Ungültiger Bilddateiname."
 msgid "Invalid image path."
 msgstr "Ungültiger Bildpfad."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Ungültige Sprache ausgewählt."
 
@@ -2102,7 +2102,7 @@ msgstr "Ungültige Sprache ausgewählt."
 msgid "Invalid orphan article action."
 msgstr "Ungültige Aktion für verwaiste Artikel."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Ungültige Profilaktualisierungsanfrage."
 
@@ -2190,7 +2190,7 @@ msgstr "LDAP-Benutzer"
 msgid "Language"
 msgstr "Sprache"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Spracheinstellung erfolgreich aktualisiert."
 
@@ -2358,10 +2358,6 @@ msgstr "Die MFA-Anmeldung wurde abgebrochen. Bitte melden Sie sich erneut an."
 msgid "MFA verification"
 msgstr "MFA-Überprüfung"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA-Verifizierung erfolgreich."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA-Verifizierung fehlgeschlagen"
@@ -2378,7 +2374,7 @@ msgstr "MFA wurde für %(username)s zurückgesetzt. Der Benutzer muss bei der n�
 msgid "MFA/OTP code"
 msgstr "MFA/OTP-Code"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP-Code ist falsch."
 
@@ -2538,7 +2534,7 @@ msgstr "Neuer interner Artikel"
 msgid "New password"
 msgstr "Neues Passwort"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Neues Passwort und Passwortbestätigung stimmen nicht überein."
 
@@ -2738,7 +2734,7 @@ msgstr "Objekt-ID %(object_id)s"
 msgid "Old password"
 msgstr "Altes Passwort"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Das alte Passwort ist falsch."
 
@@ -2870,7 +2866,7 @@ msgstr "Passwort"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Passwort- und MFA-Zähler werden getrennt zurückgesetzt, aber beide werden durch diese Aktion gelöscht."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Passwort erfolgreich geändert."
 
@@ -2918,7 +2914,7 @@ msgstr "Passwortanforderungen"
 msgid "Password syncs with your company password."
 msgstr "Das Passwort wird mit Ihrem Firmenpasswort synchronisiert."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Das Passwort wird mit Ihrem Unternehmenspasswort synchronisiert. Bitte ändern Sie es über das Passwortsystem Ihres Unternehmens."
 
@@ -3610,7 +3606,7 @@ msgstr "MFA einrichten"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Richten Sie MFA ein, bevor Sie auf die Administrationsseite zugreifen."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Richten Sie MFA ein, bevor Sie sensible Kontodaten ändern."
 
@@ -3998,7 +3994,7 @@ msgstr "Dieser Artikel ist bereits veröffentlicht. Diese Aktion kann nicht rüc
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Dies löscht temporäre Sperren, Zähler fehlgeschlagener Versuche und den progressiven Eskalationsverlauf für diesen Benutzer. Passwort, MFA-Gerät, Gruppen, Berechtigungen oder aktive Sitzungen des Benutzers werden nicht geändert."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Diese E-Mail-Adresse wird von Ihrem Domänenkonto verwaltet und kann hier nicht geändert werden."
 
@@ -4058,11 +4054,11 @@ msgstr "Navigation umschalten"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Zu viele Fragen an OpenKB AI. Bitte warten Sie, bevor Sie es erneut versuchen."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Zu viele fehlgeschlagene Anmeldeversuche. Bitte versuchen Sie es in %(duration)s erneut."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Zu viele falsche MFA-Codes. Bitte versuchen Sie es in %(duration)s erneut."
 
@@ -4270,7 +4266,7 @@ msgstr "Lesbare Benutzersitzungs-Zeitüberschreitung"
 msgid "Username"
 msgstr "Benutzername"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Änderungen des Benutzernamens werden von Administratoren verwaltet."
 
@@ -4325,6 +4321,11 @@ msgstr "Warnungen / Fehler"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "War dieser Artikel hilfreich?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Willkommen zurück, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4434,7 +4435,7 @@ msgstr "Sie werden vor der Anwendung der Änderungen um Bestätigung gebeten. Au
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "Ihre MFA wurde zurückgesetzt. Schließen Sie jetzt die Authenticator-Einrichtung ab, um das Wissensrepository weiter zu verwenden."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Ihr Konto ist derzeit deaktiviert und kann nicht auf das Wissensrepository zugreifen. Bitte wenden Sie sich an einen Administrator, falls dies unerwartet ist."
 

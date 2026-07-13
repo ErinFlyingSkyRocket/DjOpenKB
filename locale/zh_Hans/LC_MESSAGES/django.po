@@ -1155,7 +1155,7 @@ msgstr "确认孤立文章操作"
 msgid "Confirm password"
 msgstr "确认密码"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "确认密码不正确。"
 
@@ -1591,7 +1591,7 @@ msgstr "有效角色群组"
 msgid "Email"
 msgstr "电子邮件"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "电子邮件已成功更新。"
 
@@ -2088,7 +2088,7 @@ msgstr "无效的图片文件名。"
 msgid "Invalid image path."
 msgstr "无效的图片路径。"
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "选择的语言无效。"
 
@@ -2096,7 +2096,7 @@ msgstr "选择的语言无效。"
 msgid "Invalid orphan article action."
 msgstr "无效的孤立文章操作。"
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "个人资料更新请求无效。"
 
@@ -2184,7 +2184,7 @@ msgstr "LDAP 用户"
 msgid "Language"
 msgstr "语言"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "语言偏好已成功更新。"
 
@@ -2352,10 +2352,6 @@ msgstr "MFA 登录已取消。请重新登录。"
 msgid "MFA verification"
 msgstr "MFA 验证"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "MFA 验证成功。"
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "MFA 验证失败"
@@ -2372,7 +2368,7 @@ msgstr "已重置 %(username)s 的 MFA。该用户下次登录时必须设置新
 msgid "MFA/OTP code"
 msgstr "MFA/OTP 代码"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP 代码不正确。"
 
@@ -2532,7 +2528,7 @@ msgstr "新建内部文章"
 msgid "New password"
 msgstr "新密码"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "新密码与确认密码不匹配。"
 
@@ -2732,7 +2728,7 @@ msgstr "对象 ID %(object_id)s"
 msgid "Old password"
 msgstr "旧密码"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "旧密码不正确。"
 
@@ -2864,7 +2860,7 @@ msgstr "密码"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "密码和 MFA 计数器会分别重置，但此操作会同时清除两者。"
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "密码已成功更改。"
 
@@ -2912,7 +2908,7 @@ msgstr "密码要求"
 msgid "Password syncs with your company password."
 msgstr "密码与你的公司密码同步。"
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "密码与您的公司密码同步。请通过公司密码系统更改密码。"
 
@@ -3604,7 +3600,7 @@ msgstr "设置 MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "请先设置 MFA 再访问管理后台。"
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "更改敏感账号信息前请先设置 MFA。"
 
@@ -3992,7 +3988,7 @@ msgstr "此文章已发布。此操作无法撤销。请使用您的 MFA/OTP 代
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "此操作会清除此用户的临时锁定、失败尝试计数器和渐进式升级历史。不会更改用户的密码、MFA 设备、群组、权限或活动会话。"
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "此电子邮件地址由你的域账号管理，无法在这里更改。"
 
@@ -4052,11 +4048,11 @@ msgstr "切换导航"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "OpenKB AI 问题过多。请稍候再试。"
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "失败登录尝试次数过多。请在 %(duration)s 后重试。"
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "错误 MFA 代码次数过多。请在 %(duration)s 后重试。"
 
@@ -4264,7 +4260,7 @@ msgstr "用户会话超时（可读）"
 msgid "Username"
 msgstr "用户名"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "用户名更改由管理员管理。"
 
@@ -4319,6 +4315,11 @@ msgstr "警告 / 错误"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "这篇文章有帮助吗？"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "欢迎回来，%(username)s。"
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4428,7 +4429,7 @@ msgstr "应用更改前会要求您确认。所选文章会立即永久删除。
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "您的 MFA 已重置。请立即完成身份验证器设置以继续使用知识库。"
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "您的账户目前已禁用，无法访问知识库。如您认为这不符合预期，请联系管理员。"
 

@@ -347,7 +347,10 @@ def mfa_verify(request):
             if user_has_disabled_role(user):
                 return _deny_disabled_account_after_mfa(request, user, source="mfa_verify")
             next_url = _finish_mfa(request, user)
-            messages.success(request, _("MFA verification successful."))
+            messages.success(
+                request,
+                _("Welcome back, %(username)s.") % {"username": user.get_username()},
+            )
             return redirect(next_url)
         else:
             lockout = record_auth_failure(request, user=user, purpose="mfa")

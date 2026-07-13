@@ -1155,7 +1155,7 @@ msgstr "Sahkan tindakan artikel yatim"
 msgid "Confirm password"
 msgstr "Sahkan kata laluan"
 
-#: kb/views/auth.py:475
+#: kb/views/auth.py:508
 msgid "Confirm password is incorrect."
 msgstr "Kata laluan pengesahan tidak betul."
 
@@ -1591,7 +1591,7 @@ msgstr "Kumpulan peranan berkesan"
 msgid "Email"
 msgstr "E-mel"
 
-#: kb/views/auth.py:496
+#: kb/views/auth.py:529
 msgid "Email updated successfully."
 msgstr "E-mel berjaya dikemas kini."
 
@@ -2088,7 +2088,7 @@ msgstr "Nama fail imej tidak sah."
 msgid "Invalid image path."
 msgstr "Laluan imej tidak sah."
 
-#: kb/views/auth.py:443
+#: kb/views/auth.py:476
 msgid "Invalid language selected."
 msgstr "Bahasa yang dipilih tidak sah."
 
@@ -2096,7 +2096,7 @@ msgstr "Bahasa yang dipilih tidak sah."
 msgid "Invalid orphan article action."
 msgstr "Tindakan artikel yatim tidak sah."
 
-#: kb/views/auth.py:499
+#: kb/views/auth.py:532
 msgid "Invalid profile update request."
 msgstr "Permintaan kemas kini profil tidak sah."
 
@@ -2184,7 +2184,7 @@ msgstr "Pengguna LDAP"
 msgid "Language"
 msgstr "Bahasa"
 
-#: kb/views/auth.py:453
+#: kb/views/auth.py:486
 msgid "Language preference updated successfully."
 msgstr "Pilihan bahasa berjaya dikemas kini."
 
@@ -2352,10 +2352,6 @@ msgstr "Log masuk MFA dibatalkan. Sila log masuk semula."
 msgid "MFA verification"
 msgstr "Pengesahan MFA"
 
-#: kb/views/mfa.py:350
-msgid "MFA verification successful."
-msgstr "Pengesahan MFA berjaya."
-
 #: kb/models.py:256
 msgid "MFA verify failure"
 msgstr "Pengesahan MFA gagal"
@@ -2372,7 +2368,7 @@ msgstr "MFA telah ditetapkan semula untuk %(username)s. Pengguna mesti menyediak
 msgid "MFA/OTP code"
 msgstr "Kod MFA/OTP"
 
-#: kb/views/auth.py:407 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/services.py:735
 msgid "MFA/OTP code is incorrect."
 msgstr "Kod MFA/OTP tidak betul."
 
@@ -2532,7 +2528,7 @@ msgstr "Artikel dalaman baharu"
 msgid "New password"
 msgstr "Kata laluan baharu"
 
-#: kb/views/auth.py:524
+#: kb/views/auth.py:557
 msgid "New password and confirm password do not match."
 msgstr "Kata laluan baharu dan pengesahan kata laluan tidak sepadan."
 
@@ -2732,7 +2728,7 @@ msgstr "ID Objek %(object_id)s"
 msgid "Old password"
 msgstr "Kata laluan lama"
 
-#: kb/views/auth.py:520
+#: kb/views/auth.py:553
 msgid "Old password is incorrect."
 msgstr "Kata laluan lama tidak betul."
 
@@ -2864,7 +2860,7 @@ msgstr "Kata laluan"
 msgid "Password and MFA counters are reset separately but both are cleared by this action."
 msgstr "Kaunter kata laluan dan MFA ditetapkan semula secara berasingan tetapi kedua-duanya dikosongkan oleh tindakan ini."
 
-#: kb/views/auth.py:552
+#: kb/views/auth.py:585
 msgid "Password changed successfully."
 msgstr "Kata laluan berjaya ditukar."
 
@@ -2912,7 +2908,7 @@ msgstr "Keperluan kata laluan"
 msgid "Password syncs with your company password."
 msgstr "Kata laluan disegerakkan dengan kata laluan syarikat anda."
 
-#: kb/views/auth.py:512
+#: kb/views/auth.py:545
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Kata laluan disegerakkan dengan kata laluan syarikat anda. Sila tukarnya melalui sistem kata laluan syarikat."
 
@@ -3604,7 +3600,7 @@ msgstr "Sediakan MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Sediakan MFA sebelum mengakses laman pentadbir."
 
-#: kb/views/auth.py:359
+#: kb/views/auth.py:392
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Sediakan MFA sebelum menukar butiran akaun sensitif."
 
@@ -3992,7 +3988,7 @@ msgstr "Artikel ini sudah diterbitkan. Tindakan ini tidak boleh dikembalikan. Sa
 msgid "This clears temporary blocks, failed-attempt counters, and progressive escalation history for this user. It does not change the user's password, MFA device, groups, permissions, or active sessions."
 msgstr "Ini mengosongkan sekatan sementara, kaunter percubaan gagal dan sejarah peningkatan progresif bagi pengguna ini. Ia tidak mengubah kata laluan pengguna, peranti MFA, kumpulan, kebenaran atau sesi aktif."
 
-#: kb/views/auth.py:469
+#: kb/views/auth.py:502
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Alamat e-mel ini diuruskan oleh akaun domain anda dan tidak boleh ditukar di sini."
 
@@ -4052,11 +4048,11 @@ msgstr "Togol navigasi"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Terlalu banyak soalan OpenKB AI. Sila tunggu sebelum mencuba lagi."
 
-#: kb/views/auth.py:154 kb/views/auth.py:181
+#: kb/views/auth.py:171 kb/views/auth.py:210
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Terlalu banyak percubaan log masuk gagal. Sila cuba lagi dalam %(duration)s."
 
-#: kb/views/auth.py:383 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Terlalu banyak kod MFA yang salah. Sila cuba lagi dalam %(duration)s."
 
@@ -4264,7 +4260,7 @@ msgstr "Tamat masa sesi pengguna yang boleh dibaca"
 msgid "Username"
 msgstr "Nama pengguna"
 
-#: kb/views/auth.py:464 website/templates/profile.html:126
+#: kb/views/auth.py:497 website/templates/profile.html:126
 msgid "Username changes are managed by administrators."
 msgstr "Perubahan nama pengguna diuruskan oleh pentadbir."
 
@@ -4319,6 +4315,11 @@ msgstr "Amaran / ralat"
 #: website/templates/articles.html:235
 msgid "Was this article helpful?"
 msgstr "Adakah artikel ini membantu?"
+
+#: kb/views/mfa.py:350
+#, python-format
+msgid "Welcome back, %(username)s."
+msgstr "Selamat datang kembali, %(username)s."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4428,7 +4429,7 @@ msgstr "Anda akan diminta mengesahkan sebelum perubahan digunakan. Artikel yang 
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA anda telah ditetapkan semula. Lengkapkan persediaan aplikasi pengesah sekarang untuk terus menggunakan Repositori Pengetahuan."
 
-#: kb/views/auth.py:34 website/templates/account_disabled.html:29
+#: kb/views/auth.py:37 website/templates/account_disabled.html:29
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Akaun anda kini dinyahaktifkan dan tidak boleh mengakses Repositori Pengetahuan. Sila hubungi pentadbir jika anda percaya perkara ini tidak dijangka."
 
