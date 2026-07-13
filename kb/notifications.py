@@ -736,29 +736,34 @@ def _owner_notification_subject_and_body(
     author receives a direct authenticated link to read the current comments in
     DjOpenKB instead. Internal article titles are likewise intentionally omitted.
     """
-    scope = "internal" if article.is_internal else "public"
+    # Public is the normal user-facing article type, so owner emails do not
+    # unnecessarily label it as "public". Internal articles remain explicitly
+    # identified so recipients understand that the content has restricted scope.
+    article_label = "internal article" if article.is_internal else "article"
+    update_label = "internal article update" if article.is_internal else "article update"
+
     if notification_kind == OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED:
-        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {scope} article is approved"
+        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {article_label} is approved"
         outcome_lines = [
-            f"Your {scope} article has been approved and is now published.",
+            f"Your {article_label} has been approved and is now published.",
             "You do not need to take any further action.",
         ]
     elif notification_kind == OWNER_NOTIFICATION_KIND_UPDATE_APPROVED:
-        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {scope} article update is approved"
+        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {update_label} is approved"
         outcome_lines = [
-            f"Your submitted update to a {scope} article has been approved and is now published.",
+            f"Your submitted {update_label} has been approved and is now published.",
             "You do not need to take any further action.",
         ]
     elif notification_kind == OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED:
-        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {scope} article needs changes"
+        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {article_label} needs changes"
         outcome_lines = [
-            f"Your {scope} article was marked as Pending failed and has not been published.",
+            f"Your {article_label} was marked as Pending failed and has not been published.",
             "Review the reviewer comments, update the article, and resubmit it for approval.",
         ]
     elif notification_kind == OWNER_NOTIFICATION_KIND_UPDATE_PENDING_FAILED:
-        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {scope} article update needs changes"
+        subject = f"{settings.EMAIL_SUBJECT_PREFIX}Your {update_label} needs changes"
         outcome_lines = [
-            f"Your submitted update to a {scope} article was marked as Pending failed.",
+            f"Your submitted {update_label} was marked as Pending failed.",
             "The current published version remains visible. Review the reviewer comments, update the draft, and resubmit it for approval.",
         ]
     else:

@@ -11,6 +11,11 @@ from django.test import RequestFactory, TestCase, override_settings
 from kb.models import SuggestedArticle
 from kb.notifications import (
     NOTIFICATION_KIND_NEW_SUBMISSION,
+    OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED,
+    OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED,
+    OWNER_NOTIFICATION_KIND_UPDATE_APPROVED,
+    OWNER_NOTIFICATION_KIND_UPDATE_PENDING_FAILED,
+    _owner_notification_subject_and_body,
     deliver_article_review_notification,
     get_article_review_recipients,
     send_article_review_notification_after_commit,
@@ -218,3 +223,94 @@ class ArticleReviewNotificationTests(TestCase):
         self.assertEqual(response["recipient_count"], 3)
         self.assertEqual(response["relay_accepted_count"], 0)
         self.assertEqual(mail.outbox, [])
+
+
+@override_settings(
+    SITE_BASE_URL="https://knowledge.example.invalid",
+    EMAIL_SUBJECT_PREFIX="[Knowledge Repository] ",
+)
+class ArticleOwnerNotificationWordingTests(TestCase):
+    """Public owner emails stay generic while Internal scope remains explicit."""
+
+    def setUp(self):
+        User = get_user_model()
+        self.owner = User.objects.create_user(
+            username="owner-wording-test",
+            email="owner-wording@example.invalid",
+            password="safe-test-password",
+        )
+
+    def _article(self, *, internal: bool) -> SuggestedArticle:
+        return SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Owner notification wording article",
+            body="Test body",
+            visibility=(
+                SuggestedArticle.Visibility.INTERNAL
+                if internal
+                else SuggestedArticle.Visibility.PUBLIC
+            ),
+            status=SuggestedArticle.Status.PUBLISHED,
+        )
+
+    def test_public_owner_notifications_do_not_use_public_article_wording(self):
+        article = self._article(internal=False)
+        expectations = {
+            OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED: (
+                "[Knowledge Repository] Your article is approved",
+                "Your article has been approved and is now published.",
+            ),
+            OWNER_NOTIFICATION_KIND_UPDATE_APPROVED: (
+                "[Knowledge Repository] Your article update is approved",
+                "Your submitted article update has been approved and is now published.",
+            ),
+            OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED: (
+                "[Knowledge Repository] Your article needs changes",
+                "Your article was marked as Pending failed and has not been published.",
+            ),
+            OWNER_NOTIFICATION_KIND_UPDATE_PENDING_FAILED: (
+                "[Knowledge Repository] Your article update needs changes",
+                "Your submitted article update was marked as Pending failed.",
+            ),
+        }
+
+        for notification_kind, (expected_subject, expected_body_line) in expectations.items():
+            with self.subTest(notification_kind=notification_kind):
+                subject, body = _owner_notification_subject_and_body(
+                    article,
+                    notification_kind,
+                )
+                self.assertEqual(subject, expected_subject)
+                self.assertIn(expected_body_line, body)
+                self.assertNotIn("public article", f"{subject}\n{body}".lower())
+
+    def test_internal_owner_notifications_keep_internal_article_wording(self):
+        article = self._article(internal=True)
+        expectations = {
+            OWNER_NOTIFICATION_KIND_ARTICLE_APPROVED: (
+                "[Knowledge Repository] Your internal article is approved",
+                "Your internal article has been approved and is now published.",
+            ),
+            OWNER_NOTIFICATION_KIND_UPDATE_APPROVED: (
+                "[Knowledge Repository] Your internal article update is approved",
+                "Your submitted internal article update has been approved and is now published.",
+            ),
+            OWNER_NOTIFICATION_KIND_ARTICLE_PENDING_FAILED: (
+                "[Knowledge Repository] Your internal article needs changes",
+                "Your internal article was marked as Pending failed and has not been published.",
+            ),
+            OWNER_NOTIFICATION_KIND_UPDATE_PENDING_FAILED: (
+                "[Knowledge Repository] Your internal article update needs changes",
+                "Your submitted internal article update was marked as Pending failed.",
+            ),
+        }
+
+        for notification_kind, (expected_subject, expected_body_line) in expectations.items():
+            with self.subTest(notification_kind=notification_kind):
+                subject, body = _owner_notification_subject_and_body(
+                    article,
+                    notification_kind,
+                )
+                self.assertEqual(subject, expected_subject)
+                self.assertIn(expected_body_line, body)
+                self.assertIn("internal article", f"{subject}\n{body}".lower())
