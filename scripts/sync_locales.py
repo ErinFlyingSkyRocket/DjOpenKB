@@ -113,6 +113,24 @@ def literal_string(node: ast.AST | None) -> str | None:
     return None
 
 
+def literal_dict_values(node: ast.AST) -> Iterable[tuple[str, int]]:
+    """Yield static string values from nested dictionaries.
+
+    DjOpenKB's Django Admin labels are stored in literal ``labels`` and
+    ``help_texts`` dictionaries, then passed through ``gettext_lazy`` at
+    runtime. A normal AST scan cannot see the final translation call, so the
+    locale synchroniser explicitly collects those dictionary values.
+    """
+    if not isinstance(node, ast.Dict):
+        return
+    for value_node in node.values:
+        value = literal_string(value_node)
+        if value is not None:
+            yield value, getattr(value_node, "lineno", getattr(node, "lineno", 1))
+        elif isinstance(value_node, ast.Dict):
+            yield from literal_dict_values(value_node)
+
+
 def iter_python_files() -> Iterable[Path]:
     for root in PYTHON_SOURCE_DIRS:
         if not root.exists():
@@ -160,6 +178,28 @@ def collect_python_messages(collector: SourceCollector) -> None:
                 plural = literal_string(node.args[2])
                 if context is not None and singular is not None and plural is not None:
                     collector.add(singular, ref, plural=plural, context=context)
+            elif name == "_set_admin_model_label" and len(node.args) >= 3:
+                # _set_admin_model_label translates both literal labels inside
+                # the helper, so make them visible to the static extractor.
+                singular = literal_string(node.args[1])
+                plural = literal_string(node.args[2])
+                if singular is not None:
+                    collector.add(singular, ref)
+                if plural is not None:
+                    collector.add(plural, ref)
+
+        if relative == "kb/admin.py":
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Assign):
+                    continue
+                target_names = {
+                    target.id for target in node.targets
+                    if isinstance(target, ast.Name)
+                }
+                if not target_names.intersection({"labels", "help_texts"}):
+                    continue
+                for message, line_number in literal_dict_values(node.value):
+                    collector.add(message, f"{relative}:{line_number}")
 
 
 DIRECT_TEMPLATE_RE = re.compile(

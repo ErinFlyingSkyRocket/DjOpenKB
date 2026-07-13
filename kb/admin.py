@@ -11,7 +11,7 @@ from django.contrib.auth.admin import GroupAdmin as DefaultGroupAdmin, UserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils import timezone
 from django.utils.html import format_html, format_html_join
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from .models import ActivityLog, AdminActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile
 from .auth_monitoring import format_retry_after, log_auth_event, reset_user_auth_lockouts
@@ -285,39 +285,46 @@ _apply_admin_translation_labels()
 
 
 def format_admin_duration(seconds):
-    """Return a readable duration for Django Admin helper displays."""
+    """Return a translated readable duration for Django Admin displays."""
     try:
         seconds = max(0, int(seconds or 0))
     except (TypeError, ValueError):
         seconds = 0
 
     if seconds < 60:
-        return f"{seconds} second{'s' if seconds != 1 else ''}"
+        return ngettext("%(count)s second", "%(count)s seconds", seconds) % {"count": seconds}
 
     if seconds % 86400 == 0:
         days = seconds // 86400
-        return f"{days} day{'s' if days != 1 else ''}"
+        return ngettext("%(count)s day", "%(count)s days", days) % {"count": days}
 
     if seconds % 3600 == 0:
         hours = seconds // 3600
-        return f"{hours} hour{'s' if hours != 1 else ''}"
+        return ngettext("%(count)s hour", "%(count)s hours", hours) % {"count": hours}
 
     if seconds % 60 == 0:
         minutes = seconds // 60
-        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+        return ngettext("%(count)s minute", "%(count)s minutes", minutes) % {"count": minutes}
 
     minutes, remaining_seconds = divmod(seconds, 60)
-    return f"{minutes} minute{'s' if minutes != 1 else ''} {remaining_seconds} second{'s' if remaining_seconds != 1 else ''}"
+    minutes_text = ngettext("%(count)s minute", "%(count)s minutes", minutes) % {"count": minutes}
+    seconds_text = ngettext("%(count)s second", "%(count)s seconds", remaining_seconds) % {
+        "count": remaining_seconds
+    }
+    return f"{minutes_text} {seconds_text}"
 
 
 def format_admin_duration_with_seconds(seconds):
-    """Return a readable duration plus exact seconds for admin clarity."""
+    """Return a readable duration plus translated exact seconds."""
     readable = format_admin_duration(seconds)
     try:
-        seconds_int = int(seconds or 0)
+        seconds_int = max(0, int(seconds or 0))
     except (TypeError, ValueError):
         seconds_int = 0
-    return f"{readable} ({seconds_int} seconds)"
+    seconds_text = ngettext("%(count)s second", "%(count)s seconds", seconds_int) % {
+        "count": seconds_int
+    }
+    return f"{readable} ({seconds_text})"
 
 
 def can_modify_django_admin(request):

@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: kb/admin.py:1888
+#: kb/admin.py:1895
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "Oznaczono %(count)d urządzenie(a) MFA jako oczekujące na konfigurację."
 
@@ -26,47 +26,47 @@ msgstr "%(count)s artykułów"
 msgid "%(count)s articles total."
 msgstr "Łącznie %(count)s artykułów."
 
-#: kb/auth_monitoring.py:432
+#: kb/admin.py:299
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s dzień"
 msgstr[1] "%(count)s dni"
 msgstr[2] "%(count)s dni"
 
-#: kb/auth_monitoring.py:429
+#: kb/admin.py:303
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s godzina"
+msgstr[1] "%(count)s godziny"
+msgstr[2] "%(count)s godzin"
 
 #: website/templates/edit_my_suggestions.html:325
 msgid "%(count)s matching articles found."
 msgstr "Znaleziono %(count)s pasujących artykułów."
 
-#: kb/auth_monitoring.py:425
+#: kb/admin.py:307 kb/admin.py:310
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s minuta"
+msgstr[1] "%(count)s minuty"
+msgstr[2] "%(count)s minut"
 
 #: website/templates/index.html:176
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "Znaleziono %(count)s wynik(ów) na podstawie zgodności z tytułem artykułu i słowami kluczowymi."
 
-#: kb/auth_monitoring.py:421
+#: kb/admin.py:295 kb/admin.py:311 kb/admin.py:324
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%(count)s sekunda"
+msgstr[1] "%(count)s sekundy"
+msgstr[2] "%(count)s sekund"
 
 #: website/templates/edit_my_suggestions.html:184
 msgid "%(count)s total"
 msgstr "Łącznie %(count)s"
 
-#: kb/admin.py:2745
+#: kb/admin.py:2752
 msgid "%(days)s day(s)"
 msgstr "%(days)s dzień/dni"
 
@@ -74,7 +74,7 @@ msgstr "%(days)s dzień/dni"
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s przesłany przez %(uploader)s"
 
-#: kb/admin.py:2732
+#: kb/admin.py:2739
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s godz."
 
@@ -102,7 +102,7 @@ msgstr "%(prefix)s dla %(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1071
+#: kb/admin.py:1078
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, +%(extra)d więcej"
 
@@ -114,7 +114,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "łącznie %(size)s KB"
 
-#: kb/admin.py:1088
+#: kb/admin.py:1095
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, +%(extra)d więcej"
 
@@ -137,15 +137,19 @@ msgstr ", +%(count)d więcej"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: WYNIKI WYSZUKIWANIA DLA \"%(query)s\" :::"
 
-#: kb/admin.py:1828
+#: kb/admin.py:1835
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "Reset generuje nowy prywatny klucz aplikacji uwierzytelniającej i wymusza ponowną konfigurację."
 
-#: kb/admin.py:1337 kb/admin.py:1751
+#: kb/views/errors.py:40
+msgid "Access denied"
+msgstr "Odmowa dostępu"
+
+#: kb/admin.py:1344 kb/admin.py:1758
 msgid "Account Status"
 msgstr "Stan konta"
 
-#: kb/admin.py:102 kb/admin.py:1818
+#: kb/admin.py:105 kb/admin.py:1825
 msgid "Account Type"
 msgstr "Typ konta"
 
@@ -157,7 +161,7 @@ msgstr "Konto jest obecnie wyłączone"
 msgid "Account disabled"
 msgstr "Konto wyłączone"
 
-#: kb/admin.py:1169
+#: kb/admin.py:1176
 msgid "Account status"
 msgstr "Stan konta"
 
@@ -169,7 +173,7 @@ msgstr "Podsumowanie konta"
 msgid "Account type"
 msgstr "Typ konta"
 
-#: kb/admin.py:2189
+#: kb/admin.py:2196
 msgid "Action"
 msgstr "Działanie"
 
@@ -193,35 +197,35 @@ msgstr "Dzienniki aktywności"
 msgid "Add Article"
 msgstr "Dodaj artykuł"
 
-#: kb/admin.py:1208
+#: kb/admin.py:1215
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "Rola dodatkowa. Umożliwia tworzenie/edytowanie własnych artykułów wewnętrznych oraz wyświetlanie artykułów publicznych/ogólnych."
 
-#: kb/admin.py:1210
+#: kb/admin.py:1217
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "Rola dodatkowa. Umożliwia tworzenie/zarządzanie/usuwanie artykułów wewnętrznych oraz wyświetlanie artykułów publicznych/ogólnych."
 
-#: kb/admin.py:1209
+#: kb/admin.py:1216
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "Rola dodatkowa. Umożliwia przeglądanie oczekujących artykułów/aktualizacji wewnętrznych oraz wyświetlanie artykułów publicznych/ogólnych."
 
-#: kb/admin.py:805
+#: kb/admin.py:812
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "Rola dodatkowa. Umożliwia wyświetlanie artykułów publicznych/ogólnych oraz zatwierdzanie/odrzucanie oczekujących artykułów i aktualizacji wewnętrznych."
 
-#: kb/admin.py:801
+#: kb/admin.py:808
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "Rola dodatkowa. Umożliwia wyświetlanie artykułów publicznych/ogólnych oraz tworzenie/edytowanie własnych artykułów wewnętrznych."
 
-#: kb/admin.py:797
+#: kb/admin.py:804
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "Rola dodatkowa. Umożliwia wyświetlanie artykułów publicznych/ogólnych i wewnętrznych, ale nie pozwala tworzyć ani zatwierdzać artykułów wewnętrznych."
 
-#: kb/admin.py:1207
+#: kb/admin.py:1214
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "Rola dodatkowa. Umożliwia wyświetlanie artykułów publicznych/ogólnych oraz artykułów wewnętrznych."
 
-#: kb/admin.py:809
+#: kb/admin.py:816
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "Rola dodatkowa. Umożliwia wyświetlanie artykułów publicznych/ogólnych, tworzenie/zarządzanie/usuwanie artykułów wewnętrznych i przeglądanie oczekujących artykułów wewnętrznych."
 
@@ -229,11 +233,11 @@ msgstr "Rola dodatkowa. Umożliwia wyświetlanie artykułów publicznych/ogólny
 msgid "Admin"
 msgstr "Administrator"
 
-#: kb/admin.py:102 kb/models.py:1224
+#: kb/admin.py:242 kb/models.py:1224
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "Limit bezczynności MFA administratora (sekundy)"
 
-#: kb/admin.py:2723
+#: kb/admin.py:2730
 msgid "Admin MFA idle timeout readable"
 msgstr "Czytelny limit bezczynności MFA administratora"
 
@@ -241,11 +245,11 @@ msgstr "Czytelny limit bezczynności MFA administratora"
 msgid "Admin MFA verification"
 msgstr "Weryfikacja MFA administratora"
 
-#: kb/admin.py:1211 kb/admin.py:812 kb/permissions.py:62
+#: kb/admin.py:1218 kb/admin.py:819 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "Użytkownicy administratora"
 
-#: kb/admin.py:1694
+#: kb/admin.py:1701
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Użytkownicy administratora do %(count)d wybranych użytkowników."
 
@@ -265,11 +269,11 @@ msgstr "Dziennik aktywności administratora"
 msgid "Admin activity logs"
 msgstr "Dzienniki aktywności administratora"
 
-#: kb/admin.py:102 kb/models.py:1205
+#: kb/admin.py:240 kb/models.py:1205
 msgid "Admin allowed IP ranges"
 msgstr "Dozwolone zakresy IP administratora"
 
-#: kb/admin.py:102 kb/models.py:1197
+#: kb/admin.py:239 kb/models.py:1197
 msgid "Admin log rows per page"
 msgstr "Wiersze dziennika administratora na stronę"
 
@@ -297,11 +301,11 @@ msgstr "Odmówiono żądania administratora dla %(target)s"
 msgid "Admin request failed for %(target)s"
 msgstr "Żądanie administratora dla %(target)s nie powiodło się"
 
-#: kb/admin.py:2186
+#: kb/admin.py:2193
 msgid "Admin request failed or denied for %(target)s"
 msgstr "Żądanie administratora dla %(target)s nie powiodło się lub odmówiono jego wykonania"
 
-#: kb/admin.py:2187 kb/admin_audit.py:175
+#: kb/admin.py:2194 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "Żądanie administratora dla %(target)s"
 
@@ -313,7 +317,7 @@ msgstr "Akcja narzędzia administratora"
 msgid "Admin tools"
 msgstr "Narzędzia administratora"
 
-#: kb/admin.py:102
+#: kb/admin.py:138
 msgid "Admin user"
 msgstr "Użytkownik administratora"
 
@@ -321,7 +325,7 @@ msgstr "Użytkownik administratora"
 msgid "Admin user who approved this article for public display."
 msgstr "Użytkownik administratora, który zatwierdził ten artykuł do publicznego wyświetlenia."
 
-#: kb/admin.py:102
+#: kb/admin.py:139
 msgid "Admin username"
 msgstr "Nazwa użytkownika administratora"
 
@@ -329,11 +333,11 @@ msgstr "Nazwa użytkownika administratora"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "Narzędzie tylko dla administratorów. Eksport zawiera Markdown artykułu oraz pliki wskazane w"
 
-#: kb/admin.py:256 kb/models.py:50
+#: kb/admin.py:257 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "Konta administratorów/administratorów LDAP mogą uzyskać dostęp do panelu Django Admin, gdy status personelu jest włączony."
 
-#: kb/admin.py:860
+#: kb/admin.py:867
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "Po zapisaniu w razie potrzeby ponownie otwórz użytkownika i sprawdź „Efektywne uprawnienia”, aby potwierdzić końcowy poziom dostępu."
 
@@ -361,7 +365,7 @@ msgstr "Artykuł o tym tytule już istnieje. Użyj innego tytułu."
 msgid "Apply"
 msgstr "Zastosuj"
 
-#: kb/admin.py:2313
+#: kb/admin.py:2320
 msgid "Approval / review"
 msgstr "Zatwierdzenie / przegląd"
 
@@ -369,7 +373,7 @@ msgstr "Zatwierdzenie / przegląd"
 msgid "Approve / Publish"
 msgstr "Zatwierdź / Opublikuj"
 
-#: kb/admin.py:2346
+#: kb/admin.py:2353
 msgid "Approve selected pending articles"
 msgstr "Zatwierdź wybrane oczekujące artykuły"
 
@@ -377,15 +381,15 @@ msgstr "Zatwierdź wybrane oczekujące artykuły"
 msgid "Approve update"
 msgstr "Zatwierdź aktualizację"
 
-#: kb/admin.py:2369
+#: kb/admin.py:2376
 msgid "Approved article %(title)s from Django Admin"
 msgstr "Zatwierdzono artykuł %(title)s w panelu Django Admin"
 
-#: kb/admin.py:102 kb/models.py:364
+#: kb/admin.py:184 kb/models.py:364
 msgid "Approved at"
 msgstr "Zatwierdzono"
 
-#: kb/admin.py:102 kb/models.py:360
+#: kb/admin.py:183 kb/models.py:360
 msgid "Approved by"
 msgstr "Zatwierdzone przez"
 
@@ -405,31 +409,31 @@ msgstr "Czy na pewno chcesz usunąć %(article_count)s wybranych osieroconych ar
 msgid "Are you sure you want to delete <strong>%(title)s</strong>?"
 msgstr "Czy na pewno chcesz usunąć <strong>%(title)s</strong>?"
 
-#: kb/admin.py:102 kb/admin.py:2061 kb/admin.py:2310 kb/views/services_search.py:111 website/templates/_navbar.html:26
+#: kb/admin.py:158 kb/admin.py:2068 kb/admin.py:210 kb/admin.py:2317 kb/views/services_search.py:111 website/templates/_navbar.html:26
 msgid "Article"
 msgstr "Artykuł"
 
-#: kb/admin.py:1205 kb/admin.py:783 kb/permissions.py:56
+#: kb/admin.py:1212 kb/admin.py:790 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "Zatwierdzający artykuły"
 
-#: kb/admin.py:1674
+#: kb/admin.py:1681
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Zatwierdzający artykuły do %(count)d wybranych użytkowników."
 
-#: kb/admin.py:1206 kb/admin.py:790 kb/permissions.py:57
+#: kb/admin.py:1213 kb/admin.py:797 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "Menedżer artykułów"
 
-#: kb/admin.py:1684
+#: kb/admin.py:1691
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Menedżer artykułów do %(count)d wybranych użytkowników."
 
-#: kb/admin.py:1204 kb/admin.py:776 kb/permissions.py:55
+#: kb/admin.py:1211 kb/admin.py:783 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "Autor artykułów"
 
-#: kb/admin.py:1664
+#: kb/admin.py:1671
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Autor artykułów do %(count)d wybranych użytkowników."
 
@@ -453,7 +457,7 @@ msgstr "Zatwierdzający artykuły. Może wyświetlać artykuły, przeglądać oc
 msgid "Article auto-deleted from queue"
 msgstr "Artykuł automatycznie usunięty z kolejki"
 
-#: kb/admin.py:102
+#: kb/admin.py:179
 msgid "Article body"
 msgstr "Treść artykułu"
 
@@ -481,11 +485,11 @@ msgstr "Usunięcie artykułu potwierdzone po MFA."
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Usunięcie artykułu potwierdzone: %(title)s."
 
-#: kb/admin.py:2600 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:330
+#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:330
 msgid "Article deletion queue"
 msgstr "Kolejka usuwania artykułów"
 
-#: kb/admin.py:102 kb/models.py:1148
+#: kb/admin.py:234 kb/models.py:1148
 msgid "Article deletion queue retention (days)"
 msgstr "Okres przechowywania kolejki usuwania artykułów (dni)"
 
@@ -509,7 +513,7 @@ msgstr "Żądania usunięcia artykułów"
 msgid "Article details"
 msgstr "Szczegóły artykułu"
 
-#: kb/admin.py:2585
+#: kb/admin.py:2592
 msgid "Article display and upload limits"
 msgstr "Limity wyświetlania i przesyłania artykułów"
 
@@ -521,7 +525,7 @@ msgstr "Obraz artykułu"
 msgid "Article image deleted"
 msgstr "Obraz artykułu usunięty"
 
-#: kb/admin.py:102 kb/models.py:1156
+#: kb/admin.py:235 kb/models.py:1156
 msgid "Article image upload limit"
 msgstr "Limit przesyłania obrazów artykułu"
 
@@ -565,11 +569,11 @@ msgstr "Artykuł oznaczono jako nieudane zatwierdzenie."
 msgid "Article marked pending failed"
 msgstr "Artykuł oznaczony jako niepowodzenie oczekiwania"
 
-#: kb/admin.py:2085
+#: kb/admin.py:2092
 msgid "Article owner"
 msgstr "Właściciel artykułu"
 
-#: kb/admin.py:102
+#: kb/admin.py:165
 msgid "Article owner account type"
 msgstr "Typ konta właściciela artykułu"
 
@@ -577,7 +581,7 @@ msgstr "Typ konta właściciela artykułu"
 msgid "Article owner account type snapshot"
 msgstr "Migawka typu konta właściciela artykułu"
 
-#: kb/admin.py:102
+#: kb/admin.py:164
 msgid "Article owner email"
 msgstr "E-mail właściciela artykułu"
 
@@ -585,7 +589,7 @@ msgstr "E-mail właściciela artykułu"
 msgid "Article owner email snapshot"
 msgstr "Migawka e-maila właściciela artykułu"
 
-#: kb/admin.py:102
+#: kb/admin.py:163
 msgid "Article owner name"
 msgstr "Nazwa właściciela artykułu"
 
@@ -609,7 +613,7 @@ msgstr "Powiadomienie właściciela artykułu wysłane"
 msgid "Article owner notification skipped"
 msgstr "Powiadomienie właściciela artykułu pominięte"
 
-#: kb/admin.py:102
+#: kb/admin.py:161
 msgid "Article owner user ID"
 msgstr "Identyfikator użytkownika właściciela artykułu"
 
@@ -617,7 +621,7 @@ msgstr "Identyfikator użytkownika właściciela artykułu"
 msgid "Article owner user ID snapshot"
 msgstr "Migawka identyfikatora użytkownika właściciela artykułu"
 
-#: kb/admin.py:102
+#: kb/admin.py:162
 msgid "Article owner username"
 msgstr "Nazwa użytkownika właściciela artykułu"
 
@@ -665,11 +669,11 @@ msgstr "Powiadomienie o przeglądzie artykułu wysłane"
 msgid "Article review notification skipped"
 msgstr "Powiadomienie o przeglądzie artykułu pominięte"
 
-#: kb/admin.py:2330
+#: kb/admin.py:2337
 msgid "Article statistics"
 msgstr "Statystyki artykułu"
 
-#: kb/admin.py:102
+#: kb/admin.py:160
 msgid "Article status"
 msgstr "Status artykułu"
 
@@ -685,7 +689,7 @@ msgstr "Artykuł przesłano do zatwierdzenia przez administratora."
 msgid "Article submitted for approval"
 msgstr "Artykuł przesłany do zatwierdzenia"
 
-#: kb/admin.py:102 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:216 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
+#: kb/admin.py:159 kb/admin.py:178 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:216 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
 msgid "Article title"
 msgstr "Tytuł artykułu"
 
@@ -721,7 +725,7 @@ msgstr "Artykuł zaktualizowano pomyślnie."
 msgid "Article viewed"
 msgstr "Artykuł wyświetlony"
 
-#: kb/admin.py:102 kb/models.py:346
+#: kb/admin.py:181 kb/models.py:346
 msgid "Article visibility"
 msgstr "Widoczność artykułu"
 
@@ -749,7 +753,7 @@ msgstr "Głos za artykułem"
 msgid "Article votes"
 msgstr "Głosy artykułów"
 
-#: kb/admin.py:256 kb/models.py:1190
+#: kb/admin.py:266 kb/models.py:1190
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Dzienniki aktywności artykułów/głosów/obrazów/narzędzi administratora/panelu administratora starsze niż ta liczba dni mogą zostać usunięte przez polecenie czyszczenia. Użyj 0, aby zachować ogólne i administracyjne dzienniki aktywności bezterminowo."
 
@@ -789,7 +793,7 @@ msgstr "Przypisz wybrane artykuły do"
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "Przypisano %(count)s osierocony(ch) artykuł(ów) do %(user)s."
 
-#: kb/admin.py:1587
+#: kb/admin.py:1594
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "Przypisano rolę Wyłączony użytkownik do %(username)s"
 
@@ -821,11 +825,11 @@ msgstr "Wpisy dziennika audytu są tylko do dopisywania i nie można ich edytowa
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "Wpisów dziennika audytu nie można usuwać ręcznie. Są usuwane wyłącznie przez czyszczenie zgodne z okresem przechowywania."
 
-#: kb/admin.py:256 kb/models.py:1182
+#: kb/admin.py:265 kb/models.py:1182
 msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
 msgstr "Uwierzytelnione i oczekujące na MFA sesje wygasają po tej liczbie godzin od zalogowania. Domyślnie jest to 8 godzin. Dozwolony zakres: od 1 do 168 godzin (7 dni)."
 
-#: kb/admin.py:1391
+#: kb/admin.py:1398
 msgid "Authentication Lockout Reset"
 msgstr "Reset blokady uwierzytelniania"
 
@@ -833,7 +837,7 @@ msgstr "Reset blokady uwierzytelniania"
 msgid "Authentication activity log"
 msgstr "Dziennik aktywności uwierzytelniania"
 
-#: kb/admin.py:102 kb/models.py:1172
+#: kb/admin.py:236 kb/models.py:1172
 msgid "Authentication activity log retention (days)"
 msgstr "Przechowywanie dziennika aktywności uwierzytelniania (dni)"
 
@@ -841,19 +845,19 @@ msgstr "Przechowywanie dziennika aktywności uwierzytelniania (dni)"
 msgid "Authentication activity logs"
 msgstr "Dzienniki aktywności uwierzytelniania"
 
-#: kb/admin.py:2607
+#: kb/admin.py:2614
 msgid "Authentication and session settings"
 msgstr "Ustawienia uwierzytelniania i sesji"
 
-#: kb/admin.py:1277
+#: kb/admin.py:1284
 msgid "Authentication lockout"
 msgstr "Blokada uwierzytelniania"
 
-#: kb/admin.py:102 kb/models.py:1215
+#: kb/admin.py:241 kb/models.py:1215
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "Pamięć eskalacji blokady uwierzytelniania (sekundy)"
 
-#: kb/admin.py:2616
+#: kb/admin.py:2623
 msgid "Authentication lockout policy"
 msgstr "Zasady blokady uwierzytelniania"
 
@@ -861,7 +865,7 @@ msgstr "Zasady blokady uwierzytelniania"
 msgid "Authentication lockout policy stage"
 msgstr "Etap zasad blokady uwierzytelniania"
 
-#: kb/admin.py:2679 kb/admin.py:94 kb/models.py:1305
+#: kb/admin.py:2686 kb/admin.py:94 kb/models.py:1305
 msgid "Authentication lockout policy stages"
 msgstr "Etapy zasad blokady uwierzytelniania"
 
@@ -873,11 +877,11 @@ msgstr "Blokada uwierzytelniania zresetowana przez administratora"
 msgid "Authentication lockout triggered"
 msgstr "Blokada uwierzytelniania została uruchomiona"
 
-#: kb/admin.py:1164
+#: kb/admin.py:1171
 msgid "Authentication source"
 msgstr "Źródło uwierzytelniania"
 
-#: kb/admin.py:256 kb/models.py:1173
+#: kb/admin.py:264 kb/models.py:1173
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Dzienniki monitorowania uwierzytelniania/MFA starsze niż ta liczba dni mogą zostać usunięte przez polecenie czyszczenia. Użyj 0, aby przechowywać dzienniki aktywności uwierzytelniania bezterminowo."
 
@@ -889,7 +893,7 @@ msgstr "Kod MFA/OTP z aplikacji uwierzytelniającej"
 msgid "Authenticator code"
 msgstr "Kod aplikacji uwierzytelniającej"
 
-#: kb/admin.py:102 kb/admin.py:1810
+#: kb/admin.py:115 kb/admin.py:1817
 msgid "Authenticator key"
 msgstr "Klucz aplikacji uwierzytelniającej"
 
@@ -901,27 +905,27 @@ msgstr "Konfiguracja aplikacji uwierzytelniającej zakończona pomyślnie."
 msgid "Author"
 msgstr "Autor"
 
-#: kb/admin.py:102
+#: kb/admin.py:177
 msgid "Author account type snapshot"
 msgstr "Migawka typu konta autora"
 
-#: kb/admin.py:102
+#: kb/admin.py:176
 msgid "Author email snapshot"
 msgstr "Migawka adresu e-mail autora"
 
-#: kb/admin.py:102
+#: kb/admin.py:175
 msgid "Author name snapshot"
 msgstr "Migawka nazwy autora"
 
-#: kb/admin.py:2333
+#: kb/admin.py:2340
 msgid "Author snapshot"
 msgstr "Migawka autora"
 
-#: kb/admin.py:102
+#: kb/admin.py:174
 msgid "Author username snapshot"
 msgstr "Migawka nazwy użytkownika autora"
 
-#: website/templates/404.html:101 website/templates/_page_back_button.html:7 website/templates/articles.html:203 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:71 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:57
+#: website/templates/_page_back_button.html:7 website/templates/articles.html:203 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:71 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:57
 msgid "Back"
 msgstr "Wstecz"
 
@@ -937,7 +941,11 @@ msgstr "Wróć do logowania NextLabs AD"
 msgid "Back to profile"
 msgstr "Wróć do profilu"
 
-#: kb/admin.py:102 kb/models.py:1289
+#: kb/views/errors.py:35
+msgid "Bad request"
+msgstr "Nieprawidłowe żądanie"
+
+#: kb/admin.py:250 kb/models.py:1289
 msgid "Block duration (seconds)"
 msgstr "Czas blokady (sekundy)"
 
@@ -945,7 +953,7 @@ msgstr "Czas blokady (sekundy)"
 msgid "Block duration must be at least 60 seconds."
 msgstr "Czas blokady musi wynosić co najmniej 60 sekund."
 
-#: kb/admin.py:2579
+#: kb/admin.py:2586
 msgid "Block duration readable"
 msgstr "Czytelny czas blokady"
 
@@ -973,11 +981,11 @@ msgstr "Może dodawać/przesyłać artykuły wewnętrzne do zatwierdzenia"
 msgid "Can add/submit public articles for approval"
 msgstr "Może dodawać/przesyłać artykuły publiczne do zatwierdzenia"
 
-#: kb/admin.py:652
+#: kb/admin.py:659
 msgid "Can approve/manage internal articles"
 msgstr "Może zatwierdzać/zarządzać artykułami wewnętrznymi"
 
-#: kb/admin.py:625
+#: kb/admin.py:632
 msgid "Can approve/manage pending articles"
 msgstr "Może zatwierdzać/zarządzać oczekującymi artykułami"
 
@@ -989,35 +997,35 @@ msgstr "Może zatwierdzać/zarządzać oczekującymi przeglądami artykułów we
 msgid "Can approve/manage pending public article reviews"
 msgstr "Może zatwierdzać/zarządzać oczekującymi przeglądami artykułów publicznych"
 
-#: kb/admin.py:1204
+#: kb/admin.py:1211
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "Może tworzyć szkice artykułów, przesyłać artykuły do zatwierdzenia oraz edytować/ponownie przesyłać własne artykuły. Nie może zatwierdzać ani odrzucać artykułów. Obejmuje dostęp do przeglądania, więc rola Zwykły użytkownik nie jest wymagana."
 
-#: kb/admin.py:777
+#: kb/admin.py:784
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "Może tworzyć szkice artykułów, przesyłać nowe artykuły do zatwierdzenia oraz edytować/ponownie przesyłać własne artykuły. Nie może zatwierdzać ani odrzucać artykułów."
 
-#: kb/admin.py:616
+#: kb/admin.py:623
 msgid "Can create articles"
 msgstr "Może tworzyć artykuły"
 
-#: kb/admin.py:791
+#: kb/admin.py:798
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "Może tworzyć artykuły, edytować/zarządzać artykułami, przeglądać oczekujące artykuły/aktualizacje, zatwierdzać/odrzucać zgłoszenia i usuwać artykuły."
 
-#: kb/admin.py:1206
+#: kb/admin.py:1213
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "Może tworzyć artykuły, edytować/zarządzać artykułami, przeglądać oczekujące artykuły/aktualizacje, zatwierdzać/odrzucać zgłoszenia i usuwać artykuły. Obejmuje dostęp do przeglądania, więc rola Zwykły użytkownik nie jest wymagana."
 
-#: kb/admin.py:647
+#: kb/admin.py:654
 msgid "Can create internal articles"
 msgstr "Może tworzyć artykuły wewnętrzne"
 
-#: kb/admin.py:634
+#: kb/admin.py:641
 msgid "Can delete articles"
 msgstr "Może usuwać artykuły"
 
-#: kb/admin.py:657 kb/permissions.py:36
+#: kb/admin.py:664 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "Może usuwać artykuły wewnętrzne"
 
@@ -1025,15 +1033,15 @@ msgstr "Może usuwać artykuły wewnętrzne"
 msgid "Can delete public articles"
 msgstr "Może usuwać artykuły publiczne"
 
-#: kb/admin.py:784
+#: kb/admin.py:791
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "Może przeglądać oczekujące artykuły/aktualizacje, edytować treść podczas oczekującego przeglądu oraz je zatwierdzać lub odrzucać. Domyślnie nie może edytować już opublikowanych artykułów ani usuwać artykułów. Zatwierdzający artykuły domyślnie nie mogą dodawać nowych artykułów ani usuwać artykułów."
 
-#: kb/admin.py:1205
+#: kb/admin.py:1212
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "Może przeglądać oczekujące artykuły/aktualizacje, edytować treść podczas oczekującego przeglądu oraz je zatwierdzać lub odrzucać. Domyślnie nie może edytować już opublikowanych artykułów ani usuwać artykułów. Domyślnie nie może dodawać ani usuwać artykułów. Obejmuje dostęp do przeglądania, więc rola Zwykły użytkownik nie jest wymagana."
 
-#: kb/admin.py:773
+#: kb/admin.py:780
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "Może się zalogować, wyświetlać/wyszukiwać opublikowane artykuły, korzystać ze zwykłych stron artykułów oraz głosować tam, gdzie głosowanie jest włączone."
 
@@ -1041,11 +1049,11 @@ msgstr "Może się zalogować, wyświetlać/wyszukiwać opublikowane artykuły, 
 msgid "Can use Knowledge Repository admin tools"
 msgstr "Może korzystać z narzędzi administracyjnych Repozytorium wiedzy"
 
-#: kb/admin.py:606
+#: kb/admin.py:613
 msgid "Can view articles"
 msgstr "Może wyświetlać artykuły"
 
-#: kb/admin.py:642 kb/permissions.py:33
+#: kb/admin.py:649 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "Może wyświetlać artykuły wewnętrzne"
 
@@ -1053,7 +1061,7 @@ msgstr "Może wyświetlać artykuły wewnętrzne"
 msgid "Can view published public articles"
 msgstr "Może wyświetlać opublikowane artykuły publiczne"
 
-#: kb/admin.py:1203
+#: kb/admin.py:1210
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Może wyświetlać/wyszukiwać opublikowane artykuły i głosować. Jest to zapasowa rola przeglądającego i jest dodawana automatycznie tylko wtedy, gdy użytkownik nie ma innej standardowej roli Repozytorium wiedzy."
 
@@ -1061,7 +1069,7 @@ msgstr "Może wyświetlać/wyszukiwać opublikowane artykuły i głosować. Jest
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: kb/admin.py:102
+#: kb/admin.py:150
 msgid "Change message"
 msgstr "Komunikat o zmianie"
 
@@ -1069,23 +1077,23 @@ msgstr "Komunikat o zmianie"
 msgid "Change password"
 msgstr "Zmień hasło"
 
-#: kb/admin.py:372
+#: kb/admin.py:379
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "Zmieniono %(target_label)s %(target)s: %(changes)s"
 
-#: kb/admin.py:2178 kb/admin_audit.py:153
+#: kb/admin.py:2185 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "Zmieniono %(target_label)s: %(target)s"
 
-#: kb/admin.py:2173
+#: kb/admin.py:2180
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Zmieniono %(target_label)s: %(target)s — %(changes)s"
 
-#: kb/admin.py:848
+#: kb/admin.py:855
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Najpierw wybierz grupę, a następnie używaj bezpośrednich pól wyboru tylko dla wyjątków. Dla większości użytkowników sama grupa powinna wystarczyć."
 
-#: kb/admin.py:555
+#: kb/admin.py:562
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "Wybierz, czy ten profil jest lokalnym użytkownikiem/administratorem czy użytkownikiem/administratorem LDAP. Typy kont administratora dodają rolę Użytkownicy administratora i nadają uprawnienia superużytkownika Django. Zmiana z powrotem na Użytkownik/użytkownik LDAP usuwa rolę Użytkownicy administratora oraz status personelu/superużytkownika. Użyj tej opcji, aby przekształcić porzucony profil LDAP w profil lokalny, gdy konto AD zostało usunięte, ale artykuły muszą zostać zachowane."
 
@@ -1109,7 +1117,7 @@ msgstr "Wyczyść czat"
 msgid "Clear search"
 msgstr "Wyczyść wyszukiwanie"
 
-#: kb/admin.py:1385
+#: kb/admin.py:1392
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "Usuwa tymczasowe blokady i historię stopniowej blokady dla tego użytkownika. Użyj tej opcji po zweryfikowaniu, że żądanie jest prawidłowe."
 
@@ -1121,23 +1129,23 @@ msgstr "Kliknij Odśwież, aby przeskanować bieżący tytuł i treść artykuł
 msgid "Close"
 msgstr "Zamknij"
 
-#: kb/admin.py:256 kb/models.py:1206
+#: kb/admin.py:268 kb/models.py:1206
 msgid "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."
 msgstr "Lista dozwolonych zakresów CIDR/IP rozdzielona przecinkami lub nowymi wierszami dla dostępu do Django Admin. Domyślnie dozwolone są 10.65.0.0/16 i lokalna pętla zwrotna. Użytkownicy spoza tego zakresu otrzymają błąd 404, nawet jeśli znają adres URL administratora. Nginx może także wymuszać oddzielną zewnętrzną listę dozwolonych adresów w nginx/nginx.conf."
 
-#: kb/middleware.py:489
+#: kb/middleware.py:520
 msgid "Complete MFA before accessing the Django admin site."
 msgstr "Ukończ MFA przed dostępem do strony administratora Django."
 
-#: kb/middleware.py:423
+#: kb/middleware.py:454
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
 msgstr "Ukończ MFA przed kontynuacją. Nie jesteś w pełni zalogowany, dopóki MFA nie zostanie ukończone."
 
-#: kb/middleware.py:450
+#: kb/middleware.py:481
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "Ukończ MFA przed kontynuowaniem. Nie możesz uzyskać dostępu do Repozytorium wiedzy, dopóki MFA nie zostanie ukończone."
 
-#: kb/admin.py:1353 kb/mfa.py:135
+#: kb/admin.py:1360 kb/mfa.py:135
 msgid "Configured"
 msgstr "Skonfigurowano"
 
@@ -1165,35 +1173,35 @@ msgstr "Hasło potwierdzające jest nieprawidłowe."
 msgid "Confirm permanent deletion"
 msgstr "Potwierdź trwałe usunięcie"
 
-#: kb/admin.py:102
+#: kb/admin.py:116
 msgid "Confirmed"
 msgstr "Potwierdzono"
 
-#: kb/admin.py:102
+#: kb/admin.py:118
 msgid "Confirmed at"
 msgstr "Potwierdzono o"
 
-#: kb/admin.py:102
+#: kb/admin.py:219
 msgid "Content type"
 msgstr "Typ treści"
 
-#: kb/admin.py:2609
+#: kb/admin.py:2616
 msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
 msgstr "Kontroluje dzienniki uwierzytelniania/MFA, ogólne dzienniki aktywności, liczbę wierszy wyświetlanych w dzienniku administratora oraz czas życia sesji użytkownika. Domyślny czas przechowywania dzienników to 30 dni. Tabele dziennika administratora domyślnie pokazują 200 wierszy na stronę. Sesje domyślnie trwają 8 godzin i można je ustawić od 1 do 168 godzin."
 
-#: kb/admin.py:2602
+#: kb/admin.py:2609
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "Określa, jak długo usunięte opublikowane artykuły pozostają możliwe do odzyskania w Mój profil → Narzędzia administratora → Kolejka usuwania przed zaplanowanym trwałym usunięciem. Domyślnie jest to 7 dni. Ustaw 0, aby trwale usuwać natychmiast po potwierdzeniu MFA."
 
-#: kb/admin.py:2587
+#: kb/admin.py:2594
 msgid "Controls how many articles are shown per page/on each homepage column, and how many pasted/uploaded images each article may contain. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads."
 msgstr "Określa, ile artykułów jest wyświetlanych na stronie/w każdej kolumnie strony głównej oraz ile wklejonych/przesłanych obrazów może zawierać każdy artykuł. Domyślnie wyświetlanych jest 10 artykułów na stronę. Domyślny limit przesyłania obrazów wynosi 50; ustaw 0, aby wyłączyć przesyłanie obrazów artykułów."
 
-#: kb/admin.py:2595
+#: kb/admin.py:2602
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "Określa minimalny wiek używany przez Mój profil → Narzędzia administratora → Wyczyść osierocone pliki przesyłania. Użyj 0, aby pokazywać pliki natychmiast."
 
-#: kb/admin.py:256 kb/models.py:56
+#: kb/admin.py:258 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "Określa, czy hasło jest zarządzane lokalnie w Repozytorium wiedzy, czy zewnętrznie przez Active Directory."
 
@@ -1209,15 +1217,15 @@ msgstr "Utworzono"
 msgid "Created %(target)s"
 msgstr "Utworzono %(target)s"
 
-#: kb/admin.py:404
+#: kb/admin.py:411
 msgid "Created %(target_label)s %(target)s"
 msgstr "Utworzono %(target_label)s %(target)s"
 
-#: kb/admin.py:2170 kb/admin_audit.py:150
+#: kb/admin.py:2177 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "Utworzono %(target_label)s: %(target)s"
 
-#: kb/admin.py:102
+#: kb/admin.py:110 kb/admin.py:117 kb/admin.py:123 kb/admin.py:136 kb/admin.py:154 kb/admin.py:206 kb/admin.py:213
 msgid "Created at"
 msgstr "Utworzono"
 
@@ -1229,15 +1237,15 @@ msgstr "Bieżący status MFA"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "Bieżąca informacja zwrotna administratora wyświetlana właścicielowi artykułu, gdy artykuł ma status Szkic lub Zatwierdzenie nieudane."
 
-#: kb/admin.py:2421 kb/models.py:371
+#: kb/admin.py:2428 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "Aktualne komentarze odrzucenia"
 
-#: kb/admin.py:1074
+#: kb/admin.py:1081
 msgid "Current users"
 msgstr "Bieżący użytkownicy"
 
-#: kb/admin.py:1054
+#: kb/admin.py:1061
 msgid "Custom Django group"
 msgstr "Niestandardowa grupa Django"
 
@@ -1249,31 +1257,31 @@ msgstr "Data"
 msgid "Date and time when this article was approved for public display."
 msgstr "Data i godzina zatwierdzenia tego artykułu do publicznego wyświetlenia."
 
-#: kb/admin.py:1219
+#: kb/admin.py:1226
 msgid "Default Knowledge Repository groups:"
 msgstr "Domyślne grupy Repozytorium wiedzy:"
 
-#: kb/admin.py:1002
+#: kb/admin.py:1009
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "Domyślnych grup ról Repozytorium wiedzy nie można usunąć."
 
-#: kb/admin.py:1013
+#: kb/admin.py:1020
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "Domyślnych grup ról Repozytorium wiedzy nie można usunąć. Pominięto %(count)d chronionych grup."
 
-#: kb/admin.py:1040
+#: kb/admin.py:1047
 msgid "Default permissions:"
 msgstr "Domyślne uprawnienia:"
 
-#: kb/admin.py:2700
+#: kb/admin.py:2707
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "Domyślny etap 1: 10 błędnych prób powoduje blokadę na 5 minut, powtarzaną 2 razy."
 
-#: kb/admin.py:2701
+#: kb/admin.py:2708
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "Domyślny etap 2: 5 błędnych prób powoduje blokadę na 15 minut, powtarzaną 2 razy."
 
-#: kb/admin.py:2702
+#: kb/admin.py:2709
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "Domyślny etap 3: 3 błędne próby powodują blokadę na 1 godzinę, powtarzaną aż do pomyślnego logowania lub resetu przez administratora."
 
@@ -1285,7 +1293,7 @@ msgstr "Usuń"
 msgid "Delete article"
 msgstr "Usuń artykuł"
 
-#: kb/admin.py:102
+#: kb/admin.py:230
 msgid "Delete reason"
 msgstr "Powód usunięcia"
 
@@ -1301,7 +1309,7 @@ msgstr "Usuń wybrane zbędne pliki"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "Usunąć wybrane zbędne przesłane pliki? Tej operacji nie można cofnąć."
 
-#: kb/admin.py:459
+#: kb/admin.py:466
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "Usunięto %(count)d %(target_label)s: %(preview)s"
 
@@ -1309,15 +1317,15 @@ msgstr "Usunięto %(count)d %(target_label)s: %(preview)s"
 msgid "Deleted %(target)s"
 msgstr "Usunięto %(target)s"
 
-#: kb/admin.py:440
+#: kb/admin.py:447
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "Usunięto %(target_label)s %(target)s"
 
-#: kb/admin.py:2180 kb/admin_audit.py:160
+#: kb/admin.py:2187 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "Usunięto %(target_label)s: %(target)s"
 
-#: kb/admin.py:2059
+#: kb/admin.py:2066
 msgid "Deleted article"
 msgstr "Usunięty artykuł"
 
@@ -1325,11 +1333,11 @@ msgstr "Usunięty artykuł"
 msgid "Deleted articles are hidden immediately and remain recoverable here for %(days)s day(s) before permanent deletion."
 msgstr "Usunięte artykuły są natychmiast ukrywane i pozostają tutaj możliwe do odzyskania przez %(days)s dni przed trwałym usunięciem."
 
-#: kb/admin.py:102
+#: kb/admin.py:228
 msgid "Deleted at"
 msgstr "Usunięto"
 
-#: kb/admin.py:102
+#: kb/admin.py:229
 msgid "Deleted by"
 msgstr "Usunięte przez"
 
@@ -1373,7 +1381,7 @@ msgstr "Kolejka usuwania"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "Okres przechowywania kolejki usuwania jest ustawiony na 0 dni. Nowe usunięcia opublikowanych artykułów są trwale wykonywane natychmiast po potwierdzeniu. Istniejące artykuły w kolejce pokazane tutaj są gotowe do trwałego usunięcia."
 
-#: kb/admin.py:2747
+#: kb/admin.py:2754
 msgid "Deletion queue retention readable"
 msgstr "Czytelny okres przechowywania kolejki usuwania"
 
@@ -1381,15 +1389,15 @@ msgstr "Czytelny okres przechowywania kolejki usuwania"
 msgid "Deletion queued"
 msgstr "Usunięcie dodane do kolejki"
 
-#: kb/admin.py:102 kb/models.py:440
+#: kb/admin.py:200 kb/models.py:440
 msgid "Deletion queued at"
 msgstr "Dodano do kolejki usuwania"
 
-#: kb/admin.py:102 kb/models.py:448
+#: kb/admin.py:201 kb/models.py:448
 msgid "Deletion queued by"
 msgstr "Dodano do kolejki usuwania przez"
 
-#: kb/admin.py:102 kb/models.py:472
+#: kb/admin.py:205 kb/models.py:472
 msgid "Deletion reason"
 msgstr "Powód usunięcia"
 
@@ -1397,67 +1405,67 @@ msgstr "Powód usunięcia"
 msgid "Deletion rejected"
 msgstr "Usunięcie odrzucone"
 
-#: kb/admin.py:102 kb/models.py:460
+#: kb/admin.py:203 kb/models.py:460
 msgid "Deletion restored at"
 msgstr "Przywrócono"
 
-#: kb/admin.py:102 kb/models.py:468
+#: kb/admin.py:204 kb/models.py:468
 msgid "Deletion restored by"
 msgstr "Przywrócono przez"
 
-#: kb/admin.py:2233
+#: kb/admin.py:2240
 msgid "Denied"
 msgstr "Odmówiono"
 
-#: kb/admin.py:102
+#: kb/admin.py:133 kb/admin.py:151 kb/admin.py:170
 msgid "Details"
 msgstr "Szczegóły"
 
-#: kb/admin.py:1179
+#: kb/admin.py:1186
 msgid "Direct Knowledge Repository permissions"
 msgstr "Bezpośrednie uprawnienia Repozytorium wiedzy"
 
-#: kb/admin.py:626
+#: kb/admin.py:633
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia dostęp do przepływów zatwierdzania artykułów, takich jak przegląd oczekujących artykułów, przegląd oczekujących aktualizacji, działania zatwierdzania/odrzucania oraz edytowanie artykułów na etapie przeglądu. Nie umożliwia automatycznie tworzenia nowych artykułów, usuwania artykułów ani pełnego dostępu do Django Admin, chyba że nada je inne uprawnienie/grupa."
 
-#: kb/admin.py:617
+#: kb/admin.py:624
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia użytkownikowi tworzenie szkiców artykułów, przesyłanie nowych artykułów do zatwierdzenia oraz edytowanie/ponowne przesyłanie własnych artykułów lub oczekujących aktualizacji. Nie umożliwia zatwierdzania/odrzucania artykułów innych użytkowników ani korzystania z narzędzi Django Admin."
 
-#: kb/admin.py:607
+#: kb/admin.py:614
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia użytkownikowi otwieranie głównej wiki i czytanie opublikowanych artykułów po zalogowaniu. Nie umożliwia tworzenia artykułów, zatwierdzania artykułów ani korzystania z narzędzi administratora. Odznaczenie oznacza brak bezpośredniego przyznania użytkownikowi; użytkownik może nadal otrzymywać to uprawnienie od swojej grupy. Grupa Wyłączony użytkownik zastępuje bezpośrednie dodatki uprawnień."
 
-#: kb/admin.py:648
+#: kb/admin.py:655
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia temu użytkownikowi tworzenie i przesyłanie artykułów wewnętrznych/prywatnych."
 
-#: kb/admin.py:635
+#: kb/admin.py:642
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia temu użytkownikowi usuwanie artykułów. Używaj oszczędnie; standardowe grupy Menedżer artykułów i Użytkownicy administratora już je przyznają."
 
-#: kb/admin.py:658
+#: kb/admin.py:665
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia temu użytkownikowi usuwanie artykułów wewnętrznych/prywatnych."
 
-#: kb/admin.py:643
+#: kb/admin.py:650
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia temu użytkownikowi otwieranie i czytanie opublikowanych artykułów wewnętrznych/prywatnych."
 
-#: kb/admin.py:653
+#: kb/admin.py:660
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "Bezpośrednie uprawnienie użytkownika. Umożliwia temu użytkownikowi przeglądanie i zarządzanie oczekującymi artykułami wewnętrznymi/prywatnymi."
 
-#: kb/admin.py:818
+#: kb/admin.py:825
 msgid "Direct user permissions"
 msgstr "Bezpośrednie uprawnienia użytkownika"
 
-#: kb/admin.py:1202 kb/admin.py:1324 kb/admin.py:765 kb/permissions.py:53
+#: kb/admin.py:1209 kb/admin.py:1331 kb/admin.py:772 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "Wyłączony użytkownik"
 
-#: kb/admin.py:1597
+#: kb/admin.py:1604
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Wyłączony użytkownik do %(count)d wybranych użytkowników."
 
@@ -1477,11 +1485,11 @@ msgstr "Odrzucić bieżące zmiany i ponownie wczytać ostatnio opublikowaną we
 msgid "Discard your saved update draft and reload the last published version?"
 msgstr "Odrzucić zapisany szkic aktualizacji i ponownie wczytać ostatnio opublikowaną wersję?"
 
-#: kb/admin.py:2552
+#: kb/admin.py:2559
 msgid "Dislike"
 msgstr "Nie lubię"
 
-#: kb/admin.py:2436 website/templates/articles.html:272
+#: kb/admin.py:2443 website/templates/articles.html:272
 msgid "Dislikes"
 msgstr "Nie lubię"
 
@@ -1489,7 +1497,7 @@ msgstr "Nie lubię"
 msgid "Django Admin MFA lockout triggered"
 msgstr "Wyzwolono blokadę MFA administratora Django"
 
-#: kb/admin.py:1953 kb/admin.py:1959
+#: kb/admin.py:1960 kb/admin.py:1966
 msgid "Django Admin MFA verification"
 msgstr "Weryfikacja MFA administratora Django"
 
@@ -1501,11 +1509,11 @@ msgstr "Weryfikacja MFA administratora Django nie powiodła się"
 msgid "Django Admin MFA verification success"
 msgstr "Weryfikacja MFA administratora Django powiodła się"
 
-#: kb/admin.py:2635
+#: kb/admin.py:2642
 msgid "Django Admin access restrictions"
 msgstr "Ograniczenia dostępu do Django Admin"
 
-#: kb/admin.py:102
+#: kb/admin.py:144
 msgid "Django admin action flag"
 msgstr "Flaga działania administratora Django"
 
@@ -1517,11 +1525,11 @@ msgstr "Administrator domeny"
 msgid "Domain User"
 msgstr "Użytkownik domeny"
 
-#: kb/admin.py:1186
+#: kb/admin.py:1193
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "Hasło domenowe jest zarządzane w Active Directory i nie można go zmienić w panelu administracyjnym Django."
 
-#: kb/admin.py:1292
+#: kb/admin.py:1299
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "Hasła użytkowników domenowych są zarządzane w Active Directory."
 
@@ -1541,7 +1549,7 @@ msgstr "Szkic zapisano pomyślnie."
 msgid "Due"
 msgstr "Termin"
 
-#: kb/admin.py:2630
+#: kb/admin.py:2637
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Pierwsze zaakceptowane pytanie każdego użytkownika rozpoczyna stałe 24-godzinne okno. Istniejący krótkoterminowy limit serii pozostaje aktywny oddzielnie."
 
@@ -1581,11 +1589,11 @@ msgstr "Edytowany tytuł oczekuje na zatwierdzenie administratora. Opublikowany 
 msgid "Editor reverted to the last published version."
 msgstr "Edytor przywrócono do ostatnio opublikowanej wersji."
 
-#: kb/admin.py:832 kb/admin.py:879
+#: kb/admin.py:839 kb/admin.py:886
 msgid "Effective permissions"
 msgstr "Efektywne uprawnienia"
 
-#: kb/admin.py:872
+#: kb/admin.py:879
 msgid "Effective role groups"
 msgstr "Efektywne grupy ról"
 
@@ -1597,11 +1605,11 @@ msgstr "E-mail"
 msgid "Email updated successfully."
 msgstr "E-mail zaktualizowany pomyślnie."
 
-#: kb/admin.py:102 kb/models.py:1299 website/templates/profile.html:195
+#: kb/admin.py:252 kb/models.py:1299 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "Włączone"
 
-#: kb/admin.py:1807
+#: kb/admin.py:1814
 msgid "Encrypted and hidden"
 msgstr "Zaszyfrowane i ukryte"
 
@@ -1625,15 +1633,11 @@ msgstr "Wprowadź kod MFA/OTP, aby potwierdzić to usunięcie."
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "Wprowadź ponownie kod aplikacji uwierzytelniającej, aby uzyskać dostęp do witryny Django Admin."
 
-#: website/templates/404.html:92
-msgid "Error 404"
-msgstr "Błąd 404"
-
-#: kb/admin.py:2716
+#: kb/admin.py:2723
 msgid "Escalation memory readable"
 msgstr "Czytelny czas pamięci eskalacji"
 
-#: kb/admin.py:102
+#: kb/admin.py:124 kb/admin.py:137 kb/admin.py:155
 msgid "Event type"
 msgstr "Typ zdarzenia"
 
@@ -1665,11 +1669,11 @@ msgstr "Eksportuj zip artykułów"
 msgid "Export split package"
 msgstr "Eksportuj pakiet podzielony"
 
-#: kb/admin.py:2239
+#: kb/admin.py:2246
 msgid "Failed"
 msgstr "Niepowodzenie"
 
-#: kb/admin.py:102 kb/models.py:1284
+#: kb/admin.py:249 kb/models.py:1284
 msgid "Failed attempts before block"
 msgstr "Nieudane próby przed blokadą"
 
@@ -1689,7 +1693,7 @@ msgstr "Pole"
 msgid "File size"
 msgstr "Rozmiar pliku"
 
-#: kb/admin.py:102 website/templates/admin_clean_stray_upload_files.html:97
+#: kb/admin.py:195 kb/admin.py:217 website/templates/admin_clean_stray_upload_files.html:97
 msgid "Filename"
 msgstr "Nazwa pliku"
 
@@ -1701,7 +1705,7 @@ msgstr "Pliki nowsze niż %(minutes)s minuta są ignorowane. Zmień tę wartoś�
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "Pliki nowsze niż %(minutes)s minut są ignorowane. Zmień tę wartość w Django Admin → Site settings. Użyj 0 minut, aby natychmiast pokazać zbędne przesłane pliki."
 
-#: kb/admin.py:256 kb/models.py:1140
+#: kb/admin.py:261 kb/models.py:1140
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "Pliki nowsze niż ta liczba minut są ignorowane przez narzędzie czyszczenia osieroconych przesyłek. Domyślnie jest to 1440 minut (24 godziny), aby uniknąć usuwania obrazów podczas tworzenia artykułów przez użytkowników. Ustaw 0, aby natychmiast wykrywać/usuwać osierocone przesyłki."
 
@@ -1725,11 +1729,11 @@ msgstr "Znajduje nieużywane pliki w"
 msgid "First"
 msgstr "Pierwsza"
 
-#: kb/admin.py:813
+#: kb/admin.py:820
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "Pełny dostęp superużytkownika Django Admin. Użytkownicy administratora wymagają dodatkowej weryfikacji MFA administratora przed wejściem do Django Admin."
 
-#: kb/admin.py:1211
+#: kb/admin.py:1218
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "Pełny dostęp superużytkownika Django Admin. Wymaga dodatkowego kroku MFA administratora przed wejściem do Django Admin."
 
@@ -1737,7 +1741,7 @@ msgstr "Pełny dostęp superużytkownika Django Admin. Wymaga dodatkowego kroku 
 msgid "General"
 msgstr "Ogólne"
 
-#: kb/admin.py:102 kb/models.py:1189
+#: kb/admin.py:238 kb/models.py:1189
 msgid "General activity log retention (days)"
 msgstr "Przechowywanie ogólnego dziennika aktywności (dni)"
 
@@ -1761,15 +1765,15 @@ msgstr "Ogólne artykuły należące do Ciebie."
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Uzyskaj natychmiastowe odpowiedzi na najczęstsze pytania i naucz się używać 3 znaków jak profesjonalista."
 
-#: kb/admin.py:974
+#: kb/admin.py:981
 msgid "Group members"
 msgstr "Członkowie grupy"
 
-#: kb/admin.py:759
+#: kb/admin.py:766
 msgid "Group permissions"
 msgstr "Uprawnienia grupy"
 
-#: kb/admin.py:1056
+#: kb/admin.py:1063
 msgid "Group type"
 msgstr "Typ grupy"
 
@@ -1789,11 +1793,11 @@ msgstr "Pomocne"
 msgid "Hi, I am OpenKB AI."
 msgstr "Cześć, jestem OpenKB AI."
 
-#: kb/admin.py:1202
+#: kb/admin.py:1209
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "Najwyższy priorytet. Blokuje dostęp do Repozytorium wiedzy i usuwa rolę Użytkownicy administratora, status personelu/superużytkownika oraz bezpośrednie uprawnienia ról."
 
-#: kb/admin.py:766
+#: kb/admin.py:773
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "Najwyższy priorytet. Użytkownik jest przekierowywany na stronę wyłączonego konta i nie może uzyskać dostępu do Repozytorium wiedzy. Usuwa również rolę Użytkownicy administratora, status personelu/superużytkownika i bezpośrednie dodatki uprawnień Repozytorium wiedzy."
 
@@ -1829,11 +1833,11 @@ msgstr "Jak możemy pomóc?"
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "Określa, jak długo administrator może pozostawać nieaktywny w Django Admin po ukończeniu dodatkowej kontroli MFA administratora. Domyślnie 600 sekund (10 minut). Minimum wymuszane przez kod to 60 sekund; maksimum wymuszane przez kod to 86400 sekund."
 
-#: kb/admin.py:256 kb/models.py:1149
+#: kb/admin.py:262 kb/models.py:1149
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "Określa, jak długo usunięte opublikowane artykuły pozostają możliwe do odzyskania w Mój profil → Narzędzia administratora → Kolejka usuwania przed trwałym usunięciem. Domyślnie jest to 7 dni. Ustaw 0, aby trwale usuwać opublikowane artykuły natychmiast po potwierdzeniu MFA."
 
-#: kb/admin.py:256
+#: kb/admin.py:269
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "Określa, jak długo historia eskalacji nieudanego logowania/MFA jest pamiętana bez pomyślnego logowania. Pomyślna weryfikacja usuwa ją natychmiast. Domyślnie 604800 sekund (7 dni)."
 
@@ -1841,15 +1845,15 @@ msgstr "Określa, jak długo historia eskalacji nieudanego logowania/MFA jest pa
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "Określa, jak długo historia blokady nieudanego logowania/MFA jest pamiętana, jeśli użytkownik nigdy nie zaloguje się pomyślnie. Pomyślna weryfikacja hasła/MFA natychmiast resetuje odpowiednią historię blokady. Domyślnie 604800 sekund (7 dni)."
 
-#: kb/admin.py:256 kb/models.py:1290
+#: kb/admin.py:273 kb/models.py:1290
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "Określa, jak długo kontrola logowania/MFA jest blokowana po uruchomieniu tego etapu."
 
-#: kb/admin.py:256 kb/models.py:1295
+#: kb/admin.py:274 kb/models.py:1295
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "Określa, ile blokad powinno używać tego etapu przed przejściem do następnego etapu. Użyj 0 w ostatnim etapie, aby powtarzać go bez końca."
 
-#: kb/admin.py:847
+#: kb/admin.py:854
 msgid "How to use these permissions:"
 msgstr "Jak korzystać z tych uprawnień:"
 
@@ -1872,7 +1876,7 @@ msgstr[0] "Znalazłem %(count)d odpowiedni opublikowany artykuł."
 msgstr[1] "Znalazłem %(count)d odpowiednie opublikowane artykuły."
 msgstr[2] "Znalazłem %(count)d odpowiednich opublikowanych artykułów."
 
-#: kb/admin.py:102
+#: kb/admin.py:129 kb/admin.py:145 kb/admin.py:166
 msgid "IP address"
 msgstr "Adres IP"
 
@@ -1884,7 +1888,7 @@ msgstr "Centrum pomocy IT"
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
 msgstr "Jeśli brakuje manifest.json, importer spróbuje zaimportować wszystkie pliki Markdown znalezione w pliku ZIP. W przypadku pakietów podzielonych rozpakuj pakiet i importuj każdy plik ZIP części pojedynczo."
 
-#: kb/admin.py:102
+#: kb/admin.py:198
 msgid "Image assets"
 msgstr "Zasoby obrazów"
 
@@ -1928,7 +1932,7 @@ msgstr "Obrazy przesłane w tym szkicu pojawiają się tutaj. Kliknij X, aby usu
 msgid "Immediate"
 msgstr "Natychmiast"
 
-#: kb/admin.py:2744
+#: kb/admin.py:2751
 msgid "Immediate permanent deletion"
 msgstr "Natychmiastowe trwałe usunięcie"
 
@@ -2000,7 +2004,7 @@ msgstr "Zaimportowane artykuły są przypisywane do konta administratora wykonuj
 msgid "Imported articles will be owned by"
 msgstr "Zaimportowane artykuły będą należeć do"
 
-#: kb/admin.py:1321 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1328 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "Nieaktywny"
 
@@ -2008,15 +2012,15 @@ msgstr "Nieaktywny"
 msgid "Internal"
 msgstr "Wewnętrzne"
 
-#: kb/admin.py:1209 kb/admin.py:804 kb/permissions.py:60
+#: kb/admin.py:1216 kb/admin.py:811 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "Zatwierdzający artykuły wewnętrzne"
 
-#: kb/admin.py:1210 kb/admin.py:808 kb/permissions.py:61
+#: kb/admin.py:1217 kb/admin.py:815 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "Menedżer artykułów wewnętrznych"
 
-#: kb/admin.py:1208 kb/admin.py:800 kb/permissions.py:59
+#: kb/admin.py:1215 kb/admin.py:807 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "Autor artykułów wewnętrznych"
 
@@ -2028,7 +2032,7 @@ msgstr "Artykuły wewnętrzne"
 msgid "Internal Knowledge Repository"
 msgstr "Wewnętrzne Repozytorium wiedzy"
 
-#: kb/admin.py:1207 kb/admin.py:796 kb/permissions.py:58
+#: kb/admin.py:1214 kb/admin.py:803 kb/permissions.py:58
 msgid "Internal User"
 msgstr "Użytkownik wewnętrzny"
 
@@ -2044,7 +2048,7 @@ msgstr "Artykuł wewnętrzny"
 msgid "Internal article pages"
 msgstr "Strony artykułów wewnętrznych"
 
-#: kb/admin.py:729
+#: kb/admin.py:736
 msgid "Internal article permissions"
 msgstr "Uprawnienia do artykułów wewnętrznych"
 
@@ -2064,7 +2068,7 @@ msgstr "Artykuły wewnętrzne należące do Ciebie."
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "Dodatkowa rola menedżera wewnętrznego. Może wyświetlać artykuły publiczne/wewnętrzne, tworzyć, edytować/zarządzać, przeglądać, zatwierdzać/odrzucać zgłoszenia wewnętrzne i usuwać artykuły wewnętrzne w swoim zakresie. Usunięcie opublikowanego artykułu wewnętrznego wymaga potwierdzenia MFA."
 
-#: kb/admin.py:737
+#: kb/admin.py:744
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "Role wewnętrzne są dodatkowymi uprawnieniami. Użytkownik wewnętrzny nadal może wyświetlać artykuły ogólne/publiczne. Gdy to możliwe, używaj grup Użytkownik wewnętrzny / Autor artykułów wewnętrznych / Zatwierdzający artykuły wewnętrzne / Menedżer artykułów wewnętrznych; zaznaczaj te bezpośrednie pola tylko dla wyjątków."
 
@@ -2124,7 +2128,7 @@ msgstr "Baza wiedzy"
 msgid "Keep update pending / Save review edits"
 msgstr "Pozostaw aktualizację jako oczekującą / Zapisz zmiany z przeglądu"
 
-#: kb/admin.py:102 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:235 website/templates/suggest_edit.html:418
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:235 website/templates/suggest_edit.html:418
 msgid "Keywords"
 msgstr "Słowa kluczowe"
 
@@ -2136,11 +2140,11 @@ msgstr "Słowa kluczowe: %(keywords)s"
 msgid "Knowledge Repository"
 msgstr "Repozytorium wiedzy"
 
-#: kb/admin.py:1347
+#: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
 msgstr "Uprawnienia Repozytorium wiedzy"
 
-#: kb/admin.py:1342
+#: kb/admin.py:1349
 msgid "Knowledge Repository Roles"
 msgstr "Role Repozytorium wiedzy"
 
@@ -2152,11 +2156,11 @@ msgstr "Administrator Repozytorium wiedzy. Może bezpośrednio tworzyć/publikow
 msgid "Knowledge Repository article."
 msgstr "Artykuł Repozytorium wiedzy."
 
-#: kb/admin.py:1053
+#: kb/admin.py:1060
 msgid "Knowledge Repository role"
 msgstr "Rola Repozytorium wiedzy"
 
-#: kb/admin.py:1038
+#: kb/admin.py:1045
 msgid "Knowledge Repository role group"
 msgstr "Grupa ról Repozytorium wiedzy"
 
@@ -2164,11 +2168,11 @@ msgstr "Grupa ról Repozytorium wiedzy"
 msgid "Knowledge Repository role guide"
 msgstr "Przewodnik po rolach Repozytorium wiedzy"
 
-#: kb/admin.py:1049
+#: kb/admin.py:1056
 msgid "Knowledge Repository role information"
 msgstr "Informacje o roli Repozytorium wiedzy"
 
-#: kb/admin.py:711
+#: kb/admin.py:718
 msgid "Knowledge Repository role permissions"
 msgstr "Uprawnienia roli Repozytorium wiedzy"
 
@@ -2176,15 +2180,15 @@ msgstr "Uprawnienia roli Repozytorium wiedzy"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "Typy kont LDAP muszą używać Active Directory jako źródła uwierzytelniania."
 
-#: kb/admin.py:580
+#: kb/admin.py:587
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "Typy kont LDAP muszą używać użytkownika Active Directory jako źródła. Wybierz użytkownika LDAP/administratora LDAP z użytkownikiem Active Directory albo wybierz Użytkownik/Administrator z użytkownikiem lokalnym."
 
-#: kb/admin.py:1330 kb/models.py:35
+#: kb/admin.py:1337 kb/models.py:35
 msgid "LDAP admin"
 msgstr "Administrator LDAP"
 
-#: kb/admin.py:1334 kb/models.py:34
+#: kb/admin.py:1341 kb/models.py:34
 msgid "LDAP user"
 msgstr "Użytkownik LDAP"
 
@@ -2216,23 +2220,23 @@ msgstr "Ostatnio zaktualizowano"
 msgid "Last verified"
 msgstr "Ostatnio zweryfikowano"
 
-#: kb/admin.py:102
+#: kb/admin.py:119
 msgid "Last verified at"
 msgstr "Ostatnio zweryfikowano"
 
-#: kb/admin.py:256
+#: kb/admin.py:259
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "Pole zgodności ze starszą wersją. Użyj wbudowanego pola wyboru Aktywne na koncie użytkownika, aby kontrolować, czy użytkownik może się logować."
 
-#: kb/admin.py:102
+#: kb/admin.py:107
 msgid "Legacy main-site access"
 msgstr "Starszy dostęp do głównej witryny"
 
-#: kb/admin.py:2550
+#: kb/admin.py:2557
 msgid "Like"
 msgstr "Lubię to"
 
-#: kb/admin.py:2431 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
 msgid "Likes"
 msgstr "Polubienia"
 
@@ -2256,7 +2260,7 @@ msgstr "Logowanie kontem lokalnym"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "Typy kont lokalnych muszą używać użytkownika lokalnego jako źródła uwierzytelniania."
 
-#: kb/admin.py:588
+#: kb/admin.py:595
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "Typy kont lokalnych muszą używać użytkownika lokalnego jako źródła. Wybierz Użytkownik/Administrator z użytkownikiem lokalnym albo użytkownika LDAP/administratora LDAP z użytkownikiem Active Directory."
 
@@ -2264,11 +2268,11 @@ msgstr "Typy kont lokalnych muszą używać użytkownika lokalnego jako źródł
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "Konta lokalne wymagają weryfikacji aplikacją uwierzytelniającą po zalogowaniu hasłem."
 
-#: kb/admin.py:1332
+#: kb/admin.py:1339
 msgid "Local admin"
 msgstr "Administrator lokalny"
 
-#: kb/admin.py:1335 kb/models.py:38 kb/views/services.py:2559
+#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:2559
 msgid "Local user"
 msgstr "Użytkownik lokalny"
 
@@ -2276,11 +2280,11 @@ msgstr "Użytkownik lokalny"
 msgid "Local username or email"
 msgstr "Lokalna nazwa użytkownika lub e-mail"
 
-#: kb/admin.py:1978
+#: kb/admin.py:1985
 msgid "Lockout duration"
 msgstr "Czas blokady"
 
-#: kb/admin.py:1963
+#: kb/admin.py:1970
 msgid "Lockout scope"
 msgstr "Zakres blokady"
 
@@ -2292,7 +2296,7 @@ msgstr "Zalogowano jako"
 msgid "Login"
 msgstr "Logowanie"
 
-#: kb/admin.py:102
+#: kb/admin.py:128
 msgid "Login mode"
 msgstr "Tryb logowania"
 
@@ -2304,7 +2308,7 @@ msgstr "Zaloguj się, aby współtworzyć"
 msgid "Logout"
 msgstr "Wyloguj"
 
-#: kb/admin.py:256 kb/models.py:1280
+#: kb/admin.py:271 kb/models.py:1280
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "Najpierw wykonywane są niższe numery. Użyj 10, 20, 30 itd., aby później móc wstawiać etapy."
 
@@ -2312,11 +2316,11 @@ msgstr "Najpierw wykonywane są niższe numery. Użyj 10, 20, 30 itd., aby póź
 msgid "MFA QR code"
 msgstr "Kod QR MFA"
 
-#: kb/admin.py:1375 kb/admin.py:1831
+#: kb/admin.py:1382 kb/admin.py:1838
 msgid "MFA Reset"
 msgstr "Reset MFA"
 
-#: kb/admin.py:1359
+#: kb/admin.py:1366
 msgid "MFA Status"
 msgstr "Status MFA"
 
@@ -2328,11 +2332,11 @@ msgstr "MFA zresetowane przez administratora"
 msgid "MFA reset by user"
 msgstr "MFA zresetowane przez użytkownika"
 
-#: kb/admin.py:1856
+#: kb/admin.py:1863
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "Zresetowano MFA dla %(count)d wybranego/wybranych urządzeń. Użytkownicy muszą skonfigurować nową aplikację uwierzytelniającą przy następnym logowaniu."
 
-#: kb/admin.py:1527
+#: kb/admin.py:1534
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "Zresetowano MFA dla %(count)d wybranego/wybranych użytkowników. Muszą skonfigurować nową aplikację uwierzytelniającą przy następnym logowaniu."
 
@@ -2356,7 +2360,7 @@ msgstr "Konfiguracja MFA zakończona"
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "Logowanie MFA zostało anulowane. Zaloguj się ponownie."
 
-#: kb/admin.py:1958 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1965 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "Weryfikacja MFA"
 
@@ -2372,7 +2376,7 @@ msgstr "Weryfikacja MFA nie powiodła się"
 msgid "MFA verify success"
 msgstr "Weryfikacja MFA zakończona"
 
-#: kb/admin.py:1487
+#: kb/admin.py:1494
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "MFA zostało zresetowane dla %(username)s. Użytkownik musi skonfigurować nową aplikację uwierzytelniającą przy następnym logowaniu."
 
@@ -2392,7 +2396,7 @@ msgstr "Profil użytkownika głównej witryny"
 msgid "Main Site User Profiles"
 msgstr "Profile użytkowników głównej witryny"
 
-#: kb/admin.py:700
+#: kb/admin.py:707
 msgid "Main site profile"
 msgstr "Profil głównej witryny"
 
@@ -2428,23 +2432,23 @@ msgstr "Zarządzane przez aplikację uwierzytelniającą"
 msgid "Manual setup key"
 msgstr "Ręczny klucz konfiguracji"
 
-#: kb/admin.py:1861
+#: kb/admin.py:1868
 msgid "Mark selected MFA devices as setup pending"
 msgstr "Oznacz wybrane urządzenia MFA jako oczekujące na konfigurację"
 
-#: kb/admin.py:2380
+#: kb/admin.py:2387
 msgid "Mark selected articles as pending failed"
 msgstr "Oznacz wybrane artykuły jako niepowodzenie oczekiwania"
 
-#: kb/admin.py:1881
+#: kb/admin.py:1888
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "Oznaczono konfigurację MFA jako oczekującą dla użytkownika %(username)s"
 
-#: kb/admin.py:2403
+#: kb/admin.py:2410
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "Oznaczono artykuł %(title)s jako Zatwierdzenie nieudane w Django Admin"
 
-#: kb/admin.py:2391 kb/admin.py:2465
+#: kb/admin.py:2398 kb/admin.py:2472
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Oznaczone przez administratora jako niepowodzenie oczekiwania. Sprawdź ten artykuł i prześlij go ponownie do zatwierdzenia."
 
@@ -2452,11 +2456,11 @@ msgstr "Oznaczone przez administratora jako niepowodzenie oczekiwania. Sprawdź 
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Maksymalnie %(limit)s obrazów na artykuł."
 
-#: kb/admin.py:256 kb/models.py:1235
+#: kb/admin.py:270 kb/models.py:1235
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "Maksymalna liczba zaakceptowanych pytań Ask OpenKB AI na użytkownika w stałym 24-godzinnym oknie. Pierwsze zaakceptowane pytanie rozpoczyna okno, a późniejsze pytania go nie wydłużają. Domyślnie: 20."
 
-#: kb/admin.py:256 kb/models.py:1157
+#: kb/admin.py:263 kb/models.py:1157
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "Maksymalna liczba obrazów wklejonych lub przesłanych do jednego artykułu, obejmująca wersje robocze, oczekujące, opublikowane i oczekujące na aktualizację. Domyślnie 50. Ustaw 0, aby wyłączyć przesyłanie obrazów artykułów."
 
@@ -2492,11 +2496,11 @@ msgstr "Strony najczęściej lubianych artykułów"
 msgid "Most recent article pages"
 msgstr "Strony najnowszych artykułów"
 
-#: kb/admin.py:1267 website/templates/profile.html:190
+#: kb/admin.py:1274 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "Uwierzytelnianie wieloskładnikowe"
 
-#: kb/admin.py:562
+#: kb/admin.py:569
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "Musi odpowiadać typowi konta. Lokalny użytkownik/Lokalny administrator używają użytkownika lokalnego. Użytkownik LDAP/administrator LDAP używają użytkownika Active Directory. Aby przekształcić konto LDAP w konto lokalne, ustaw Typ konta na Użytkownik lub Administrator, a Źródło na Użytkownik lokalny, a następnie ustaw hasło lokalne."
 
@@ -2556,7 +2560,7 @@ msgstr "E-mail lub nazwa użytkownika NextLabs AD"
 msgid "No"
 msgstr "Nie"
 
-#: kb/admin.py:1029 kb/admin.py:1080 kb/permissions.py:400
+#: kb/admin.py:1036 kb/admin.py:1087 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "Brak uprawnień ról Repozytorium wiedzy"
 
@@ -2644,7 +2648,7 @@ msgstr "Brak oczekujących recenzji artykułów pasujących do wyszukiwania."
 msgid "No pending update"
 msgstr "Brak oczekującej aktualizacji"
 
-#: kb/admin.py:1084
+#: kb/admin.py:1091
 msgid "No permissions"
 msgstr "Brak uprawnień"
 
@@ -2676,7 +2680,7 @@ msgstr "Nie wybrano żadnych zbędnych przesłanych plików do usunięcia."
 msgid "No stray uploaded files found."
 msgstr "Nie znaleziono nieużywanych przesłanych plików."
 
-#: kb/admin.py:1066
+#: kb/admin.py:1073
 msgid "No users"
 msgstr "Brak użytkowników"
 
@@ -2684,11 +2688,11 @@ msgstr "Brak użytkowników"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "Normalny eksport automatycznie staje się pakietem podzielonym, jeśli zawartość jest zbyt duża. Pakiety podzielone zawierają importowalne pliki ZIP części w folderze parts/; rozpakuj pakiet i importuj każdy plik ZIP części w kolejności."
 
-#: kb/admin.py:1808
+#: kb/admin.py:1815
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "Nie zaszyfrowano. Zresetuj urządzenie MFA tego użytkownika i poproś użytkownika o ponowną konfigurację MFA."
 
-#: kb/admin.py:2235
+#: kb/admin.py:2242
 msgid "Not found"
 msgstr "Nie znaleziono"
 
@@ -2700,7 +2704,7 @@ msgstr "Niepomocne"
 msgid "Not required"
 msgstr "Niewymagane"
 
-#: kb/admin.py:1805
+#: kb/admin.py:1812
 msgid "Not set"
 msgstr "Nie ustawiono"
 
@@ -2708,7 +2712,7 @@ msgstr "Nie ustawiono"
 msgid "Not set up"
 msgstr "Nie skonfigurowano"
 
-#: kb/admin.py:102
+#: kb/admin.py:109
 msgid "Notes"
 msgstr "Notatki"
 
@@ -2716,7 +2720,7 @@ msgstr "Notatki"
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "Liczba opublikowanych artykułów wyświetlanych na stronie w wynikach wyszukiwania oraz w każdej kolumnie artykułów na stronie głównej, takiej jak Popularne tematy, Najczęściej lubiane i Najnowsze artykuły. Zalecany zakres: od 5 do 100. Domyślnie 10."
 
-#: kb/admin.py:256 kb/models.py:1198
+#: kb/admin.py:267 kb/models.py:1198
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Liczba wierszy wyświetlanych na stronę w tabelach dzienników Django Admin. Zalecany zakres: od 50 do 500. Domyślnie: 200."
 
@@ -2724,15 +2728,15 @@ msgstr "Liczba wierszy wyświetlanych na stronę w tabelach dzienników Django A
 msgid "Number of unique session views for this article."
 msgstr "Liczba unikalnych wyświetleń sesji dla tego artykułu."
 
-#: kb/admin.py:256 kb/models.py:1285
+#: kb/admin.py:272 kb/models.py:1285
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "Liczba błędnych prób hasła/MFA wymagana, zanim ten etap zablokuje użytkownika."
 
-#: kb/admin.py:2229
+#: kb/admin.py:2236
 msgid "OK"
 msgstr "OK"
 
-#: kb/admin.py:2219
+#: kb/admin.py:2226
 msgid "Object ID %(object_id)s"
 msgstr "Identyfikator obiektu %(object_id)s"
 
@@ -2752,7 +2756,7 @@ msgstr "Dozwolone są tylko pliki importu .zip."
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Dozwolone są tylko obrazy PNG, JPG, GIF lub WEBP."
 
-#: kb/admin.py:2641
+#: kb/admin.py:2648
 msgid "Only superusers connecting from these CIDR/IP ranges can access /admin/. Django Admin also requires an extra MFA verification. The admin MFA idle timeout controls how long the admin area may remain inactive before the admin verification is cleared. Direct /admin/login/ is always hidden with 404. Use comma or newline separated CIDR/IP values, for example: 10.65.0.0/16, 127.0.0.1/32."
 msgstr "Tylko superużytkownicy łączący się z tych zakresów CIDR/IP mogą uzyskać dostęp do /admin/. Django Admin wymaga również dodatkowej weryfikacji MFA. Limit bezczynności MFA administratora określa, jak długo obszar administratora może pozostawać nieaktywny, zanim weryfikacja administratora zostanie wyczyszczona. Bezpośrednie /admin/login/ jest zawsze ukryte przez błąd 404. Użyj wartości CIDR/IP rozdzielonych przecinkami lub nowymi wierszami, na przykład: 10.65.0.0/16, 127.0.0.1/32."
 
@@ -2788,7 +2792,7 @@ msgstr "OpenKB AI jest tymczasowo niedostępne. Spróbuj ponownie później lub 
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI myśli..."
 
-#: kb/admin.py:102 kb/models.py:1234
+#: kb/admin.py:243 kb/models.py:1234
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "Monity OpenKB AI na 24 godziny"
 
@@ -2800,7 +2804,7 @@ msgstr "Pytanie do OpenKB AI"
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI ograniczony limitem żądań"
 
-#: kb/admin.py:2628
+#: kb/admin.py:2635
 msgid "OpenKB AI rate limits"
 msgstr "Limity szybkości OpenKB AI"
 
@@ -2812,11 +2816,11 @@ msgstr "OpenKB AI zbyt długo odpowiadało. Spróbuj ponownie później lub skon
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "Nie znaleziono folderu danych OpenKB. Sprawdź OPENKB_DATA_DIR w settings.py."
 
-#: kb/admin.py:2327
+#: kb/admin.py:2334
 msgid "OpenKB files"
 msgstr "Pliki OpenKB"
 
-#: kb/admin.py:102
+#: kb/admin.py:218
 msgid "Original name"
 msgstr "Nazwa oryginalna"
 
@@ -2836,7 +2840,7 @@ msgstr "Osierocony artykuł usunięty"
 msgid "Orphan article pages"
 msgstr "Strony osieroconych artykułów"
 
-#: kb/admin.py:102 website/templates/admin_bulk_articles.html:144 website/templates/admin_deletion_queue.html:122 website/templates/edit_my_suggestions.html:217
+#: kb/admin.py:173 website/templates/admin_bulk_articles.html:144 website/templates/admin_deletion_queue.html:122 website/templates/edit_my_suggestions.html:217
 msgid "Owner"
 msgstr "Właściciel"
 
@@ -2860,11 +2864,11 @@ msgstr "Strona %(number)s z %(num_pages)s · Wyświetlanie %(start)s–%(end)s z
 msgid "Page %(page)s of %(total)s"
 msgstr "Strona %(page)s z %(total)s"
 
-#: kb/views/errors.py:29 website/templates/404.html:6 website/templates/404.html:89
+#: kb/views/errors.py:45
 msgid "Page not found"
 msgstr "Nie znaleziono strony"
 
-#: kb/admin.py:1188 kb/admin.py:1957 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:217
+#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:217
 msgid "Password"
 msgstr "Hasło"
 
@@ -2924,15 +2928,15 @@ msgstr "Hasło synchronizuje się z hasłem firmowym."
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Hasło jest synchronizowane z hasłem firmowym. Zmień je za pomocą firmowego systemu haseł."
 
-#: kb/admin.py:1780
+#: kb/admin.py:1787
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "Zresetowano liczniki blokady hasła/MFA dla %(count)d wybranych profili."
 
-#: kb/admin.py:1559
+#: kb/admin.py:1566
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "Zresetowano liczniki blokady hasła/MFA dla %(count)d wybranych użytkowników."
 
-#: kb/admin.py:1443
+#: kb/admin.py:1450
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "Zresetowano liczniki blokady hasła/MFA dla %(username)s."
 
@@ -2948,7 +2952,7 @@ msgstr "Hasła są zgodne."
 msgid "Pasted images"
 msgstr "Wklejone obrazy"
 
-#: kb/admin.py:102 kb/admin.py:2091 kb/admin.py:2248
+#: kb/admin.py:131 kb/admin.py:147 kb/admin.py:168 kb/admin.py:2098 kb/admin.py:2255
 msgid "Path"
 msgstr "Ścieżka"
 
@@ -2988,23 +2992,23 @@ msgstr "Historia komentarzy odrzucenia"
 msgid "Pending update"
 msgstr "Oczekująca aktualizacja"
 
-#: kb/admin.py:102 kb/models.py:388
+#: kb/admin.py:188 kb/models.py:388
 msgid "Pending update body"
 msgstr "Oczekująca aktualizacja - treść"
 
-#: kb/admin.py:102 kb/models.py:400
+#: kb/admin.py:190 kb/models.py:400
 msgid "Pending update image assets"
 msgstr "Oczekująca aktualizacja - zasoby obrazów"
 
-#: kb/admin.py:102 kb/models.py:394
+#: kb/admin.py:189 kb/models.py:394
 msgid "Pending update keywords"
 msgstr "Oczekująca aktualizacja - słowa kluczowe"
 
-#: kb/admin.py:2316
+#: kb/admin.py:2323
 msgid "Pending update review"
 msgstr "Oczekująca aktualizacja - weryfikacja"
 
-#: kb/admin.py:102 kb/models.py:383
+#: kb/admin.py:187 kb/models.py:383
 msgid "Pending update title"
 msgstr "Oczekująca aktualizacja - tytuł"
 
@@ -3020,7 +3024,7 @@ msgstr "Oczekujące aktualizacje mogą jedynie pozostać oczekujące, zostać za
 msgid "Permalink"
 msgstr "Link stały"
 
-#: kb/admin.py:102 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
+#: kb/admin.py:202 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
 msgid "Permanent deletion after"
 msgstr "Trwałe usunięcie po"
 
@@ -3040,13 +3044,17 @@ msgstr "Trwale usunięto %(count)s osieroconych artykułów."
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "Trwale usunięto %(count)s artykułów z kolejki."
 
-#: kb/admin.py:865
+#: kb/admin.py:872
 msgid "Permission guide"
 msgstr "Przewodnik po uprawnieniach"
 
-#: kb/admin.py:1091
+#: kb/admin.py:1098
 msgid "Permissions"
 msgstr "Uprawnienia"
+
+#: kb/views/errors.py:37
+msgid "Please check the submitted information and try again."
+msgstr "Sprawdź przesłane informacje i spróbuj ponownie."
 
 #: kb/views/admin.py:170
 msgid "Please choose a .zip file to import."
@@ -3080,6 +3088,14 @@ msgstr "Zaloguj się przed weryfikacją MFA."
 msgid "Please sign in using your NextLabs AD email account to access the knowledge repository."
 msgstr "Zaloguj się przy użyciu konta e-mail NextLabs AD, aby uzyskać dostęp do repozytorium wiedzy."
 
+#: kb/views/errors.py:67
+msgid "Please try again later or contact an administrator if the issue continues."
+msgstr "Spróbuj ponownie później lub skontaktuj się z administratorem, jeśli problem będzie się powtarzał."
+
+#: kb/views/errors.py:72 kb/views/errors.py:77
+msgid "Please try again shortly."
+msgstr "Spróbuj ponownie za chwilę."
+
 #: kb/views/ai.py:46 website/templates/_openkb_ai_chat.html:13
 msgid "Please type a question first."
 msgstr "Najpierw wpisz pytanie."
@@ -3088,7 +3104,15 @@ msgstr "Najpierw wpisz pytanie."
 msgid "Please use the Assign selected or Delete selected button."
 msgstr "Użyj przycisku Przypisz wybrane lub Usuń wybrane."
 
-#: kb/admin.py:2709
+#: kb/views/errors.py:82
+msgid "Please wait briefly and try again."
+msgstr "Poczekaj chwilę i spróbuj ponownie."
+
+#: kb/views/errors.py:62
+msgid "Please wait briefly before trying again."
+msgstr "Poczekaj chwilę przed ponowną próbą."
+
+#: kb/admin.py:2716
 msgid "Policy guide"
 msgstr "Przewodnik po zasadach"
 
@@ -3100,11 +3124,11 @@ msgstr "Obsługiwane przez"
 msgid "Powered by openKB"
 msgstr "Obsługiwane przez openKB"
 
-#: kb/admin.py:102 kb/admin.py:1174
+#: kb/admin.py:108 kb/admin.py:1181
 msgid "Preferred language"
 msgstr "Preferowany język"
 
-#: kb/admin.py:256 kb/models.py:66
+#: kb/admin.py:260 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "Preferowany język głównego interfejsu wiki."
 
@@ -3128,11 +3152,11 @@ msgstr "Poprzedni właściciel"
 msgid "Previous status"
 msgstr "Poprzedni stan"
 
-#: kb/admin.py:102 kb/models.py:433
+#: kb/admin.py:199 kb/models.py:433
 msgid "Previous status before deletion queue"
 msgstr "Poprzedni stan przed kolejką usuwania"
 
-#: kb/admin.py:1159
+#: kb/admin.py:1166
 msgid "Profile account type"
 msgstr "Typ konta profilu"
 
@@ -3204,11 +3228,11 @@ msgstr "Dodano do kolejki podczas czyszczenia osieroconych artykułów."
 msgid "Ran admin action '%(action)s'"
 msgstr "Wykonano działanie administratora „%(action)s”"
 
-#: kb/admin.py:2184
+#: kb/admin.py:2191
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "Wykonano działanie administratora „%(action)s” dla %(target)s"
 
-#: kb/admin.py:102
+#: kb/admin.py:196
 msgid "Raw path"
 msgstr "Ścieżka surowa"
 
@@ -3228,15 +3252,23 @@ msgstr "Gotowe do zaplanowanego trwałego usunięcia"
 msgid "Recommended articles"
 msgstr "Polecane artykuły"
 
-#: kb/admin.py:2231
+#: kb/admin.py:2238
 msgid "Redirect"
 msgstr "Przekierowanie"
+
+#: kb/views/errors.py:57
+msgid "Reduce the file size or request content, then try again."
+msgstr "Zmniejsz rozmiar pliku lub zawartość żądania, a następnie spróbuj ponownie."
 
 #: website/templates/_keyword_suggestions.html:83
 msgid "Refresh"
 msgstr "Odśwież"
 
-#: kb/admin.py:1203 kb/admin.py:772 kb/permissions.py:54
+#: kb/views/errors.py:157
+msgid "Refresh the page and try again. If the issue continues, sign in again."
+msgstr "Odśwież stronę i spróbuj ponownie. Jeśli problem będzie się powtarzał, zaloguj się ponownie."
+
+#: kb/admin.py:1210 kb/admin.py:779 kb/permissions.py:54
 msgid "Regular User"
 msgstr "Zwykły użytkownik"
 
@@ -3244,7 +3276,7 @@ msgstr "Zwykły użytkownik"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "Zwykły użytkownik jest zapasową publiczną rolą przeglądającego. Role wewnętrzne są rolami dodatkowymi, które obejmują również wyświetlanie artykułów publicznych. Bezpośrednie uprawnienia użytkownika mogą nadal być zaznaczane dla niestandardowych kombinacji. Django łączy uprawnienia grup i bezpośrednie uprawnienia użytkownika."
 
-#: kb/admin.py:1654
+#: kb/admin.py:1661
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Zwykły użytkownik do %(count)d wybranych użytkowników."
 
@@ -3268,7 +3300,7 @@ msgstr "Usuń obraz z artykułu"
 msgid "Removed by uploader from editor"
 msgstr "Usunięto przez przesyłającego z edytora"
 
-#: kb/admin.py:102 kb/models.py:1294
+#: kb/admin.py:251 kb/models.py:1294
 msgid "Repeat count"
 msgstr "Liczba powtórzeń"
 
@@ -3276,23 +3308,35 @@ msgstr "Liczba powtórzeń"
 msgid "Request failed. Check Django terminal logs."
 msgstr "Żądanie nie powiodło się. Sprawdź logi terminala Django."
 
-#: kb/admin.py:102
+#: kb/admin.py:132 kb/admin.py:148 kb/admin.py:169
 msgid "Request method"
 msgstr "Metoda żądania"
 
-#: kb/admin.py:1368 website/templates/profile.html:208
+#: kb/views/errors.py:50
+msgid "Request not allowed"
+msgstr "Żądanie niedozwolone"
+
+#: kb/views/errors.py:80
+msgid "Request timed out"
+msgstr "Przekroczono limit czasu żądania"
+
+#: kb/views/errors.py:55
+msgid "Request too large"
+msgstr "Żądanie jest zbyt duże"
+
+#: kb/admin.py:1375 website/templates/profile.html:208
 msgid "Reset MFA"
 msgstr "Resetuj MFA"
 
-#: kb/admin.py:1497
+#: kb/admin.py:1504
 msgid "Reset MFA for %(username)s"
 msgstr "Zresetuj MFA dla %(username)s"
 
-#: kb/admin.py:1504
+#: kb/admin.py:1511
 msgid "Reset MFA for selected users"
 msgstr "Zresetuj MFA dla wybranych użytkowników"
 
-#: kb/admin.py:1481 kb/admin.py:1520 kb/admin.py:1849
+#: kb/admin.py:1488 kb/admin.py:1527 kb/admin.py:1856
 msgid "Reset MFA for user %(username)s"
 msgstr "Zresetuj MFA dla użytkownika %(username)s"
 
@@ -3300,7 +3344,7 @@ msgstr "Zresetuj MFA dla użytkownika %(username)s"
 msgid "Reset MFA now"
 msgstr "Resetuj MFA teraz"
 
-#: kb/admin.py:102
+#: kb/admin.py:120
 msgid "Reset at"
 msgstr "Zresetowano o"
 
@@ -3308,35 +3352,35 @@ msgstr "Zresetowano o"
 msgid "Reset lockout now"
 msgstr "Zresetuj blokadę teraz"
 
-#: kb/admin.py:1384
+#: kb/admin.py:1391
 msgid "Reset password/MFA lockout"
 msgstr "Zresetuj blokadę hasła/MFA"
 
-#: kb/admin.py:1451
+#: kb/admin.py:1458
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "Zresetuj blokadę hasła/MFA dla %(username)s"
 
-#: kb/admin.py:1753
+#: kb/admin.py:1760
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "Zresetuj blokadę hasła/MFA dla wybranych profili"
 
-#: kb/admin.py:1532
+#: kb/admin.py:1539
 msgid "Reset password/MFA lockout for selected users"
 msgstr "Zresetuj blokadę hasła/MFA dla wybranych użytkowników"
 
-#: kb/admin.py:1437 kb/admin.py:1552 kb/admin.py:1773
+#: kb/admin.py:1444 kb/admin.py:1559 kb/admin.py:1780
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "Zresetuj blokadę hasła/MFA dla użytkownika %(username)s"
 
-#: kb/admin.py:1833
+#: kb/admin.py:1840
 msgid "Reset selected MFA devices"
 msgstr "Zresetuj wybrane urządzenia MFA"
 
-#: kb/admin.py:1827
+#: kb/admin.py:1834
 msgid "Reset this user's MFA"
 msgstr "Zresetuj MFA tego użytkownika"
 
-#: kb/admin.py:1369
+#: kb/admin.py:1376
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Resetuje aplikację uwierzytelniającą tego użytkownika i wymaga ponownej konfiguracji QR. Nowy klucz aplikacji uwierzytelniającej jest prywatny i nie jest wyświetlany administratorom."
 
@@ -3355,6 +3399,14 @@ msgstr "Przywróć wybrane"
 #: kb/views/admin.py:744
 msgid "Restored %(count)s article(s) from the deletion queue."
 msgstr "Przywrócono %(count)s artykułów z kolejki usuwania."
+
+#: kb/views/errors.py:52
+msgid "Return to the previous page and use the available controls instead."
+msgstr "Wróć do poprzedniej strony i użyj dostępnych elementów sterujących."
+
+#: kb/views/errors.py:42
+msgid "Return to the previous page or contact an administrator if access is required."
+msgstr "Wróć do poprzedniej strony lub skontaktuj się z administratorem, jeśli potrzebujesz dostępu."
 
 #: website/templates/suggest_edit.html:303 website/templates/suggest_edit.html:308 website/templates/suggest_edit.html:312 website/templates/suggest_edit.html:317
 msgid "Revert to last published version"
@@ -3388,7 +3440,7 @@ msgstr "Przeglądaj zgłoszenia ogólne i wewnętrzne na jednej stronie. Użyj l
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "Przeglądaj artykuły ogólne i oczekujące aktualizacje publiczne czekające na zatwierdzenie."
 
-#: kb/admin.py:102 kb/admin.py:2426
+#: kb/admin.py:186 kb/admin.py:2433
 msgid "Review history"
 msgstr "Historia recenzji"
 
@@ -3404,7 +3456,7 @@ msgstr "Przeglądaj artykuły wewnętrzne czekające na zatwierdzenie."
 msgid "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here."
 msgstr "Tryb przeglądu: możesz edytować ten oczekujący artykuł lub aktualizację, a następnie go zatwierdzić lub odrzucić. Widoczności nie można tutaj zmienić."
 
-#: kb/admin.py:102
+#: kb/admin.py:185
 msgid "Review notes"
 msgstr "Notatki recenzji"
 
@@ -3512,43 +3564,47 @@ msgstr "Zaznacz wszystko"
 msgid "Select all stray files"
 msgstr "Zaznacz wszystkie zbędne pliki"
 
-#: kb/admin.py:890
+#: kb/admin.py:897
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "Wybierz użytkowników, którzy powinni należeć do tej grupy. Użyj pola filtra po lewej, aby wyszukać użytkowników, przenieś wybranych użytkowników na prawą stronę, a następnie zapisz. Usunięcie użytkownika z prawej strony usuwa tylko członkostwo w tej grupie."
 
-#: kb/admin.py:2237
+#: kb/admin.py:2244 kb/views/errors.py:65
 msgid "Server error"
 msgstr "Błąd serwera"
 
-#: kb/admin.py:1630
+#: kb/views/errors.py:70 kb/views/errors.py:75
+msgid "Service unavailable"
+msgstr "Usługa niedostępna"
+
+#: kb/admin.py:1637
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "Ustaw rolę użytkownika %(username)s na %(role)s (%(status)s)"
 
-#: kb/admin.py:1687
+#: kb/admin.py:1694
 msgid "Set selected users as Admin Users"
 msgstr "Ustaw wybranych użytkowników jako Użytkowników administratora"
 
-#: kb/admin.py:1667
+#: kb/admin.py:1674
 msgid "Set selected users as Article Approver"
 msgstr "Ustaw wybranych użytkowników jako Zatwierdzających artykuły"
 
-#: kb/admin.py:1677
+#: kb/admin.py:1684
 msgid "Set selected users as Article Manager"
 msgstr "Ustaw wybranych użytkowników jako Menedżerów artykułów"
 
-#: kb/admin.py:1657
+#: kb/admin.py:1664
 msgid "Set selected users as Article Writer"
 msgstr "Ustaw wybranych użytkowników jako Autorów artykułów"
 
-#: kb/admin.py:1563
+#: kb/admin.py:1570
 msgid "Set selected users as Disabled User"
 msgstr "Ustaw wybranych użytkowników jako Wyłączonych użytkowników"
 
-#: kb/admin.py:1647
+#: kb/admin.py:1654
 msgid "Set selected users as Regular User"
 msgstr "Ustaw wybranych użytkowników jako Zwykłych użytkowników"
 
-#: kb/admin.py:760
+#: kb/admin.py:767
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Ustaw zwykłą rolę użytkownika w sekcji Grupy. Niestandardowe grupy nieról mogą być później używane na przykład do powiadomień."
 
@@ -3572,7 +3628,7 @@ msgstr "Skonfiguruj MFA przed usunięciem opublikowanego artykułu."
 msgid "Set up authenticator"
 msgstr "Skonfiguruj aplikację uwierzytelniającą"
 
-#: kb/admin.py:1355 kb/mfa.py:136
+#: kb/admin.py:1362 kb/mfa.py:136
 msgid "Setup pending"
 msgstr "Oczekuje na konfigurację"
 
@@ -3628,7 +3684,7 @@ msgstr "Zaloguj się przy użyciu lokalnego konta Repozytorium wiedzy."
 msgid "Sign out and go to sign in"
 msgstr "Wyloguj się i przejdź do logowania"
 
-#: kb/admin.py:102 kb/admin.py:97 kb/models.py:1244
+#: kb/admin.py:247 kb/admin.py:97 kb/models.py:1244
 msgid "Site setting"
 msgstr "Ustawienie witryny"
 
@@ -3640,11 +3696,11 @@ msgstr "Ustawienia witryny"
 msgid "Size"
 msgstr "Rozmiar"
 
-#: kb/admin.py:2810
+#: kb/admin.py:2817
 msgid "Size (KB)"
 msgstr "Rozmiar (KB)"
 
-#: kb/admin.py:102
+#: kb/admin.py:220
 msgid "Size bytes"
 msgstr "Rozmiar w bajtach"
 
@@ -3696,7 +3752,7 @@ msgstr "Wystąpił błąd podczas przetwarzania działania na osieroconym artyku
 msgid "Something went wrong."
 msgstr "Coś poszło nie tak."
 
-#: kb/admin.py:102
+#: kb/admin.py:106
 msgid "Source"
 msgstr "Źródło"
 
@@ -3708,11 +3764,11 @@ msgstr "Podzielony pakiet eksportu nie zawierał żadnych możliwych do zaimport
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "Etap %(order)s: %(failures)s nieudanych prób -> %(block)s sekund, powtórz %(repeat)s"
 
-#: kb/admin.py:2668
+#: kb/admin.py:2675
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "Etap %(order)s: %(failures)s nieudanych prób -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:102 kb/models.py:1279
+#: kb/admin.py:248 kb/models.py:1279
 msgid "Stage order"
 msgstr "Kolejność etapu"
 
@@ -3720,19 +3776,19 @@ msgstr "Kolejność etapu"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Zacznij wpisywać tytuł lub treść artykułu, aby zobaczyć pasujące istniejące słowa kluczowe."
 
-#: kb/admin.py:102 kb/admin.py:2242 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:219 website/templates/suggest_edit.html:246
+#: kb/admin.py:182 kb/admin.py:2249 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:219 website/templates/suggest_edit.html:246
 msgid "Status"
 msgstr "Stan"
 
-#: kb/admin.py:102
+#: kb/admin.py:149
 msgid "Status code"
 msgstr "Kod stanu"
 
-#: kb/admin.py:2593
+#: kb/admin.py:2600
 msgid "Stray upload cleanup"
 msgstr "Czyszczenie osieroconych przesyłek"
 
-#: kb/admin.py:102 kb/models.py:1139
+#: kb/admin.py:233 kb/models.py:1139
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "Minimalny wiek czyszczenia osieroconych przesyłek (minuty)"
 
@@ -3756,11 +3812,11 @@ msgstr "Prześlij aktualizację do zatwierdzenia"
 msgid "Submitted by"
 msgstr "Przesłane przez"
 
-#: kb/admin.py:102
+#: kb/admin.py:125
 msgid "Success"
 msgstr "Sukces"
 
-#: kb/admin.py:2703
+#: kb/admin.py:2710
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "Pomyślna weryfikacja hasła resetuje historię blokady hasła. Pomyślna weryfikacja MFA resetuje historię blokady MFA. Administratorzy mogą resetować liczniki użytkownika na stronie administracyjnej Użytkownik."
 
@@ -3788,23 +3844,23 @@ msgstr "Sugerowane słowa kluczowe"
 msgid "Supported zip format"
 msgstr "Obsługiwany format zip"
 
-#: kb/admin.py:2222
+#: kb/admin.py:2229
 msgid "Target"
 msgstr "Cel"
 
-#: kb/admin.py:102
+#: kb/admin.py:140
 msgid "Target app"
 msgstr "Aplikacja docelowa"
 
-#: kb/admin.py:102 kb/admin.py:2199
+#: kb/admin.py:141 kb/admin.py:2206
 msgid "Target model"
 msgstr "Model docelowy"
 
-#: kb/admin.py:102
+#: kb/admin.py:143
 msgid "Target object"
 msgstr "Obiekt docelowy"
 
-#: kb/admin.py:102
+#: kb/admin.py:142
 msgid "Target object ID"
 msgstr "Identyfikator obiektu docelowego"
 
@@ -3812,15 +3868,27 @@ msgstr "Identyfikator obiektu docelowego"
 msgid "Thank you. Your vote has been saved."
 msgstr "Dziękujemy. Twój głos został zapisany."
 
-#: kb/admin.py:1226
+#: kb/admin.py:1233
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "Pole wyboru Aktywne kontroluje, czy konto może w ogóle się logować. Zwykły użytkownik jest wyłącznie zapasową rolą przeglądającego i jest usuwany automatycznie po przypisaniu roli Autor, Zatwierdzający, Menedżer lub podwyższonych ról wewnętrznych. Użytkownik wewnętrzny jest dodatkową rolą przeglądającego i może być łączony ze Zwykłym użytkownikiem. Niestandardowe grupy nieról mogą nadal być później używane do powiadomień lub grupowania według działu."
+
+#: kb/views/errors.py:76
+msgid "The application is temporarily unable to handle the request."
+msgstr "Aplikacja tymczasowo nie może obsłużyć żądania."
+
+#: kb/views/errors.py:71
+msgid "The application service is temporarily unavailable."
+msgstr "Usługa aplikacji jest tymczasowo niedostępna."
+
+#: kb/views/errors.py:81
+msgid "The application took too long to respond."
+msgstr "Aplikacja zbyt długo nie odpowiadała."
 
 #: kb/views/admin.py:540
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "Nie można było bezpiecznie przypisać artykułów. Nie zastosowano przypisania. Sprawdź logi i spróbuj ponownie."
 
-#: kb/admin.py:819
+#: kb/admin.py:826
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Poniższe pola wyboru są specjalnymi wyjątkami dla pojedynczego użytkownika wyłącznie w zakresie dostępu do artykułów. Są przydatne, gdy jeden użytkownik potrzebuje nieco większego dostępu do artykułów niż jego grupa, bez tworzenia nowej grupy. Dostęp do Django Admin jest przyznawany wyłącznie przez grupę Użytkownicy administratora/status superużytkownika."
 
@@ -3832,7 +3900,7 @@ msgstr "Wynik importu jest wyświetlany tutaj, aby nie zajmował głównej stron
 msgid "The knowledge base does not contain matching information about that topic."
 msgstr "Baza wiedzy nie zawiera pasujących informacji na ten temat."
 
-#: website/templates/404.html:97
+#: kb/views/errors.py:47
 msgid "The link may be invalid, expired, or you may not have access to this page."
 msgstr "Link może być nieprawidłowy, wygasł lub nie masz dostępu do tej strony."
 
@@ -3840,15 +3908,23 @@ msgstr "Link może być nieprawidłowy, wygasł lub nie masz dostępu do tej str
 msgid "The next login will require authenticator setup before access is granted."
 msgstr "Następne logowanie będzie wymagało konfiguracji aplikacji uwierzytelniającej przed przyznaniem dostępu."
 
-#: website/templates/404.html:94
+#: kb/views/errors.py:46
 msgid "The page you requested could not be found."
 msgstr "Nie można było znaleźć żądanej strony."
+
+#: kb/views/errors.py:36
+msgid "The request could not be processed."
+msgstr "Nie można było przetworzyć żądania."
+
+#: kb/views/errors.py:156
+msgid "The request could not be verified."
+msgstr "Nie można było zweryfikować żądania."
 
 #: website/templates/admin/kb/reset_auth_lockout_confirm.html:22
 msgid "The reset is recorded in the authentication activity log."
 msgstr "Reset jest rejestrowany w dzienniku aktywności uwierzytelniania."
 
-#: kb/admin.py:2696
+#: kb/admin.py:2703
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "Te same stopniowe zasady są używane dla niepowodzeń logowania hasłem i niepowodzeń kodu MFA, ale liczniki hasła i MFA są śledzone osobno dla każdego użytkownika."
 
@@ -3867,6 +3943,14 @@ msgstr "Wybrany użytkownik docelowy jest nieprawidłowy lub nieaktywny. Wybierz
 #: kb/views/admin.py:473
 msgid "The selected target user was missing. Please choose the user again."
 msgstr "Brakuje wybranego użytkownika docelowego. Wybierz użytkownika ponownie."
+
+#: kb/views/errors.py:66
+msgid "The server could not complete your request."
+msgstr "Serwer nie mógł zrealizować żądania."
+
+#: kb/views/errors.py:56
+msgid "The submitted file or request is larger than the permitted limit."
+msgstr "Przesłany plik lub żądanie przekracza dozwolony limit."
 
 #: kb/views/services.py:1141
 msgid "The uploaded file is not a valid image."
@@ -3932,11 +4016,11 @@ msgstr "Ten obraz został już przesłany w tym szkicu. Najpierw użyj przycisku
 msgid "This image is not removable from this editing session."
 msgstr "Tego obrazu nie można usunąć z tej sesji edycji."
 
-#: kb/admin.py:833
+#: kb/admin.py:840
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "Ten wiersz pokazuje wynik końcowy po połączeniu przez Django uprawnień grupy, bezpośrednich uprawnień użytkownika i statusu superużytkownika."
 
-#: kb/admin.py:826
+#: kb/admin.py:833
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "Ta czynność usuwa tylko bezpośrednie uprawnienie użytkownika. Jeżeli grupa użytkownika nadal przyznaje to samo uprawnienie, efektywne uprawnienie pozostanie aktywne."
 
@@ -3947,6 +4031,10 @@ msgstr "Skanuje openkb-data/wiki/uploads i znajduje przesłane pliki, do któryc
 #: website/templates/admin_bulk_articles.html:100
 msgid "This tool prefers the system export format:"
 msgstr "To narzędzie preferuje systemowy format eksportu:"
+
+#: kb/views/errors.py:51
+msgid "This type of request is not allowed for the selected page."
+msgstr "Ten typ żądania nie jest dozwolony dla wybranej strony."
 
 #: website/templates/admin/kb/reset_mfa_confirm.html:16
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using Knowledge Repository."
@@ -3960,7 +4048,7 @@ msgstr "Nie lubię"
 msgid "Thumbs up"
 msgstr "Lubię to"
 
-#: kb/admin.py:2341 kb/admin.py:744
+#: kb/admin.py:2348 kb/admin.py:751
 msgid "Timestamps"
 msgstr "Znaczniki czasu"
 
@@ -3987,6 +4075,14 @@ msgstr "Zbyt wiele nieprawidłowych kodów MFA. Spróbuj ponownie za %(duration)
 #: kb/admin_security.py:275 kb/admin_security.py:305
 msgid "Too many incorrect admin MFA codes. Please try again in %(duration)s."
 msgstr "Zbyt wiele nieprawidłowych kodów MFA administratora. Spróbuj ponownie za %(duration)s."
+
+#: kb/views/errors.py:60
+msgid "Too many requests"
+msgstr "Zbyt wiele żądań"
+
+#: kb/views/errors.py:61
+msgid "Too many requests were submitted within a short period of time."
+msgstr "W krótkim czasie przesłano zbyt wiele żądań."
 
 #: website/templates/edit_my_suggestions.html:190
 msgid "Top article pagination"
@@ -4028,7 +4124,7 @@ msgstr "Odznacz wszystko"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "Odznacz to, aby zablokować użytkownikowi dostęp do głównej witryny wiki."
 
-#: kb/admin.py:825
+#: kb/admin.py:832
 msgid "Unticking a checkbox"
 msgstr "Odznaczenie pola wyboru"
 
@@ -4060,23 +4156,23 @@ msgstr "Aktualizacja odrzucona — Sprawdź komentarze administratora, popraw zm
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Postęp aktualizacji zapisany. Opublikowana wersja nadal jest widoczna, a aktualizacja nie została jeszcze przesłana do zatwierdzenia."
 
-#: kb/admin.py:102 kb/models.py:418
+#: kb/admin.py:193 kb/models.py:418
 msgid "Update reviewed at"
 msgstr "Aktualizacja sprawdzona"
 
-#: kb/admin.py:102
+#: kb/admin.py:191
 msgid "Update status"
 msgstr "Status aktualizacji"
 
-#: kb/admin.py:102 kb/models.py:413
+#: kb/admin.py:192 kb/models.py:413
 msgid "Update submitted at"
 msgstr "Aktualizacja przesłana"
 
-#: kb/admin.py:102
+#: kb/admin.py:111 kb/admin.py:207 kb/admin.py:214 kb/admin.py:244
 msgid "Updated at"
 msgstr "Zaktualizowano"
 
-#: kb/admin.py:102
+#: kb/admin.py:225
 msgid "Upload IP address"
 msgstr "Adres IP przesyłania"
 
@@ -4088,51 +4184,51 @@ msgstr "Prześlij zip wyeksportowany z tego systemu albo zip zawierający pliki 
 msgid "Upload image"
 msgstr "Prześlij obraz"
 
-#: kb/admin.py:102
+#: kb/admin.py:226
 msgid "Upload user agent"
 msgstr "User-Agent przesyłania"
 
-#: kb/admin.py:102 website/templates/admin_clean_stray_upload_files.html:99
+#: kb/admin.py:227 website/templates/admin_clean_stray_upload_files.html:99
 msgid "Uploaded at"
 msgstr "Przesłano"
 
-#: kb/admin.py:102 website/templates/admin_clean_stray_upload_files.html:98
+#: kb/admin.py:221 website/templates/admin_clean_stray_upload_files.html:98
 msgid "Uploaded by"
 msgstr "Przesłane przez"
 
-#: kb/admin.py:102
+#: kb/admin.py:224
 msgid "Uploader account type snapshot"
 msgstr "Migawka typu konta przesyłającego"
 
-#: kb/admin.py:2805
+#: kb/admin.py:2812
 msgid "Uploader display"
 msgstr "Nazwa wyświetlana przesyłającego"
 
-#: kb/admin.py:102
+#: kb/admin.py:223
 msgid "Uploader email snapshot"
 msgstr "Migawka adresu e-mail przesyłającego"
 
-#: kb/admin.py:102
+#: kb/admin.py:222
 msgid "Uploader username snapshot"
 msgstr "Migawka nazwy użytkownika przesyłającego"
 
-#: kb/admin.py:722
+#: kb/admin.py:729
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "Użyj Grup jako standardowej roli użytkownika dla artykułów publicznych. Zaznaczaj te pola tylko wtedy, gdy konkretny użytkownik potrzebuje dodatkowych uprawnień do artykułów publicznych poza swoją grupą. Grupa Wyłączony użytkownik zastępuje te bezpośrednie dodatki uprawnień."
 
-#: kb/admin.py:1042
+#: kb/admin.py:1049
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "Użyj selektora Członkowie grupy poniżej, aby dodawać lub usuwać użytkowników z tej roli. W przypadku jednorazowych wyjątków edytuj konkretnego użytkownika i zaznacz bezpośrednie pola uprawnień Repozytorium wiedzy. Nowi użytkownicy niebędący administratorami są automatycznie umieszczani w roli Zwykły użytkownik podczas tworzenia konta."
 
-#: kb/admin.py:2622
+#: kb/admin.py:2629
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "Użyj poniższych wierszy wbudowanych, aby kontrolować stopniowe blokady hasła/MFA. Wprowadź czasy w sekundach; strona administratora pokazuje również czytelne przeliczenie na minuty/godziny/dni. repeat_count=0 oznacza, że etap powtarza się bez końca, co zwykle należy stosować w ostatnim wierszu."
 
-#: kb/admin.py:1220
+#: kb/admin.py:1227
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "Użyj tych grup jako głównego modelu dostępu. Wyłączony użytkownik zawsze ma najwyższy priorytet."
 
-#: kb/admin.py:1280
+#: kb/admin.py:1287
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "Użyj tej opcji, jeśli użytkownik jest tymczasowo zablokowany z powodu powtarzających się błędnych prób hasła lub MFA. Usuwa liczniki blokady hasła i MFA tylko dla tego użytkownika."
 
@@ -4140,15 +4236,15 @@ msgstr "Użyj tej opcji, jeśli użytkownik jest tymczasowo zablokowany z powodu
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "Użyj tej opcji dopiero po zweryfikowaniu, że żądanie odblokowania jest prawidłowe."
 
-#: kb/admin.py:977
+#: kb/admin.py:984
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "Użyj tej przeszukiwalnej listy lewa/prawa, aby dodać użytkowników do tej grupy lub ich z niej usunąć. Użytkownicy po prawej są członkami tej grupy. Użytkownicy po lewej są dostępni."
 
-#: kb/admin.py:1270
+#: kb/admin.py:1277
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "Użyj tej sekcji, aby zresetować konfigurację aplikacji uwierzytelniającej użytkownika. Reset generuje nowy prywatny sekret aplikacji uwierzytelniającej i wymusza zeskanowanie nowego kodu QR przy następnym logowaniu."
 
-#: kb/admin.py:102 kb/models.py:33
+#: kb/admin.py:104 kb/admin.py:114 kb/admin.py:126 kb/admin.py:156 kb/admin.py:211 kb/models.py:33
 msgid "User"
 msgstr "Użytkownik"
 
@@ -4160,23 +4256,23 @@ msgstr "Urządzenie MFA użytkownika"
 msgid "User MFA devices"
 msgstr "Urządzenia MFA użytkownika"
 
-#: kb/admin.py:102 kb/admin.py:1984
+#: kb/admin.py:130 kb/admin.py:146 kb/admin.py:167 kb/admin.py:1991
 msgid "User agent"
 msgstr "Agent użytkownika"
 
-#: kb/admin.py:1413 kb/admin.py:1461
+#: kb/admin.py:1420 kb/admin.py:1468
 msgid "User does not exist."
 msgstr "Użytkownik nie istnieje."
 
-#: kb/admin.py:102 kb/models.py:1181
+#: kb/admin.py:237 kb/models.py:1181
 msgid "User session timeout (hours)"
 msgstr "Limit czasu sesji użytkownika (godziny)"
 
-#: kb/admin.py:2734
+#: kb/admin.py:2741
 msgid "User session timeout readable"
 msgstr "Czytelny limit czasu sesji użytkownika"
 
-#: kb/admin.py:102 website/templates/profile.html:124
+#: kb/admin.py:127 kb/admin.py:157 website/templates/profile.html:124
 msgid "Username"
 msgstr "Nazwa użytkownika"
 
@@ -4184,11 +4280,11 @@ msgstr "Nazwa użytkownika"
 msgid "Username changes are managed by administrators."
 msgstr "Zmiany nazwy użytkownika są zarządzane przez administratorów."
 
-#: kb/admin.py:1061
+#: kb/admin.py:1068
 msgid "Users"
 msgstr "Użytkownicy"
 
-#: kb/admin.py:888 kb/admin.py:958
+#: kb/admin.py:895 kb/admin.py:965
 msgid "Users in this group"
 msgstr "Użytkownicy w tej grupie"
 
@@ -4208,7 +4304,7 @@ msgstr "Widok"
 msgid "View articles"
 msgstr "Wyświetl artykuły"
 
-#: kb/admin.py:102 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
 msgid "View count"
 msgstr "Liczba wyświetleń"
 
@@ -4224,7 +4320,7 @@ msgstr "Widoczność"
 msgid "Visibility can be changed only before the article is published."
 msgstr "Widoczność można zmienić tylko przed opublikowaniem artykułu."
 
-#: kb/admin.py:102 kb/admin.py:2555
+#: kb/admin.py:212 kb/admin.py:2562
 msgid "Vote"
 msgstr "Głosuj"
 
@@ -4236,7 +4332,7 @@ msgstr "Ostrzeżenia / błędy"
 msgid "Was this article helpful?"
 msgstr "Czy ten artykuł był pomocny?"
 
-#: kb/admin.py:102
+#: kb/admin.py:197
 msgid "Wiki path"
 msgstr "Ścieżka wiki"
 
@@ -4276,6 +4372,10 @@ msgstr "Za chwilę zresetujesz liczniki blokady hasła/MFA dla użytkownika <str
 msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
 msgstr "Możesz wkleić małe obrazy PNG/JPG/GIF/WEBP bezpośrednio do edytora albo przesłać jeden przyciskiem. Maksymalnie 2 MB każdy."
 
+#: kb/views/errors.py:41
+msgid "You do not have permission to access this page or perform this action."
+msgstr "Nie masz uprawnień do otwarcia tej strony ani wykonania tej czynności."
+
 #: kb/permissions.py:916
 msgid "You do not have permission to add articles."
 msgstr "Nie masz uprawnień do dodawania artykułów."
@@ -4284,11 +4384,11 @@ msgstr "Nie masz uprawnień do dodawania artykułów."
 msgid "You do not have permission to add internal articles."
 msgstr "Nie masz uprawnień do dodawania artykułów wewnętrznych."
 
-#: kb/admin.py:2349
+#: kb/admin.py:2356
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "Nie masz uprawnień do zatwierdzania artykułów z Django Admin."
 
-#: kb/admin.py:1566
+#: kb/admin.py:1573
 msgid "You do not have permission to assign Disabled User."
 msgstr "Nie masz uprawnień do przypisywania roli Wyłączony użytkownik."
 
@@ -4300,15 +4400,15 @@ msgstr "Nie masz uprawnień do zarządzania artykułami."
 msgid "You do not have permission to manage internal articles."
 msgstr "Nie masz uprawnień do zarządzania artykułami wewnętrznymi."
 
-#: kb/admin.py:1609
+#: kb/admin.py:1616
 msgid "You do not have permission to modify users."
 msgstr "Nie masz uprawnień do modyfikowania użytkowników."
 
-#: kb/admin.py:477
+#: kb/admin.py:484
 msgid "You do not have permission to perform this admin reset."
 msgstr "Nie masz uprawnień do wykonania tego resetu administratora."
 
-#: kb/admin.py:2383
+#: kb/admin.py:2390
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "Nie masz uprawnień do odrzucania artykułów z Django Admin."
 
@@ -4348,11 +4448,11 @@ msgstr "Twoje konto jest obecnie wyłączone i nie może uzyskać dostępu do Re
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "Twoja sesja administratora wygasła z powodu bezczynności. Zweryfikuj ponownie MFA, aby wejść ponownie do witryny administratora."
 
-#: kb/admin.py:1603
+#: kb/admin.py:1610
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Do Twojego konta przypisano rolę Wyłączony użytkownik. Przy następnym żądaniu zostaniesz przekierowany na stronę wyłączonego konta."
 
-#: kb/middleware.py:220
+#: kb/middleware.py:251
 msgid "Your session has expired. Please sign in again."
 msgstr "Sesja wygasła. Zaloguj się ponownie."
 
@@ -4404,11 +4504,11 @@ msgstr "usunięty-użytkownik"
 msgid "denied"
 msgstr "odmówiono"
 
-#: kb/admin.py:2666
+#: kb/admin.py:2673
 msgid "disabled"
 msgstr "wyłączono"
 
-#: kb/admin.py:2666
+#: kb/admin.py:2673
 msgid "enabled"
 msgstr "włączono"
 
@@ -4480,11 +4580,11 @@ msgstr "przekierowano"
 msgid "removed %(items)s"
 msgstr "usunięto %(items)s"
 
-#: kb/admin.py:2665
+#: kb/admin.py:2672
 msgid "repeat %(count)s time(s)"
 msgstr "powtórz %(count)s razy"
 
-#: kb/admin.py:2665
+#: kb/admin.py:2672
 msgid "repeat forever"
 msgstr "powtarzaj bez końca"
 
@@ -4528,6 +4628,6 @@ msgstr "nieznany administrator"
 msgid "unknown user"
 msgstr "nieznany użytkownik"
 
-#: kb/admin.py:889
+#: kb/admin.py:896
 msgid "users"
 msgstr "użytkownicy"
