@@ -343,8 +343,20 @@ $(document).ready(function(){
             toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'table', 'horizontal-rule', 'code', 'guide']
         });
 
-        // setup inline attachments
-        inlineAttachment.editors.codemirror4.attach(simplemde.codemirror, {uploadUrl: $('#app_context').val() + '/file/upload_file'});
+        // The Django article add/edit forms provide their own protected image
+        // uploader, preview tray, delete control, CSRF handling, and upload limits.
+        // Do not attach the legacy OpenKB uploader on those pages or the same
+        // paste event will be uploaded twice (including once to the obsolete
+        // /file/upload_file endpoint).
+        var hasManagedArticleImageUploader = document.getElementById('existingArticleImages') !== null;
+        if(
+            !hasManagedArticleImageUploader &&
+            typeof inlineAttachment !== 'undefined' &&
+            inlineAttachment.editors &&
+            inlineAttachment.editors.codemirror4
+        ){
+            inlineAttachment.editors.codemirror4.attach(simplemde.codemirror, {uploadUrl: $('#app_context').val() + '/file/upload_file'});
+        }
 
         // do initial convert on load
         convertTextAreaToMarkdown(true); //true means this is first call - do all rendering    

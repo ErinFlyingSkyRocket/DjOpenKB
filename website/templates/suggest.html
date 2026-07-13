@@ -51,7 +51,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .CodeMirror { min-height: 360px; }
 
         .pasted-image-panel {
-            display: none;
+            display: block;
             margin: 12px 0 18px;
             padding: 12px;
             border: 1px solid #d9edf7;
@@ -203,7 +203,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     </div>
 
                     <div class="col-xs-12">
-                        <div id="pastedImagePanel" class="pasted-image-panel">
+                        <div id="pastedImagePanel" class="pasted-image-panel csp-is-hidden">
                             <div class="pasted-image-panel-title">{% trans "Pasted images" %}</div>
                             <p class="text-muted article-upload-help">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
                             <div id="pastedImageList" class="pasted-image-list"></div>
@@ -345,9 +345,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
     function removeMarkdownForFilename(filename, fallbackMarkdown) {
         const escapedFilename = escapeRegExp(filename);
-        const pattern = new RegExp("\\n?!\\[[^\\]]*\\]\\(/wiki/uploads/" + escapedFilename + "\\)\\n?", "g");
         const currentValue = getEditorValue();
-        const updatedValue = currentValue.replace(pattern, "\n");
+        const imageMarkdown = "!\\[[^\\]\\n]*\\]\\(\\s*<?/wiki/uploads/" + escapedFilename
+            + "(?:[?#][^\\s)>]*)?>?(?:\\s+[\\\"'][^\\n\\\"']*[\\\"'])?\\s*\\)";
+        const linkedImagePattern = new RegExp("\\n?\\[" + imageMarkdown + "\\]\\([^\\n)]*\\)\\n?", "g");
+        const imagePattern = new RegExp("\\n?" + imageMarkdown + "\\n?", "g");
+        const updatedValue = currentValue
+            .replace(linkedImagePattern, "\n")
+            .replace(imagePattern, "\n");
         if (updatedValue !== currentValue) {
             setEditorValue(updatedValue);
             return;

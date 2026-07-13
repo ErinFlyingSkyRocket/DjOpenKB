@@ -52,7 +52,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .CodeMirror { min-height: 360px; }
 
         .pasted-image-panel {
-            display: none;
+            display: block;
             margin: 12px 0 18px;
             padding: 12px;
             border: 1px solid #d9edf7;
@@ -384,9 +384,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     {% endif %}
 
                     <div class="col-xs-12">
-                        <div id="pastedImagePanel" class="pasted-image-panel">
+                        <div id="pastedImagePanel" class="pasted-image-panel csp-is-hidden">
                             <div class="pasted-image-panel-title">{% trans "Pasted images" %}</div>
-                            <p class="text-muted article-upload-help">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
+                            {% if can_edit_article_content %}
+                                <p class="text-muted article-upload-help">{% trans "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file." %}</p>
+                            {% endif %}
                             <div id="pastedImageList" class="pasted-image-list"></div>
                         </div>
                     </div>
@@ -562,9 +564,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
     function removeMarkdownForFilename(filename, fallbackMarkdown) {
         const escapedFilename = escapeRegExp(filename);
-        const pattern = new RegExp("\\n?!\\[[^\\]]*\\]\\(/wiki/uploads/" + escapedFilename + "\\)\\n?", "g");
         const currentValue = getEditorValue();
-        const updatedValue = currentValue.replace(pattern, "\n");
+        const imageMarkdown = "!\\[[^\\]\\n]*\\]\\(\\s*<?/wiki/uploads/" + escapedFilename
+            + "(?:[?#][^\\s)>]*)?>?(?:\\s+[\\\"'][^\\n\\\"']*[\\\"'])?\\s*\\)";
+        const linkedImagePattern = new RegExp("\\n?\\[" + imageMarkdown + "\\]\\([^\\n)]*\\)\\n?", "g");
+        const imagePattern = new RegExp("\\n?" + imageMarkdown + "\\n?", "g");
+        const updatedValue = currentValue
+            .replace(linkedImagePattern, "\n")
+            .replace(imagePattern, "\n");
         if (updatedValue !== currentValue) {
             setEditorValue(updatedValue);
             return;
@@ -620,47 +627,53 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         image.src = info.url;
         image.alt = "{% trans 'Article image' %}";
 
-        const removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "pasted-image-remove";
-        removeButton.title = "{% trans 'Remove image from article' %}";
-        removeButton.setAttribute("aria-label", "{% trans 'Remove image from article' %}");
-        removeButton.innerHTML = "&times;";
-
-        removeButton.addEventListener("click", async function () {
-            removeMarkdownForFilename(info.filename, info.markdown);
-
-            if (!info.existing) {
-                const formData = new FormData();
-                formData.append("filename", info.filename);
-
-                try {
-                    await fetch(deleteUrl, {
-                        method: "POST",
-                        headers: { "X-CSRFToken": csrfToken },
-                        body: formData
-                    });
-                } catch (error) {
-                    // Markdown is removed locally even if server cleanup fails.
-                }
-            }
-
-            uploadedImages.delete(key);
-            if (info.hash) {
-                uploadedHashes.delete(info.hash);
-            }
-            card.remove();
-            ensureImagePanelVisible();
-            showPasteMessage(info.existing ? "{% trans 'Image removed from this draft. Save the article to delete it from storage.' %}" : "{% trans 'Image removed from this article draft.' %}", "success");
-        });
-
         card.appendChild(image);
-        card.appendChild(removeButton);
+
+        if (!isReadOnlyArticleEditor) {
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "pasted-image-remove";
+            removeButton.title = "{% trans 'Remove image from article' %}";
+            removeButton.setAttribute("aria-label", "{% trans 'Remove image from article' %}");
+            removeButton.innerHTML = "&times;";
+
+            removeButton.addEventListener("click", async function () {
+                removeMarkdownForFilename(info.filename, info.markdown);
+
+                if (!info.existing) {
+                    const formData = new FormData();
+                    formData.append("filename", info.filename);
+
+                    try {
+                        await fetch(deleteUrl, {
+                            method: "POST",
+                            headers: { "X-CSRFToken": csrfToken },
+                            body: formData
+                        });
+                    } catch (error) {
+                        // Markdown is removed locally even if server cleanup fails.
+                    }
+                }
+
+                uploadedImages.delete(key);
+                if (info.hash) {
+                    uploadedHashes.delete(info.hash);
+                }
+                card.remove();
+                ensureImagePanelVisible();
+                showPasteMessage(info.existing ? "{% trans 'Image removed from this draft. Save the article to delete it from storage.' %}" : "{% trans 'Image removed from this article draft.' %}", "success");
+            });
+
+            card.appendChild(removeButton);
+        }
         list.appendChild(card);
         ensureImagePanelVisible();
     }
 
     async function uploadImage(file) {
+        if (isReadOnlyArticleEditor) {
+            return;
+        }
         if (!file || !allowedImageTypes.has(file.type)) {
             showPasteMessage("{% trans 'Only PNG, JPG, GIF, or WEBP images are allowed.' %}", "danger");
             return;
@@ -724,6 +737,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     }
 
     document.addEventListener("paste", function (event) {
+        if (isReadOnlyArticleEditor) {
+            return;
+        }
         const editorWrapper = document.querySelector("#editor-wrapper-suggest");
         if (!editorWrapper || !editorWrapper.contains(document.activeElement)) {
             return;

@@ -147,6 +147,10 @@ def _suggest_unified(request):
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
+    draft_image_assets = extract_article_image_filenames(body)
+    draft_images_json = json.dumps(
+        get_article_image_cards_from_filenames(draft_image_assets, existing=False)
+    )
     submit_action = request.POST.get("submit_action", "submit").strip()
     if submit_action not in {"draft", "submit"}:
         raise Http404("Article action not allowed")
@@ -165,6 +169,7 @@ def _suggest_unified(request):
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
+            "existing_images_json": draft_images_json,
         })
 
     duplicate_article = find_duplicate_article_by_title(title)
@@ -174,9 +179,10 @@ def _suggest_unified(request):
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
+            "existing_images_json": draft_images_json,
         })
 
-    new_image_assets = extract_article_image_filenames(body)
+    new_image_assets = draft_image_assets
     try:
         new_image_assets = validate_article_image_count(new_image_assets)
     except ValidationError as error:
@@ -186,7 +192,9 @@ def _suggest_unified(request):
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
-            "existing_images_json": json.dumps(get_article_image_cards_from_filenames(new_image_assets)),
+            "existing_images_json": json.dumps(
+                get_article_image_cards_from_filenames(new_image_assets, existing=False)
+            ),
         })
 
     article = SuggestedArticle(

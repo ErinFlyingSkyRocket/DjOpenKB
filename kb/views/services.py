@@ -84,7 +84,14 @@ ALLOWED_ARTICLE_IMAGE_FORMATS = {
 }
 MAX_ARTICLE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
 MAX_ARTICLE_IMAGE_PIXELS = 16_000_000
-ARTICLE_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(/wiki/uploads/([^)/?#]+)(?:[?#][^)]*)?\)")
+# Match the server-generated Markdown and common safe manual edits made by users,
+# including changed alt text, optional angle brackets, query/hash suffixes, and
+# an optional Markdown image title. This keeps an uploaded file associated with
+# its article even after the user adjusts the inserted Markdown link.
+ARTICLE_IMAGE_RE = re.compile(
+    r"!\[[^\]\n]*\]\(\s*<?/wiki/uploads/([^)/?#>\s]+)"
+    r"(?:[?#][^\s)>]*)?>?(?:\s+[\"'][^\n\"']*[\"'])?\s*\)"
+)
 
 logger = logging.getLogger(__name__)
 
