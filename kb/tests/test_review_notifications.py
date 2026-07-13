@@ -130,6 +130,16 @@ class ArticleReviewNotificationTests(TestCase):
         )
         self.assertNotIn(self.internal_approver.email, mail.outbox[0].bcc)
         self.assertNotIn(self.disabled_public_approver.email, mail.outbox[0].bcc)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            "[Knowledge Repository] Article review required",
+        )
+        rendered_mail = f"{mail.outbox[0].subject}\n{mail.outbox[0].body}"
+        self.assertIn(
+            "An article is awaiting review in Knowledge Repository.",
+            rendered_mail,
+        )
+        self.assertNotIn("public article", rendered_mail.lower())
 
     def test_internal_submission_sends_one_bcc_message_to_internal_reviewers_and_admins(self):
         secret_internal_title = "Private identity migration plan"
@@ -152,7 +162,15 @@ class ArticleReviewNotificationTests(TestCase):
                 self.admin.email,
             }
         )
+        self.assertEqual(
+            mail.outbox[0].subject,
+            "[Knowledge Repository] Internal article review required",
+        )
         rendered_mail = f"{mail.outbox[0].subject}\n{mail.outbox[0].body}"
+        self.assertIn(
+            "An internal article is awaiting review in Knowledge Repository.",
+            rendered_mail,
+        )
         self.assertNotIn(secret_internal_title, rendered_mail)
         self.assertNotIn("This is test content", rendered_mail)
         self.assertIn("/internal/profile/admin/pending-articles/", rendered_mail)

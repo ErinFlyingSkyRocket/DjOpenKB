@@ -215,23 +215,30 @@ def _clean_public_article_title(article: SuggestedArticle) -> str:
 
 
 def _build_message(article: SuggestedArticle, notification_kind: str) -> tuple[str, str]:
-    """Return a deliberately minimal subject/body without article content."""
+    """Return a deliberately minimal reviewer subject and body.
+
+    Public submissions use neutral wording because normal platform articles do
+    not need to be labelled as ``Public`` in user-facing email. Internal
+    submissions remain explicitly labelled so reviewers can recognise the
+    restricted article scope before opening the review queue.
+    """
     is_update = notification_kind == NOTIFICATION_KIND_UPDATE_SUBMISSION
-    scope = "internal" if article.is_internal else "public"
     item = "article update" if is_update else "article"
 
-    subject = f"{settings.EMAIL_SUBJECT_PREFIX}{scope.title()} {item} review required"
-
-    lines = [
-        f"A {scope} {item} is awaiting review in Knowledge Repository.",
-    ]
     if article.is_internal:
-        # Internal titles/content stay out of inboxes and relay logs.
-        lines.append(
-            "The title and content are intentionally omitted because this is an internal submission."
+        subject = (
+            f"{settings.EMAIL_SUBJECT_PREFIX}Internal {item} review required"
         )
+        lines = [
+            f"An internal {item} is awaiting review in Knowledge Repository.",
+            "The title and content are intentionally omitted because this is an internal submission.",
+        ]
     else:
-        lines.append(f"Article title: {_clean_public_article_title(article)}")
+        subject = f"{settings.EMAIL_SUBJECT_PREFIX}{item.title()} review required"
+        lines = [
+            f"An {item} is awaiting review in Knowledge Repository.",
+            f"Article title: {_clean_public_article_title(article)}",
+        ]
 
     lines.extend(
         [
