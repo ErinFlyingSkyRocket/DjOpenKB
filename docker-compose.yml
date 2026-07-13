@@ -369,6 +369,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/proxy_params:/etc/nginx/proxy_params:ro
       - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/error-pages:/etc/nginx/error-pages:ro
       - static_volume:/app/staticfiles:ro
     networks:
       - frontend

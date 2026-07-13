@@ -185,6 +185,37 @@ class ContentSecurityPolicyMiddleware:
         return response
 
 
+class NginxErrorPageMiddleware:
+    """Render friendly pages for errors generated at the Nginx edge.
+
+    Normal browser requests cannot activate this middleware because
+    ``nginx/proxy_params`` removes the private marker header. Nginx adds it
+    back only inside its ``internal`` error locations.
+    """
+
+    ALLOWED_STATUS_CODES = {400, 403, 404, 405, 413, 429, 500}
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        raw_status = request.META.get("HTTP_X_DJOPENKB_NGINX_ERROR", "").strip()
+        if not raw_status:
+            return self.get_response(request)
+
+        try:
+            status_code = int(raw_status)
+        except (TypeError, ValueError):
+            return self.get_response(request)
+
+        if status_code not in self.ALLOWED_STATUS_CODES:
+            return self.get_response(request)
+
+        from .views.errors import render_http_error
+
+        return render_http_error(request, status_code)
+
+
 class SessionTimeoutMiddleware:
     """Expire authenticated and pending-MFA sessions by admin-defined age.
 

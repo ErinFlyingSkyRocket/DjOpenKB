@@ -5,3 +5,8 @@ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 proxy_set_header X-Forwarded-Proto https;
 proxy_set_header X-Forwarded-Port 443;
 proxy_set_header Connection "";
+
+# Never trust a browser-supplied copy of the private error marker. Dedicated
+# Nginx internal error locations explicitly set it again after this file is
+# included.
+proxy_set_header X-DjOpenKB-Nginx-Error "";

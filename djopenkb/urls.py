@@ -44,5 +44,8 @@ urlpatterns = [
     path("", include("kb.urls")),
 ]
 
-# Friendly error pages. Django uses this when DJANGO_DEBUG=false.
+# Friendly error pages. Django uses these when DJANGO_DEBUG=false.
+handler400 = "kb.views.errors.bad_request"
+handler403 = "kb.views.errors.permission_denied"
 handler404 = "kb.views.errors.page_not_found"
+handler500 = "kb.views.errors.server_error"

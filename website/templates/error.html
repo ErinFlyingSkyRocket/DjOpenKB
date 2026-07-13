@@ -1,0 +1,36 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{{ page_title }}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'stylesheets/error-page.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}">
+</head>
+<body class="openkb-error-page">
+    <main class="openkb-error-wrap">
+        <section class="openkb-error-card" role="alert" aria-labelledby="error-title">
+            <div class="openkb-error-header">
+                <h1 id="error-title">
+                    <span class="openkb-error-icon" aria-hidden="true">!</span>
+                    <span>{{ page_title }}</span>
+                </h1>
+            </div>
+            <div class="openkb-error-body">
+                <div class="openkb-error-code">HTTP {{ error_code }}</div>
+                <p class="openkb-error-message">{{ error_message }}</p>
+                <p class="openkb-error-help">{{ error_help }}</p>
+                <div class="openkb-error-actions">
+                    <a class="openkb-error-button" href="{{ safe_back_url|default:'/' }}">
+                        <span class="openkb-back-icon" aria-hidden="true">&#8592;</span>
+                        <span>{% trans "Back" %}</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

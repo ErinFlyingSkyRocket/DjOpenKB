@@ -333,6 +333,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "kb.middleware.NginxErrorPageMiddleware",
     "kb.middleware.DisabledUserLogoutMiddleware",
     "kb.middleware.SessionTimeoutMiddleware",
     "kb.middleware.UserProfileLanguageMiddleware",
@@ -344,6 +345,10 @@ MIDDLEWARE = [
     "kb.middleware.NoIndexRobotsHeaderMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Keep expired/invalid form submissions on the same friendly error layout used
+# by the other application and reverse-proxy error responses.
+CSRF_FAILURE_VIEW = "kb.views.errors.csrf_failure"
 
 ROOT_URLCONF = "djopenkb.urls"
 
