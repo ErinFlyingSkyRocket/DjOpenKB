@@ -562,11 +562,18 @@ $(document).ready(function(){
         }
     }
 
-    function showArticleVideoError(video){
+    function clearArticleVideoLoadTimer(video){
+        if(video._djopenkbVideoLoadTimer){
+            window.clearTimeout(video._djopenkbVideoLoadTimer);
+            video._djopenkbVideoLoadTimer = null;
+        }
+    }
+
+    function showArticleVideoError(video, customError){
         removeArticleVideoError(video);
 
         var errorCode = video.error && video.error.code ? video.error.code : 0;
-        var details = getArticleVideoErrorDetails(errorCode);
+        var details = customError || getArticleVideoErrorDetails(errorCode);
         var errorBox = document.createElement('div');
         errorBox.className = 'alert alert-warning article-video-load-error';
         errorBox.setAttribute('role', 'alert');
@@ -575,10 +582,19 @@ $(document).ready(function(){
         strong.textContent = 'Video unavailable';
         errorBox.appendChild(strong);
 
-        var codeText = errorCode ? ' Error ' + errorCode + ' (' + details.name + '). ' : '. ';
+        var codeText;
+        if(customError && customError.code){
+            codeText = ' Error ' + customError.code + ' (' + customError.name + '). ';
+        }else if(errorCode){
+            codeText = ' Error ' + errorCode + ' (' + details.name + '). ';
+        }else{
+            codeText = '. ';
+        }
         errorBox.appendChild(document.createTextNode(codeText + details.message));
 
-        video.insertAdjacentElement('afterend', errorBox);
+        if(video.parentNode){
+            video.insertAdjacentElement('afterend', errorBox);
+        }
     }
 
     function initializeArticleVideoErrorHandling(root){
@@ -589,16 +605,39 @@ $(document).ready(function(){
             }
 
             video.setAttribute('data-video-error-handler', '1');
+
+            function markVideoLoaded(){
+                clearArticleVideoLoadTimer(video);
+                removeArticleVideoError(video);
+            }
+
             video.addEventListener('error', function(){
+                clearArticleVideoLoadTimer(video);
                 showArticleVideoError(video);
             });
-            video.addEventListener('loadedmetadata', function(){
-                removeArticleVideoError(video);
-            });
+            video.addEventListener('loadedmetadata', markVideoLoaded);
+            video.addEventListener('canplay', markVideoLoaded);
+
+            // Some authentication-gated or incompatible external URLs do not
+            // produce a MediaError. The browser can remain indefinitely at 0:00
+            // with readyState HAVE_NOTHING. Detect that silent failure as well so
+            // authors and readers are not left with an unexplained black player.
+            video._djopenkbVideoLoadTimer = window.setTimeout(function(){
+                if(!video.parentNode || video.error || video.readyState >= 1){
+                    return;
+                }
+
+                showArticleVideoError(video, {
+                    code: 'V001',
+                    name: 'VIDEO_METADATA_TIMEOUT',
+                    message: 'The browser could not load video information from this URL. The source may be inaccessible, may require external sign-in, or may not provide a directly playable video response.'
+                });
+            }, 8000);
 
             // The media may already have failed before the DOM-ready handler was
             // attached (for example on an article page loaded from cache).
             if(video.error){
+                clearArticleVideoLoadTimer(video);
                 showArticleVideoError(video);
             }
         });
