@@ -172,6 +172,18 @@ def _suggest_unified(request):
             "existing_images_json": draft_images_json,
         })
 
+    try:
+        validate_article_video_links_for_anonymous_access(body)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_suggest_form({
+            "error": message,
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "existing_images_json": draft_images_json,
+        })
+
     duplicate_article = find_duplicate_article_by_title(title)
     if duplicate_article:
         return render_suggest_form({
@@ -573,6 +585,15 @@ def edit_suggestion(request, article_id):
             "error": _("Article title and body must be at least 5 characters."),
         })
 
+    try:
+        validate_article_video_links_for_anonymous_access(body)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_edit_form({
+            **error_context,
+            "error": message,
+        })
+
     duplicate_article = find_duplicate_article_by_title(title, exclude_pk=article.pk)
     if duplicate_article:
         return render_edit_form({
@@ -911,6 +932,34 @@ def delete_suggestion(request, article_id):
         "delete_action": delete_action,
         "requires_mfa": requires_mfa,
     })
+
+
+@article_image_editor_required
+@require_POST
+def validate_article_video_link(request):
+    """Validate a video link before the editor inserts it into article Markdown.
+
+    Supported links are accepted normally. SharePoint/OneDrive direct videos are
+    additionally checked without credentials so auth-gated links are rejected
+    before they can create a username/password prompt for article viewers.
+    """
+    url = (request.POST.get("url") or "").strip()
+    if not url or len(url) > 4096 or not article_video_embed_html(url):
+        return JsonResponse({
+            "valid": False,
+            "error": _("Enter a supported video link."),
+        }, status=400)
+
+    if is_microsoft_cloud_video_url(url):
+        result = check_microsoft_video_anonymous_access(url)
+        if not result.get("allowed"):
+            return JsonResponse({
+                "valid": False,
+                "error": article_video_access_error_message(result),
+                "reason": result.get("reason", "unverified"),
+            }, status=400)
+
+    return JsonResponse({"valid": True, "url": url})
 
 
 @article_image_editor_required

@@ -37,6 +37,7 @@ urlpatterns = [
     path("ask-openkb-ai/jobs/<uuid:job_id>/cancel/", views.cancel_openkb_ai_job, name="cancel_openkb_ai_job"),
     path("articles/<int:article_id>/", views.article_detail, name="article_detail"),
     path("articles/<int:article_id>/vote/", views.vote_article, name="vote_article"),
+    path("article-video-link-validate/", views.validate_article_video_link, name="validate_article_video_link"),
     path("article-image-upload/", views.upload_article_image, name="upload_article_image"),
     path("article-image-delete/", views.delete_article_image, name="delete_article_image"),
     path("wiki/uploads/<path:filename>", views.serve_article_image, name="serve_article_image"),

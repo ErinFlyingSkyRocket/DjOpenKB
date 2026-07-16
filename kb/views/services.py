@@ -1,6 +1,7 @@
 import os
 import io
 import json
+import hashlib
 import logging
 import re
 import shutil
@@ -13,7 +14,9 @@ from datetime import datetime, timedelta
 from functools import wraps
 from html import escape as html_escape
 from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
+from urllib.error import HTTPError, URLError
+from urllib.parse import parse_qs, urljoin, urlsplit
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 import bleach
 import markdown
@@ -127,6 +130,36 @@ VIMEO_IFRAME_ALLOW = (
 )
 
 DIRECT_VIDEO_EXTENSIONS = {".mp4", ".webm", ".ogg"}
+
+# SharePoint and OneDrive direct video links may trigger external authentication
+# prompts for viewers. Only these Microsoft-hosted direct-video URLs are probed
+# anonymously by the server before they can be inserted/saved. Arbitrary external
+# hosts are never fetched, which avoids turning the validation feature into an SSRF
+# primitive.
+MICROSOFT_VIDEO_HOST_SUFFIXES = (
+    "sharepoint.com",
+    "sharepointonline.com",
+    "1drv.com",
+    "1drv.ms",
+    "onedrive.com",
+    "onedrive.live.com",
+)
+MICROSOFT_AUTH_HOSTS = {
+    "login.microsoftonline.com",
+    "login.microsoft.com",
+    "login.live.com",
+    "login.windows.net",
+    "account.live.com",
+}
+MICROSOFT_VIDEO_PROBE_HOST_SUFFIXES = MICROSOFT_VIDEO_HOST_SUFFIXES + (
+    "microsoft.com",
+    "microsoftonline.com",
+    "office.com",
+    "office.net",
+    "live.com",
+)
+VIDEO_ACCESS_CHECK_CACHE_SECONDS = 60
+VIDEO_ACCESS_CHECK_TIMEOUT_SECONDS = 5
 
 logger = logging.getLogger(__name__)
 
@@ -2255,6 +2288,212 @@ def is_safe_direct_video_url(url):
 
     path = parsed.path.lower()
     return any(path.endswith(extension) for extension in DIRECT_VIDEO_EXTENSIONS)
+
+
+def _hostname_matches_suffixes(hostname, suffixes):
+    hostname = (hostname or "").lower().rstrip(".")
+    return any(hostname == suffix or hostname.endswith("." + suffix) for suffix in suffixes)
+
+
+def is_microsoft_cloud_video_url(url):
+    """Return True for supported direct SharePoint/OneDrive video URLs."""
+    if not is_safe_direct_video_url(url):
+        return False
+    try:
+        hostname = (urlsplit((url or "").strip()).hostname or "").lower().rstrip(".")
+    except (TypeError, ValueError):
+        return False
+    return _hostname_matches_suffixes(hostname, MICROSOFT_VIDEO_HOST_SUFFIXES)
+
+
+def _is_microsoft_authentication_url(url):
+    try:
+        parsed = urlsplit(url or "")
+    except (TypeError, ValueError):
+        return True
+
+    hostname = (parsed.hostname or "").lower().rstrip(".")
+    path = (parsed.path or "").lower()
+    query = (parsed.query or "").lower()
+    if hostname in MICROSOFT_AUTH_HOSTS:
+        return True
+    return (
+        "authenticate.aspx" in path
+        or path.endswith("/login")
+        or "/login/" in path
+        or "wsignin" in query
+        or "oauth2/authorize" in path
+    )
+
+
+class _NoVideoProbeRedirectHandler(HTTPRedirectHandler):
+    """Expose redirects to the validator instead of following them automatically."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # pragma: no cover - stdlib hook
+        return None
+
+
+def _video_probe_result(allowed, reason, status=None):
+    return {"allowed": bool(allowed), "reason": reason, "status": status}
+
+
+def _perform_microsoft_video_access_probe(url):
+    """Check a Microsoft-hosted direct video without sending user credentials.
+
+    Redirects are followed only while they stay on known Microsoft service hosts.
+    Authentication redirects, 401/403 responses, or HTML login/viewer pages are
+    rejected so article viewers are not presented with an external credential prompt.
+    """
+    opener = build_opener(_NoVideoProbeRedirectHandler())
+    current_url = (url or "").strip()
+
+    for _ in range(4):
+        request = Request(
+            current_url,
+            method="GET",
+            headers={
+                "Accept": "video/*,application/octet-stream;q=0.9,*/*;q=0.1",
+                "Range": "bytes=0-0",
+                "User-Agent": "DjOpenKB-Anonymous-Video-Check/1.0",
+            },
+        )
+
+        response = None
+        try:
+            response = opener.open(request, timeout=VIDEO_ACCESS_CHECK_TIMEOUT_SECONDS)
+            status = getattr(response, "status", None) or response.getcode()
+            headers = response.headers or {}
+        except HTTPError as error:
+            status = error.code
+            headers = error.headers or {}
+            response = error
+        except (URLError, TimeoutError, ValueError, OSError):
+            return _video_probe_result(False, "unverified")
+
+        try:
+            authenticate_header = (headers.get("WWW-Authenticate") or "").strip()
+            if status in {401, 403, 407} or authenticate_header:
+                return _video_probe_result(False, "auth_required", status)
+
+            if 300 <= int(status or 0) < 400:
+                location = (headers.get("Location") or "").strip()
+                if not location:
+                    return _video_probe_result(False, "unverified", status)
+                redirect_url = urljoin(current_url, location)
+                if _is_microsoft_authentication_url(redirect_url):
+                    return _video_probe_result(False, "auth_required", status)
+
+                try:
+                    redirect_parts = urlsplit(redirect_url)
+                except ValueError:
+                    return _video_probe_result(False, "unverified", status)
+                redirect_host = (redirect_parts.hostname or "").lower().rstrip(".")
+                if (
+                    redirect_parts.scheme.lower() != "https"
+                    or not _hostname_matches_suffixes(redirect_host, MICROSOFT_VIDEO_PROBE_HOST_SUFFIXES)
+                ):
+                    return _video_probe_result(False, "unverified", status)
+
+                current_url = redirect_url
+                continue
+
+            if 200 <= int(status or 0) < 300:
+                content_type = (headers.get("Content-Type") or "").split(";", 1)[0].strip().lower()
+                if content_type == "text/html" or content_type == "application/xhtml+xml":
+                    return _video_probe_result(False, "not_direct_media", status)
+                return _video_probe_result(True, "accessible", status)
+
+            return _video_probe_result(False, "inaccessible", status)
+        finally:
+            try:
+                response.close()
+            except Exception:
+                pass
+
+    return _video_probe_result(False, "unverified")
+
+
+def check_microsoft_video_anonymous_access(url):
+    """Return the cached anonymous-access result for a SharePoint/OneDrive video."""
+    if not is_microsoft_cloud_video_url(url):
+        return _video_probe_result(True, "not_required")
+
+    normalized_url = (url or "").strip()
+    cache_key = "article-video-access:" + hashlib.sha256(normalized_url.encode("utf-8")).hexdigest()
+    cached = cache.get(cache_key)
+    if isinstance(cached, dict) and "allowed" in cached:
+        return cached
+
+    result = _perform_microsoft_video_access_probe(normalized_url)
+    cache.set(cache_key, result, VIDEO_ACCESS_CHECK_CACHE_SECONDS)
+    return result
+
+
+def article_video_access_error_message(result):
+    reason = (result or {}).get("reason")
+    if reason == "auth_required":
+        return _(
+            "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. "
+            "Use a video link that can be viewed without signing in."
+        )
+    if reason == "not_direct_media":
+        return _(
+            "This SharePoint or OneDrive link does not provide a directly playable video anonymously. "
+            "Use a direct video link that can be viewed without signing in."
+        )
+    if reason == "inaccessible":
+        return _(
+            "This SharePoint or OneDrive video cannot be accessed anonymously. "
+            "Check its sharing permissions and use a link that can be viewed without signing in."
+        )
+    return _(
+        "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. "
+        "Check its sharing permissions and try again."
+    )
+
+
+def standalone_article_video_urls(markdown_text):
+    """Return supported standalone video URLs outside fenced code blocks."""
+    urls = []
+    active_fence_char = None
+    active_fence_length = 0
+
+    for line in (markdown_text or "").splitlines():
+        fence_match = VIDEO_FENCE_RE.match(line)
+        if fence_match:
+            fence_token = fence_match.group(1)
+            fence_char = fence_token[0]
+            fence_length = len(fence_token)
+            fence_suffix = fence_match.group(2).strip()
+            if active_fence_char is None:
+                active_fence_char = fence_char
+                active_fence_length = fence_length
+            elif fence_char == active_fence_char and fence_length >= active_fence_length and not fence_suffix:
+                active_fence_char = None
+                active_fence_length = 0
+            continue
+
+        if active_fence_char is not None:
+            continue
+
+        url_match = VIDEO_STANDALONE_URL_RE.fullmatch(line)
+        if not url_match:
+            continue
+        url = url_match.group(1)
+        if article_video_embed_html(url):
+            urls.append(url)
+
+    return urls
+
+
+def validate_article_video_links_for_anonymous_access(markdown_text):
+    """Reject auth-gated SharePoint/OneDrive videos before an article is saved."""
+    for url in standalone_article_video_urls(markdown_text):
+        if not is_microsoft_cloud_video_url(url):
+            continue
+        result = check_microsoft_video_anonymous_access(url)
+        if not result.get("allowed"):
+            raise ValidationError(article_video_access_error_message(result))
 
 
 def youtube_embed_html(video_id):

@@ -629,30 +629,90 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             input.value = "";
         }
         if (error) {
+            error.textContent = "{% trans 'Enter a supported video link.' %}";
             error.classList.add("csp-is-hidden");
         }
     }
 
-    function insertVideoFromModal() {
+    async function insertVideoFromModal() {
         const input = document.getElementById("videoUrl");
         const error = document.getElementById("videoUrlError");
+        const button = document.getElementById("insertVideoButton");
         if (!input) {
             return;
         }
 
+        const defaultErrorMessage = "{% trans 'Enter a supported video link.' %}";
         const normalizedUrl = normalizeSupportedVideoUrl(input.value);
         if (!normalizedUrl) {
             if (error) {
+                error.textContent = defaultErrorMessage;
                 error.classList.remove("csp-is-hidden");
             }
             input.focus();
             return;
         }
 
-        insertMarkdown(normalizedUrl);
-        resetVideoInsertModal();
-        $("#videoInsertModal").modal("hide");
-        showPasteMessage("{% trans 'Video link inserted into the article.' %}", "success");
+        const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (!csrfInput || !csrfInput.value) {
+            if (error) {
+                error.textContent = "{% trans 'Unable to validate this video link. Refresh the page and try again.' %}";
+                error.classList.remove("csp-is-hidden");
+            }
+            return;
+        }
+
+        const originalButtonText = button ? button.textContent : "";
+        if (button) {
+            button.disabled = true;
+            button.textContent = "{% trans 'Checking...' %}";
+        }
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append("url", normalizedUrl);
+            const response = await fetch("{% url 'validate_article_video_link' %}", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-CSRFToken": csrfInput.value
+                },
+                body: formData.toString()
+            });
+
+            let payload = {};
+            try {
+                payload = await response.json();
+            } catch (parseError) {
+                payload = {};
+            }
+
+            if (!response.ok || !payload.valid) {
+                if (error) {
+                    error.textContent = payload.error || "{% trans 'This video link could not be validated. Please try another link.' %}";
+                    error.classList.remove("csp-is-hidden");
+                }
+                input.focus();
+                return;
+            }
+
+            insertMarkdown(payload.url || normalizedUrl);
+            resetVideoInsertModal();
+            $("#videoInsertModal").modal("hide");
+            showPasteMessage("{% trans 'Video link inserted into the article.' %}", "success");
+        } catch (requestError) {
+            if (error) {
+                error.textContent = "{% trans 'Unable to verify that this video is accessible without signing in. Please try again.' %}";
+                error.classList.remove("csp-is-hidden");
+            }
+            input.focus();
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.textContent = originalButtonText;
+            }
+        }
     }
 
     const insertVideoButton = document.getElementById("insertVideoButton");
