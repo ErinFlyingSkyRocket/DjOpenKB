@@ -170,10 +170,10 @@
         {% include "_navbar.html" %}
 <div><h1>{% if home_heading %}{{ home_heading }}{% else %}{% trans "IT Help Center" %}{% endif %}</h1></div>
 
-        <form action="{{ search_action_url|default:'/search/' }}" id="search_form" method="get">
+        <form action="{{ search_action_url|default:'/search/' }}" id="search_form" method="get" autocomplete="off">
             <div class="col-md-4 col-md-offset-4 search_bar">
                 <div class="input-group">
-                    <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="{% trans 'search' %}" value="{{ search_query|default:'' }}">
+                    <input type="text" name="q" id="frm_search" class="form-control input-lg" placeholder="{% trans 'search' %}" value="{{ search_query|default:'' }}" autocomplete="off" spellcheck="false">
                     <span class="input-group-btn">
                         <button class="btn btn-default btn-lg" id="btn_search" type="submit">
                             <i class="fa fa-search" aria-hidden="true"></i>
