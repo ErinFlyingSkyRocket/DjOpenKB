@@ -93,7 +93,9 @@ $(document).ready(function(){
             $input.attr('autocomplete', 'off');
 
             var storageKey = options.storageKey;
-            var title = options.title || 'Search history';
+            var $searchHistoryI18n = $('[data-openkb-search-history-title]').first();
+            var title = options.title || $searchHistoryI18n.attr('data-openkb-search-history-title') || 'Search history';
+            var removeLabel = options.removeLabel || $searchHistoryI18n.attr('data-openkb-search-history-remove-label') || 'Remove search history item';
 
             // Keep the dropdown outside Bootstrap's .input-group. The input-group
             // uses table-style layout and absolutely positioned children can collapse to
@@ -158,7 +160,7 @@ $(document).ready(function(){
                     return;
                 }
 
-                $dropdown.append('<div class="search-history-title">' + title + '</div>');
+                $dropdown.append($('<div class="search-history-title"></div>').text(title));
 
                 history.forEach(function(item){
                     // Use a focusable div instead of nesting a remove <button> inside
@@ -167,7 +169,7 @@ $(document).ready(function(){
                     var $row = $('<div class="search-history-item" role="option" tabindex="0"></div>');
                     var $icon = $('<i class="fa fa-history search-history-icon" aria-hidden="true"></i>');
                     var $term = $('<span class="search-history-term"></span>').text(item);
-                    var $remove = $('<button type="button" class="search-history-remove" aria-label="Remove search history item"><i class="fa fa-times"></i></button>');
+                    var $remove = $('<button type="button" class="search-history-remove"><i class="fa fa-times" aria-hidden="true"></i></button>').attr('aria-label', removeLabel);
 
                     $row.append($icon).append($term).append($remove);
 
@@ -278,8 +280,7 @@ $(document).ready(function(){
             if(seenInputs.indexOf(this) === -1){
                 seenInputs.push(this);
                 setupHistoryDropdown($(this), {
-                    storageKey: 'djopenkb.searchHistory',
-                    title: 'Search history'
+                    storageKey: 'djopenkb.searchHistory'
                 });
             }
         });

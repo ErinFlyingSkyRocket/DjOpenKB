@@ -48,7 +48,7 @@ msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s minuutti"
 msgstr[1] "%(count)s minuuttia"
 
-#: website/templates/index.html:176
+#: website/templates/index.html:211
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s tulosta löytyi artikkelin otsikon ja avainsanojen perusteella."
 
@@ -128,7 +128,7 @@ msgstr[1] "+%(count)d lisämuutosta"
 msgid ", +%(count)d more"
 msgstr ", +%(count)d lisää"
 
-#: website/templates/index.html:174
+#: website/templates/index.html:209
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: HAKUTULOKSET HAULLE \"%(query)s\" :::"
 
@@ -548,7 +548,7 @@ msgstr "Artikkelin kuva ladattu"
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Ylläpitäjä on tällä hetkellä poistanut artikkelikuvien lataukset käytöstä."
 
-#: website/templates/articles.html:326 website/templates/index.html:192
+#: website/templates/articles.html:326 website/templates/index.html:227
 msgid "Article keywords"
 msgstr "Artikkelin avainsanat"
 
@@ -624,7 +624,7 @@ msgstr "Artikkelin omistajan käyttäjänimi"
 msgid "Article owner username snapshot"
 msgstr "Artikkelin omistajan käyttäjänimen tilannekuva"
 
-#: website/templates/index.html:217
+#: website/templates/index.html:252
 msgid "Article pagination"
 msgstr "Artikkelien sivutus"
 
@@ -1112,7 +1112,7 @@ msgstr "Siivoa käyttämättömät ladatut tiedostot"
 msgid "Clear chat"
 msgstr "Tyhjennä keskustelu"
 
-#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:151
+#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:186
 msgid "Clear search"
 msgstr "Tyhjennä haku"
 
@@ -1248,7 +1248,7 @@ msgstr "Nykyiset käyttäjät"
 msgid "Custom Django group"
 msgstr "Mukautettu Django-ryhmä"
 
-#: website/templates/index.html:188 website/templates/index.html:258 website/templates/index.html:332 website/templates/index.html:380 website/templates/index.html:426
+#: website/templates/index.html:223 website/templates/index.html:293 website/templates/index.html:367 website/templates/index.html:415 website/templates/index.html:461
 msgid "Date"
 msgstr "Päivämäärä"
 
@@ -1732,7 +1732,7 @@ msgstr "Etsi artikkelit, joilla ei ole omistajaa tai joiden omistaja on passiivi
 msgid "Finds unused files in"
 msgstr "Etsii käyttämättömiä tiedostoja kohteesta"
 
-#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:220 website/templates/index.html:223 website/templates/index.html:278 website/templates/index.html:281 website/templates/index.html:349 website/templates/index.html:352 website/templates/index.html:397 website/templates/index.html:400 website/templates/index.html:445 website/templates/index.html:448
+#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:255 website/templates/index.html:258 website/templates/index.html:313 website/templates/index.html:316 website/templates/index.html:384 website/templates/index.html:387 website/templates/index.html:432 website/templates/index.html:435 website/templates/index.html:480 website/templates/index.html:483
 msgid "First"
 msgstr "Ensimmäinen"
 
@@ -1768,7 +1768,7 @@ msgstr "Yleiset artikkelit"
 msgid "General articles you own."
 msgstr "Omistamasi yleiset artikkelit."
 
-#: website/templates/index.html:165
+#: website/templates/index.html:200
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Saat välittömät vastaukset yleisimpiin kysymyksiin ja opit käyttämään 3 merkkiä kuin ammattilainen."
 
@@ -1886,7 +1886,7 @@ msgstr[1] "Löysin %(count)d aiheeseen liittyvää julkaistua artikkelia."
 msgid "IP address"
 msgstr "IP-osoite"
 
-#: website/templates/index.html:136
+#: website/templates/index.html:171
 msgid "IT Help Center"
 msgstr "IT-tukikeskus"
 
@@ -2014,7 +2014,7 @@ msgstr "Passiivinen"
 msgid "Insert video link"
 msgstr "Lisää videolinkki"
 
-#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
+#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:219 website/templates/index.html:291 website/templates/index.html:363 website/templates/index.html:411 website/templates/index.html:459 website/templates/index.html:688
 msgid "Internal"
 msgstr "Sisäinen"
 
@@ -2030,7 +2030,7 @@ msgstr "Sisäisten artikkelien hallinnoija"
 msgid "Internal Article Writer"
 msgstr "Sisäisten artikkelien kirjoittaja"
 
-#: website/templates/index.html:248
+#: website/templates/index.html:283
 msgid "Internal Articles"
 msgstr "Sisäiset artikkelit"
 
@@ -2050,7 +2050,7 @@ msgstr "Sisäisten artikkelien hyväksyjän lisärooli. Voi tarkastella julkisia
 msgid "Internal article"
 msgstr "Sisäinen artikkeli"
 
-#: website/templates/index.html:275
+#: website/templates/index.html:310
 msgid "Internal article pages"
 msgstr "Sisäisten artikkelien sivut"
 
@@ -2134,17 +2134,13 @@ msgstr "Tietokanta"
 msgid "Keep update pending / Save review edits"
 msgstr "Pidä päivitys odottamassa / Tallenna tarkistusmuokkaukset"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Avainsanat"
 
 #: kb/views/services_search.py:72
 msgid "Keywords: %(keywords)s"
 msgstr "Avainsanat: %(keywords)s"
-
-#: website/templates/_navbar.html:12 website/templates/_navbar.html:14
-msgid "Knowledge Repository"
-msgstr "Tietovarasto"
 
 #: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
@@ -2210,7 +2206,7 @@ msgstr "Kieliasetus päivitettiin onnistuneesti."
 msgid "Large exports may download as a split package:"
 msgstr "Suuret viennit voidaan ladata jaettuna pakettina:"
 
-#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:231 website/templates/index.html:234 website/templates/index.html:287 website/templates/index.html:290 website/templates/index.html:358 website/templates/index.html:361 website/templates/index.html:406 website/templates/index.html:409 website/templates/index.html:454 website/templates/index.html:457
+#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:266 website/templates/index.html:269 website/templates/index.html:322 website/templates/index.html:325 website/templates/index.html:393 website/templates/index.html:396 website/templates/index.html:441 website/templates/index.html:444 website/templates/index.html:489 website/templates/index.html:492
 msgid "Last"
 msgstr "Viimeinen"
 
@@ -2242,7 +2238,7 @@ msgstr "Vanha pääsivuston käyttöoikeus"
 msgid "Like"
 msgstr "Tykkää"
 
-#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Tykkäykset"
 
@@ -2482,19 +2478,19 @@ msgstr "Pienennä OpenKB AI"
 msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
 msgstr "Useampi kuin yksi aktiivinen käyttäjä vastasi arvoa '%(user)s'. Käytä tarkkaa käyttäjänimeä."
 
-#: website/templates/index.html:309
+#: website/templates/index.html:344
 msgid "Most Liked"
 msgstr "Eniten tykätyt"
 
-#: website/templates/index.html:314
+#: website/templates/index.html:349
 msgid "Most Recent Articles"
 msgstr "Uusimmat artikkelit"
 
-#: website/templates/index.html:394
+#: website/templates/index.html:429
 msgid "Most liked article pages"
 msgstr "Eniten tykättyjen artikkelien sivut"
 
-#: website/templates/index.html:442
+#: website/templates/index.html:477
 msgid "Most recent article pages"
 msgstr "Uusimpien artikkelien sivut"
 
@@ -2550,13 +2546,17 @@ msgstr "Uusi salasana"
 msgid "New password and confirm password do not match."
 msgstr "Uusi salasana ja salasanan vahvistus eivät täsmää."
 
-#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:230 website/templates/index.html:233 website/templates/index.html:286 website/templates/index.html:289 website/templates/index.html:357 website/templates/index.html:360 website/templates/index.html:405 website/templates/index.html:408 website/templates/index.html:453 website/templates/index.html:456
+#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:265 website/templates/index.html:268 website/templates/index.html:321 website/templates/index.html:324 website/templates/index.html:392 website/templates/index.html:395 website/templates/index.html:440 website/templates/index.html:443 website/templates/index.html:488 website/templates/index.html:491
 msgid "Next"
 msgstr "Seuraava"
 
 #: website/templates/login.html:125 website/templates/login.html:82 website/templates/login.html:83
 msgid "NextLabs AD email or username"
 msgstr "NextLabs AD -sähköposti tai käyttäjätunnus"
+
+#: website/templates/_navbar.html:12 website/templates/_navbar.html:14 website/templates/index.html:6 website/templates/index.html:7
+msgid "NextLabs IT Knowledge Repository"
+msgstr "NextLabs IT Knowledge Repository"
 
 #: kb/admin_audit.py:212
 msgid "No"
@@ -2598,11 +2598,11 @@ msgstr "Kuvatiedostoa ei vastaanotettu."
 msgid "No image filename received."
 msgstr "Kuvatiedoston nimeä ei vastaanotettu."
 
-#: website/templates/index.html:266
+#: website/templates/index.html:301
 msgid "No internal articles have been published yet."
 msgstr "Sisäisiä artikkeleita ei ole vielä julkaistu."
 
-#: website/templates/index.html:386
+#: website/templates/index.html:421
 msgid "No liked articles yet."
 msgstr "Ei vielä tykättyjä artikkeleita."
 
@@ -2610,11 +2610,11 @@ msgstr "Ei vielä tykättyjä artikkeleita."
 msgid "No matching active user found."
 msgstr "Vastaavaa aktiivista käyttäjää ei löytynyt."
 
-#: website/templates/articles.html:435 website/templates/index.html:544
+#: website/templates/articles.html:435 website/templates/index.html:705
 msgid "No matching articles found."
 msgstr "Vastaavia artikkeleita ei löytynyt."
 
-#: website/templates/index.html:208
+#: website/templates/index.html:243
 msgid "No matching published articles found by title or keywords."
 msgstr "Otsikkoa tai avainsanoja vastaavia julkaistuja artikkeleita ei löytynyt."
 
@@ -2654,7 +2654,7 @@ msgstr "Ei odottavaa päivitystä"
 msgid "No permissions"
 msgstr "Ei käyttöoikeuksia"
 
-#: website/templates/index.html:338
+#: website/templates/index.html:373
 msgid "No published articles yet."
 msgstr "Julkaistuja artikkeleita ei ole vielä."
 
@@ -2662,7 +2662,7 @@ msgstr "Julkaistuja artikkeleita ei ole vielä."
 msgid "No queued articles were selected."
 msgstr "Jonossa olevia artikkeleita ei valittu."
 
-#: website/templates/index.html:434
+#: website/templates/index.html:469
 msgid "No recent articles yet."
 msgstr "Ei vielä uusia artikkeleita."
 
@@ -2842,15 +2842,15 @@ msgstr "Omistaja"
 msgid "Page %(current)s of %(total)s"
 msgstr "Sivu %(current)s / %(total)s"
 
-#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:227 website/templates/index.html:284 website/templates/index.html:355 website/templates/index.html:403 website/templates/index.html:451
+#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:262 website/templates/index.html:319 website/templates/index.html:390 website/templates/index.html:438 website/templates/index.html:486
 msgid "Page %(number)s of %(num_pages)s"
 msgstr "Sivu %(number)s / %(num_pages)s"
 
-#: website/templates/index.html:343 website/templates/index.html:391 website/templates/index.html:439
+#: website/templates/index.html:378 website/templates/index.html:426 website/templates/index.html:474
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s article(s)"
 msgstr "Sivu %(number)s/%(num_pages)s · Näytetään %(start)s–%(end)s / %(count)s artikkelia"
 
-#: website/templates/index.html:272
+#: website/templates/index.html:307
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s internal article(s)"
 msgstr "Sivu %(number)s/%(num_pages)s · Näytetään %(start)s–%(end)s / %(count)s sisäistä artikkelia"
 
@@ -3138,7 +3138,7 @@ msgstr "Esikatselu"
 msgid "Preview / Open"
 msgstr "Esikatselu / Avaa"
 
-#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:221 website/templates/index.html:224 website/templates/index.html:279 website/templates/index.html:282 website/templates/index.html:350 website/templates/index.html:353 website/templates/index.html:398 website/templates/index.html:401 website/templates/index.html:446 website/templates/index.html:449
+#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:256 website/templates/index.html:259 website/templates/index.html:314 website/templates/index.html:317 website/templates/index.html:385 website/templates/index.html:388 website/templates/index.html:433 website/templates/index.html:436 website/templates/index.html:481 website/templates/index.html:484
 msgid "Previous"
 msgstr "Edellinen"
 
@@ -3293,6 +3293,10 @@ msgstr "Liittyvät artikkelit"
 #: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Poista kuva artikkelista"
+
+#: website/templates/_navbar.html:2
+msgid "Remove search history item"
+msgstr "Poista kohde hakuhistoriasta"
 
 #: kb/models.py:824
 msgid "Removed by uploader from editor"
@@ -3518,9 +3522,13 @@ msgstr "Haku"
 msgid "Search by title, body, keywords, status, or file path"
 msgstr "Hae otsikon, sisällön, avainsanojen, tilan tai tiedostopolun perusteella"
 
-#: website/templates/articles.html:331 website/templates/index.html:197
+#: website/templates/articles.html:331 website/templates/index.html:232
 msgid "Search for %(keyword)s"
 msgstr "Hae avainsanalla %(keyword)s"
+
+#: website/templates/_navbar.html:2
+msgid "Search history"
+msgstr "Hakuhistoria"
 
 #: website/templates/admin_orphan_articles.html:187
 msgid "Search orphan articles"
@@ -3534,7 +3542,7 @@ msgstr "Etsi odottavia artikkeleita"
 msgid "Search queued articles"
 msgstr "Hae jonossa olevia artikkeleita"
 
-#: website/templates/articles.html:192 website/templates/index.html:156
+#: website/templates/articles.html:192 website/templates/index.html:191
 msgid "Search results"
 msgstr "Hakutulokset"
 
@@ -3642,7 +3650,7 @@ msgstr "Jaa artikkeli"
 msgid "Showing %(count)s of %(total)s queued article(s)."
 msgstr "Näytetään %(count)s / %(total)s jonossa olevaa artikkelia."
 
-#: website/templates/index.html:214
+#: website/templates/index.html:249
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
 msgstr "Näytetään %(start)s-%(end)s / %(count)s artikkelia"
 
@@ -4130,11 +4138,11 @@ msgstr "Artikkelien yläsivutus"
 msgid "Total articles suggested by %(name)s"
 msgstr "Yhteensä %(name)s käyttäjän ehdottamat artikkelit"
 
-#: website/templates/index.html:304
+#: website/templates/index.html:339
 msgid "Trending Topics"
 msgstr "Suositut aiheet"
 
-#: website/templates/index.html:346
+#: website/templates/index.html:381
 msgid "Trending article pages"
 msgstr "Suosittujen artikkelien sivut"
 
@@ -4178,7 +4186,7 @@ msgstr "Valintaruudun valinnan poistaminen"
 msgid "Untitled"
 msgstr "Nimetön"
 
-#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:523
+#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:682
 msgid "Untitled article"
 msgstr "Nimetön artikkeli"
 
@@ -4358,7 +4366,7 @@ msgstr "Näytä"
 msgid "View articles"
 msgstr "Näytä artikkelit"
 
-#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "Katselukerrat"
 
@@ -4610,10 +4618,6 @@ msgstr "ei asetettu"
 msgid "object"
 msgstr "objekti"
 
-#: website/templates/index.html:6 website/templates/index.html:7
-msgid "openKB"
-msgstr "openKB"
-
 #: website/templates/edit_my_suggestions.html:12 website/templates/login.html:12 website/templates/profile.html:11 website/templates/suggest.html:12 website/templates/suggest_edit.html:13
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
 msgstr "openKB on avoimen lähdekoodin Node.js Markdown -pohjainen tietokanta/FAQ/Wiki-sovellus, jossa on tehokas lunr-haku"
@@ -4650,7 +4654,7 @@ msgstr "toista %(count)s kertaa"
 msgid "repeat forever"
 msgstr "toista ikuisesti"
 
-#: website/templates/articles.html:186 website/templates/index.html:141
+#: website/templates/articles.html:186 website/templates/index.html:176
 msgid "search"
 msgstr "haku"
 

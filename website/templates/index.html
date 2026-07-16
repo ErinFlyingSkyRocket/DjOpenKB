@@ -520,6 +520,9 @@
     const openkbSearchDropdown = document.getElementById("searchResult");
     const openkbSearchSuggestionList = openkbSearchDropdown ? openkbSearchDropdown.querySelector(".searchResultList") : null;
     const openkbSearchSuggestionUrl = openkbSearchDropdown ? openkbSearchDropdown.dataset.suggestionsUrl : "";
+    const openkbSearchHistoryI18n = document.querySelector("[data-openkb-search-history-title]");
+    const openkbSearchHistoryTitle = openkbSearchHistoryI18n ? openkbSearchHistoryI18n.dataset.openkbSearchHistoryTitle : "Search history";
+    const openkbSearchHistoryRemoveLabel = openkbSearchHistoryI18n ? openkbSearchHistoryI18n.dataset.openkbSearchHistoryRemoveLabel : "Remove search history item";
     const openkbSearchHistoryKey = "djopenkb.searchHistory";
     const openkbSearchHistoryLimit = 5;
     let openkbSearchSuggestTimer = null;
@@ -603,7 +606,7 @@
 
         const heading = document.createElement("div");
         heading.className = "list-group-item list-group-heading";
-        heading.textContent = "Search history";
+        heading.textContent = openkbSearchHistoryTitle;
         openkbSearchSuggestionList.appendChild(heading);
 
         history.forEach(function(item) {
@@ -623,7 +626,7 @@
             const remove = document.createElement("button");
             remove.type = "button";
             remove.className = "openkb-search-history-remove";
-            remove.setAttribute("aria-label", "Remove search history item");
+            remove.setAttribute("aria-label", openkbSearchHistoryRemoveLabel);
             remove.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
 
             function selectHistoryItem() {

@@ -48,7 +48,7 @@ msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s دقیقه"
 msgstr[1] "%(count)s دقیقه"
 
-#: website/templates/index.html:176
+#: website/templates/index.html:211
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s نتیجه با تطبیق عنوان و کلیدواژه‌های مقاله یافت شد."
 
@@ -128,7 +128,7 @@ msgstr[1] "+%(count)d تغییر دیگر"
 msgid ", +%(count)d more"
 msgstr "، +%(count)d مورد دیگر"
 
-#: website/templates/index.html:174
+#: website/templates/index.html:209
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: نتایج جستجو برای \"%(query)s\" :::"
 
@@ -548,7 +548,7 @@ msgstr "تصویر مقاله بارگذاری شد"
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "بارگذاری تصویر مقاله در حال حاضر توسط مدیر غیرفعال شده است."
 
-#: website/templates/articles.html:326 website/templates/index.html:192
+#: website/templates/articles.html:326 website/templates/index.html:227
 msgid "Article keywords"
 msgstr "کلیدواژه‌های مقاله"
 
@@ -624,7 +624,7 @@ msgstr "نام کاربری مالک مقاله"
 msgid "Article owner username snapshot"
 msgstr "تصویر لحظه‌ای نام کاربری مالک مقاله"
 
-#: website/templates/index.html:217
+#: website/templates/index.html:252
 msgid "Article pagination"
 msgstr "صفحه‌بندی مقاله"
 
@@ -1112,7 +1112,7 @@ msgstr "پاک‌سازی فایل‌های بارگذاری‌شده استفا
 msgid "Clear chat"
 msgstr "پاک کردن گفت‌وگو"
 
-#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:151
+#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:186
 msgid "Clear search"
 msgstr "پاک کردن جستجو"
 
@@ -1248,7 +1248,7 @@ msgstr "کاربران فعلی"
 msgid "Custom Django group"
 msgstr "گروه سفارشی Django"
 
-#: website/templates/index.html:188 website/templates/index.html:258 website/templates/index.html:332 website/templates/index.html:380 website/templates/index.html:426
+#: website/templates/index.html:223 website/templates/index.html:293 website/templates/index.html:367 website/templates/index.html:415 website/templates/index.html:461
 msgid "Date"
 msgstr "تاریخ"
 
@@ -1732,7 +1732,7 @@ msgstr "مقاله‌هایی را که مالک ندارند یا مالک آن
 msgid "Finds unused files in"
 msgstr "فایل‌های استفاده‌نشده را در این مسیر پیدا می‌کند"
 
-#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:220 website/templates/index.html:223 website/templates/index.html:278 website/templates/index.html:281 website/templates/index.html:349 website/templates/index.html:352 website/templates/index.html:397 website/templates/index.html:400 website/templates/index.html:445 website/templates/index.html:448
+#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:255 website/templates/index.html:258 website/templates/index.html:313 website/templates/index.html:316 website/templates/index.html:384 website/templates/index.html:387 website/templates/index.html:432 website/templates/index.html:435 website/templates/index.html:480 website/templates/index.html:483
 msgid "First"
 msgstr "اول"
 
@@ -1768,7 +1768,7 @@ msgstr "مقاله‌های عمومی"
 msgid "General articles you own."
 msgstr "مقاله‌های عمومیِ متعلق به شما."
 
-#: website/templates/index.html:165
+#: website/templates/index.html:200
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "پاسخ فوری برای رایج‌ترین پرسش‌ها دریافت کنید و یاد بگیرید چگونه مانند حرفه‌ای‌ها از ۳ نویسه استفاده کنید."
 
@@ -1886,7 +1886,7 @@ msgstr[1] "%(count)d مقالهٔ منتشرشدهٔ مرتبط پیدا کرد�
 msgid "IP address"
 msgstr "نشانی IP"
 
-#: website/templates/index.html:136
+#: website/templates/index.html:171
 msgid "IT Help Center"
 msgstr "مرکز راهنمایی فناوری اطلاعات"
 
@@ -2014,7 +2014,7 @@ msgstr "غیرفعال"
 msgid "Insert video link"
 msgstr "درج پیوند ویدیو"
 
-#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
+#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:219 website/templates/index.html:291 website/templates/index.html:363 website/templates/index.html:411 website/templates/index.html:459 website/templates/index.html:688
 msgid "Internal"
 msgstr "داخلی"
 
@@ -2030,7 +2030,7 @@ msgstr "مدیر مقالهٔ داخلی"
 msgid "Internal Article Writer"
 msgstr "نویسندهٔ مقالهٔ داخلی"
 
-#: website/templates/index.html:248
+#: website/templates/index.html:283
 msgid "Internal Articles"
 msgstr "مقاله‌های داخلی"
 
@@ -2050,7 +2050,7 @@ msgstr "افزونهٔ تأییدکنندهٔ داخلی. می‌تواند مق
 msgid "Internal article"
 msgstr "مقالهٔ داخلی"
 
-#: website/templates/index.html:275
+#: website/templates/index.html:310
 msgid "Internal article pages"
 msgstr "صفحه‌های مقالهٔ داخلی"
 
@@ -2134,17 +2134,13 @@ msgstr "پایگاه دانش"
 msgid "Keep update pending / Save review edits"
 msgstr "به‌روزرسانی را در انتظار نگه دارید / ویرایش‌های بازبینی را ذخیره کنید"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "کلیدواژه‌ها"
 
 #: kb/views/services_search.py:72
 msgid "Keywords: %(keywords)s"
 msgstr "کلیدواژه‌ها: %(keywords)s"
-
-#: website/templates/_navbar.html:12 website/templates/_navbar.html:14
-msgid "Knowledge Repository"
-msgstr "مخزن دانش"
 
 #: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
@@ -2210,7 +2206,7 @@ msgstr "ترجیح زبان با موفقیت به‌روزرسانی شد."
 msgid "Large exports may download as a split package:"
 msgstr "خروجی‌های بزرگ ممکن است به‌صورت بسته تقسیم‌شده دانلود شوند:"
 
-#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:231 website/templates/index.html:234 website/templates/index.html:287 website/templates/index.html:290 website/templates/index.html:358 website/templates/index.html:361 website/templates/index.html:406 website/templates/index.html:409 website/templates/index.html:454 website/templates/index.html:457
+#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:266 website/templates/index.html:269 website/templates/index.html:322 website/templates/index.html:325 website/templates/index.html:393 website/templates/index.html:396 website/templates/index.html:441 website/templates/index.html:444 website/templates/index.html:489 website/templates/index.html:492
 msgid "Last"
 msgstr "آخر"
 
@@ -2242,7 +2238,7 @@ msgstr "دسترسی قدیمی به سایت اصلی"
 msgid "Like"
 msgstr "پسندیدن"
 
-#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "پسندیدن‌ها"
 
@@ -2482,19 +2478,19 @@ msgstr "کوچک کردن OpenKB AI"
 msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
 msgstr "بیش از یک کاربر فعال با '%(user)s' مطابقت داشت. لطفاً نام کاربری دقیق را استفاده کنید."
 
-#: website/templates/index.html:309
+#: website/templates/index.html:344
 msgid "Most Liked"
 msgstr "بیشترین پسندیده‌شده"
 
-#: website/templates/index.html:314
+#: website/templates/index.html:349
 msgid "Most Recent Articles"
 msgstr "جدیدترین مقاله‌ها"
 
-#: website/templates/index.html:394
+#: website/templates/index.html:429
 msgid "Most liked article pages"
 msgstr "صفحه‌های مقاله با بیشترین پسند"
 
-#: website/templates/index.html:442
+#: website/templates/index.html:477
 msgid "Most recent article pages"
 msgstr "صفحه‌های جدیدترین مقاله"
 
@@ -2550,13 +2546,17 @@ msgstr "رمز عبور جدید"
 msgid "New password and confirm password do not match."
 msgstr "گذرواژهٔ جدید و تأیید گذرواژه مطابقت ندارند."
 
-#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:230 website/templates/index.html:233 website/templates/index.html:286 website/templates/index.html:289 website/templates/index.html:357 website/templates/index.html:360 website/templates/index.html:405 website/templates/index.html:408 website/templates/index.html:453 website/templates/index.html:456
+#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:265 website/templates/index.html:268 website/templates/index.html:321 website/templates/index.html:324 website/templates/index.html:392 website/templates/index.html:395 website/templates/index.html:440 website/templates/index.html:443 website/templates/index.html:488 website/templates/index.html:491
 msgid "Next"
 msgstr "بعدی"
 
 #: website/templates/login.html:125 website/templates/login.html:82 website/templates/login.html:83
 msgid "NextLabs AD email or username"
 msgstr "ایمیل یا نام کاربری NextLabs AD"
+
+#: website/templates/_navbar.html:12 website/templates/_navbar.html:14 website/templates/index.html:6 website/templates/index.html:7
+msgid "NextLabs IT Knowledge Repository"
+msgstr "NextLabs IT Knowledge Repository"
 
 #: kb/admin_audit.py:212
 msgid "No"
@@ -2598,11 +2598,11 @@ msgstr "هیچ فایل تصویری دریافت نشد."
 msgid "No image filename received."
 msgstr "هیچ نام فایل تصویری دریافت نشد."
 
-#: website/templates/index.html:266
+#: website/templates/index.html:301
 msgid "No internal articles have been published yet."
 msgstr "هنوز هیچ مقالهٔ داخلی منتشر نشده است."
 
-#: website/templates/index.html:386
+#: website/templates/index.html:421
 msgid "No liked articles yet."
 msgstr "هنوز هیچ مقالهٔ پسندیده‌شده‌ای وجود ندارد."
 
@@ -2610,11 +2610,11 @@ msgstr "هنوز هیچ مقالهٔ پسندیده‌شده‌ای وجود ن�
 msgid "No matching active user found."
 msgstr "هیچ کاربر فعال مطابقی پیدا نشد."
 
-#: website/templates/articles.html:435 website/templates/index.html:544
+#: website/templates/articles.html:435 website/templates/index.html:705
 msgid "No matching articles found."
 msgstr "مقاله مطابقی یافت نشد."
 
-#: website/templates/index.html:208
+#: website/templates/index.html:243
 msgid "No matching published articles found by title or keywords."
 msgstr "هیچ مقالهٔ منتشرشدهٔ مطابقی بر اساس عنوان یا کلیدواژه‌ها پیدا نشد."
 
@@ -2654,7 +2654,7 @@ msgstr "به‌روزرسانی در انتظاری وجود ندارد"
 msgid "No permissions"
 msgstr "بدون مجوز"
 
-#: website/templates/index.html:338
+#: website/templates/index.html:373
 msgid "No published articles yet."
 msgstr "هنوز هیچ مقالهٔ منتشرشده‌ای وجود ندارد."
 
@@ -2662,7 +2662,7 @@ msgstr "هنوز هیچ مقالهٔ منتشرشده‌ای وجود ندارد
 msgid "No queued articles were selected."
 msgstr "هیچ مقالهٔ در صفی انتخاب نشد."
 
-#: website/templates/index.html:434
+#: website/templates/index.html:469
 msgid "No recent articles yet."
 msgstr "هنوز هیچ مقالهٔ جدیدی وجود ندارد."
 
@@ -2842,15 +2842,15 @@ msgstr "مالک"
 msgid "Page %(current)s of %(total)s"
 msgstr "صفحه %(current)s از %(total)s"
 
-#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:227 website/templates/index.html:284 website/templates/index.html:355 website/templates/index.html:403 website/templates/index.html:451
+#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:262 website/templates/index.html:319 website/templates/index.html:390 website/templates/index.html:438 website/templates/index.html:486
 msgid "Page %(number)s of %(num_pages)s"
 msgstr "صفحه %(number)s از %(num_pages)s"
 
-#: website/templates/index.html:343 website/templates/index.html:391 website/templates/index.html:439
+#: website/templates/index.html:378 website/templates/index.html:426 website/templates/index.html:474
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s article(s)"
 msgstr "صفحهٔ %(number)s از %(num_pages)s · نمایش %(start)s–%(end)s از %(count)s مقاله"
 
-#: website/templates/index.html:272
+#: website/templates/index.html:307
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s internal article(s)"
 msgstr "صفحهٔ %(number)s از %(num_pages)s · نمایش %(start)s–%(end)s از %(count)s مقالهٔ داخلی"
 
@@ -3138,7 +3138,7 @@ msgstr "پیش‌نمایش"
 msgid "Preview / Open"
 msgstr "پیش‌نمایش / باز کردن"
 
-#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:221 website/templates/index.html:224 website/templates/index.html:279 website/templates/index.html:282 website/templates/index.html:350 website/templates/index.html:353 website/templates/index.html:398 website/templates/index.html:401 website/templates/index.html:446 website/templates/index.html:449
+#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:256 website/templates/index.html:259 website/templates/index.html:314 website/templates/index.html:317 website/templates/index.html:385 website/templates/index.html:388 website/templates/index.html:433 website/templates/index.html:436 website/templates/index.html:481 website/templates/index.html:484
 msgid "Previous"
 msgstr "قبلی"
 
@@ -3293,6 +3293,10 @@ msgstr "مقالات مرتبط"
 #: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "حذف تصویر از مقاله"
+
+#: website/templates/_navbar.html:2
+msgid "Remove search history item"
+msgstr "حذف مورد از تاریخچه جستجو"
 
 #: kb/models.py:824
 msgid "Removed by uploader from editor"
@@ -3518,9 +3522,13 @@ msgstr "جستجو"
 msgid "Search by title, body, keywords, status, or file path"
 msgstr "جستجو بر اساس عنوان، متن، کلیدواژه‌ها، وضعیت یا مسیر فایل"
 
-#: website/templates/articles.html:331 website/templates/index.html:197
+#: website/templates/articles.html:331 website/templates/index.html:232
 msgid "Search for %(keyword)s"
 msgstr "جست‌وجوی %(keyword)s"
+
+#: website/templates/_navbar.html:2
+msgid "Search history"
+msgstr "تاریخچه جستجو"
 
 #: website/templates/admin_orphan_articles.html:187
 msgid "Search orphan articles"
@@ -3534,7 +3542,7 @@ msgstr "جستجوی مقاله‌های در انتظار"
 msgid "Search queued articles"
 msgstr "جست‌وجوی مقاله‌های در صف"
 
-#: website/templates/articles.html:192 website/templates/index.html:156
+#: website/templates/articles.html:192 website/templates/index.html:191
 msgid "Search results"
 msgstr "نتایج جستجو"
 
@@ -3642,7 +3650,7 @@ msgstr "اشتراک‌گذاری مقاله"
 msgid "Showing %(count)s of %(total)s queued article(s)."
 msgstr "نمایش %(count)s از %(total)s مقالهٔ در صف."
 
-#: website/templates/index.html:214
+#: website/templates/index.html:249
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
 msgstr "نمایش %(start)s-%(end)s از %(count)s مقاله"
 
@@ -4130,11 +4138,11 @@ msgstr "صفحه‌بندی بالای مقاله"
 msgid "Total articles suggested by %(name)s"
 msgstr "مجموع مقاله‌های پیشنهادشده توسط %(name)s"
 
-#: website/templates/index.html:304
+#: website/templates/index.html:339
 msgid "Trending Topics"
 msgstr "موضوعات پرطرفدار"
 
-#: website/templates/index.html:346
+#: website/templates/index.html:381
 msgid "Trending article pages"
 msgstr "صفحه‌های مقالهٔ پرطرفدار"
 
@@ -4178,7 +4186,7 @@ msgstr "برداشتن تیک یک کادر انتخاب"
 msgid "Untitled"
 msgstr "بدون عنوان"
 
-#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:523
+#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:682
 msgid "Untitled article"
 msgstr "مقاله بدون عنوان"
 
@@ -4358,7 +4366,7 @@ msgstr "مشاهده"
 msgid "View articles"
 msgstr "مشاهده مقاله‌ها"
 
-#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "تعداد بازدید"
 
@@ -4610,10 +4618,6 @@ msgstr "تنظیم نشده"
 msgid "object"
 msgstr "شیء"
 
-#: website/templates/index.html:6 website/templates/index.html:7
-msgid "openKB"
-msgstr "openKB"
-
 #: website/templates/edit_my_suggestions.html:12 website/templates/login.html:12 website/templates/profile.html:11 website/templates/suggest.html:12 website/templates/suggest_edit.html:13
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
 msgstr "openKB یک برنامه پایگاه دانش/FAQ/Wiki متن‌باز مبتنی بر Node.js و Markdown با جستجوی قدرتمند lunr است"
@@ -4650,7 +4654,7 @@ msgstr "%(count)s بار تکرار"
 msgid "repeat forever"
 msgstr "تکرار همیشگی"
 
-#: website/templates/articles.html:186 website/templates/index.html:141
+#: website/templates/articles.html:186 website/templates/index.html:176
 msgid "search"
 msgstr "جستجو"
 

@@ -45,7 +45,7 @@ msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s분"
 
-#: website/templates/index.html:176
+#: website/templates/index.html:211
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "문서 제목 및 키워드와 일치하는 결과 %(count)s개를 찾았습니다."
 
@@ -123,7 +123,7 @@ msgstr[0] "추가 변경 %(count)d건"
 msgid ", +%(count)d more"
 msgstr ", 추가 %(count)d개"
 
-#: website/templates/index.html:174
+#: website/templates/index.html:209
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: \"%(query)s\" 검색 결과 :::"
 
@@ -543,7 +543,7 @@ msgstr "문서 이미지 업로드됨"
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "문서 이미지 업로드는 현재 관리자가 비활성화했습니다."
 
-#: website/templates/articles.html:326 website/templates/index.html:192
+#: website/templates/articles.html:326 website/templates/index.html:227
 msgid "Article keywords"
 msgstr "문서 키워드"
 
@@ -619,7 +619,7 @@ msgstr "문서 소유자 사용자 이름"
 msgid "Article owner username snapshot"
 msgstr "문서 소유자 사용자 이름 스냅샷"
 
-#: website/templates/index.html:217
+#: website/templates/index.html:252
 msgid "Article pagination"
 msgstr "문서 페이지 이동"
 
@@ -1107,7 +1107,7 @@ msgstr "사용하지 않는 업로드 파일 정리"
 msgid "Clear chat"
 msgstr "채팅 지우기"
 
-#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:151
+#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:186
 msgid "Clear search"
 msgstr "검색 지우기"
 
@@ -1243,7 +1243,7 @@ msgstr "현재 사용자"
 msgid "Custom Django group"
 msgstr "사용자 지정 Django 그룹"
 
-#: website/templates/index.html:188 website/templates/index.html:258 website/templates/index.html:332 website/templates/index.html:380 website/templates/index.html:426
+#: website/templates/index.html:223 website/templates/index.html:293 website/templates/index.html:367 website/templates/index.html:415 website/templates/index.html:461
 msgid "Date"
 msgstr "날짜"
 
@@ -1727,7 +1727,7 @@ msgstr "소유자가 없거나 비활성화/삭제된 소유자를 가진 문서
 msgid "Finds unused files in"
 msgstr "사용하지 않는 파일 찾기 위치"
 
-#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:220 website/templates/index.html:223 website/templates/index.html:278 website/templates/index.html:281 website/templates/index.html:349 website/templates/index.html:352 website/templates/index.html:397 website/templates/index.html:400 website/templates/index.html:445 website/templates/index.html:448
+#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:255 website/templates/index.html:258 website/templates/index.html:313 website/templates/index.html:316 website/templates/index.html:384 website/templates/index.html:387 website/templates/index.html:432 website/templates/index.html:435 website/templates/index.html:480 website/templates/index.html:483
 msgid "First"
 msgstr "처음"
 
@@ -1763,7 +1763,7 @@ msgstr "일반 문서"
 msgid "General articles you own."
 msgstr "내가 소유한 일반 문서입니다."
 
-#: website/templates/index.html:165
+#: website/templates/index.html:200
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "가장 일반적인 질문에 대한 즉시 답변을 받고 3자를 전문가처럼 사용하는 방법을 배워보세요."
 
@@ -1880,7 +1880,7 @@ msgstr[0] "관련 게시 문서 %(count)d개를 찾았습니다."
 msgid "IP address"
 msgstr "IP 주소"
 
-#: website/templates/index.html:136
+#: website/templates/index.html:171
 msgid "IT Help Center"
 msgstr "IT 도움말 센터"
 
@@ -2008,7 +2008,7 @@ msgstr "비활성"
 msgid "Insert video link"
 msgstr "동영상 링크 삽입"
 
-#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
+#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:219 website/templates/index.html:291 website/templates/index.html:363 website/templates/index.html:411 website/templates/index.html:459 website/templates/index.html:688
 msgid "Internal"
 msgstr "내부"
 
@@ -2024,7 +2024,7 @@ msgstr "내부 문서 관리자"
 msgid "Internal Article Writer"
 msgstr "내부 문서 작성자"
 
-#: website/templates/index.html:248
+#: website/templates/index.html:283
 msgid "Internal Articles"
 msgstr "내부 문서"
 
@@ -2044,7 +2044,7 @@ msgstr "내부 승인자 추가 역할입니다. 공개/내부 문서를 보고,
 msgid "Internal article"
 msgstr "내부 문서"
 
-#: website/templates/index.html:275
+#: website/templates/index.html:310
 msgid "Internal article pages"
 msgstr "내부 문서 페이지"
 
@@ -2128,17 +2128,13 @@ msgstr "지식 베이스"
 msgid "Keep update pending / Save review edits"
 msgstr "업데이트를 대기 상태로 유지 / 검토 편집 저장"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "키워드"
 
 #: kb/views/services_search.py:72
 msgid "Keywords: %(keywords)s"
 msgstr "키워드: %(keywords)s"
-
-#: website/templates/_navbar.html:12 website/templates/_navbar.html:14
-msgid "Knowledge Repository"
-msgstr "지식 저장소"
 
 #: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
@@ -2204,7 +2200,7 @@ msgstr "언어 기본 설정이 성공적으로 업데이트되었습니다."
 msgid "Large exports may download as a split package:"
 msgstr "큰 내보내기는 분할 패키지로 다운로드될 수 있습니다:"
 
-#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:231 website/templates/index.html:234 website/templates/index.html:287 website/templates/index.html:290 website/templates/index.html:358 website/templates/index.html:361 website/templates/index.html:406 website/templates/index.html:409 website/templates/index.html:454 website/templates/index.html:457
+#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:266 website/templates/index.html:269 website/templates/index.html:322 website/templates/index.html:325 website/templates/index.html:393 website/templates/index.html:396 website/templates/index.html:441 website/templates/index.html:444 website/templates/index.html:489 website/templates/index.html:492
 msgid "Last"
 msgstr "마지막"
 
@@ -2236,7 +2232,7 @@ msgstr "레거시 메인 사이트 접근"
 msgid "Like"
 msgstr "좋아요"
 
-#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "좋아요"
 
@@ -2476,19 +2472,19 @@ msgstr "OpenKB AI 최소화"
 msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
 msgstr "'%(user)s'와 일치하는 활성 사용자가 둘 이상입니다. 정확한 사용자 이름을 사용하세요."
 
-#: website/templates/index.html:309
+#: website/templates/index.html:344
 msgid "Most Liked"
 msgstr "가장 많은 좋아요"
 
-#: website/templates/index.html:314
+#: website/templates/index.html:349
 msgid "Most Recent Articles"
 msgstr "최신 문서"
 
-#: website/templates/index.html:394
+#: website/templates/index.html:429
 msgid "Most liked article pages"
 msgstr "가장 많은 좋아요 문서 페이지"
 
-#: website/templates/index.html:442
+#: website/templates/index.html:477
 msgid "Most recent article pages"
 msgstr "최신 문서 페이지"
 
@@ -2544,13 +2540,17 @@ msgstr "새 비밀번호"
 msgid "New password and confirm password do not match."
 msgstr "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."
 
-#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:230 website/templates/index.html:233 website/templates/index.html:286 website/templates/index.html:289 website/templates/index.html:357 website/templates/index.html:360 website/templates/index.html:405 website/templates/index.html:408 website/templates/index.html:453 website/templates/index.html:456
+#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:265 website/templates/index.html:268 website/templates/index.html:321 website/templates/index.html:324 website/templates/index.html:392 website/templates/index.html:395 website/templates/index.html:440 website/templates/index.html:443 website/templates/index.html:488 website/templates/index.html:491
 msgid "Next"
 msgstr "다음"
 
 #: website/templates/login.html:125 website/templates/login.html:82 website/templates/login.html:83
 msgid "NextLabs AD email or username"
 msgstr "NextLabs AD 이메일 또는 사용자 이름"
+
+#: website/templates/_navbar.html:12 website/templates/_navbar.html:14 website/templates/index.html:6 website/templates/index.html:7
+msgid "NextLabs IT Knowledge Repository"
+msgstr "NextLabs IT Knowledge Repository"
 
 #: kb/admin_audit.py:212
 msgid "No"
@@ -2592,11 +2592,11 @@ msgstr "이미지 파일을 받지 못했습니다."
 msgid "No image filename received."
 msgstr "이미지 파일 이름을 받지 못했습니다."
 
-#: website/templates/index.html:266
+#: website/templates/index.html:301
 msgid "No internal articles have been published yet."
 msgstr "아직 게시된 내부 문서가 없습니다."
 
-#: website/templates/index.html:386
+#: website/templates/index.html:421
 msgid "No liked articles yet."
 msgstr "아직 좋아요를 누른 문서가 없습니다."
 
@@ -2604,11 +2604,11 @@ msgstr "아직 좋아요를 누른 문서가 없습니다."
 msgid "No matching active user found."
 msgstr "일치하는 활성 사용자를 찾을 수 없습니다."
 
-#: website/templates/articles.html:435 website/templates/index.html:544
+#: website/templates/articles.html:435 website/templates/index.html:705
 msgid "No matching articles found."
 msgstr "일치하는 문서를 찾을 수 없습니다."
 
-#: website/templates/index.html:208
+#: website/templates/index.html:243
 msgid "No matching published articles found by title or keywords."
 msgstr "제목 또는 키워드로 일치하는 게시 문서를 찾지 못했습니다."
 
@@ -2648,7 +2648,7 @@ msgstr "대기 중인 업데이트 없음"
 msgid "No permissions"
 msgstr "권한 없음"
 
-#: website/templates/index.html:338
+#: website/templates/index.html:373
 msgid "No published articles yet."
 msgstr "아직 게시된 문서가 없습니다."
 
@@ -2656,7 +2656,7 @@ msgstr "아직 게시된 문서가 없습니다."
 msgid "No queued articles were selected."
 msgstr "대기열 문서를 선택하지 않았습니다."
 
-#: website/templates/index.html:434
+#: website/templates/index.html:469
 msgid "No recent articles yet."
 msgstr "아직 최근 문서가 없습니다."
 
@@ -2836,15 +2836,15 @@ msgstr "소유자"
 msgid "Page %(current)s of %(total)s"
 msgstr "%(total)s페이지 중 %(current)s페이지"
 
-#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:227 website/templates/index.html:284 website/templates/index.html:355 website/templates/index.html:403 website/templates/index.html:451
+#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:262 website/templates/index.html:319 website/templates/index.html:390 website/templates/index.html:438 website/templates/index.html:486
 msgid "Page %(number)s of %(num_pages)s"
 msgstr "%(num_pages)s페이지 중 %(number)s페이지"
 
-#: website/templates/index.html:343 website/templates/index.html:391 website/templates/index.html:439
+#: website/templates/index.html:378 website/templates/index.html:426 website/templates/index.html:474
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s article(s)"
 msgstr "%(number)s / %(num_pages)s페이지 · 문서 %(count)s개 중 %(start)s–%(end)s개 표시"
 
-#: website/templates/index.html:272
+#: website/templates/index.html:307
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s internal article(s)"
 msgstr "%(number)s / %(num_pages)s페이지 · 내부 문서 %(count)s개 중 %(start)s–%(end)s개 표시"
 
@@ -3132,7 +3132,7 @@ msgstr "미리보기"
 msgid "Preview / Open"
 msgstr "미리보기 / 열기"
 
-#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:221 website/templates/index.html:224 website/templates/index.html:279 website/templates/index.html:282 website/templates/index.html:350 website/templates/index.html:353 website/templates/index.html:398 website/templates/index.html:401 website/templates/index.html:446 website/templates/index.html:449
+#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:256 website/templates/index.html:259 website/templates/index.html:314 website/templates/index.html:317 website/templates/index.html:385 website/templates/index.html:388 website/templates/index.html:433 website/templates/index.html:436 website/templates/index.html:481 website/templates/index.html:484
 msgid "Previous"
 msgstr "이전"
 
@@ -3287,6 +3287,10 @@ msgstr "관련 문서"
 #: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "문서에서 이미지 제거"
+
+#: website/templates/_navbar.html:2
+msgid "Remove search history item"
+msgstr "검색 기록 항목 삭제"
 
 #: kb/models.py:824
 msgid "Removed by uploader from editor"
@@ -3512,9 +3516,13 @@ msgstr "검색"
 msgid "Search by title, body, keywords, status, or file path"
 msgstr "제목, 본문, 키워드, 상태 또는 파일 경로로 검색"
 
-#: website/templates/articles.html:331 website/templates/index.html:197
+#: website/templates/articles.html:331 website/templates/index.html:232
 msgid "Search for %(keyword)s"
 msgstr "%(keyword)s 검색"
+
+#: website/templates/_navbar.html:2
+msgid "Search history"
+msgstr "검색 기록"
 
 #: website/templates/admin_orphan_articles.html:187
 msgid "Search orphan articles"
@@ -3528,7 +3536,7 @@ msgstr "대기 중인 문서 검색"
 msgid "Search queued articles"
 msgstr "대기열 문서 검색"
 
-#: website/templates/articles.html:192 website/templates/index.html:156
+#: website/templates/articles.html:192 website/templates/index.html:191
 msgid "Search results"
 msgstr "검색 결과"
 
@@ -3636,7 +3644,7 @@ msgstr "문서 공유"
 msgid "Showing %(count)s of %(total)s queued article(s)."
 msgstr "대기열 문서 %(total)s개 중 %(count)s개 표시."
 
-#: website/templates/index.html:214
+#: website/templates/index.html:249
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
 msgstr "%(count)s개 문서 중 %(start)s-%(end)s 표시"
 
@@ -4124,11 +4132,11 @@ msgstr "상단 문서 페이지 이동"
 msgid "Total articles suggested by %(name)s"
 msgstr "%(name)s님이 제안한 총 문서 수"
 
-#: website/templates/index.html:304
+#: website/templates/index.html:339
 msgid "Trending Topics"
 msgstr "인기 주제"
 
-#: website/templates/index.html:346
+#: website/templates/index.html:381
 msgid "Trending article pages"
 msgstr "인기 문서 페이지"
 
@@ -4172,7 +4180,7 @@ msgstr "체크박스 선택 해제"
 msgid "Untitled"
 msgstr "제목 없음"
 
-#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:523
+#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:682
 msgid "Untitled article"
 msgstr "제목 없는 문서"
 
@@ -4352,7 +4360,7 @@ msgstr "보기"
 msgid "View articles"
 msgstr "문서 보기"
 
-#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "조회수"
 
@@ -4604,10 +4612,6 @@ msgstr "설정되지 않음"
 msgid "object"
 msgstr "객체"
 
-#: website/templates/index.html:6 website/templates/index.html:7
-msgid "openKB"
-msgstr "openKB"
-
 #: website/templates/edit_my_suggestions.html:12 website/templates/login.html:12 website/templates/profile.html:11 website/templates/suggest.html:12 website/templates/suggest_edit.html:13
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
 msgstr "openKB는 강력한 lunr 검색을 갖춘 Node.js Markdown 기반 오픈 소스 지식베이스/FAQ/Wiki 앱입니다"
@@ -4644,7 +4648,7 @@ msgstr "%(count)s회 반복"
 msgid "repeat forever"
 msgstr "무한 반복"
 
-#: website/templates/articles.html:186 website/templates/index.html:141
+#: website/templates/articles.html:186 website/templates/index.html:176
 msgid "search"
 msgstr "검색"
 

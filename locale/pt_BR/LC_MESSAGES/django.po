@@ -48,7 +48,7 @@ msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s minuto"
 msgstr[1] "%(count)s minutos"
 
-#: website/templates/index.html:176
+#: website/templates/index.html:211
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "Foram encontrados %(count)s resultado(s) com base no título e nas palavras-chave do artigo."
 
@@ -128,7 +128,7 @@ msgstr[1] "+%(count)d alterações adicionais"
 msgid ", +%(count)d more"
 msgstr ", +%(count)d adicionais"
 
-#: website/templates/index.html:174
+#: website/templates/index.html:209
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: RESULTADOS DA BUSCA POR \"%(query)s\" :::"
 
@@ -548,7 +548,7 @@ msgstr "Imagem do artigo enviada"
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Os uploads de imagens de artigos estão atualmente desativados pelo administrador."
 
-#: website/templates/articles.html:326 website/templates/index.html:192
+#: website/templates/articles.html:326 website/templates/index.html:227
 msgid "Article keywords"
 msgstr "Palavras-chave do artigo"
 
@@ -624,7 +624,7 @@ msgstr "Nome de usuário do proprietário do artigo"
 msgid "Article owner username snapshot"
 msgstr "Instantâneo do nome de usuário do proprietário do artigo"
 
-#: website/templates/index.html:217
+#: website/templates/index.html:252
 msgid "Article pagination"
 msgstr "Paginação de artigos"
 
@@ -1112,7 +1112,7 @@ msgstr "Limpar arquivos enviados não utilizados"
 msgid "Clear chat"
 msgstr "Limpar conversa"
 
-#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:151
+#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:186
 msgid "Clear search"
 msgstr "Limpar busca"
 
@@ -1248,7 +1248,7 @@ msgstr "Usuários atuais"
 msgid "Custom Django group"
 msgstr "Grupo personalizado do Django"
 
-#: website/templates/index.html:188 website/templates/index.html:258 website/templates/index.html:332 website/templates/index.html:380 website/templates/index.html:426
+#: website/templates/index.html:223 website/templates/index.html:293 website/templates/index.html:367 website/templates/index.html:415 website/templates/index.html:461
 msgid "Date"
 msgstr "Data"
 
@@ -1732,7 +1732,7 @@ msgstr "Localize artigos sem proprietário ou com proprietário inativo/excluíd
 msgid "Finds unused files in"
 msgstr "Encontra arquivos não usados em"
 
-#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:220 website/templates/index.html:223 website/templates/index.html:278 website/templates/index.html:281 website/templates/index.html:349 website/templates/index.html:352 website/templates/index.html:397 website/templates/index.html:400 website/templates/index.html:445 website/templates/index.html:448
+#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:255 website/templates/index.html:258 website/templates/index.html:313 website/templates/index.html:316 website/templates/index.html:384 website/templates/index.html:387 website/templates/index.html:432 website/templates/index.html:435 website/templates/index.html:480 website/templates/index.html:483
 msgid "First"
 msgstr "Primeira"
 
@@ -1768,7 +1768,7 @@ msgstr "Artigos gerais"
 msgid "General articles you own."
 msgstr "Artigos gerais de sua propriedade."
 
-#: website/templates/index.html:165
+#: website/templates/index.html:200
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Obtenha respostas instantâneas para as perguntas mais comuns e aprenda a usar 3 caracteres como um profissional."
 
@@ -1886,7 +1886,7 @@ msgstr[1] "Encontrei %(count)d artigos publicados relevantes."
 msgid "IP address"
 msgstr "Endereço IP"
 
-#: website/templates/index.html:136
+#: website/templates/index.html:171
 msgid "IT Help Center"
 msgstr "Central de Ajuda de TI"
 
@@ -2014,7 +2014,7 @@ msgstr "Inativo"
 msgid "Insert video link"
 msgstr "Inserir link de vídeo"
 
-#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
+#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:219 website/templates/index.html:291 website/templates/index.html:363 website/templates/index.html:411 website/templates/index.html:459 website/templates/index.html:688
 msgid "Internal"
 msgstr "Interno"
 
@@ -2030,7 +2030,7 @@ msgstr "Gerenciador de artigos internos"
 msgid "Internal Article Writer"
 msgstr "Autor de artigos internos"
 
-#: website/templates/index.html:248
+#: website/templates/index.html:283
 msgid "Internal Articles"
 msgstr "Artigos internos"
 
@@ -2050,7 +2050,7 @@ msgstr "Função adicional de aprovador interno. Pode visualizar artigos públic
 msgid "Internal article"
 msgstr "Artigo interno"
 
-#: website/templates/index.html:275
+#: website/templates/index.html:310
 msgid "Internal article pages"
 msgstr "Páginas de artigos internos"
 
@@ -2134,17 +2134,13 @@ msgstr "Base de conhecimento"
 msgid "Keep update pending / Save review edits"
 msgstr "Manter atualização pendente / Salvar edições de revisão"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Palavras-chave"
 
 #: kb/views/services_search.py:72
 msgid "Keywords: %(keywords)s"
 msgstr "Palavras-chave: %(keywords)s"
-
-#: website/templates/_navbar.html:12 website/templates/_navbar.html:14
-msgid "Knowledge Repository"
-msgstr "Repositório de conhecimento"
 
 #: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
@@ -2210,7 +2206,7 @@ msgstr "Preferência de idioma atualizada com sucesso."
 msgid "Large exports may download as a split package:"
 msgstr "Exportações grandes podem ser baixadas como um pacote dividido:"
 
-#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:231 website/templates/index.html:234 website/templates/index.html:287 website/templates/index.html:290 website/templates/index.html:358 website/templates/index.html:361 website/templates/index.html:406 website/templates/index.html:409 website/templates/index.html:454 website/templates/index.html:457
+#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:266 website/templates/index.html:269 website/templates/index.html:322 website/templates/index.html:325 website/templates/index.html:393 website/templates/index.html:396 website/templates/index.html:441 website/templates/index.html:444 website/templates/index.html:489 website/templates/index.html:492
 msgid "Last"
 msgstr "Última"
 
@@ -2242,7 +2238,7 @@ msgstr "Acesso legado ao site principal"
 msgid "Like"
 msgstr "Curtir"
 
-#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Gostei"
 
@@ -2482,19 +2478,19 @@ msgstr "Minimizar OpenKB AI"
 msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
 msgstr "Mais de um usuário ativo correspondeu a '%(user)s'. Use o nome de usuário exato."
 
-#: website/templates/index.html:309
+#: website/templates/index.html:344
 msgid "Most Liked"
 msgstr "Mais curtidos"
 
-#: website/templates/index.html:314
+#: website/templates/index.html:349
 msgid "Most Recent Articles"
 msgstr "Artigos mais recentes"
 
-#: website/templates/index.html:394
+#: website/templates/index.html:429
 msgid "Most liked article pages"
 msgstr "Páginas de artigos mais curtidos"
 
-#: website/templates/index.html:442
+#: website/templates/index.html:477
 msgid "Most recent article pages"
 msgstr "Páginas de artigos mais recentes"
 
@@ -2550,13 +2546,17 @@ msgstr "Nova senha"
 msgid "New password and confirm password do not match."
 msgstr "A nova senha e a confirmação da senha não coincidem."
 
-#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:230 website/templates/index.html:233 website/templates/index.html:286 website/templates/index.html:289 website/templates/index.html:357 website/templates/index.html:360 website/templates/index.html:405 website/templates/index.html:408 website/templates/index.html:453 website/templates/index.html:456
+#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:265 website/templates/index.html:268 website/templates/index.html:321 website/templates/index.html:324 website/templates/index.html:392 website/templates/index.html:395 website/templates/index.html:440 website/templates/index.html:443 website/templates/index.html:488 website/templates/index.html:491
 msgid "Next"
 msgstr "Próxima"
 
 #: website/templates/login.html:125 website/templates/login.html:82 website/templates/login.html:83
 msgid "NextLabs AD email or username"
 msgstr "E-mail ou usuário NextLabs AD"
+
+#: website/templates/_navbar.html:12 website/templates/_navbar.html:14 website/templates/index.html:6 website/templates/index.html:7
+msgid "NextLabs IT Knowledge Repository"
+msgstr "NextLabs IT Knowledge Repository"
 
 #: kb/admin_audit.py:212
 msgid "No"
@@ -2598,11 +2598,11 @@ msgstr "Nenhum arquivo de imagem recebido."
 msgid "No image filename received."
 msgstr "Nenhum nome de arquivo de imagem recebido."
 
-#: website/templates/index.html:266
+#: website/templates/index.html:301
 msgid "No internal articles have been published yet."
 msgstr "Nenhum artigo interno foi publicado ainda."
 
-#: website/templates/index.html:386
+#: website/templates/index.html:421
 msgid "No liked articles yet."
 msgstr "Nenhum artigo curtido ainda."
 
@@ -2610,11 +2610,11 @@ msgstr "Nenhum artigo curtido ainda."
 msgid "No matching active user found."
 msgstr "Nenhum usuário ativo correspondente encontrado."
 
-#: website/templates/articles.html:435 website/templates/index.html:544
+#: website/templates/articles.html:435 website/templates/index.html:705
 msgid "No matching articles found."
 msgstr "Nenhum artigo correspondente encontrado."
 
-#: website/templates/index.html:208
+#: website/templates/index.html:243
 msgid "No matching published articles found by title or keywords."
 msgstr "Nenhum artigo publicado correspondente encontrado por título ou palavras-chave."
 
@@ -2654,7 +2654,7 @@ msgstr "Nenhuma atualização pendente"
 msgid "No permissions"
 msgstr "Sem permissões"
 
-#: website/templates/index.html:338
+#: website/templates/index.html:373
 msgid "No published articles yet."
 msgstr "Nenhum artigo publicado ainda."
 
@@ -2662,7 +2662,7 @@ msgstr "Nenhum artigo publicado ainda."
 msgid "No queued articles were selected."
 msgstr "Nenhum artigo na fila foi selecionado."
 
-#: website/templates/index.html:434
+#: website/templates/index.html:469
 msgid "No recent articles yet."
 msgstr "Nenhum artigo recente ainda."
 
@@ -2842,15 +2842,15 @@ msgstr "Proprietário"
 msgid "Page %(current)s of %(total)s"
 msgstr "Página %(current)s de %(total)s"
 
-#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:227 website/templates/index.html:284 website/templates/index.html:355 website/templates/index.html:403 website/templates/index.html:451
+#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:262 website/templates/index.html:319 website/templates/index.html:390 website/templates/index.html:438 website/templates/index.html:486
 msgid "Page %(number)s of %(num_pages)s"
 msgstr "Página %(number)s de %(num_pages)s"
 
-#: website/templates/index.html:343 website/templates/index.html:391 website/templates/index.html:439
+#: website/templates/index.html:378 website/templates/index.html:426 website/templates/index.html:474
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s article(s)"
 msgstr "Página %(number)s de %(num_pages)s · Exibindo %(start)s–%(end)s de %(count)s artigo(s)"
 
-#: website/templates/index.html:272
+#: website/templates/index.html:307
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s internal article(s)"
 msgstr "Página %(number)s de %(num_pages)s · Exibindo %(start)s–%(end)s de %(count)s artigo(s) interno(s)"
 
@@ -3138,7 +3138,7 @@ msgstr "Pré-visualização"
 msgid "Preview / Open"
 msgstr "Pré-visualização / Abrir"
 
-#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:221 website/templates/index.html:224 website/templates/index.html:279 website/templates/index.html:282 website/templates/index.html:350 website/templates/index.html:353 website/templates/index.html:398 website/templates/index.html:401 website/templates/index.html:446 website/templates/index.html:449
+#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:256 website/templates/index.html:259 website/templates/index.html:314 website/templates/index.html:317 website/templates/index.html:385 website/templates/index.html:388 website/templates/index.html:433 website/templates/index.html:436 website/templates/index.html:481 website/templates/index.html:484
 msgid "Previous"
 msgstr "Anterior"
 
@@ -3293,6 +3293,10 @@ msgstr "Artigos relacionados"
 #: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Remover imagem do artigo"
+
+#: website/templates/_navbar.html:2
+msgid "Remove search history item"
+msgstr "Remover item do histórico de pesquisa"
 
 #: kb/models.py:824
 msgid "Removed by uploader from editor"
@@ -3518,9 +3522,13 @@ msgstr "Pesquisar"
 msgid "Search by title, body, keywords, status, or file path"
 msgstr "Pesquisar por título, corpo, palavras-chave, status ou caminho do arquivo"
 
-#: website/templates/articles.html:331 website/templates/index.html:197
+#: website/templates/articles.html:331 website/templates/index.html:232
 msgid "Search for %(keyword)s"
 msgstr "Pesquisar por %(keyword)s"
+
+#: website/templates/_navbar.html:2
+msgid "Search history"
+msgstr "Histórico de pesquisa"
 
 #: website/templates/admin_orphan_articles.html:187
 msgid "Search orphan articles"
@@ -3534,7 +3542,7 @@ msgstr "Pesquisar artigos pendentes"
 msgid "Search queued articles"
 msgstr "Pesquisar artigos na fila"
 
-#: website/templates/articles.html:192 website/templates/index.html:156
+#: website/templates/articles.html:192 website/templates/index.html:191
 msgid "Search results"
 msgstr "Resultados da pesquisa"
 
@@ -3642,7 +3650,7 @@ msgstr "Compartilhar artigo"
 msgid "Showing %(count)s of %(total)s queued article(s)."
 msgstr "Exibindo %(count)s de %(total)s artigo(s) na fila."
 
-#: website/templates/index.html:214
+#: website/templates/index.html:249
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
 msgstr "Mostrando %(start)s-%(end)s de %(count)s artigo(s)"
 
@@ -4130,11 +4138,11 @@ msgstr "Paginação superior de artigos"
 msgid "Total articles suggested by %(name)s"
 msgstr "Total de artigos sugeridos por %(name)s"
 
-#: website/templates/index.html:304
+#: website/templates/index.html:339
 msgid "Trending Topics"
 msgstr "Tópicos em alta"
 
-#: website/templates/index.html:346
+#: website/templates/index.html:381
 msgid "Trending article pages"
 msgstr "Páginas de artigos em alta"
 
@@ -4178,7 +4186,7 @@ msgstr "Desmarcar uma caixa de seleção"
 msgid "Untitled"
 msgstr "Sem título"
 
-#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:523
+#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:682
 msgid "Untitled article"
 msgstr "Artigo sem título"
 
@@ -4358,7 +4366,7 @@ msgstr "Visualizar"
 msgid "View articles"
 msgstr "Ver artigos"
 
-#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "Contagem de visualizações"
 
@@ -4610,10 +4618,6 @@ msgstr "não definido"
 msgid "object"
 msgstr "objeto"
 
-#: website/templates/index.html:6 website/templates/index.html:7
-msgid "openKB"
-msgstr "openKB"
-
 #: website/templates/edit_my_suggestions.html:12 website/templates/login.html:12 website/templates/profile.html:11 website/templates/suggest.html:12 website/templates/suggest_edit.html:13
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
 msgstr "openKB é um aplicativo de base de conhecimento/FAQ/Wiki de código aberto baseado em Node.js e Markdown, com poderosa busca lunr"
@@ -4650,7 +4654,7 @@ msgstr "repetir %(count)s vez(es)"
 msgid "repeat forever"
 msgstr "repetir para sempre"
 
-#: website/templates/articles.html:186 website/templates/index.html:141
+#: website/templates/articles.html:186 website/templates/index.html:176
 msgid "search"
 msgstr "pesquisar"
 

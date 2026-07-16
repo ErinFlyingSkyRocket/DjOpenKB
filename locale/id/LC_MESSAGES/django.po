@@ -45,7 +45,7 @@ msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s menit"
 
-#: website/templates/index.html:176
+#: website/templates/index.html:211
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s hasil ditemukan berdasarkan kecocokan judul artikel dan kata kunci."
 
@@ -123,7 +123,7 @@ msgstr[0] "+%(count)d perubahan lagi"
 msgid ", +%(count)d more"
 msgstr ", +%(count)d lagi"
 
-#: website/templates/index.html:174
+#: website/templates/index.html:209
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: HASIL PENCARIAN UNTUK \"%(query)s\" :::"
 
@@ -543,7 +543,7 @@ msgstr "Gambar artikel diunggah"
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Unggahan gambar artikel saat ini dinonaktifkan oleh administrator."
 
-#: website/templates/articles.html:326 website/templates/index.html:192
+#: website/templates/articles.html:326 website/templates/index.html:227
 msgid "Article keywords"
 msgstr "Kata kunci artikel"
 
@@ -619,7 +619,7 @@ msgstr "Nama pengguna pemilik artikel"
 msgid "Article owner username snapshot"
 msgstr "Snapshot nama pengguna pemilik artikel"
 
-#: website/templates/index.html:217
+#: website/templates/index.html:252
 msgid "Article pagination"
 msgstr "Paginasi artikel"
 
@@ -1107,7 +1107,7 @@ msgstr "Bersihkan file unggahan tidak terpakai"
 msgid "Clear chat"
 msgstr "Hapus percakapan"
 
-#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:151
+#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:186
 msgid "Clear search"
 msgstr "Hapus pencarian"
 
@@ -1243,7 +1243,7 @@ msgstr "Pengguna saat ini"
 msgid "Custom Django group"
 msgstr "Grup Django kustom"
 
-#: website/templates/index.html:188 website/templates/index.html:258 website/templates/index.html:332 website/templates/index.html:380 website/templates/index.html:426
+#: website/templates/index.html:223 website/templates/index.html:293 website/templates/index.html:367 website/templates/index.html:415 website/templates/index.html:461
 msgid "Date"
 msgstr "Tanggal"
 
@@ -1727,7 +1727,7 @@ msgstr "Temukan artikel tanpa pemilik atau dengan pemilik tidak aktif/dihapus, l
 msgid "Finds unused files in"
 msgstr "Menemukan file yang tidak digunakan di"
 
-#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:220 website/templates/index.html:223 website/templates/index.html:278 website/templates/index.html:281 website/templates/index.html:349 website/templates/index.html:352 website/templates/index.html:397 website/templates/index.html:400 website/templates/index.html:445 website/templates/index.html:448
+#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:255 website/templates/index.html:258 website/templates/index.html:313 website/templates/index.html:316 website/templates/index.html:384 website/templates/index.html:387 website/templates/index.html:432 website/templates/index.html:435 website/templates/index.html:480 website/templates/index.html:483
 msgid "First"
 msgstr "Pertama"
 
@@ -1763,7 +1763,7 @@ msgstr "Artikel umum"
 msgid "General articles you own."
 msgstr "Artikel umum milik Anda."
 
-#: website/templates/index.html:165
+#: website/templates/index.html:200
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Dapatkan jawaban instan untuk pertanyaan paling umum dan pelajari cara menggunakan 3 karakter seperti profesional."
 
@@ -1880,7 +1880,7 @@ msgstr[0] "Saya menemukan %(count)d artikel yang diterbitkan dan relevan."
 msgid "IP address"
 msgstr "Alamat IP"
 
-#: website/templates/index.html:136
+#: website/templates/index.html:171
 msgid "IT Help Center"
 msgstr "Pusat Bantuan TI"
 
@@ -2008,7 +2008,7 @@ msgstr "Tidak aktif"
 msgid "Insert video link"
 msgstr "Sisipkan tautan video"
 
-#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
+#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:219 website/templates/index.html:291 website/templates/index.html:363 website/templates/index.html:411 website/templates/index.html:459 website/templates/index.html:688
 msgid "Internal"
 msgstr "Internal"
 
@@ -2024,7 +2024,7 @@ msgstr "Manajer Artikel Internal"
 msgid "Internal Article Writer"
 msgstr "Penulis Artikel Internal"
 
-#: website/templates/index.html:248
+#: website/templates/index.html:283
 msgid "Internal Articles"
 msgstr "Artikel Internal"
 
@@ -2044,7 +2044,7 @@ msgstr "Tambahan penyetuju internal. Dapat melihat artikel publik/internal, meng
 msgid "Internal article"
 msgstr "Artikel internal"
 
-#: website/templates/index.html:275
+#: website/templates/index.html:310
 msgid "Internal article pages"
 msgstr "Halaman artikel internal"
 
@@ -2128,17 +2128,13 @@ msgstr "Basis Pengetahuan"
 msgid "Keep update pending / Save review edits"
 msgstr "Biarkan pembaruan menunggu / Simpan edit tinjauan"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Kata kunci"
 
 #: kb/views/services_search.py:72
 msgid "Keywords: %(keywords)s"
 msgstr "Kata kunci: %(keywords)s"
-
-#: website/templates/_navbar.html:12 website/templates/_navbar.html:14
-msgid "Knowledge Repository"
-msgstr "Repositori Pengetahuan"
 
 #: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
@@ -2204,7 +2200,7 @@ msgstr "Preferensi bahasa berhasil diperbarui."
 msgid "Large exports may download as a split package:"
 msgstr "Ekspor besar dapat diunduh sebagai paket terbagi:"
 
-#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:231 website/templates/index.html:234 website/templates/index.html:287 website/templates/index.html:290 website/templates/index.html:358 website/templates/index.html:361 website/templates/index.html:406 website/templates/index.html:409 website/templates/index.html:454 website/templates/index.html:457
+#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:266 website/templates/index.html:269 website/templates/index.html:322 website/templates/index.html:325 website/templates/index.html:393 website/templates/index.html:396 website/templates/index.html:441 website/templates/index.html:444 website/templates/index.html:489 website/templates/index.html:492
 msgid "Last"
 msgstr "Terakhir"
 
@@ -2236,7 +2232,7 @@ msgstr "Akses situs utama lama"
 msgid "Like"
 msgstr "Suka"
 
-#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Suka"
 
@@ -2476,19 +2472,19 @@ msgstr "Perkecil OpenKB AI"
 msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
 msgstr "Lebih dari satu pengguna aktif cocok dengan '%(user)s'. Gunakan nama pengguna yang tepat."
 
-#: website/templates/index.html:309
+#: website/templates/index.html:344
 msgid "Most Liked"
 msgstr "Paling Disukai"
 
-#: website/templates/index.html:314
+#: website/templates/index.html:349
 msgid "Most Recent Articles"
 msgstr "Artikel Terbaru"
 
-#: website/templates/index.html:394
+#: website/templates/index.html:429
 msgid "Most liked article pages"
 msgstr "Halaman artikel paling disukai"
 
-#: website/templates/index.html:442
+#: website/templates/index.html:477
 msgid "Most recent article pages"
 msgstr "Halaman artikel terbaru"
 
@@ -2544,13 +2540,17 @@ msgstr "Kata sandi baru"
 msgid "New password and confirm password do not match."
 msgstr "Kata sandi baru dan konfirmasi kata sandi tidak cocok."
 
-#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:230 website/templates/index.html:233 website/templates/index.html:286 website/templates/index.html:289 website/templates/index.html:357 website/templates/index.html:360 website/templates/index.html:405 website/templates/index.html:408 website/templates/index.html:453 website/templates/index.html:456
+#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:265 website/templates/index.html:268 website/templates/index.html:321 website/templates/index.html:324 website/templates/index.html:392 website/templates/index.html:395 website/templates/index.html:440 website/templates/index.html:443 website/templates/index.html:488 website/templates/index.html:491
 msgid "Next"
 msgstr "Berikutnya"
 
 #: website/templates/login.html:125 website/templates/login.html:82 website/templates/login.html:83
 msgid "NextLabs AD email or username"
 msgstr "Email atau nama pengguna NextLabs AD"
+
+#: website/templates/_navbar.html:12 website/templates/_navbar.html:14 website/templates/index.html:6 website/templates/index.html:7
+msgid "NextLabs IT Knowledge Repository"
+msgstr "NextLabs IT Knowledge Repository"
 
 #: kb/admin_audit.py:212
 msgid "No"
@@ -2592,11 +2592,11 @@ msgstr "Tidak ada file gambar yang diterima."
 msgid "No image filename received."
 msgstr "Tidak ada nama file gambar yang diterima."
 
-#: website/templates/index.html:266
+#: website/templates/index.html:301
 msgid "No internal articles have been published yet."
 msgstr "Belum ada artikel internal yang diterbitkan."
 
-#: website/templates/index.html:386
+#: website/templates/index.html:421
 msgid "No liked articles yet."
 msgstr "Belum ada artikel yang disukai."
 
@@ -2604,11 +2604,11 @@ msgstr "Belum ada artikel yang disukai."
 msgid "No matching active user found."
 msgstr "Tidak ada pengguna aktif yang cocok ditemukan."
 
-#: website/templates/articles.html:435 website/templates/index.html:544
+#: website/templates/articles.html:435 website/templates/index.html:705
 msgid "No matching articles found."
 msgstr "Tidak ada artikel yang cocok ditemukan."
 
-#: website/templates/index.html:208
+#: website/templates/index.html:243
 msgid "No matching published articles found by title or keywords."
 msgstr "Tidak ada artikel yang diterbitkan yang cocok berdasarkan judul atau kata kunci."
 
@@ -2648,7 +2648,7 @@ msgstr "Tidak ada pembaruan tertunda"
 msgid "No permissions"
 msgstr "Tidak ada izin"
 
-#: website/templates/index.html:338
+#: website/templates/index.html:373
 msgid "No published articles yet."
 msgstr "Belum ada artikel yang diterbitkan."
 
@@ -2656,7 +2656,7 @@ msgstr "Belum ada artikel yang diterbitkan."
 msgid "No queued articles were selected."
 msgstr "Tidak ada artikel dalam antrean yang dipilih."
 
-#: website/templates/index.html:434
+#: website/templates/index.html:469
 msgid "No recent articles yet."
 msgstr "Belum ada artikel terbaru."
 
@@ -2836,15 +2836,15 @@ msgstr "Pemilik"
 msgid "Page %(current)s of %(total)s"
 msgstr "Halaman %(current)s dari %(total)s"
 
-#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:227 website/templates/index.html:284 website/templates/index.html:355 website/templates/index.html:403 website/templates/index.html:451
+#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:262 website/templates/index.html:319 website/templates/index.html:390 website/templates/index.html:438 website/templates/index.html:486
 msgid "Page %(number)s of %(num_pages)s"
 msgstr "Halaman %(number)s dari %(num_pages)s"
 
-#: website/templates/index.html:343 website/templates/index.html:391 website/templates/index.html:439
+#: website/templates/index.html:378 website/templates/index.html:426 website/templates/index.html:474
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s article(s)"
 msgstr "Halaman %(number)s dari %(num_pages)s · Menampilkan %(start)s–%(end)s dari %(count)s artikel"
 
-#: website/templates/index.html:272
+#: website/templates/index.html:307
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s internal article(s)"
 msgstr "Halaman %(number)s dari %(num_pages)s · Menampilkan %(start)s–%(end)s dari %(count)s artikel internal"
 
@@ -3132,7 +3132,7 @@ msgstr "Pratinjau"
 msgid "Preview / Open"
 msgstr "Pratinjau / Buka"
 
-#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:221 website/templates/index.html:224 website/templates/index.html:279 website/templates/index.html:282 website/templates/index.html:350 website/templates/index.html:353 website/templates/index.html:398 website/templates/index.html:401 website/templates/index.html:446 website/templates/index.html:449
+#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:256 website/templates/index.html:259 website/templates/index.html:314 website/templates/index.html:317 website/templates/index.html:385 website/templates/index.html:388 website/templates/index.html:433 website/templates/index.html:436 website/templates/index.html:481 website/templates/index.html:484
 msgid "Previous"
 msgstr "Sebelumnya"
 
@@ -3287,6 +3287,10 @@ msgstr "Artikel terkait"
 #: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Hapus gambar dari artikel"
+
+#: website/templates/_navbar.html:2
+msgid "Remove search history item"
+msgstr "Hapus item dari riwayat pencarian"
 
 #: kb/models.py:824
 msgid "Removed by uploader from editor"
@@ -3512,9 +3516,13 @@ msgstr "Cari"
 msgid "Search by title, body, keywords, status, or file path"
 msgstr "Cari berdasarkan judul, isi, kata kunci, status, atau jalur file"
 
-#: website/templates/articles.html:331 website/templates/index.html:197
+#: website/templates/articles.html:331 website/templates/index.html:232
 msgid "Search for %(keyword)s"
 msgstr "Cari %(keyword)s"
+
+#: website/templates/_navbar.html:2
+msgid "Search history"
+msgstr "Riwayat pencarian"
 
 #: website/templates/admin_orphan_articles.html:187
 msgid "Search orphan articles"
@@ -3528,7 +3536,7 @@ msgstr "Cari artikel yang menunggu"
 msgid "Search queued articles"
 msgstr "Cari artikel dalam antrean"
 
-#: website/templates/articles.html:192 website/templates/index.html:156
+#: website/templates/articles.html:192 website/templates/index.html:191
 msgid "Search results"
 msgstr "Hasil pencarian"
 
@@ -3636,7 +3644,7 @@ msgstr "Bagikan artikel"
 msgid "Showing %(count)s of %(total)s queued article(s)."
 msgstr "Menampilkan %(count)s dari %(total)s artikel dalam antrean."
 
-#: website/templates/index.html:214
+#: website/templates/index.html:249
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
 msgstr "Menampilkan %(start)s-%(end)s dari %(count)s artikel"
 
@@ -4124,11 +4132,11 @@ msgstr "Paginasi artikel atas"
 msgid "Total articles suggested by %(name)s"
 msgstr "Total artikel yang disarankan oleh %(name)s"
 
-#: website/templates/index.html:304
+#: website/templates/index.html:339
 msgid "Trending Topics"
 msgstr "Topik Tren"
 
-#: website/templates/index.html:346
+#: website/templates/index.html:381
 msgid "Trending article pages"
 msgstr "Halaman artikel tren"
 
@@ -4172,7 +4180,7 @@ msgstr "Menghapus centang kotak"
 msgid "Untitled"
 msgstr "Tanpa judul"
 
-#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:523
+#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:682
 msgid "Untitled article"
 msgstr "Artikel tanpa judul"
 
@@ -4352,7 +4360,7 @@ msgstr "Lihat"
 msgid "View articles"
 msgstr "Lihat artikel"
 
-#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "Jumlah tayangan"
 
@@ -4604,10 +4612,6 @@ msgstr "belum diatur"
 msgid "object"
 msgstr "objek"
 
-#: website/templates/index.html:6 website/templates/index.html:7
-msgid "openKB"
-msgstr "openKB"
-
 #: website/templates/edit_my_suggestions.html:12 website/templates/login.html:12 website/templates/profile.html:11 website/templates/suggest.html:12 website/templates/suggest_edit.html:13
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
 msgstr "openKB adalah aplikasi basis pengetahuan/FAQ/Wiki sumber terbuka berbasis Node.js Markdown dengan pencarian lunr yang kuat"
@@ -4644,7 +4648,7 @@ msgstr "ulangi %(count)s kali"
 msgid "repeat forever"
 msgstr "ulangi selamanya"
 
-#: website/templates/articles.html:186 website/templates/index.html:141
+#: website/templates/articles.html:186 website/templates/index.html:176
 msgid "search"
 msgstr "cari"
 

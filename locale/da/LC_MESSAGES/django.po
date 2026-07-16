@@ -48,7 +48,7 @@ msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s minut"
 msgstr[1] "%(count)s minutter"
 
-#: website/templates/index.html:176
+#: website/templates/index.html:211
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s resultat(er) fundet ved match af artikeltitel og nøgleord."
 
@@ -128,7 +128,7 @@ msgstr[1] "+%(count)d yderligere ændringer"
 msgid ", +%(count)d more"
 msgstr ", +%(count)d flere"
 
-#: website/templates/index.html:174
+#: website/templates/index.html:209
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: SØGERESULTATER FOR \"%(query)s\" :::"
 
@@ -548,7 +548,7 @@ msgstr "Artikelbillede uploadet"
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Upload af artikelbilleder er i øjeblikket deaktiveret af administratoren."
 
-#: website/templates/articles.html:326 website/templates/index.html:192
+#: website/templates/articles.html:326 website/templates/index.html:227
 msgid "Article keywords"
 msgstr "Artikelnøgleord"
 
@@ -624,7 +624,7 @@ msgstr "Artikelejerens brugernavn"
 msgid "Article owner username snapshot"
 msgstr "Øjebliksbillede af artikkelejerens brugernavn"
 
-#: website/templates/index.html:217
+#: website/templates/index.html:252
 msgid "Article pagination"
 msgstr "Artikelpaginering"
 
@@ -1112,7 +1112,7 @@ msgstr "Ryd ubrugte uploadfiler"
 msgid "Clear chat"
 msgstr "Ryd chat"
 
-#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:151
+#: website/templates/admin_deletion_queue.html:90 website/templates/admin_orphan_articles.html:199 website/templates/admin_pending_articles.html:77 website/templates/edit_my_suggestions.html:171 website/templates/edit_my_suggestions.html:285 website/templates/index.html:186
 msgid "Clear search"
 msgstr "Ryd søgning"
 
@@ -1248,7 +1248,7 @@ msgstr "Nuværende brugere"
 msgid "Custom Django group"
 msgstr "Brugerdefineret Django-gruppe"
 
-#: website/templates/index.html:188 website/templates/index.html:258 website/templates/index.html:332 website/templates/index.html:380 website/templates/index.html:426
+#: website/templates/index.html:223 website/templates/index.html:293 website/templates/index.html:367 website/templates/index.html:415 website/templates/index.html:461
 msgid "Date"
 msgstr "Dato"
 
@@ -1732,7 +1732,7 @@ msgstr "Find artikler uden ejer eller med en inaktiv/slettet ejer, og tildel dem
 msgid "Finds unused files in"
 msgstr "Finder ubrugte filer i"
 
-#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:220 website/templates/index.html:223 website/templates/index.html:278 website/templates/index.html:281 website/templates/index.html:349 website/templates/index.html:352 website/templates/index.html:397 website/templates/index.html:400 website/templates/index.html:445 website/templates/index.html:448
+#: website/templates/admin_orphan_articles.html:209 website/templates/admin_orphan_articles.html:212 website/templates/admin_pending_articles.html:87 website/templates/admin_pending_articles.html:90 website/templates/edit_my_suggestions.html:193 website/templates/edit_my_suggestions.html:196 website/templates/edit_my_suggestions.html:304 website/templates/edit_my_suggestions.html:307 website/templates/index.html:255 website/templates/index.html:258 website/templates/index.html:313 website/templates/index.html:316 website/templates/index.html:384 website/templates/index.html:387 website/templates/index.html:432 website/templates/index.html:435 website/templates/index.html:480 website/templates/index.html:483
 msgid "First"
 msgstr "Første"
 
@@ -1768,7 +1768,7 @@ msgstr "Generelle artikler"
 msgid "General articles you own."
 msgstr "Generelle artikler, du ejer."
 
-#: website/templates/index.html:165
+#: website/templates/index.html:200
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Få øjeblikkelige svar på de mest almindelige spørgsmål, og lær at bruge 3 tegn som en professionel."
 
@@ -1886,7 +1886,7 @@ msgstr[1] "Jeg fandt %(count)d relevante udgivne artikler."
 msgid "IP address"
 msgstr "IP-adresse"
 
-#: website/templates/index.html:136
+#: website/templates/index.html:171
 msgid "IT Help Center"
 msgstr "IT Hjælpecenter"
 
@@ -2014,7 +2014,7 @@ msgstr "Inaktiv"
 msgid "Insert video link"
 msgstr "Indsæt videolink"
 
-#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
+#: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:219 website/templates/index.html:291 website/templates/index.html:363 website/templates/index.html:411 website/templates/index.html:459 website/templates/index.html:688
 msgid "Internal"
 msgstr "Intern"
 
@@ -2030,7 +2030,7 @@ msgstr "Intern artikeladministrator"
 msgid "Internal Article Writer"
 msgstr "Intern artikelforfatter"
 
-#: website/templates/index.html:248
+#: website/templates/index.html:283
 msgid "Internal Articles"
 msgstr "Interne artikler"
 
@@ -2050,7 +2050,7 @@ msgstr "Supplerende rolle for intern godkender. Kan se offentlige/interne artikl
 msgid "Internal article"
 msgstr "Intern artikel"
 
-#: website/templates/index.html:275
+#: website/templates/index.html:310
 msgid "Internal article pages"
 msgstr "Sider med interne artikler"
 
@@ -2134,17 +2134,13 @@ msgstr "Vidensbase"
 msgid "Keep update pending / Save review edits"
 msgstr "Behold opdatering som afventende / Gem gennemgangsredigeringer"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Nøgleord"
 
 #: kb/views/services_search.py:72
 msgid "Keywords: %(keywords)s"
 msgstr "Nøgleord: %(keywords)s"
-
-#: website/templates/_navbar.html:12 website/templates/_navbar.html:14
-msgid "Knowledge Repository"
-msgstr "Vidensarkiv"
 
 #: kb/admin.py:1354
 msgid "Knowledge Repository Permissions"
@@ -2210,7 +2206,7 @@ msgstr "Sprogindstilling opdateret."
 msgid "Large exports may download as a split package:"
 msgstr "Store eksporter kan blive downloadet som en opdelt pakke:"
 
-#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:231 website/templates/index.html:234 website/templates/index.html:287 website/templates/index.html:290 website/templates/index.html:358 website/templates/index.html:361 website/templates/index.html:406 website/templates/index.html:409 website/templates/index.html:454 website/templates/index.html:457
+#: website/templates/admin_orphan_articles.html:218 website/templates/admin_orphan_articles.html:221 website/templates/admin_pending_articles.html:96 website/templates/admin_pending_articles.html:99 website/templates/edit_my_suggestions.html:202 website/templates/edit_my_suggestions.html:205 website/templates/edit_my_suggestions.html:315 website/templates/edit_my_suggestions.html:318 website/templates/index.html:266 website/templates/index.html:269 website/templates/index.html:322 website/templates/index.html:325 website/templates/index.html:393 website/templates/index.html:396 website/templates/index.html:441 website/templates/index.html:444 website/templates/index.html:489 website/templates/index.html:492
 msgid "Last"
 msgstr "Sidste"
 
@@ -2242,7 +2238,7 @@ msgstr "Forældet adgang til hovedsitet"
 msgid "Like"
 msgstr "Synes godt om"
 
-#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:186 website/templates/index.html:260 website/templates/index.html:331 website/templates/index.html:378 website/templates/index.html:428
+#: kb/admin.py:2438 website/templates/articles.html:270 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Synes godt om"
 
@@ -2482,19 +2478,19 @@ msgstr "Minimer OpenKB AI"
 msgid "More than one active user matched '%(user)s'. Please use the exact username instead."
 msgstr "Mere end én aktiv bruger matchede '%(user)s'. Brug det nøjagtige brugernavn."
 
-#: website/templates/index.html:309
+#: website/templates/index.html:344
 msgid "Most Liked"
 msgstr "Mest likede"
 
-#: website/templates/index.html:314
+#: website/templates/index.html:349
 msgid "Most Recent Articles"
 msgstr "Seneste artikler"
 
-#: website/templates/index.html:394
+#: website/templates/index.html:429
 msgid "Most liked article pages"
 msgstr "Sider med mest likede artikler"
 
-#: website/templates/index.html:442
+#: website/templates/index.html:477
 msgid "Most recent article pages"
 msgstr "Sider med seneste artikler"
 
@@ -2550,13 +2546,17 @@ msgstr "Ny adgangskode"
 msgid "New password and confirm password do not match."
 msgstr "Ny adgangskode og bekræft adgangskode matcher ikke."
 
-#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:230 website/templates/index.html:233 website/templates/index.html:286 website/templates/index.html:289 website/templates/index.html:357 website/templates/index.html:360 website/templates/index.html:405 website/templates/index.html:408 website/templates/index.html:453 website/templates/index.html:456
+#: website/templates/admin_orphan_articles.html:217 website/templates/admin_orphan_articles.html:220 website/templates/admin_pending_articles.html:95 website/templates/admin_pending_articles.html:98 website/templates/edit_my_suggestions.html:201 website/templates/edit_my_suggestions.html:204 website/templates/edit_my_suggestions.html:314 website/templates/edit_my_suggestions.html:317 website/templates/index.html:265 website/templates/index.html:268 website/templates/index.html:321 website/templates/index.html:324 website/templates/index.html:392 website/templates/index.html:395 website/templates/index.html:440 website/templates/index.html:443 website/templates/index.html:488 website/templates/index.html:491
 msgid "Next"
 msgstr "Næste"
 
 #: website/templates/login.html:125 website/templates/login.html:82 website/templates/login.html:83
 msgid "NextLabs AD email or username"
 msgstr "NextLabs AD-mail eller brugernavn"
+
+#: website/templates/_navbar.html:12 website/templates/_navbar.html:14 website/templates/index.html:6 website/templates/index.html:7
+msgid "NextLabs IT Knowledge Repository"
+msgstr "NextLabs IT Knowledge Repository"
 
 #: kb/admin_audit.py:212
 msgid "No"
@@ -2598,11 +2598,11 @@ msgstr "Ingen billedfil modtaget."
 msgid "No image filename received."
 msgstr "Intet filnavn for billede modtaget."
 
-#: website/templates/index.html:266
+#: website/templates/index.html:301
 msgid "No internal articles have been published yet."
 msgstr "Der er endnu ikke udgivet nogen interne artikler."
 
-#: website/templates/index.html:386
+#: website/templates/index.html:421
 msgid "No liked articles yet."
 msgstr "Ingen likede artikler endnu."
 
@@ -2610,11 +2610,11 @@ msgstr "Ingen likede artikler endnu."
 msgid "No matching active user found."
 msgstr "Ingen matchende aktiv bruger fundet."
 
-#: website/templates/articles.html:435 website/templates/index.html:544
+#: website/templates/articles.html:435 website/templates/index.html:705
 msgid "No matching articles found."
 msgstr "Ingen matchende artikler fundet."
 
-#: website/templates/index.html:208
+#: website/templates/index.html:243
 msgid "No matching published articles found by title or keywords."
 msgstr "Ingen matchende udgivne artikler fundet efter titel eller nøgleord."
 
@@ -2654,7 +2654,7 @@ msgstr "Ingen afventende opdatering"
 msgid "No permissions"
 msgstr "Ingen tilladelser"
 
-#: website/templates/index.html:338
+#: website/templates/index.html:373
 msgid "No published articles yet."
 msgstr "Ingen udgivne artikler endnu."
 
@@ -2662,7 +2662,7 @@ msgstr "Ingen udgivne artikler endnu."
 msgid "No queued articles were selected."
 msgstr "Ingen artikler i køen blev valgt."
 
-#: website/templates/index.html:434
+#: website/templates/index.html:469
 msgid "No recent articles yet."
 msgstr "Ingen seneste artikler endnu."
 
@@ -2842,15 +2842,15 @@ msgstr "Ejer"
 msgid "Page %(current)s of %(total)s"
 msgstr "Side %(current)s af %(total)s"
 
-#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:227 website/templates/index.html:284 website/templates/index.html:355 website/templates/index.html:403 website/templates/index.html:451
+#: website/templates/edit_my_suggestions.html:311 website/templates/index.html:262 website/templates/index.html:319 website/templates/index.html:390 website/templates/index.html:438 website/templates/index.html:486
 msgid "Page %(number)s of %(num_pages)s"
 msgstr "Side %(number)s af %(num_pages)s"
 
-#: website/templates/index.html:343 website/templates/index.html:391 website/templates/index.html:439
+#: website/templates/index.html:378 website/templates/index.html:426 website/templates/index.html:474
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s article(s)"
 msgstr "Side %(number)s af %(num_pages)s · Viser %(start)s–%(end)s af %(count)s artikel/artikler"
 
-#: website/templates/index.html:272
+#: website/templates/index.html:307
 msgid "Page %(number)s of %(num_pages)s · Showing %(start)s–%(end)s of %(count)s internal article(s)"
 msgstr "Side %(number)s af %(num_pages)s · Viser %(start)s–%(end)s af %(count)s intern(e) artikel/artikler"
 
@@ -3138,7 +3138,7 @@ msgstr "Forhåndsvisning"
 msgid "Preview / Open"
 msgstr "Forhåndsvisning / Åbn"
 
-#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:221 website/templates/index.html:224 website/templates/index.html:279 website/templates/index.html:282 website/templates/index.html:350 website/templates/index.html:353 website/templates/index.html:398 website/templates/index.html:401 website/templates/index.html:446 website/templates/index.html:449
+#: website/templates/admin_orphan_articles.html:210 website/templates/admin_orphan_articles.html:213 website/templates/admin_pending_articles.html:88 website/templates/admin_pending_articles.html:91 website/templates/edit_my_suggestions.html:194 website/templates/edit_my_suggestions.html:197 website/templates/edit_my_suggestions.html:305 website/templates/edit_my_suggestions.html:308 website/templates/index.html:256 website/templates/index.html:259 website/templates/index.html:314 website/templates/index.html:317 website/templates/index.html:385 website/templates/index.html:388 website/templates/index.html:433 website/templates/index.html:436 website/templates/index.html:481 website/templates/index.html:484
 msgid "Previous"
 msgstr "Forrige"
 
@@ -3293,6 +3293,10 @@ msgstr "Relaterede artikler"
 #: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Fjern billede fra artikel"
+
+#: website/templates/_navbar.html:2
+msgid "Remove search history item"
+msgstr "Fjern element fra søgehistorikken"
 
 #: kb/models.py:824
 msgid "Removed by uploader from editor"
@@ -3518,9 +3522,13 @@ msgstr "Søg"
 msgid "Search by title, body, keywords, status, or file path"
 msgstr "Søg efter titel, indhold, nøgleord, status eller filsti"
 
-#: website/templates/articles.html:331 website/templates/index.html:197
+#: website/templates/articles.html:331 website/templates/index.html:232
 msgid "Search for %(keyword)s"
 msgstr "Søg efter %(keyword)s"
+
+#: website/templates/_navbar.html:2
+msgid "Search history"
+msgstr "Søgehistorik"
 
 #: website/templates/admin_orphan_articles.html:187
 msgid "Search orphan articles"
@@ -3534,7 +3542,7 @@ msgstr "Søg i afventende artikler"
 msgid "Search queued articles"
 msgstr "Søg i artikler i køen"
 
-#: website/templates/articles.html:192 website/templates/index.html:156
+#: website/templates/articles.html:192 website/templates/index.html:191
 msgid "Search results"
 msgstr "Søgeresultater"
 
@@ -3642,7 +3650,7 @@ msgstr "Del artikel"
 msgid "Showing %(count)s of %(total)s queued article(s)."
 msgstr "Viser %(count)s af %(total)s artikel/artikler i køen."
 
-#: website/templates/index.html:214
+#: website/templates/index.html:249
 msgid "Showing %(start)s-%(end)s of %(count)s article(s)"
 msgstr "Viser %(start)s-%(end)s af %(count)s artikel/artikler"
 
@@ -4130,11 +4138,11 @@ msgstr "Øverste artikelpaginering"
 msgid "Total articles suggested by %(name)s"
 msgstr "Samlet antal artikler foreslået af %(name)s"
 
-#: website/templates/index.html:304
+#: website/templates/index.html:339
 msgid "Trending Topics"
 msgstr "Populære emner"
 
-#: website/templates/index.html:346
+#: website/templates/index.html:381
 msgid "Trending article pages"
 msgstr "Sider med populære artikler"
 
@@ -4178,7 +4186,7 @@ msgstr "Fjern markering af et afkrydsningsfelt"
 msgid "Untitled"
 msgstr "Uden titel"
 
-#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:523
+#: kb/views/main.py:318 website/templates/_openkb_ai_chat.html:17 website/templates/articles.html:414 website/templates/index.html:682
 msgid "Untitled article"
 msgstr "Artikel uden titel"
 
@@ -4358,7 +4366,7 @@ msgstr "Vis"
 msgid "View articles"
 msgstr "Vis artikler"
 
-#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:187 website/templates/index.html:259 website/templates/index.html:330 website/templates/index.html:379 website/templates/index.html:427
+#: kb/admin.py:194 website/templates/articles.html:310 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "Visningstal"
 
@@ -4610,10 +4618,6 @@ msgstr "ikke angivet"
 msgid "object"
 msgstr "objekt"
 
-#: website/templates/index.html:6 website/templates/index.html:7
-msgid "openKB"
-msgstr "openKB"
-
 #: website/templates/edit_my_suggestions.html:12 website/templates/login.html:12 website/templates/profile.html:11 website/templates/suggest.html:12 website/templates/suggest_edit.html:13
 msgid "openKB is an Open Source Node.js Markdown based knowledge base/FAQ/Wiki app with powerful lunr search"
 msgstr "openKB er en open source Node.js Markdown-baseret vidensbase/FAQ/Wiki-app med kraftfuld lunr-søgning"
@@ -4650,7 +4654,7 @@ msgstr "gentag %(count)s gang(e)"
 msgid "repeat forever"
 msgstr "gentag for altid"
 
-#: website/templates/articles.html:186 website/templates/index.html:141
+#: website/templates/articles.html:186 website/templates/index.html:176
 msgid "search"
 msgstr "søg"
 
