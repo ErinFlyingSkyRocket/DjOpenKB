@@ -401,6 +401,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% if can_edit_article_content %}
                                     <p>
                                         <button id="articleImageUploadButton" class="btn btn-default btn-sm" type="button"><i class="fa fa-image"></i> {% trans "Upload image" %}</button>
+                                        <button class="btn btn-default btn-sm" type="button" data-toggle="modal" data-target="#videoInsertModal"><i class="fa fa-play-circle"></i> {% trans "Insert video link" %}</button>
                                         <input id="articleImageUploadInput" class="article-image-upload-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp">
                                     </p>
                                 {% endif %}
@@ -427,6 +428,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             </div>
         </div>
     </div>
+    {% if can_edit_article_content %}
+        {% include "_video_insert_modal.html" %}
+    {% endif %}
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% empty %}{% if has_pending_update %}{% trans 'Pending update — This edit is waiting for admin approval. The current published version is still visible to users.' %}{% elif has_failed_update %}{% trans 'Update pending failed — Please review the admin comments, update your changes, and submit again.' %}{% elif has_saved_update_draft %}{% trans 'Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval.' %}{% endif %}{% endfor %}">
     <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% empty %}{% if has_pending_update %}warning{% elif has_failed_update %}danger{% elif has_saved_update_draft %}info{% endif %}{% endfor %}">
     <input type="hidden" value="" id="app_context">
@@ -547,6 +551,132 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         textarea.selectionStart = textarea.selectionEnd = start + inserted.length;
         textarea.focus();
         textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+
+    function normalizeSupportedVideoUrl(value) {
+        const rawValue = String(value || "").trim();
+        if (!rawValue) {
+            return "";
+        }
+
+        let parsed;
+        try {
+            parsed = new URL(rawValue);
+        } catch (error) {
+            return "";
+        }
+
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+            return "";
+        }
+
+        const hostname = parsed.hostname.toLowerCase().replace(/\.$/, "");
+        const pathParts = parsed.pathname.split("/").filter(Boolean);
+
+        const youtubeHosts = new Set([
+            "youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com",
+            "youtu.be", "www.youtu.be", "youtube-nocookie.com", "www.youtube-nocookie.com"
+        ]);
+        if (youtubeHosts.has(hostname)) {
+            let videoId = "";
+            if (hostname === "youtu.be" || hostname === "www.youtu.be") {
+                videoId = pathParts[0] || "";
+            } else if (hostname === "youtube-nocookie.com" || hostname === "www.youtube-nocookie.com") {
+                if (pathParts.length >= 2 && pathParts[0].toLowerCase() === "embed") {
+                    videoId = pathParts[1];
+                }
+            } else if (parsed.pathname.replace(/\/$/, "").toLowerCase() === "/watch") {
+                videoId = parsed.searchParams.get("v") || "";
+            } else if (pathParts.length >= 2 && ["shorts", "embed", "live"].includes(pathParts[0].toLowerCase())) {
+                videoId = pathParts[1];
+            }
+            return /^[A-Za-z0-9_-]{11}$/.test(videoId)
+                ? "https://www.youtube.com/watch?v=" + videoId
+                : "";
+        }
+
+        const vimeoHosts = new Set(["vimeo.com", "www.vimeo.com", "player.vimeo.com"]);
+        if (vimeoHosts.has(hostname)) {
+            let videoId = "";
+            if (hostname === "player.vimeo.com") {
+                if (pathParts.length >= 2 && pathParts[0].toLowerCase() === "video") {
+                    videoId = pathParts[1];
+                }
+            } else {
+                for (let index = pathParts.length - 1; index >= 0; index--) {
+                    if (/^[0-9]{1,20}$/.test(pathParts[index])) {
+                        videoId = pathParts[index];
+                        break;
+                    }
+                }
+            }
+            return /^[0-9]{1,20}$/.test(videoId)
+                ? "https://vimeo.com/" + videoId
+                : "";
+        }
+
+        if (parsed.protocol === "https:" && /\.(mp4|webm|ogg)$/i.test(parsed.pathname)) {
+            return rawValue;
+        }
+
+        return "";
+    }
+
+    function resetVideoInsertModal() {
+        const input = document.getElementById("videoUrl");
+        const error = document.getElementById("videoUrlError");
+        if (input) {
+            input.value = "";
+        }
+        if (error) {
+            error.classList.add("csp-is-hidden");
+        }
+    }
+
+    function insertVideoFromModal() {
+        const input = document.getElementById("videoUrl");
+        const error = document.getElementById("videoUrlError");
+        if (!input) {
+            return;
+        }
+
+        const normalizedUrl = normalizeSupportedVideoUrl(input.value);
+        if (!normalizedUrl) {
+            if (error) {
+                error.classList.remove("csp-is-hidden");
+            }
+            input.focus();
+            return;
+        }
+
+        insertMarkdown(normalizedUrl);
+        resetVideoInsertModal();
+        $("#videoInsertModal").modal("hide");
+        showPasteMessage("{% trans 'Video link inserted into the article.' %}", "success");
+    }
+
+    const insertVideoButton = document.getElementById("insertVideoButton");
+    const videoUrlInput = document.getElementById("videoUrl");
+    if (insertVideoButton) {
+        insertVideoButton.addEventListener("click", insertVideoFromModal);
+    }
+    if (videoUrlInput) {
+        videoUrlInput.addEventListener("input", function () {
+            const error = document.getElementById("videoUrlError");
+            if (error) {
+                error.classList.add("csp-is-hidden");
+            }
+        });
+        videoUrlInput.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                insertVideoFromModal();
+            }
+        });
+        $("#videoInsertModal").on("shown.bs.modal", function () {
+            videoUrlInput.focus();
+        });
+        $("#videoInsertModal").on("hidden.bs.modal", resetVideoInsertModal);
     }
 
     function replaceMarkdown(oldText, newText) {
