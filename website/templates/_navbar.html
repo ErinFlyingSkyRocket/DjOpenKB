@@ -9,9 +9,9 @@
                 <span class="icon-bar"></span>
             </button>
             {% if user.is_authenticated %}
-                <a class="navbar-brand" href="{% url 'home' %}">{% trans "Knowledge Repository" %}</a>
+                <a class="navbar-brand" href="{% url 'home' %}">{% trans "NextLabs IT Knowledge Repository" %}</a>
             {% else %}
-                <a class="navbar-brand" href="{% url 'root_login' %}">{% trans "Knowledge Repository" %}</a>
+                <a class="navbar-brand" href="{% url 'root_login' %}">{% trans "NextLabs IT Knowledge Repository" %}</a>
             {% endif %}
         </div>
 
