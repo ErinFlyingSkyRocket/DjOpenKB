@@ -529,6 +529,81 @@ $(document).ready(function(){
         });
     });
 
+    function getArticleVideoErrorDetails(errorCode){
+        var details = {
+            1: {
+                name: 'MEDIA_ERR_ABORTED',
+                message: 'Video loading was interrupted before it completed.'
+            },
+            2: {
+                name: 'MEDIA_ERR_NETWORK',
+                message: 'The video could not be downloaded because of a network or access problem.'
+            },
+            3: {
+                name: 'MEDIA_ERR_DECODE',
+                message: 'The video was received but could not be decoded by this browser.'
+            },
+            4: {
+                name: 'MEDIA_ERR_SRC_NOT_SUPPORTED',
+                message: 'The video source is unavailable, unsupported, or may require external sign-in or access permission.'
+            }
+        };
+
+        return details[errorCode] || {
+            name: 'MEDIA_ERR_UNKNOWN',
+            message: 'The video could not be loaded. The source may be unavailable or require additional access permission.'
+        };
+    }
+
+    function removeArticleVideoError(video){
+        var nextElement = video.nextElementSibling;
+        if(nextElement && nextElement.classList.contains('article-video-load-error')){
+            nextElement.remove();
+        }
+    }
+
+    function showArticleVideoError(video){
+        removeArticleVideoError(video);
+
+        var errorCode = video.error && video.error.code ? video.error.code : 0;
+        var details = getArticleVideoErrorDetails(errorCode);
+        var errorBox = document.createElement('div');
+        errorBox.className = 'alert alert-warning article-video-load-error';
+        errorBox.setAttribute('role', 'alert');
+
+        var strong = document.createElement('strong');
+        strong.textContent = 'Video unavailable';
+        errorBox.appendChild(strong);
+
+        var codeText = errorCode ? ' Error ' + errorCode + ' (' + details.name + '). ' : '. ';
+        errorBox.appendChild(document.createTextNode(codeText + details.message));
+
+        video.insertAdjacentElement('afterend', errorBox);
+    }
+
+    function initializeArticleVideoErrorHandling(root){
+        var container = root && root.querySelectorAll ? root : document;
+        Array.prototype.slice.call(container.querySelectorAll('video.article-video')).forEach(function(video){
+            if(video.getAttribute('data-video-error-handler') === '1'){
+                return;
+            }
+
+            video.setAttribute('data-video-error-handler', '1');
+            video.addEventListener('error', function(){
+                showArticleVideoError(video);
+            });
+            video.addEventListener('loadedmetadata', function(){
+                removeArticleVideoError(video);
+            });
+
+            // The media may already have failed before the DOM-ready handler was
+            // attached (for example on an article page loaded from cache).
+            if(video.error){
+                showArticleVideoError(video);
+            }
+        });
+    }
+
     function getPreviewVideoMarkup(value){
         var rawValue = String(value || '').trim();
         if(!rawValue){
@@ -813,6 +888,7 @@ $(document).ready(function(){
         });
 
         $('#preview').html(previewContainer.innerHTML);
+        initializeArticleVideoErrorHandling(document.getElementById('preview'));
 
         // re-hightlight the preview
         $('pre code').each(function(i, block){
@@ -928,6 +1004,9 @@ $(document).ready(function(){
             event.preventDefault();
         }
     });
+
+    // Show a clear inline error when a direct article video cannot be loaded.
+    initializeArticleVideoErrorHandling(document);
 
     if($('#input_notify_message').val() !== ''){
         // save values from inputs
