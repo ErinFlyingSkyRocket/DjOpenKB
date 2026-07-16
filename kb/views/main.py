@@ -303,7 +303,7 @@ def _search_article_suggestions(request, *, visibility=SuggestedArticle.Visibili
     init_openkb_storage()
 
     query = (request.GET.get("q") or "").strip()[:80]
-    if len(query) < 2:
+    if not query:
         return JsonResponse({"results": []})
 
     matched_articles = search_public_articles_by_title_keywords(query, limit=8, visibility=visibility, user=request.user)

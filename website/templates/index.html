@@ -68,6 +68,41 @@
         .openkb-search-suggestions a.list-group-item {
             text-align: left;
         }
+        .openkb-search-history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            cursor: pointer;
+        }
+        .openkb-search-history-item:hover,
+        .openkb-search-history-item:focus {
+            background: #f5f5f5;
+            outline: none;
+        }
+        .openkb-search-history-icon {
+            flex: 0 0 auto;
+            color: #95a5a6;
+        }
+        .openkb-search-history-term {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .openkb-search-history-remove {
+            flex: 0 0 auto;
+            border: 0;
+            background: transparent;
+            color: #95a5a6;
+            padding: 2px 6px;
+        }
+        .openkb-search-history-remove:hover,
+        .openkb-search-history-remove:focus {
+            color: #c0392b;
+            outline: none;
+        }
         .openkb-search-suggestion-title {
             display: block;
             font-weight: 600;
@@ -153,7 +188,7 @@
                     </div>
                 {% endif %}
                 <div id="searchResult" class="hidden openkb-search-suggestions" data-suggestions-url="{{ search_suggestions_url|default:'/search/suggestions/' }}">
-                    <ul class="list-group searchResultList" role="listbox" aria-label="{% trans 'Search results' %}"></ul>
+                    <div class="list-group searchResultList" role="listbox" aria-label="{% trans 'Search results' %}"></div>
                 </div>
             </div>
         </form>
@@ -481,9 +516,12 @@
 
 <script nonce="{{ csp_nonce }}">
     const openkbSearchInput = document.getElementById("frm_search");
+    const openkbSearchForm = document.getElementById("search_form");
     const openkbSearchDropdown = document.getElementById("searchResult");
     const openkbSearchSuggestionList = openkbSearchDropdown ? openkbSearchDropdown.querySelector(".searchResultList") : null;
     const openkbSearchSuggestionUrl = openkbSearchDropdown ? openkbSearchDropdown.dataset.suggestionsUrl : "";
+    const openkbSearchHistoryKey = "djopenkb.searchHistory";
+    const openkbSearchHistoryLimit = 5;
     let openkbSearchSuggestTimer = null;
     let openkbSearchSuggestController = null;
 
@@ -503,6 +541,124 @@
         if (openkbSearchSuggestionList) {
             openkbSearchSuggestionList.innerHTML = "";
         }
+    }
+
+    function cancelOpenKbSearchSuggestionRequest() {
+        if (openkbSearchSuggestController) {
+            openkbSearchSuggestController.abort();
+            openkbSearchSuggestController = null;
+        }
+    }
+
+    function getOpenKbSearchHistory() {
+        try {
+            const history = JSON.parse(window.sessionStorage.getItem(openkbSearchHistoryKey) || "[]");
+            if (!Array.isArray(history)) { return []; }
+            return history.filter(function(item) {
+                return typeof item === "string" && item.trim() !== "";
+            }).slice(0, openkbSearchHistoryLimit);
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function saveOpenKbSearchHistory(history) {
+        try {
+            window.sessionStorage.setItem(openkbSearchHistoryKey, JSON.stringify(history.slice(0, openkbSearchHistoryLimit)));
+        } catch (error) {
+            // Search remains fully usable when browser storage is unavailable.
+        }
+    }
+
+    function addOpenKbSearchHistory(value) {
+        const query = (value || "").trim();
+        if (!query) { return; }
+
+        const queryLower = query.toLowerCase();
+        const history = getOpenKbSearchHistory().filter(function(item) {
+            return item.toLowerCase() !== queryLower;
+        });
+        history.unshift(query);
+        saveOpenKbSearchHistory(history);
+    }
+
+    function removeOpenKbSearchHistory(value) {
+        const valueLower = (value || "").toLowerCase();
+        saveOpenKbSearchHistory(getOpenKbSearchHistory().filter(function(item) {
+            return item.toLowerCase() !== valueLower;
+        }));
+    }
+
+    function renderOpenKbSearchHistory() {
+        if (!openkbSearchInput || !openkbSearchSuggestionList) { return; }
+
+        cancelOpenKbSearchSuggestionRequest();
+        clearOpenKbSearchSuggestions();
+
+        const history = getOpenKbSearchHistory();
+        if (!history.length) {
+            hideOpenKbSearchSuggestions();
+            return;
+        }
+
+        const heading = document.createElement("div");
+        heading.className = "list-group-item list-group-heading";
+        heading.textContent = "Search history";
+        openkbSearchSuggestionList.appendChild(heading);
+
+        history.forEach(function(item) {
+            const row = document.createElement("div");
+            row.className = "list-group-item openkb-search-history-item";
+            row.setAttribute("role", "option");
+            row.setAttribute("tabindex", "0");
+
+            const icon = document.createElement("i");
+            icon.className = "fa fa-history openkb-search-history-icon";
+            icon.setAttribute("aria-hidden", "true");
+
+            const term = document.createElement("span");
+            term.className = "openkb-search-history-term";
+            term.textContent = item;
+
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "openkb-search-history-remove";
+            remove.setAttribute("aria-label", "Remove search history item");
+            remove.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+
+            function selectHistoryItem() {
+                openkbSearchInput.value = item;
+                openkbSearchInput.focus();
+                loadOpenKbSearchSuggestions();
+            }
+
+            row.addEventListener("click", function(event) {
+                if (!event.target.closest(".openkb-search-history-remove")) {
+                    selectHistoryItem();
+                }
+            });
+
+            row.addEventListener("keydown", function(event) {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    selectHistoryItem();
+                }
+            });
+
+            remove.addEventListener("click", function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                removeOpenKbSearchHistory(item);
+                renderOpenKbSearchHistory();
+            });
+
+            row.appendChild(icon);
+            row.appendChild(term);
+            row.appendChild(remove);
+            openkbSearchSuggestionList.appendChild(row);
+        });
+
+        showOpenKbSearchSuggestions();
     }
 
     function getSafeOpenKbArticleUrl(url) {
@@ -534,12 +690,14 @@
     }
 
     function renderOpenKbSearchSuggestions(query, articles) {
+        if (!openkbSearchInput || openkbSearchInput.value.trim() !== query) { return; }
+
         clearOpenKbSearchSuggestions();
 
         if (articles.length) {
             articles.forEach(appendOpenKbSuggestionItem);
         } else {
-            const empty = document.createElement("li");
+            const empty = document.createElement("div");
             empty.className = "list-group-item text-muted";
             empty.textContent = "{% trans 'No matching articles found.' %}";
             openkbSearchSuggestionList.appendChild(empty);
@@ -552,15 +710,12 @@
         if (!openkbSearchInput || !openkbSearchSuggestionList || !openkbSearchSuggestionUrl) { return; }
 
         const query = openkbSearchInput.value.trim();
-        if (query.length < 2) {
-            clearOpenKbSearchSuggestions();
-            hideOpenKbSearchSuggestions();
+        if (!query) {
+            renderOpenKbSearchHistory();
             return;
         }
 
-        if (openkbSearchSuggestController) {
-            openkbSearchSuggestController.abort();
-        }
+        cancelOpenKbSearchSuggestionRequest();
         openkbSearchSuggestController = new AbortController();
 
         try {
@@ -579,15 +734,32 @@
         }
     }
 
+    function updateOpenKbSearchDropdown() {
+        window.clearTimeout(openkbSearchSuggestTimer);
+
+        if (!openkbSearchInput.value.trim()) {
+            renderOpenKbSearchHistory();
+            return;
+        }
+
+        hideOpenKbSearchSuggestions();
+        openkbSearchSuggestTimer = window.setTimeout(loadOpenKbSearchSuggestions, 180);
+    }
+
     if (openkbSearchInput) {
-        openkbSearchInput.addEventListener("input", function() {
-            window.clearTimeout(openkbSearchSuggestTimer);
-            openkbSearchSuggestTimer = window.setTimeout(loadOpenKbSearchSuggestions, 180);
-        });
+        openkbSearchInput.addEventListener("input", updateOpenKbSearchDropdown);
 
         openkbSearchInput.addEventListener("focus", function() {
-            if (openkbSearchInput.value.trim().length >= 2) {
+            if (openkbSearchInput.value.trim()) {
                 loadOpenKbSearchSuggestions();
+            } else {
+                renderOpenKbSearchHistory();
+            }
+        });
+
+        openkbSearchInput.addEventListener("click", function() {
+            if (!openkbSearchInput.value.trim()) {
+                renderOpenKbSearchHistory();
             }
         });
 
@@ -596,6 +768,12 @@
                 hideOpenKbSearchSuggestions();
             }
         });
+
+        if (openkbSearchForm) {
+            openkbSearchForm.addEventListener("submit", function() {
+                addOpenKbSearchHistory(openkbSearchInput.value);
+            });
+        }
 
         document.addEventListener("click", function(event) {
             if (!openkbSearchDropdown || !openkbSearchInput) { return; }

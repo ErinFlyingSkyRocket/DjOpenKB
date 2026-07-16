@@ -267,6 +267,14 @@ $(document).ready(function(){
                 return;
             }
 
+            // The modern home/internal search uses the existing #searchResult dropdown
+            // for both recent-search history and live article suggestions. Attaching
+            // this older standalone history dropdown as well would create two
+            // competing dropdowns for the same input.
+            if(inputId === 'frm_search' && $('#searchResult[data-suggestions-url]').length){
+                return;
+            }
+
             if(seenInputs.indexOf(this) === -1){
                 seenInputs.push(this);
                 setupHistoryDropdown($(this), {
