@@ -699,10 +699,120 @@ $(document).ready(function(){
                 'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
                 'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'iframe', 'video'
             ],
-            allowedAttributes: false
+            // Keep the preview aligned with the stricter server-side Bleach policy.
+            // Never allow arbitrary HTML attributes such as onerror/onload/style.
+            allowedAttributes: {
+                'a': [ 'href', 'title' ],
+                'img': [ 'src', 'alt', 'title', 'class' ],
+                'code': [ 'class' ],
+                'pre': [ 'class' ],
+                'table': [ 'class' ],
+                'th': [ 'align', 'colspan', 'rowspan' ],
+                'td': [ 'align', 'colspan', 'rowspan' ],
+                'h1': [ 'id' ],
+                'h2': [ 'id' ],
+                'h3': [ 'id' ],
+                'h4': [ 'id' ],
+                'h5': [ 'id' ],
+                'h6': [ 'id' ],
+                'iframe': [ 'src', 'class', 'title', 'loading', 'referrerpolicy', 'allow', 'allowfullscreen' ],
+                'video': [ 'src', 'class', 'controls', 'preload' ]
+            },
+            allowedSchemes: [ 'http', 'https', 'mailto' ]
         });
 
-        $('#preview').html(cleanHTML);
+        // sanitize-html restricts attribute names and URL schemes. Apply the same
+        // provider/source checks as the backend before anything is inserted into
+        // the live preview DOM, so raw Markdown HTML cannot create arbitrary
+        // external frames, media requests, or remote tracking images.
+        var previewContainer = document.createElement('div');
+        previewContainer.innerHTML = cleanHTML;
+
+        Array.prototype.slice.call(previewContainer.querySelectorAll('iframe')).forEach(function(frame){
+            var src = frame.getAttribute('src') || '';
+            var parsed;
+            try{
+                parsed = new URL(src, window.location.origin);
+            }catch(error){
+                frame.remove();
+                return;
+            }
+
+            var hostname = parsed.hostname.toLowerCase().replace(/\.$/, '');
+            var pathParts = parsed.pathname.split('/').filter(function(part){ return part !== ''; });
+            var youtubeId = '';
+            var vimeoId = '';
+
+            if(parsed.protocol === 'https:' && hostname === 'www.youtube-nocookie.com' &&
+                    !parsed.search && !parsed.hash && pathParts.length === 2 && pathParts[0] === 'embed' &&
+                    /^[A-Za-z0-9_-]{11}$/.test(pathParts[1])){
+                youtubeId = pathParts[1];
+            }else if(parsed.protocol === 'https:' && hostname === 'player.vimeo.com' &&
+                    !parsed.search && !parsed.hash && pathParts.length === 2 && pathParts[0] === 'video' &&
+                    /^[0-9]{1,20}$/.test(pathParts[1])){
+                vimeoId = pathParts[1];
+            }
+
+            if(!youtubeId && !vimeoId){
+                frame.remove();
+                return;
+            }
+
+            // Rebuild approved iframe attributes instead of trusting attributes
+            // supplied in raw article HTML.
+            Array.prototype.slice.call(frame.attributes).forEach(function(attribute){
+                frame.removeAttribute(attribute.name);
+            });
+            frame.setAttribute('class', 'article-video-embed');
+            frame.setAttribute('loading', 'lazy');
+            frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+            frame.setAttribute('allowfullscreen', '');
+
+            if(youtubeId){
+                frame.setAttribute('src', 'https://www.youtube-nocookie.com/embed/' + youtubeId);
+                frame.setAttribute('title', 'YouTube video player');
+                frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            }else{
+                frame.setAttribute('src', 'https://player.vimeo.com/video/' + vimeoId);
+                frame.setAttribute('title', 'Vimeo video player');
+                frame.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share');
+            }
+        });
+
+        Array.prototype.slice.call(previewContainer.querySelectorAll('video')).forEach(function(video){
+            var src = video.getAttribute('src') || '';
+            var parsed;
+            try{
+                parsed = new URL(src);
+            }catch(error){
+                video.remove();
+                return;
+            }
+
+            if(parsed.protocol !== 'https:' || parsed.username || parsed.password ||
+                    !/\.(mp4|webm|ogg)$/i.test(parsed.pathname)){
+                video.remove();
+                return;
+            }
+
+            Array.prototype.slice.call(video.attributes).forEach(function(attribute){
+                video.removeAttribute(attribute.name);
+            });
+            video.setAttribute('class', 'article-video');
+            video.setAttribute('controls', '');
+            video.setAttribute('preload', 'metadata');
+            video.setAttribute('src', parsed.href);
+        });
+
+        Array.prototype.slice.call(previewContainer.querySelectorAll('img')).forEach(function(image){
+            var src = image.getAttribute('src') || '';
+            var safeUpload = /^\/wiki\/uploads\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:png|jpe?g|gif|webp)$/i.test(src);
+            if(!safeUpload){
+                image.removeAttribute('src');
+            }
+        });
+
+        $('#preview').html(previewContainer.innerHTML);
 
         // re-hightlight the preview
         $('pre code').each(function(i, block){
