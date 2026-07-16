@@ -71,15 +71,15 @@ $(document).ready(function(){
             $('head').append(
                 '<style id="djopenkb-search-history-style">' +
                 '.search-history-container{position:relative;}' +
-                '.search-history-dropdown{position:absolute;z-index:10050;background:#fff;border:1px solid #dce4ec;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.16);max-height:260px;overflow:auto;text-align:left;}' +
+                '.search-history-dropdown{position:absolute;z-index:10050;box-sizing:border-box;background:#fff;border:1px solid #dce4ec;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.16);max-height:260px;overflow-x:hidden;overflow-y:auto;text-align:left;}' +
                 '.search-history-dropdown.hidden{display:none;}' +
-                '.search-history-title{padding:7px 11px;color:#7b8a8b;font-size:12px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #eef2f4;background:#f8fafb;}' +
-                '.search-history-item{display:flex;align-items:center;gap:8px;width:100%;border:0;background:#fff;padding:9px 10px;color:#2c3e50;text-align:left;}' +
+                '.search-history-title{padding:7px 11px;color:#7b8a8b;font-size:12px;font-weight:700;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid #eef2f4;background:#f8fafb;}' +
+                '.search-history-item{display:flex;align-items:center;column-gap:8px;width:100%;min-width:0;background:#fff;padding:8px 9px;color:#2c3e50;text-align:left;cursor:pointer;}' +
                 '.search-history-item:hover,.search-history-item:focus{background:#f4f8fb;outline:none;}' +
-                '.search-history-term{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
-                '.search-history-icon{color:#95a5a6;}' +
-                '.search-history-remove{border:0;background:transparent;color:#95a5a6;padding:0 2px;line-height:1;}' +
-                '.search-history-remove:hover{color:#c0392b;}' +
+                '.search-history-term{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+                '.search-history-icon{flex:0 0 auto;color:#95a5a6;}' +
+                '.search-history-remove{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:0;border-radius:3px;background:transparent;color:#95a5a6;padding:0;line-height:1;}' +
+                '.search-history-remove:hover,.search-history-remove:focus{background:#fff;color:#c0392b;outline:none;}' +
                 '</style>'
             );
         }
@@ -95,9 +95,17 @@ $(document).ready(function(){
             var storageKey = options.storageKey;
             var title = options.title || 'Search history';
 
-            var $container = $input.closest('.input-group');
+            // Keep the dropdown outside Bootstrap's .input-group. The input-group
+            // uses table-style layout and absolutely positioned children can collapse to
+            // the search button width instead of following the full search field.
+            var $anchor = $input.closest('.input-group');
+            if(!$anchor.length){
+                $anchor = $input;
+            }
+
+            var $container = $input.closest('.search_bar');
             if(!$container.length){
-                $container = $input.parent();
+                $container = $anchor.parent();
             }
             $container.addClass('search-history-container');
 
@@ -105,11 +113,17 @@ $(document).ready(function(){
             $container.append($dropdown);
 
             function positionDropdown(){
-                var inputPosition = $input.position();
+                var containerOffset = $container.offset();
+                var anchorOffset = $anchor.offset();
+
+                if(!containerOffset || !anchorOffset){
+                    return;
+                }
+
                 $dropdown.css({
-                    left: inputPosition.left,
-                    top: inputPosition.top + $input.outerHeight(),
-                    width: $input.outerWidth()
+                    left: anchorOffset.left - containerOffset.left,
+                    top: (anchorOffset.top - containerOffset.top) + $anchor.outerHeight() + 4,
+                    width: $anchor.outerWidth()
                 });
             }
 
@@ -120,6 +134,14 @@ $(document).ready(function(){
             function renderDropdown(){
                 var history = getHistory(storageKey);
                 var currentValue = $.trim($input.val() || '').toLowerCase();
+
+                // The main article search has its own live title/keyword suggestions.
+                // Once the user has typed enough to query those suggestions, keep the
+                // history dropdown out of the way so the two menus never overlap.
+                if($input.is('#frm_search') && currentValue.length >= 2){
+                    hideDropdown();
+                    return;
+                }
 
                 if(currentValue){
                     history = history.filter(function(item){
@@ -138,27 +160,57 @@ $(document).ready(function(){
                 $dropdown.append('<div class="search-history-title">' + title + '</div>');
 
                 history.forEach(function(item){
-                    var $row = $('<button type="button" class="search-history-item" role="option"></button>');
+                    // Use a focusable div instead of nesting a remove <button> inside
+                    // another <button>, which is invalid HTML and is rendered
+                    // inconsistently by browsers.
+                    var $row = $('<div class="search-history-item" role="option" tabindex="0"></div>');
                     var $icon = $('<i class="fa fa-history search-history-icon" aria-hidden="true"></i>');
                     var $term = $('<span class="search-history-term"></span>').text(item);
                     var $remove = $('<button type="button" class="search-history-remove" aria-label="Remove search history item"><i class="fa fa-times"></i></button>');
 
                     $row.append($icon).append($term).append($remove);
 
-                    $row.on('mousedown', function(event){
-                        event.preventDefault();
-                    });
+                    function chooseHistoryItem(){
+                        $input.val(item);
 
-                    $row.on('click', function(){
-                        $input.val(item).focus();
+                        // Notify the newer live title/keyword suggestion handler that
+                        // the input value changed, then return focus to the search bar.
+                        if($input[0] && typeof Event === 'function'){
+                            $input[0].dispatchEvent(new Event('input', {bubbles: true}));
+                        }
+
+                        $input.focus();
                         hideDropdown();
+                    }
+
+                    $row.on('mousedown', function(event){
+                        if(!$(event.target).closest('.search-history-remove').length){
+                            event.preventDefault();
+                        }
                     });
 
-                    $remove.on('click', function(event){
+                    $row.on('click', function(event){
+                        if($(event.target).closest('.search-history-remove').length){
+                            return;
+                        }
+                        chooseHistoryItem();
+                    });
+
+                    $row.on('keydown', function(event){
+                        if(event.key === 'Enter' || event.key === ' '){
+                            event.preventDefault();
+                            chooseHistoryItem();
+                        }
+                    });
+
+                    $remove.on('mousedown click', function(event){
                         event.preventDefault();
                         event.stopPropagation();
-                        removeHistoryItem(storageKey, item);
-                        renderDropdown();
+
+                        if(event.type === 'click'){
+                            removeHistoryItem(storageKey, item);
+                            renderDropdown();
+                        }
                     });
 
                     $dropdown.append($row);
@@ -168,11 +220,7 @@ $(document).ready(function(){
                 $dropdown.removeClass('hidden');
             }
 
-            $input.on('focus click keyup', function(event){
-                if(event.type === 'keyup' && event.key === 'Escape'){
-                    hideDropdown();
-                    return;
-                }
+            $input.on('focus click input', function(){
                 renderDropdown();
             });
 
@@ -266,9 +314,12 @@ $(document).ready(function(){
         });
     });
 
-    // hookup the typeahead search
-    if(config.typeahead_search === true){
-        // on pages which have the search form
+    // Legacy OpenKB typeahead is retained only for old pages that do not use
+    // DjOpenKB's newer GET-based title/keyword suggestion endpoint. Running both
+    // handlers on the same search bar causes competing dropdown updates.
+    var hasModernSearchSuggestions = $('#searchResult[data-suggestions-url]').length > 0;
+    if(config.typeahead_search === true && !hasModernSearchSuggestions){
+        // on pages which have the legacy search form
         if($('#frm_search').length){
             $('#frm_search').on('keyup', function(){
                 if($('#frm_search').val().length > 2){
