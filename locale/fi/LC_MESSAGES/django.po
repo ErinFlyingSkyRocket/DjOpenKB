@@ -308,7 +308,7 @@ msgstr "Ylläpitäjäpyyntö kohteelle %(target)s"
 msgid "Admin tool action"
 msgstr "Ylläpitotyökalun toiminto"
 
-#: website/templates/profile.html:297
+#: website/templates/profile.html:296
 msgid "Admin tools"
 msgstr "Ylläpitäjän työkalut"
 
@@ -348,7 +348,7 @@ msgstr "Kaikki sallitut artikkelit"
 msgid "All statuses"
 msgstr "Kaikki tilat"
 
-#: kb/views/services.py:166
+#: kb/views/services.py:241
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "Artikkeli otsikolla “%(title)s” on jo olemassa. Käytä toista otsikkoa."
 
@@ -436,7 +436,7 @@ msgstr "Artikkelien kirjoittajan rooli määritettiin %(count)d valitulle käytt
 msgid "Article and update reviews"
 msgstr "Artikkeleiden ja päivitysten tarkistukset"
 
-#: kb/views/suggestions.py:824
+#: kb/views/suggestions.py:853
 msgid "Article approved and published."
 msgstr "Artikkeli hyväksyttiin ja julkaistiin."
 
@@ -456,7 +456,7 @@ msgstr "Artikkeli poistettiin automaattisesti jonosta"
 msgid "Article body"
 msgstr "Artikkelin sisältö"
 
-#: website/templates/suggest.html:216 website/templates/suggest_edit.html:397
+#: website/templates/suggest.html:216 website/templates/suggest_edit.html:399
 msgid "Article body (Markdown)"
 msgstr "Artikkelin sisältö (Markdown)"
 
@@ -472,15 +472,15 @@ msgstr "Artikkeli luotu"
 msgid "Article deleted"
 msgstr "Artikkeli poistettu"
 
-#: kb/views/suggestions.py:862
+#: kb/views/suggestions.py:891
 msgid "Article deletion confirmed after MFA."
 msgstr "Artikkelin poistaminen vahvistettiin MFA:n jälkeen."
 
-#: kb/views/suggestions.py:886
+#: kb/views/suggestions.py:915
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Artikkelin poistaminen vahvistettu: %(title)s."
 
-#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:330
+#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Artikkeleiden poistamisjono"
 
@@ -512,7 +512,7 @@ msgstr "Artikkelin tiedot"
 msgid "Article display and upload limits"
 msgstr "Artikkeleiden näyttö- ja latausrajat"
 
-#: website/templates/suggest.html:404 website/templates/suggest_edit.html:621
+#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
 msgid "Article image"
 msgstr "Artikkelin kuva"
 
@@ -544,7 +544,7 @@ msgstr "Artikkelikuvien latauslokit"
 msgid "Article image uploaded"
 msgstr "Artikkelin kuva ladattu"
 
-#: kb/views/services.py:1225
+#: kb/views/services.py:1300
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Ylläpitäjä on tällä hetkellä poistanut artikkelikuvien lataukset käytöstä."
 
@@ -556,7 +556,7 @@ msgstr "Artikkelin avainsanat"
 msgid "Article manager. Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates, approve/reject submissions, and delete public articles in scope. Published article deletion requires MFA confirmation. Regular User is not required."
 msgstr "Artikkelien hallinnoija. Voi tarkastella julkisia artikkeleita, luoda julkisia artikkeleita, muokata/hallinnoida julkisia artikkeleita, tarkistaa odottavia julkisia artikkeleita/päivityksiä, hyväksyä/hylätä lähetyksiä ja poistaa soveltamisalaan kuuluvia julkisia artikkeleita. Julkaistun artikkelin poistaminen edellyttää MFA-vahvistusta. Tavallinen käyttäjä -roolia ei tarvita."
 
-#: kb/views/suggestions.py:822
+#: kb/views/suggestions.py:851
 msgid "Article marked as pending failed."
 msgstr "Artikkeli merkittiin epäonnistuneeksi odottavaksi."
 
@@ -632,11 +632,11 @@ msgstr "Artikkelien sivutus"
 msgid "Article permanently deleted"
 msgstr "Artikkeli poistettu pysyvästi"
 
-#: kb/views/suggestions.py:897
+#: kb/views/suggestions.py:926
 msgid "Article permanently deleted: %(title)s."
 msgstr "Artikkeli poistettu pysyvästi: %(title)s."
 
-#: kb/views/suggestions.py:251
+#: kb/views/suggestions.py:271
 msgid "Article published successfully."
 msgstr "Artikkeli julkaistu onnistuneesti."
 
@@ -676,7 +676,7 @@ msgstr "Artikkelin tila"
 msgid "Article status changed"
 msgstr "Artikkelin tila muutettu"
 
-#: kb/views/suggestions.py:253 kb/views/suggestions.py:820
+#: kb/views/suggestions.py:273 kb/views/suggestions.py:849
 msgid "Article submitted for admin approval."
 msgstr "Artikkeli lähetettiin ylläpitäjän hyväksyttäväksi."
 
@@ -688,7 +688,7 @@ msgstr "Artikkeli lähetetty hyväksyttäväksi"
 msgid "Article title"
 msgstr "Artikkelin otsikko"
 
-#: kb/views/suggestions.py:164 kb/views/suggestions.py:565
+#: kb/views/suggestions.py:168 kb/views/suggestions.py:585
 msgid "Article title and body must be at least 5 characters."
 msgstr "Artikkelin otsikon ja sisällön on oltava vähintään 5 merkkiä."
 
@@ -696,15 +696,15 @@ msgstr "Artikkelin otsikon ja sisällön on oltava vähintään 5 merkkiä."
 msgid "Article type"
 msgstr "Artikkelin tyyppi"
 
-#: kb/views/suggestions.py:812
+#: kb/views/suggestions.py:841
 msgid "Article update approved and published."
 msgstr "Artikkelin päivitys hyväksyttiin ja julkaistiin."
 
-#: kb/views/suggestions.py:814
+#: kb/views/suggestions.py:843
 msgid "Article update marked as pending failed. The current published version remains visible."
 msgstr "Artikkelin päivitys merkittiin epäonnistuneeksi odottavaksi tarkistukseksi. Nykyinen julkaistu versio pysyy näkyvissä."
 
-#: kb/views/suggestions.py:810
+#: kb/views/suggestions.py:839
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
 msgstr "Artikkelin päivitys lähetettiin ylläpitäjän hyväksyttäväksi. Julkaistu versio pysyy näkyvissä, kunnes päivitys hyväksytään."
 
@@ -712,7 +712,7 @@ msgstr "Artikkelin päivitys lähetettiin ylläpitäjän hyväksyttäväksi. Jul
 msgid "Article updated"
 msgstr "Artikkeli päivitetty"
 
-#: kb/views/suggestions.py:826
+#: kb/views/suggestions.py:855
 msgid "Article updated successfully."
 msgstr "Artikkeli päivitettiin onnistuneesti."
 
@@ -752,7 +752,7 @@ msgstr "Artikkeliäänestykset"
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Tätä päivämäärää vanhemmat artikkeli-/äänestys-/kuva-/ylläpitotyökalu-/ylläpitosivuston toimintalokit voidaan poistaa siivouskomennolla. Käytä arvoa 0 säilyttääksesi yleiset ja ylläpitäjän toimintalokit toistaiseksi."
 
-#: website/templates/profile.html:237
+#: website/templates/profile.html:236
 msgid "Articles"
 msgstr "Artikkelit"
 
@@ -792,23 +792,23 @@ msgstr "Määritettiin %(count)s orpoa artikkelia käyttäjälle %(user)s."
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "Määritettiin Käytöstä poistettu käyttäjä -rooli käyttäjälle %(username)s"
 
-#: website/templates/profile.html:368
+#: website/templates/profile.html:401
 msgid "At least 1 lowercase letter"
 msgstr "Vähintään 1 pieni kirjain"
 
-#: website/templates/profile.html:369
+#: website/templates/profile.html:402
 msgid "At least 1 number"
 msgstr "Vähintään 1 numero"
 
-#: website/templates/profile.html:370
+#: website/templates/profile.html:403
 msgid "At least 1 special character"
 msgstr "Vähintään 1 erikoismerkki"
 
-#: website/templates/profile.html:367
+#: website/templates/profile.html:400
 msgid "At least 1 uppercase letter"
 msgstr "Vähintään 1 iso kirjain"
 
-#: website/templates/profile.html:366
+#: website/templates/profile.html:399
 msgid "At least 12 characters"
 msgstr "Vähintään 12 merkkiä"
 
@@ -880,7 +880,7 @@ msgstr "Todennuslähde"
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Tunnistautumis-/MFA-valvontalokit, jotka ovat tätä päivämäärää vanhempia, voidaan poistaa siivouskomennolla. Käytä arvoa 0 säilyttääksesi tunnistautumistoimintalokit pysyvästi."
 
-#: website/templates/profile.html:155 website/templates/profile.html:381
+#: website/templates/profile.html:155 website/templates/profile.html:364 website/templates/profile.html:414
 msgid "Authenticator MFA/OTP code"
 msgstr "Authenticator MFA/OTP -koodi"
 
@@ -892,7 +892,7 @@ msgstr "Todennussovelluksen koodi"
 msgid "Authenticator key"
 msgstr "Todennussovelluksen avain"
 
-#: kb/views/mfa.py:238
+#: kb/views/mfa.py:239
 msgid "Authenticator setup completed successfully."
 msgstr "Authenticatorin käyttöönotto valmistui onnistuneesti."
 
@@ -964,7 +964,7 @@ msgstr "Artikkelien joukkotuonti / -vienti"
 msgid "Bulk article import"
 msgstr "Artikkelien massatuonti"
 
-#: website/templates/admin_bulk_articles.html:41 website/templates/profile.html:310
+#: website/templates/admin_bulk_articles.html:41 website/templates/profile.html:309
 msgid "Bulk import / export articles"
 msgstr "Artikkelien joukko tuonti / vienti"
 
@@ -1060,7 +1060,7 @@ msgstr "Voi tarkastella julkaistuja julkisia artikkeleita"
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Voi tarkastella/hakea julkaistuja artikkeleita ja äänestää. Tämä on varakatselijan rooli, joka lisätään automaattisesti vain, kun käyttäjällä ei ole muuta tavallista Tietovaraston roolia."
 
-#: website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:386 website/templates/suggest_delete.html:52
+#: website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
 msgid "Cancel"
 msgstr "Peruuta"
 
@@ -1068,7 +1068,7 @@ msgstr "Peruuta"
 msgid "Change message"
 msgstr "Muutosviesti"
 
-#: website/templates/profile.html:221 website/templates/profile.html:225 website/templates/profile.html:353
+#: website/templates/profile.html:220 website/templates/profile.html:224 website/templates/profile.html:386
 msgid "Change password"
 msgstr "Vaihda salasana"
 
@@ -1084,6 +1084,10 @@ msgstr "Muutettiin %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Muutettiin %(target_label)s: %(target)s — %(changes)s"
 
+#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+msgid "Checking..."
+msgstr "Tarkistetaan..."
+
 #: kb/admin.py:855
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Valitse ensin ryhmä ja käytä suoria valintaruutuja vain poikkeuksiin. Useimmille käyttäjille pelkän ryhmän pitäisi riittää."
@@ -1096,11 +1100,11 @@ msgstr "Valitse, onko tämä profiili paikallinen käyttäjä/ylläpitäjä vai 
 msgid "Clean Stray Upload Files"
 msgstr "Siivoa käyttämättömät ladatut tiedostot"
 
-#: website/templates/profile.html:303
+#: website/templates/profile.html:302
 msgid "Clean stray files"
 msgstr "Siivoa käyttämättömät tiedostot"
 
-#: website/templates/admin_clean_stray_upload_files.html:43 website/templates/profile.html:300
+#: website/templates/admin_clean_stray_upload_files.html:43 website/templates/profile.html:299
 msgid "Clean stray upload files"
 msgstr "Siivoa käyttämättömät ladatut tiedostot"
 
@@ -1120,7 +1124,7 @@ msgstr "Poistaa tämän käyttäjän tilapäiset estot ja porrastetun lukituksen
 msgid "Click Refresh to scan the current title and article body for existing keywords."
 msgstr "Napsauta Päivitä etsiäksesi nykyisestä otsikosta ja artikkelin sisällöstä olemassa olevia avainsanoja."
 
-#: website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352
+#: website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
 msgid "Close"
 msgstr "Sulje"
 
@@ -1148,7 +1152,7 @@ msgstr "Määritetty"
 msgid "Configured recovery period"
 msgstr "Määritetty palautusjakso"
 
-#: website/templates/profile.html:376
+#: website/templates/profile.html:409
 msgid "Confirm new password"
 msgstr "Vahvista uusi salasana"
 
@@ -1156,11 +1160,11 @@ msgstr "Vahvista uusi salasana"
 msgid "Confirm orphan article action"
 msgstr "Vahvista orpojen artikkelien toiminto"
 
-#: website/templates/profile.html:150
+#: website/templates/profile.html:150 website/templates/profile.html:360
 msgid "Confirm password"
 msgstr "Vahvista salasana"
 
-#: kb/views/auth.py:508
+#: kb/views/auth.py:508 kb/views/mfa.py:452
 msgid "Confirm password is incorrect."
 msgstr "Vahvistussalasana on virheellinen."
 
@@ -1344,15 +1348,15 @@ msgstr "Poistettu ylläpitäjän ylimääräisten tiedostojen siivouksessa"
 msgid "Deleted by automatic stray-file cleanup"
 msgstr "Poistettu automaattisessa ylimääräisten tiedostojen siivouksessa"
 
-#: kb/views/suggestions.py:892
+#: kb/views/suggestions.py:921
 msgid "Deleted from article page before publication."
 msgstr "Poistettu artikkelisivulta ennen julkaisua."
 
-#: kb/views/suggestions.py:871
+#: kb/views/suggestions.py:900
 msgid "Deleted from article page with immediate deletion setting."
 msgstr "Poistettu artikkelisivulta välittömän poistamisen asetuksella."
 
-#: kb/views/suggestions.py:881
+#: kb/views/suggestions.py:910
 msgid "Deleted from article page."
 msgstr "Poistettu artikkelisivulta."
 
@@ -1368,7 +1372,7 @@ msgstr "Poistettu käyttäjä"
 msgid "Deletion approved"
 msgstr "Poistaminen hyväksytty"
 
-#: website/templates/profile.html:333
+#: website/templates/profile.html:332
 msgid "Deletion queue"
 msgstr "Poistamisjono"
 
@@ -1488,6 +1492,10 @@ msgstr "En tykkää"
 msgid "Dislikes"
 msgstr "Ei tykkäykset"
 
+#: kb/views/services.py:2449
+msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
+msgstr "DjOpenKB ei voinut varmistaa, että tämä SharePoint- tai OneDrive-video on käytettävissä ilman kirjautumista. Tarkista jakamisoikeudet ja yritä uudelleen."
+
 #: kb/models.py:262
 msgid "Django Admin MFA lockout triggered"
 msgstr "Django-ylläpidon MFA-lukitus laukaistu"
@@ -1512,11 +1520,11 @@ msgstr "Django-ylläpidon käyttörajoitukset"
 msgid "Django admin action flag"
 msgstr "Django-ylläpidon toimintomerkintä"
 
-#: kb/views/services.py:2505
+#: kb/views/services.py:3037
 msgid "Domain Admin"
 msgstr "Toimialueen ylläpitäjä"
 
-#: kb/views/services.py:2503
+#: kb/views/services.py:3035
 msgid "Domain User"
 msgstr "Toimialueen käyttäjä"
 
@@ -1536,7 +1544,7 @@ msgstr "Lataa zip, joka sisältää kaikki Djangon hallinnoimat artikkelit, niid
 msgid "Draft"
 msgstr "Luonnos"
 
-#: kb/views/suggestions.py:249 kb/views/suggestions.py:818
+#: kb/views/suggestions.py:269 kb/views/suggestions.py:847
 msgid "Draft saved successfully."
 msgstr "Luonnos tallennettiin onnistuneesti."
 
@@ -1560,11 +1568,11 @@ msgstr "Muokkaa artikkeleitani"
 msgid "Edit article"
 msgstr "Muokkaa artikkelia"
 
-#: website/templates/_navbar.html:30 website/templates/profile.html:253 website/templates/profile.html:259
+#: website/templates/_navbar.html:30 website/templates/profile.html:252 website/templates/profile.html:258
 msgid "Edit my articles"
 msgstr "Muokkaa artikkeleitani"
 
-#: website/templates/profile.html:256
+#: website/templates/profile.html:255
 msgid "Edit my internal articles"
 msgstr "Muokkaa omia sisäisiä artikkeleitani"
 
@@ -1580,7 +1588,7 @@ msgstr "Muokatut avainsanat odottavat ylläpitäjän hyväksyntää."
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Muokattu otsikko odottaa ylläpitäjän hyväksyntää. Julkaistu otsikko pysyy muuttumattomana hyväksyntään asti."
 
-#: kb/views/suggestions.py:537
+#: kb/views/suggestions.py:557
 msgid "Editor reverted to the last published version."
 msgstr "Editori palautettiin viimeisimpään julkaistuun versioon."
 
@@ -1611,6 +1619,10 @@ msgstr "Salattu ja piilotettu"
 #: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:47
 msgid "Enter MFA/OTP code"
 msgstr "Anna MFA/OTP-koodi"
+
+#: kb/views/suggestions.py:950 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+msgid "Enter a supported video link."
+msgstr "Anna tuettu videolinkki."
 
 #: website/templates/admin_orphan_articles.html:268
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
@@ -1652,7 +1664,7 @@ msgstr "Selitä, mitä käyttäjän on korjattava ennen artikkelin tai päivityk
 msgid "Export articles"
 msgstr "Vie artikkeleita"
 
-#: website/templates/profile.html:311
+#: website/templates/profile.html:310
 msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
 msgstr "Vie artikkelit zip-tiedostona Markdownin ja ladattujen tiedostojen kanssa, tai tuo zip ja määritä tuodut artikkelit ylläpitäjätilillesi."
 
@@ -1704,7 +1716,7 @@ msgstr "Alle %(minutes)s minuutin ikäiset tiedostot ohitetaan. Muuta arvoa Djan
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "Tätä minuuttimäärää uudemmat tiedostot ohitetaan orpojen latausten siivoustyökalussa. Oletus on 1440 minuuttia (24 tuntia), jotta kuvia ei poisteta käyttäjien luonnostellessa artikkeleita. Aseta arvoon 0 havaitaksesi/poistaaksesi orvot lataukset heti."
 
-#: website/templates/profile.html:321
+#: website/templates/profile.html:320
 msgid "Find articles with no active owner, then assign them to a user or queue them for deletion after confirmation."
 msgstr "Etsi artikkelit, joilla ei ole aktiivista omistajaa, ja määritä ne käyttäjälle tai aseta ne vahvistuksen jälkeen poistamisjonoon."
 
@@ -1716,7 +1728,7 @@ msgstr "Etsi artikkelit, joilla ei ole omistajaa tai joiden omistaja on passiivi
 msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them. Published articles are queued for recovery; non-published articles are deleted immediately."
 msgstr "Etsi artikkelit, joilla ei ole omistajaa tai joiden omistaja on passiivinen/poistettu, ja määritä ne aktiiviselle käyttäjälle tai poista ne. Julkaistut artikkelit asetetaan palautettaviksi jonoon; julkaisemattomat artikkelit poistetaan välittömästi."
 
-#: website/templates/profile.html:301
+#: website/templates/profile.html:300
 msgid "Finds unused files in"
 msgstr "Etsii käyttämättömiä tiedostoja kohteesta"
 
@@ -1740,7 +1752,7 @@ msgstr "Yleinen"
 msgid "General activity log retention (days)"
 msgstr "Yleisen toimintalokin säilytys (päivää)"
 
-#: website/templates/profile.html:244
+#: website/templates/profile.html:243
 msgid "General and internal articles you own."
 msgstr "Omistamasi yleiset ja sisäiset artikkelit."
 
@@ -1752,7 +1764,7 @@ msgstr "Yleinen artikkeli"
 msgid "General articles"
 msgstr "Yleiset artikkelit"
 
-#: website/templates/profile.html:248
+#: website/templates/profile.html:247
 msgid "General articles you own."
 msgstr "Omistamasi yleiset artikkelit."
 
@@ -1772,7 +1784,7 @@ msgstr "Ryhmän käyttöoikeudet"
 msgid "Group type"
 msgstr "Ryhmän tyyppi"
 
-#: kb/views/services.py:2500
+#: kb/views/services.py:3032
 msgid "Guest"
 msgstr "Vieras"
 
@@ -1886,31 +1898,27 @@ msgstr "Jos manifest.json puuttuu, tuontityökalu yrittää tuoda kaikki ZIP-tie
 msgid "Image assets"
 msgstr "Kuvasisällöt"
 
-#: kb/views/services.py:1153
+#: kb/views/services.py:1228
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Kuvan mitat ovat liian suuret. Lataa pienempi kuva."
 
-#: kb/views/services.py:1132
+#: kb/views/services.py:1207 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Kuva on liian suuri. Suurin sallittu koko on 2 Mt."
 
-#: website/templates/suggest.html:437 website/templates/suggest_edit.html:654
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this article draft."
 msgstr "Kuva poistettiin tästä artikkeliluonnoksesta."
 
-#: website/templates/suggest.html:437 website/templates/suggest_edit.html:654
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Kuva poistettiin tästä luonnoksesta. Tallenna artikkeli poistaaksesi sen tallennustilasta."
 
-#: website/templates/suggest.html:478 website/templates/suggest_edit.html:695
-msgid "Image upload failed."
-msgstr "Kuvan lataus epäonnistui."
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+msgid "Image upload is temporarily unavailable. Please try again later."
+msgstr "Kuvan lataaminen ei ole tilapäisesti käytettävissä. Yritä myöhemmin uudelleen."
 
-#: website/templates/suggest.html:495 website/templates/suggest_edit.html:712
-msgid "Image upload failed. Check Django terminal logs."
-msgstr "Kuvan lataus epäonnistui. Tarkista Django-päätelokin tiedot."
-
-#: website/templates/suggest.html:492 website/templates/suggest_edit.html:709
+#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
 msgid "Image uploaded and inserted into the article."
 msgstr "Kuva ladattiin ja lisättiin artikkeliin."
 
@@ -1918,7 +1926,7 @@ msgstr "Kuva ladattiin ja lisättiin artikkeliin."
 msgid "Images referenced by the pending update draft."
 msgstr "Kuvat, joihin odottava päivitysluonnos viittaa."
 
-#: website/templates/suggest.html:208 website/templates/suggest_edit.html:389
+#: website/templates/suggest.html:208 website/templates/suggest_edit.html:390
 msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
 msgstr "Tähän luonnokseen ladatut kuvat näkyvät tässä. Napsauta X poistaaksesi kuvan artikkelista ja poistaaksesi ladatun tiedoston."
 
@@ -1930,7 +1938,7 @@ msgstr "Välitön"
 msgid "Immediate permanent deletion"
 msgstr "Välitön pysyvä poistaminen"
 
-#: website/templates/profile.html:313
+#: website/templates/profile.html:312
 msgid "Import / Export"
 msgstr "Tuo / vie"
 
@@ -2002,6 +2010,10 @@ msgstr "Tuotujen artikkeleiden omistaja on"
 msgid "Inactive"
 msgstr "Passiivinen"
 
+#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:220 website/templates/suggest_edit.html:404
+msgid "Insert video link"
+msgstr "Lisää videolinkki"
+
 #: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
 msgid "Internal"
 msgstr "Sisäinen"
@@ -2034,7 +2046,7 @@ msgstr "Sisäinen käyttäjä"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "Sisäisten artikkelien hyväksyjän lisärooli. Voi tarkastella julkisia/sisäisiä artikkeleita, muokata sisältöä sisäisten artikkeleiden/päivitysten ollessa odottamassa, pitää ne odottamassa tarkistusmuokkausten jälkeen sekä hyväksyä tai hylätä odottavia sisäisiä artikkeleita/päivityksiä. Ei voi oletuksena poistaa tai muokata jo julkaistuja sisäisiä artikkeleita."
 
-#: kb/models.py:325 kb/views/services.py:368 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
+#: kb/models.py:325 kb/views/services.py:443 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
 msgid "Internal article"
 msgstr "Sisäinen artikkeli"
 
@@ -2054,7 +2066,7 @@ msgstr "Sisäiset artikkelit"
 msgid "Internal articles are visible only to internal users."
 msgstr "Sisäiset artikkelit näkyvät vain sisäisille käyttäjille."
 
-#: website/templates/profile.html:246
+#: website/templates/profile.html:245
 msgid "Internal articles you own."
 msgstr "Omistamasi sisäiset artikkelit."
 
@@ -2078,7 +2090,7 @@ msgstr "Sisäisten artikkelien kirjoittajan lisärooli. Voi tarkastella julkisia
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Tilin tunnistetiedot eivät kelpaa. Tarkista käyttäjätunnus ja salasana."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:265 kb/views/mfa.py:377
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
 msgid "Invalid authenticator code. Please try again."
 msgstr "Virheellinen authenticator-koodi. Yritä uudelleen."
 
@@ -2086,11 +2098,11 @@ msgstr "Virheellinen authenticator-koodi. Yritä uudelleen."
 msgid "Invalid deletion queue action."
 msgstr "Virheellinen poistamisjonon toiminto."
 
-#: kb/views/suggestions.py:997
+#: kb/views/suggestions.py:1054
 msgid "Invalid image filename."
 msgstr "Virheellinen kuvatiedoston nimi."
 
-#: kb/views/suggestions.py:1008
+#: kb/views/suggestions.py:1065
 msgid "Invalid image path."
 msgstr "Virheellinen kuvapolku."
 
@@ -2122,7 +2134,7 @@ msgstr "Tietokanta"
 msgid "Keep update pending / Save review edits"
 msgstr "Pidä päivitys odottamassa / Tallenna tarkistusmuokkaukset"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:235 website/templates/suggest_edit.html:418
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Avainsanat"
 
@@ -2146,7 +2158,7 @@ msgstr "Tietovaraston roolit"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "Tietovaraston ylläpitäjä. Voi luoda/julkaista artikkeleita suoraan, ja se synkronoidaan Djangon henkilöstö-/pääkäyttäjäkäyttöön täyttä Django-ylläpidon hallintaa varten."
 
-#: kb/views/services.py:1675
+#: kb/views/services.py:1750
 msgid "Knowledge Repository article."
 msgstr "Tietovaraston artikkeli."
 
@@ -2234,11 +2246,11 @@ msgstr "Tykkää"
 msgid "Likes"
 msgstr "Tykkäykset"
 
-#: kb/views/services.py:2509
+#: kb/views/services.py:3041
 msgid "Local Admin"
 msgstr "Paikallinen ylläpitäjä"
 
-#: kb/views/services.py:2507
+#: kb/views/services.py:3039
 msgid "Local User"
 msgstr "Paikallinen käyttäjä"
 
@@ -2266,7 +2278,7 @@ msgstr "Paikalliset tilit vaativat authenticator-vahvistuksen salasanakirjautumi
 msgid "Local admin"
 msgstr "Paikallinen ylläpitäjä"
 
-#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:2559
+#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:3091
 msgid "Local user"
 msgstr "Paikallinen käyttäjä"
 
@@ -2334,7 +2346,7 @@ msgstr "MFA nollattiin %(count)d valitulle laitteelle. Käyttäjien on määrite
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "MFA nollattiin %(count)d valitulle käyttäjälle. Heidän on määritettävä uusi authenticator seuraavalla kirjautumisella."
 
-#: kb/views/mfa.py:387
+#: kb/views/mfa.py:551
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "MFA:n nollaus on käytettävissä Tietovarasto-tilillesi."
 
@@ -2350,7 +2362,7 @@ msgstr "MFA-määritys vaaditaan jatkamiseen."
 msgid "MFA setup success"
 msgstr "MFA:n käyttöönotto onnistui"
 
-#: kb/views/mfa.py:167
+#: kb/views/mfa.py:168
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "MFA-kirjautuminen peruutettiin. Kirjaudu sisään uudelleen."
 
@@ -2374,7 +2386,7 @@ msgstr "MFA nollattiin käyttäjälle %(username)s. Käyttäjän on määritett�
 msgid "MFA/OTP code"
 msgstr "MFA/OTP-koodi"
 
-#: kb/views/auth.py:440 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP-koodi on virheellinen."
 
@@ -2398,15 +2410,15 @@ msgstr "Hallinnoi odottavia sisäisiä artikkeleita"
 msgid "Manage Pending Articles"
 msgstr "Hallinnoi odottavia artikkeleita"
 
-#: website/templates/_navbar.html:35 website/templates/profile.html:280
+#: website/templates/_navbar.html:35 website/templates/profile.html:279
 msgid "Manage internal pending articles"
 msgstr "Hallinnoi odottavia sisäisiä artikkeleita"
 
-#: kb/views/suggestions.py:345
+#: kb/views/suggestions.py:365
 msgid "Manage my articles"
 msgstr "Hallinnoi artikkeleitani"
 
-#: website/templates/_navbar.html:33 website/templates/_navbar.html:37 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:6 website/templates/profile.html:271 website/templates/profile.html:275 website/templates/profile.html:285
+#: website/templates/_navbar.html:33 website/templates/_navbar.html:37 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:6 website/templates/profile.html:270 website/templates/profile.html:274 website/templates/profile.html:284
 msgid "Manage pending articles"
 msgstr "Hallinnoi odottavia artikkeleita"
 
@@ -2442,7 +2454,7 @@ msgstr "Artikkeli %(title)s merkittiin Django-ylläpidossa tilaan Odottaa: hylä
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Ylläpitäjä merkitsi tämän epäonnistuneeksi odottavaksi. Tarkista artikkeli ja lähetä se uudelleen hyväksyttäväksi."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:398
+#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Enintään %(limit)s kuvaa artikkelia kohti."
 
@@ -2494,7 +2506,7 @@ msgstr "Monivaiheinen tunnistautuminen"
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "On vastattava tilityyppiä. Paikallinen käyttäjä/Paikallinen ylläpitäjä käyttää Paikallista käyttäjää. LDAP-käyttäjä/LDAP-ylläpitäjä käyttää Active Directory -käyttäjää. Muunna LDAP-tili paikalliseksi tiliksi asettamalla tilityypiksi Käyttäjä tai Ylläpitäjä ja lähteeksi Paikallinen käyttäjä, minkä jälkeen aseta paikallinen salasana."
 
-#: website/templates/profile.html:371
+#: website/templates/profile.html:404
 msgid "Must not contain your username or email name"
 msgstr "Ei saa sisältää käyttäjänimeäsi tai sähköpostinimeäsi"
 
@@ -2502,7 +2514,7 @@ msgstr "Ei saa sisältää käyttäjänimeäsi tai sähköpostinimeäsi"
 msgid "My Profile"
 msgstr "Profiilini"
 
-#: website/templates/profile.html:241
+#: website/templates/profile.html:240
 msgid "My articles"
 msgstr "Omat artikkelit"
 
@@ -2518,7 +2530,7 @@ msgstr "Nimi"
 msgid "New"
 msgstr "Uusi"
 
-#: website/templates/edit_my_suggestions.html:132 website/templates/profile.html:252 website/templates/profile.html:258
+#: website/templates/edit_my_suggestions.html:132 website/templates/profile.html:251 website/templates/profile.html:257
 msgid "New article"
 msgstr "Uusi artikkeli"
 
@@ -2526,11 +2538,11 @@ msgstr "Uusi artikkeli"
 msgid "New email"
 msgstr "Uusi sähköposti"
 
-#: website/templates/profile.html:255
+#: website/templates/profile.html:254
 msgid "New internal article"
 msgstr "Uusi sisäinen artikkeli"
 
-#: website/templates/profile.html:361
+#: website/templates/profile.html:394
 msgid "New password"
 msgstr "Uusi salasana"
 
@@ -2578,11 +2590,11 @@ msgstr "Sähköpostia ei asetettu"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Nykyistä otsikkoa tai sisältöä vastaavia olemassa olevia avainsanoja ei vielä ole."
 
-#: kb/views/suggestions.py:920
+#: kb/views/suggestions.py:977
 msgid "No image file received."
 msgstr "Kuvatiedostoa ei vastaanotettu."
 
-#: kb/views/suggestions.py:992
+#: kb/views/suggestions.py:1049
 msgid "No image filename received."
 msgstr "Kuvatiedoston nimeä ei vastaanotettu."
 
@@ -2730,7 +2742,7 @@ msgstr "OK"
 msgid "Object ID %(object_id)s"
 msgstr "Objektitunnus %(object_id)s"
 
-#: website/templates/profile.html:357
+#: website/templates/profile.html:390
 msgid "Old password"
 msgstr "Vanha salasana"
 
@@ -2742,7 +2754,7 @@ msgstr "Vanha salasana on virheellinen."
 msgid "Only .zip import files are allowed."
 msgstr "Vain .zip-tuontitiedostot ovat sallittuja."
 
-#: kb/views/services.py:1129 kb/views/services.py:1150 website/templates/suggest.html:448 website/templates/suggest.html:504 website/templates/suggest.html:529 website/templates/suggest_edit.html:665 website/templates/suggest_edit.html:721 website/templates/suggest_edit.html:746
+#: kb/views/services.py:1204 kb/views/services.py:1225 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Vain PNG-, JPG-, GIF- tai WEBP-kuvat ovat sallittuja."
 
@@ -2758,15 +2770,7 @@ msgstr "Avaa"
 msgid "Open OpenKB AI chat"
 msgstr "Avaa OpenKB AI -chat"
 
-#: kb/views/ai.py:145 kb/views/ai_jobs.py:317 kb/views/ai_jobs.py:358 kb/views/services_ai.py:1150
-msgid "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
-msgstr "OpenKB AI ei voinut suorittaa pyyntöä. Yritä myöhemmin uudelleen tai ota yhteyttä IT-tukeen, jos ongelma jatkuu."
-
-#: kb/views/ai_jobs.py:419
-msgid "OpenKB AI could not produce a clear answer for that question. Please try rephrasing it or contact IT support if the issue persists."
-msgstr "OpenKB AI ei pystynyt muodostamaan selkeää vastausta tähän kysymykseen. Yritä muotoilla se toisin tai ota yhteyttä IT-tukeen, jos ongelma jatkuu."
-
-#: kb/views/ai.py:94 kb/views/ai_jobs.py:491
+#: kb/views/ai.py:94 kb/views/ai_jobs.py:497
 msgid "OpenKB AI is currently handling other questions. Please try again shortly."
 msgstr "OpenKB AI käsittelee tällä hetkellä muita kysymyksiä. Yritä hetken kuluttua uudelleen."
 
@@ -2774,7 +2778,7 @@ msgstr "OpenKB AI käsittelee tällä hetkellä muita kysymyksiä. Yritä hetken
 msgid "OpenKB AI is ready. Ask me a knowledge-base question or request relevant articles."
 msgstr "OpenKB AI on valmis. Kysy tietovarastosta tai pyydä aiheeseen liittyviä artikkeleita."
 
-#: kb/views/services_ai.py:1142 kb/views/services_ai.py:1145
+#: kb/views/ai.py:145 kb/views/ai_jobs.py:364 kb/views/services_ai.py:1145 kb/views/services_ai.py:1148 kb/views/services_ai.py:1153
 msgid "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
 msgstr "OpenKB AI ei ole tilapäisesti käytettävissä. Yritä myöhemmin uudelleen tai ota yhteyttä IT-tukeen, jos ongelma jatkuu."
 
@@ -2798,11 +2802,11 @@ msgstr "OpenKB AI rajoitettu nopeusrajoituksella"
 msgid "OpenKB AI rate limits"
 msgstr "OpenKB AI:n nopeusrajoitukset"
 
-#: kb/views/services_ai.py:1148
+#: kb/views/services_ai.py:1151
 msgid "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."
 msgstr "OpenKB AI:n vastaus kesti liian kauan. Yritä myöhemmin uudelleen tai ota yhteyttä IT-tukeen, jos ongelma jatkuu."
 
-#: kb/views/ai_jobs.py:384
+#: kb/views/ai_jobs.py:390
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "OpenKB-datakansiota ei löytynyt. Tarkista OPENKB_DATA_DIR asetustiedostosta settings.py."
 
@@ -2858,7 +2862,7 @@ msgstr "Sivu %(page)s/%(total)s"
 msgid "Page not found"
 msgstr "Sivua ei löytynyt"
 
-#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:217
+#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Salasana"
 
@@ -2878,39 +2882,39 @@ msgstr "Salasanakirjautuminen epäonnistui"
 msgid "Password login success"
 msgstr "Salasanakirjautuminen onnistui"
 
-#: kb/views/services.py:2597
+#: kb/views/services.py:3129
 msgid "Password must be at least 12 characters long."
 msgstr "Salasanassa on oltava vähintään 12 merkkiä."
 
-#: kb/views/services.py:2601
+#: kb/views/services.py:3133
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Salasanassa on oltava vähintään 1 pieni kirjain."
 
-#: kb/views/services.py:2603
+#: kb/views/services.py:3135
 msgid "Password must include at least 1 number."
 msgstr "Salasanassa on oltava vähintään 1 numero."
 
-#: kb/views/services.py:2605
+#: kb/views/services.py:3137
 msgid "Password must include at least 1 special character."
 msgstr "Salasanassa on oltava vähintään 1 erikoismerkki."
 
-#: kb/views/services.py:2599
+#: kb/views/services.py:3131
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Salasanassa on oltava vähintään 1 iso kirjain."
 
-#: kb/views/services.py:2614
+#: kb/views/services.py:3146
 msgid "Password must not contain the name part of your email address."
 msgstr "Salasana ei saa sisältää sähköpostiosoitteesi nimiosaa."
 
-#: kb/views/services.py:2612
+#: kb/views/services.py:3144
 msgid "Password must not contain your username."
 msgstr "Salasana ei saa sisältää käyttäjänimeäsi."
 
-#: website/templates/profile.html:364
+#: website/templates/profile.html:397
 msgid "Password requirements"
 msgstr "Salasanavaatimukset"
 
-#: website/templates/profile.html:224 website/templates/profile.html:227
+#: website/templates/profile.html:223 website/templates/profile.html:226
 msgid "Password syncs with your company password."
 msgstr "Salasana synkronoituu yrityksen salasanan kanssa."
 
@@ -2930,13 +2934,17 @@ msgstr "Salasana-/MFA-lukituksen laskurit nollattiin %(count)d valitulta käytt�
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "Salasana-/MFA-lukituksen laskurit nollattiin käyttäjältä %(username)s."
 
-#: website/templates/profile.html:455
+#: website/templates/profile.html:488
 msgid "Passwords do not match yet."
 msgstr "Salasanat eivät vielä täsmää."
 
-#: website/templates/profile.html:452
+#: website/templates/profile.html:485
 msgid "Passwords match."
 msgstr "Salasanat täsmäävät."
+
+#: website/templates/_video_insert_modal.html:13
+msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
+msgstr "Liitä YouTube- tai Vimeo-linkki tai suora HTTPS-linkki, jonka pääte on .mp4, .webm tai .ogg. Artikkelissa näytetään toistettava video."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3002,11 +3010,11 @@ msgstr "Odottava päivitys - tarkistus"
 msgid "Pending update title"
 msgstr "Odottava päivitys - otsikko"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
 msgstr "Päivitys odottaa hyväksyntää — Tämä muokkaus odottaa ylläpitäjän hyväksyntää. Nykyinen julkaistu versio näkyy edelleen käyttäjille."
 
-#: kb/views/suggestions.py:676
+#: kb/views/suggestions.py:705
 msgid "Pending updates can only be kept pending, approved as Published, or marked as Pending failed."
 msgstr "Odottavat päivitykset voidaan vain pitää odottamassa, hyväksyä tilaan Julkaistu tai merkitä tilaan Odottaa: hylätty."
 
@@ -3050,7 +3058,7 @@ msgstr "Tarkista lähetetyt tiedot ja yritä uudelleen."
 msgid "Please choose a .zip file to import."
 msgstr "Valitse tuotava .zip-tiedosto."
 
-#: kb/views/suggestions.py:558
+#: kb/views/suggestions.py:578
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
 msgstr "Anna hylkäyskommentit ennen kuin merkitset artikkelin hylätyksi."
 
@@ -3066,11 +3074,11 @@ msgstr "Anna MFA/OTP-koodi jatkaaksesi."
 msgid "Please select at least one orphan article first."
 msgstr "Valitse ensin vähintään yksi orpo artikkeli."
 
-#: kb/views/mfa.py:183
+#: kb/views/mfa.py:184
 msgid "Please sign in before setting up MFA."
 msgstr "Kirjaudu sisään ennen MFA:n käyttöönottoa."
 
-#: kb/views/mfa.py:282
+#: kb/views/mfa.py:283
 msgid "Please sign in before verifying MFA."
 msgstr "Kirjaudu sisään ennen MFA:n vahvistamista."
 
@@ -3122,7 +3130,7 @@ msgstr "Ensisijainen kieli"
 msgid "Preferred language for the main wiki user interface."
 msgstr "Pääwikin käyttöliittymän ensisijainen kieli."
 
-#: website/templates/suggest.html:227 website/templates/suggest_edit.html:410
+#: website/templates/suggest.html:228 website/templates/suggest_edit.html:413
 msgid "Preview"
 msgstr "Esikatselu"
 
@@ -3158,7 +3166,7 @@ msgstr "Profiilin sähköposti päivitetty"
 msgid "Profile password changed"
 msgstr "Profiilin salasana vaihdettu"
 
-#: kb/models.py:324 kb/views/services.py:369
+#: kb/models.py:324 kb/views/services.py:444
 msgid "Public article"
 msgstr "Julkinen artikkeli"
 
@@ -3226,7 +3234,7 @@ msgstr "Suoritettiin ylläpitotoiminto '%(action)s' kohteelle %(target)s"
 msgid "Raw path"
 msgstr "Raakapolku"
 
-#: website/templates/profile.html:378 website/templates/profile.html:449
+#: website/templates/profile.html:411 website/templates/profile.html:482
 msgid "Re-type the new password to confirm."
 msgstr "Kirjoita uusi salasana uudelleen vahvistaaksesi."
 
@@ -3282,7 +3290,7 @@ msgstr "Hylkää päivitys"
 msgid "Related articles"
 msgstr "Liittyvät artikkelit"
 
-#: website/templates/suggest.html:409 website/templates/suggest.html:410 website/templates/suggest_edit.html:626 website/templates/suggest_edit.html:627
+#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Poista kuva artikkelista"
 
@@ -3314,7 +3322,7 @@ msgstr "Pyynnön aikakatkaisu"
 msgid "Request too large"
 msgstr "Pyyntö on liian suuri"
 
-#: kb/admin.py:1375 website/templates/profile.html:208
+#: kb/admin.py:1375 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "Nollaa MFA"
 
@@ -3374,11 +3382,11 @@ msgstr "Nollaa tämän käyttäjän MFA"
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Nollaa tämän käyttäjän todennussovelluksen ja vaatii uuden QR-määrityksen. Uusi todennusavain on yksityinen eikä sitä näytetä ylläpitäjille."
 
-#: website/templates/profile.html:206
+#: website/templates/profile.html:357
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
 msgstr "MFA:n nollaus edellyttää heti uuden authenticator-koodin määrittämistä ennen jatkamista. Jatketaanko?"
 
-#: website/templates/profile.html:331
+#: website/templates/profile.html:330
 msgid "Restore articles before the recovery period ends, or permanently delete queued articles when required."
 msgstr "Palauta artikkelit ennen palautusajan päättymistä tai poista jonossa olevat artikkelit pysyvästi tarvittaessa."
 
@@ -3414,7 +3422,7 @@ msgstr "Tarkista ennen poistamista"
 msgid "Review comments history"
 msgstr "Tarkistuskommenttien historia"
 
-#: kb/views/suggestions.py:816
+#: kb/views/suggestions.py:845
 msgid "Review edits saved. The update remains pending approval and the current published version is still visible."
 msgstr "Tarkistusmuokkaukset tallennettiin. Päivitys odottaa edelleen hyväksyntää, ja nykyinen julkaistu versio on yhä näkyvissä."
 
@@ -3422,7 +3430,7 @@ msgstr "Tarkistusmuokkaukset tallennettiin. Päivitys odottaa edelleen hyväksyn
 msgid "Review general and internal articles or pending updates waiting for approval."
 msgstr "Tarkista hyväksyntää odottavat yleiset ja sisäiset artikkelit tai odottavat päivitykset."
 
-#: website/templates/profile.html:273
+#: website/templates/profile.html:272
 msgid "Review general and internal submissions from one page. Use the scope dropdown to switch between queues."
 msgstr "Tarkista yleiset ja sisäiset lähetykset yhdeltä sivulta. Vaihda jonojen välillä soveltamisalan avattavasta valikosta."
 
@@ -3438,7 +3446,7 @@ msgstr "Tarkistushistoria"
 msgid "Review internal articles and internal pending updates waiting for approval."
 msgstr "Tarkista hyväksyntää odottavat sisäiset artikkelit ja sisäiset päivitykset."
 
-#: website/templates/profile.html:278
+#: website/templates/profile.html:277
 msgid "Review internal articles waiting for approval."
 msgstr "Tarkista hyväksyntää odottavat sisäiset artikkelit."
 
@@ -3454,7 +3462,7 @@ msgstr "Tarkistusmuistiinpanot"
 msgid "Review submitted articles and pending updates within your allowed article scope."
 msgstr "Tarkista lähetyt artikkelit ja odottavat päivitykset sallitun artikkelien soveltamisalasi puitteissa."
 
-#: website/templates/profile.html:283
+#: website/templates/profile.html:282
 msgid "Review user-submitted general articles waiting for approval."
 msgstr "Tarkista käyttäjien lähettämät hyväksyntää odottavat yleiset artikkelit."
 
@@ -3486,11 +3494,11 @@ msgstr "Tallenna päivityksen edistyminen"
 msgid "Saved update draft"
 msgstr "Päivitysluonnos tallennettu"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
 msgstr "Päivitysluonnos tallennettu — Muokkaat tämän julkaistun artikkelin tallennettuja muutoksia. Nykyinen julkaistu versio näkyy, kunnes lähetät tämän päivityksen hyväksyttäväksi."
 
-#: website/templates/_navbar.html:40 website/templates/admin_orphan_articles.html:171 website/templates/admin_orphan_articles.html:6 website/templates/profile.html:320 website/templates/profile.html:323
+#: website/templates/_navbar.html:40 website/templates/admin_orphan_articles.html:171 website/templates/admin_orphan_articles.html:6 website/templates/profile.html:319 website/templates/profile.html:322
 msgid "Scan orphan articles"
 msgstr "Skannaa orvot artikkelit"
 
@@ -3606,15 +3614,15 @@ msgstr "Määritä MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Määritä MFA ennen ylläpitosivuston käyttöä."
 
-#: kb/views/auth.py:392
+#: kb/views/auth.py:392 kb/views/mfa.py:471
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Ota MFA käyttöön ennen arkaluonteisten tilitietojen muuttamista."
 
-#: kb/views/services.py:682
+#: kb/views/services.py:757
 msgid "Set up MFA before deleting a published article."
 msgstr "Määritä MFA ennen julkaistun artikkelin poistamista."
 
-#: website/templates/profile.html:211
+#: website/templates/profile.html:210
 msgid "Set up authenticator"
 msgstr "Ota authenticator käyttöön"
 
@@ -3882,11 +3890,23 @@ msgstr "Artikkeleita ei voitu määrittää turvallisesti. Määritystä ei teht
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Alla olevat valintaruudut ovat erityisiä käyttäjäkohtaisia poikkeuksia vain artikkelien käyttöoikeuksiin. Niistä on hyötyä, kun yksi käyttäjä tarvitsee hieman enemmän artikkelien käyttöoikeuksia kuin hänen ryhmänsä ilman uuden ryhmän luomista. Django-ylläpitokäyttö myönnetään vain Ylläpitäjäkäyttäjät-ryhmän/pääkäyttäjätilan kautta."
 
+#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+msgid "The image could not be uploaded. Please try again."
+msgstr "Kuvaa ei voitu ladata. Yritä uudelleen."
+
+#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+msgid "The image upload could not connect to the server. Please check your connection and try again."
+msgstr "Kuvan lataus ei saanut yhteyttä palvelimeen. Tarkista yhteys ja yritä uudelleen."
+
+#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+msgid "The image upload was not authorised. Refresh the page and try again."
+msgstr "Kuvan latausta ei valtuutettu. Päivitä sivu ja yritä uudelleen."
+
 #: website/templates/admin_bulk_articles.html:130
 msgid "The import result is shown here so it does not take over the main import/export page."
 msgstr "Tuonnin tulos näytetään tässä, jotta se ei peitä varsinaista tuonti-/vientisivua."
 
-#: kb/views/ai_jobs.py:408 kb/views/services_ai.py:1047 kb/views/services_ai.py:1081
+#: kb/views/ai_jobs.py:325 kb/views/ai_jobs.py:414 kb/views/ai_jobs.py:425 kb/views/ai_jobs.py:477 kb/views/services_ai.py:1047 kb/views/services_ai.py:1081 kb/views/services_ai.py:1135
 msgid "The knowledge base does not contain matching information about that topic."
 msgstr "Tietovarasto ei sisällä aihetta vastaavia tietoja."
 
@@ -3922,6 +3942,14 @@ msgstr "Samaa porrastettua käytäntöä käytetään salasana-kirjautumisen ja 
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Valitut artikkelit eivät ole enää orpoja tai niitä ei enää ole. Päivitä ja yritä uudelleen."
 
+#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+msgid "The selected file is not a valid supported image."
+msgstr "Valittu tiedosto ei ole kelvollinen tuettu kuva."
+
+#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+msgid "The selected image is empty. Please choose a different image."
+msgstr "Valittu kuva on tyhjä. Valitse toinen kuva."
+
 #: kb/views/admin.py:716
 msgid "The selected queued articles are no longer available. Please refresh and try again."
 msgstr "Valitut jonossa olevat artikkelit eivät ole enää saatavilla. Päivitä sivu ja yritä uudelleen."
@@ -3942,7 +3970,7 @@ msgstr "Palvelin ei voinut suorittaa pyyntöäsi loppuun."
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "Lähetetty tiedosto tai pyyntö ylittää sallitun koon."
 
-#: kb/views/services.py:1141
+#: kb/views/services.py:1216
 msgid "The uploaded file is not a valid image."
 msgstr "Ladattu tiedosto ei ole kelvollinen kuva."
 
@@ -3958,13 +3986,25 @@ msgstr "Nämä kommentit näytetään artikkelin omistajalle, kun artikkeli tai 
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Nämä tiedostot näyttävät käyttämättömiltä. Tarkista lataajan tiedot ja poista vain tiedostot, joita ei enää tarvita."
 
-#: kb/views/mfa.py:306
+#: kb/views/mfa.py:307 kb/views/mfa.py:477
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Tätä MFA-laitetta ei voida varmentaa, koska sen salaisuutta ei voitu lukea. Pyydä ylläpitäjää nollaamaan MFA tai nollaa se palvelimen komentoriviltä, jos ylläpitäjät ovat lukittuja ulos."
 
 #: kb/admin_security.py:245
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Tätä MFA-laitetta ei voida varmentaa, koska sen salaisuutta ei voitu lukea. Pyydä toista ylläpitäjää nollaamaan tämän tilin MFA."
+
+#: kb/views/services.py:2440
+msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
+msgstr "Tämä SharePoint- tai OneDrive-linkki ei tarjoa suoraan toistettavaa videota ilman kirjautumista. Käytä suoraa videolinkkiä, jonka voi katsoa kirjautumatta."
+
+#: kb/views/services.py:2445
+msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
+msgstr "Tätä SharePoint- tai OneDrive-videota ei voi käyttää ilman kirjautumista. Tarkista jakamisoikeudet ja käytä linkkiä, jonka voi avata kirjautumatta."
+
+#: kb/views/services.py:2435
+msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
+msgstr "Tämä SharePoint- tai OneDrive-video vaatii ulkoisen kirjautumisen eikä sitä voi upottaa. Käytä videolinkkiä, jonka voi katsoa kirjautumatta."
 
 #: website/templates/suggest_delete.html:39
 msgid "This action cannot be reversed."
@@ -3974,15 +4014,15 @@ msgstr "Tätä toimintoa ei voi perua."
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "Tällä artikkelilla on myös odottava päivitys, mutta sitä käsitellään edelleen julkaistuna artikkelina."
 
-#: kb/views/services.py:1228
+#: kb/views/services.py:1303
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "Tässä artikkelissa on %(count)s kuvaa, mutta enintään %(limit)s kuvaa sallitaan. Poista joitakin kuvia ennen tallentamista."
 
-#: kb/views/services.py:1227
+#: kb/views/services.py:1302
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Tämä artikkeli on saavuttanut %(limit)s kuvan latausrajan."
 
-#: website/templates/suggest.html:452 website/templates/suggest_edit.html:669
+#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Tämä artikkeli on saavuttanut kuvien latausrajan. Poista kuva ennen uuden lataamista."
 
@@ -3998,11 +4038,11 @@ msgstr "Tämä poistaa tämän käyttäjän tilapäiset estot, epäonnistuneiden
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Tätä sähköpostiosoitetta hallitaan toimialuetililläsi eikä sitä voi muuttaa täällä."
 
-#: website/templates/suggest.html:458 website/templates/suggest_edit.html:675
+#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Tämä kuva on jo ladattu tähän luonnokseen. Poista se ensin esikatselun X-painikkeella."
 
-#: kb/views/suggestions.py:1001
+#: kb/views/suggestions.py:1058
 msgid "This image is not removable from this editing session."
 msgstr "Tätä kuvaa ei voi poistaa tästä muokkausistunnosta."
 
@@ -4025,6 +4065,10 @@ msgstr "Tämä työkalu suosii järjestelmän vientimuotoa:"
 #: kb/views/errors.py:51
 msgid "This type of request is not allowed for the selected page."
 msgstr "Tällaista pyyntöä ei sallita valitulla sivulla."
+
+#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+msgid "This video link could not be validated. Please try another link."
+msgstr "Tätä videolinkkiä ei voitu vahvistaa. Kokeile toista linkkiä."
 
 #: website/templates/admin/kb/reset_mfa_confirm.html:16
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using Knowledge Repository."
@@ -4054,11 +4098,15 @@ msgstr "Vaihda navigointi"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "OpenKB AI -kysymyksiä on liian paljon. Odota ennen kuin yrität uudelleen."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Liian monta epäonnistunutta kirjautumisyritystä. Yritä uudelleen %(duration)s kuluttua."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+msgid "Too many image upload attempts. Please wait a moment and try again."
+msgstr "Liian monta kuvan latausyritystä. Odota hetki ja yritä uudelleen."
+
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Liian monta virheellistä MFA-koodia. Yritä uudelleen %(duration)s kuluttua."
 
@@ -4098,6 +4146,14 @@ msgstr "Tyyppi"
 msgid "Type username or email"
 msgstr "Kirjoita käyttäjänimi tai sähköposti"
 
+#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+msgid "Unable to validate this video link. Refresh the page and try again."
+msgstr "Tätä videolinkkiä ei voitu vahvistaa. Päivitä sivu ja yritä uudelleen."
+
+#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+msgid "Unable to verify that this video is accessible without signing in. Please try again."
+msgstr "Ei voitu varmistaa, että tämä video on käytettävissä ilman kirjautumista. Yritä uudelleen."
+
 #: website/templates/edit_my_suggestions.html:241
 msgid "Unassigned"
 msgstr "Määrittämätön"
@@ -4130,7 +4186,7 @@ msgstr "Nimetön artikkeli"
 msgid "Update approval status"
 msgstr "Päivityksen hyväksynnän tila"
 
-#: website/templates/profile.html:387
+#: website/templates/profile.html:420
 msgid "Update password"
 msgstr "Päivitä salasana"
 
@@ -4138,11 +4194,11 @@ msgstr "Päivitä salasana"
 msgid "Update pending failed"
 msgstr "Päivitys hylätty"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
 msgstr "Päivitystä ei hyväksytty — Tarkista ylläpitäjän kommentit, tee muutokset ja lähetä uudelleen."
 
-#: kb/views/suggestions.py:807
+#: kb/views/suggestions.py:836
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Päivityksen edistyminen tallennettiin. Julkaistu versio näkyy edelleen, eikä päivitystä ole vielä lähetetty hyväksyttäväksi."
 
@@ -4170,7 +4226,7 @@ msgstr "Latauksen IP-osoite"
 msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
 msgstr "Lataa tästä järjestelmästä viety zip tai zip, joka sisältää Markdown-tiedostoja ja valinnaisen"
 
-#: website/templates/suggest.html:219 website/templates/suggest_edit.html:401
+#: website/templates/suggest.html:219 website/templates/suggest_edit.html:403
 msgid "Upload image"
 msgstr "Lataa kuva"
 
@@ -4286,6 +4342,14 @@ msgstr "Vahvista"
 msgid "Verify and continue to admin"
 msgstr "Varmenna ja jatka ylläpitoon"
 
+#: website/templates/_video_insert_modal.html:11
+msgid "Video link"
+msgstr "Videolinkki"
+
+#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+msgid "Video link inserted into the article."
+msgstr "Videolinkki lisättiin artikkeliin."
+
 #: website/templates/admin_orphan_articles.html:314
 msgid "View"
 msgstr "Näytä"
@@ -4298,7 +4362,7 @@ msgstr "Näytä artikkelit"
 msgid "View count"
 msgstr "Katselukerrat"
 
-#: website/templates/profile.html:262
+#: website/templates/profile.html:261
 msgid "View internal articles"
 msgstr "Näytä sisäiset artikkelit"
 
@@ -4322,8 +4386,7 @@ msgstr "Varoitukset / virheet"
 msgid "Was this article helpful?"
 msgstr "Oliko tästä artikkelista apua?"
 
-#: kb/views/mfa.py:350
-#, python-format
+#: kb/views/mfa.py:353
 msgid "Welcome back, %(username)s."
 msgstr "Tervetuloa takaisin, %(username)s."
 
@@ -4363,7 +4426,7 @@ msgstr "Olet nollaamassa MFA:n käyttäjälle <strong>%(username)s</strong>."
 msgid "You are about to reset password/MFA lockout counters for user <strong>%(username)s</strong>."
 msgstr "Olet nollaamassa käyttäjän <strong>%(username)s</strong> salasana-/MFA-lukituksen laskureita."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:398
+#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
 msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
 msgstr "Voit liittää pieniä PNG/JPG/GIF/WEBP-kuvia suoraan editoriin tai ladata yhden painikkeella. Enintään 2 MB kukin."
 
@@ -4431,7 +4494,7 @@ msgstr "Sinua pyydetään vahvistamaan ennen muutosten toteuttamista. Julkaistut
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Sinua pyydetään vahvistamaan ennen muutosten toteuttamista. Valitut artikkelit poistetaan välittömästi pysyvästi."
 
-#: kb/views/mfa.py:406
+#: kb/views/mfa.py:587
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA:si nollattiin. Suorita todennussovelluksen määritys nyt, jotta voit jatkaa Tietovaraston käyttöä."
 
@@ -4446,6 +4509,10 @@ msgstr "Ylläpitoistuntosi vanheni käyttämättömyyden vuoksi. Varmenna MFA uu
 #: kb/admin.py:1610
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Omalle tilillesi määritettiin Käytöstä poistettu käyttäjä -rooli. Seuraavalla pyynnöllä sinut ohjataan käytöstä poistetun tilin sivulle."
+
+#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+msgid "Your session has expired. Please sign in again before uploading the image."
+msgstr "Istuntosi on vanhentunut. Kirjaudu uudelleen sisään ennen kuvan lataamista."
 
 #: kb/middleware.py:251
 msgid "Your session has expired. Please sign in again."
@@ -4611,7 +4678,7 @@ msgstr "käyttämätöntä ladattua tiedostoa löytyi"
 msgid "successful"
 msgstr "onnistui"
 
-#: website/templates/profile.html:301
+#: website/templates/profile.html:300
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "joihin mikään artikkeli tai wiki Markdown -tiedosto ei enää viittaa."
 

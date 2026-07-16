@@ -308,7 +308,7 @@ msgstr "%(target)s için yönetici isteği"
 msgid "Admin tool action"
 msgstr "Yönetici aracı eylemi"
 
-#: website/templates/profile.html:297
+#: website/templates/profile.html:296
 msgid "Admin tools"
 msgstr "Yönetici araçları"
 
@@ -348,7 +348,7 @@ msgstr "İzin verilen tüm makaleler"
 msgid "All statuses"
 msgstr "Tüm durumlar"
 
-#: kb/views/services.py:166
+#: kb/views/services.py:241
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "‘%(title)s’ başlıklı bir makale zaten var. Lütfen farklı bir başlık kullanın."
 
@@ -436,7 +436,7 @@ msgstr "Makale Yazarı rolü, seçilen %(count)d kullanıcıya atandı."
 msgid "Article and update reviews"
 msgstr "Makale ve güncelleme incelemeleri"
 
-#: kb/views/suggestions.py:824
+#: kb/views/suggestions.py:853
 msgid "Article approved and published."
 msgstr "Makale onaylandı ve yayınlandı."
 
@@ -456,7 +456,7 @@ msgstr "Makale kuyruktan otomatik olarak silindi"
 msgid "Article body"
 msgstr "Makale gövdesi"
 
-#: website/templates/suggest.html:216 website/templates/suggest_edit.html:397
+#: website/templates/suggest.html:216 website/templates/suggest_edit.html:399
 msgid "Article body (Markdown)"
 msgstr "Makale gövdesi (Markdown)"
 
@@ -472,15 +472,15 @@ msgstr "Makale oluşturuldu"
 msgid "Article deleted"
 msgstr "Makale silindi"
 
-#: kb/views/suggestions.py:862
+#: kb/views/suggestions.py:891
 msgid "Article deletion confirmed after MFA."
 msgstr "Makale silme işlemi MFA sonrasında onaylandı."
 
-#: kb/views/suggestions.py:886
+#: kb/views/suggestions.py:915
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Makale silme işlemi onaylandı: %(title)s."
 
-#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:330
+#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Makale silme kuyruğu"
 
@@ -512,7 +512,7 @@ msgstr "Makale ayrıntıları"
 msgid "Article display and upload limits"
 msgstr "Makale görüntüleme ve yükleme sınırları"
 
-#: website/templates/suggest.html:404 website/templates/suggest_edit.html:621
+#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
 msgid "Article image"
 msgstr "Makale görseli"
 
@@ -544,7 +544,7 @@ msgstr "Makale resmi yükleme günlükleri"
 msgid "Article image uploaded"
 msgstr "Makale resmi yüklendi"
 
-#: kb/views/services.py:1225
+#: kb/views/services.py:1300
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Makale görseli yüklemeleri şu anda yönetici tarafından devre dışı bırakıldı."
 
@@ -556,7 +556,7 @@ msgstr "Makale anahtar kelimeleri"
 msgid "Article manager. Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates, approve/reject submissions, and delete public articles in scope. Published article deletion requires MFA confirmation. Regular User is not required."
 msgstr "Makale yöneticisi. Herkese açık makaleleri görüntüleyebilir, herkese açık makaleler oluşturabilir, herkese açık makaleleri düzenleyip yönetebilir, bekleyen herkese açık makaleleri/güncellemeleri inceleyebilir, gönderimleri onaylayabilir/reddedebilir ve kapsamındaki herkese açık makaleleri silebilir. Yayınlanmış makaleyi silmek için MFA onayı gerekir. Normal Kullanıcı gerekli değildir."
 
-#: kb/views/suggestions.py:822
+#: kb/views/suggestions.py:851
 msgid "Article marked as pending failed."
 msgstr "Makale onay başarısız olarak işaretlendi."
 
@@ -632,11 +632,11 @@ msgstr "Makale sayfalama"
 msgid "Article permanently deleted"
 msgstr "Makale kalıcı olarak silindi"
 
-#: kb/views/suggestions.py:897
+#: kb/views/suggestions.py:926
 msgid "Article permanently deleted: %(title)s."
 msgstr "Makale kalıcı olarak silindi: %(title)s."
 
-#: kb/views/suggestions.py:251
+#: kb/views/suggestions.py:271
 msgid "Article published successfully."
 msgstr "Makale başarıyla yayımlandı."
 
@@ -676,7 +676,7 @@ msgstr "Makale durumu"
 msgid "Article status changed"
 msgstr "Makale durumu değiştirildi"
 
-#: kb/views/suggestions.py:253 kb/views/suggestions.py:820
+#: kb/views/suggestions.py:273 kb/views/suggestions.py:849
 msgid "Article submitted for admin approval."
 msgstr "Makale yönetici onayına gönderildi."
 
@@ -688,7 +688,7 @@ msgstr "Makale onaya gönderildi"
 msgid "Article title"
 msgstr "Makale başlığı"
 
-#: kb/views/suggestions.py:164 kb/views/suggestions.py:565
+#: kb/views/suggestions.py:168 kb/views/suggestions.py:585
 msgid "Article title and body must be at least 5 characters."
 msgstr "Makale başlığı ve içeriği en az 5 karakter olmalıdır."
 
@@ -696,15 +696,15 @@ msgstr "Makale başlığı ve içeriği en az 5 karakter olmalıdır."
 msgid "Article type"
 msgstr "Makale türü"
 
-#: kb/views/suggestions.py:812
+#: kb/views/suggestions.py:841
 msgid "Article update approved and published."
 msgstr "Makale güncellemesi onaylandı ve yayımlandı."
 
-#: kb/views/suggestions.py:814
+#: kb/views/suggestions.py:843
 msgid "Article update marked as pending failed. The current published version remains visible."
 msgstr "Makale güncellemesi beklemede başarısız olarak işaretlendi. Mevcut yayımlanmış sürüm görünür kalır."
 
-#: kb/views/suggestions.py:810
+#: kb/views/suggestions.py:839
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
 msgstr "Makale güncellemesi yönetici onayı için gönderildi. Güncelleme onaylanana kadar yayımlanmış sürüm görünür kalır."
 
@@ -712,7 +712,7 @@ msgstr "Makale güncellemesi yönetici onayı için gönderildi. Güncelleme ona
 msgid "Article updated"
 msgstr "Makale güncellendi"
 
-#: kb/views/suggestions.py:826
+#: kb/views/suggestions.py:855
 msgid "Article updated successfully."
 msgstr "Makale başarıyla güncellendi."
 
@@ -752,7 +752,7 @@ msgstr "Makale oyları"
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Bu kadar günden eski makale/oy/görsel/yönetici aracı/yönetici sitesi etkinlik günlükleri temizlik komutuyla silinebilir. Genel ve yönetici etkinlik günlüklerini süresiz saklamak için 0 kullanın."
 
-#: website/templates/profile.html:237
+#: website/templates/profile.html:236
 msgid "Articles"
 msgstr "Makaleler"
 
@@ -792,23 +792,23 @@ msgstr "%(count)s sahipsiz makale %(user)s kullanıcısına atandı."
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "%(username)s kullanıcısına Devre Dışı Kullanıcı rolü atandı"
 
-#: website/templates/profile.html:368
+#: website/templates/profile.html:401
 msgid "At least 1 lowercase letter"
 msgstr "En az 1 küçük harf"
 
-#: website/templates/profile.html:369
+#: website/templates/profile.html:402
 msgid "At least 1 number"
 msgstr "En az 1 sayı"
 
-#: website/templates/profile.html:370
+#: website/templates/profile.html:403
 msgid "At least 1 special character"
 msgstr "En az 1 özel karakter"
 
-#: website/templates/profile.html:367
+#: website/templates/profile.html:400
 msgid "At least 1 uppercase letter"
 msgstr "En az 1 büyük harf"
 
-#: website/templates/profile.html:366
+#: website/templates/profile.html:399
 msgid "At least 12 characters"
 msgstr "En az 12 karakter"
 
@@ -880,7 +880,7 @@ msgstr "Kimlik doğrulama kaynağı"
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Bu kadar günden eski kimlik doğrulama/MFA izleme günlükleri temizleme komutuyla silinebilir. Kimlik doğrulama etkinlik günlüklerini süresiz saklamak için 0 kullanın."
 
-#: website/templates/profile.html:155 website/templates/profile.html:381
+#: website/templates/profile.html:155 website/templates/profile.html:364 website/templates/profile.html:414
 msgid "Authenticator MFA/OTP code"
 msgstr "Kimlik doğrulayıcı MFA/OTP kodu"
 
@@ -892,7 +892,7 @@ msgstr "Kimlik doğrulayıcı kodu"
 msgid "Authenticator key"
 msgstr "Kimlik doğrulayıcı anahtarı"
 
-#: kb/views/mfa.py:238
+#: kb/views/mfa.py:239
 msgid "Authenticator setup completed successfully."
 msgstr "Kimlik doğrulayıcı kurulumu başarıyla tamamlandı."
 
@@ -964,7 +964,7 @@ msgstr "Makaleleri toplu içe aktar / dışa aktar"
 msgid "Bulk article import"
 msgstr "Toplu makale içe aktarma"
 
-#: website/templates/admin_bulk_articles.html:41 website/templates/profile.html:310
+#: website/templates/admin_bulk_articles.html:41 website/templates/profile.html:309
 msgid "Bulk import / export articles"
 msgstr "Makaleleri toplu içe / dışa aktar"
 
@@ -1060,7 +1060,7 @@ msgstr "Yayımlanmış herkese açık makaleleri görüntüleyebilir"
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Yayımlanmış makaleleri görüntüleyebilir/arayabilir ve oy verebilir. Bu, yedek görüntüleyici rolüdür ve yalnızca kullanıcının başka bir standart Bilgi Deposu rolü olmadığında otomatik eklenir."
 
-#: website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:386 website/templates/suggest_delete.html:52
+#: website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
 msgid "Cancel"
 msgstr "İptal"
 
@@ -1068,7 +1068,7 @@ msgstr "İptal"
 msgid "Change message"
 msgstr "Değişiklik iletisi"
 
-#: website/templates/profile.html:221 website/templates/profile.html:225 website/templates/profile.html:353
+#: website/templates/profile.html:220 website/templates/profile.html:224 website/templates/profile.html:386
 msgid "Change password"
 msgstr "Şifreyi değiştir"
 
@@ -1084,6 +1084,10 @@ msgstr "%(target_label)s değiştirildi: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s değiştirildi: %(target)s — %(changes)s"
 
+#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+msgid "Checking..."
+msgstr "Kontrol ediliyor..."
+
 #: kb/admin.py:855
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Önce bir grup seçin; ardından doğrudan onay kutularını yalnızca istisnalar için kullanın. Çoğu kullanıcı için yalnızca grup yeterli olmalıdır."
@@ -1096,11 +1100,11 @@ msgstr "Bu profilin yerel kullanıcı/yönetici mi yoksa LDAP kullanıcısı/yö
 msgid "Clean Stray Upload Files"
 msgstr "Kullanılmayan yükleme dosyalarını temizle"
 
-#: website/templates/profile.html:303
+#: website/templates/profile.html:302
 msgid "Clean stray files"
 msgstr "Sahipsiz dosyaları temizle"
 
-#: website/templates/admin_clean_stray_upload_files.html:43 website/templates/profile.html:300
+#: website/templates/admin_clean_stray_upload_files.html:43 website/templates/profile.html:299
 msgid "Clean stray upload files"
 msgstr "Kullanılmayan yükleme dosyalarını temizle"
 
@@ -1120,7 +1124,7 @@ msgstr "Bu kullanıcı için geçici engellemeleri ve aşamalı kilitleme geçmi
 msgid "Click Refresh to scan the current title and article body for existing keywords."
 msgstr "Geçerli başlıkta ve makale gövdesinde mevcut anahtar kelimeleri taramak için Yenile'ye tıklayın."
 
-#: website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352
+#: website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
 msgid "Close"
 msgstr "Kapat"
 
@@ -1148,7 +1152,7 @@ msgstr "Yapılandırıldı"
 msgid "Configured recovery period"
 msgstr "Yapılandırılmış kurtarma süresi"
 
-#: website/templates/profile.html:376
+#: website/templates/profile.html:409
 msgid "Confirm new password"
 msgstr "Yeni şifreyi onayla"
 
@@ -1156,11 +1160,11 @@ msgstr "Yeni şifreyi onayla"
 msgid "Confirm orphan article action"
 msgstr "Sahipsiz makale işlemini onayla"
 
-#: website/templates/profile.html:150
+#: website/templates/profile.html:150 website/templates/profile.html:360
 msgid "Confirm password"
 msgstr "Şifreyi onayla"
 
-#: kb/views/auth.py:508
+#: kb/views/auth.py:508 kb/views/mfa.py:452
 msgid "Confirm password is incorrect."
 msgstr "Onay şifresi yanlış."
 
@@ -1344,15 +1348,15 @@ msgstr "Yönetici gereksiz dosya temizliği ile silindi"
 msgid "Deleted by automatic stray-file cleanup"
 msgstr "Otomatik gereksiz dosya temizliği ile silindi"
 
-#: kb/views/suggestions.py:892
+#: kb/views/suggestions.py:921
 msgid "Deleted from article page before publication."
 msgstr "Yayımlanmadan önce makale sayfasından silindi."
 
-#: kb/views/suggestions.py:871
+#: kb/views/suggestions.py:900
 msgid "Deleted from article page with immediate deletion setting."
 msgstr "Hemen silme ayarıyla makale sayfasından silindi."
 
-#: kb/views/suggestions.py:881
+#: kb/views/suggestions.py:910
 msgid "Deleted from article page."
 msgstr "Makale sayfasından silindi."
 
@@ -1368,7 +1372,7 @@ msgstr "Silinmiş kullanıcı"
 msgid "Deletion approved"
 msgstr "Silme onaylandı"
 
-#: website/templates/profile.html:333
+#: website/templates/profile.html:332
 msgid "Deletion queue"
 msgstr "Silme kuyruğu"
 
@@ -1488,6 +1492,10 @@ msgstr "Beğenme"
 msgid "Dislikes"
 msgstr "Beğenmeme"
 
+#: kb/views/services.py:2449
+msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
+msgstr "DjOpenKB, bu SharePoint veya OneDrive videosuna oturum açmadan erişilebildiğini doğrulayamadı. Paylaşım izinlerini kontrol edip tekrar deneyin."
+
 #: kb/models.py:262
 msgid "Django Admin MFA lockout triggered"
 msgstr "Django Admin MFA kilitlemesi tetiklendi"
@@ -1512,11 +1520,11 @@ msgstr "Django Yönetici erişim kısıtlamaları"
 msgid "Django admin action flag"
 msgstr "Django yönetici işlem işareti"
 
-#: kb/views/services.py:2505
+#: kb/views/services.py:3037
 msgid "Domain Admin"
 msgstr "Etki Alanı Yöneticisi"
 
-#: kb/views/services.py:2503
+#: kb/views/services.py:3035
 msgid "Domain User"
 msgstr "Etki Alanı Kullanıcısı"
 
@@ -1536,7 +1544,7 @@ msgstr "Django tarafından yönetilen tüm makaleleri, Markdown içeriğini, bir
 msgid "Draft"
 msgstr "Taslak"
 
-#: kb/views/suggestions.py:249 kb/views/suggestions.py:818
+#: kb/views/suggestions.py:269 kb/views/suggestions.py:847
 msgid "Draft saved successfully."
 msgstr "Taslak başarıyla kaydedildi."
 
@@ -1560,11 +1568,11 @@ msgstr "Makalelerimi düzenle"
 msgid "Edit article"
 msgstr "Makaleyi düzenle"
 
-#: website/templates/_navbar.html:30 website/templates/profile.html:253 website/templates/profile.html:259
+#: website/templates/_navbar.html:30 website/templates/profile.html:252 website/templates/profile.html:258
 msgid "Edit my articles"
 msgstr "Makalelerimi düzenle"
 
-#: website/templates/profile.html:256
+#: website/templates/profile.html:255
 msgid "Edit my internal articles"
 msgstr "Kendi iç makalelerimi düzenle"
 
@@ -1580,7 +1588,7 @@ msgstr "Yönetici onayı bekleyen düzenlenmiş anahtar kelimeler."
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Yönetici onayı bekleyen düzenlenmiş başlık. Yayınlanmış başlık onaya kadar değişmeden kalır."
 
-#: kb/views/suggestions.py:537
+#: kb/views/suggestions.py:557
 msgid "Editor reverted to the last published version."
 msgstr "Düzenleyici son yayımlanan sürüme geri döndürüldü."
 
@@ -1611,6 +1619,10 @@ msgstr "Şifrelenmiş ve gizli"
 #: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:47
 msgid "Enter MFA/OTP code"
 msgstr "MFA/OTP kodunu girin"
+
+#: kb/views/suggestions.py:950 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+msgid "Enter a supported video link."
+msgstr "Desteklenen bir video bağlantısı girin."
 
 #: website/templates/admin_orphan_articles.html:268
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
@@ -1652,7 +1664,7 @@ msgstr "Bu makaleyi veya güncellemeyi yeniden göndermeden önce kullanıcını
 msgid "Export articles"
 msgstr "Makaleleri dışa aktar"
 
-#: website/templates/profile.html:311
+#: website/templates/profile.html:310
 msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
 msgstr "Makaleleri Markdown ve yüklenen dosyalarla zip olarak dışa aktarın veya zip içe aktararak makaleleri yönetici hesabınıza atayın."
 
@@ -1704,7 +1716,7 @@ msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Djang
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "Bu dakikadan daha yeni dosyalar sahipsiz yükleme temizleme aracı tarafından yok sayılır. Kullanıcılar makale taslağı hazırlarken resimlerin silinmesini önlemek için varsayılan değer 1440 dakikadır (24 saat). Sahipsiz yüklemeleri hemen algılamak/silmek için 0 olarak ayarlayın."
 
-#: website/templates/profile.html:321
+#: website/templates/profile.html:320
 msgid "Find articles with no active owner, then assign them to a user or queue them for deletion after confirmation."
 msgstr "Etkin sahibi olmayan makaleleri bulun; ardından bunları bir kullanıcıya atayın veya onaydan sonra silme kuyruğuna alın."
 
@@ -1716,7 +1728,7 @@ msgstr "Sahibi olmayan ya da sahibi etkin olmayan/silinmiş makaleleri bulun; ar
 msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them. Published articles are queued for recovery; non-published articles are deleted immediately."
 msgstr "Sahibi olmayan ya da sahibi etkin olmayan/silinmiş makaleleri bulun; ardından etkin bir kullanıcıya atayın veya silin. Yayınlanmış makaleler kurtarma için kuyruğa alınır; yayınlanmamış makaleler hemen silinir."
 
-#: website/templates/profile.html:301
+#: website/templates/profile.html:300
 msgid "Finds unused files in"
 msgstr "Şurada kullanılmayan dosyaları bulur:"
 
@@ -1740,7 +1752,7 @@ msgstr "Genel"
 msgid "General activity log retention (days)"
 msgstr "Genel etkinlik günlüğü saklama süresi (gün)"
 
-#: website/templates/profile.html:244
+#: website/templates/profile.html:243
 msgid "General and internal articles you own."
 msgstr "Sahibi olduğunuz genel ve iç makaleler."
 
@@ -1752,7 +1764,7 @@ msgstr "Genel makale"
 msgid "General articles"
 msgstr "Genel makaleler"
 
-#: website/templates/profile.html:248
+#: website/templates/profile.html:247
 msgid "General articles you own."
 msgstr "Sahibi olduğunuz genel makaleler."
 
@@ -1772,7 +1784,7 @@ msgstr "Grup izinleri"
 msgid "Group type"
 msgstr "Grup türü"
 
-#: kb/views/services.py:2500
+#: kb/views/services.py:3032
 msgid "Guest"
 msgstr "Konuk"
 
@@ -1886,31 +1898,27 @@ msgstr "manifest.json eksikse içe aktarıcı ZIP içindeki tüm Markdown dosyal
 msgid "Image assets"
 msgstr "Resim varlıkları"
 
-#: kb/views/services.py:1153
+#: kb/views/services.py:1228
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Görsel boyutları çok büyük. Lütfen daha küçük bir görsel yükleyin."
 
-#: kb/views/services.py:1132
+#: kb/views/services.py:1207 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Görsel çok büyük. İzin verilen en büyük boyut 2 MB'dir."
 
-#: website/templates/suggest.html:437 website/templates/suggest_edit.html:654
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this article draft."
 msgstr "Görsel bu makale taslağından kaldırıldı."
 
-#: website/templates/suggest.html:437 website/templates/suggest_edit.html:654
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Görsel bu taslaktan kaldırıldı. Depolamadan silmek için makaleyi kaydedin."
 
-#: website/templates/suggest.html:478 website/templates/suggest_edit.html:695
-msgid "Image upload failed."
-msgstr "Görsel yükleme başarısız oldu."
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+msgid "Image upload is temporarily unavailable. Please try again later."
+msgstr "Görsel yükleme geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
 
-#: website/templates/suggest.html:495 website/templates/suggest_edit.html:712
-msgid "Image upload failed. Check Django terminal logs."
-msgstr "Görsel yükleme başarısız oldu. Django terminal günlüklerini kontrol edin."
-
-#: website/templates/suggest.html:492 website/templates/suggest_edit.html:709
+#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
 msgid "Image uploaded and inserted into the article."
 msgstr "Görsel yüklendi ve makaleye eklendi."
 
@@ -1918,7 +1926,7 @@ msgstr "Görsel yüklendi ve makaleye eklendi."
 msgid "Images referenced by the pending update draft."
 msgstr "Bekleyen güncelleme taslağında başvurulan görseller."
 
-#: website/templates/suggest.html:208 website/templates/suggest_edit.html:389
+#: website/templates/suggest.html:208 website/templates/suggest_edit.html:390
 msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
 msgstr "Bu taslağa yüklenen resimler burada görünür. Resmi makaleden kaldırmak ve yüklenen dosyayı silmek için X'e tıklayın."
 
@@ -1930,7 +1938,7 @@ msgstr "Hemen"
 msgid "Immediate permanent deletion"
 msgstr "Hemen kalıcı silme"
 
-#: website/templates/profile.html:313
+#: website/templates/profile.html:312
 msgid "Import / Export"
 msgstr "İçe aktar / Dışa aktar"
 
@@ -2002,6 +2010,10 @@ msgstr "İçe aktarılan makalelerin sahibi"
 msgid "Inactive"
 msgstr "Pasif"
 
+#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:220 website/templates/suggest_edit.html:404
+msgid "Insert video link"
+msgstr "Video bağlantısı ekle"
+
 #: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
 msgid "Internal"
 msgstr "İç"
@@ -2034,7 +2046,7 @@ msgstr "İç Kullanıcı"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "İç onaylayıcı eklentisi. Herkese açık/iç makaleleri görüntüleyebilir, iç makaleler/güncellemeler beklemedeyken içeriği düzenleyebilir, inceleme düzenlemelerinden sonra bunları beklemede tutabilir ve bekleyen iç makaleleri/güncellemeleri onaylayabilir veya reddedebilir. Varsayılan olarak yayımlanmış iç makaleleri silemez veya düzenleyemez."
 
-#: kb/models.py:325 kb/views/services.py:368 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
+#: kb/models.py:325 kb/views/services.py:443 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
 msgid "Internal article"
 msgstr "İç makale"
 
@@ -2054,7 +2066,7 @@ msgstr "İç makaleler"
 msgid "Internal articles are visible only to internal users."
 msgstr "İç makaleler yalnızca iç kullanıcılar tarafından görüntülenebilir."
 
-#: website/templates/profile.html:246
+#: website/templates/profile.html:245
 msgid "Internal articles you own."
 msgstr "Sahibi olduğunuz iç makaleler."
 
@@ -2078,7 +2090,7 @@ msgstr "İç yazar eklentisi. Herkese açık/iç makaleleri görüntüleyebilir,
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Hesap bilgileri geçersiz. Lütfen kullanıcı adı ve parolayı kontrol edin."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:265 kb/views/mfa.py:377
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
 msgid "Invalid authenticator code. Please try again."
 msgstr "Kimlik doğrulayıcı kodu geçersiz. Lütfen tekrar deneyin."
 
@@ -2086,11 +2098,11 @@ msgstr "Kimlik doğrulayıcı kodu geçersiz. Lütfen tekrar deneyin."
 msgid "Invalid deletion queue action."
 msgstr "Geçersiz silme kuyruğu işlemi."
 
-#: kb/views/suggestions.py:997
+#: kb/views/suggestions.py:1054
 msgid "Invalid image filename."
 msgstr "Geçersiz görsel dosya adı."
 
-#: kb/views/suggestions.py:1008
+#: kb/views/suggestions.py:1065
 msgid "Invalid image path."
 msgstr "Geçersiz görsel yolu."
 
@@ -2122,7 +2134,7 @@ msgstr "Bilgi bankası"
 msgid "Keep update pending / Save review edits"
 msgstr "Güncellemeyi beklemede tut / İnceleme düzenlemelerini kaydet"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:235 website/templates/suggest_edit.html:418
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Anahtar kelimeler"
 
@@ -2146,7 +2158,7 @@ msgstr "Bilgi Deposu Rolleri"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "Bilgi Deposu yöneticisi. Makaleleri doğrudan oluşturabilir/yayımlayabilir ve tam Django Yönetici yönetimi için Django personel/süper kullanıcı erişimiyle eşitlenir."
 
-#: kb/views/services.py:1675
+#: kb/views/services.py:1750
 msgid "Knowledge Repository article."
 msgstr "Bilgi Deposu makalesi."
 
@@ -2234,11 +2246,11 @@ msgstr "Beğen"
 msgid "Likes"
 msgstr "Beğeniler"
 
-#: kb/views/services.py:2509
+#: kb/views/services.py:3041
 msgid "Local Admin"
 msgstr "Yerel Yönetici"
 
-#: kb/views/services.py:2507
+#: kb/views/services.py:3039
 msgid "Local User"
 msgstr "Yerel Kullanıcı"
 
@@ -2266,7 +2278,7 @@ msgstr "Yerel hesaplar, parola ile oturum açtıktan sonra kimlik doğrulayıcı
 msgid "Local admin"
 msgstr "Yerel yönetici"
 
-#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:2559
+#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:3091
 msgid "Local user"
 msgstr "Yerel kullanıcı"
 
@@ -2334,7 +2346,7 @@ msgstr "Seçili %(count)d cihaz için MFA sıfırlandı. Kullanıcılar bir sonr
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "Seçili %(count)d kullanıcı için MFA sıfırlandı. Bir sonraki oturum açışlarında yeni bir kimlik doğrulayıcı ayarlamalıdırlar."
 
-#: kb/views/mfa.py:387
+#: kb/views/mfa.py:551
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Bilgi Deposu hesabınız için MFA sıfırlama kullanılabilir."
 
@@ -2350,7 +2362,7 @@ msgstr "Devam etmek için MFA kurulumu gereklidir."
 msgid "MFA setup success"
 msgstr "MFA kurulumu başarılı"
 
-#: kb/views/mfa.py:167
+#: kb/views/mfa.py:168
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "MFA ile oturum açma iptal edildi. Lütfen yeniden oturum açın."
 
@@ -2374,7 +2386,7 @@ msgstr "%(username)s için MFA sıfırlandı. Kullanıcı bir sonraki oturum aç
 msgid "MFA/OTP code"
 msgstr "MFA/OTP kodu"
 
-#: kb/views/auth.py:440 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP kodu yanlış."
 
@@ -2398,15 +2410,15 @@ msgstr "Bekleyen İç Makaleleri Yönet"
 msgid "Manage Pending Articles"
 msgstr "Bekleyen Makaleleri Yönet"
 
-#: website/templates/_navbar.html:35 website/templates/profile.html:280
+#: website/templates/_navbar.html:35 website/templates/profile.html:279
 msgid "Manage internal pending articles"
 msgstr "Bekleyen iç makaleleri yönet"
 
-#: kb/views/suggestions.py:345
+#: kb/views/suggestions.py:365
 msgid "Manage my articles"
 msgstr "Makalelerimi yönet"
 
-#: website/templates/_navbar.html:33 website/templates/_navbar.html:37 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:6 website/templates/profile.html:271 website/templates/profile.html:275 website/templates/profile.html:285
+#: website/templates/_navbar.html:33 website/templates/_navbar.html:37 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:6 website/templates/profile.html:270 website/templates/profile.html:274 website/templates/profile.html:284
 msgid "Manage pending articles"
 msgstr "Bekleyen makaleleri yönet"
 
@@ -2442,7 +2454,7 @@ msgstr "%(title)s makalesi Django Yönetici panelinden bekleme başarısız olar
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Yönetici tarafından bekleme başarısız olarak işaretlendi. Lütfen bu makaleyi gözden geçirip onay için yeniden gönderin."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:398
+#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Makale başına en fazla %(limit)s görsel."
 
@@ -2494,7 +2506,7 @@ msgstr "Çok faktörlü kimlik doğrulama"
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "Hesap Türü ile eşleşmelidir. Yerel Kullanıcı/Yerel Yönetici Yerel kullanıcıyı kullanır. LDAP kullanıcısı/LDAP yöneticisi Active Directory kullanıcısını kullanır. Bir LDAP hesabını yerel hesaba dönüştürmek için Hesap Türünü Kullanıcı veya Yönetici, Kaynağı ise Yerel kullanıcı olarak ayarlayın; ardından yerel bir parola belirleyin."
 
-#: website/templates/profile.html:371
+#: website/templates/profile.html:404
 msgid "Must not contain your username or email name"
 msgstr "Kullanıcı adınızı veya e-posta adınızı içermemelidir"
 
@@ -2502,7 +2514,7 @@ msgstr "Kullanıcı adınızı veya e-posta adınızı içermemelidir"
 msgid "My Profile"
 msgstr "Profilim"
 
-#: website/templates/profile.html:241
+#: website/templates/profile.html:240
 msgid "My articles"
 msgstr "Makalelerim"
 
@@ -2518,7 +2530,7 @@ msgstr "Ad"
 msgid "New"
 msgstr "Yeni"
 
-#: website/templates/edit_my_suggestions.html:132 website/templates/profile.html:252 website/templates/profile.html:258
+#: website/templates/edit_my_suggestions.html:132 website/templates/profile.html:251 website/templates/profile.html:257
 msgid "New article"
 msgstr "Yeni makale"
 
@@ -2526,11 +2538,11 @@ msgstr "Yeni makale"
 msgid "New email"
 msgstr "Yeni e-posta"
 
-#: website/templates/profile.html:255
+#: website/templates/profile.html:254
 msgid "New internal article"
 msgstr "Yeni iç makale"
 
-#: website/templates/profile.html:361
+#: website/templates/profile.html:394
 msgid "New password"
 msgstr "Yeni şifre"
 
@@ -2578,11 +2590,11 @@ msgstr "E-posta ayarlanmadı"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Geçerli başlık ya da gövdeyle henüz eşleşen mevcut anahtar kelime yok."
 
-#: kb/views/suggestions.py:920
+#: kb/views/suggestions.py:977
 msgid "No image file received."
 msgstr "Görsel dosyası alınmadı."
 
-#: kb/views/suggestions.py:992
+#: kb/views/suggestions.py:1049
 msgid "No image filename received."
 msgstr "Görsel dosya adı alınmadı."
 
@@ -2730,7 +2742,7 @@ msgstr "Tamam"
 msgid "Object ID %(object_id)s"
 msgstr "Nesne kimliği %(object_id)s"
 
-#: website/templates/profile.html:357
+#: website/templates/profile.html:390
 msgid "Old password"
 msgstr "Eski şifre"
 
@@ -2742,7 +2754,7 @@ msgstr "Eski parola yanlış."
 msgid "Only .zip import files are allowed."
 msgstr "Yalnızca .zip içe aktarma dosyalarına izin verilir."
 
-#: kb/views/services.py:1129 kb/views/services.py:1150 website/templates/suggest.html:448 website/templates/suggest.html:504 website/templates/suggest.html:529 website/templates/suggest_edit.html:665 website/templates/suggest_edit.html:721 website/templates/suggest_edit.html:746
+#: kb/views/services.py:1204 kb/views/services.py:1225 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Yalnızca PNG, JPG, GIF veya WEBP görsellerine izin verilir."
 
@@ -2758,15 +2770,7 @@ msgstr "Aç"
 msgid "Open OpenKB AI chat"
 msgstr "OpenKB AI sohbetini aç"
 
-#: kb/views/ai.py:145 kb/views/ai_jobs.py:317 kb/views/ai_jobs.py:358 kb/views/services_ai.py:1150
-msgid "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
-msgstr "OpenKB AI isteği tamamlayamadı. Lütfen daha sonra yeniden deneyin veya sorun devam ederse BT desteğiyle iletişime geçin."
-
-#: kb/views/ai_jobs.py:419
-msgid "OpenKB AI could not produce a clear answer for that question. Please try rephrasing it or contact IT support if the issue persists."
-msgstr "OpenKB AI bu soru için net bir yanıt üretemedi. Lütfen soruyu farklı biçimde yazmayı deneyin veya sorun devam ederse BT desteğiyle iletişime geçin."
-
-#: kb/views/ai.py:94 kb/views/ai_jobs.py:491
+#: kb/views/ai.py:94 kb/views/ai_jobs.py:497
 msgid "OpenKB AI is currently handling other questions. Please try again shortly."
 msgstr "OpenKB AI şu anda başka soruları işliyor. Lütfen kısa süre sonra yeniden deneyin."
 
@@ -2774,7 +2778,7 @@ msgstr "OpenKB AI şu anda başka soruları işliyor. Lütfen kısa süre sonra 
 msgid "OpenKB AI is ready. Ask me a knowledge-base question or request relevant articles."
 msgstr "OpenKB AI hazır. Bilgi bankasıyla ilgili bir soru sorun veya ilgili makaleleri isteyin."
 
-#: kb/views/services_ai.py:1142 kb/views/services_ai.py:1145
+#: kb/views/ai.py:145 kb/views/ai_jobs.py:364 kb/views/services_ai.py:1145 kb/views/services_ai.py:1148 kb/views/services_ai.py:1153
 msgid "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
 msgstr "OpenKB AI geçici olarak kullanılamıyor. Lütfen daha sonra yeniden deneyin veya sorun devam ederse BT desteğiyle iletişime geçin."
 
@@ -2798,11 +2802,11 @@ msgstr "OpenKB AI hız sınırına takıldı"
 msgid "OpenKB AI rate limits"
 msgstr "OpenKB AI hız sınırları"
 
-#: kb/views/services_ai.py:1148
+#: kb/views/services_ai.py:1151
 msgid "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."
 msgstr "OpenKB AI yanıt vermek için çok uzun süre aldı. Lütfen daha sonra yeniden deneyin veya sorun devam ederse BT desteğiyle iletişime geçin."
 
-#: kb/views/ai_jobs.py:384
+#: kb/views/ai_jobs.py:390
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "OpenKB veri klasörü bulunamadı. settings.py içindeki OPENKB_DATA_DIR ayarını kontrol edin."
 
@@ -2858,7 +2862,7 @@ msgstr "%(page)s / %(total)s. sayfa"
 msgid "Page not found"
 msgstr "Sayfa bulunamadı"
 
-#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:217
+#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Parola"
 
@@ -2878,39 +2882,39 @@ msgstr "Parola ile oturum açma başarısız"
 msgid "Password login success"
 msgstr "Parola ile oturum açma başarılı"
 
-#: kb/views/services.py:2597
+#: kb/views/services.py:3129
 msgid "Password must be at least 12 characters long."
 msgstr "Parola en az 12 karakter uzunluğunda olmalıdır."
 
-#: kb/views/services.py:2601
+#: kb/views/services.py:3133
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Parola en az 1 küçük harf içermelidir."
 
-#: kb/views/services.py:2603
+#: kb/views/services.py:3135
 msgid "Password must include at least 1 number."
 msgstr "Parola en az 1 sayı içermelidir."
 
-#: kb/views/services.py:2605
+#: kb/views/services.py:3137
 msgid "Password must include at least 1 special character."
 msgstr "Parola en az 1 özel karakter içermelidir."
 
-#: kb/views/services.py:2599
+#: kb/views/services.py:3131
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Parola en az 1 büyük harf içermelidir."
 
-#: kb/views/services.py:2614
+#: kb/views/services.py:3146
 msgid "Password must not contain the name part of your email address."
 msgstr "Parola, e-posta adresinizin ad bölümünü içermemelidir."
 
-#: kb/views/services.py:2612
+#: kb/views/services.py:3144
 msgid "Password must not contain your username."
 msgstr "Parola kullanıcı adınızı içermemelidir."
 
-#: website/templates/profile.html:364
+#: website/templates/profile.html:397
 msgid "Password requirements"
 msgstr "Şifre gereksinimleri"
 
-#: website/templates/profile.html:224 website/templates/profile.html:227
+#: website/templates/profile.html:223 website/templates/profile.html:226
 msgid "Password syncs with your company password."
 msgstr "Parola şirket parolanızla eşitlenir."
 
@@ -2930,13 +2934,17 @@ msgstr "Seçilen %(count)d kullanıcı için parola/MFA kilit sayaçları sıfı
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "%(username)s için parola/MFA kilit sayaçları sıfırlandı."
 
-#: website/templates/profile.html:455
+#: website/templates/profile.html:488
 msgid "Passwords do not match yet."
 msgstr "Şifreler henüz eşleşmiyor."
 
-#: website/templates/profile.html:452
+#: website/templates/profile.html:485
 msgid "Passwords match."
 msgstr "Şifreler eşleşiyor."
+
+#: website/templates/_video_insert_modal.html:13
+msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
+msgstr "Bir YouTube veya Vimeo bağlantısı ya da .mp4, .webm veya .ogg ile biten doğrudan bir HTTPS bağlantısı yapıştırın. Makalede oynatılabilir bir video görüntülenecektir."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3002,11 +3010,11 @@ msgstr "Bekleyen güncelleme - inceleme"
 msgid "Pending update title"
 msgstr "Bekleyen güncelleme - başlık"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
 msgstr "Güncelleme beklemede — Bu düzenleme yönetici onayı bekliyor. Mevcut yayımlanmış sürüm kullanıcılara görünmeye devam eder."
 
-#: kb/views/suggestions.py:676
+#: kb/views/suggestions.py:705
 msgid "Pending updates can only be kept pending, approved as Published, or marked as Pending failed."
 msgstr "Bekleyen güncellemeler yalnızca beklemede tutulabilir, Yayınlandı olarak onaylanabilir veya Bekleme başarısız olarak işaretlenebilir."
 
@@ -3050,7 +3058,7 @@ msgstr "Gönderilen bilgileri kontrol edip yeniden deneyin."
 msgid "Please choose a .zip file to import."
 msgstr "İçe aktarmak için bir .zip dosyası seçin."
 
-#: kb/views/suggestions.py:558
+#: kb/views/suggestions.py:578
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
 msgstr "Bu makaleyi reddedildi olarak işaretlemeden önce reddedilme yorumlarını girin."
 
@@ -3066,11 +3074,11 @@ msgstr "Devam etmek için MFA/OTP kodunuzu girin."
 msgid "Please select at least one orphan article first."
 msgstr "Önce en az bir sahipsiz makale seçin."
 
-#: kb/views/mfa.py:183
+#: kb/views/mfa.py:184
 msgid "Please sign in before setting up MFA."
 msgstr "MFA kurmadan önce oturum açın."
 
-#: kb/views/mfa.py:282
+#: kb/views/mfa.py:283
 msgid "Please sign in before verifying MFA."
 msgstr "MFA doğrulamadan önce oturum açın."
 
@@ -3122,7 +3130,7 @@ msgstr "Tercih edilen dil"
 msgid "Preferred language for the main wiki user interface."
 msgstr "Ana wiki kullanıcı arayüzü için tercih edilen dil."
 
-#: website/templates/suggest.html:227 website/templates/suggest_edit.html:410
+#: website/templates/suggest.html:228 website/templates/suggest_edit.html:413
 msgid "Preview"
 msgstr "Önizleme"
 
@@ -3158,7 +3166,7 @@ msgstr "Profil e-posta adresi güncellendi"
 msgid "Profile password changed"
 msgstr "Profil parolası değiştirildi"
 
-#: kb/models.py:324 kb/views/services.py:369
+#: kb/models.py:324 kb/views/services.py:444
 msgid "Public article"
 msgstr "Herkese açık makale"
 
@@ -3226,7 +3234,7 @@ msgstr "'%(action)s' yönetici işlemi %(target)s üzerinde çalıştırıldı"
 msgid "Raw path"
 msgstr "Ham yol"
 
-#: website/templates/profile.html:378 website/templates/profile.html:449
+#: website/templates/profile.html:411 website/templates/profile.html:482
 msgid "Re-type the new password to confirm."
 msgstr "Onaylamak için yeni şifreyi tekrar yazın."
 
@@ -3282,7 +3290,7 @@ msgstr "Güncellemeyi reddet"
 msgid "Related articles"
 msgstr "İlgili makaleler"
 
-#: website/templates/suggest.html:409 website/templates/suggest.html:410 website/templates/suggest_edit.html:626 website/templates/suggest_edit.html:627
+#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Görseli makaleden kaldır"
 
@@ -3314,7 +3322,7 @@ msgstr "İstek zaman aşımına uğradı"
 msgid "Request too large"
 msgstr "İstek çok büyük"
 
-#: kb/admin.py:1375 website/templates/profile.html:208
+#: kb/admin.py:1375 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "MFA'yı sıfırla"
 
@@ -3374,11 +3382,11 @@ msgstr "Bu kullanıcının MFA’sını sıfırla"
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Bu kullanıcının kimlik doğrulayıcısını sıfırlar ve yeni bir QR kurulumu gerektirir. Yeni kimlik doğrulayıcı anahtarı özeldir ve yöneticilere gösterilmez."
 
-#: website/templates/profile.html:206
+#: website/templates/profile.html:357
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
 msgstr "MFA’yı sıfırlamak, devam etmeden önce hemen yeni bir kimlik doğrulayıcı kodu ayarlamanızı gerektirir. Devam edilsin mi?"
 
-#: website/templates/profile.html:331
+#: website/templates/profile.html:330
 msgid "Restore articles before the recovery period ends, or permanently delete queued articles when required."
 msgstr "Kurtarma süresi sona ermeden makaleleri geri yükleyin veya gerektiğinde kuyruktaki makaleleri kalıcı olarak silin."
 
@@ -3414,7 +3422,7 @@ msgstr "Silmeden önce inceleyin"
 msgid "Review comments history"
 msgstr "İnceleme yorumları geçmişi"
 
-#: kb/views/suggestions.py:816
+#: kb/views/suggestions.py:845
 msgid "Review edits saved. The update remains pending approval and the current published version is still visible."
 msgstr "İnceleme düzenlemeleri kaydedildi. Güncelleme onay beklemeye devam ediyor ve geçerli yayımlanmış sürüm hâlâ görünür durumda."
 
@@ -3422,7 +3430,7 @@ msgstr "İnceleme düzenlemeleri kaydedildi. Güncelleme onay beklemeye devam ed
 msgid "Review general and internal articles or pending updates waiting for approval."
 msgstr "Onay bekleyen genel ve iç makaleleri veya bekleyen güncellemeleri inceleyin."
 
-#: website/templates/profile.html:273
+#: website/templates/profile.html:272
 msgid "Review general and internal submissions from one page. Use the scope dropdown to switch between queues."
 msgstr "Genel ve iç gönderimleri tek sayfadan inceleyin. Kuyruklar arasında geçiş yapmak için kapsam açılır listesini kullanın."
 
@@ -3438,7 +3446,7 @@ msgstr "İnceleme geçmişi"
 msgid "Review internal articles and internal pending updates waiting for approval."
 msgstr "Onay bekleyen iç makaleleri ve iç bekleyen güncellemeleri inceleyin."
 
-#: website/templates/profile.html:278
+#: website/templates/profile.html:277
 msgid "Review internal articles waiting for approval."
 msgstr "Onay bekleyen iç makaleleri inceleyin."
 
@@ -3454,7 +3462,7 @@ msgstr "İnceleme notları"
 msgid "Review submitted articles and pending updates within your allowed article scope."
 msgstr "İzin verilen makale kapsamınızdaki gönderilen makaleleri ve bekleyen güncellemeleri inceleyin."
 
-#: website/templates/profile.html:283
+#: website/templates/profile.html:282
 msgid "Review user-submitted general articles waiting for approval."
 msgstr "Onay bekleyen kullanıcı tarafından gönderilmiş genel makaleleri inceleyin."
 
@@ -3486,11 +3494,11 @@ msgstr "Güncelleme ilerlemesini kaydet"
 msgid "Saved update draft"
 msgstr "Güncelleme taslağı kaydedildi"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
 msgstr "Güncelleme taslağı kaydedildi — Bu yayımlanmış makale için kaydedilmiş değişiklikleri düzenliyorsunuz. Bu güncellemeyi onaya gönderene kadar mevcut yayımlanmış sürüm görünmeye devam eder."
 
-#: website/templates/_navbar.html:40 website/templates/admin_orphan_articles.html:171 website/templates/admin_orphan_articles.html:6 website/templates/profile.html:320 website/templates/profile.html:323
+#: website/templates/_navbar.html:40 website/templates/admin_orphan_articles.html:171 website/templates/admin_orphan_articles.html:6 website/templates/profile.html:319 website/templates/profile.html:322
 msgid "Scan orphan articles"
 msgstr "Sahipsiz makaleleri tara"
 
@@ -3606,15 +3614,15 @@ msgstr "MFA'yı ayarla"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Yönetici sitesine erişmeden önce MFA'yı kurun."
 
-#: kb/views/auth.py:392
+#: kb/views/auth.py:392 kb/views/mfa.py:471
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Hassas hesap ayrıntılarını değiştirmeden önce MFA kurun."
 
-#: kb/views/services.py:682
+#: kb/views/services.py:757
 msgid "Set up MFA before deleting a published article."
 msgstr "Yayınlanmış bir makaleyi silmeden önce MFA'yı kurun."
 
-#: website/templates/profile.html:211
+#: website/templates/profile.html:210
 msgid "Set up authenticator"
 msgstr "Kimlik doğrulayıcıyı kur"
 
@@ -3882,11 +3890,23 @@ msgstr "Makaleler güvenli şekilde atanamadı. Hiçbir atama uygulanmadı. Lüt
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Aşağıdaki onay kutuları yalnızca makale erişimi için kullanıcıya özel istisnalardır. Bir kullanıcının yeni bir grup oluşturmadan grubundan biraz daha fazla makale erişimine ihtiyacı olduğunda yararlıdır. Django Yönetici erişimi yalnızca Yönetici Kullanıcılar grubu/süper kullanıcı durumu aracılığıyla verilir."
 
+#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+msgid "The image could not be uploaded. Please try again."
+msgstr "Görsel yüklenemedi. Lütfen tekrar deneyin."
+
+#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+msgid "The image upload could not connect to the server. Please check your connection and try again."
+msgstr "Görsel yükleme sırasında sunucuya bağlanılamadı. Bağlantınızı kontrol edip tekrar deneyin."
+
+#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+msgid "The image upload was not authorised. Refresh the page and try again."
+msgstr "Görsel yüklemeye izin verilmedi. Sayfayı yenileyip tekrar deneyin."
+
 #: website/templates/admin_bulk_articles.html:130
 msgid "The import result is shown here so it does not take over the main import/export page."
 msgstr "İçe aktarma sonucu, ana içe/dışa aktarma sayfasını kaplamaması için burada gösterilir."
 
-#: kb/views/ai_jobs.py:408 kb/views/services_ai.py:1047 kb/views/services_ai.py:1081
+#: kb/views/ai_jobs.py:325 kb/views/ai_jobs.py:414 kb/views/ai_jobs.py:425 kb/views/ai_jobs.py:477 kb/views/services_ai.py:1047 kb/views/services_ai.py:1081 kb/views/services_ai.py:1135
 msgid "The knowledge base does not contain matching information about that topic."
 msgstr "Bilgi bankası bu konuyla ilgili eşleşen bilgi içermiyor."
 
@@ -3922,6 +3942,14 @@ msgstr "Aynı aşamalı ilke parola ile oturum açma hataları ve MFA kodu hatal
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Seçilen makaleler artık sahipsiz değil veya mevcut değil. Lütfen yenileyip tekrar deneyin."
 
+#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+msgid "The selected file is not a valid supported image."
+msgstr "Seçilen dosya geçerli ve desteklenen bir görsel değil."
+
+#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+msgid "The selected image is empty. Please choose a different image."
+msgstr "Seçilen görsel boş. Lütfen başka bir görsel seçin."
+
 #: kb/views/admin.py:716
 msgid "The selected queued articles are no longer available. Please refresh and try again."
 msgstr "Seçilen kuyruktaki makaleler artık kullanılamıyor. Lütfen yenileyin ve tekrar deneyin."
@@ -3942,7 +3970,7 @@ msgstr "Sunucu isteğinizi tamamlayamadı."
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "Gönderilen dosya veya istek izin verilen sınırdan daha büyük."
 
-#: kb/views/services.py:1141
+#: kb/views/services.py:1216
 msgid "The uploaded file is not a valid image."
 msgstr "Yüklenen dosya geçerli bir görsel değil."
 
@@ -3958,13 +3986,25 @@ msgstr "Makale veya güncelleme Reddedildi olarak işaretlendiğinde bu yorumlar
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Bu dosyalar kullanılmıyor gibi görünüyor. Yükleyen bilgilerini kontrol edin ve yalnızca artık gerekli olmayan dosyaları silin."
 
-#: kb/views/mfa.py:306
+#: kb/views/mfa.py:307 kb/views/mfa.py:477
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Gizli anahtarı okunamadığından bu MFA cihazı doğrulanamıyor. Bir yöneticiden MFA'nızı sıfırlamasını isteyin veya yöneticilerin erişimi kilitliyse sunucu komut satırından sıfırlayın."
 
 #: kb/admin_security.py:245
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Gizli anahtarı okunamadığından bu MFA cihazı doğrulanamıyor. Başka bir yöneticiden bu hesap için MFA'yı sıfırlamasını isteyin."
+
+#: kb/views/services.py:2440
+msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
+msgstr "Bu SharePoint veya OneDrive bağlantısı, oturum açmadan doğrudan oynatılabilen bir video sağlamıyor. Oturum açmadan görüntülenebilen doğrudan bir video bağlantısı kullanın."
+
+#: kb/views/services.py:2445
+msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
+msgstr "Bu SharePoint veya OneDrive videosuna oturum açmadan erişilemiyor. Paylaşım izinlerini kontrol edin ve oturum açmadan görüntülenebilen bir bağlantı kullanın."
+
+#: kb/views/services.py:2435
+msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
+msgstr "Bu SharePoint veya OneDrive videosu harici oturum açma gerektiriyor ve gömülemiyor. Oturum açmadan görüntülenebilen bir video bağlantısı kullanın."
 
 #: website/templates/suggest_delete.html:39
 msgid "This action cannot be reversed."
@@ -3974,15 +4014,15 @@ msgstr "Bu işlem geri alınamaz."
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "Bu makalenin bekleyen bir güncellemesi de var; ancak yine de yayımlanmış makale olarak değerlendirilir."
 
-#: kb/views/services.py:1228
+#: kb/views/services.py:1303
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "Bu makalede %(count)s görsel var, ancak izin verilen azami sayı %(limit)s. Kaydetmeden önce bazı görselleri kaldırın."
 
-#: kb/views/services.py:1227
+#: kb/views/services.py:1302
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Bu makale %(limit)s görsel yükleme sınırına ulaştı."
 
-#: website/templates/suggest.html:452 website/templates/suggest_edit.html:669
+#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Bu makale görsel yükleme sınırına ulaştı. Başka bir görsel yüklemeden önce bir görseli kaldırın."
 
@@ -3998,11 +4038,11 @@ msgstr "Bu işlem bu kullanıcı için geçici engellemeleri, başarısız denem
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Bu e-posta adresi alan hesabınız tarafından yönetilir ve burada değiştirilemez."
 
-#: website/templates/suggest.html:458 website/templates/suggest_edit.html:675
+#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Bu görsel zaten bu taslağa yüklendi. Önce X önizleme düğmesini kullanarak kaldırın."
 
-#: kb/views/suggestions.py:1001
+#: kb/views/suggestions.py:1058
 msgid "This image is not removable from this editing session."
 msgstr "Bu görsel bu düzenleme oturumundan kaldırılamaz."
 
@@ -4025,6 +4065,10 @@ msgstr "Bu araç sistem dışa aktarma biçimini tercih eder:"
 #: kb/views/errors.py:51
 msgid "This type of request is not allowed for the selected page."
 msgstr "Seçilen sayfada bu tür isteğe izin verilmiyor."
+
+#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+msgid "This video link could not be validated. Please try another link."
+msgstr "Bu video bağlantısı doğrulanamadı. Başka bir bağlantı deneyin."
 
 #: website/templates/admin/kb/reset_mfa_confirm.html:16
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using Knowledge Repository."
@@ -4054,11 +4098,15 @@ msgstr "Gezinmeyi aç/kapat"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Çok fazla OpenKB AI sorusu. Lütfen yeniden denemeden önce bekleyin."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonra yeniden deneyin."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+msgid "Too many image upload attempts. Please wait a moment and try again."
+msgstr "Çok fazla görsel yükleme denemesi yapıldı. Bir süre bekleyip tekrar deneyin."
+
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Çok fazla yanlış MFA kodu. Lütfen %(duration)s sonra yeniden deneyin."
 
@@ -4098,6 +4146,14 @@ msgstr "Tür"
 msgid "Type username or email"
 msgstr "Kullanıcı adı veya e-posta yazın"
 
+#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+msgid "Unable to validate this video link. Refresh the page and try again."
+msgstr "Bu video bağlantısı doğrulanamıyor. Sayfayı yenileyip tekrar deneyin."
+
+#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+msgid "Unable to verify that this video is accessible without signing in. Please try again."
+msgstr "Bu videoya oturum açmadan erişilebildiği doğrulanamıyor. Lütfen tekrar deneyin."
+
 #: website/templates/edit_my_suggestions.html:241
 msgid "Unassigned"
 msgstr "Atanmamış"
@@ -4130,7 +4186,7 @@ msgstr "Başlıksız makale"
 msgid "Update approval status"
 msgstr "Güncelleme onay durumu"
 
-#: website/templates/profile.html:387
+#: website/templates/profile.html:420
 msgid "Update password"
 msgstr "Şifreyi güncelle"
 
@@ -4138,11 +4194,11 @@ msgstr "Şifreyi güncelle"
 msgid "Update pending failed"
 msgstr "Güncelleme reddedildi"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
 msgstr "Güncelleme reddedildi — Lütfen yönetici yorumlarını inceleyin, değişikliklerinizi güncelleyin ve tekrar gönderin."
 
-#: kb/views/suggestions.py:807
+#: kb/views/suggestions.py:836
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Güncelleme ilerlemesi kaydedildi. Yayımlanmış sürüm hâlâ görünür ve güncelleme henüz onaya gönderilmedi."
 
@@ -4170,7 +4226,7 @@ msgstr "Yükleme IP adresi"
 msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
 msgstr "Bu sistemden dışa aktarılmış bir zip veya Markdown dosyaları ve isteğe bağlı bir"
 
-#: website/templates/suggest.html:219 website/templates/suggest_edit.html:401
+#: website/templates/suggest.html:219 website/templates/suggest_edit.html:403
 msgid "Upload image"
 msgstr "Resim yükle"
 
@@ -4286,6 +4342,14 @@ msgstr "Doğrula"
 msgid "Verify and continue to admin"
 msgstr "Doğrula ve yöneticiye devam et"
 
+#: website/templates/_video_insert_modal.html:11
+msgid "Video link"
+msgstr "Video bağlantısı"
+
+#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+msgid "Video link inserted into the article."
+msgstr "Video bağlantısı makaleye eklendi."
+
 #: website/templates/admin_orphan_articles.html:314
 msgid "View"
 msgstr "Görüntüle"
@@ -4298,7 +4362,7 @@ msgstr "Makaleleri görüntüle"
 msgid "View count"
 msgstr "Görüntüleme sayısı"
 
-#: website/templates/profile.html:262
+#: website/templates/profile.html:261
 msgid "View internal articles"
 msgstr "İç makaleleri görüntüle"
 
@@ -4322,8 +4386,7 @@ msgstr "Uyarılar / hatalar"
 msgid "Was this article helpful?"
 msgstr "Bu makale faydalı oldu mu?"
 
-#: kb/views/mfa.py:350
-#, python-format
+#: kb/views/mfa.py:353
 msgid "Welcome back, %(username)s."
 msgstr "Tekrar hoş geldiniz, %(username)s."
 
@@ -4363,7 +4426,7 @@ msgstr "<strong>%(username)s</strong> kullanıcısı için MFA’yı sıfırlama
 msgid "You are about to reset password/MFA lockout counters for user <strong>%(username)s</strong>."
 msgstr "<strong>%(username)s</strong> kullanıcısı için parola/MFA kilit sayaçlarını sıfırlamak üzeresiniz."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:398
+#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
 msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
 msgstr "Küçük PNG/JPG/GIF/WEBP resimleri doğrudan düzenleyiciye yapıştırabilir veya düğmeyle yükleyebilirsiniz. Her biri maksimum 2 MB."
 
@@ -4431,7 +4494,7 @@ msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Yayınlanmış 
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Seçilen makaleler hemen kalıcı olarak silinir."
 
-#: kb/views/mfa.py:406
+#: kb/views/mfa.py:587
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA'nız sıfırlandı. Bilgi Deposunu kullanmaya devam etmek için şimdi kimlik doğrulayıcı kurulumunu tamamlayın."
 
@@ -4446,6 +4509,10 @@ msgstr "Yönetici oturumunuz hareketsizlik nedeniyle sona erdi. Yönetici sitesi
 #: kb/admin.py:1610
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Kendi hesabınıza Devre Dışı Kullanıcı rolü atandı. Sonraki istekte hesap devre dışı sayfasına yönlendirileceksiniz."
+
+#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+msgid "Your session has expired. Please sign in again before uploading the image."
+msgstr "Oturumunuzun süresi doldu. Görseli yüklemeden önce lütfen tekrar oturum açın."
 
 #: kb/middleware.py:251
 msgid "Your session has expired. Please sign in again."
@@ -4611,7 +4678,7 @@ msgstr "kullanılmayan yükleme dosyaları bulundu"
 msgid "successful"
 msgstr "başarılı"
 
-#: website/templates/profile.html:301
+#: website/templates/profile.html:300
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "artık hiçbir makale veya wiki Markdown dosyası tarafından başvurulmayan."
 

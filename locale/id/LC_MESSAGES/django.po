@@ -303,7 +303,7 @@ msgstr "Permintaan admin untuk %(target)s"
 msgid "Admin tool action"
 msgstr "Tindakan alat admin"
 
-#: website/templates/profile.html:297
+#: website/templates/profile.html:296
 msgid "Admin tools"
 msgstr "Alat admin"
 
@@ -343,7 +343,7 @@ msgstr "Semua artikel yang diizinkan"
 msgid "All statuses"
 msgstr "Semua status"
 
-#: kb/views/services.py:166
+#: kb/views/services.py:241
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "Artikel dengan judul ‘%(title)s’ sudah ada. Gunakan judul lain."
 
@@ -431,7 +431,7 @@ msgstr "Peran Penulis Artikel ditetapkan kepada %(count)d pengguna yang dipilih.
 msgid "Article and update reviews"
 msgstr "Tinjauan artikel dan pembaruan"
 
-#: kb/views/suggestions.py:824
+#: kb/views/suggestions.py:853
 msgid "Article approved and published."
 msgstr "Artikel disetujui dan diterbitkan."
 
@@ -451,7 +451,7 @@ msgstr "Artikel dihapus otomatis dari antrean"
 msgid "Article body"
 msgstr "Isi artikel"
 
-#: website/templates/suggest.html:216 website/templates/suggest_edit.html:397
+#: website/templates/suggest.html:216 website/templates/suggest_edit.html:399
 msgid "Article body (Markdown)"
 msgstr "Isi artikel (Markdown)"
 
@@ -467,15 +467,15 @@ msgstr "Artikel dibuat"
 msgid "Article deleted"
 msgstr "Artikel dihapus"
 
-#: kb/views/suggestions.py:862
+#: kb/views/suggestions.py:891
 msgid "Article deletion confirmed after MFA."
 msgstr "Penghapusan artikel dikonfirmasi setelah MFA."
 
-#: kb/views/suggestions.py:886
+#: kb/views/suggestions.py:915
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Penghapusan artikel dikonfirmasi: %(title)s."
 
-#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:330
+#: kb/admin.py:2607 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Antrean penghapusan artikel"
 
@@ -507,7 +507,7 @@ msgstr "Detail artikel"
 msgid "Article display and upload limits"
 msgstr "Batas tampilan dan unggahan artikel"
 
-#: website/templates/suggest.html:404 website/templates/suggest_edit.html:621
+#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
 msgid "Article image"
 msgstr "Gambar artikel"
 
@@ -539,7 +539,7 @@ msgstr "Log unggahan gambar artikel"
 msgid "Article image uploaded"
 msgstr "Gambar artikel diunggah"
 
-#: kb/views/services.py:1225
+#: kb/views/services.py:1300
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Unggahan gambar artikel saat ini dinonaktifkan oleh administrator."
 
@@ -551,7 +551,7 @@ msgstr "Kata kunci artikel"
 msgid "Article manager. Can view public articles, create public articles, edit/manage public articles, review public pending articles/updates, approve/reject submissions, and delete public articles in scope. Published article deletion requires MFA confirmation. Regular User is not required."
 msgstr "Manajer artikel. Dapat melihat artikel publik, membuat artikel publik, mengedit/mengelola artikel publik, meninjau artikel/pembaruan publik yang menunggu, menyetujui/menolak kiriman, dan menghapus artikel publik dalam cakupan. Penghapusan artikel yang diterbitkan memerlukan konfirmasi MFA. Pengguna Biasa tidak diperlukan."
 
-#: kb/views/suggestions.py:822
+#: kb/views/suggestions.py:851
 msgid "Article marked as pending failed."
 msgstr "Artikel ditandai sebagai persetujuan gagal."
 
@@ -627,11 +627,11 @@ msgstr "Paginasi artikel"
 msgid "Article permanently deleted"
 msgstr "Artikel dihapus permanen"
 
-#: kb/views/suggestions.py:897
+#: kb/views/suggestions.py:926
 msgid "Article permanently deleted: %(title)s."
 msgstr "Artikel dihapus permanen: %(title)s."
 
-#: kb/views/suggestions.py:251
+#: kb/views/suggestions.py:271
 msgid "Article published successfully."
 msgstr "Artikel berhasil diterbitkan."
 
@@ -671,7 +671,7 @@ msgstr "Status artikel"
 msgid "Article status changed"
 msgstr "Status artikel diubah"
 
-#: kb/views/suggestions.py:253 kb/views/suggestions.py:820
+#: kb/views/suggestions.py:273 kb/views/suggestions.py:849
 msgid "Article submitted for admin approval."
 msgstr "Artikel dikirim untuk persetujuan admin."
 
@@ -683,7 +683,7 @@ msgstr "Artikel dikirim untuk persetujuan"
 msgid "Article title"
 msgstr "Judul artikel"
 
-#: kb/views/suggestions.py:164 kb/views/suggestions.py:565
+#: kb/views/suggestions.py:168 kb/views/suggestions.py:585
 msgid "Article title and body must be at least 5 characters."
 msgstr "Judul dan isi artikel harus minimal 5 karakter."
 
@@ -691,15 +691,15 @@ msgstr "Judul dan isi artikel harus minimal 5 karakter."
 msgid "Article type"
 msgstr "Jenis artikel"
 
-#: kb/views/suggestions.py:812
+#: kb/views/suggestions.py:841
 msgid "Article update approved and published."
 msgstr "Pembaruan artikel telah disetujui dan dipublikasikan."
 
-#: kb/views/suggestions.py:814
+#: kb/views/suggestions.py:843
 msgid "Article update marked as pending failed. The current published version remains visible."
 msgstr "Pembaruan artikel ditandai sebagai menunggu gagal. Versi yang saat ini dipublikasikan tetap terlihat."
 
-#: kb/views/suggestions.py:810
+#: kb/views/suggestions.py:839
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
 msgstr "Pembaruan artikel dikirim untuk persetujuan admin. Versi yang dipublikasikan tetap terlihat hingga pembaruan disetujui."
 
@@ -707,7 +707,7 @@ msgstr "Pembaruan artikel dikirim untuk persetujuan admin. Versi yang dipublikas
 msgid "Article updated"
 msgstr "Artikel diperbarui"
 
-#: kb/views/suggestions.py:826
+#: kb/views/suggestions.py:855
 msgid "Article updated successfully."
 msgstr "Artikel berhasil diperbarui."
 
@@ -747,7 +747,7 @@ msgstr "Suara artikel"
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Log aktivitas artikel/suara/gambar/alat admin/situs admin yang lebih lama dari jumlah hari ini dapat dihapus oleh perintah pembersihan. Gunakan 0 untuk menyimpan log aktivitas umum dan admin tanpa batas waktu."
 
-#: website/templates/profile.html:237
+#: website/templates/profile.html:236
 msgid "Articles"
 msgstr "Artikel"
 
@@ -787,23 +787,23 @@ msgstr "%(count)s artikel yatim ditetapkan ke %(user)s."
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "Peran Pengguna Dinonaktifkan ditetapkan kepada %(username)s"
 
-#: website/templates/profile.html:368
+#: website/templates/profile.html:401
 msgid "At least 1 lowercase letter"
 msgstr "Minimal 1 huruf kecil"
 
-#: website/templates/profile.html:369
+#: website/templates/profile.html:402
 msgid "At least 1 number"
 msgstr "Minimal 1 angka"
 
-#: website/templates/profile.html:370
+#: website/templates/profile.html:403
 msgid "At least 1 special character"
 msgstr "Minimal 1 karakter khusus"
 
-#: website/templates/profile.html:367
+#: website/templates/profile.html:400
 msgid "At least 1 uppercase letter"
 msgstr "Minimal 1 huruf besar"
 
-#: website/templates/profile.html:366
+#: website/templates/profile.html:399
 msgid "At least 12 characters"
 msgstr "Minimal 12 karakter"
 
@@ -875,7 +875,7 @@ msgstr "Sumber autentikasi"
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Log pemantauan autentikasi/MFA yang lebih lama dari jumlah hari ini dapat dihapus oleh perintah pembersihan. Gunakan 0 untuk menyimpan log aktivitas autentikasi tanpa batas waktu."
 
-#: website/templates/profile.html:155 website/templates/profile.html:381
+#: website/templates/profile.html:155 website/templates/profile.html:364 website/templates/profile.html:414
 msgid "Authenticator MFA/OTP code"
 msgstr "Kode MFA/OTP aplikasi autentikator"
 
@@ -887,7 +887,7 @@ msgstr "Kode autentikator"
 msgid "Authenticator key"
 msgstr "Kunci autentikator"
 
-#: kb/views/mfa.py:238
+#: kb/views/mfa.py:239
 msgid "Authenticator setup completed successfully."
 msgstr "Pengaturan autentikator berhasil diselesaikan."
 
@@ -959,7 +959,7 @@ msgstr "Impor / ekspor artikel secara massal"
 msgid "Bulk article import"
 msgstr "Impor artikel massal"
 
-#: website/templates/admin_bulk_articles.html:41 website/templates/profile.html:310
+#: website/templates/admin_bulk_articles.html:41 website/templates/profile.html:309
 msgid "Bulk import / export articles"
 msgstr "Impor / ekspor artikel massal"
 
@@ -1055,7 +1055,7 @@ msgstr "Dapat melihat artikel publik yang diterbitkan"
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Dapat melihat/mencari artikel yang diterbitkan dan memberi suara. Ini adalah peran penampil cadangan dan hanya ditambahkan otomatis ketika pengguna tidak memiliki peran Repositori Pengetahuan standar lain."
 
-#: website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:386 website/templates/suggest_delete.html:52
+#: website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
 msgid "Cancel"
 msgstr "Batal"
 
@@ -1063,7 +1063,7 @@ msgstr "Batal"
 msgid "Change message"
 msgstr "Pesan perubahan"
 
-#: website/templates/profile.html:221 website/templates/profile.html:225 website/templates/profile.html:353
+#: website/templates/profile.html:220 website/templates/profile.html:224 website/templates/profile.html:386
 msgid "Change password"
 msgstr "Ubah kata sandi"
 
@@ -1079,6 +1079,10 @@ msgstr "%(target_label)s diubah: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s diubah: %(target)s — %(changes)s"
 
+#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+msgid "Checking..."
+msgstr "Memeriksa..."
+
 #: kb/admin.py:855
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Pilih grup terlebih dahulu, lalu gunakan kotak centang langsung hanya untuk pengecualian. Bagi sebagian besar pengguna, grup saja sudah cukup."
@@ -1091,11 +1095,11 @@ msgstr "Pilih apakah profil ini adalah pengguna/admin lokal atau pengguna/admin 
 msgid "Clean Stray Upload Files"
 msgstr "Bersihkan file unggahan tidak terpakai"
 
-#: website/templates/profile.html:303
+#: website/templates/profile.html:302
 msgid "Clean stray files"
 msgstr "Bersihkan file sisa"
 
-#: website/templates/admin_clean_stray_upload_files.html:43 website/templates/profile.html:300
+#: website/templates/admin_clean_stray_upload_files.html:43 website/templates/profile.html:299
 msgid "Clean stray upload files"
 msgstr "Bersihkan file unggahan tidak terpakai"
 
@@ -1115,7 +1119,7 @@ msgstr "Menghapus blokir sementara dan riwayat penguncian progresif untuk penggu
 msgid "Click Refresh to scan the current title and article body for existing keywords."
 msgstr "Klik Muat ulang untuk memindai judul dan isi artikel saat ini guna mencari kata kunci yang ada."
 
-#: website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352
+#: website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
 msgid "Close"
 msgstr "Tutup"
 
@@ -1143,7 +1147,7 @@ msgstr "Dikonfigurasi"
 msgid "Configured recovery period"
 msgstr "Masa pemulihan yang dikonfigurasi"
 
-#: website/templates/profile.html:376
+#: website/templates/profile.html:409
 msgid "Confirm new password"
 msgstr "Konfirmasi kata sandi baru"
 
@@ -1151,11 +1155,11 @@ msgstr "Konfirmasi kata sandi baru"
 msgid "Confirm orphan article action"
 msgstr "Konfirmasi tindakan artikel yatim"
 
-#: website/templates/profile.html:150
+#: website/templates/profile.html:150 website/templates/profile.html:360
 msgid "Confirm password"
 msgstr "Konfirmasi kata sandi"
 
-#: kb/views/auth.py:508
+#: kb/views/auth.py:508 kb/views/mfa.py:452
 msgid "Confirm password is incorrect."
 msgstr "Konfirmasi kata sandi salah."
 
@@ -1339,15 +1343,15 @@ msgstr "Dihapus oleh pembersihan file sisa admin"
 msgid "Deleted by automatic stray-file cleanup"
 msgstr "Dihapus oleh pembersihan file sisa otomatis"
 
-#: kb/views/suggestions.py:892
+#: kb/views/suggestions.py:921
 msgid "Deleted from article page before publication."
 msgstr "Dihapus dari halaman artikel sebelum diterbitkan."
 
-#: kb/views/suggestions.py:871
+#: kb/views/suggestions.py:900
 msgid "Deleted from article page with immediate deletion setting."
 msgstr "Dihapus dari halaman artikel dengan pengaturan penghapusan segera."
 
-#: kb/views/suggestions.py:881
+#: kb/views/suggestions.py:910
 msgid "Deleted from article page."
 msgstr "Dihapus dari halaman artikel."
 
@@ -1363,7 +1367,7 @@ msgstr "Pengguna dihapus"
 msgid "Deletion approved"
 msgstr "Penghapusan disetujui"
 
-#: website/templates/profile.html:333
+#: website/templates/profile.html:332
 msgid "Deletion queue"
 msgstr "Antrean penghapusan"
 
@@ -1483,6 +1487,10 @@ msgstr "Tidak suka"
 msgid "Dislikes"
 msgstr "Tidak suka"
 
+#: kb/views/services.py:2449
+msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
+msgstr "DjOpenKB tidak dapat memverifikasi bahwa video SharePoint atau OneDrive ini dapat diakses tanpa masuk. Periksa izin berbagi dan coba lagi."
+
 #: kb/models.py:262
 msgid "Django Admin MFA lockout triggered"
 msgstr "Penguncian MFA Admin Django dipicu"
@@ -1507,11 +1515,11 @@ msgstr "Pembatasan akses Admin Django"
 msgid "Django admin action flag"
 msgstr "Penanda tindakan admin Django"
 
-#: kb/views/services.py:2505
+#: kb/views/services.py:3037
 msgid "Domain Admin"
 msgstr "Admin Domain"
 
-#: kb/views/services.py:2503
+#: kb/views/services.py:3035
 msgid "Domain User"
 msgstr "Pengguna Domain"
 
@@ -1531,7 +1539,7 @@ msgstr "Unduh zip yang berisi semua artikel yang dikelola Django, konten Markdow
 msgid "Draft"
 msgstr "Draf"
 
-#: kb/views/suggestions.py:249 kb/views/suggestions.py:818
+#: kb/views/suggestions.py:269 kb/views/suggestions.py:847
 msgid "Draft saved successfully."
 msgstr "Draf berhasil disimpan."
 
@@ -1555,11 +1563,11 @@ msgstr "Edit artikel saya"
 msgid "Edit article"
 msgstr "Edit artikel"
 
-#: website/templates/_navbar.html:30 website/templates/profile.html:253 website/templates/profile.html:259
+#: website/templates/_navbar.html:30 website/templates/profile.html:252 website/templates/profile.html:258
 msgid "Edit my articles"
 msgstr "Edit artikel saya"
 
-#: website/templates/profile.html:256
+#: website/templates/profile.html:255
 msgid "Edit my internal articles"
 msgstr "Edit artikel internal saya"
 
@@ -1575,7 +1583,7 @@ msgstr "Kata kunci yang diedit menunggu persetujuan admin."
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Judul yang diedit menunggu persetujuan admin. Judul yang diterbitkan tetap tidak berubah hingga disetujui."
 
-#: kb/views/suggestions.py:537
+#: kb/views/suggestions.py:557
 msgid "Editor reverted to the last published version."
 msgstr "Editor dikembalikan ke versi terakhir yang diterbitkan."
 
@@ -1606,6 +1614,10 @@ msgstr "Dienkripsi dan disembunyikan"
 #: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:47
 msgid "Enter MFA/OTP code"
 msgstr "Masukkan kode MFA/OTP"
+
+#: kb/views/suggestions.py:950 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+msgid "Enter a supported video link."
+msgstr "Masukkan tautan video yang didukung."
 
 #: website/templates/admin_orphan_articles.html:268
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
@@ -1647,7 +1659,7 @@ msgstr "Jelaskan apa yang perlu diperbaiki pengguna sebelum mengirim ulang artik
 msgid "Export articles"
 msgstr "Ekspor artikel"
 
-#: website/templates/profile.html:311
+#: website/templates/profile.html:310
 msgid "Export articles as a zip with Markdown and uploaded files, or import a zip and assign imported articles to your admin account."
 msgstr "Ekspor artikel sebagai zip dengan Markdown dan file unggahan, atau impor zip dan tetapkan artikel yang diimpor ke akun admin Anda."
 
@@ -1699,7 +1711,7 @@ msgstr "File yang lebih baru dari %(minutes)s menit diabaikan. Ubah nilai ini di
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "File yang lebih baru dari jumlah menit ini akan diabaikan oleh alat pembersihan unggahan tersisa. Default adalah 1440 menit (24 jam) untuk menghindari penghapusan gambar saat pengguna menyusun artikel. Atur ke 0 untuk mendeteksi/menghapus unggahan tersisa segera."
 
-#: website/templates/profile.html:321
+#: website/templates/profile.html:320
 msgid "Find articles with no active owner, then assign them to a user or queue them for deletion after confirmation."
 msgstr "Temukan artikel tanpa pemilik aktif, lalu tetapkan ke pengguna atau masukkan ke antrean penghapusan setelah konfirmasi."
 
@@ -1711,7 +1723,7 @@ msgstr "Temukan artikel tanpa pemilik atau dengan pemilik tidak aktif/dihapus, l
 msgid "Find articles with no owner or an inactive/deleted owner, then assign them to an active user or delete them. Published articles are queued for recovery; non-published articles are deleted immediately."
 msgstr "Temukan artikel tanpa pemilik atau dengan pemilik tidak aktif/dihapus, lalu tetapkan ke pengguna aktif atau hapus. Artikel yang diterbitkan dimasukkan ke antrean untuk pemulihan; artikel yang belum diterbitkan langsung dihapus."
 
-#: website/templates/profile.html:301
+#: website/templates/profile.html:300
 msgid "Finds unused files in"
 msgstr "Menemukan file yang tidak digunakan di"
 
@@ -1735,7 +1747,7 @@ msgstr "Umum"
 msgid "General activity log retention (days)"
 msgstr "Retensi log aktivitas umum (hari)"
 
-#: website/templates/profile.html:244
+#: website/templates/profile.html:243
 msgid "General and internal articles you own."
 msgstr "Artikel umum dan internal milik Anda."
 
@@ -1747,7 +1759,7 @@ msgstr "Artikel umum"
 msgid "General articles"
 msgstr "Artikel umum"
 
-#: website/templates/profile.html:248
+#: website/templates/profile.html:247
 msgid "General articles you own."
 msgstr "Artikel umum milik Anda."
 
@@ -1767,7 +1779,7 @@ msgstr "Izin grup"
 msgid "Group type"
 msgstr "Jenis grup"
 
-#: kb/views/services.py:2500
+#: kb/views/services.py:3032
 msgid "Guest"
 msgstr "Tamu"
 
@@ -1880,31 +1892,27 @@ msgstr "Jika manifest.json tidak ada, pengimpor akan mencoba mengimpor semua fil
 msgid "Image assets"
 msgstr "Aset gambar"
 
-#: kb/views/services.py:1153
+#: kb/views/services.py:1228
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Dimensi gambar terlalu besar. Unggah gambar yang lebih kecil."
 
-#: kb/views/services.py:1132
+#: kb/views/services.py:1207 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Gambar terlalu besar. Ukuran maksimum yang diizinkan adalah 2 MB."
 
-#: website/templates/suggest.html:437 website/templates/suggest_edit.html:654
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this article draft."
 msgstr "Gambar dihapus dari draf artikel ini."
 
-#: website/templates/suggest.html:437 website/templates/suggest_edit.html:654
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Gambar dihapus dari draf ini. Simpan artikel untuk menghapusnya dari penyimpanan."
 
-#: website/templates/suggest.html:478 website/templates/suggest_edit.html:695
-msgid "Image upload failed."
-msgstr "Unggah gambar gagal."
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+msgid "Image upload is temporarily unavailable. Please try again later."
+msgstr "Unggah gambar sementara tidak tersedia. Silakan coba lagi nanti."
 
-#: website/templates/suggest.html:495 website/templates/suggest_edit.html:712
-msgid "Image upload failed. Check Django terminal logs."
-msgstr "Unggah gambar gagal. Periksa log terminal Django."
-
-#: website/templates/suggest.html:492 website/templates/suggest_edit.html:709
+#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
 msgid "Image uploaded and inserted into the article."
 msgstr "Gambar diunggah dan dimasukkan ke artikel."
 
@@ -1912,7 +1920,7 @@ msgstr "Gambar diunggah dan dimasukkan ke artikel."
 msgid "Images referenced by the pending update draft."
 msgstr "Gambar yang dirujuk oleh draf pembaruan yang menunggu."
 
-#: website/templates/suggest.html:208 website/templates/suggest_edit.html:389
+#: website/templates/suggest.html:208 website/templates/suggest_edit.html:390
 msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
 msgstr "Gambar yang diunggah dalam draf ini muncul di sini. Klik X untuk menghapus gambar dari artikel dan menghapus file unggahan."
 
@@ -1924,7 +1932,7 @@ msgstr "Segera"
 msgid "Immediate permanent deletion"
 msgstr "Penghapusan permanen segera"
 
-#: website/templates/profile.html:313
+#: website/templates/profile.html:312
 msgid "Import / Export"
 msgstr "Impor / Ekspor"
 
@@ -1996,6 +2004,10 @@ msgstr "Artikel yang diimpor akan dimiliki oleh"
 msgid "Inactive"
 msgstr "Tidak aktif"
 
+#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:220 website/templates/suggest_edit.html:404
+msgid "Insert video link"
+msgstr "Sisipkan tautan video"
+
 #: website/templates/_navbar.html:22 website/templates/admin_deletion_queue.html:137 website/templates/admin_deletion_queue_confirm.html:46 website/templates/admin_pending_articles.html:132 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:51 website/templates/articles.html:215 website/templates/articles.html:226 website/templates/articles.html:283 website/templates/articles.html:420 website/templates/edit_my_suggestions.html:247 website/templates/index.html:184 website/templates/index.html:256 website/templates/index.html:328 website/templates/index.html:376 website/templates/index.html:424 website/templates/index.html:529
 msgid "Internal"
 msgstr "Internal"
@@ -2028,7 +2040,7 @@ msgstr "Pengguna Internal"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "Tambahan penyetuju internal. Dapat melihat artikel publik/internal, mengedit konten saat artikel/pembaruan internal tetap menunggu, mempertahankannya sebagai menunggu setelah edit tinjauan, serta menyetujui atau menolak artikel/pembaruan internal yang menunggu. Secara default tidak dapat menghapus atau mengedit artikel internal yang sudah diterbitkan."
 
-#: kb/models.py:325 kb/views/services.py:368 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
+#: kb/models.py:325 kb/views/services.py:443 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
 msgid "Internal article"
 msgstr "Artikel internal"
 
@@ -2048,7 +2060,7 @@ msgstr "Artikel internal"
 msgid "Internal articles are visible only to internal users."
 msgstr "Artikel internal hanya terlihat bagi pengguna internal."
 
-#: website/templates/profile.html:246
+#: website/templates/profile.html:245
 msgid "Internal articles you own."
 msgstr "Artikel internal milik Anda."
 
@@ -2072,7 +2084,7 @@ msgstr "Tambahan penulis internal. Dapat melihat artikel publik/internal, membua
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Kredensial akun tidak valid. Periksa nama pengguna dan kata sandi."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:265 kb/views/mfa.py:377
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
 msgid "Invalid authenticator code. Please try again."
 msgstr "Kode autentikator tidak valid. Coba lagi."
 
@@ -2080,11 +2092,11 @@ msgstr "Kode autentikator tidak valid. Coba lagi."
 msgid "Invalid deletion queue action."
 msgstr "Tindakan antrean penghapusan tidak valid."
 
-#: kb/views/suggestions.py:997
+#: kb/views/suggestions.py:1054
 msgid "Invalid image filename."
 msgstr "Nama file gambar tidak valid."
 
-#: kb/views/suggestions.py:1008
+#: kb/views/suggestions.py:1065
 msgid "Invalid image path."
 msgstr "Jalur gambar tidak valid."
 
@@ -2116,7 +2128,7 @@ msgstr "Basis Pengetahuan"
 msgid "Keep update pending / Save review edits"
 msgstr "Biarkan pembaruan menunggu / Simpan edit tinjauan"
 
-#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:235 website/templates/suggest_edit.html:418
+#: kb/admin.py:180 website/templates/articles.html:327 website/templates/index.html:193 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Kata kunci"
 
@@ -2140,7 +2152,7 @@ msgstr "Peran Repositori Pengetahuan"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "Administrator Repositori Pengetahuan. Dapat membuat/menerbitkan artikel secara langsung dan disinkronkan dengan akses staf/superuser Django untuk pengelolaan penuh Admin Django."
 
-#: kb/views/services.py:1675
+#: kb/views/services.py:1750
 msgid "Knowledge Repository article."
 msgstr "Artikel Repositori Pengetahuan."
 
@@ -2228,11 +2240,11 @@ msgstr "Suka"
 msgid "Likes"
 msgstr "Suka"
 
-#: kb/views/services.py:2509
+#: kb/views/services.py:3041
 msgid "Local Admin"
 msgstr "Admin Lokal"
 
-#: kb/views/services.py:2507
+#: kb/views/services.py:3039
 msgid "Local User"
 msgstr "Pengguna Lokal"
 
@@ -2260,7 +2272,7 @@ msgstr "Akun lokal memerlukan verifikasi autentikator setelah masuk dengan kata 
 msgid "Local admin"
 msgstr "Admin lokal"
 
-#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:2559
+#: kb/admin.py:1342 kb/models.py:38 kb/views/services.py:3091
 msgid "Local user"
 msgstr "Pengguna lokal"
 
@@ -2328,7 +2340,7 @@ msgstr "MFA direset untuk %(count)d perangkat yang dipilih. Pengguna harus menyi
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "MFA direset untuk %(count)d pengguna yang dipilih. Mereka harus menyiapkan autentikator baru saat masuk berikutnya."
 
-#: kb/views/mfa.py:387
+#: kb/views/mfa.py:551
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Reset MFA tersedia untuk akun Repositori Pengetahuan Anda."
 
@@ -2344,7 +2356,7 @@ msgstr "Penyiapan MFA diperlukan untuk melanjutkan."
 msgid "MFA setup success"
 msgstr "Pengaturan MFA berhasil"
 
-#: kb/views/mfa.py:167
+#: kb/views/mfa.py:168
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "Login MFA dibatalkan. Silakan masuk lagi."
 
@@ -2368,7 +2380,7 @@ msgstr "MFA untuk %(username)s telah direset. Pengguna harus menyiapkan autentik
 msgid "MFA/OTP code"
 msgstr "Kode MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/services.py:735
+#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "Kode MFA/OTP salah."
 
@@ -2392,15 +2404,15 @@ msgstr "Kelola Artikel Internal yang Menunggu"
 msgid "Manage Pending Articles"
 msgstr "Kelola Artikel yang Menunggu"
 
-#: website/templates/_navbar.html:35 website/templates/profile.html:280
+#: website/templates/_navbar.html:35 website/templates/profile.html:279
 msgid "Manage internal pending articles"
 msgstr "Kelola artikel internal yang menunggu"
 
-#: kb/views/suggestions.py:345
+#: kb/views/suggestions.py:365
 msgid "Manage my articles"
 msgstr "Kelola artikel saya"
 
-#: website/templates/_navbar.html:33 website/templates/_navbar.html:37 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:6 website/templates/profile.html:271 website/templates/profile.html:275 website/templates/profile.html:285
+#: website/templates/_navbar.html:33 website/templates/_navbar.html:37 website/templates/admin_pending_articles.html:42 website/templates/admin_pending_articles.html:6 website/templates/profile.html:270 website/templates/profile.html:274 website/templates/profile.html:284
 msgid "Manage pending articles"
 msgstr "Kelola artikel yang menunggu"
 
@@ -2436,7 +2448,7 @@ msgstr "Artikel %(title)s ditandai sebagai persetujuan gagal dari Admin Django"
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Ditandai sebagai gagal tertunda oleh admin. Harap tinjau artikel ini dan kirim ulang untuk persetujuan."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:398
+#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Maksimum %(limit)s gambar per artikel."
 
@@ -2488,7 +2500,7 @@ msgstr "Autentikasi multifaktor"
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "Harus sesuai dengan Jenis Akun. Pengguna Lokal/Admin Lokal menggunakan pengguna Lokal. Pengguna LDAP/admin LDAP menggunakan pengguna Active Directory. Untuk mengubah akun LDAP menjadi akun lokal, atur Jenis Akun ke Pengguna atau Admin dan Sumber ke pengguna Lokal, lalu atur kata sandi lokal."
 
-#: website/templates/profile.html:371
+#: website/templates/profile.html:404
 msgid "Must not contain your username or email name"
 msgstr "Tidak boleh berisi nama pengguna atau nama email Anda"
 
@@ -2496,7 +2508,7 @@ msgstr "Tidak boleh berisi nama pengguna atau nama email Anda"
 msgid "My Profile"
 msgstr "Profil Saya"
 
-#: website/templates/profile.html:241
+#: website/templates/profile.html:240
 msgid "My articles"
 msgstr "Artikel saya"
 
@@ -2512,7 +2524,7 @@ msgstr "Nama"
 msgid "New"
 msgstr "Baru"
 
-#: website/templates/edit_my_suggestions.html:132 website/templates/profile.html:252 website/templates/profile.html:258
+#: website/templates/edit_my_suggestions.html:132 website/templates/profile.html:251 website/templates/profile.html:257
 msgid "New article"
 msgstr "Artikel baru"
 
@@ -2520,11 +2532,11 @@ msgstr "Artikel baru"
 msgid "New email"
 msgstr "Email baru"
 
-#: website/templates/profile.html:255
+#: website/templates/profile.html:254
 msgid "New internal article"
 msgstr "Artikel internal baru"
 
-#: website/templates/profile.html:361
+#: website/templates/profile.html:394
 msgid "New password"
 msgstr "Kata sandi baru"
 
@@ -2572,11 +2584,11 @@ msgstr "Belum ada email"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Belum ada kata kunci yang cocok dengan judul atau isi saat ini."
 
-#: kb/views/suggestions.py:920
+#: kb/views/suggestions.py:977
 msgid "No image file received."
 msgstr "Tidak ada file gambar yang diterima."
 
-#: kb/views/suggestions.py:992
+#: kb/views/suggestions.py:1049
 msgid "No image filename received."
 msgstr "Tidak ada nama file gambar yang diterima."
 
@@ -2724,7 +2736,7 @@ msgstr "OK"
 msgid "Object ID %(object_id)s"
 msgstr "ID Objek %(object_id)s"
 
-#: website/templates/profile.html:357
+#: website/templates/profile.html:390
 msgid "Old password"
 msgstr "Kata sandi lama"
 
@@ -2736,7 +2748,7 @@ msgstr "Kata sandi lama salah."
 msgid "Only .zip import files are allowed."
 msgstr "Hanya file impor .zip yang diizinkan."
 
-#: kb/views/services.py:1129 kb/views/services.py:1150 website/templates/suggest.html:448 website/templates/suggest.html:504 website/templates/suggest.html:529 website/templates/suggest_edit.html:665 website/templates/suggest_edit.html:721 website/templates/suggest_edit.html:746
+#: kb/views/services.py:1204 kb/views/services.py:1225 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Hanya gambar PNG, JPG, GIF, atau WEBP yang diperbolehkan."
 
@@ -2752,15 +2764,7 @@ msgstr "Buka"
 msgid "Open OpenKB AI chat"
 msgstr "Buka chat OpenKB AI"
 
-#: kb/views/ai.py:145 kb/views/ai_jobs.py:317 kb/views/ai_jobs.py:358 kb/views/services_ai.py:1150
-msgid "OpenKB AI could not complete the request. Please try again later or contact IT support if the issue persists."
-msgstr "OpenKB AI tidak dapat menyelesaikan permintaan. Coba lagi nanti atau hubungi dukungan TI jika masalah berlanjut."
-
-#: kb/views/ai_jobs.py:419
-msgid "OpenKB AI could not produce a clear answer for that question. Please try rephrasing it or contact IT support if the issue persists."
-msgstr "OpenKB AI tidak dapat menghasilkan jawaban yang jelas untuk pertanyaan tersebut. Coba ubah susunan pertanyaannya atau hubungi dukungan TI jika masalah berlanjut."
-
-#: kb/views/ai.py:94 kb/views/ai_jobs.py:491
+#: kb/views/ai.py:94 kb/views/ai_jobs.py:497
 msgid "OpenKB AI is currently handling other questions. Please try again shortly."
 msgstr "OpenKB AI sedang menangani pertanyaan lain. Coba lagi sebentar lagi."
 
@@ -2768,7 +2772,7 @@ msgstr "OpenKB AI sedang menangani pertanyaan lain. Coba lagi sebentar lagi."
 msgid "OpenKB AI is ready. Ask me a knowledge-base question or request relevant articles."
 msgstr "OpenKB AI siap. Ajukan pertanyaan basis pengetahuan atau minta artikel yang relevan."
 
-#: kb/views/services_ai.py:1142 kb/views/services_ai.py:1145
+#: kb/views/ai.py:145 kb/views/ai_jobs.py:364 kb/views/services_ai.py:1145 kb/views/services_ai.py:1148 kb/views/services_ai.py:1153
 msgid "OpenKB AI is temporarily unavailable. Please try again later or contact IT support if the issue persists."
 msgstr "OpenKB AI sementara tidak tersedia. Coba lagi nanti atau hubungi dukungan TI jika masalah berlanjut."
 
@@ -2792,11 +2796,11 @@ msgstr "OpenKB AI dibatasi laju"
 msgid "OpenKB AI rate limits"
 msgstr "Batas laju OpenKB AI"
 
-#: kb/views/services_ai.py:1148
+#: kb/views/services_ai.py:1151
 msgid "OpenKB AI took too long to respond. Please try again later or contact IT support if the issue persists."
 msgstr "OpenKB AI terlalu lama merespons. Coba lagi nanti atau hubungi dukungan TI jika masalah berlanjut."
 
-#: kb/views/ai_jobs.py:384
+#: kb/views/ai_jobs.py:390
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "Folder data OpenKB tidak ditemukan. Periksa OPENKB_DATA_DIR di settings.py."
 
@@ -2852,7 +2856,7 @@ msgstr "Halaman %(page)s dari %(total)s"
 msgid "Page not found"
 msgstr "Halaman tidak ditemukan"
 
-#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:217
+#: kb/admin.py:1195 kb/admin.py:1964 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Kata sandi"
 
@@ -2872,39 +2876,39 @@ msgstr "Login kata sandi gagal"
 msgid "Password login success"
 msgstr "Login kata sandi berhasil"
 
-#: kb/views/services.py:2597
+#: kb/views/services.py:3129
 msgid "Password must be at least 12 characters long."
 msgstr "Kata sandi harus memiliki panjang minimal 12 karakter."
 
-#: kb/views/services.py:2601
+#: kb/views/services.py:3133
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Kata sandi harus menyertakan minimal 1 huruf kecil."
 
-#: kb/views/services.py:2603
+#: kb/views/services.py:3135
 msgid "Password must include at least 1 number."
 msgstr "Kata sandi harus menyertakan minimal 1 angka."
 
-#: kb/views/services.py:2605
+#: kb/views/services.py:3137
 msgid "Password must include at least 1 special character."
 msgstr "Kata sandi harus menyertakan minimal 1 karakter khusus."
 
-#: kb/views/services.py:2599
+#: kb/views/services.py:3131
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Kata sandi harus menyertakan minimal 1 huruf besar."
 
-#: kb/views/services.py:2614
+#: kb/views/services.py:3146
 msgid "Password must not contain the name part of your email address."
 msgstr "Kata sandi tidak boleh berisi bagian nama dari alamat email Anda."
 
-#: kb/views/services.py:2612
+#: kb/views/services.py:3144
 msgid "Password must not contain your username."
 msgstr "Kata sandi tidak boleh berisi nama pengguna Anda."
 
-#: website/templates/profile.html:364
+#: website/templates/profile.html:397
 msgid "Password requirements"
 msgstr "Persyaratan kata sandi"
 
-#: website/templates/profile.html:224 website/templates/profile.html:227
+#: website/templates/profile.html:223 website/templates/profile.html:226
 msgid "Password syncs with your company password."
 msgstr "Kata sandi disinkronkan dengan kata sandi perusahaan Anda."
 
@@ -2924,13 +2928,17 @@ msgstr "Penghitung penguncian kata sandi/MFA direset untuk %(count)d pengguna ya
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "Penghitung penguncian kata sandi/MFA direset untuk %(username)s."
 
-#: website/templates/profile.html:455
+#: website/templates/profile.html:488
 msgid "Passwords do not match yet."
 msgstr "Kata sandi belum cocok."
 
-#: website/templates/profile.html:452
+#: website/templates/profile.html:485
 msgid "Passwords match."
 msgstr "Kata sandi cocok."
+
+#: website/templates/_video_insert_modal.html:13
+msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
+msgstr "Tempel tautan YouTube atau Vimeo, atau tautan HTTPS langsung yang berakhiran .mp4, .webm, atau .ogg. Artikel akan menampilkan video yang dapat diputar."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -2996,11 +3004,11 @@ msgstr "Pembaruan tertunda - peninjauan"
 msgid "Pending update title"
 msgstr "Pembaruan tertunda - judul"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
 msgstr "Pembaruan menunggu persetujuan — Perubahan ini sedang menunggu persetujuan admin. Versi yang saat ini diterbitkan masih terlihat oleh pengguna."
 
-#: kb/views/suggestions.py:676
+#: kb/views/suggestions.py:705
 msgid "Pending updates can only be kept pending, approved as Published, or marked as Pending failed."
 msgstr "Pembaruan yang menunggu hanya dapat tetap menunggu, disetujui sebagai Diterbitkan, atau ditandai sebagai Persetujuan gagal."
 
@@ -3044,7 +3052,7 @@ msgstr "Periksa informasi yang dikirimkan, lalu coba lagi."
 msgid "Please choose a .zip file to import."
 msgstr "Pilih file .zip untuk diimpor."
 
-#: kb/views/suggestions.py:558
+#: kb/views/suggestions.py:578
 msgid "Please enter Pending failed comments before marking this article as Pending failed."
 msgstr "Masukkan komentar gagal tertunda sebelum menandai artikel ini sebagai gagal tertunda."
 
@@ -3060,11 +3068,11 @@ msgstr "Masukkan kode MFA/OTP untuk melanjutkan."
 msgid "Please select at least one orphan article first."
 msgstr "Pilih minimal satu artikel yatim terlebih dahulu."
 
-#: kb/views/mfa.py:183
+#: kb/views/mfa.py:184
 msgid "Please sign in before setting up MFA."
 msgstr "Masuk sebelum menyiapkan MFA."
 
-#: kb/views/mfa.py:282
+#: kb/views/mfa.py:283
 msgid "Please sign in before verifying MFA."
 msgstr "Masuk sebelum memverifikasi MFA."
 
@@ -3116,7 +3124,7 @@ msgstr "Bahasa pilihan"
 msgid "Preferred language for the main wiki user interface."
 msgstr "Bahasa pilihan untuk antarmuka pengguna wiki utama."
 
-#: website/templates/suggest.html:227 website/templates/suggest_edit.html:410
+#: website/templates/suggest.html:228 website/templates/suggest_edit.html:413
 msgid "Preview"
 msgstr "Pratinjau"
 
@@ -3152,7 +3160,7 @@ msgstr "Email profil diperbarui"
 msgid "Profile password changed"
 msgstr "Kata sandi profil diubah"
 
-#: kb/models.py:324 kb/views/services.py:369
+#: kb/models.py:324 kb/views/services.py:444
 msgid "Public article"
 msgstr "Artikel publik"
 
@@ -3220,7 +3228,7 @@ msgstr "Tindakan admin '%(action)s' dijalankan pada %(target)s"
 msgid "Raw path"
 msgstr "Jalur mentah"
 
-#: website/templates/profile.html:378 website/templates/profile.html:449
+#: website/templates/profile.html:411 website/templates/profile.html:482
 msgid "Re-type the new password to confirm."
 msgstr "Ketik ulang kata sandi baru untuk konfirmasi."
 
@@ -3276,7 +3284,7 @@ msgstr "Tolak pembaruan"
 msgid "Related articles"
 msgstr "Artikel terkait"
 
-#: website/templates/suggest.html:409 website/templates/suggest.html:410 website/templates/suggest_edit.html:626 website/templates/suggest_edit.html:627
+#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Hapus gambar dari artikel"
 
@@ -3308,7 +3316,7 @@ msgstr "Waktu permintaan habis"
 msgid "Request too large"
 msgstr "Permintaan terlalu besar"
 
-#: kb/admin.py:1375 website/templates/profile.html:208
+#: kb/admin.py:1375 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "Reset ulang MFA"
 
@@ -3368,11 +3376,11 @@ msgstr "Reset MFA pengguna ini"
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Mereset autentikator pengguna ini dan memerlukan penyiapan QR baru. Kunci autentikator baru bersifat privat dan tidak ditampilkan kepada admin."
 
-#: website/templates/profile.html:206
+#: website/templates/profile.html:357
 msgid "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?"
 msgstr "Mereset MFA akan segera mengharuskan Anda menyiapkan kode autentikator baru sebelum melanjutkan. Lanjutkan?"
 
-#: website/templates/profile.html:331
+#: website/templates/profile.html:330
 msgid "Restore articles before the recovery period ends, or permanently delete queued articles when required."
 msgstr "Pulihkan artikel sebelum masa pemulihan berakhir, atau hapus permanen artikel dalam antrean bila diperlukan."
 
@@ -3408,7 +3416,7 @@ msgstr "Tinjau sebelum menghapus"
 msgid "Review comments history"
 msgstr "Riwayat komentar tinjauan"
 
-#: kb/views/suggestions.py:816
+#: kb/views/suggestions.py:845
 msgid "Review edits saved. The update remains pending approval and the current published version is still visible."
 msgstr "Edit tinjauan disimpan. Pembaruan tetap menunggu persetujuan dan versi yang saat ini diterbitkan masih terlihat."
 
@@ -3416,7 +3424,7 @@ msgstr "Edit tinjauan disimpan. Pembaruan tetap menunggu persetujuan dan versi y
 msgid "Review general and internal articles or pending updates waiting for approval."
 msgstr "Tinjau artikel umum dan internal atau pembaruan yang menunggu persetujuan."
 
-#: website/templates/profile.html:273
+#: website/templates/profile.html:272
 msgid "Review general and internal submissions from one page. Use the scope dropdown to switch between queues."
 msgstr "Tinjau kiriman umum dan internal dari satu halaman. Gunakan menu tarik-turun cakupan untuk beralih antar antrean."
 
@@ -3432,7 +3440,7 @@ msgstr "Riwayat peninjauan"
 msgid "Review internal articles and internal pending updates waiting for approval."
 msgstr "Tinjau artikel internal dan pembaruan internal yang menunggu persetujuan."
 
-#: website/templates/profile.html:278
+#: website/templates/profile.html:277
 msgid "Review internal articles waiting for approval."
 msgstr "Tinjau artikel internal yang menunggu persetujuan."
 
@@ -3448,7 +3456,7 @@ msgstr "Catatan tinjauan"
 msgid "Review submitted articles and pending updates within your allowed article scope."
 msgstr "Tinjau artikel yang dikirim dan pembaruan yang menunggu dalam cakupan artikel yang diizinkan untuk Anda."
 
-#: website/templates/profile.html:283
+#: website/templates/profile.html:282
 msgid "Review user-submitted general articles waiting for approval."
 msgstr "Tinjau artikel umum yang dikirim pengguna dan menunggu persetujuan."
 
@@ -3480,11 +3488,11 @@ msgstr "Simpan progres pembaruan"
 msgid "Saved update draft"
 msgstr "Draf pembaruan tersimpan"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
 msgstr "Draf pembaruan tersimpan — Anda sedang mengedit perubahan tersimpan untuk artikel yang sudah diterbitkan ini. Versi yang saat ini diterbitkan tetap terlihat sampai Anda mengirim pembaruan ini untuk persetujuan."
 
-#: website/templates/_navbar.html:40 website/templates/admin_orphan_articles.html:171 website/templates/admin_orphan_articles.html:6 website/templates/profile.html:320 website/templates/profile.html:323
+#: website/templates/_navbar.html:40 website/templates/admin_orphan_articles.html:171 website/templates/admin_orphan_articles.html:6 website/templates/profile.html:319 website/templates/profile.html:322
 msgid "Scan orphan articles"
 msgstr "Pindai artikel yatim"
 
@@ -3600,15 +3608,15 @@ msgstr "Siapkan MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Siapkan MFA sebelum mengakses situs admin."
 
-#: kb/views/auth.py:392
+#: kb/views/auth.py:392 kb/views/mfa.py:471
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Siapkan MFA sebelum mengubah detail akun sensitif."
 
-#: kb/views/services.py:682
+#: kb/views/services.py:757
 msgid "Set up MFA before deleting a published article."
 msgstr "Siapkan MFA sebelum menghapus artikel yang diterbitkan."
 
-#: website/templates/profile.html:211
+#: website/templates/profile.html:210
 msgid "Set up authenticator"
 msgstr "Siapkan autentikator"
 
@@ -3876,11 +3884,23 @@ msgstr "Artikel tidak dapat ditetapkan dengan aman. Tidak ada penetapan yang dit
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Kotak centang di bawah ini adalah pengecualian khusus per pengguna hanya untuk akses artikel. Kotak ini berguna ketika satu pengguna memerlukan akses artikel sedikit lebih banyak daripada grupnya, tanpa membuat grup baru. Akses Admin Django hanya diberikan melalui grup Pengguna Admin/status superuser."
 
+#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+msgid "The image could not be uploaded. Please try again."
+msgstr "Gambar tidak dapat diunggah. Silakan coba lagi."
+
+#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+msgid "The image upload could not connect to the server. Please check your connection and try again."
+msgstr "Unggah gambar tidak dapat terhubung ke server. Periksa koneksi Anda dan coba lagi."
+
+#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+msgid "The image upload was not authorised. Refresh the page and try again."
+msgstr "Unggah gambar tidak diizinkan. Muat ulang halaman dan coba lagi."
+
 #: website/templates/admin_bulk_articles.html:130
 msgid "The import result is shown here so it does not take over the main import/export page."
 msgstr "Hasil impor ditampilkan di sini agar tidak memenuhi halaman utama impor/ekspor."
 
-#: kb/views/ai_jobs.py:408 kb/views/services_ai.py:1047 kb/views/services_ai.py:1081
+#: kb/views/ai_jobs.py:325 kb/views/ai_jobs.py:414 kb/views/ai_jobs.py:425 kb/views/ai_jobs.py:477 kb/views/services_ai.py:1047 kb/views/services_ai.py:1081 kb/views/services_ai.py:1135
 msgid "The knowledge base does not contain matching information about that topic."
 msgstr "Basis pengetahuan tidak memuat informasi yang cocok mengenai topik tersebut."
 
@@ -3916,6 +3936,14 @@ msgstr "Kebijakan progresif yang sama digunakan untuk kegagalan login kata sandi
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak ada lagi. Muat ulang dan coba lagi."
 
+#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+msgid "The selected file is not a valid supported image."
+msgstr "File yang dipilih bukan gambar valid yang didukung."
+
+#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+msgid "The selected image is empty. Please choose a different image."
+msgstr "Gambar yang dipilih kosong. Silakan pilih gambar lain."
+
 #: kb/views/admin.py:716
 msgid "The selected queued articles are no longer available. Please refresh and try again."
 msgstr "Artikel dalam antrean yang dipilih tidak lagi tersedia. Muat ulang dan coba lagi."
@@ -3936,7 +3964,7 @@ msgstr "Server tidak dapat menyelesaikan permintaan Anda."
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "File atau permintaan yang dikirim melebihi batas yang diizinkan."
 
-#: kb/views/services.py:1141
+#: kb/views/services.py:1216
 msgid "The uploaded file is not a valid image."
 msgstr "File yang diunggah bukan gambar yang valid."
 
@@ -3952,13 +3980,25 @@ msgstr "Komentar ini ditampilkan kepada pemilik artikel saat artikel atau pembar
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "File ini tampaknya tidak digunakan. Periksa detail pengunggah, lalu hapus hanya file yang tidak lagi diperlukan."
 
-#: kb/views/mfa.py:306
+#: kb/views/mfa.py:307 kb/views/mfa.py:477
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Perangkat MFA ini tidak dapat diverifikasi karena rahasianya tidak dapat dibaca. Minta admin mereset MFA Anda, atau reset dari baris perintah server jika admin terkunci."
 
 #: kb/admin_security.py:245
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Perangkat MFA ini tidak dapat diverifikasi karena rahasianya tidak dapat dibaca. Minta administrator lain mereset MFA untuk akun ini."
+
+#: kb/views/services.py:2440
+msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
+msgstr "Tautan SharePoint atau OneDrive ini tidak menyediakan video yang dapat diputar langsung secara anonim. Gunakan tautan video langsung yang dapat dilihat tanpa masuk."
+
+#: kb/views/services.py:2445
+msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
+msgstr "Video SharePoint atau OneDrive ini tidak dapat diakses secara anonim. Periksa izin berbagi dan gunakan tautan yang dapat dilihat tanpa masuk."
+
+#: kb/views/services.py:2435
+msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
+msgstr "Video SharePoint atau OneDrive ini memerlukan proses masuk eksternal dan tidak dapat disematkan. Gunakan tautan video yang dapat dilihat tanpa masuk."
 
 #: website/templates/suggest_delete.html:39
 msgid "This action cannot be reversed."
@@ -3968,15 +4008,15 @@ msgstr "Tindakan ini tidak dapat dipulihkan."
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "Artikel ini juga memiliki pembaruan yang menunggu, tetapi tetap diperlakukan sebagai artikel yang diterbitkan."
 
-#: kb/views/services.py:1228
+#: kb/views/services.py:1303
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "Artikel ini memiliki %(count)s gambar, tetapi maksimum yang diizinkan adalah %(limit)s gambar. Hapus beberapa gambar sebelum menyimpan."
 
-#: kb/views/services.py:1227
+#: kb/views/services.py:1302
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Artikel ini telah mencapai batas unggah %(limit)s gambar."
 
-#: website/templates/suggest.html:452 website/templates/suggest_edit.html:669
+#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Artikel ini telah mencapai batas unggah gambar. Hapus satu gambar sebelum mengunggah gambar lain."
 
@@ -3992,11 +4032,11 @@ msgstr "Tindakan ini menghapus blokir sementara, penghitung percobaan gagal, dan
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Alamat email ini dikelola oleh akun domain Anda dan tidak dapat diubah di sini."
 
-#: website/templates/suggest.html:458 website/templates/suggest_edit.html:675
+#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Gambar ini sudah diunggah dalam draf ini. Gunakan tombol pratinjau X untuk menghapusnya terlebih dahulu."
 
-#: kb/views/suggestions.py:1001
+#: kb/views/suggestions.py:1058
 msgid "This image is not removable from this editing session."
 msgstr "Gambar ini tidak dapat dihapus dari sesi pengeditan ini."
 
@@ -4019,6 +4059,10 @@ msgstr "Alat ini lebih memilih format ekspor sistem:"
 #: kb/views/errors.py:51
 msgid "This type of request is not allowed for the selected page."
 msgstr "Jenis permintaan ini tidak diizinkan untuk halaman yang dipilih."
+
+#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+msgid "This video link could not be validated. Please try another link."
+msgstr "Tautan video ini tidak dapat divalidasi. Coba tautan lain."
 
 #: website/templates/admin/kb/reset_mfa_confirm.html:16
 msgid "This will generate a brand-new private authenticator secret for the user. The key is not shown to administrators and should not be shared. The user must sign in again and scan their own new QR code before they can continue using Knowledge Repository."
@@ -4048,11 +4092,15 @@ msgstr "Alihkan navigasi"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Terlalu banyak pertanyaan OpenKB AI. Tunggu sebelum mencoba lagi."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Terlalu banyak percobaan masuk yang gagal. Coba lagi dalam %(duration)s."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:222 kb/views/mfa.py:253 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/services.py:707
+#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+msgid "Too many image upload attempts. Please wait a moment and try again."
+msgstr "Terlalu banyak percobaan unggah gambar. Tunggu sebentar dan coba lagi."
+
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Terlalu banyak kode MFA yang salah. Coba lagi dalam %(duration)s."
 
@@ -4092,6 +4140,14 @@ msgstr "Jenis"
 msgid "Type username or email"
 msgstr "Ketik nama pengguna atau email"
 
+#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+msgid "Unable to validate this video link. Refresh the page and try again."
+msgstr "Tidak dapat memvalidasi tautan video ini. Muat ulang halaman dan coba lagi."
+
+#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+msgid "Unable to verify that this video is accessible without signing in. Please try again."
+msgstr "Tidak dapat memverifikasi bahwa video ini dapat diakses tanpa masuk. Silakan coba lagi."
+
 #: website/templates/edit_my_suggestions.html:241
 msgid "Unassigned"
 msgstr "Belum ditetapkan"
@@ -4124,7 +4180,7 @@ msgstr "Artikel tanpa judul"
 msgid "Update approval status"
 msgstr "Status persetujuan pembaruan"
 
-#: website/templates/profile.html:387
+#: website/templates/profile.html:420
 msgid "Update password"
 msgstr "Perbarui kata sandi"
 
@@ -4132,11 +4188,11 @@ msgstr "Perbarui kata sandi"
 msgid "Update pending failed"
 msgstr "Pembaruan ditolak"
 
-#: website/templates/suggest_edit.html:428
+#: website/templates/suggest_edit.html:434
 msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
 msgstr "Pembaruan ditolak — Tinjau komentar admin, perbarui perubahan Anda, lalu kirim lagi."
 
-#: kb/views/suggestions.py:807
+#: kb/views/suggestions.py:836
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Progres pembaruan telah disimpan. Versi yang diterbitkan tetap terlihat, dan pembaruan belum dikirim untuk persetujuan."
 
@@ -4164,7 +4220,7 @@ msgstr "Alamat IP unggahan"
 msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
 msgstr "Unggah zip yang diekspor dari sistem ini, atau zip yang berisi file Markdown dan opsional"
 
-#: website/templates/suggest.html:219 website/templates/suggest_edit.html:401
+#: website/templates/suggest.html:219 website/templates/suggest_edit.html:403
 msgid "Upload image"
 msgstr "Unggah gambar"
 
@@ -4280,6 +4336,14 @@ msgstr "Verifikasi"
 msgid "Verify and continue to admin"
 msgstr "Verifikasi dan lanjutkan ke admin"
 
+#: website/templates/_video_insert_modal.html:11
+msgid "Video link"
+msgstr "Tautan video"
+
+#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+msgid "Video link inserted into the article."
+msgstr "Tautan video telah disisipkan ke dalam artikel."
+
 #: website/templates/admin_orphan_articles.html:314
 msgid "View"
 msgstr "Lihat"
@@ -4292,7 +4356,7 @@ msgstr "Lihat artikel"
 msgid "View count"
 msgstr "Jumlah tayangan"
 
-#: website/templates/profile.html:262
+#: website/templates/profile.html:261
 msgid "View internal articles"
 msgstr "Lihat artikel internal"
 
@@ -4316,8 +4380,7 @@ msgstr "Peringatan / kesalahan"
 msgid "Was this article helpful?"
 msgstr "Apakah artikel ini membantu?"
 
-#: kb/views/mfa.py:350
-#, python-format
+#: kb/views/mfa.py:353
 msgid "Welcome back, %(username)s."
 msgstr "Selamat datang kembali, %(username)s."
 
@@ -4357,7 +4420,7 @@ msgstr "Anda akan mereset MFA untuk pengguna <strong>%(username)s</strong>."
 msgid "You are about to reset password/MFA lockout counters for user <strong>%(username)s</strong>."
 msgstr "Anda akan mereset penghitung penguncian kata sandi/MFA untuk pengguna <strong>%(username)s</strong>."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:398
+#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
 msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
 msgstr "Anda dapat menempel gambar kecil PNG/JPG/GIF/WEBP langsung ke editor atau mengunggahnya menggunakan tombol. Maksimum 2 MB masing-masing."
 
@@ -4425,7 +4488,7 @@ msgstr "Anda akan diminta mengonfirmasi sebelum perubahan diterapkan. Artikel ya
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Anda akan diminta mengonfirmasi sebelum perubahan diterapkan. Artikel yang dipilih akan segera dihapus permanen."
 
-#: kb/views/mfa.py:406
+#: kb/views/mfa.py:587
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA Anda telah direset. Selesaikan penyiapan autentikator sekarang untuk terus menggunakan Repositori Pengetahuan."
 
@@ -4440,6 +4503,10 @@ msgstr "Sesi admin Anda berakhir karena tidak aktif. Verifikasi MFA lagi untuk m
 #: kb/admin.py:1610
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Akun Anda sendiri ditetapkan sebagai Pengguna Dinonaktifkan. Pada permintaan berikutnya, Anda akan dialihkan ke halaman akun dinonaktifkan."
+
+#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+msgid "Your session has expired. Please sign in again before uploading the image."
+msgstr "Sesi Anda telah berakhir. Silakan masuk lagi sebelum mengunggah gambar."
 
 #: kb/middleware.py:251
 msgid "Your session has expired. Please sign in again."
@@ -4605,7 +4672,7 @@ msgstr "file unggahan tidak terpakai ditemukan"
 msgid "successful"
 msgstr "berhasil"
 
-#: website/templates/profile.html:301
+#: website/templates/profile.html:300
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "yang tidak lagi dirujuk oleh artikel atau file Markdown wiki mana pun."
 
