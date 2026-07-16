@@ -131,19 +131,20 @@ $(document).ready(function(){
                 $dropdown.addClass('hidden');
             }
 
-            function renderDropdown(){
+            function renderDropdown(showFullHistory){
                 var history = getHistory(storageKey);
                 var currentValue = $.trim($input.val() || '').toLowerCase();
 
-                // The main article search has its own live title/keyword suggestions.
-                // Once the user has typed enough to query those suggestions, keep the
-                // history dropdown out of the way so the two menus never overlap.
-                if($input.is('#frm_search') && currentValue.length >= 2){
+                // Clicking/focusing the search field should always let the user reopen
+                // the complete recent-search history, matching the original behaviour.
+                // While the user is actively typing, however, the newer article
+                // title/keyword suggestions take precedence once there is enough text.
+                if(!showFullHistory && $input.is('#frm_search') && currentValue.length >= 2){
                     hideDropdown();
                     return;
                 }
 
-                if(currentValue){
+                if(!showFullHistory && currentValue){
                     history = history.filter(function(item){
                         return item.toLowerCase().indexOf(currentValue) !== -1;
                     });
@@ -220,8 +221,20 @@ $(document).ready(function(){
                 $dropdown.removeClass('hidden');
             }
 
-            $input.on('focus click input', function(){
-                renderDropdown();
+            $input.on('focus click', function(){
+                // History is intentionally shown on click/focus, even when the field
+                // still contains a previous query. Hide the live article-suggestion
+                // dropdown first so only one dropdown is visible at a time.
+                if($input.is('#frm_search')){
+                    $('#searchResult').addClass('hidden');
+                }
+                renderDropdown(true);
+            });
+
+            $input.on('input', function(){
+                // Once the user edits the query, switch back to filtered history for a
+                // short value, or let the normal title/keyword suggestions take over.
+                renderDropdown(false);
             });
 
             $input.on('keydown', function(event){
