@@ -529,120 +529,6 @@ $(document).ready(function(){
         });
     });
 
-    function getArticleVideoErrorDetails(errorCode){
-        var details = {
-            1: {
-                name: 'MEDIA_ERR_ABORTED',
-                message: 'Video loading was interrupted before it completed.'
-            },
-            2: {
-                name: 'MEDIA_ERR_NETWORK',
-                message: 'The video could not be downloaded because of a network or access problem.'
-            },
-            3: {
-                name: 'MEDIA_ERR_DECODE',
-                message: 'The video was received but could not be decoded by this browser.'
-            },
-            4: {
-                name: 'MEDIA_ERR_SRC_NOT_SUPPORTED',
-                message: 'The video source is unavailable, unsupported, or may require external sign-in or access permission.'
-            }
-        };
-
-        return details[errorCode] || {
-            name: 'MEDIA_ERR_UNKNOWN',
-            message: 'The video could not be loaded. The source may be unavailable or require additional access permission.'
-        };
-    }
-
-    function removeArticleVideoError(video){
-        var nextElement = video.nextElementSibling;
-        if(nextElement && nextElement.classList.contains('article-video-load-error')){
-            nextElement.remove();
-        }
-    }
-
-    function clearArticleVideoLoadTimer(video){
-        if(video._djopenkbVideoLoadTimer){
-            window.clearTimeout(video._djopenkbVideoLoadTimer);
-            video._djopenkbVideoLoadTimer = null;
-        }
-    }
-
-    function showArticleVideoError(video, customError){
-        removeArticleVideoError(video);
-
-        var errorCode = video.error && video.error.code ? video.error.code : 0;
-        var details = customError || getArticleVideoErrorDetails(errorCode);
-        var errorBox = document.createElement('div');
-        errorBox.className = 'alert alert-warning article-video-load-error';
-        errorBox.setAttribute('role', 'alert');
-
-        var strong = document.createElement('strong');
-        strong.textContent = 'Video unavailable';
-        errorBox.appendChild(strong);
-
-        var codeText;
-        if(customError && customError.code){
-            codeText = ' Error ' + customError.code + ' (' + customError.name + '). ';
-        }else if(errorCode){
-            codeText = ' Error ' + errorCode + ' (' + details.name + '). ';
-        }else{
-            codeText = '. ';
-        }
-        errorBox.appendChild(document.createTextNode(codeText + details.message));
-
-        if(video.parentNode){
-            video.insertAdjacentElement('afterend', errorBox);
-        }
-    }
-
-    function initializeArticleVideoErrorHandling(root){
-        var container = root && root.querySelectorAll ? root : document;
-        Array.prototype.slice.call(container.querySelectorAll('video.article-video')).forEach(function(video){
-            if(video.getAttribute('data-video-error-handler') === '1'){
-                return;
-            }
-
-            video.setAttribute('data-video-error-handler', '1');
-
-            function markVideoLoaded(){
-                clearArticleVideoLoadTimer(video);
-                removeArticleVideoError(video);
-            }
-
-            video.addEventListener('error', function(){
-                clearArticleVideoLoadTimer(video);
-                showArticleVideoError(video);
-            });
-            video.addEventListener('loadedmetadata', markVideoLoaded);
-            video.addEventListener('canplay', markVideoLoaded);
-
-            // Some authentication-gated or incompatible external URLs do not
-            // produce a MediaError. The browser can remain indefinitely at 0:00
-            // with readyState HAVE_NOTHING. Detect that silent failure as well so
-            // authors and readers are not left with an unexplained black player.
-            video._djopenkbVideoLoadTimer = window.setTimeout(function(){
-                if(!video.parentNode || video.error || video.readyState >= 1){
-                    return;
-                }
-
-                showArticleVideoError(video, {
-                    code: 'V001',
-                    name: 'VIDEO_METADATA_TIMEOUT',
-                    message: 'The browser could not load video information from this URL. The source may be inaccessible, may require external sign-in, or may not provide a directly playable video response.'
-                });
-            }, 8000);
-
-            // The media may already have failed before the DOM-ready handler was
-            // attached (for example on an article page loaded from cache).
-            if(video.error){
-                clearArticleVideoLoadTimer(video);
-                showArticleVideoError(video);
-            }
-        });
-    }
-
     function getPreviewVideoMarkup(value){
         var rawValue = String(value || '').trim();
         if(!rawValue){
@@ -927,7 +813,6 @@ $(document).ready(function(){
         });
 
         $('#preview').html(previewContainer.innerHTML);
-        initializeArticleVideoErrorHandling(document.getElementById('preview'));
 
         // re-hightlight the preview
         $('pre code').each(function(i, block){
@@ -1043,9 +928,6 @@ $(document).ready(function(){
             event.preventDefault();
         }
     });
-
-    // Show a clear inline error when a direct article video cannot be loaded.
-    initializeArticleVideoErrorHandling(document);
 
     if($('#input_notify_message').val() !== ''){
         // save values from inputs
