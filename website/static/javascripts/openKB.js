@@ -529,6 +529,131 @@ $(document).ready(function(){
         });
     });
 
+    function getPreviewVideoMarkup(value){
+        var rawValue = String(value || '').trim();
+        if(!rawValue){
+            return '';
+        }
+
+        var parsed;
+        try{
+            parsed = new URL(rawValue);
+        }catch(error){
+            return '';
+        }
+
+        if(parsed.protocol !== 'http:' && parsed.protocol !== 'https:'){
+            return '';
+        }
+
+        var hostname = parsed.hostname.toLowerCase().replace(/\.$/, '');
+        var pathParts = parsed.pathname.split('/').filter(function(part){ return part !== ''; });
+        var youtubeHosts = [
+            'youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com',
+            'youtu.be', 'www.youtu.be', 'youtube-nocookie.com', 'www.youtube-nocookie.com'
+        ];
+
+        if(youtubeHosts.indexOf(hostname) !== -1){
+            var youtubeId = '';
+            if(hostname === 'youtu.be' || hostname === 'www.youtu.be'){
+                youtubeId = pathParts[0] || '';
+            }else if(hostname === 'youtube-nocookie.com' || hostname === 'www.youtube-nocookie.com'){
+                if(pathParts.length >= 2 && pathParts[0].toLowerCase() === 'embed'){
+                    youtubeId = pathParts[1];
+                }
+            }else if(parsed.pathname.replace(/\/$/, '').toLowerCase() === '/watch'){
+                youtubeId = parsed.searchParams.get('v') || '';
+            }else if(pathParts.length >= 2 && ['shorts', 'embed', 'live'].indexOf(pathParts[0].toLowerCase()) !== -1){
+                youtubeId = pathParts[1];
+            }
+
+            if(/^[A-Za-z0-9_-]{11}$/.test(youtubeId)){
+                return '<iframe class="article-video-embed" ' +
+                    'src="https://www.youtube-nocookie.com/embed/' + youtubeId + '" ' +
+                    'title="YouTube video player" loading="lazy" ' +
+                    'referrerpolicy="strict-origin-when-cross-origin" ' +
+                    'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+                    'allowfullscreen></iframe>';
+            }
+        }
+
+        var vimeoHosts = ['vimeo.com', 'www.vimeo.com', 'player.vimeo.com'];
+        if(vimeoHosts.indexOf(hostname) !== -1){
+            var vimeoId = '';
+            if(hostname === 'player.vimeo.com'){
+                if(pathParts.length >= 2 && pathParts[0].toLowerCase() === 'video'){
+                    vimeoId = pathParts[1];
+                }
+            }else{
+                for(var index = pathParts.length - 1; index >= 0; index--){
+                    if(/^[0-9]{1,20}$/.test(pathParts[index])){
+                        vimeoId = pathParts[index];
+                        break;
+                    }
+                }
+            }
+
+            if(/^[0-9]{1,20}$/.test(vimeoId)){
+                return '<iframe class="article-video-embed" ' +
+                    'src="https://player.vimeo.com/video/' + vimeoId + '" ' +
+                    'title="Vimeo video player" loading="lazy" ' +
+                    'referrerpolicy="strict-origin-when-cross-origin" ' +
+                    'allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" ' +
+                    'allowfullscreen></iframe>';
+            }
+        }
+
+        if(parsed.protocol === 'https:' && /\.(mp4|webm|ogg)$/i.test(parsed.pathname)){
+            var escapedUrl = $('<div>').text(rawValue).html();
+            return '<video class="article-video" controls preload="metadata" src="' + escapedUrl + '"></video>';
+        }
+
+        return '';
+    }
+
+    function expandPreviewVideoLinks(markdownText){
+        var lines = String(markdownText || '').split(/\r?\n/);
+        var renderedLines = [];
+        var activeFenceChar = '';
+        var activeFenceLength = 0;
+
+        lines.forEach(function(line){
+            var fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+            if(fenceMatch){
+                var fenceToken = fenceMatch[1];
+                var fenceChar = fenceToken.charAt(0);
+                var fenceLength = fenceToken.length;
+                var fenceSuffix = fenceMatch[2].trim();
+
+                if(!activeFenceChar){
+                    activeFenceChar = fenceChar;
+                    activeFenceLength = fenceLength;
+                }else if(fenceChar === activeFenceChar && fenceLength >= activeFenceLength && !fenceSuffix){
+                    activeFenceChar = '';
+                    activeFenceLength = 0;
+                }
+
+                renderedLines.push(line);
+                return;
+            }
+
+            if(!activeFenceChar){
+                var urlMatch = line.match(/^ {0,3}<?(https?:\/\/[^\s<>]+)>? *$/i);
+                if(urlMatch){
+                    var videoMarkup = getPreviewVideoMarkup(urlMatch[1]);
+                    if(videoMarkup){
+                        renderedLines.push(videoMarkup);
+                        return;
+                    }
+                }
+            }
+
+            renderedLines.push(line);
+        });
+
+        return renderedLines.join('\n');
+    }
+
     // convert editor markdown to HTML and display in #preview div
     //firstRender indicates this is a first call (i.e. not a re-render request due to a code editor change) 
     function convertTextAreaToMarkdown(firstRender){
@@ -563,7 +688,7 @@ $(document).ready(function(){
             }
         }
 
-        var html = mark_it_down.render(simplemde.value());
+        var html = mark_it_down.render(expandPreviewVideoLinks(simplemde.value()));
 
         // add responsive images and tables
         var fixed_html = html.replace(/<img/g, "<img class='img-responsive' ");
@@ -572,7 +697,7 @@ $(document).ready(function(){
         var cleanHTML = sanitizeHtml(fixed_html, {
             allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
                 'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-                'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'iframe'
+                'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'iframe', 'video'
             ],
             allowedAttributes: false
         });

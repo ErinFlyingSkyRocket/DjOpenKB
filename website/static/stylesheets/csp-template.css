@@ -45,3 +45,19 @@
 .admin-review-notes-group { margin-bottom: 0; }
 .admin-review-notes-help { margin: 6px 0 0; }
 .openkb-search-suggestion-badge { margin-left: 8px; }
+
+/* Controlled responsive video players generated from validated article links. */
+.article-video-embed,
+.article-video {
+    display: block;
+    width: 100%;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    margin: 18px auto;
+    border: 0;
+}
+
+.article-video {
+    background: #000;
+}

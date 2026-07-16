@@ -11,7 +11,9 @@ import uuid
 import zipfile
 from datetime import datetime, timedelta
 from functools import wraps
+from html import escape as html_escape
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 import bleach
 import markdown
@@ -92,6 +94,39 @@ ARTICLE_IMAGE_RE = re.compile(
     r"!\[[^\]\n]*\]\(\s*<?/wiki/uploads/([^)/?#>\s]+)"
     r"(?:[?#][^\s)>]*)?>?(?:\s+[\"'][^\n\"']*[\"'])?\s*\)"
 )
+
+VIDEO_STANDALONE_URL_RE = re.compile(r"^ {0,3}<?(https?://[^\s<>]+)>? *$", re.IGNORECASE)
+VIDEO_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+
+YOUTUBE_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
+YOUTUBE_ALLOWED_HOSTS = {
+    "youtube.com",
+    "www.youtube.com",
+    "m.youtube.com",
+    "music.youtube.com",
+    "youtu.be",
+    "www.youtu.be",
+    "youtube-nocookie.com",
+    "www.youtube-nocookie.com",
+}
+YOUTUBE_EMBED_HOST = "www.youtube-nocookie.com"
+YOUTUBE_IFRAME_ALLOW = (
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; "
+    "picture-in-picture; web-share"
+)
+
+VIMEO_VIDEO_ID_RE = re.compile(r"^[0-9]{1,20}$")
+VIMEO_ALLOWED_HOSTS = {
+    "vimeo.com",
+    "www.vimeo.com",
+    "player.vimeo.com",
+}
+VIMEO_EMBED_HOST = "player.vimeo.com"
+VIMEO_IFRAME_ALLOW = (
+    "autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+)
+
+DIRECT_VIDEO_EXTENSIONS = {".mp4", ".webm", ".ogg"}
 
 logger = logging.getLogger(__name__)
 
@@ -2140,6 +2175,229 @@ def prepare_article_display_markdown(raw_markdown, title, suggested=None):
     return cleaned
 
 
+def extract_youtube_video_id(url):
+    """Return a validated YouTube video ID from a supported public URL."""
+    try:
+        parsed = urlsplit((url or "").strip())
+    except (TypeError, ValueError):
+        return None
+
+    if parsed.scheme.lower() not in {"http", "https"}:
+        return None
+
+    hostname = (parsed.hostname or "").lower().rstrip(".")
+    if hostname not in YOUTUBE_ALLOWED_HOSTS:
+        return None
+
+    path_parts = [part for part in parsed.path.split("/") if part]
+    candidate = None
+
+    if hostname in {"youtu.be", "www.youtu.be"}:
+        if path_parts:
+            candidate = path_parts[0]
+    elif hostname in {"youtube-nocookie.com", "www.youtube-nocookie.com"}:
+        if len(path_parts) >= 2 and path_parts[0].lower() == "embed":
+            candidate = path_parts[1]
+    elif parsed.path.rstrip("/").lower() == "/watch":
+        candidate = (parse_qs(parsed.query).get("v") or [None])[0]
+    elif len(path_parts) >= 2 and path_parts[0].lower() in {"shorts", "embed", "live"}:
+        candidate = path_parts[1]
+
+    if candidate and YOUTUBE_VIDEO_ID_RE.fullmatch(candidate):
+        return candidate
+    return None
+
+
+def extract_vimeo_video_id(url):
+    """Return a validated Vimeo video ID from a supported public URL."""
+    try:
+        parsed = urlsplit((url or "").strip())
+    except (TypeError, ValueError):
+        return None
+
+    if parsed.scheme.lower() not in {"http", "https"}:
+        return None
+
+    hostname = (parsed.hostname or "").lower().rstrip(".")
+    if hostname not in VIMEO_ALLOWED_HOSTS:
+        return None
+
+    path_parts = [part for part in parsed.path.split("/") if part]
+    candidate = None
+
+    if hostname == VIMEO_EMBED_HOST:
+        if len(path_parts) >= 2 and path_parts[0].lower() == "video":
+            candidate = path_parts[1]
+    else:
+        # Supports normal links such as /123456789 and common channel/showcase
+        # links whose final path component is the numeric video ID.
+        for part in reversed(path_parts):
+            if VIMEO_VIDEO_ID_RE.fullmatch(part):
+                candidate = part
+                break
+
+    if candidate and VIMEO_VIDEO_ID_RE.fullmatch(candidate):
+        return candidate
+    return None
+
+
+def is_safe_direct_video_url(url):
+    """Allow only explicit HTTPS links to common browser-playable video files."""
+    try:
+        parsed = urlsplit((url or "").strip())
+    except (TypeError, ValueError):
+        return False
+
+    if parsed.scheme.lower() != "https" or not parsed.hostname:
+        return False
+    if parsed.username or parsed.password:
+        return False
+
+    path = parsed.path.lower()
+    return any(path.endswith(extension) for extension in DIRECT_VIDEO_EXTENSIONS)
+
+
+def youtube_embed_html(video_id):
+    return (
+        '<iframe class="article-video-embed" '
+        f'src="https://{YOUTUBE_EMBED_HOST}/embed/{video_id}" '
+        'title="YouTube video player" loading="lazy" '
+        'referrerpolicy="strict-origin-when-cross-origin" '
+        f'allow="{YOUTUBE_IFRAME_ALLOW}" allowfullscreen></iframe>'
+    )
+
+
+def vimeo_embed_html(video_id):
+    return (
+        '<iframe class="article-video-embed" '
+        f'src="https://{VIMEO_EMBED_HOST}/video/{video_id}" '
+        'title="Vimeo video player" loading="lazy" '
+        'referrerpolicy="strict-origin-when-cross-origin" '
+        f'allow="{VIMEO_IFRAME_ALLOW}" allowfullscreen></iframe>'
+    )
+
+
+def direct_video_html(url):
+    # The URL has already passed is_safe_direct_video_url(). Bleach validates it
+    # again after Markdown rendering before it can reach the article page.
+    escaped_url = html_escape(url.strip(), quote=True)
+    return (
+        '<video class="article-video" controls preload="metadata" '
+        f'src="{escaped_url}"></video>'
+    )
+
+
+def article_video_embed_html(url):
+    """Return controlled player markup for a supported video URL, or None."""
+    youtube_id = extract_youtube_video_id(url)
+    if youtube_id:
+        return youtube_embed_html(youtube_id)
+
+    vimeo_id = extract_vimeo_video_id(url)
+    if vimeo_id:
+        return vimeo_embed_html(vimeo_id)
+
+    if is_safe_direct_video_url(url):
+        return direct_video_html(url)
+
+    return None
+
+
+def expand_standalone_video_links(markdown_text):
+    """Convert supported standalone video URLs into controlled players.
+
+    Only URLs placed on their own Markdown line are converted. URLs inside fenced
+    code blocks are left untouched, and the stored article body remains the
+    original plain URL.
+    """
+    lines = (markdown_text or "").splitlines()
+    rendered_lines = []
+    active_fence_char = None
+    active_fence_length = 0
+
+    for line in lines:
+        fence_match = VIDEO_FENCE_RE.match(line)
+        if fence_match:
+            fence_token = fence_match.group(1)
+            fence_char = fence_token[0]
+            fence_length = len(fence_token)
+            fence_suffix = fence_match.group(2).strip()
+
+            if active_fence_char is None:
+                active_fence_char = fence_char
+                active_fence_length = fence_length
+            elif (
+                fence_char == active_fence_char
+                and fence_length >= active_fence_length
+                and not fence_suffix
+            ):
+                active_fence_char = None
+                active_fence_length = 0
+
+            rendered_lines.append(line)
+            continue
+
+        if active_fence_char is None:
+            url_match = VIDEO_STANDALONE_URL_RE.fullmatch(line)
+            if url_match:
+                embed_html = article_video_embed_html(url_match.group(1))
+                if embed_html:
+                    rendered_lines.append(embed_html)
+                    continue
+
+        rendered_lines.append(line)
+
+    return "\n".join(rendered_lines)
+
+
+# Backwards-compatible helper retained for any existing imports/tests.
+def expand_standalone_youtube_links(markdown_text):
+    return expand_standalone_video_links(markdown_text)
+
+
+def is_safe_youtube_embed_src(value):
+    """Allow only canonical privacy-enhanced YouTube embed URLs."""
+    try:
+        parsed = urlsplit(value or "")
+    except (TypeError, ValueError):
+        return False
+
+    if parsed.scheme != "https" or (parsed.hostname or "").lower() != YOUTUBE_EMBED_HOST:
+        return False
+    if parsed.query or parsed.fragment:
+        return False
+
+    path_parts = [part for part in parsed.path.split("/") if part]
+    return (
+        len(path_parts) == 2
+        and path_parts[0] == "embed"
+        and bool(YOUTUBE_VIDEO_ID_RE.fullmatch(path_parts[1]))
+    )
+
+
+def is_safe_vimeo_embed_src(value):
+    """Allow only canonical Vimeo player URLs generated by this application."""
+    try:
+        parsed = urlsplit(value or "")
+    except (TypeError, ValueError):
+        return False
+
+    if parsed.scheme != "https" or (parsed.hostname or "").lower() != VIMEO_EMBED_HOST:
+        return False
+    if parsed.query or parsed.fragment:
+        return False
+
+    path_parts = [part for part in parsed.path.split("/") if part]
+    return (
+        len(path_parts) == 2
+        and path_parts[0] == "video"
+        and bool(VIMEO_VIDEO_ID_RE.fullmatch(path_parts[1]))
+    )
+
+
+def is_safe_article_video_embed_src(value):
+    return is_safe_youtube_embed_src(value) or is_safe_vimeo_embed_src(value)
+
 def is_safe_article_upload_src(tag, name, value):
     """Allow only local /wiki/uploads/<safe-image-filename> image sources."""
     if name != "src":
@@ -2162,6 +2420,34 @@ def article_html_attribute_filter(tag, name, value):
             return True
         return False
 
+    if tag == "iframe":
+        if name == "src":
+            return is_safe_article_video_embed_src(value)
+        if name == "class":
+            return value == "article-video-embed"
+        if name == "title":
+            return value in {"YouTube video player", "Vimeo video player"}
+        if name == "loading":
+            return value == "lazy"
+        if name == "referrerpolicy":
+            return value == "strict-origin-when-cross-origin"
+        if name == "allow":
+            return value in {YOUTUBE_IFRAME_ALLOW, VIMEO_IFRAME_ALLOW}
+        if name == "allowfullscreen":
+            return True
+        return False
+
+    if tag == "video":
+        if name == "src":
+            return is_safe_direct_video_url(value)
+        if name == "class":
+            return value == "article-video"
+        if name == "controls":
+            return True
+        if name == "preload":
+            return value == "metadata"
+        return False
+
     if tag == "a":
         return name in {"href", "title"}
 
@@ -2180,7 +2466,7 @@ def article_html_attribute_filter(tag, name, value):
 def render_safe_markdown(markdown_text):
     """Render Markdown and sanitize raw HTML before displaying an article."""
     html = markdown.markdown(
-        markdown_text or "",
+        expand_standalone_video_links(markdown_text),
         extensions=["fenced_code", "tables", "toc"],
         output_format="html5",
     )
@@ -2190,7 +2476,7 @@ def render_safe_markdown(markdown_text):
         "h1", "h2", "h3", "h4", "h5", "h6",
         "pre", "span",
         "table", "thead", "tbody", "tr", "th", "td",
-        "img",
+        "img", "iframe", "video",
     }
 
     return bleach.clean(

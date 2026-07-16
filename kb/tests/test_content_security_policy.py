@@ -14,6 +14,9 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertNotIn("unsafe-inline", policy)
         self.assertIn("script-src-attr 'none'", policy)
         self.assertIn("style-src-attr 'none'", policy)
+        self.assertIn("frame-src https://www.youtube-nocookie.com https://player.vimeo.com", policy)
+        self.assertIn("media-src 'self' https:", policy)
+        self.assertNotIn("frame-src 'none'", policy)
 
         match = re.search(r"script-src 'self' 'nonce-([^']+)'", policy)
         self.assertIsNotNone(match)
