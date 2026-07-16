@@ -4,14 +4,14 @@ from io import BytesIO
 import pyotp
 import qrcode
 from django.contrib import messages
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate, logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from .services import main_site_login_required
+from .services import is_ldap_managed_user, main_site_login_required
 
 from ..auth_monitoring import (
     format_retry_after,
@@ -22,6 +22,7 @@ from ..auth_monitoring import (
 )
 from ..mfa import (
     begin_pending_mfa_login,
+    clear_user_auth_sessions,
     clear_mfa_verified,
     clear_pending_mfa_login,
     complete_pending_mfa_login,
@@ -382,6 +383,166 @@ def mfa_verify(request):
     return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
 
 
+def _verify_mfa_reset_password(request, user):
+    """Require the account password again before a self-service MFA reset.
+
+    Local accounts are checked against Django's password hash. AD-managed
+    accounts are re-authenticated against the configured LDAP backend. The
+    submitted password is never stored in the session or database.
+    """
+    current_password = request.POST.get("current_password", "")
+    locked, retry_after, identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="password",
+    )
+    if locked:
+        log_auth_event(
+            request,
+            event_type="password_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={
+                "reason": "temporary_lockout",
+                "source": "mfa_reset_self",
+                "lockout_identifier": identifier,
+                "retry_after_seconds": retry_after,
+            },
+        )
+        messages.error(
+            request,
+            _("Too many failed sign-in attempts. Please try again in %(duration)s.")
+            % {"duration": format_retry_after(retry_after)},
+        )
+        return False
+
+    if is_ldap_managed_user(user):
+        # Do not trust a user-supplied login_mode here. The account's stored
+        # authentication source decides whether LDAP re-authentication is used.
+        verified_user = authenticate(
+            request=None,
+            username=user.get_username(),
+            password=current_password,
+        )
+        password_valid = bool(verified_user and verified_user.pk == user.pk)
+    else:
+        password_valid = bool(user.has_usable_password() and user.check_password(current_password))
+
+    if not password_valid:
+        lockout = record_auth_failure(request, user=user, purpose="password")
+        details = {
+            "reason": "invalid_mfa_reset_password",
+            "source": "mfa_reset_self",
+            "lockout_identifier": lockout.get("identifier"),
+            "failure_count": lockout.get("failure_count"),
+            "failure_limit": lockout.get("failure_limit"),
+        }
+        if lockout.get("locked"):
+            details["reason"] = "temporary_lockout_created"
+            details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+        log_auth_event(
+            request,
+            event_type="password_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details=details,
+        )
+        messages.error(request, _("Confirm password is incorrect."))
+        return False
+
+    record_auth_success(request, user=user, purpose="password")
+    log_auth_event(
+        request,
+        event_type="password_success",
+        success=True,
+        user=user,
+        username=user.get_username(),
+        details={"source": "mfa_reset_self"},
+    )
+    return True
+
+
+def _verify_mfa_reset_code(request, user):
+    """Require the currently configured TOTP before replacing its secret."""
+    device = getattr(user, "kb_mfa_device", None)
+    if not device or not device.confirmed:
+        messages.error(request, _("Set up MFA before changing sensitive account details."))
+        return False
+
+    if not mfa_device_secret_is_readable(device):
+        messages.error(
+            request,
+            _(
+                "This MFA device cannot be verified because its secret could not be read. "
+                "Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
+            ),
+        )
+        return False
+
+    locked, retry_after, identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="mfa",
+    )
+    if locked:
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={
+                "reason": "temporary_lockout",
+                "source": "mfa_reset_self",
+                "lockout_identifier": identifier,
+                "retry_after_seconds": retry_after,
+            },
+        )
+        messages.error(
+            request,
+            _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+            % {"duration": format_retry_after(retry_after)},
+        )
+        return False
+
+    if not verify_totp_code(device, request.POST.get("mfa_code")):
+        lockout = record_auth_failure(request, user=user, purpose="mfa")
+        details = {
+            "reason": "invalid_mfa_reset_totp",
+            "source": "mfa_reset_self",
+            "lockout_identifier": lockout.get("identifier"),
+            "failure_count": lockout.get("failure_count"),
+            "failure_limit": lockout.get("failure_limit"),
+        }
+        if lockout.get("locked"):
+            details["reason"] = "temporary_lockout_created"
+            details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details=details,
+        )
+        messages.error(request, _("MFA/OTP code is incorrect."))
+        return False
+
+    record_auth_success(request, user=user, purpose="mfa")
+    device.mark_verified()
+    log_auth_event(
+        request,
+        event_type="mfa_verify_success",
+        success=True,
+        user=user,
+        username=user.get_username(),
+        details={"reason": "mfa_reset_self_confirmed"},
+    )
+    return True
+
+
 @main_site_login_required
 @require_POST
 def reset_mfa(request):
@@ -390,21 +551,38 @@ def reset_mfa(request):
         messages.info(request, _("MFA reset is available for your Knowledge Repository account."))
         return redirect("profile")
 
+    # A stolen authenticated browser session must not be enough to replace the
+    # user's second factor. Require both the account password and the currently
+    # configured authenticator code immediately before the reset.
+    if not _verify_mfa_reset_password(request, user):
+        return redirect("profile")
+    if not _verify_mfa_reset_code(request, user):
+        return redirect("profile")
+
+    next_url = reverse("profile")
+    backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
+
     reset_mfa_device_for_user(user)
+
+    # End the current authenticated session first, then invalidate every other
+    # active/pending MFA session belonging to this account. The current browser
+    # receives only a fresh pending-MFA session for new authenticator setup.
+    logout(request)
+    sessions_deleted = clear_user_auth_sessions(user)
+    begin_pending_mfa_login(request, user, next_url=next_url, backend=backend)
+
     log_auth_event(
         request,
         event_type="mfa_reset_self",
         success=True,
         user=user,
         username=user.get_username(),
+        details={
+            "password_reverified": True,
+            "mfa_reverified": True,
+            "other_sessions_deleted": sessions_deleted,
+        },
     )
-
-    # MFA is a login criterion. After reset, the old authenticated session is no
-    # longer allowed. Convert it to a pending-MFA session and force setup now.
-    next_url = reverse("profile")
-    backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
-    logout(request)
-    begin_pending_mfa_login(request, user, next_url=next_url, backend=backend)
 
     messages.warning(request, _("Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."))
     return redirect("mfa_setup")
