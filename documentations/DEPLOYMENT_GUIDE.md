@@ -1,10 +1,10 @@
 # DjOpenKB Deployment and Operations Guide
 
-This guide is for Linux administrators who install, run, update, back up, and troubleshoot DjOpenKB.
+This guide is for Linux administrators who install, run, back up, and troubleshoot DjOpenKB.
 
-It intentionally covers **deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`.
+It intentionally covers **first-time deployment and day-to-day service operations only**. Application workflows, article lifecycle details, security controls, and role permissions are documented separately in `documentations/FULL_FEATURE_DOCUMENTATION.md`. For later source-code, dependency, `.env`, and Vault secret updates, use [UPDATE_AND_MAINTENANCE_GUIDE.md](UPDATE_AND_MAINTENANCE_GUIDE.md).
 
-> **SMTP workflow and lockout notifications:** optional SMTP relay setup is documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). The same relay sends article-workflow email and alert email when a recognised account reaches a new temporary password/MFA lockout. For Exchange certificate export, Linux certificate preparation, and the first relay test, use [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md). Keep notifications disabled until the relay, TLS certificate hostname/trust, Vault mailbox credentials, and web-service SMTP test are complete.
+> **SMTP workflow and lockout notifications:** certificate preparation, relay configuration, notification behaviour, and testing are documented together in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md). Keep notifications disabled until the relay, certificate trust, Vault mailbox credentials, and controlled SMTP test are complete.
 
 ## 1. Deployment scope and command convention
 
@@ -264,22 +264,60 @@ Do not set an unusually short interval on a production host unless there is a cl
 
 SMTP notifications are optional. The Django `web` service sends them directly after a writer submits an article or published-article update for review, after an article outcome is decided, and after a recognised account reaches a new temporary password/MFA lockout. Reviewer and lockout alerts use Bcc; a single owner outcome uses direct `To`. There is no notification queue or separate notification worker.
 
-The existing `EMAIL_NOTIFICATIONS_ENABLED` switch controls all of these events. No extra environment variable is required for lockout email alerts.
+The existing `EMAIL_NOTIFICATIONS_ENABLED` switch controls all of these events. No extra environment variable is required for lockout email alerts. Keep notifications disabled until the SMTP certificate, Vault mailbox credentials, hostname resolution, and controlled relay test are all successful.
 
-For the current Exchange lab certificate, which has `CN=qapf1-exch`, complete the Windows GUI export and Linux certificate preparation in [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md) before enabling notifications. The exported **public** certificate belongs at:
+#### 4.5.1 Prepare the Exchange SMTP certificate
+
+For a self-signed SMTP relay, export the **public SMTP certificate** from the Exchange server. For a private-CA-issued SMTP certificate, use the public issuing/root CA certificate or chain. Export the required public certificate as **Base-64 encoded X.509 (.CER)** without any private key, then copy it to the Linux server and place it in:
 
 ```text
 /opt/DjOpenKB/ldap-certs/exchange-smtp.crt
 ```
+
+The file may be exported as `.cer` first and renamed to `exchange-smtp.crt`. The filename extension itself is not important; the certificate format is what matters.
+
+Check the certificate on Linux:
+
+```bash
+cd /opt/DjOpenKB
+head -n 1 ldap-certs/exchange-smtp.crt
+```
+
+If it begins with:
+
+```text
+-----BEGIN CERTIFICATE-----
+```
+
+it is already in the correct PEM/Base-64 format and no conversion or system-wide certificate installation is required.
+
+If the exported certificate is instead binary DER format, convert it once with OpenSSL:
+
+```bash
+openssl x509 -inform DER \
+  -in ldap-certs/exchange-smtp.cer \
+  -out ldap-certs/exchange-smtp.crt
+```
+
+The project mounts this certificate directory into the Django container. Configure the SMTP certificate path as:
+
+```text
+/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
+```
+
+Use the SMTP server DNS name that matches the certificate when configuring `SMTP_RELAY_HOST`.
+
+
+#### 4.5.2 Configure the non-secret SMTP values
 
 Add the following non-secret SMTP values to `.env`. Keep `EMAIL_NOTIFICATIONS_ENABLED=false` until the first controlled test succeeds; change it to `true` only after the certificate and Vault credentials are ready.
 
 ```dotenv
 EMAIL_NOTIFICATIONS_ENABLED=false
 
-# Use the exact DNS name in the Exchange SMTP certificate, never a raw IP address.
-# Current lab self-signed certificate: CN=qapf1-exch
-SMTP_RELAY_HOST=qapf1-exch
+# Use the exact DNS name present in the Exchange SMTP certificate CN/SAN.
+# Never use a raw IP address for a TLS SMTP connection.
+SMTP_RELAY_HOST=<EXCHANGE_SMTP_CERTIFICATE_NAME>
 SMTP_RELAY_PORT=587
 SMTP_RELAY_USE_TLS=true
 SMTP_RELAY_USE_SSL=false
@@ -290,14 +328,21 @@ SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
 
 # The address Exchange permits the SMTP mailbox to send as.
 SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
-SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=qapf1.qalab01.nextlabs.com
+SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=<ALLOWED_RECIPIENT_DOMAIN>
 SITE_BASE_URL=https://<INTERNAL_SERVER_IP>:8080
 EMAIL_SUBJECT_PREFIX=[Knowledge Repository]
 ```
 
 `SITE_BASE_URL` must exactly match the HTTPS address users open in the browser and must have no trailing slash. The SMTP certificate trust file does not bypass hostname validation: `SMTP_RELAY_HOST` must match a SAN/CN in the Exchange certificate.
 
-For a new Exchange certificate that includes the full FQDN, replace only `SMTP_RELAY_HOST` with that FQDN after assigning the certificate to Exchange SMTP. Do not use an IP address for TLS SMTP.
+If the SMTP certificate or `.env` SMTP values are added after the stack is already running, recreate the `web` service after the certificate has been placed in the correct directory:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose up -d --force-recreate web
+```
+
+If the SMTP mailbox credentials were also newly added to `vault/bootstrap/djopenkb.env`, seed them through the normal Vault initialization process, remove the temporary bootstrap file afterwards, and then recreate `web`.
 
 ---
 
@@ -708,15 +753,17 @@ sudo docker compose exec web python manage.py migrate --noinput
 sudo docker compose exec web python manage.py collectstatic --noinput
 ```
 
+### 10.1 Create the first administrator and role groups
+
 Create the first local Django administrator:
 
 ```bash
 sudo docker compose exec web python manage.py createsuperuser
 ```
 
-The command prompts for username, email, and password. The administrator must complete normal MFA enrolment after first signing in through the main login page.
+The command prompts for username, email, and password. Keep this account for initial administration and emergency local access. The administrator must complete normal MFA enrolment after first signing in through the main login page.
 
-Ensure DjOpenKB role groups are present and assign any existing users without a role group to an appropriate default role:
+Ensure the DjOpenKB role groups are present and assign any existing users without a role group to an appropriate default role:
 
 ```bash
 sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missing-users
@@ -757,7 +804,19 @@ https://<PUBLIC_HOSTNAME>
 
 The default Django `/admin/login/` route is intentionally hidden. Sign in through the main application login, complete MFA, then enter Django Admin from the application navigation while connected from an allowed management network.
 
-### 10.1 Optional SMTP relay validation
+### 10.2 First administrator sign-in
+
+After the `createsuperuser` command succeeds, complete the initial administrator setup through the browser:
+
+1. Browse to the exact deployed address: currently `https://<INTERNAL_SERVER_IP>:8080`, or later `https://<PUBLIC_HOSTNAME>` after firewall/DNS publication.
+2. Sign in with the local superuser username and password created above.
+3. Complete the normal MFA enrolment and verify the code.
+4. Confirm the browser/client IP is included in the Nginx Django Admin allowlist from Section 5.2.
+5. Use the **Admin** navigation entry, complete the separate Admin MFA prompt, then open Django Admin.
+
+Do not try to browse directly to `/admin/login/`; that route is intentionally hidden. If the Admin navigation does not open, first check the Nginx administrator network allowlist and the web/nginx logs.
+
+### 10.3 Optional SMTP relay validation
 
 Run this only when the SMTP values in Section 4.5 are configured, the public Exchange certificate is in `ldap-certs/exchange-smtp.crt`, the mailbox credentials were seeded into Vault, and `EMAIL_NOTIFICATIONS_ENABLED=true`.
 
@@ -769,7 +828,7 @@ cd /opt/DjOpenKB
 sudo docker compose exec web \
   sh -c 'test -r /etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt && echo "Exchange SMTP certificate is available inside the web container."'
 
-sudo docker compose exec web getent hosts qapf1-exch
+sudo docker compose exec web sh -c 'getent hosts "$SMTP_RELAY_HOST"'
 ```
 
 Then send one operator-selected test message to an allowed organisation mailbox:
@@ -785,34 +844,15 @@ Expected result:
 SMTP relay accepted one test message. Check the recipient mailbox.
 ```
 
-If SMTP configuration is completed after the initial deployment, seed the SMTP Vault values, remove the temporary bootstrap file, recreate `web`, then run this test:
+If SMTP configuration is completed after the initial deployment, follow [UPDATE_AND_MAINTENANCE_GUIDE.md](UPDATE_AND_MAINTENANCE_GUIDE.md) for the Vault secret update and service restart process, then run this test.
 
-```bash
-cd /opt/DjOpenKB
-sudo docker compose up -d --force-recreate vault-init
-sudo rm -f vault/bootstrap/djopenkb.env
-sudo docker compose up -d --force-recreate web
-```
-
-For certificate, hostname, authentication, or recipient-domain failures, see [EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md](EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
-
-### 10.2 First administrator sign-in
-
-After the `createsuperuser` command succeeds, complete the initial administrator setup through the browser:
-
-1. Browse to the exact deployed address: currently `https://<INTERNAL_SERVER_IP>:8080`, or later `https://<PUBLIC_HOSTNAME>` after firewall/DNS publication.
-2. Sign in with the local superuser username and password created above.
-3. Complete the normal MFA enrolment and verify the code.
-4. Confirm the browser/client IP is included in the Nginx Django Admin allowlist from Section 5.2.
-5. Use the **Admin** navigation entry, complete the separate Admin MFA prompt, then open Django Admin.
-
-Do not try to browse directly to `/admin/login/`; that route is intentionally hidden. If the Admin navigation does not open, first check the Nginx administrator network allowlist and the web/nginx logs.
+For certificate, hostname, authentication, recipient-domain, or workflow-notification issues, see [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md).
 
 ---
 
 ## 11. Normal Docker service operations
 
-Run these commands from `/opt/DjOpenKB`.
+Run these commands from `/opt/DjOpenKB`. For source-code, dependency, `.env`, or Vault secret changes, follow [UPDATE_AND_MAINTENANCE_GUIDE.md](UPDATE_AND_MAINTENANCE_GUIDE.md) instead of treating the commands below as a complete update procedure.
 
 ### Status and logs
 

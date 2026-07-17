@@ -109,9 +109,10 @@ def ask_openkb_ai(request):
         )
         return JsonResponse(
             {
-                # Reuse the existing translated rate-limit copy. The browser
-                # receives retry_after_seconds for an optional countdown.
-                "error": _("Too many OpenKB AI questions. Please wait before trying again."),
+                "error": _(
+                    "You have reached your OpenKB AI prompt limit for the current 24-hour period. "
+                    "Please try again when your limit resets."
+                ),
                 "retry_after_seconds": prompt_quota.get("retry_after_seconds", 0),
                 "prompt_limit": prompt_quota.get("limit", 20),
                 "prompt_used": prompt_quota.get("used", 0),

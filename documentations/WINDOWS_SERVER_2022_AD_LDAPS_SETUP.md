@@ -456,13 +456,19 @@ Protected pages should not be available to anonymous users:
 /admin/        → requires login, admin/staff role, and allowed admin network/VPN
 ```
 
-To test role changes, sign in as a Django admin and use Django Admin → Groups:
+To test role changes, sign in as a Django admin and use Django Admin → Groups. The current standard groups are:
 
 ```text
+Disabled User
 Regular User
 Article Writer
+Article Approver
 Article Manager
+Internal User
+Internal Article Writer
+Internal Article Approver
+Internal Article Manager
 Admin Users
 ```
 
-Move the AD test user between groups and confirm the expected website permissions. Direct user permission checkboxes can be used for one-off add-on permissions.
+Move the AD test user between suitable groups and confirm the expected website permissions. Manager precedence is enforced within each visibility scope, while public and internal scopes remain independent. Direct user permission checkboxes can be used for one-off add-on permissions.

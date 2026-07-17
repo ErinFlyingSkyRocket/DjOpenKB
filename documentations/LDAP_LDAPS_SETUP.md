@@ -1,37 +1,106 @@
-# LDAP / LDAPS Setup for DjOpenKB
+# LDAP / LDAPS Production Setup for DjOpenKB
 
-DjOpenKB supports Active Directory login through LDAP or LDAPS.
+This guide is for connecting DjOpenKB to an existing production Active Directory environment.
 
-For security, use **LDAPS**:
+For building a Windows Server 2022 AD/LDAPS lab from scratch, use:
 
 ```text
-ldaps://<domain-controller-hostname>:636
+documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
 ```
 
-Plain LDAP on port `389` should only be used temporarily for testing.
+For production, use **LDAPS** on TCP port `636` so credentials and directory traffic are protected with TLS.
 
 ---
 
-## 1. Required AD Information
+## 1. Obtain the Active Directory Details
 
-Prepare these values from the Windows Server AD lab:
+Get the following information from the Active Directory administrator:
 
 ```text
-AD domain:              openkb.local
-NetBIOS domain:         OPENKB
-Domain Controller host: WIN-VVCA4BIOSK7.openkb.local
-Domain Controller IP:   <DOMAIN_CONTROLLER_IP>
-Service account:        svc_djopenkb@openkb.local
-Search base:            DC=openkb,DC=local
+AD DNS domain:              <AD_DOMAIN>
+NetBIOS domain:             <AD_NETBIOS_DOMAIN>
+Domain Controller FQDN:     <DOMAIN_CONTROLLER_FQDN>
+Domain Controller IP:       <AD_DC_IP>
+LDAP bind/service account:  <LDAP_BIND_ACCOUNT>
+LDAP user search base:      <LDAP_USER_SEARCH_BASE>
+Accepted login/email domains: <ALLOWED_DOMAINS>
 ```
 
-The service account should be a low-privilege AD account used only for LDAP bind/search. It should not be a Domain Admin, Enterprise Admin, local administrator, or interactive-login account.
+Use a low-privilege service account that only needs permission to bind to Active Directory and search for users.
+
+The Domain Controller hostname used in `LDAP_SERVER_URI` should match the hostname covered by the LDAPS certificate.
 
 ---
 
-## 2. `.env` LDAPS Configuration
+## 2. Obtain the LDAPS CA Certificate
 
-Use this format:
+Obtain the public CA certificate that issued the Domain Controller's LDAPS certificate from the Active Directory or certificate administrator.
+
+If exporting it from Windows:
+
+1. Open the Windows certificate manager or the organisation's Certificate Authority console.
+2. Locate the Root CA certificate that issued the Domain Controller certificate.
+3. If an Intermediate/Issuing CA is also used, export that certificate as well.
+4. Export **without the private key**.
+5. Select **Base-64 encoded X.509 (.CER)** when available.
+
+Copy the certificate to the DjOpenKB server and place it in:
+
+```text
+/opt/DjOpenKB/ldap-certs/ad-ca.crt
+```
+
+A Base-64 `.cer` file can simply be copied or renamed to `ad-ca.crt`.
+
+From the project directory:
+
+```bash
+cd /opt/DjOpenKB
+head -n 2 ldap-certs/ad-ca.crt
+```
+
+A readable certificate should begin with:
+
+```text
+-----BEGIN CERTIFICATE-----
+```
+
+If the exported certificate is binary DER format, convert it once:
+
+```bash
+openssl x509 -inform DER \
+  -in ldap-certs/ad-ca.cer \
+  -out ldap-certs/ad-ca.crt
+```
+
+Verify it:
+
+```bash
+openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
+```
+
+If the Domain Controller certificate uses an Intermediate/Issuing CA, combine the required CA chain into the same file, with the issuing certificate first and the root certificate after it:
+
+```bash
+cat issuing-ca.crt root-ca.crt > ldap-certs/ad-ca.crt
+```
+
+Do not export or copy any private key.
+
+DjOpenKB uses the certificate file directly through the Docker mount; it does not need to be installed into the Linux system-wide certificate store.
+
+---
+
+## 3. Configure LDAPS in `.env`
+
+Edit:
+
+```bash
+cd /opt/DjOpenKB
+sudo nano .env
+```
+
+Configure the production values:
 
 ```env
 LDAP_ENABLED=true
@@ -45,293 +114,172 @@ LDAP_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 LDAP_TLS_REQUIRE_CERT=demand
 LDAP_ALLOW_INSECURE=false
 
-# Example AD domain values. Replace openkb.local/OPENKB with the real AD values.
-LDAP_AD_DOMAIN=openkb.local
-LDAP_NETBIOS_DOMAIN=OPENKB
-LDAP_ALLOWED_EMAIL_DOMAINS=openkb.local,company.com
+LDAP_AD_DOMAIN=<AD_DOMAIN>
+LDAP_NETBIOS_DOMAIN=<AD_NETBIOS_DOMAIN>
+LDAP_ALLOWED_EMAIL_DOMAINS=<ALLOWED_DOMAINS>
 
-# For openkb.local, use DC=openkb,DC=local.
-# For example.corp.local, use DC=example,DC=corp,DC=local.
-LDAP_USER_SEARCH_BASE=DC=openkb,DC=local
-LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@openkb.local)(mail=%(user)s)(mail=%(user)s@openkb.local)(mail=%(user)s@company.com)(userPrincipalName=%(user)s@company.com))
+LDAP_USER_SEARCH_BASE=<LDAP_USER_SEARCH_BASE>
+LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(mail=%(user)s))
 
-# Every valid AD user returned by this search can sign in.
-# Narrow LDAP_USER_SEARCH_BASE and LDAP_USER_FILTER when your AD design requires it.
-
-LDAP_BIND_DN=svc_djopenkb@openkb.local
+LDAP_BIND_DN=<LDAP_BIND_ACCOUNT>
 ```
 
-Notes:
+Example search-base conversion:
 
 ```text
-- `openkb.local` is only a documentation example. Replace it with the real AD DNS domain.
-- Convert the AD DNS domain into the search base by splitting each part into `DC=` values. Example: `openkb.local` becomes `DC=openkb,DC=local`.
-- `LDAP_SERVER_URI` should use the Domain Controller hostname/FQDN, not the IP address.
-- `LDAP_EXTRA_HOSTNAME`, `LDAP_EXTRA_SHORT_HOSTNAME`, and `LDAP_DC_IP` are optional and only help Docker resolve the hostname when DNS is unavailable.
-- `LDAP_BIND_DN` must be the real AD service account login format that can bind/search, for example `svc_djopenkb@openkb.local`.
-- Every valid AD account returned by `LDAP_USER_SEARCH_BASE` and `LDAP_USER_FILTER` can sign in. Narrow the search base or filter only when your AD structure requires a smaller authentication scope.
-- The public email domain and the AD UPN suffix may be different. Include both in LDAP_ALLOWED_EMAIL_DOMAINS if both are accepted for login.
+example.local
+-> DC=example,DC=local
 ```
 
-Store the service account password in Vault, not `.env`:
+Every valid Active Directory user returned by `LDAP_USER_SEARCH_BASE` and `LDAP_USER_FILTER` can authenticate. Narrow the search base or filter only when the organisation requires a smaller login scope.
+
+---
+
+## 4. Store the LDAP Bind Password in Vault
+
+Do not place the LDAP bind password in `.env`.
+
+For a first-time deployment, add only the required secret to the Vault bootstrap file before the initial Vault setup:
 
 ```env
-LDAP_BIND_PASSWORD=service-account-password
+LDAP_BIND_PASSWORD=<LDAP_BIND_PASSWORD>
 ```
 
-Use plain `KEY=value` format in `vault/bootstrap/djopenkb.env` where possible:
-
-```env
-LDAP_BIND_PASSWORD=P@ssw0rd-example
-```
-
-Avoid spaces around `=`. For the simplest deployment experience, use service-account passwords made from letters, numbers, `@`, `.`, `_`, and `-`. If the password contains shell-breaking characters, test the Vault bootstrap logs carefully and rotate to a simpler service-account password if seeding fails.
-## 3. CA Certificate File
-
-Export the AD CS Root CA certificate from Windows Server. Recommended export format:
+The file is:
 
 ```text
-Base-64 encoded X.509 (.CER)
+/opt/DjOpenKB/vault/bootstrap/djopenkb.env
 ```
 
-Rename/copy it to:
+After Vault has been seeded successfully, remove the bootstrap file as described in the Deployment Guide.
+
+For an existing deployment where the LDAP bind password must be changed, follow:
 
 ```text
-ldap-certs/ad-ca.crt
-```
-
-Docker Compose mounts it into the web container as:
-
-```text
-/etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-```
-
-On the Linux server, check whether the certificate is readable PEM text:
-
-```bash
-head -n 5 ldap-certs/ad-ca.crt
-```
-
-Expected:
-
-```text
------BEGIN CERTIFICATE-----
-...
-```
-
-If the file displays unreadable binary characters, it is DER/binary format. Convert it on the Linux server:
-
-```bash
-openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
-mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
-mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
-```
-
-Verify the converted certificate:
-
-```bash
-openssl x509 -in ldap-certs/ad-ca.crt -noout -subject -issuer -dates
-```
-
-If the Domain Controller certificate is issued by an intermediate CA, place the full CA chain in the same PEM file:
-
-```bash
-cat issuing-ca.crt root-ca.crt > ldap-certs/ad-ca.crt
-```
-
-Do not use the Domain Controller server certificate as the CA file unless it is self-signed. The CA file should normally contain the Root CA and, if applicable, the Issuing/Intermediate CA.
-## 4. Docker Compose Requirements
-
-The `web` service should include the CA cert mount:
-
-```yaml
-volumes:
-  - ./ldap-certs:/etc/ssl/certs/djopenkb-ldap:ro
-```
-
-If Docker cannot resolve the AD hostname, use `extra_hosts`:
-
-```yaml
-extra_hosts:
-  - "WIN-VVCA4BIOSK7.openkb.local:${LDAP_DC_IP}"
-```
-
-The `web` service should pass these LDAP variables:
-
-```yaml
-environment:
-  LDAP_SERVER_URI: ${LDAP_SERVER_URI:-}
-  LDAP_START_TLS: ${LDAP_START_TLS:-false}
-  LDAP_CA_CERT_FILE: ${LDAP_CA_CERT_FILE:-}
-  LDAP_TLS_REQUIRE_CERT: ${LDAP_TLS_REQUIRE_CERT:-demand}
-  LDAP_ALLOW_INSECURE: ${LDAP_ALLOW_INSECURE:-false}
+documentations/UPDATE_AND_MAINTENANCE_GUIDE.md
 ```
 
 ---
 
-## 5. Test LDAPS from Docker
+## 5. Start or Recreate the Application
 
-Start the stack:
+For a fresh deployment, continue with the normal Deployment Guide.
+
+If LDAPS configuration or the certificate was added to an existing deployment:
 
 ```bash
-docker compose up -d --build
+cd /opt/DjOpenKB
+sudo docker compose down
+sudo docker compose up -d --build
 ```
+
+The project mounts:
+
+```text
+./ldap-certs/
+```
+
+into the Django container as:
+
+```text
+/etc/ssl/certs/djopenkb-ldap/
+```
+
+---
+
+## 6. Test the LDAPS Connection
 
 Run:
 
 ```bash
-docker compose exec web sh scripts/test_ldaps.sh
+cd /opt/DjOpenKB
+sudo docker compose exec web sh scripts/test_ldaps.sh
 ```
 
-Expected result:
+A successful test should confirm that:
 
 ```text
-Resolving hostname...
-Opening TLS connection...
-TLS handshake OK
-TLS version: TLSv1.3
-LDAPS DNS + TLS certificate validation looks good.
+- the Domain Controller hostname resolves;
+- TCP port 636 is reachable;
+- the TLS handshake succeeds; and
+- the Domain Controller certificate is trusted by ad-ca.crt.
 ```
 
-This confirms:
+You can also verify that the certificate is visible inside the container:
 
-```text
-1. Docker can resolve the Domain Controller hostname.
-2. Port 636 is reachable.
-3. TLS handshake succeeds.
-4. The Domain Controller certificate is trusted by the mounted CA certificate.
+```bash
+sudo docker compose exec web \
+  ls -l /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 ```
 
 ---
 
-## 6. Test Login
+## 7. Test Active Directory Login
 
-After LDAPS passes, test the website login with a domain user.
+After the LDAPS test succeeds, sign in to DjOpenKB using a normal Active Directory account.
 
-Accepted formats:
-
-```text
-alice
-alice@openkb.local
-OPENKB\alice
-```
-
-All formats should map to one Django account:
+Depending on the configured domain values, supported formats may include:
 
 ```text
-alice
+username
+username@<AD_DOMAIN>
+<AD_NETBIOS_DOMAIN>\username
 ```
 
-This avoids duplicate Django accounts for the same AD user.
+A valid Active Directory account should be mapped to one Django user account instead of creating separate users for different login formats.
 
 ---
 
-## 7. Common Errors
+## 8. Quick Troubleshooting
 
-### `FileNotFoundError: /etc/ssl/certs/djopenkb-ldap/ad-ca.crt`
+### Certificate file not found
 
-The CA file is missing or not mounted.
-
-Check host:
+Check the host file:
 
 ```bash
-ls -la ldap-certs
+ls -l /opt/DjOpenKB/ldap-certs/ad-ca.crt
 ```
 
-Check container:
+Check the container mount:
 
 ```bash
-docker compose exec web ls -l /etc/ssl/certs/djopenkb-ldap/
+sudo docker compose exec web \
+  ls -l /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
 ```
-
-### Hostname resolves incorrectly or not at all
-
-Check:
-
-```bash
-docker compose exec web python -c "import socket; print(socket.getaddrinfo('WIN-VVCA4BIOSK7.openkb.local', 636))"
-```
-
-If it fails, set `LDAP_DC_IP` in `.env` and use the Compose `extra_hosts` entry.
 
 ### Certificate validation fails
 
-Common causes:
+Confirm that:
 
 ```text
-Wrong CA certificate exported
-Certificate file is DER/binary instead of Base-64 PEM format
-The CA chain is incomplete
-LDAP_SERVER_URI uses an IP address instead of the certificate hostname
-The Domain Controller certificate does not contain the hostname used by LDAP_SERVER_URI
+- ad-ca.crt contains the CA that issued the Domain Controller LDAPS certificate;
+- any required Intermediate/Issuing CA is included;
+- LDAP_SERVER_URI uses the correct Domain Controller FQDN; and
+- LDAP_TLS_REQUIRE_CERT remains set to demand.
 ```
 
-Check the mounted file:
+Do not bypass production certificate validation by setting insecure LDAP options.
+
+### Domain Controller hostname does not resolve
+
+Confirm DNS from the Django container:
 
 ```bash
-docker compose exec web head -n 5 /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-docker compose exec web openssl x509 -in /etc/ssl/certs/djopenkb-ldap/ad-ca.crt -noout -subject -issuer -dates
+sudo docker compose exec web python -c \
+  "import socket; print(socket.getaddrinfo('<DOMAIN_CONTROLLER_FQDN>', 636))"
 ```
 
-A readable PEM file starts with:
+If the deployment network does not provide the required DNS record, configure the approved `LDAP_DC_IP`/Compose hostname mapping used by the project.
+
+### Authentication fails after TLS succeeds
+
+Check:
 
 ```text
------BEGIN CERTIFICATE-----
+- LDAP_BIND_DN is correct;
+- the Vault LDAP bind password is current;
+- LDAP_USER_SEARCH_BASE matches the production AD structure; and
+- LDAP_USER_FILTER returns the intended users.
 ```
 
-If the file is DER/binary, convert it on the Linux server:
-
-```bash
-openssl x509 -inform DER -in ldap-certs/ad-ca.crt -out ldap-certs/ad-ca.pem
-mv ldap-certs/ad-ca.crt ldap-certs/ad-ca.der.bak
-mv ldap-certs/ad-ca.pem ldap-certs/ad-ca.crt
-```
-
-Then test the LDAPS handshake:
-
-```bash
-docker compose exec web openssl s_client \
-  -connect <DOMAIN_CONTROLLER_FQDN>:636 \
-  -servername <DOMAIN_CONTROLLER_FQDN> \
-  -CAfile /etc/ssl/certs/djopenkb-ldap/ad-ca.crt
-```
-
-Expected:
-
-```text
-Verify return code: 0 (ok)
-```
-
-If it still says `unable to get local issuer certificate`, export the Root CA and any Issuing/Intermediate CA from Windows Server and combine them into `ldap-certs/ad-ca.crt`.
-
----
-
-
-## 7. Required AD Access Group
-
-Before enabling LDAP in production, confirm that `LDAP_USER_SEARCH_BASE` and `LDAP_USER_FILTER` match the intended AD scope. Every valid AD account found by this search can sign in. The service account used by `LDAP_BIND_DN` must remain low-privilege and read-only; it is used only to locate and verify AD users.
-
-The LDAP bind account only needs permission to search users and group membership. It must not be a Domain Admin, local administrator, or interactive-login account.
-
-## 8. DjOpenKB Role and MFA Behaviour After AD Login
-
-When a valid AD user who belongs to the configured required AD group signs in for the first time, DjOpenKB creates or updates the Django-side user record and assigns the default website role.
-
-Current default behaviour:
-
-```text
-New AD / LDAP user → Regular User group
-Regular User       → can view published articles and vote after login
-```
-
-Admins can later move the user into `Article Writer`, `Article Manager`, or `Admin Users` from Django Admin → Groups. When an AD/LDAP user is added to `Admin Users`, the profile remains AD/LDAP-sourced and is shown as an LDAP admin. If the account is later removed from `Admin Users`, it returns to LDAP user status rather than being converted to a local user. The Groups page provides a searchable left/right selector for adding and removing users.
-
-The Users admin page also provides direct DjOpenKB permission checkboxes for one-off exceptions. These are add-on permissions only and do not remove permissions inherited from groups.
-
-MFA is still required after successful AD password authentication where MFA is enabled. AD passwords remain managed by Active Directory, so users cannot change their AD password from the DjOpenKB profile page.
-
-Because the current site is login-only, anonymous users should not be able to browse articles or use the AI chatbot. Protected paths return 404 before normal article/admin content is shown.
-
-## LDAP Account Recovery Note
-
-If an AD account is removed from Active Directory but the corresponding Knowledge Repository account owns important articles, a superuser can edit the Django-side profile in Django Admin and convert the account source/type to a local account. After conversion, set a local password and MFA status according to the organisation recovery process. This preserves article ownership and audit history without depending on the deleted AD identity.
+Do not require a separate AD access group unless the organisation intentionally adds that restriction to the search base or filter.

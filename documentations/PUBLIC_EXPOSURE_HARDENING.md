@@ -164,7 +164,11 @@ from this web server.
 
 ## 8. CSP status
 
-The application sends a strict per-response Content Security Policy with a fresh nonce and does not include `'unsafe-inline'`. Project-owned inline script and style blocks that need server-rendered values use this nonce. Inline event attributes and inline `style=` attributes are forbidden, while static JavaScript and CSS remain self-hosted. When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`.
+The application sends a strict per-response Content Security Policy with a fresh nonce and does not include `'unsafe-inline'`. Project-owned inline script and style blocks that need server-rendered values use this nonce. Inline event attributes and inline `style=` attributes are forbidden, while static JavaScript and CSS remain self-hosted.
+
+The article-video feature adds only narrow external media exceptions: `frame-src` permits `https://www.youtube-nocookie.com` and `https://player.vimeo.com`, while `media-src` permits HTTPS direct video files. The server still generates and sanitises the player markup; arbitrary article-supplied iframe sources are not accepted. SharePoint/OneDrive direct-video validation probes only recognised Microsoft hosts and rejects external authentication redirects.
+
+When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`. Any new external frame/media host must be reviewed deliberately rather than broadly weakening the CSP.
 
 ## 9. Required verification after an update
 

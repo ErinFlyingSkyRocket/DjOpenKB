@@ -4,14 +4,20 @@ DjOpenKB is a Docker-based internal IT knowledge base built with Django. It prov
 
 The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required during development: users on the reachable internal network can use the browser-facing server IP over HTTPS, for example `https://<INTERNAL_SERVER_IP>:8080`. Replace `<INTERNAL_SERVER_IP>` with the approved internal address for the deployment. `localhost` and `127.0.0.1` refer only to the Linux server itself and are not remote-user addresses. When a firewall and final DNS name are later introduced, publish only HTTPS and update the trusted host/origin settings to the exact public address.
 
-For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GUIDE.md). Optional Exchange SMTP workflow and authentication-lockout notifications use [SMTP Relay Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md) and the Windows GUI/Linux certificate process in [Exchange SMTP Certificate Setup](documentations/EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md).
+For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GUIDE.md). For later code, dependency, `.env`, or Vault secret changes, follow [Update and Maintenance Guide](documentations/UPDATE_AND_MAINTENANCE_GUIDE.md). Optional SMTP relay setup, certificate preparation, workflow notifications, and authentication-lockout alerts are covered in [SMTP Relay Setup and Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md).
+
+---
+
+## System Architecture
+
+![DjOpenKB Architecture Layout Diagram](documentations/Djopenkb%20Architecture%20Layout%20Diagram.png)
 
 ---
 
 ## Main Features
 
 - Internal IT wiki / knowledge base website.
-- Login-protected public article browsing, title/keyword search, view tracking, voting, trending articles, most-liked articles, and most-recent articles.
+- Login-protected public article browsing, title/keyword search, per-browser-session recent-search history, view tracking, voting, trending articles, most-liked articles, and most-recent articles. The main search dropdown shows up to five recent searches while empty and switches to live accessible article suggestions when text is entered.
 - Separate internal article area for users with internal article access.
 - Public/internal article visibility model with separate public and internal writer, approver, and manager roles.
 - User article suggestion workflow with approval and pending-update review for published article edits.
@@ -36,7 +42,7 @@ For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GU
 - Nginx HTTPS reverse proxy on host port `8080` for direct internal development; a perimeter firewall may later publish public TCP `443` and translate it to this listener. Nginx applies per-IP POST rate limits to login, MFA, admin MFA, AI, upload, and bulk-import submissions.
 - Persistent OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`. Questions run as short-lived Celery jobs so they continue while a signed-in user moves between normal site pages.
 - AI resource controls: prompt length limit, short-burst rate limit and cooldown, a per-user fixed 24-hour quota, worker/query concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and privacy-safe activity metadata.
-- Markdown article rendering with sanitization.
+- Markdown article rendering with sanitization, plus controlled playable video links for supported YouTube, Vimeo, and direct HTTPS `.mp4`/`.webm`/`.ogg` sources. SharePoint/OneDrive direct-video links are checked for anonymous accessibility before acceptance so viewers are not sent into an external sign-in flow.
 - Image upload restrictions for article content, including protected image serving based on article visibility and ownership/review access.
 - Multilingual UI support through Django translation files.
 - Docker cleanup scheduler for routine cleanup tasks. The Compose stack separates the proxy, application, Vault, and worker-egress networks; application services use an unprivileged UID/GID, read-only filesystems, temporary `tmpfs` storage, capability dropping, and process limits where supported.
@@ -84,7 +90,9 @@ Important role notes:
 | Public writer, approver, or manager assigned | `Regular User` is removed because public viewing is already included. |
 | Internal role assigned | Internal access is additive and also includes public article viewing. |
 | Public and internal roles combined | Permissions remain scope-specific. For example, a public manager plus internal approver manages published public articles and reviews pending internal articles. |
-| Writer combined with matching approver/manager | Permissions are additive; the user can approve their own matching-scope submission. This project does not enforce separation of duties for deliberately combined roles. |
+| Writer combined with matching approver | Permissions are additive; the user can approve their own matching-scope submission. This project does not enforce separation of duties for deliberately combined roles. |
+| Public Article Manager assigned | Replaces the lower public `Article Writer` and `Article Approver` role groups while retaining the Manager's combined create/review/manage permissions. |
+| Internal Article Manager assigned | Replaces `Internal User`, `Internal Article Writer`, and `Internal Article Approver` while leaving public-scope roles unchanged. |
 | Disabled User assigned | Highest precedence. Standard role/admin groups and direct Knowledge Repository permissions are removed, staff/superuser flags are cleared, and site access is blocked. |
 
 Group membership is the baseline permission model. Direct user permission checkboxes are add-on permissions only; removing a direct permission does not remove a permission inherited from a group, and direct permissions do not grant Django Admin access.
@@ -97,16 +105,16 @@ Local and AD users are identified from account-source metadata rather than email
 
 | Area | Security controls |
 |---|---|
-| Authentication | Login-only site access, local login, AD/LDAPS login restricted to an approved AD group, MFA, fixed eight-hour session lifetime, authentication logging |
+| Authentication | Login-only site access, local login, AD/LDAPS login limited by the configured AD search base and user filter, MFA, fixed maximum session lifetime (8 hours by default), authentication logging |
 | Anonymous access | Only the login/language/static support paths and intentionally public `/robots.txt` are public; normal app pages and hidden admin login return 404 when unauthenticated |
 | User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
 | Authorization | Group-based roles, public/internal scope checks, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, protected image serving, and restricted admin routes |
 | Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, pending-update review for published edits, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
-| Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only; normal results are newest-updated matching articles first |
+| Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only; normal results are newest-updated matching articles first; the main search dropdown keeps up to five recent searches in browser `sessionStorage` and switches to live accessible article suggestions while typing |
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body. Displayed article keywords are clickable and run the normal title/keyword search. |
 | Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
-| Markdown | Sanitized rendered HTML to reduce XSS risk |
+| Markdown / video | Sanitized rendered HTML to reduce XSS risk; supported standalone video links are converted only into controlled YouTube privacy-enhanced, Vimeo, or direct HTTPS video players and remain constrained by the CSP allowlists |
 | AI chatbot | Login-protected persistent chat widget, role-scoped public/internal indexes, encrypted short-lived Redis job records, Celery background execution, 5 questions per 60 seconds, a 30-minute burst cooldown, an Admin-configurable fixed 24-hour per-user quota (default 20), query/worker concurrency controls, timeout handling, related article recommendations, and privacy-safe activity metadata |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
@@ -167,7 +175,7 @@ Draft, pending, pending failed, deletion-queued, and unapproved pending-update c
 
 ## SMTP Relay Workflow and Lockout Notifications
 
-SMTP workflow and lockout notifications are optional and disabled by default. The Django web service resolves current eligible role-group recipients and sends direct SMTP email using a Vault-stored service account. Public review submissions notify Public Article Approver/Manager/Admin Users, while internal review submissions notify Internal Article Approver/Manager/Admin Users. Reviewer pools use one Bcc-only message. Article approval and Pending-failed outcomes notify only the current eligible article owner with an authenticated DjOpenKB link. A recognised account reaching a new temporary password, normal MFA, or Django Admin MFA lockout sends one Bcc-only alert to active eligible `Admin Users`; retries during the same block do not send more mail, and unknown usernames remain log-only to prevent inbox flooding. TLS certificate and hostname validation remain enabled. Private-CA or self-signed Exchange relays can use one mounted public PEM/CRT trust certificate configured through `SMTP_RELAY_CA_CERT_FILE`; private keys and PFX/P12 bundles are never used. Follow [SMTP relay notification setup](documentations/SMTP_RELAY_NOTIFICATIONS.md) for configuration and testing, and [Exchange SMTP Certificate Setup](documentations/EXCHANGE_SMTP_RELAY_READINESS_AND_SETUP.md) for the Windows GUI export and Linux certificate process.
+SMTP workflow and lockout notifications are optional and disabled by default. The Django web service resolves current eligible role-group recipients and sends direct SMTP email using a Vault-stored service account. Public review submissions notify Public Article Approver/Manager/Admin Users, while internal review submissions notify Internal Article Approver/Manager/Admin Users. Reviewer pools use one Bcc-only message. Article approval and Pending-failed outcomes notify only the current eligible article owner with an authenticated DjOpenKB link. A recognised account reaching a new temporary password, normal MFA, or Django Admin MFA lockout sends one Bcc-only alert to active eligible `Admin Users`; retries during the same block do not send more mail, and unknown usernames remain log-only to prevent inbox flooding. TLS certificate and hostname validation remain enabled. Private-CA or self-signed Exchange relays can use one mounted public PEM/CRT trust certificate configured through `SMTP_RELAY_CA_CERT_FILE`; private keys and PFX/P12 bundles are never used. Follow [SMTP Relay Setup and Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md) for certificate preparation, configuration, and testing.
 
 ## Project Folder Structure
 
@@ -301,12 +309,15 @@ Contains the main documentation files for setup, testing, and feature explanatio
 
 ```text
 documentations/DEPLOYMENT_GUIDE.md
+documentations/UPDATE_AND_MAINTENANCE_GUIDE.md
 documentations/FULL_FEATURE_DOCUMENTATION.md
 documentations/LDAP_LDAPS_SETUP.md
 documentations/WINDOWS_SERVER_2022_AD_LDAPS_SETUP.md
+documentations/PUBLIC_EXPOSURE_HARDENING.md
+documentations/SMTP_RELAY_NOTIFICATIONS.md
 ```
 
-Use the deployment guide for Linux server setup. Use the LDAPS guide and Windows Server guide when configuring Active Directory login.
+Use the deployment guide for first-time Linux server setup, initial `createsuperuser` creation, and reboot persistence. Use the update and maintenance guide for Git/VS Code deployments, direct server edits, dependency changes, `.env` updates, and Vault secret updates. Use the LDAPS and Windows Server guides for Active Directory login, the public-exposure guide for edge hardening, and the SMTP guide for relay certificate setup, notifications, and testing.
 
 ---
 
@@ -392,11 +403,7 @@ Contains the public OpenKB workspace used by the chatbot for public article inde
 
 This folder stores the public OpenKB data/index workspace and published public article files used by the AI integration. Internal article data is not stored here.
 
-Before using the chatbot, initialize OpenKB inside this folder:
-
-```bash
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
-```
+Before using the chatbot on a fresh server, initialise this folder once using the temporary host virtual-environment procedure in `documentations/DEPLOYMENT_GUIDE.md` Section 9. Run `openkb init` from `/opt/DjOpenKB/openkb-data`, use the same model as `OPENKB_AI_MODEL`, and leave the OpenKB API-key prompt blank because the production key is supplied through Vault. Do not re-run initialisation over a healthy existing workspace.
 
 Then sync published Django articles into OpenKB. By default this rebuilds both the public index and the internal public+internal index:
 
@@ -509,7 +516,7 @@ Keep `OPENKB_AI_WORKER_CONCURRENCY=1` for the current single-VM deployment unles
 
 ## Public-Exposure Hardening
 
-Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, read-only filesystems with controlled `tmpfs` storage, an eight-hour fixed session lifetime, Vault token group permissions, and a required AD access-group check. During the current direct internal-IP phase, `DJANGO_ALLOWED_HOSTS` uses the reachable server IP and `DJANGO_CSRF_TRUSTED_ORIGINS` must include the visible `:8080` port. After a firewall publishes external `443`, use the public IP or DNS origin without `:8080`.
+Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, read-only filesystems with controlled `tmpfs` storage, a fixed maximum session lifetime (8 hours by default), Vault token group permissions, and configurable AD search-scope controls. During the current direct internal-IP phase, `DJANGO_ALLOWED_HOSTS` uses the reachable server IP and `DJANGO_CSRF_TRUSTED_ORIGINS` must include the visible `:8080` port. After a firewall publishes external `443`, use the public IP or DNS origin without `:8080`.
 
 ## Quick Deployment Summary
 
@@ -529,12 +536,14 @@ nano .env
 sh vault/bootstrap/generate-secrets.sh
 chmod +x nginx/certs/generate-localhost-cert.sh
 ./nginx/certs/generate-localhost-cert.sh <DIRECT_INTERNAL_SERVER_IP>
+
+# Complete the one-time host OpenKB initialisation from Deployment Guide Section 9.
+# The web container runs migrations, schema repair, and collectstatic automatically at startup.
 docker compose up -d --build
-docker compose exec web python manage.py migrate
-docker compose exec web python manage.py collectstatic --noinput
 docker compose exec web python manage.py createsuperuser
-docker compose exec web sh -lc "cd /app/openkb-data && PYTHONPATH=/app/OpenKB-main python -m openkb.cli init"
-docker compose exec web python manage.py sync_openkb_ai
+docker compose exec web python manage.py seed_djopenkb_roles --assign-missing-users
+docker compose exec web python manage.py sync_openkb_ai --scope all
+docker compose exec web python manage.py check_internal_article_isolation --sync-first
 docker compose exec web python manage.py check --deploy
 # After first login, review Site settings → Authentication lockout policy stages and OpenKB AI rate limits.
 ```
@@ -544,6 +553,8 @@ Access the website using:
 ```text
 https://<server-ip>:8080
 ```
+
+For host-reboot persistence, enable the `djopenkb.service` systemd unit documented in `documentations/DEPLOYMENT_GUIDE.md`. The boot service starts existing Compose containers with `docker compose up -d`; normal code deployments still use `docker compose up -d --build`. The long-running Compose services also retain `restart: unless-stopped` policies for individual container recovery.
 
 ---
 
