@@ -171,19 +171,17 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <input id="profile-article-search" type="search" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}" autocomplete="off" data-search-history="off">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
-                                                {% if is_profile_search %}
-                                                    <a class="btn btn-default" href="{{ profile_clear_search_url }}">{% trans "Clear search" %}</a>
-                                                {% endif %}
                                             </span>
                                         </div>
+                                        {% if is_profile_search %}
+                                            <p class="profile-muted profile-muted-spaced">
+                                                {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
+                                                <a href="{{ profile_clear_search_url }}">{% trans "Clear search" %}</a>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </form>
-                            {% if is_profile_search %}
-                                <p class="profile-muted profile-muted-spaced">
-                                    {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
-                                </p>
-                            {% endif %}
                         </div>
                     </div>
 
