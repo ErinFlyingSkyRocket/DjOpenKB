@@ -137,38 +137,51 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="panel-heading"><strong>{% trans "Search suggested articles" %}</strong></div>
                         <div class="panel-body">
                             <form method="get" action="{{ profile_search_action|default:'/profile/articles/' }}">
-                                {% if profile_show_visibility_filter %}
-                                    <div class="row">
+                                {% if not profile_show_visibility_filter and profile_visibility_filter != "all" %}
+                                    <input type="hidden" name="visibility" value="{{ profile_visibility_filter }}">
+                                {% endif %}
+                                <div class="row">
+                                    {% if profile_show_visibility_filter %}
                                         <div class="col-sm-3">
-                                            <select name="visibility" class="form-control auto-submit-on-change">
+                                            <label for="profile-visibility-filter">{% trans "Visibility" %}</label>
+                                            <select id="profile-visibility-filter" name="visibility" class="form-control auto-submit-on-change">
                                                 <option value="all" {% if profile_visibility_filter == "all" %}selected{% endif %}>{% trans "All allowed articles" %}</option>
                                                 {% if profile_allowed_public %}<option value="public" {% if profile_visibility_filter == "public" %}selected{% endif %}>{% trans "General articles" %}</option>{% endif %}
                                                 {% if profile_allowed_internal %}<option value="internal" {% if profile_visibility_filter == "internal" %}selected{% endif %}>{% trans "Internal articles" %}</option>{% endif %}
                                             </select>
                                         </div>
-                                        <div class="col-sm-9">
-                                            <div class="input-group">
-                                                <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}" autocomplete="off" data-search-history="off">
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
-                                                </span>
-                                            </div>
+                                    {% endif %}
+
+                                    <div class="col-sm-3">
+                                        <label for="profile-status-filter">{% trans "Status" %}</label>
+                                        <select id="profile-status-filter" name="status" class="form-control auto-submit-on-change">
+                                            <option value="all" {% if profile_status_filter == "all" %}selected{% endif %}>{% trans "All statuses" %}</option>
+                                            <option value="published" {% if profile_status_filter == "published" %}selected{% endif %}>{% trans "Published" %}</option>
+                                            <option value="pending" {% if profile_status_filter == "pending" %}selected{% endif %}>{% trans "Pending approval" %}</option>
+                                            <option value="failed" {% if profile_status_filter == "failed" %}selected{% endif %}>{% trans "Pending failed" %}</option>
+                                            <option value="draft" {% if profile_status_filter == "draft" %}selected{% endif %}>{% trans "Draft" %}</option>
+                                            <option value="pending_update" {% if profile_status_filter == "pending_update" %}selected{% endif %}>{% trans "Pending update" %}</option>
+                                            <option value="failed_update" {% if profile_status_filter == "failed_update" %}selected{% endif %}>{% trans "Update pending failed" %}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="{% if profile_show_visibility_filter %}col-sm-6{% else %}col-sm-9{% endif %}">
+                                        <label for="profile-article-search">{% trans "Search article" %}</label>
+                                        <div class="input-group">
+                                            <input id="profile-article-search" type="search" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}" autocomplete="off" data-search-history="off">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
+                                                {% if is_profile_search %}
+                                                    <a class="btn btn-default" href="{{ profile_clear_search_url }}">{% trans "Clear search" %}</a>
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     </div>
-                                {% else %}
-                                    {% if profile_visibility_filter != "all" %}<input type="hidden" name="visibility" value="{{ profile_visibility_filter }}">{% endif %}
-                                    <div class="input-group">
-                                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}" autocomplete="off" data-search-history="off">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
-                                        </span>
-                                    </div>
-                                {% endif %}
+                                </div>
                             </form>
                             {% if is_profile_search %}
                                 <p class="profile-muted profile-muted-spaced">
                                     {% blocktrans with query=profile_search_query %}Showing results for "{{ query }}".{% endblocktrans %}
-                                    <a href="{{ profile_search_action|default:'/profile/articles/' }}{% if profile_visibility_filter != 'all' %}?visibility={{ profile_visibility_filter }}{% endif %}">{% trans "Clear search" %}</a>
                                 </p>
                             {% endif %}
                         </div>
@@ -178,7 +191,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="panel-heading suggestion-panel-heading">
                             <span class="suggestion-panel-title">{% trans "My suggested articles" %}</span>
                             <span class="suggestion-panel-count">
-                                {% if is_profile_search %}
+                                {% if profile_has_active_filters %}
                                     {% blocktrans with matching=profile_result_count total=total_user_article_count %}{{ matching }} matching / {{ total }} total{% endblocktrans %}
                                 {% else %}
                                     {% blocktrans with count=total_user_article_count %}{{ count }} total{% endblocktrans %}
@@ -280,9 +293,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     </table>
                                 </div>
                             {% else %}
-                                {% if is_profile_search %}
+                                {% if profile_has_active_filters %}
                                     <p>{% trans "No matching suggested articles found." %}</p>
-                                    <a class="btn btn-default" href="{{ profile_search_action|default:'/profile/articles/' }}{% if profile_visibility_filter != 'all' %}?visibility={{ profile_visibility_filter }}{% endif %}">{% trans "Clear search" %}</a>
+                                    {% if is_profile_search %}
+                                        <a class="btn btn-default" href="{{ profile_clear_search_url }}">{% trans "Clear search" %}</a>
+                                    {% endif %}
                                 {% else %}
                                     <p>{% trans "You have not suggested any articles yet." %}</p>
                                     <a class="btn btn-success" href="{{ profile_new_article_url|default:'/suggest/' }}">{% trans "Create your first suggestion" %}</a>

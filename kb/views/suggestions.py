@@ -313,11 +313,51 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
     if requested_visibility != "all" and requested_visibility not in allowed_visibilities:
         requested_visibility = "all"
 
+    requested_status = (request.GET.get("status") or "all").strip().lower()
+    allowed_status_filters = {
+        "all",
+        SuggestedArticle.Status.PUBLISHED,
+        SuggestedArticle.Status.PENDING,
+        SuggestedArticle.Status.FAILED,
+        SuggestedArticle.Status.DRAFT,
+        "pending_update",
+        "failed_update",
+    }
+    if requested_status not in allowed_status_filters:
+        requested_status = "all"
+
     article_queryset = article_workspace_queryset_for_user(request.user)
     if requested_visibility != "all":
         article_queryset = article_queryset.filter(visibility=requested_visibility)
 
+    # Keep this count before status/text filtering so the page can show the
+    # number of matching articles against the selected visibility scope.
     total_user_article_count = article_queryset.count()
+
+    # Filter by the status users actually see in the table. Published articles
+    # with a submitted/rejected staged update are shown under their update
+    # status rather than under Published.
+    if requested_status == "pending_update":
+        article_queryset = article_queryset.filter(
+            status=SuggestedArticle.Status.PUBLISHED,
+            update_status=SuggestedArticle.UpdateStatus.PENDING,
+        )
+    elif requested_status == "failed_update":
+        article_queryset = article_queryset.filter(
+            status=SuggestedArticle.Status.PUBLISHED,
+            update_status=SuggestedArticle.UpdateStatus.FAILED,
+        )
+    elif requested_status == SuggestedArticle.Status.PUBLISHED:
+        article_queryset = article_queryset.filter(
+            status=SuggestedArticle.Status.PUBLISHED,
+            update_status=SuggestedArticle.UpdateStatus.NONE,
+        )
+    elif requested_status in {
+        SuggestedArticle.Status.PENDING,
+        SuggestedArticle.Status.FAILED,
+        SuggestedArticle.Status.DRAFT,
+    }:
+        article_queryset = article_queryset.filter(status=requested_status)
 
     if search_query:
         article_queryset = article_queryset.filter(
@@ -350,8 +390,19 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
     filter_query_suffix = ""
     if requested_visibility != "all":
         filter_query_suffix += f"&visibility={requested_visibility}"
+    if requested_status != "all":
+        filter_query_suffix += f"&status={requested_status}"
     if search_query:
         filter_query_suffix += f"&q={quote(search_query)}"
+
+    clear_search_url = reverse("edit_my_suggestions")
+    clear_search_params = []
+    if requested_visibility != "all":
+        clear_search_params.append(f"visibility={quote(requested_visibility)}")
+    if requested_status != "all":
+        clear_search_params.append(f"status={quote(requested_status)}")
+    if clear_search_params:
+        clear_search_url += "?" + "&".join(clear_search_params)
 
     return render(request, "edit_my_suggestions.html", {
         "articles": page_obj.object_list,
@@ -366,10 +417,13 @@ def _edit_my_suggestions_for_allowed_visibilities(request):
         "profile_search_action": reverse("edit_my_suggestions"),
         "profile_new_article_url": new_article_url,
         "profile_visibility_filter": requested_visibility,
+        "profile_status_filter": requested_status,
         "profile_allowed_public": SuggestedArticle.Visibility.PUBLIC in allowed_visibilities,
         "profile_allowed_internal": SuggestedArticle.Visibility.INTERNAL in allowed_visibilities,
         "profile_show_visibility_filter": len(allowed_visibilities) > 1,
         "profile_filter_query_suffix": filter_query_suffix,
+        "profile_clear_search_url": clear_search_url,
+        "profile_has_active_filters": bool(search_query or requested_status != "all"),
         "profile_show_owner_column": False,
         "is_internal_space": False,
     })
