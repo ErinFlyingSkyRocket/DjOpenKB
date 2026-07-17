@@ -1159,6 +1159,16 @@ class SiteSetting(models.Model):
             "pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
         ),
     )
+    article_video_max_width_px = models.PositiveIntegerField(
+        default=360,
+        validators=[MinValueValidator(160), MaxValueValidator(1920)],
+        verbose_name=_("Article video maximum width (px)"),
+        help_text=_(
+            "Maximum display width for article video players in pixels. "
+            "Videos remain responsive and keep a 16:9 ratio on smaller screens. "
+            "Default is 360 px. Allowed range: 160 to 1920 px."
+        ),
+    )
     articles_per_page = models.PositiveIntegerField(
         default=10,
         verbose_name=_("Articles per page"),

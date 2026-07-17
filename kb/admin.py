@@ -233,6 +233,7 @@ def _apply_admin_translation_labels():
             "stray_upload_cleanup_min_age_minutes": "Stray upload cleanup minimum age (minutes)",
             "article_deletion_queue_retention_days": "Article deletion queue retention (days)",
             "article_image_upload_limit": "Article image upload limit",
+            "article_video_max_width_px": "Article video maximum width (px)",
             "auth_activity_log_retention_days": "Authentication activity log retention (days)",
             "session_timeout_hours": "User session timeout (hours)",
             "activity_log_retention_days": "General activity log retention (days)",
@@ -261,6 +262,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
         (SiteSetting, "article_deletion_queue_retention_days"): "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
+        (SiteSetting, "article_video_max_width_px"): "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 360 px. Allowed range: 160 to 1920 px.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
         (SiteSetting, "session_timeout_hours"): "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
@@ -2590,11 +2592,16 @@ class AuthLockoutPolicyStageInline(admin.TabularInline):
 class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
     fieldsets = (
         (_("Article display and upload limits"), {
-            "fields": ("articles_per_page", "article_image_upload_limit"),
+            "fields": (
+                "articles_per_page",
+                "article_image_upload_limit",
+                "article_video_max_width_px",
+            ),
             "description": _(
                 "Controls how many articles are shown per page/on each homepage column, "
-                "and how many pasted/uploaded images each article may contain. "
-                "Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads."
+                "how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. "
+                "Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. "
+                "Article video width defaults to 360 px and remains responsive on smaller screens."
             ),
         }),
         (_("Stray upload cleanup"), {

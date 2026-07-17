@@ -25,6 +25,7 @@ class Command(BaseCommand):
             return
 
         self._repair_suggested_article()
+        self._repair_site_setting()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
 
     def _column_exists(self, table_name, column_name):
@@ -91,3 +92,33 @@ class Command(BaseCommand):
                 f"Repaired {len(missing_actions)} missing column(s) on {table_name}. Existing article data was preserved."
             )
         )
+
+    def _repair_site_setting(self):
+        table_name = "kb_sitesetting"
+
+        if not self._table_exists(table_name):
+            self.stdout.write(
+                self.style.WARNING(f"Table {table_name} does not exist yet. Run migrate first. Skipping repair.")
+            )
+            return
+
+        if self._column_exists(table_name, "article_video_max_width_px"):
+            self.stdout.write("No kb_sitesetting schema drift found.")
+            return
+
+        with connection.cursor() as cursor:
+            self.stdout.write(f"Adding missing column: {table_name}.article_video_max_width_px")
+            cursor.execute(
+                """
+                ALTER TABLE kb_sitesetting
+                ADD COLUMN article_video_max_width_px integer NOT NULL DEFAULT 360
+                CHECK (article_video_max_width_px >= 0)
+                """
+            )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Repaired missing kb_sitesetting.article_video_max_width_px column. Existing site settings were preserved."
+            )
+        )
+

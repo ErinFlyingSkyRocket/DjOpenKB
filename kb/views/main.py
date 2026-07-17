@@ -201,6 +201,7 @@ def article_detail(request, article_id):
         "search_suggestions_url": search_suggestions_url,
         "is_internal_space": article.is_internal,
         "show_internal_article_tags": user_can_view_internal_articles(request.user),
+        "article_video_max_width_px": get_article_video_max_width_px(),
     })
 
 

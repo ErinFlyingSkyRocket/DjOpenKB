@@ -1300,6 +1300,16 @@ def get_articles_per_page():
     return _bounded_site_setting_int("articles_per_page", default=10, minimum=5, maximum=100)
 
 
+def get_article_video_max_width_px():
+    """Return the admin-configured maximum article video width in pixels."""
+    return _bounded_site_setting_int(
+        "article_video_max_width_px",
+        default=360,
+        minimum=160,
+        maximum=1920,
+    )
+
+
 def article_image_limit_error_message(image_count=None, limit=None):
     limit = get_article_image_upload_limit() if limit is None else max(int(limit), 0)
     if limit <= 0:
