@@ -295,25 +295,25 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
+                            {% trans "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed." as revert_confirm_text %}
                             {% if can_review_article %}
+                                {% if is_pending_update_review %}
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
+                                {% endif %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if is_article_review_mode %}{% trans "Save review action" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
-                                    {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update again" %}</button>
                                 {% elif has_pending_update %}
-                                    {% trans "Discard this pending update draft and revert the editor to the last published version?" as revert_confirm_text %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                 {% elif has_saved_update_draft %}
-                                    {% trans "Discard your saved update draft and reload the last published version?" as revert_confirm_text %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>
                                 {% else %}
-                                    {% trans "Discard your current edits and reload the last published version?" as revert_confirm_text %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_update_draft">{% trans "Save update progress" %}</button>
                                     <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit_update">{% trans "Submit update for approval" %}</button>

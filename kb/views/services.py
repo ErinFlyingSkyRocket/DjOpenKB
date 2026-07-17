@@ -1058,7 +1058,13 @@ def allowed_article_edit_actions_for(user, article, *, review_mode=False):
     if user_can_review_article(user, article, review_mode=review_mode):
         # Article Approvers/Managers, Internal Approvers/Managers, and Admin Users
         # review through the status dropdown and Save button within their own scope.
-        return {"save", ""}
+        #
+        # Use the same revert action as article owners whenever a published
+        # article has a separate staged update.
+        allowed_actions = {"save", ""}
+        if getattr(article, "has_staged_update", False):
+            allowed_actions.add("revert_published")
+        return allowed_actions
 
     if not user_owns_article(user, article) or not user_can_add_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)):
         return set()

@@ -586,11 +586,14 @@ def edit_suggestion(request, article_id):
             default=article.visibility,
         )
 
-    if is_published_update_flow and submit_action == "revert_published":
-        # Discard the user's pending/rejected update draft and return the edit
-        # screen to the last approved public version. This does not modify the
-        # published article files because article.title/body/keywords are already
-        # the last approved content.
+    if (
+        submit_action == "revert_published"
+        and (is_published_update_flow or is_admin_pending_update_review)
+    ):
+        # Standard revert operation for every permitted role: discard the
+        # unpublished staged update and keep the last approved published version.
+        # The published article itself does not need restoring because
+        # article.title/body/keywords already contain the approved content.
         if article.review_notes:
             article.archive_current_review_note(actor=request.user, action="update_reverted_to_published")
         article.review_notes = ""
@@ -605,11 +608,27 @@ def edit_suggestion(request, article_id):
                 "action": "revert_pending_update_to_published",
                 "previous_status": previous_status,
                 "previous_update_status": previous_update_status,
-                "is_published_update_flow": True,
+                "is_published_update_flow": is_published_update_flow,
+                "is_admin_pending_update_review": is_admin_pending_update_review,
+                "is_review_mode": is_review_mode,
             },
         )
-        messages.success(request, _("Editor reverted to the last published version."))
-        return redirect(f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}?next={quote(return_url, safe='')}")
+
+        messages.success(
+            request,
+            _("Reverted to the last published version. Any unpublished update changes were discarded."),
+        )
+
+        # A reviewer coming from Manage Pending should return to that queue,
+        # because after the staged update is discarded there is nothing left to
+        # review. Managers/Admins editing from their own article page retain the
+        # existing owner-style behaviour and reload the editor.
+        if is_review_mode:
+            return redirect(return_url)
+        return redirect(
+            f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}"
+            f"?next={quote(return_url, safe='')}"
+        )
 
     error_context = {
         "title_value": title,
