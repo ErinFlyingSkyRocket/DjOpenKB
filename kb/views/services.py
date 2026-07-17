@@ -2504,21 +2504,25 @@ def validate_article_video_links_for_anonymous_access(markdown_text):
 
 def youtube_embed_html(video_id):
     return (
+        '<div class="article-video-wrapper">'
         '<iframe class="article-video-embed" '
         f'src="https://{YOUTUBE_EMBED_HOST}/embed/{video_id}" '
         'title="YouTube video player" loading="lazy" '
         'referrerpolicy="strict-origin-when-cross-origin" '
         f'allow="{YOUTUBE_IFRAME_ALLOW}" allowfullscreen></iframe>'
+        '</div>'
     )
 
 
 def vimeo_embed_html(video_id):
     return (
+        '<div class="article-video-wrapper">'
         '<iframe class="article-video-embed" '
         f'src="https://{VIMEO_EMBED_HOST}/video/{video_id}" '
         'title="Vimeo video player" loading="lazy" '
         'referrerpolicy="strict-origin-when-cross-origin" '
         f'allow="{VIMEO_IFRAME_ALLOW}" allowfullscreen></iframe>'
+        '</div>'
     )
 
 
@@ -2702,6 +2706,9 @@ def article_html_attribute_filter(tag, name, value):
     if tag in {"th", "td"}:
         return name in {"align", "colspan", "rowspan"}
 
+    if tag == "div":
+        return name == "class" and value == "article-video-wrapper"
+
     if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
         return name == "id"
 
@@ -2719,7 +2726,7 @@ def render_safe_markdown(markdown_text):
     allowed_tags = set(bleach.sanitizer.ALLOWED_TAGS) | {
         "p", "br", "hr",
         "h1", "h2", "h3", "h4", "h5", "h6",
-        "pre", "span",
+        "pre", "span", "div",
         "table", "thead", "tbody", "tr", "th", "td",
         "img", "iframe", "video",
     }
