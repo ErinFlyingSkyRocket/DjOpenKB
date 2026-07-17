@@ -71,16 +71,15 @@ $(document).ready(function(){
             $('head').append(
                 '<style id="djopenkb-search-history-style">' +
                 '.search-history-container{position:relative;}' +
-                '.search-history-dropdown{position:absolute;z-index:10050;box-sizing:border-box;margin-bottom:0;background:#fff;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.16);max-height:260px;overflow-x:hidden;overflow-y:auto;text-align:left;}' +
+                '.search-history-dropdown{position:absolute;z-index:10050;box-sizing:border-box;background:#fff;border:1px solid #dce4ec;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.16);max-height:260px;overflow-x:hidden;overflow-y:auto;text-align:left;}' +
                 '.search-history-dropdown.hidden{display:none;}' +
-                '.search-history-dropdown .list-group-item{margin-bottom:0;}' +
-                '.search-history-dropdown .list-group-heading{height:auto;min-height:40px;padding:10px 15px;}' +
-                '.openkb-search-history-item{display:flex;align-items:center;gap:8px;text-align:left;cursor:pointer;}' +
-                '.openkb-search-history-item:hover,.openkb-search-history-item:focus{background:#f5f5f5;outline:none;}' +
-                '.openkb-search-history-icon{flex:0 0 auto;color:#95a5a6;}' +
-                '.openkb-search-history-term{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
-                '.openkb-search-history-remove{flex:0 0 auto;border:0;background:transparent;color:#95a5a6;padding:2px 6px;}' +
-                '.openkb-search-history-remove:hover,.openkb-search-history-remove:focus{color:#c0392b;outline:none;}' +
+                '.search-history-title{padding:7px 11px;color:#7b8a8b;font-size:12px;font-weight:700;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid #eef2f4;background:#f8fafb;}' +
+                '.search-history-item{display:flex;align-items:center;column-gap:8px;width:100%;min-width:0;background:#fff;padding:8px 9px;color:#2c3e50;text-align:left;cursor:pointer;}' +
+                '.search-history-item:hover,.search-history-item:focus{background:#f4f8fb;outline:none;}' +
+                '.search-history-term{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+                '.search-history-icon{flex:0 0 auto;color:#95a5a6;}' +
+                '.search-history-remove{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:0;border-radius:3px;background:transparent;color:#95a5a6;padding:0;line-height:1;}' +
+                '.search-history-remove:hover,.search-history-remove:focus{background:#fff;color:#c0392b;outline:none;}' +
                 '</style>'
             );
         }
@@ -112,7 +111,7 @@ $(document).ready(function(){
             }
             $container.addClass('search-history-container');
 
-            var $dropdown = $('<div class="search-history-dropdown list-group hidden" role="listbox"></div>');
+            var $dropdown = $('<div class="search-history-dropdown hidden" role="listbox"></div>');
             $container.append($dropdown);
 
             function positionDropdown(){
@@ -161,16 +160,16 @@ $(document).ready(function(){
                     return;
                 }
 
-                $dropdown.append($('<div class="list-group-item list-group-heading"></div>').text(title));
+                $dropdown.append($('<div class="search-history-title"></div>').text(title));
 
                 history.forEach(function(item){
                     // Use a focusable div instead of nesting a remove <button> inside
                     // another <button>, which is invalid HTML and is rendered
                     // inconsistently by browsers.
-                    var $row = $('<div class="list-group-item openkb-search-history-item" role="option" tabindex="0"></div>');
-                    var $icon = $('<i class="fa fa-history openkb-search-history-icon" aria-hidden="true"></i>');
-                    var $term = $('<span class="openkb-search-history-term"></span>').text(item);
-                    var $remove = $('<button type="button" class="openkb-search-history-remove"><i class="fa fa-times" aria-hidden="true"></i></button>').attr('aria-label', removeLabel);
+                    var $row = $('<div class="search-history-item" role="option" tabindex="0"></div>');
+                    var $icon = $('<i class="fa fa-history search-history-icon" aria-hidden="true"></i>');
+                    var $term = $('<span class="search-history-term"></span>').text(item);
+                    var $remove = $('<button type="button" class="search-history-remove"><i class="fa fa-times" aria-hidden="true"></i></button>').attr('aria-label', removeLabel);
 
                     $row.append($icon).append($term).append($remove);
 
@@ -188,13 +187,13 @@ $(document).ready(function(){
                     }
 
                     $row.on('mousedown', function(event){
-                        if(!$(event.target).closest('.openkb-search-history-remove').length){
+                        if(!$(event.target).closest('.search-history-remove').length){
                             event.preventDefault();
                         }
                     });
 
                     $row.on('click', function(event){
-                        if($(event.target).closest('.openkb-search-history-remove').length){
+                        if($(event.target).closest('.search-history-remove').length){
                             return;
                         }
                         chooseHistoryItem();
@@ -264,6 +263,11 @@ $(document).ready(function(){
         var seenInputs = [];
         $('input[type="text"][name="q"], #frm_search').each(function(){
             var inputId = this.id || '';
+
+            // Individual search fields can explicitly opt out of search history.
+            if($(this).attr('data-search-history') === 'off'){
+                return;
+            }
 
             // Do not enable history for the OpenKB AI question/chatbox input.
             if(inputId === 'openkbAiQuestion' || $(this).closest('#openkbAiBox, .openkb-ai-box, .ai-chatbox, .chatbox').length){
