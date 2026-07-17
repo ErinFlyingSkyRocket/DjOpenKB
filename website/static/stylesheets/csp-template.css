@@ -56,7 +56,7 @@
     position: relative;
     display: block;
     width: 100%;
-    max-width: 960px;
+    max-width: 720px;
     height: 0;
     padding-bottom: 56.25%;
     margin: 18px auto;
@@ -81,7 +81,7 @@
 .article-video {
     display: block;
     width: 100%;
-    max-width: 960px;
+    max-width: 720px;
     aspect-ratio: 16 / 9;
     margin: 18px auto;
     border: 0;
