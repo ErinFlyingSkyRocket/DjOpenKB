@@ -148,7 +148,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         </div>
                                         <div class="col-sm-9">
                                             <div class="input-group">
-                                                <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
+                                                <input type="text" name="q" class="form-control" autocomplete="off" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                                                 </span>
@@ -158,7 +158,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% else %}
                                     {% if profile_visibility_filter != "all" %}<input type="hidden" name="visibility" value="{{ profile_visibility_filter }}">{% endif %}
                                     <div class="input-group">
-                                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
+                                        <input type="text" name="q" class="form-control" autocomplete="off" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}">
                                         <span class="input-group-btn">
                                             <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                                         </span>
