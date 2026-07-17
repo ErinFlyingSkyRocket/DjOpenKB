@@ -320,11 +320,13 @@ def admin_mfa_verify(request):
 
 
 class AdminMFASessionMiddleware:
-    """Require step-up MFA before Django Admin and expire idle admin sessions.
+    """Require step-up MFA before Django Admin and sensitive admin tools.
 
-    This does not log users out of the normal Knowledge Repository site. It only
-    clears the admin-step-up verification and sends the user back to /home/ when
-    the admin area has been idle too long.
+    This does not log users out of the normal Knowledge Repository site. Leaving
+    the protected admin scope clears only the short-lived admin-MFA grant. If a
+    standalone maintenance tool times out, the user is challenged for MFA again
+    and returned to that tool. Django Admin itself keeps the existing behaviour
+    of returning to the normal site after an idle timeout.
     """
 
     def __init__(self, get_response):
@@ -338,6 +340,9 @@ class AdminMFASessionMiddleware:
 
     def _is_admin_path(self, path: str) -> bool:
         return is_admin_step_up_path(path)
+
+    def _is_django_admin_path(self, path: str) -> bool:
+        return path == "/admin" or path.startswith("/admin/")
 
     def _is_static_or_safe_asset(self, path: str) -> bool:
         if settings.STATIC_URL and path.startswith(settings.STATIC_URL):
@@ -373,8 +378,17 @@ class AdminMFASessionMiddleware:
         except (TypeError, ValueError):
             return None
 
-    def _admin_timeout_response(self, request):
+    def _admin_timeout_response(self, request, path: str):
         clear_admin_mfa_session(request)
+
+        # A timed-out standalone maintenance tool should stay in its own flow:
+        # ask for a fresh MFA code, then return directly to the requested tool.
+        # Only Django Admin itself sends the user back to the normal site after
+        # inactivity, preserving the existing admin-site timeout behaviour.
+        if not self._is_django_admin_path(path):
+            response = _redirect_with_next("admin_mfa_verify", request.get_full_path())
+            return set_strict_no_cache_headers(response)
+
         messages.warning(
             request,
             _("Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."),
@@ -390,6 +404,12 @@ class AdminMFASessionMiddleware:
             return self.get_response(request)
 
         if self._is_exempt_admin_path(path):
+            # Explicitly discard any step-up grant before Django processes an
+            # admin logout. Django normally clears the whole authenticated
+            # session as well, but removing these keys here prevents a stale
+            # grant from surviving any customised logout behaviour.
+            if path == "/admin/logout/":
+                clear_admin_mfa_session(request)
             return self.get_response(request)
 
         user = getattr(request, "user", None)
@@ -406,7 +426,7 @@ class AdminMFASessionMiddleware:
             request.session[ADMIN_MFA_LAST_ACTIVITY_AT_KEY] = now
             request.session.modified = True
         elif now - last_activity >= get_admin_mfa_idle_timeout_seconds():
-            return self._admin_timeout_response(request)
+            return self._admin_timeout_response(request, path)
         else:
             request.session[ADMIN_MFA_LAST_ACTIVITY_AT_KEY] = now
             request.session.modified = True
