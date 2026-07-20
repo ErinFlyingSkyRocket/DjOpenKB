@@ -520,7 +520,7 @@ msgstr "Artikeldetails"
 msgid "Article display and upload limits"
 msgstr "Weergave- en uploadlimieten voor artikelen"
 
-#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
+#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
 msgid "Article image"
 msgstr "Artikelafbeelding"
 
@@ -1096,7 +1096,7 @@ msgstr "%(target_label)s gewijzigd: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s gewijzigd: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
+#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
 msgid "Checking..."
 msgstr "Controleren..."
 
@@ -1205,8 +1205,8 @@ msgid "Controls how long deleted published articles stay recoverable in My Profi
 msgstr "Bepaalt hoelang verwijderde gepubliceerde artikelen herstelbaar blijven in Mijn profiel → Beheerhulpmiddelen → Verwijderingswachtrij vóór de geplande permanente verwijdering. Standaard is 7 dagen. Stel in op 0 voor onmiddellijke permanente verwijdering na MFA-bevestiging."
 
 #: kb/admin.py:2600
-msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 360 px and remains responsive on smaller screens."
-msgstr "Bepaalt hoeveel artikelen per pagina/in elke kolom op de startpagina worden weergegeven, hoeveel geplakte/geüploade afbeeldingen elk artikel mag bevatten en wat de maximale weergavebreedte van artikelvideo's is. Het standaardaantal artikelen per pagina is 10. De standaardlimiet voor het uploaden van afbeeldingen is 50; stel deze in op 0 om het uploaden van artikelafbeeldingen uit te schakelen. De standaardbreedte van artikelvideo's is 360 px en blijft responsief op kleinere schermen."
+msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
+msgstr "Bepaalt hoeveel artikelen per pagina/in elke kolom op de startpagina worden weergegeven, hoeveel geplakte/geüploade afbeeldingen elk artikel mag bevatten en wat de maximale weergavebreedte van artikelvideo's is. Het standaardaantal artikelen per pagina is 10. De standaardlimiet voor het uploaden van afbeeldingen is 50; stel deze in op 0 om het uploaden van artikelafbeeldingen uit te schakelen. De standaardbreedte van artikelvideo's is 720 px en blijft responsief op kleinere schermen."
 
 #: kb/admin.py:2609
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
@@ -1520,11 +1520,11 @@ msgstr "Toegangsbeperkingen voor Django-beheer"
 msgid "Django admin action flag"
 msgstr "Vlag voor Django-beheeractie"
 
-#: kb/views/services.py:3051
+#: kb/views/services.py:3060
 msgid "Domain Admin"
 msgstr "Domeinbeheerder"
 
-#: kb/views/services.py:3049
+#: kb/views/services.py:3058
 msgid "Domain User"
 msgstr "Domeingebruiker"
 
@@ -1616,7 +1616,7 @@ msgstr "Versleuteld en verborgen"
 msgid "Enter MFA/OTP code"
 msgstr "Voer MFA/OTP-code in"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
 msgid "Enter a supported video link."
 msgstr "Voer een ondersteunde videolink in."
 
@@ -1780,7 +1780,7 @@ msgstr "Groepsmachtigingen"
 msgid "Group type"
 msgstr "Groeptype"
 
-#: kb/views/services.py:3046
+#: kb/views/services.py:3055
 msgid "Guest"
 msgstr "Gast"
 
@@ -1898,23 +1898,23 @@ msgstr "Afbeeldingsassets"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "De afbeeldingsafmetingen zijn te groot. Upload een kleinere afbeelding."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
+#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "De afbeelding is te groot. De maximaal toegestane grootte is 2 MB."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this article draft."
 msgstr "Afbeelding verwijderd uit dit artikelconcept."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Afbeelding verwijderd uit dit concept. Sla het artikel op om deze uit de opslag te verwijderen."
 
-#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Het uploaden van afbeeldingen is tijdelijk niet beschikbaar. Probeer het later opnieuw."
 
-#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
+#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
 msgid "Image uploaded and inserted into the article."
 msgstr "Afbeelding geüpload en in het artikel ingevoegd."
 
@@ -2094,11 +2094,11 @@ msgstr "Ongeldige authenticatiecode. Probeer opnieuw."
 msgid "Invalid deletion queue action."
 msgstr "Ongeldige actie voor verwijderingswachtrij."
 
-#: kb/views/suggestions.py:1118
+#: kb/views/suggestions.py:1127
 msgid "Invalid image filename."
 msgstr "Ongeldige afbeeldingsbestandsnaam."
 
-#: kb/views/suggestions.py:1129
+#: kb/views/suggestions.py:1138
 msgid "Invalid image path."
 msgstr "Ongeldig afbeeldingspad."
 
@@ -2238,11 +2238,11 @@ msgstr "Vind ik leuk"
 msgid "Likes"
 msgstr "Vind-ik-leuks"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3064
 msgid "Local Admin"
 msgstr "Lokale beheerder"
 
-#: kb/views/services.py:3053
+#: kb/views/services.py:3062
 msgid "Local User"
 msgstr "Lokale gebruiker"
 
@@ -2270,7 +2270,7 @@ msgstr "Lokale accounts vereisen verificatie via authenticator na aanmelding met
 msgid "Local admin"
 msgstr "Lokale beheerder"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3105
+#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
 msgid "Local user"
 msgstr "Lokale gebruiker"
 
@@ -2455,8 +2455,8 @@ msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour wind
 msgstr "Maximumaantal geaccepteerde Ask OpenKB AI-vragen per gebruiker binnen een vast venster van 24 uur. De eerste geaccepteerde vraag start het venster en latere vragen verlengen het niet. Standaard: 20."
 
 #: kb/admin.py:265 kb/models.py:1166
-msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 360 px. Allowed range: 160 to 1920 px."
-msgstr "Maximale weergavebreedte van videospelers in artikelen, in pixels. Video's blijven responsief en behouden een beeldverhouding van 16:9 op kleinere schermen. De standaardwaarde is 360 px. Toegestaan bereik: 160 tot 1920 px."
+msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
+msgstr "Maximale weergavebreedte van videospelers in artikelen, in pixels. Video's blijven responsief en behouden een beeldverhouding van 16:9 op kleinere schermen. De standaardwaarde is 720 px. Toegestaan bereik: 160 tot 1920 px."
 
 #: kb/admin.py:264 kb/models.py:1157
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
@@ -2590,11 +2590,11 @@ msgstr "Geen e-mail ingesteld"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Er zijn nog geen bestaande trefwoorden die overeenkomen met de huidige titel of inhoud."
 
-#: kb/views/suggestions.py:1041
+#: kb/views/suggestions.py:1050
 msgid "No image file received."
 msgstr "Geen afbeeldingsbestand ontvangen."
 
-#: kb/views/suggestions.py:1113
+#: kb/views/suggestions.py:1122
 msgid "No image filename received."
 msgstr "Geen afbeeldingsbestandsnaam ontvangen."
 
@@ -2754,7 +2754,7 @@ msgstr "Oud wachtwoord is onjuist."
 msgid "Only .zip import files are allowed."
 msgstr "Alleen .zip-importbestanden zijn toegestaan."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Alleen PNG-, JPG-, GIF- of WEBP-afbeeldingen zijn toegestaan."
 
@@ -2882,31 +2882,31 @@ msgstr "Aanmelding met wachtwoord mislukt"
 msgid "Password login success"
 msgstr "Aanmelding met wachtwoord gelukt"
 
-#: kb/views/services.py:3143
+#: kb/views/services.py:3152
 msgid "Password must be at least 12 characters long."
 msgstr "Wachtwoord moet minimaal 12 tekens lang zijn."
 
-#: kb/views/services.py:3147
+#: kb/views/services.py:3156
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Wachtwoord moet minimaal 1 kleine letter bevatten."
 
-#: kb/views/services.py:3149
+#: kb/views/services.py:3158
 msgid "Password must include at least 1 number."
 msgstr "Wachtwoord moet minimaal 1 cijfer bevatten."
 
-#: kb/views/services.py:3151
+#: kb/views/services.py:3160
 msgid "Password must include at least 1 special character."
 msgstr "Wachtwoord moet minimaal 1 speciaal teken bevatten."
 
-#: kb/views/services.py:3145
+#: kb/views/services.py:3154
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Wachtwoord moet minimaal 1 hoofdletter bevatten."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3169
 msgid "Password must not contain the name part of your email address."
 msgstr "Wachtwoord mag niet het naamgedeelte van je e-mailadres bevatten."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3167
 msgid "Password must not contain your username."
 msgstr "Wachtwoord mag je gebruikersnaam niet bevatten."
 
@@ -2943,8 +2943,8 @@ msgid "Passwords match."
 msgstr "Wachtwoorden komen overeen."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
-msgstr "Plak een YouTube- of Vimeo-link. Rechtstreekse videobestanden en links waarvoor mogelijk extern aanmelden nodig is, worden niet ondersteund."
+msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
+msgstr "Plak een YouTube- of Vimeo-link, of een directe HTTPS-link die eindigt op .mp4, .webm of .ogg. Het artikel toont een afspeelbare video."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3302,7 +3302,7 @@ msgstr "Update afwijzen"
 msgid "Related articles"
 msgstr "Gerelateerde artikelen"
 
-#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
+#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Afbeelding uit artikel verwijderen"
 
@@ -3918,15 +3918,15 @@ msgstr "De artikelen konden niet veilig worden toegewezen. Er is geen toewijzing
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "De onderstaande selectievakjes zijn speciale uitzonderingen per gebruiker, uitsluitend voor artikeltoegang. Ze zijn nuttig wanneer één gebruiker iets meer toegang tot artikelen nodig heeft dan zijn of haar groep, zonder een nieuwe groep te maken. Toegang tot Django-beheer wordt alleen verleend via de groep Beheerders/supergebruikerstatus."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
 msgid "The image could not be uploaded. Please try again."
 msgstr "De afbeelding kon niet worden geüpload. Probeer het opnieuw."
 
-#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
+#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Bij het uploaden van de afbeelding kon geen verbinding met de server worden gemaakt. Controleer uw verbinding en probeer het opnieuw."
 
-#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
+#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Het uploaden van de afbeelding was niet geautoriseerd. Vernieuw de pagina en probeer het opnieuw."
 
@@ -3970,11 +3970,11 @@ msgstr "Hetzelfde progressieve beleid wordt gebruikt voor mislukte wachtwoordaan
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "De geselecteerde artikelen zijn geen weesartikelen meer of bestaan niet meer. Vernieuw en probeer opnieuw."
 
-#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
+#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
 msgid "The selected file is not a valid supported image."
 msgstr "Het geselecteerde bestand is geen geldige ondersteunde afbeelding."
 
-#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
+#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
 msgid "The selected image is empty. Please choose a different image."
 msgstr "De geselecteerde afbeelding is leeg. Kies een andere afbeelding."
 
@@ -4050,7 +4050,7 @@ msgstr "Dit artikel bevat %(count)s afbeelding(en), maar het maximum is %(limit)
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Dit artikel heeft de uploadlimiet van %(limit)s afbeelding(en) bereikt."
 
-#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
+#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Dit artikel heeft de uploadlimiet voor afbeeldingen bereikt. Verwijder een afbeelding voordat u er nog een uploadt."
 
@@ -4066,11 +4066,11 @@ msgstr "Hiermee worden tijdelijke blokkeringen, tellers voor mislukte pogingen e
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Dit e-mailadres wordt beheerd door je domeinaccount en kan hier niet worden gewijzigd."
 
-#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
+#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Deze afbeelding is al geüpload in dit concept. Gebruik eerst de X-knop in de preview om deze te verwijderen."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1131
 msgid "This image is not removable from this editing session."
 msgstr "Deze afbeelding kan niet uit deze bewerkingssessie worden verwijderd."
 
@@ -4094,7 +4094,7 @@ msgstr "Deze tool geeft de voorkeur aan het systeemexportformaat:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Dit type verzoek is niet toegestaan voor de geselecteerde pagina."
 
-#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
+#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
 msgid "This video link could not be validated. Please try another link."
 msgstr "Deze videolink kon niet worden gevalideerd. Probeer een andere link."
 
@@ -4130,7 +4130,7 @@ msgstr "Te veel vragen aan OpenKB AI. Wacht voordat je het opnieuw probeert."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Te veel mislukte aanmeldingspogingen. Probeer het opnieuw over %(duration)s."
 
-#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
+#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Te veel pogingen om afbeeldingen te uploaden. Wacht even en probeer het opnieuw."
 
@@ -4174,11 +4174,11 @@ msgstr "Soort"
 msgid "Type username or email"
 msgstr "Typ gebruikersnaam of e-mail"
 
-#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
+#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Deze videolink kan niet worden gevalideerd. Vernieuw de pagina en probeer het opnieuw."
 
-#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
+#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Kan niet verifiëren of deze video toegankelijk is zonder aanmelding. Probeer het opnieuw."
 
@@ -4378,7 +4378,7 @@ msgstr "Versie is succesvol verwijderd."
 msgid "Video link"
 msgstr "Videolink"
 
-#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
+#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
 msgid "Video link inserted into the article."
 msgstr "De videolink is in het artikel ingevoegd."
 
@@ -4546,7 +4546,7 @@ msgstr "Je beheersessie is na inactiviteit verlopen. Verifieer MFA opnieuw om de
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Aan je eigen account is Uitgeschakelde gebruiker toegewezen. Bij het volgende verzoek word je doorgestuurd naar de pagina voor uitgeschakelde accounts."
 
-#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
+#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Uw sessie is verlopen. Meld u opnieuw aan voordat u de afbeelding uploadt."
 

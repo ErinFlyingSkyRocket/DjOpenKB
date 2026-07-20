@@ -520,7 +520,7 @@ msgstr "Artikeldetaljer"
 msgid "Article display and upload limits"
 msgstr "Grænser for artikelvisning og upload"
 
-#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
+#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
 msgid "Article image"
 msgstr "Artikelbillede"
 
@@ -1096,7 +1096,7 @@ msgstr "Ændrede %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Ændrede %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
+#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
 msgid "Checking..."
 msgstr "Kontrollerer..."
 
@@ -1205,8 +1205,8 @@ msgid "Controls how long deleted published articles stay recoverable in My Profi
 msgstr "Styrer, hvor længe slettede udgivne artikler kan gendannes i Min profil → Administratorværktøjer → Slettelseskø før planlagt permanent sletning. Standard er 7 dage. Sæt til 0 for øjeblikkelig permanent sletning efter MFA-bekræftelse."
 
 #: kb/admin.py:2600
-msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 360 px and remains responsive on smaller screens."
-msgstr "Styrer, hvor mange artikler der vises pr. side/i hver kolonne på startsiden, hvor mange indsatte/uploadede billeder hver artikel må indeholde, samt den maksimale visningsbredde for artikelvideoer. Standard for artikler pr. side er 10. Standardgrænsen for billedupload er 50; sæt den til 0 for at deaktivere upload af artikelbilleder. Standardbredden for artikelvideoer er 360 px og forbliver responsiv på mindre skærme."
+msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
+msgstr "Styrer, hvor mange artikler der vises pr. side/i hver kolonne på startsiden, hvor mange indsatte/uploadede billeder hver artikel må indeholde, samt den maksimale visningsbredde for artikelvideoer. Standard for artikler pr. side er 10. Standardgrænsen for billedupload er 50; sæt den til 0 for at deaktivere upload af artikelbilleder. Standardbredden for artikelvideoer er 720 px og forbliver responsiv på mindre skærme."
 
 #: kb/admin.py:2609
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
@@ -1520,11 +1520,11 @@ msgstr "Adgangsbegrænsninger for Django-administration"
 msgid "Django admin action flag"
 msgstr "Flag for Django-administratorhandling"
 
-#: kb/views/services.py:3051
+#: kb/views/services.py:3060
 msgid "Domain Admin"
 msgstr "Domæneadministrator"
 
-#: kb/views/services.py:3049
+#: kb/views/services.py:3058
 msgid "Domain User"
 msgstr "Domænebruger"
 
@@ -1616,7 +1616,7 @@ msgstr "Krypteret og skjult"
 msgid "Enter MFA/OTP code"
 msgstr "Indtast MFA/OTP-kode"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
 msgid "Enter a supported video link."
 msgstr "Indtast et understøttet videolink."
 
@@ -1780,7 +1780,7 @@ msgstr "Gruppetilladelser"
 msgid "Group type"
 msgstr "Gruppetype"
 
-#: kb/views/services.py:3046
+#: kb/views/services.py:3055
 msgid "Guest"
 msgstr "Gæst"
 
@@ -1898,23 +1898,23 @@ msgstr "Billedaktiver"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Billedets dimensioner er for store. Upload et mindre billede."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
+#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Billedet er for stort. Den maksimalt tilladte størrelse er 2 MB."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this article draft."
 msgstr "Billedet blev fjernet fra dette artikeludkast."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Billedet blev fjernet fra dette udkast. Gem artiklen for at slette det fra lageret."
 
-#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Billedupload er midlertidigt utilgængelig. Prøv igen senere."
 
-#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
+#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
 msgid "Image uploaded and inserted into the article."
 msgstr "Billedet blev uploadet og indsat i artiklen."
 
@@ -2094,11 +2094,11 @@ msgstr "Ugyldig authenticator-kode. Prøv igen."
 msgid "Invalid deletion queue action."
 msgstr "Ugyldig handling i slettelseskøen."
 
-#: kb/views/suggestions.py:1118
+#: kb/views/suggestions.py:1127
 msgid "Invalid image filename."
 msgstr "Ugyldigt filnavn for billede."
 
-#: kb/views/suggestions.py:1129
+#: kb/views/suggestions.py:1138
 msgid "Invalid image path."
 msgstr "Ugyldig billedsti."
 
@@ -2238,11 +2238,11 @@ msgstr "Synes godt om"
 msgid "Likes"
 msgstr "Synes godt om"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3064
 msgid "Local Admin"
 msgstr "Lokal administrator"
 
-#: kb/views/services.py:3053
+#: kb/views/services.py:3062
 msgid "Local User"
 msgstr "Lokal bruger"
 
@@ -2270,7 +2270,7 @@ msgstr "Lokale konti kræver authenticator-bekræftelse efter login med adgangsk
 msgid "Local admin"
 msgstr "Lokal administrator"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3105
+#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
 msgid "Local user"
 msgstr "Lokal bruger"
 
@@ -2455,8 +2455,8 @@ msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour wind
 msgstr "Maksimalt antal accepterede Ask OpenKB AI-spørgsmål pr. bruger i et fast 24-timers vindue. Det første accepterede spørgsmål starter vinduet, og senere spørgsmål forlænger det ikke. Standard: 20."
 
 #: kb/admin.py:265 kb/models.py:1166
-msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 360 px. Allowed range: 160 to 1920 px."
-msgstr "Maksimal visningsbredde for videoafspillere i artikler i pixel. Videoer forbliver responsive og bevarer et 16:9-format på mindre skærme. Standard er 360 px. Tilladt interval: 160 til 1920 px."
+msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
+msgstr "Maksimal visningsbredde for videoafspillere i artikler i pixel. Videoer forbliver responsive og bevarer et 16:9-format på mindre skærme. Standard er 720 px. Tilladt interval: 160 til 1920 px."
 
 #: kb/admin.py:264 kb/models.py:1157
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
@@ -2590,11 +2590,11 @@ msgstr "Ingen e-mail angivet"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Ingen eksisterende nøgleord matcher endnu den aktuelle titel eller tekst."
 
-#: kb/views/suggestions.py:1041
+#: kb/views/suggestions.py:1050
 msgid "No image file received."
 msgstr "Ingen billedfil modtaget."
 
-#: kb/views/suggestions.py:1113
+#: kb/views/suggestions.py:1122
 msgid "No image filename received."
 msgstr "Intet filnavn for billede modtaget."
 
@@ -2754,7 +2754,7 @@ msgstr "Den gamle adgangskode er forkert."
 msgid "Only .zip import files are allowed."
 msgstr "Kun .zip-importfiler er tilladt."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Kun PNG-, JPG-, GIF- eller WEBP-billeder er tilladt."
 
@@ -2882,31 +2882,31 @@ msgstr "Login med adgangskode mislykkedes"
 msgid "Password login success"
 msgstr "Login med adgangskode fuldført"
 
-#: kb/views/services.py:3143
+#: kb/views/services.py:3152
 msgid "Password must be at least 12 characters long."
 msgstr "Adgangskoden skal være mindst 12 tegn lang."
 
-#: kb/views/services.py:3147
+#: kb/views/services.py:3156
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Adgangskoden skal indeholde mindst 1 lille bogstav."
 
-#: kb/views/services.py:3149
+#: kb/views/services.py:3158
 msgid "Password must include at least 1 number."
 msgstr "Adgangskoden skal indeholde mindst 1 tal."
 
-#: kb/views/services.py:3151
+#: kb/views/services.py:3160
 msgid "Password must include at least 1 special character."
 msgstr "Adgangskoden skal indeholde mindst 1 specialtegn."
 
-#: kb/views/services.py:3145
+#: kb/views/services.py:3154
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Adgangskoden skal indeholde mindst 1 stort bogstav."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3169
 msgid "Password must not contain the name part of your email address."
 msgstr "Adgangskoden må ikke indeholde navnedelen af din e-mailadresse."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3167
 msgid "Password must not contain your username."
 msgstr "Adgangskoden må ikke indeholde dit brugernavn."
 
@@ -2943,8 +2943,8 @@ msgid "Passwords match."
 msgstr "Adgangskoderne matcher."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
-msgstr "Indsæt et YouTube- eller Vimeo-link. Direkte videofiler og links, der kan kræve eksternt login, understøttes ikke."
+msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
+msgstr "Indsæt et YouTube- eller Vimeo-link eller et direkte HTTPS-link, der slutter på .mp4, .webm eller .ogg. Artiklen viser en video, der kan afspilles."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3302,7 +3302,7 @@ msgstr "Afvis opdatering"
 msgid "Related articles"
 msgstr "Relaterede artikler"
 
-#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
+#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Fjern billede fra artikel"
 
@@ -3918,15 +3918,15 @@ msgstr "Artiklerne kunne ikke tildeles sikkert. Ingen tildeling blev anvendt. Tj
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Afkrydsningsfelterne nedenfor er særlige undtagelser pr. bruger kun for artikeladgang. De er nyttige, når én bruger behøver lidt mere artikeladgang end sin gruppe, uden at der oprettes en ny gruppe. Django-administratoradgang gives kun gennem gruppen Administratorbrugere/superbrugerstatus."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
 msgid "The image could not be uploaded. Please try again."
 msgstr "Billedet kunne ikke uploades. Prøv igen."
 
-#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
+#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Billedupload kunne ikke oprette forbindelse til serveren. Kontrollér din forbindelse, og prøv igen."
 
-#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
+#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Billedupload blev ikke godkendt. Opdater siden, og prøv igen."
 
@@ -3970,11 +3970,11 @@ msgstr "Den samme progressive politik bruges til fejl ved adgangskodelogin og MF
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "De valgte artikler er ikke længere forældreløse eller findes ikke længere. Opdater siden, og prøv igen."
 
-#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
+#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
 msgid "The selected file is not a valid supported image."
 msgstr "Den valgte fil er ikke et gyldigt understøttet billede."
 
-#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
+#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Det valgte billede er tomt. Vælg et andet billede."
 
@@ -4050,7 +4050,7 @@ msgstr "Denne artikel har %(count)s billede(r), men det maksimalt tilladte er %(
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Denne artikel har nået uploadgrænsen på %(limit)s billede(r)."
 
-#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
+#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Denne artikel har nået uploadgrænsen for billeder. Fjern et billede, før du uploader et nyt."
 
@@ -4066,11 +4066,11 @@ msgstr "Dette rydder midlertidige blokeringer, tællere for mislykkede forsøg o
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Denne e-mailadresse administreres af din domænekonto og kan ikke ændres her."
 
-#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
+#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Dette billede er allerede uploadet i dette udkast. Brug først X-forhåndsvisningsknappen til at fjerne det."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1131
 msgid "This image is not removable from this editing session."
 msgstr "Dette billede kan ikke fjernes fra denne redigeringssession."
 
@@ -4094,7 +4094,7 @@ msgstr "Dette værktøj foretrækker systemets eksportformat:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Denne type anmodning er ikke tilladt for den valgte side."
 
-#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
+#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
 msgid "This video link could not be validated. Please try another link."
 msgstr "Dette videolink kunne ikke valideres. Prøv et andet link."
 
@@ -4130,7 +4130,7 @@ msgstr "For mange OpenKB AI-spørgsmål. Vent venligst, før du prøver igen."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "For mange mislykkede loginforsøg. Prøv igen om %(duration)s."
 
-#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
+#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "For mange forsøg på at uploade billeder. Vent et øjeblik, og prøv igen."
 
@@ -4174,11 +4174,11 @@ msgstr "Kontotype"
 msgid "Type username or email"
 msgstr "Indtast brugernavn eller e-mail"
 
-#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
+#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Dette videolink kunne ikke valideres. Opdater siden, og prøv igen."
 
-#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
+#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Det kunne ikke bekræftes, at denne video er tilgængelig uden login. Prøv igen."
 
@@ -4378,7 +4378,7 @@ msgstr "Versionen blev fjernet."
 msgid "Video link"
 msgstr "Videolink"
 
-#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
+#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
 msgid "Video link inserted into the article."
 msgstr "Videolinket blev indsat i artiklen."
 
@@ -4546,7 +4546,7 @@ msgstr "Din administratorsession udløb på grund af inaktivitet. Bekræft MFA i
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Din egen konto blev tildelt Deaktiveret bruger. Ved næste anmodning omdirigeres du til siden med deaktiveret konto."
 
-#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
+#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Din session er udløbet. Log ind igen, før du uploader billedet."
 

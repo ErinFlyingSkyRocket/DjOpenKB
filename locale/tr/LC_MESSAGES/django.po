@@ -520,7 +520,7 @@ msgstr "Makale ayrıntıları"
 msgid "Article display and upload limits"
 msgstr "Makale görüntüleme ve yükleme sınırları"
 
-#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
+#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
 msgid "Article image"
 msgstr "Makale görseli"
 
@@ -1096,7 +1096,7 @@ msgstr "%(target_label)s değiştirildi: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s değiştirildi: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
+#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
 msgid "Checking..."
 msgstr "Kontrol ediliyor..."
 
@@ -1205,8 +1205,8 @@ msgid "Controls how long deleted published articles stay recoverable in My Profi
 msgstr "Yayınlanmış silinmiş makalelerin, zamanlanmış kalıcı silmeden önce Profilim → Yönetici araçları → Silme kuyruğu bölümünde ne kadar süre geri yüklenebilir kalacağını denetler. Varsayılan 7 gündür. MFA onayından sonra hemen kalıcı silme için 0 olarak ayarlayın."
 
 #: kb/admin.py:2600
-msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 360 px and remains responsive on smaller screens."
-msgstr "Sayfa başına/ana sayfadaki her sütunda kaç makale gösterileceğini, her makalenin kaç yapıştırılmış/yüklenmiş görsel içerebileceğini ve makale videolarının azami görüntüleme genişliğini kontrol eder. Sayfa başına makale sayısının varsayılan değeri 10'dur. Görsel yükleme sınırının varsayılan değeri 50'dir; makale görseli yüklemeyi devre dışı bırakmak için 0 olarak ayarlayın. Makale videosu genişliğinin varsayılan değeri 360 px'tir ve daha küçük ekranlarda duyarlı kalır."
+msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
+msgstr "Sayfa başına/ana sayfadaki her sütunda kaç makale gösterileceğini, her makalenin kaç yapıştırılmış/yüklenmiş görsel içerebileceğini ve makale videolarının azami görüntüleme genişliğini kontrol eder. Sayfa başına makale sayısının varsayılan değeri 10'dur. Görsel yükleme sınırının varsayılan değeri 50'dir; makale görseli yüklemeyi devre dışı bırakmak için 0 olarak ayarlayın. Makale videosu genişliğinin varsayılan değeri 720 px'tir ve daha küçük ekranlarda duyarlı kalır."
 
 #: kb/admin.py:2609
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
@@ -1520,11 +1520,11 @@ msgstr "Django Yönetici erişim kısıtlamaları"
 msgid "Django admin action flag"
 msgstr "Django yönetici işlem işareti"
 
-#: kb/views/services.py:3051
+#: kb/views/services.py:3060
 msgid "Domain Admin"
 msgstr "Etki Alanı Yöneticisi"
 
-#: kb/views/services.py:3049
+#: kb/views/services.py:3058
 msgid "Domain User"
 msgstr "Etki Alanı Kullanıcısı"
 
@@ -1616,7 +1616,7 @@ msgstr "Şifrelenmiş ve gizli"
 msgid "Enter MFA/OTP code"
 msgstr "MFA/OTP kodunu girin"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
 msgid "Enter a supported video link."
 msgstr "Desteklenen bir video bağlantısı girin."
 
@@ -1780,7 +1780,7 @@ msgstr "Grup izinleri"
 msgid "Group type"
 msgstr "Grup türü"
 
-#: kb/views/services.py:3046
+#: kb/views/services.py:3055
 msgid "Guest"
 msgstr "Konuk"
 
@@ -1898,23 +1898,23 @@ msgstr "Resim varlıkları"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Görsel boyutları çok büyük. Lütfen daha küçük bir görsel yükleyin."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
+#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Görsel çok büyük. İzin verilen en büyük boyut 2 MB'dir."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this article draft."
 msgstr "Görsel bu makale taslağından kaldırıldı."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Görsel bu taslaktan kaldırıldı. Depolamadan silmek için makaleyi kaydedin."
 
-#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Görsel yükleme geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin."
 
-#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
+#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
 msgid "Image uploaded and inserted into the article."
 msgstr "Görsel yüklendi ve makaleye eklendi."
 
@@ -2094,11 +2094,11 @@ msgstr "Kimlik doğrulayıcı kodu geçersiz. Lütfen tekrar deneyin."
 msgid "Invalid deletion queue action."
 msgstr "Geçersiz silme kuyruğu işlemi."
 
-#: kb/views/suggestions.py:1118
+#: kb/views/suggestions.py:1127
 msgid "Invalid image filename."
 msgstr "Geçersiz görsel dosya adı."
 
-#: kb/views/suggestions.py:1129
+#: kb/views/suggestions.py:1138
 msgid "Invalid image path."
 msgstr "Geçersiz görsel yolu."
 
@@ -2238,11 +2238,11 @@ msgstr "Beğen"
 msgid "Likes"
 msgstr "Beğeniler"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3064
 msgid "Local Admin"
 msgstr "Yerel Yönetici"
 
-#: kb/views/services.py:3053
+#: kb/views/services.py:3062
 msgid "Local User"
 msgstr "Yerel Kullanıcı"
 
@@ -2270,7 +2270,7 @@ msgstr "Yerel hesaplar, parola ile oturum açtıktan sonra kimlik doğrulayıcı
 msgid "Local admin"
 msgstr "Yerel yönetici"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3105
+#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
 msgid "Local user"
 msgstr "Yerel kullanıcı"
 
@@ -2455,8 +2455,8 @@ msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour wind
 msgstr "Sabit 24 saatlik bir pencerede kullanıcı başına kabul edilen Ask OpenKB AI sorularının azami sayısı. İlk kabul edilen soru pencereyi başlatır; sonraki sorular pencereyi uzatmaz. Varsayılan: 20."
 
 #: kb/admin.py:265 kb/models.py:1166
-msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 360 px. Allowed range: 160 to 1920 px."
-msgstr "Makalelerdeki video oynatıcıların piksel cinsinden azami görüntüleme genişliği. Videolar duyarlı kalır ve daha küçük ekranlarda 16:9 en-boy oranını korur. Varsayılan değer 360 px'tir. İzin verilen aralık: 160 ile 1920 px."
+msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
+msgstr "Makalelerdeki video oynatıcıların piksel cinsinden azami görüntüleme genişliği. Videolar duyarlı kalır ve daha küçük ekranlarda 16:9 en-boy oranını korur. Varsayılan değer 720 px'tir. İzin verilen aralık: 160 ile 1920 px."
 
 #: kb/admin.py:264 kb/models.py:1157
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
@@ -2590,11 +2590,11 @@ msgstr "E-posta ayarlanmadı"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Geçerli başlık ya da gövdeyle henüz eşleşen mevcut anahtar kelime yok."
 
-#: kb/views/suggestions.py:1041
+#: kb/views/suggestions.py:1050
 msgid "No image file received."
 msgstr "Görsel dosyası alınmadı."
 
-#: kb/views/suggestions.py:1113
+#: kb/views/suggestions.py:1122
 msgid "No image filename received."
 msgstr "Görsel dosya adı alınmadı."
 
@@ -2754,7 +2754,7 @@ msgstr "Eski parola yanlış."
 msgid "Only .zip import files are allowed."
 msgstr "Yalnızca .zip içe aktarma dosyalarına izin verilir."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Yalnızca PNG, JPG, GIF veya WEBP görsellerine izin verilir."
 
@@ -2882,31 +2882,31 @@ msgstr "Parola ile oturum açma başarısız"
 msgid "Password login success"
 msgstr "Parola ile oturum açma başarılı"
 
-#: kb/views/services.py:3143
+#: kb/views/services.py:3152
 msgid "Password must be at least 12 characters long."
 msgstr "Parola en az 12 karakter uzunluğunda olmalıdır."
 
-#: kb/views/services.py:3147
+#: kb/views/services.py:3156
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Parola en az 1 küçük harf içermelidir."
 
-#: kb/views/services.py:3149
+#: kb/views/services.py:3158
 msgid "Password must include at least 1 number."
 msgstr "Parola en az 1 sayı içermelidir."
 
-#: kb/views/services.py:3151
+#: kb/views/services.py:3160
 msgid "Password must include at least 1 special character."
 msgstr "Parola en az 1 özel karakter içermelidir."
 
-#: kb/views/services.py:3145
+#: kb/views/services.py:3154
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Parola en az 1 büyük harf içermelidir."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3169
 msgid "Password must not contain the name part of your email address."
 msgstr "Parola, e-posta adresinizin ad bölümünü içermemelidir."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3167
 msgid "Password must not contain your username."
 msgstr "Parola kullanıcı adınızı içermemelidir."
 
@@ -2943,8 +2943,8 @@ msgid "Passwords match."
 msgstr "Şifreler eşleşiyor."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
-msgstr "Bir YouTube veya Vimeo bağlantısı yapıştırın. Doğrudan video dosyaları ve harici oturum açma gerektirebilecek bağlantılar desteklenmez."
+msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
+msgstr "Bir YouTube veya Vimeo bağlantısı ya da .mp4, .webm veya .ogg ile biten doğrudan bir HTTPS bağlantısı yapıştırın. Makalede oynatılabilir bir video görüntülenecektir."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3302,7 +3302,7 @@ msgstr "Güncellemeyi reddet"
 msgid "Related articles"
 msgstr "İlgili makaleler"
 
-#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
+#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
 msgid "Remove image from article"
 msgstr "Görseli makaleden kaldır"
 
@@ -3918,15 +3918,15 @@ msgstr "Makaleler güvenli şekilde atanamadı. Hiçbir atama uygulanmadı. Lüt
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Aşağıdaki onay kutuları yalnızca makale erişimi için kullanıcıya özel istisnalardır. Bir kullanıcının yeni bir grup oluşturmadan grubundan biraz daha fazla makale erişimine ihtiyacı olduğunda yararlıdır. Django Yönetici erişimi yalnızca Yönetici Kullanıcılar grubu/süper kullanıcı durumu aracılığıyla verilir."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
 msgid "The image could not be uploaded. Please try again."
 msgstr "Görsel yüklenemedi. Lütfen tekrar deneyin."
 
-#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
+#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Görsel yükleme sırasında sunucuya bağlanılamadı. Bağlantınızı kontrol edip tekrar deneyin."
 
-#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
+#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Görsel yüklemeye izin verilmedi. Sayfayı yenileyip tekrar deneyin."
 
@@ -3970,11 +3970,11 @@ msgstr "Aynı aşamalı ilke parola ile oturum açma hataları ve MFA kodu hatal
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Seçilen makaleler artık sahipsiz değil veya mevcut değil. Lütfen yenileyip tekrar deneyin."
 
-#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
+#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
 msgid "The selected file is not a valid supported image."
 msgstr "Seçilen dosya geçerli ve desteklenen bir görsel değil."
 
-#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
+#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Seçilen görsel boş. Lütfen başka bir görsel seçin."
 
@@ -4050,7 +4050,7 @@ msgstr "Bu makalede %(count)s görsel var, ancak izin verilen azami sayı %(limi
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Bu makale %(limit)s görsel yükleme sınırına ulaştı."
 
-#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
+#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Bu makale görsel yükleme sınırına ulaştı. Başka bir görsel yüklemeden önce bir görseli kaldırın."
 
@@ -4066,11 +4066,11 @@ msgstr "Bu işlem bu kullanıcı için geçici engellemeleri, başarısız denem
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Bu e-posta adresi alan hesabınız tarafından yönetilir ve burada değiştirilemez."
 
-#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
+#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Bu görsel zaten bu taslağa yüklendi. Önce X önizleme düğmesini kullanarak kaldırın."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1131
 msgid "This image is not removable from this editing session."
 msgstr "Bu görsel bu düzenleme oturumundan kaldırılamaz."
 
@@ -4094,7 +4094,7 @@ msgstr "Bu araç sistem dışa aktarma biçimini tercih eder:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Seçilen sayfada bu tür isteğe izin verilmiyor."
 
-#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
+#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
 msgid "This video link could not be validated. Please try another link."
 msgstr "Bu video bağlantısı doğrulanamadı. Başka bir bağlantı deneyin."
 
@@ -4130,7 +4130,7 @@ msgstr "Çok fazla OpenKB AI sorusu. Lütfen yeniden denemeden önce bekleyin."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonra yeniden deneyin."
 
-#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
+#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Çok fazla görsel yükleme denemesi yapıldı. Bir süre bekleyip tekrar deneyin."
 
@@ -4174,11 +4174,11 @@ msgstr "Tür"
 msgid "Type username or email"
 msgstr "Kullanıcı adı veya e-posta yazın"
 
-#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
+#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Bu video bağlantısı doğrulanamıyor. Sayfayı yenileyip tekrar deneyin."
 
-#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
+#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Bu videoya oturum açmadan erişilebildiği doğrulanamıyor. Lütfen tekrar deneyin."
 
@@ -4378,7 +4378,7 @@ msgstr "Sürüm başarıyla kaldırıldı."
 msgid "Video link"
 msgstr "Video bağlantısı"
 
-#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
+#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
 msgid "Video link inserted into the article."
 msgstr "Video bağlantısı makaleye eklendi."
 
@@ -4546,7 +4546,7 @@ msgstr "Yönetici oturumunuz hareketsizlik nedeniyle sona erdi. Yönetici sitesi
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Kendi hesabınıza Devre Dışı Kullanıcı rolü atandı. Sonraki istekte hesap devre dışı sayfasına yönlendirileceksiniz."
 
-#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
+#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Oturumunuzun süresi doldu. Görseli yüklemeden önce lütfen tekrar oturum açın."
 

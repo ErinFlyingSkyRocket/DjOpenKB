@@ -1304,7 +1304,7 @@ def get_article_video_max_width_px():
     """Return the admin-configured maximum article video width in pixels."""
     return _bounded_site_setting_int(
         "article_video_max_width_px",
-        default=360,
+        default=720,
         minimum=160,
         maximum=1920,
     )
@@ -2547,12 +2547,7 @@ def direct_video_html(url):
 
 
 def article_video_embed_html(url):
-    """Return controlled player markup for a supported public video URL, or None.
-
-    Only YouTube and Vimeo are embedded. Direct media-file URLs are deliberately
-    left as normal links/text so the browser can never auto-load an external
-    resource that may respond with an authentication challenge.
-    """
+    """Return controlled player markup for a supported video URL, or None."""
     youtube_id = extract_youtube_video_id(url)
     if youtube_id:
         return youtube_embed_html(youtube_id)
@@ -2560,6 +2555,9 @@ def article_video_embed_html(url):
     vimeo_id = extract_vimeo_video_id(url)
     if vimeo_id:
         return vimeo_embed_html(vimeo_id)
+
+    if is_safe_direct_video_url(url):
+        return direct_video_html(url)
 
     return None
 
@@ -2698,6 +2696,17 @@ def article_html_attribute_filter(tag, name, value):
             return True
         return False
 
+    if tag == "video":
+        if name == "src":
+            return is_safe_direct_video_url(value)
+        if name == "class":
+            return value == "article-video"
+        if name == "controls":
+            return True
+        if name == "preload":
+            return value == "metadata"
+        return False
+
     if tag == "a":
         return name in {"href", "title"}
 
@@ -2729,7 +2738,7 @@ def render_safe_markdown(markdown_text):
         "h1", "h2", "h3", "h4", "h5", "h6",
         "pre", "span", "div",
         "table", "thead", "tbody", "tr", "th", "td",
-        "img", "iframe",
+        "img", "iframe", "video",
     }
 
     return bleach.clean(

@@ -95,6 +95,7 @@ class Command(BaseCommand):
 
     def _repair_site_setting(self):
         table_name = "kb_sitesetting"
+        column_name = "article_video_max_width_px"
 
         if not self._table_exists(table_name):
             self.stdout.write(
@@ -102,23 +103,66 @@ class Command(BaseCommand):
             )
             return
 
-        if self._column_exists(table_name, "article_video_max_width_px"):
-            self.stdout.write("No kb_sitesetting schema drift found.")
+        if not self._column_exists(table_name, column_name):
+            with connection.cursor() as cursor:
+                self.stdout.write(f"Adding missing column: {table_name}.{column_name}")
+                cursor.execute(
+                    """
+                    ALTER TABLE kb_sitesetting
+                    ADD COLUMN article_video_max_width_px integer NOT NULL DEFAULT 720
+                    CHECK (article_video_max_width_px >= 0)
+                    """
+                )
+
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "Repaired missing kb_sitesetting.article_video_max_width_px column with the 720 px default. "
+                    "Existing site settings were preserved."
+                )
+            )
             return
 
+        # One-time upgrade from the previous 360 px project default to 720 px.
+        # We key this migration off the database column default. After the column
+        # default is changed to 720, a user may later choose 360 manually and
+        # future startups will leave that explicit setting unchanged.
         with connection.cursor() as cursor:
-            self.stdout.write(f"Adding missing column: {table_name}.article_video_max_width_px")
             cursor.execute(
                 """
-                ALTER TABLE kb_sitesetting
-                ADD COLUMN article_video_max_width_px integer NOT NULL DEFAULT 360
-                CHECK (article_video_max_width_px >= 0)
-                """
+                SELECT column_default
+                FROM information_schema.columns
+                WHERE table_schema = current_schema()
+                  AND table_name = %s
+                  AND column_name = %s
+                """,
+                [table_name, column_name],
             )
+            row = cursor.fetchone()
+            column_default = str(row[0] or "") if row else ""
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Repaired missing kb_sitesetting.article_video_max_width_px column. Existing site settings were preserved."
-            )
-        )
+            if "360" in column_default:
+                self.stdout.write(
+                    "Updating the previous article video width default from 360 px to 720 px."
+                )
+                cursor.execute(
+                    """
+                    UPDATE kb_sitesetting
+                    SET article_video_max_width_px = 720
+                    WHERE article_video_max_width_px = 360
+                    """
+                )
+                cursor.execute(
+                    """
+                    ALTER TABLE kb_sitesetting
+                    ALTER COLUMN article_video_max_width_px SET DEFAULT 720
+                    """
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        "Updated the article video width default to 720 px."
+                    )
+                )
+                return
+
+        self.stdout.write("No kb_sitesetting schema drift found.")
 
