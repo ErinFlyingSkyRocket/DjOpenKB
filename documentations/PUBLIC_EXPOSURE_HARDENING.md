@@ -65,7 +65,7 @@ The reverse proxy now applies these controls before traffic reaches Django or Ac
 | Request-body limit | Ordinary requests are limited to `3 MB`. |
 | Bulk-import exception | The authorised admin bulk-import endpoint alone permits up to `100 MB`, matching the application ZIP validation limit. |
 | Timeouts | Header, body, proxy-connect, proxy-read, proxy-send, and keepalive timeouts prevent slow or stuck connections from holding resources indefinitely. |
-| Admin outer gate | The Nginx administrator CIDR/VPN allowlist returns `404` before unauthorised `/admin/` requests reach Django. Django enforces a second allowlist and its separate Admin MFA gate. |
+| Admin network gate | Nginx does not keep a static Admin IP allowlist. Django Site settings can dynamically enable an IPv4/IPv6 address/CIDR allowlist; when disabled, source IP is unrestricted. The hidden `/admin/login/` route, superuser checks, and separate Admin MFA gate still apply. |
 
 The rate limits use the TCP peer address seen by Nginx. With direct firewall NAT, this is normally the browser IP. If a CDN or Layer-7 reverse proxy is introduced later, configure `real_ip_header` and `set_real_ip_from` for the known proxy range before relying on IP-based rate limits or audit records. Never trust browser-supplied `X-Forwarded-For` directly.
 
@@ -166,7 +166,7 @@ from this web server.
 
 The application sends a strict per-response Content Security Policy with a fresh nonce and does not include `'unsafe-inline'`. Project-owned inline script and style blocks that need server-rendered values use this nonce. Inline event attributes and inline `style=` attributes are forbidden, while static JavaScript and CSS remain self-hosted.
 
-The article-video feature permits controlled embeds only from `https://www.youtube-nocookie.com` and `https://player.vimeo.com`. Direct media-file URLs are not converted into players, so protected SharePoint, OneDrive, internal-site, or other external video URLs cannot trigger browser authentication prompts through automatic media loading. Arbitrary article-supplied iframe and video sources are removed by the sanitisation layers.
+The article-video feature adds only narrow external media exceptions: `frame-src` permits `https://www.youtube-nocookie.com` and `https://player.vimeo.com`, while `media-src` permits HTTPS direct video files. The server still generates and sanitises the player markup; arbitrary article-supplied iframe sources are not accepted. SharePoint/OneDrive direct-video validation probes only recognised Microsoft hosts and rejects external authentication redirects.
 
 When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`. Any new external frame/media host must be reviewed deliberately rather than broadly weakening the CSP.
 

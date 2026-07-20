@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kb/admin.py:1897
+#: kb/admin.py:1902
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "%(count)d MFA-laite(tta) merkitty odottamaan käyttöönottoa."
 
@@ -26,13 +26,13 @@ msgstr "%(count)s artikkelia"
 msgid "%(count)s articles total."
 msgstr "%(count)s artikkelia yhteensä."
 
-#: kb/admin.py:301
+#: kb/admin.py:306
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s päivä"
 msgstr[1] "%(count)s päivää"
 
-#: kb/admin.py:305
+#: kb/admin.py:310
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s tunti"
@@ -42,7 +42,7 @@ msgstr[1] "%(count)s tuntia"
 msgid "%(count)s matching articles found."
 msgstr "%(count)s vastaavaa artikkelia löytyi."
 
-#: kb/admin.py:309 kb/admin.py:312
+#: kb/admin.py:314 kb/admin.py:317
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s minuutti"
@@ -52,7 +52,7 @@ msgstr[1] "%(count)s minuuttia"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s tulosta löytyi artikkelin otsikon ja avainsanojen perusteella."
 
-#: kb/admin.py:297 kb/admin.py:313 kb/admin.py:326
+#: kb/admin.py:302 kb/admin.py:318 kb/admin.py:331
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s sekunti"
@@ -62,7 +62,7 @@ msgstr[1] "%(count)s sekuntia"
 msgid "%(count)s total"
 msgstr "Yhteensä %(count)s"
 
-#: kb/admin.py:2759
+#: kb/admin.py:2846
 msgid "%(days)s day(s)"
 msgstr "%(days)s päivä(ä)"
 
@@ -70,7 +70,7 @@ msgstr "%(days)s päivä(ä)"
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s, lataaja %(uploader)s"
 
-#: kb/admin.py:2746
+#: kb/admin.py:2833
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s tunti(a)"
 
@@ -98,7 +98,7 @@ msgstr "%(prefix)s kohteessa %(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1080
+#: kb/admin.py:1085
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, +%(extra)d lisää"
 
@@ -110,7 +110,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "yhteensä %(size)s KB"
 
-#: kb/admin.py:1097
+#: kb/admin.py:1102
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, +%(extra)d lisää"
 
@@ -132,7 +132,7 @@ msgstr ", +%(count)d lisää"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: HAKUTULOKSET HAULLE \"%(query)s\" :::"
 
-#: kb/admin.py:1837
+#: kb/admin.py:1842
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "Nollaus luo uuden yksityisen todennusavaimen ja pakottaa määrityksen uudelleen."
 
@@ -140,11 +140,11 @@ msgstr "Nollaus luo uuden yksityisen todennusavaimen ja pakottaa määrityksen u
 msgid "Access denied"
 msgstr "Pääsy estetty"
 
-#: kb/admin.py:1346 kb/admin.py:1760
+#: kb/admin.py:1351 kb/admin.py:1765
 msgid "Account Status"
 msgstr "Tilin tila"
 
-#: kb/admin.py:105 kb/admin.py:1827
+#: kb/admin.py:108 kb/admin.py:1832
 msgid "Account Type"
 msgstr "Tilin tyyppi"
 
@@ -156,7 +156,7 @@ msgstr "Tili on tällä hetkellä poistettu käytöstä"
 msgid "Account disabled"
 msgstr "Tili poistettu käytöstä"
 
-#: kb/admin.py:1178
+#: kb/admin.py:1183
 msgid "Account status"
 msgstr "Tilin tila"
 
@@ -168,7 +168,7 @@ msgstr "Tilin yhteenveto"
 msgid "Account type"
 msgstr "Tilin tyyppi"
 
-#: kb/admin.py:2198
+#: kb/admin.py:2203
 msgid "Action"
 msgstr "Toiminto"
 
@@ -180,11 +180,11 @@ msgstr "Toiminnot"
 msgid "Active Directory user"
 msgstr "Active Directory -käyttäjä"
 
-#: kb/admin.py:99 kb/models.py:1059
+#: kb/admin.py:102 kb/models.py:1059
 msgid "Activity log"
 msgstr "Toimintaloki"
 
-#: kb/admin.py:99 kb/models.py:1060
+#: kb/admin.py:102 kb/models.py:1060
 msgid "Activity logs"
 msgstr "Toimintalokit"
 
@@ -192,35 +192,35 @@ msgstr "Toimintalokit"
 msgid "Add Article"
 msgstr "Lisää artikkeli"
 
-#: kb/admin.py:1217
+#: kb/admin.py:1222
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "Lisärooli. Voi luoda/muokata omia sisäisiä artikkeleita ja tarkastella julkisia/yleisiä artikkeleita."
 
-#: kb/admin.py:1219
+#: kb/admin.py:1224
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "Lisärooli. Voi luoda/hallinnoida/poistaa sisäisiä artikkeleita ja tarkastella julkisia/yleisiä artikkeleita."
 
-#: kb/admin.py:1218
+#: kb/admin.py:1223
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "Lisärooli. Voi tarkistaa odottavia sisäisiä artikkeleita/päivityksiä ja tarkastella julkisia/yleisiä artikkeleita."
 
-#: kb/admin.py:814
+#: kb/admin.py:819
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "Lisärooli. Voi tarkastella julkisia/yleisiä artikkeleita ja hyväksyä/hylätä odottavia sisäisiä artikkeleita ja päivityksiä."
 
-#: kb/admin.py:810
+#: kb/admin.py:815
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "Lisärooli. Voi tarkastella julkisia/yleisiä artikkeleita ja luoda/muokata omia sisäisiä artikkeleitaan."
 
-#: kb/admin.py:806
+#: kb/admin.py:811
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "Lisärooli. Voi tarkastella julkisia/yleisiä ja sisäisiä artikkeleita, mutta ei voi luoda tai hyväksyä sisäisiä artikkeleita."
 
-#: kb/admin.py:1216
+#: kb/admin.py:1221
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "Lisärooli. Voi tarkastella julkisia/yleisiä artikkeleita sekä sisäisiä artikkeleita."
 
-#: kb/admin.py:818
+#: kb/admin.py:823
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "Lisärooli. Voi tarkastella julkisia/yleisiä artikkeleita, luoda/hallinnoida/poistaa sisäisiä artikkeleita ja tarkistaa odottavia sisäisiä artikkeleita."
 
@@ -228,11 +228,15 @@ msgstr "Lisärooli. Voi tarkastella julkisia/yleisiä artikkeleita, luoda/hallin
 msgid "Admin"
 msgstr "Ylläpitäjä"
 
-#: kb/admin.py:243 kb/models.py:1234
+#: kb/admin.py:2817
+msgid "Admin IP restriction status"
+msgstr "Admin-IP-rajoituksen tila"
+
+#: kb/admin.py:247 kb/models.py:1242
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "Ylläpitäjän MFA:n käyttämättömyyden aikakatkaisu (sekunteina)"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2824
 msgid "Admin MFA idle timeout readable"
 msgstr "Ylläpitäjän MFA:n käyttämättömyyden aikakatkaisu luettavassa muodossa"
 
@@ -240,11 +244,11 @@ msgstr "Ylläpitäjän MFA:n käyttämättömyyden aikakatkaisu luettavassa muod
 msgid "Admin MFA verification"
 msgstr "Ylläpitäjän MFA-varmennus"
 
-#: kb/admin.py:1220 kb/admin.py:821 kb/permissions.py:62
+#: kb/admin.py:1225 kb/admin.py:826 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "Ylläpitäjäkäyttäjät"
 
-#: kb/admin.py:1703
+#: kb/admin.py:1708
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "Ylläpitäjäkäyttäjien rooli määritettiin %(count)d valitulle käyttäjälle."
 
@@ -256,19 +260,19 @@ msgstr "Ylläpitäjäkäyttö edellyttää aktiivista MFA-suojattua tiliä."
 msgid "Admin action/request"
 msgstr "Ylläpitäjän toiminto/pyyntö"
 
-#: kb/admin.py:100 kb/models.py:1119
+#: kb/admin.py:103 kb/models.py:1119
 msgid "Admin activity log"
 msgstr "Ylläpitäjän toimintaloki"
 
-#: kb/admin.py:100 kb/models.py:1120
+#: kb/admin.py:103 kb/models.py:1120
 msgid "Admin activity logs"
 msgstr "Ylläpitäjän toimintalokit"
 
-#: kb/admin.py:241 kb/models.py:1215
+#: kb/admin.py:245 kb/models.py:1224
 msgid "Admin allowed IP ranges"
 msgstr "Ylläpitäjän sallitut IP-alueet"
 
-#: kb/admin.py:240 kb/models.py:1207
+#: kb/admin.py:243 kb/models.py:1207
 msgid "Admin log rows per page"
 msgstr "Ylläpitolokin rivejä sivulla"
 
@@ -296,11 +300,11 @@ msgstr "Ylläpitäjäpyyntö estetty kohteelta %(target)s"
 msgid "Admin request failed for %(target)s"
 msgstr "Ylläpitäjäpyyntö epäonnistui kohteelle %(target)s"
 
-#: kb/admin.py:2195
+#: kb/admin.py:2200
 msgid "Admin request failed or denied for %(target)s"
 msgstr "Ylläpitäjäpyyntö epäonnistui tai estettiin kohteelle %(target)s"
 
-#: kb/admin.py:2196 kb/admin_audit.py:175
+#: kb/admin.py:2201 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "Ylläpitäjäpyyntö kohteelle %(target)s"
 
@@ -312,7 +316,7 @@ msgstr "Ylläpitotyökalun toiminto"
 msgid "Admin tools"
 msgstr "Ylläpitäjän työkalut"
 
-#: kb/admin.py:138
+#: kb/admin.py:141
 msgid "Admin user"
 msgstr "Ylläpitäjäkäyttäjä"
 
@@ -320,7 +324,7 @@ msgstr "Ylläpitäjäkäyttäjä"
 msgid "Admin user who approved this article for public display."
 msgstr "Ylläpitäjäkäyttäjä, joka hyväksyi tämän artikkelin julkiseen näyttöön."
 
-#: kb/admin.py:139
+#: kb/admin.py:142
 msgid "Admin username"
 msgstr "Ylläpitäjän käyttäjänimi"
 
@@ -328,11 +332,11 @@ msgstr "Ylläpitäjän käyttäjänimi"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "Vain ylläpitäjille tarkoitettu työkalu. Viennit sisältävät artikkelin Markdownin sekä viitatut tiedostot kohteessa"
 
-#: kb/admin.py:258 kb/models.py:50
+#: kb/admin.py:262 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "Ylläpitäjä-/LDAP-ylläpitäjätilit voivat käyttää Django-ylläpitoa, kun henkilöstötila on käytössä."
 
-#: kb/admin.py:869
+#: kb/admin.py:874
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "Avaa käyttäjä tarvittaessa uudelleen tallennuksen jälkeen ja tarkista 'Tehokkaat käyttöoikeudet' varmistaaksesi lopullisen käyttöoikeustason."
 
@@ -348,6 +352,18 @@ msgstr "Kaikki sallitut artikkelit"
 msgid "All statuses"
 msgstr "Kaikki tilat"
 
+#: kb/admin.py:2792
+msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
+msgstr "Sallittujen luettelo ei ole käytössä — kaikki IPv4- ja IPv6-osoitteet voivat päästä Adminin tunnistautumis-/MFA-tarkistuksiin."
+
+#: kb/admin.py:2807
+msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
+msgstr "Sallittujen luettelo käytössä — %(count)s IP/CIDR-alue(tta) sallittu:"
+
+#: kb/admin.py:2802
+msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
+msgstr "Sallittujen luettelo on käytössä, mutta kelvollisia IP/CIDR-alueita ei ole määritetty. Admin-pääsy estetään, kunnes vähintään yksi kelvollinen alue on tallennettu."
+
 #: kb/views/services.py:241
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "Artikkeli otsikolla “%(title)s” on jo olemassa. Käytä toista otsikkoa."
@@ -360,7 +376,7 @@ msgstr "Tällä otsikolla on jo artikkeli. Käytä toista otsikkoa."
 msgid "Apply"
 msgstr "Käytä"
 
-#: kb/admin.py:2322
+#: kb/admin.py:2327
 msgid "Approval / review"
 msgstr "Hyväksyntä / tarkistus"
 
@@ -368,7 +384,7 @@ msgstr "Hyväksyntä / tarkistus"
 msgid "Approve / Publish"
 msgstr "Hyväksy / Julkaise"
 
-#: kb/admin.py:2355
+#: kb/admin.py:2360
 msgid "Approve selected pending articles"
 msgstr "Hyväksy valitut odottavat artikkelit"
 
@@ -376,15 +392,15 @@ msgstr "Hyväksy valitut odottavat artikkelit"
 msgid "Approve update"
 msgstr "Hyväksy päivitys"
 
-#: kb/admin.py:2378
+#: kb/admin.py:2383
 msgid "Approved article %(title)s from Django Admin"
 msgstr "Hyväksyttiin artikkeli %(title)s Django-ylläpidossa"
 
-#: kb/admin.py:184 kb/models.py:364
+#: kb/admin.py:187 kb/models.py:364
 msgid "Approved at"
 msgstr "Hyväksytty"
 
-#: kb/admin.py:183 kb/models.py:360
+#: kb/admin.py:186 kb/models.py:360
 msgid "Approved by"
 msgstr "Hyväksynyt"
 
@@ -412,31 +428,31 @@ msgstr "Haluatko varmasti poistaa tiedoston?"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Haluatko varmasti palauttaa viimeisimpään julkaistuun versioon? Kaikki julkaisemattomat päivitysmuutokset poistetaan pysyvästi."
 
-#: kb/admin.py:158 kb/admin.py:2070 kb/admin.py:210 kb/admin.py:2319 kb/views/services_search.py:111 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:111 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "Artikkeli"
 
-#: kb/admin.py:1214 kb/admin.py:792 kb/permissions.py:56
+#: kb/admin.py:1219 kb/admin.py:797 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "Artikkelien hyväksyjä"
 
-#: kb/admin.py:1683
+#: kb/admin.py:1688
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "Artikkelien hyväksyjän rooli määritettiin %(count)d valitulle käyttäjälle."
 
-#: kb/admin.py:1215 kb/admin.py:799 kb/permissions.py:57
+#: kb/admin.py:1220 kb/admin.py:804 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "Artikkelien hallinnoija"
 
-#: kb/admin.py:1693
+#: kb/admin.py:1698
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "Artikkelien hallinnoijan rooli määritettiin %(count)d valitulle käyttäjälle."
 
-#: kb/admin.py:1213 kb/admin.py:785 kb/permissions.py:55
+#: kb/admin.py:1218 kb/admin.py:790 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "Artikkelien kirjoittaja"
 
-#: kb/admin.py:1673
+#: kb/admin.py:1678
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "Artikkelien kirjoittajan rooli määritettiin %(count)d valitulle käyttäjälle."
 
@@ -460,7 +476,7 @@ msgstr "Artikkelien hyväksyjä. Voi tarkastella artikkeleita, tarkistaa odottav
 msgid "Article auto-deleted from queue"
 msgstr "Artikkeli poistettiin automaattisesti jonosta"
 
-#: kb/admin.py:179
+#: kb/admin.py:182
 msgid "Article body"
 msgstr "Artikkelin sisältö"
 
@@ -488,11 +504,11 @@ msgstr "Artikkelin poistaminen vahvistettiin MFA:n jälkeen."
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Artikkelin poistaminen vahvistettu: %(title)s."
 
-#: kb/admin.py:2614 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2671 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Artikkeleiden poistamisjono"
 
-#: kb/admin.py:234 kb/models.py:1148
+#: kb/admin.py:237 kb/models.py:1148
 msgid "Article deletion queue retention (days)"
 msgstr "Artikkeleiden poistamisjonon säilytysaika (päivinä)"
 
@@ -516,7 +532,7 @@ msgstr "Artikkeleiden poistamispyynnöt"
 msgid "Article details"
 msgstr "Artikkelin tiedot"
 
-#: kb/admin.py:2594
+#: kb/admin.py:2651
 msgid "Article display and upload limits"
 msgstr "Artikkeleiden näyttö- ja latausrajat"
 
@@ -528,11 +544,11 @@ msgstr "Artikkelin kuva"
 msgid "Article image deleted"
 msgstr "Artikkelin kuva poistettu"
 
-#: kb/admin.py:235 kb/models.py:1156
+#: kb/admin.py:238 kb/models.py:1156
 msgid "Article image upload limit"
 msgstr "Artikkelikuvien latausraja"
 
-#: kb/admin.py:98 kb/models.py:869
+#: kb/admin.py:101 kb/models.py:869
 msgid "Article image upload log"
 msgstr "Artikkelikuvien latausloki"
 
@@ -544,7 +560,7 @@ msgstr "Artikkelikuvien latauslokin tietueita voi vain lisätä, eikä niitä vo
 msgid "Article image upload log records cannot be manually deleted."
 msgstr "Artikkelikuvien latauslokin tietueita ei voi poistaa manuaalisesti."
 
-#: kb/admin.py:98 kb/models.py:870
+#: kb/admin.py:101 kb/models.py:870
 msgid "Article image upload logs"
 msgstr "Artikkelikuvien latauslokit"
 
@@ -572,11 +588,11 @@ msgstr "Artikkeli merkittiin epäonnistuneeksi odottavaksi."
 msgid "Article marked pending failed"
 msgstr "Artikkeli merkitty epäonnistuneeksi odottavaksi"
 
-#: kb/admin.py:2094
+#: kb/admin.py:2099
 msgid "Article owner"
 msgstr "Artikkelin omistaja"
 
-#: kb/admin.py:165
+#: kb/admin.py:168
 msgid "Article owner account type"
 msgstr "Artikkelin omistajan tilityyppi"
 
@@ -584,7 +600,7 @@ msgstr "Artikkelin omistajan tilityyppi"
 msgid "Article owner account type snapshot"
 msgstr "Artikkelin omistajan tilityypin tilannekuva"
 
-#: kb/admin.py:164
+#: kb/admin.py:167
 msgid "Article owner email"
 msgstr "Artikkelin omistajan sähköposti"
 
@@ -592,7 +608,7 @@ msgstr "Artikkelin omistajan sähköposti"
 msgid "Article owner email snapshot"
 msgstr "Artikkelin omistajan sähköpostin tilannekuva"
 
-#: kb/admin.py:163
+#: kb/admin.py:166
 msgid "Article owner name"
 msgstr "Artikkelin omistajan nimi"
 
@@ -616,7 +632,7 @@ msgstr "Artikkelin omistajan ilmoitus lähetetty"
 msgid "Article owner notification skipped"
 msgstr "Artikkelin omistajan ilmoitus ohitettu"
 
-#: kb/admin.py:161
+#: kb/admin.py:164
 msgid "Article owner user ID"
 msgstr "Artikkelin omistajan käyttäjätunnus"
 
@@ -624,7 +640,7 @@ msgstr "Artikkelin omistajan käyttäjätunnus"
 msgid "Article owner user ID snapshot"
 msgstr "Artikkelin omistajan käyttäjätunnuksen tilannekuva"
 
-#: kb/admin.py:162
+#: kb/admin.py:165
 msgid "Article owner username"
 msgstr "Artikkelin omistajan käyttäjänimi"
 
@@ -672,11 +688,11 @@ msgstr "Artikkelin tarkistusilmoitus lähetetty"
 msgid "Article review notification skipped"
 msgstr "Artikkelin tarkistusilmoitus ohitettu"
 
-#: kb/admin.py:2339
+#: kb/admin.py:2344
 msgid "Article statistics"
 msgstr "Artikkelin tilastot"
 
-#: kb/admin.py:160
+#: kb/admin.py:163
 msgid "Article status"
 msgstr "Artikkelin tila"
 
@@ -692,7 +708,7 @@ msgstr "Artikkeli lähetettiin ylläpitäjän hyväksyttäväksi."
 msgid "Article submitted for approval"
 msgstr "Artikkeli lähetetty hyväksyttäväksi"
 
-#: kb/admin.py:159 kb/admin.py:178 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
+#: kb/admin.py:162 kb/admin.py:181 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
 msgid "Article title"
 msgstr "Artikkelin otsikko"
 
@@ -724,7 +740,7 @@ msgstr "Artikkeli päivitetty"
 msgid "Article updated successfully."
 msgstr "Artikkeli päivitettiin onnistuneesti."
 
-#: kb/admin.py:236 kb/models.py:1165
+#: kb/admin.py:239 kb/models.py:1165
 msgid "Article video maximum width (px)"
 msgstr "Artikkelivideon enimmäisleveys (px)"
 
@@ -732,11 +748,11 @@ msgstr "Artikkelivideon enimmäisleveys (px)"
 msgid "Article viewed"
 msgstr "Artikkeli katsottu"
 
-#: kb/admin.py:181 kb/models.py:346
+#: kb/admin.py:184 kb/models.py:346
 msgid "Article visibility"
 msgstr "Artikkelin näkyvyys"
 
-#: kb/admin.py:96 kb/models.py:806
+#: kb/admin.py:99 kb/models.py:806
 msgid "Article vote"
 msgstr "Artikkeliäänestys"
 
@@ -756,11 +772,11 @@ msgstr "Artikkelin ääni poistettu"
 msgid "Article vote up"
 msgstr "Artikkelin plusääni"
 
-#: kb/admin.py:96 kb/models.py:807
+#: kb/admin.py:99 kb/models.py:807
 msgid "Article votes"
 msgstr "Artikkeliäänestykset"
 
-#: kb/admin.py:268 kb/models.py:1200
+#: kb/admin.py:272 kb/models.py:1200
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Tätä päivämäärää vanhemmat artikkeli-/äänestys-/kuva-/ylläpitotyökalu-/ylläpitosivuston toimintalokit voidaan poistaa siivouskomennolla. Käytä arvoa 0 säilyttääksesi yleiset ja ylläpitäjän toimintalokit toistaiseksi."
 
@@ -800,7 +816,7 @@ msgstr "Määritä valitut artikkelit käyttäjälle"
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "Määritettiin %(count)s orpoa artikkelia käyttäjälle %(user)s."
 
-#: kb/admin.py:1596
+#: kb/admin.py:1601
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "Määritettiin Käytöstä poistettu käyttäjä -rooli käyttäjälle %(username)s"
 
@@ -832,47 +848,47 @@ msgstr "Tarkastuslokin tietueita voi vain lisätä, eikä niitä voi muokata."
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "Tarkastuslokin tietueita ei voi poistaa manuaalisesti. Ne poistetaan vain säilytysajan mukaisessa siivouksessa."
 
-#: kb/admin.py:267 kb/models.py:1192
+#: kb/admin.py:271 kb/models.py:1192
 msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
 msgstr "Todennetut ja MFA:ta odottavat istunnot vanhenevat tämän tuntimäärän kuluttua kirjautumisesta. Oletus on 8 tuntia. Sallittu alue: 1–168 tuntia (7 päivää)."
 
-#: kb/admin.py:1400
+#: kb/admin.py:1405
 msgid "Authentication Lockout Reset"
 msgstr "Nollaa todennuksen lukitus"
 
-#: kb/admin.py:93 kb/models.py:291
+#: kb/admin.py:96 kb/models.py:291
 msgid "Authentication activity log"
 msgstr "Tunnistautumisen toimintaloki"
 
-#: kb/admin.py:237 kb/models.py:1182
+#: kb/admin.py:240 kb/models.py:1182
 msgid "Authentication activity log retention (days)"
 msgstr "Tunnistautumistoimintalokin säilytys (päivää)"
 
-#: kb/admin.py:93 kb/models.py:292
+#: kb/admin.py:96 kb/models.py:292
 msgid "Authentication activity logs"
 msgstr "Tunnistautumisen toimintalokit"
 
-#: kb/admin.py:2621
+#: kb/admin.py:2678
 msgid "Authentication and session settings"
 msgstr "Tunnistautumis- ja istuntoasetukset"
 
-#: kb/admin.py:1286
+#: kb/admin.py:1291
 msgid "Authentication lockout"
 msgstr "Todennuksen lukitus"
 
-#: kb/admin.py:242 kb/models.py:1225
+#: kb/admin.py:246 kb/models.py:1233
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "Todennuksen lukituksen porrastuksen muistiaika (sekunteina)"
 
-#: kb/admin.py:2630
+#: kb/admin.py:2687
 msgid "Authentication lockout policy"
 msgstr "Todennuksen lukituskäytäntö"
 
-#: kb/admin.py:94 kb/models.py:1314
+#: kb/admin.py:97 kb/models.py:1322
 msgid "Authentication lockout policy stage"
 msgstr "Todennuksen lukituskäytännön vaihe"
 
-#: kb/admin.py:2693 kb/admin.py:94 kb/models.py:1315
+#: kb/admin.py:2751 kb/admin.py:97 kb/models.py:1323
 msgid "Authentication lockout policy stages"
 msgstr "Todennuksen lukituskäytännön vaiheet"
 
@@ -884,11 +900,11 @@ msgstr "Ylläpitäjä nollasi todennuksen lukituksen"
 msgid "Authentication lockout triggered"
 msgstr "Todennuslukitus aktivoitu"
 
-#: kb/admin.py:1173
+#: kb/admin.py:1178
 msgid "Authentication source"
 msgstr "Todennuslähde"
 
-#: kb/admin.py:266 kb/models.py:1183
+#: kb/admin.py:270 kb/models.py:1183
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Tunnistautumis-/MFA-valvontalokit, jotka ovat tätä päivämäärää vanhempia, voidaan poistaa siivouskomennolla. Käytä arvoa 0 säilyttääksesi tunnistautumistoimintalokit pysyvästi."
 
@@ -900,7 +916,7 @@ msgstr "Authenticator MFA/OTP -koodi"
 msgid "Authenticator code"
 msgstr "Todennussovelluksen koodi"
 
-#: kb/admin.py:115 kb/admin.py:1819
+#: kb/admin.py:118 kb/admin.py:1824
 msgid "Authenticator key"
 msgstr "Todennussovelluksen avain"
 
@@ -912,23 +928,23 @@ msgstr "Authenticatorin käyttöönotto valmistui onnistuneesti."
 msgid "Author"
 msgstr "Tekijä"
 
-#: kb/admin.py:177
+#: kb/admin.py:180
 msgid "Author account type snapshot"
 msgstr "Tekijän tilityypin tilannevedos"
 
-#: kb/admin.py:176
+#: kb/admin.py:179
 msgid "Author email snapshot"
 msgstr "Tekijän sähköpostin tilannevedos"
 
-#: kb/admin.py:175
+#: kb/admin.py:178
 msgid "Author name snapshot"
 msgstr "Tekijän nimen tilannevedos"
 
-#: kb/admin.py:2342
+#: kb/admin.py:2347
 msgid "Author snapshot"
 msgstr "Tekijän tilannevedos"
 
-#: kb/admin.py:174
+#: kb/admin.py:177
 msgid "Author username snapshot"
 msgstr "Tekijän käyttäjänimen tilannevedos"
 
@@ -952,15 +968,15 @@ msgstr "Takaisin profiiliin"
 msgid "Bad request"
 msgstr "Virheellinen pyyntö"
 
-#: kb/admin.py:251 kb/models.py:1299
+#: kb/admin.py:255 kb/models.py:1307
 msgid "Block duration (seconds)"
 msgstr "Eston kesto (sekunteina)"
 
-#: kb/models.py:1333
+#: kb/models.py:1341
 msgid "Block duration must be at least 60 seconds."
 msgstr "Eston keston on oltava vähintään 60 sekuntia."
 
-#: kb/admin.py:2588
+#: kb/admin.py:2593
 msgid "Block duration readable"
 msgstr "Eston kesto luettavassa muodossa"
 
@@ -988,11 +1004,11 @@ msgstr "Voi lisätä/lähettää sisäisiä artikkeleita hyväksyttäväksi"
 msgid "Can add/submit public articles for approval"
 msgstr "Voi lisätä/lähettää julkisia artikkeleita hyväksyttäväksi"
 
-#: kb/admin.py:661
+#: kb/admin.py:666
 msgid "Can approve/manage internal articles"
 msgstr "Voi hyväksyä/hallinnoida sisäisiä artikkeleita"
 
-#: kb/admin.py:634
+#: kb/admin.py:639
 msgid "Can approve/manage pending articles"
 msgstr "Voi hyväksyä/hallinnoida odottavia artikkeleita"
 
@@ -1004,35 +1020,35 @@ msgstr "Voi hyväksyä/hallinnoida odottavia sisäisten artikkelien tarkistuksia
 msgid "Can approve/manage pending public article reviews"
 msgstr "Voi hyväksyä/hallinnoida odottavia julkisten artikkelien tarkistuksia"
 
-#: kb/admin.py:1213
+#: kb/admin.py:1218
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "Voi luoda artikkeliluonnoksia, lähettää artikkeleita hyväksyttäväksi ja muokata/lähettää uudelleen omia artikkeleitaan. Ei voi hyväksyä tai hylätä artikkeleita. Sisältää katseluoikeuden, joten Tavallinen käyttäjä -roolia ei tarvita."
 
-#: kb/admin.py:786
+#: kb/admin.py:791
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "Voi luoda artikkeliluonnoksia, lähettää uusia artikkeleita hyväksyttäväksi ja muokata/lähettää uudelleen omia artikkeleitaan. Ei voi hyväksyä tai hylätä artikkeleita."
 
-#: kb/admin.py:625
+#: kb/admin.py:630
 msgid "Can create articles"
 msgstr "Voi luoda artikkeleita"
 
-#: kb/admin.py:800
+#: kb/admin.py:805
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "Voi luoda artikkeleita, muokata/hallinnoida artikkeleita, tarkistaa odottavia artikkeleita/päivityksiä, hyväksyä/hylätä lähetyksiä ja poistaa artikkeleita."
 
-#: kb/admin.py:1215
+#: kb/admin.py:1220
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "Voi luoda artikkeleita, muokata/hallinnoida artikkeleita, tarkistaa odottavia artikkeleita/päivityksiä, hyväksyä/hylätä lähetyksiä ja poistaa artikkeleita. Sisältää katseluoikeuden, joten Tavallinen käyttäjä -roolia ei tarvita."
 
-#: kb/admin.py:656
+#: kb/admin.py:661
 msgid "Can create internal articles"
 msgstr "Voi luoda sisäisiä artikkeleita"
 
-#: kb/admin.py:643
+#: kb/admin.py:648
 msgid "Can delete articles"
 msgstr "Voi poistaa artikkeleita"
 
-#: kb/admin.py:666 kb/permissions.py:36
+#: kb/admin.py:671 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "Voi poistaa sisäisiä artikkeleita"
 
@@ -1040,15 +1056,15 @@ msgstr "Voi poistaa sisäisiä artikkeleita"
 msgid "Can delete public articles"
 msgstr "Voi poistaa julkisia artikkeleita"
 
-#: kb/admin.py:793
+#: kb/admin.py:798
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "Voi tarkistaa odottavia artikkeleita/päivityksiä, muokata sisältöä odottavan tarkistuksen aikana sekä hyväksyä tai hylätä ne. Ei voi oletuksena muokata jo julkaistuja artikkeleita tai poistaa artikkeleita. Artikkelien hyväksyjät eivät voi oletuksena lisätä uusia artikkeleita tai poistaa artikkeleita."
 
-#: kb/admin.py:1214
+#: kb/admin.py:1219
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "Voi tarkistaa odottavia artikkeleita/päivityksiä, muokata sisältöä odottavan tarkistuksen aikana sekä hyväksyä tai hylätä ne. Ei voi oletuksena muokata jo julkaistuja artikkeleita tai poistaa artikkeleita. Ei voi oletuksena lisätä tai poistaa artikkeleita. Sisältää katseluoikeuden, joten Tavallinen käyttäjä -roolia ei tarvita."
 
-#: kb/admin.py:782
+#: kb/admin.py:787
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "Voi kirjautua sisään, tarkastella/hakea julkaistuja artikkeleita, käyttää tavallisia artikkelisivuja ja äänestää, kun äänestys on käytössä."
 
@@ -1056,11 +1072,11 @@ msgstr "Voi kirjautua sisään, tarkastella/hakea julkaistuja artikkeleita, käy
 msgid "Can use Knowledge Repository admin tools"
 msgstr "Voi käyttää Tietovaraston ylläpitotyökaluja"
 
-#: kb/admin.py:615
+#: kb/admin.py:620
 msgid "Can view articles"
 msgstr "Voi tarkastella artikkeleita"
 
-#: kb/admin.py:651 kb/permissions.py:33
+#: kb/admin.py:656 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "Voi tarkastella sisäisiä artikkeleita"
 
@@ -1068,7 +1084,7 @@ msgstr "Voi tarkastella sisäisiä artikkeleita"
 msgid "Can view published public articles"
 msgstr "Voi tarkastella julkaistuja julkisia artikkeleita"
 
-#: kb/admin.py:1212
+#: kb/admin.py:1217
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Voi tarkastella/hakea julkaistuja artikkeleita ja äänestää. Tämä on varakatselijan rooli, joka lisätään automaattisesti vain, kun käyttäjällä ei ole muuta tavallista Tietovaraston roolia."
 
@@ -1076,7 +1092,7 @@ msgstr "Voi tarkastella/hakea julkaistuja artikkeleita ja äänestää. Tämä o
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: kb/admin.py:150
+#: kb/admin.py:153
 msgid "Change message"
 msgstr "Muutosviesti"
 
@@ -1084,15 +1100,15 @@ msgstr "Muutosviesti"
 msgid "Change password"
 msgstr "Vaihda salasana"
 
-#: kb/admin.py:381
+#: kb/admin.py:386
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "Muutettiin %(target_label)s %(target)s: %(changes)s"
 
-#: kb/admin.py:2187 kb/admin_audit.py:153
+#: kb/admin.py:2192 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "Muutettiin %(target_label)s: %(target)s"
 
-#: kb/admin.py:2182
+#: kb/admin.py:2187
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Muutettiin %(target_label)s: %(target)s — %(changes)s"
 
@@ -1100,11 +1116,11 @@ msgstr "Muutettiin %(target_label)s: %(target)s — %(changes)s"
 msgid "Checking..."
 msgstr "Tarkistetaan..."
 
-#: kb/admin.py:857
+#: kb/admin.py:862
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Valitse ensin ryhmä ja käytä suoria valintaruutuja vain poikkeuksiin. Useimmille käyttäjille pelkän ryhmän pitäisi riittää."
 
-#: kb/admin.py:564
+#: kb/admin.py:569
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "Valitse, onko tämä profiili paikallinen käyttäjä/ylläpitäjä vai LDAP-käyttäjä/ylläpitäjä. Ylläpitäjätilityypit lisäävät Ylläpitäjäkäyttäjät-roolin ja tekevät käyttäjistä Djangon pääkäyttäjiä. Muuttaminen takaisin Käyttäjä-/LDAP-käyttäjätiliksi poistaa Ylläpitäjäkäyttäjät-roolin sekä henkilöstö-/pääkäyttäjätilan. Käytä tätä, kun hylätty LDAP-profiili halutaan muuntaa paikalliseksi profiiliksi AD-tilin poistamisen jälkeen, mutta artikkelit on säilytettävä."
 
@@ -1128,7 +1144,7 @@ msgstr "Tyhjennä keskustelu"
 msgid "Clear search"
 msgstr "Tyhjennä haku"
 
-#: kb/admin.py:1394
+#: kb/admin.py:1399
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "Poistaa tämän käyttäjän tilapäiset estot ja porrastetun lukituksen historian. Käytä tätä, kun olet varmistanut pyynnön oikeellisuuden."
 
@@ -1140,23 +1156,19 @@ msgstr "Napsauta Päivitä etsiäksesi nykyisestä otsikosta ja artikkelin sisä
 msgid "Close"
 msgstr "Sulje"
 
-#: kb/admin.py:270 kb/models.py:1216
-msgid "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."
-msgstr "Pilkuilla tai rivinvaihdoilla erotettu CIDR/IP-sallittujen luettelo Django-ylläpitokäyttöä varten. Oletusarvo sallii 10.65.0.0/16-alueen ja paikallisen loopbackin. Tämän alueen ulkopuolella olevat käyttäjät saavat 404-virheen, vaikka he tietäisivät ylläpidon URL-osoitteen. Nginx voi myös pakottaa erillisen ulkoisen sallittujen luettelon tiedostossa nginx/nginx.conf."
-
-#: kb/middleware.py:520
+#: kb/middleware.py:540
 msgid "Complete MFA before accessing the Django admin site."
 msgstr "Suorita MFA ennen Django-ylläpitosivuston käyttöä."
 
-#: kb/middleware.py:454
+#: kb/middleware.py:474
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
 msgstr "Suorita MFA ennen jatkamista. Et ole täysin kirjautunut sisään ennen kuin MFA on valmis."
 
-#: kb/middleware.py:481
+#: kb/middleware.py:501
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "Suorita MFA loppuun ennen jatkamista. Et voi käyttää Tietovarastoa, ennen kuin MFA on suoritettu loppuun."
 
-#: kb/admin.py:1362 kb/mfa.py:135
+#: kb/admin.py:1367 kb/mfa.py:135
 msgid "Configured"
 msgstr "Määritetty"
 
@@ -1184,35 +1196,35 @@ msgstr "Vahvistussalasana on virheellinen."
 msgid "Confirm permanent deletion"
 msgstr "Vahvista pysyvä poistaminen"
 
-#: kb/admin.py:116
+#: kb/admin.py:119
 msgid "Confirmed"
 msgstr "Vahvistettu"
 
-#: kb/admin.py:118
+#: kb/admin.py:121
 msgid "Confirmed at"
 msgstr "Vahvistettu"
 
-#: kb/admin.py:219
+#: kb/admin.py:222
 msgid "Content type"
 msgstr "Sisältötyyppi"
 
-#: kb/admin.py:2623
+#: kb/admin.py:2680
 msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
 msgstr "Hallitsee todennus-/MFA-lokeja, yleisiä toimintalokeja, ylläpitolokin näyttörivejä ja käyttäjäistunnon kestoa. Lokien oletussäilytysaika on 30 päivää. Ylläpitolokitaulut näyttävät oletuksena 200 riviä sivua kohti. Istunnot kestävät oletuksena 8 tuntia ja ne voidaan asettaa 1–168 tuntiin."
 
-#: kb/admin.py:2616
+#: kb/admin.py:2673
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "Määrittää, kuinka kauan poistetut julkaistut artikkelit ovat palautettavissa kohdassa Oma profiili → Ylläpitotyökalut → Poistamisjono ennen ajastettua pysyvää poistamista. Oletus on 7 päivää. Aseta arvoksi 0, jos haluat pysyvän poistamisen heti MFA-vahvistuksen jälkeen."
 
-#: kb/admin.py:2600
+#: kb/admin.py:2657
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "Määrittää, kuinka monta artikkelia näytetään sivulla/kussakin etusivun sarakkeessa, kuinka monta liitettyä tai ladattua kuvaa artikkeli saa sisältää sekä artikkelivideoiden enimmäisnäyttöleveyden. Artikkeleita sivulla on oletusarvoisesti 10. Kuvien latausraja on oletusarvoisesti 50; aseta arvoksi 0, jos haluat poistaa artikkelikuvien lataamisen käytöstä. Artikkelivideon oletusleveys on 720 px, ja se mukautuu pienemmille näytöille."
 
-#: kb/admin.py:2609
+#: kb/admin.py:2666
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "Määrittää vähimmäisiän, jota käytetään kohdassa Oma profiili → Ylläpitotyökalut → Siivoa orvot lataustiedostot. Käytä arvoa 0 näyttääksesi tiedostot heti."
 
-#: kb/admin.py:259 kb/models.py:56
+#: kb/admin.py:263 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "Määrittää, hallitaanko salasanaa paikallisesti Tietovarastossa vai ulkoisesti Active Directoryssä."
 
@@ -1228,15 +1240,15 @@ msgstr "Luotu"
 msgid "Created %(target)s"
 msgstr "Luotu %(target)s"
 
-#: kb/admin.py:413
+#: kb/admin.py:418
 msgid "Created %(target_label)s %(target)s"
 msgstr "Luotu %(target_label)s %(target)s"
 
-#: kb/admin.py:2179 kb/admin_audit.py:150
+#: kb/admin.py:2184 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "Luotu %(target_label)s: %(target)s"
 
-#: kb/admin.py:110 kb/admin.py:117 kb/admin.py:123 kb/admin.py:136 kb/admin.py:154 kb/admin.py:206 kb/admin.py:213
+#: kb/admin.py:113 kb/admin.py:120 kb/admin.py:126 kb/admin.py:139 kb/admin.py:157 kb/admin.py:209 kb/admin.py:216
 msgid "Created at"
 msgstr "Luotu"
 
@@ -1248,15 +1260,15 @@ msgstr "Nykyinen MFA-tila"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "Artikkelin omistajalle näytettävä nykyinen ylläpitäjäpalaute, kun artikkelin tila on Luonnos tai Odottaa: hylätty."
 
-#: kb/admin.py:2430 kb/models.py:371
+#: kb/admin.py:2435 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "Nykyiset hylkäyskommentit"
 
-#: kb/admin.py:1083
+#: kb/admin.py:1088
 msgid "Current users"
 msgstr "Nykyiset käyttäjät"
 
-#: kb/admin.py:1063
+#: kb/admin.py:1068
 msgid "Custom Django group"
 msgstr "Mukautettu Django-ryhmä"
 
@@ -1268,31 +1280,31 @@ msgstr "Päivämäärä"
 msgid "Date and time when this article was approved for public display."
 msgstr "Päivä ja kellonaika, jolloin tämä artikkeli hyväksyttiin julkiseen näyttöön."
 
-#: kb/admin.py:1228
+#: kb/admin.py:1233
 msgid "Default Knowledge Repository groups:"
 msgstr "Tietovaraston oletusryhmät:"
 
-#: kb/admin.py:1011
+#: kb/admin.py:1016
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "Tietovaraston oletusrooliryhmiä ei voi poistaa."
 
-#: kb/admin.py:1022
+#: kb/admin.py:1027
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "Tietovaraston oletusrooliryhmiä ei voi poistaa. %(count)d suojattua ryhmää ohitettiin."
 
-#: kb/admin.py:1049
+#: kb/admin.py:1054
 msgid "Default permissions:"
 msgstr "Oletuskäyttöoikeudet:"
 
-#: kb/admin.py:2714
+#: kb/admin.py:2772
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "Oletusvaihe 1: 10 virheellistä yritystä estää käytön 5 minuutiksi, toistetaan 2 kertaa."
 
-#: kb/admin.py:2715
+#: kb/admin.py:2773
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "Oletusvaihe 2: 5 virheellistä yritystä estää käytön 15 minuutiksi, toistetaan 2 kertaa."
 
-#: kb/admin.py:2716
+#: kb/admin.py:2774
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "Oletusvaihe 3: 3 virheellistä yritystä estää käytön 1 tunniksi toistuvasti, kunnes kirjautuminen onnistuu tai ylläpitäjä nollaa lukituksen."
 
@@ -1304,7 +1316,7 @@ msgstr "Poista"
 msgid "Delete article"
 msgstr "Poista artikkeli"
 
-#: kb/admin.py:230
+#: kb/admin.py:233
 msgid "Delete reason"
 msgstr "Poistamisen syy"
 
@@ -1320,7 +1332,7 @@ msgstr "Poista valitut ylimääräiset tiedostot"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "Poistetaanko valitut ylimääräiset lataustiedostot? Tätä ei voi perua."
 
-#: kb/admin.py:468
+#: kb/admin.py:473
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "Poistettiin %(count)d %(target_label)s: %(preview)s"
 
@@ -1328,15 +1340,15 @@ msgstr "Poistettiin %(count)d %(target_label)s: %(preview)s"
 msgid "Deleted %(target)s"
 msgstr "Poistettu %(target)s"
 
-#: kb/admin.py:449
+#: kb/admin.py:454
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "Poistettu %(target_label)s %(target)s"
 
-#: kb/admin.py:2189 kb/admin_audit.py:160
+#: kb/admin.py:2194 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "Poistettu %(target_label)s: %(target)s"
 
-#: kb/admin.py:2068
+#: kb/admin.py:2073
 msgid "Deleted article"
 msgstr "Poistettu artikkeli"
 
@@ -1344,11 +1356,11 @@ msgstr "Poistettu artikkeli"
 msgid "Deleted articles are hidden immediately and remain recoverable here for %(days)s day(s) before permanent deletion."
 msgstr "Poistetut artikkelit piilotetaan välittömästi, ja ne ovat palautettavissa täällä %(days)s päivän ajan ennen pysyvää poistamista."
 
-#: kb/admin.py:228
+#: kb/admin.py:231
 msgid "Deleted at"
 msgstr "Poistettu"
 
-#: kb/admin.py:229
+#: kb/admin.py:232
 msgid "Deleted by"
 msgstr "Poistaja"
 
@@ -1392,7 +1404,7 @@ msgstr "Poistamisjono"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "Poistamisjonon säilytysajaksi on asetettu 0 päivää. Uusien julkaistujen artikkelien poistot tehdään pysyvästi heti vahvistuksen jälkeen. Tässä näkyvät olemassa olevat jonossa olevat artikkelit ovat valmiita pysyvään poistamiseen."
 
-#: kb/admin.py:2761
+#: kb/admin.py:2848
 msgid "Deletion queue retention readable"
 msgstr "Poistamisjonon säilytysaika luettavassa muodossa"
 
@@ -1400,15 +1412,15 @@ msgstr "Poistamisjonon säilytysaika luettavassa muodossa"
 msgid "Deletion queued"
 msgstr "Poistaminen asetettu jonoon"
 
-#: kb/admin.py:200 kb/models.py:440
+#: kb/admin.py:203 kb/models.py:440
 msgid "Deletion queued at"
 msgstr "Lisätty jonoon"
 
-#: kb/admin.py:201 kb/models.py:448
+#: kb/admin.py:204 kb/models.py:448
 msgid "Deletion queued by"
 msgstr "Jonoon lisännyt"
 
-#: kb/admin.py:205 kb/models.py:472
+#: kb/admin.py:208 kb/models.py:472
 msgid "Deletion reason"
 msgstr "Poistamisen syy"
 
@@ -1416,67 +1428,67 @@ msgstr "Poistamisen syy"
 msgid "Deletion rejected"
 msgstr "Poistaminen hylätty"
 
-#: kb/admin.py:203 kb/models.py:460
+#: kb/admin.py:206 kb/models.py:460
 msgid "Deletion restored at"
 msgstr "Palautettu"
 
-#: kb/admin.py:204 kb/models.py:468
+#: kb/admin.py:207 kb/models.py:468
 msgid "Deletion restored by"
 msgstr "Palauttanut"
 
-#: kb/admin.py:2242
+#: kb/admin.py:2247
 msgid "Denied"
 msgstr "Estetty"
 
-#: kb/admin.py:133 kb/admin.py:151 kb/admin.py:170
+#: kb/admin.py:136 kb/admin.py:154 kb/admin.py:173
 msgid "Details"
 msgstr "Tiedot"
 
-#: kb/admin.py:1188
+#: kb/admin.py:1193
 msgid "Direct Knowledge Repository permissions"
 msgstr "Suorat Tietovaraston käyttöoikeudet"
 
-#: kb/admin.py:635
+#: kb/admin.py:640
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii pääsyn artikkelien hyväksyntätyönkulkuihin, kuten odottavien artikkelien ja päivitysten tarkistuksiin, hyväksymis-/hylkäystoimintoihin sekä artikkeleiden muokkaukseen tarkistusvaiheessa. Se ei automaattisesti salli uusien artikkeleiden luomista, artikkeleiden poistamista eikä täyttä Django-ylläpitokäyttöä, ellei toinen käyttöoikeus tai ryhmä myönnä niitä."
 
-#: kb/admin.py:626
+#: kb/admin.py:631
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii käyttäjän luoda artikkeliluonnoksia, lähettää uusia artikkeleita hyväksyttäväksi sekä muokata/lähettää uudelleen omia artikkeleitaan tai odottavia päivityksiään. Se ei salli muiden käyttäjien artikkeleiden hyväksymistä/hylkäämistä eikä Django-ylläpitotyökalujen käyttöä."
 
-#: kb/admin.py:616
+#: kb/admin.py:621
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii käyttäjän avata pääwikin ja lukea julkaistuja artikkeleita kirjautumisen jälkeen. Se ei salli artikkeleiden luomista, artikkeleiden hyväksymistä eikä ylläpitotyökalujen käyttöä. Valitsematta jättäminen tarkoittaa, ettei suoraa käyttöoikeutta myönnetä; käyttäjä voi silti saada tämän oikeuden ryhmältään. Käytöstä poistettu käyttäjä -ryhmä ohittaa suorat käyttöoikeuslisät."
 
-#: kb/admin.py:657
+#: kb/admin.py:662
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii tämän käyttäjän luoda ja lähettää sisäisiä/yksityisiä artikkeleita."
 
-#: kb/admin.py:644
+#: kb/admin.py:649
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii tämän käyttäjän poistaa artikkeleita. Käytä harkiten; tavalliset Artikkelien hallinnoija- ja Ylläpitäjäkäyttäjät-ryhmät myöntävät tämän jo."
 
-#: kb/admin.py:667
+#: kb/admin.py:672
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii tämän käyttäjän poistaa sisäisiä/yksityisiä artikkeleita."
 
-#: kb/admin.py:652
+#: kb/admin.py:657
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii tämän käyttäjän avata ja lukea sisäisiä/yksityisiä julkaistuja artikkeleita."
 
-#: kb/admin.py:662
+#: kb/admin.py:667
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "Suora käyttäjäkohtainen käyttöoikeus. Sallii tämän käyttäjän tarkistaa ja hallinnoida odottavia sisäisiä/yksityisiä artikkeleita."
 
-#: kb/admin.py:827
+#: kb/admin.py:832
 msgid "Direct user permissions"
 msgstr "Suorat käyttäjäkohtaiset käyttöoikeudet"
 
-#: kb/admin.py:1211 kb/admin.py:1333 kb/admin.py:774 kb/permissions.py:53
+#: kb/admin.py:1216 kb/admin.py:1338 kb/admin.py:779 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "Käytöstä poistettu käyttäjä"
 
-#: kb/admin.py:1606
+#: kb/admin.py:1611
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "Käytöstä poistettu käyttäjä -rooli määritettiin %(count)d valitulle käyttäjälle."
 
@@ -1484,11 +1496,15 @@ msgstr "Käytöstä poistettu käyttäjä -rooli määritettiin %(count)d valitu
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "Käytöstä poistetun tilin rooli. Käyttäjätili säilyy Djangossa tarkastus- ja historiatarkoituksia varten, mutta käyttäjä ei voi suorittaa kirjautumista loppuun eikä käyttää wikiä, ennen kuin ylläpitäjä siirtää käyttäjän toiseen rooliin."
 
-#: kb/admin.py:2561
+#: kb/admin.py:274 kb/models.py:1216
+msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
+msgstr "Oletuksena pois käytöstä. Kun asetus on pois käytöstä, Django Adminiin voidaan muodostaa yhteys mistä tahansa IPv4- tai IPv6-osoitteesta normaalin tunnistautumisen ja Admin MFA:n mukaisesti. Kun asetus on käytössä, vain määritetyt IP/CIDR-alueet sallitaan."
+
+#: kb/admin.py:2566
 msgid "Dislike"
 msgstr "En tykkää"
 
-#: kb/admin.py:2445 website/templates/articles.html:277
+#: kb/admin.py:2450 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "Ei tykkäykset"
 
@@ -1500,7 +1516,7 @@ msgstr "DjOpenKB ei voinut varmistaa, että tämä SharePoint- tai OneDrive-vide
 msgid "Django Admin MFA lockout triggered"
 msgstr "Django-ylläpidon MFA-lukitus laukaistu"
 
-#: kb/admin.py:1962 kb/admin.py:1968
+#: kb/admin.py:1967 kb/admin.py:1973
 msgid "Django Admin MFA verification"
 msgstr "Django-ylläpidon MFA-vahvistus"
 
@@ -1512,11 +1528,11 @@ msgstr "Django-ylläpidon MFA-vahvistus epäonnistui"
 msgid "Django Admin MFA verification success"
 msgstr "Django-ylläpidon MFA-vahvistus onnistui"
 
-#: kb/admin.py:2649
+#: kb/admin.py:2706
 msgid "Django Admin access restrictions"
 msgstr "Django-ylläpidon käyttörajoitukset"
 
-#: kb/admin.py:144
+#: kb/admin.py:147
 msgid "Django admin action flag"
 msgstr "Django-ylläpidon toimintomerkintä"
 
@@ -1528,11 +1544,11 @@ msgstr "Toimialueen ylläpitäjä"
 msgid "Domain User"
 msgstr "Toimialueen käyttäjä"
 
-#: kb/admin.py:1195
+#: kb/admin.py:1200
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "Toimialueen salasanaa hallitaan Active Directoryssä, eikä sitä voi muuttaa Django-ylläpidosta."
 
-#: kb/admin.py:1301
+#: kb/admin.py:1306
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "Toimialuekäyttäjien salasanoja hallitaan Active Directoryssä."
 
@@ -1552,7 +1568,7 @@ msgstr "Luonnos tallennettiin onnistuneesti."
 msgid "Due"
 msgstr "Erääntyy"
 
-#: kb/admin.py:2644
+#: kb/admin.py:2701
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Kunkin käyttäjän ensimmäinen hyväksytty kysymys aloittaa kiinteän 24 tunnin jakson. Nykyinen lyhytaikainen purskerajoitus pysyy erikseen voimassa."
 
@@ -1588,11 +1604,11 @@ msgstr "Muokatut avainsanat odottavat ylläpitäjän hyväksyntää."
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Muokattu otsikko odottaa ylläpitäjän hyväksyntää. Julkaistu otsikko pysyy muuttumattomana hyväksyntään asti."
 
-#: kb/admin.py:841 kb/admin.py:888
+#: kb/admin.py:846 kb/admin.py:893
 msgid "Effective permissions"
 msgstr "Tehokkaat käyttöoikeudet"
 
-#: kb/admin.py:881
+#: kb/admin.py:886
 msgid "Effective role groups"
 msgstr "Tehokkaat rooliryhmät"
 
@@ -1604,11 +1620,15 @@ msgstr "Sähköpostiosoite"
 msgid "Email updated successfully."
 msgstr "Sähköposti päivitettiin onnistuneesti."
 
-#: kb/admin.py:253 kb/models.py:1309 website/templates/profile.html:195
+#: kb/admin.py:244 kb/models.py:1215
+msgid "Enable Admin IP allowlist"
+msgstr "Ota Adminin IP-sallittujen luettelo käyttöön"
+
+#: kb/admin.py:257 kb/models.py:1317 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "Käytössä"
 
-#: kb/admin.py:1816
+#: kb/admin.py:1821
 msgid "Encrypted and hidden"
 msgstr "Salattu ja piilotettu"
 
@@ -1624,6 +1644,10 @@ msgstr "Anna tuettu videolinkki."
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
 msgstr "Anna aktiivinen paikallinen tai AD-käyttäjänimi/sähköposti, valitse artikkelit ja napsauta Määritä valitut."
 
+#: kb/admin.py:2640
+msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
+msgstr "Syötä vähintään yksi kelvollinen IPv4/IPv6-osoite tai CIDR-alue ennen Adminin IP-sallittujen luettelon käyttöönottoa."
+
 #: website/templates/suggest_delete.html:47
 msgid "Enter your 6-digit code"
 msgstr "Anna 6-numeroinen koodisi"
@@ -1636,11 +1660,11 @@ msgstr "Vahvista tämä poistaminen antamalla MFA-/OTP-koodisi."
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "Anna todennussovelluksen koodisi uudelleen päästäksesi Django-ylläpitosivustolle."
 
-#: kb/admin.py:2730
+#: kb/admin.py:2788
 msgid "Escalation memory readable"
 msgstr "Porrastuksen muistiaika luettavassa muodossa"
 
-#: kb/admin.py:124 kb/admin.py:137 kb/admin.py:155
+#: kb/admin.py:127 kb/admin.py:140 kb/admin.py:158
 msgid "Event type"
 msgstr "Tapahtumatyyppi"
 
@@ -1672,15 +1696,15 @@ msgstr "Vie artikkelit zipinä"
 msgid "Export split package"
 msgstr "Vie jaettu paketti"
 
-#: kb/admin.py:2248
+#: kb/admin.py:2253
 msgid "Failed"
 msgstr "Epäonnistui"
 
-#: kb/admin.py:250 kb/models.py:1294
+#: kb/admin.py:254 kb/models.py:1302
 msgid "Failed attempts before block"
 msgstr "Epäonnistuneita yrityksiä ennen estoa"
 
-#: kb/models.py:1331
+#: kb/models.py:1339
 msgid "Failed attempts must be at least 1."
 msgstr "Epäonnistuneiden yritysten määrän on oltava vähintään 1."
 
@@ -1696,7 +1720,7 @@ msgstr "Kenttä"
 msgid "File size"
 msgstr "Tiedoston koko"
 
-#: kb/admin.py:195 kb/admin.py:217 website/templates/admin_clean_stray_upload_files.html:97
+#: kb/admin.py:198 kb/admin.py:220 website/templates/admin_clean_stray_upload_files.html:97
 msgid "Filename"
 msgstr "Tiedostonimi"
 
@@ -1708,7 +1732,7 @@ msgstr "Alle %(minutes)s minuutin ikäiset tiedostot ohitetaan. Muuta arvoa Djan
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "Alle %(minutes)s minuutin ikäiset tiedostot ohitetaan. Muuta arvoa Django Admin → Site settings -kohdassa. Käytä 0 minuuttia näyttääksesi ylimääräiset lataukset heti."
 
-#: kb/admin.py:262 kb/models.py:1140
+#: kb/admin.py:266 kb/models.py:1140
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "Tätä minuuttimäärää uudemmat tiedostot ohitetaan orpojen latausten siivoustyökalussa. Oletus on 1440 minuuttia (24 tuntia), jotta kuvia ei poisteta käyttäjien luonnostellessa artikkeleita. Aseta arvoon 0 havaitaksesi/poistaaksesi orvot lataukset heti."
 
@@ -1732,11 +1756,11 @@ msgstr "Etsii käyttämättömiä tiedostoja kohteesta"
 msgid "First"
 msgstr "Ensimmäinen"
 
-#: kb/admin.py:822
+#: kb/admin.py:827
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "Täydet Django-ylläpidon pääkäyttäjäoikeudet. Ylläpitäjäkäyttäjät edellyttävät ylimääräistä ylläpitäjän MFA-varmennusta ennen Django-ylläpitoon siirtymistä."
 
-#: kb/admin.py:1220
+#: kb/admin.py:1225
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "Täydet Django-ylläpidon pääkäyttäjäoikeudet. Edellyttää ylimääräistä ylläpitäjän MFA-vaihetta ennen Django-ylläpitoon siirtymistä."
 
@@ -1744,7 +1768,7 @@ msgstr "Täydet Django-ylläpidon pääkäyttäjäoikeudet. Edellyttää ylimä�
 msgid "General"
 msgstr "Yleinen"
 
-#: kb/admin.py:239 kb/models.py:1199
+#: kb/admin.py:242 kb/models.py:1199
 msgid "General activity log retention (days)"
 msgstr "Yleisen toimintalokin säilytys (päivää)"
 
@@ -1768,15 +1792,15 @@ msgstr "Omistamasi yleiset artikkelit."
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Saat välittömät vastaukset yleisimpiin kysymyksiin ja opit käyttämään 3 merkkiä kuin ammattilainen."
 
-#: kb/admin.py:983
+#: kb/admin.py:988
 msgid "Group members"
 msgstr "Ryhmän jäsenet"
 
-#: kb/admin.py:768
+#: kb/admin.py:773
 msgid "Group permissions"
 msgstr "Ryhmän käyttöoikeudet"
 
-#: kb/admin.py:1065
+#: kb/admin.py:1070
 msgid "Group type"
 msgstr "Ryhmän tyyppi"
 
@@ -1796,11 +1820,11 @@ msgstr "Hyödyllinen"
 msgid "Hi, I am OpenKB AI."
 msgstr "Hei, olen OpenKB AI."
 
-#: kb/admin.py:1211
+#: kb/admin.py:1216
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "Korkein etusija. Estää Tietovaraston käytön ja poistaa Ylläpitäjäkäyttäjät-roolin, henkilöstö-/pääkäyttäjätilan sekä suorat roolikäyttöoikeudet."
 
-#: kb/admin.py:775
+#: kb/admin.py:780
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "Korkein etusija. Käyttäjä ohjataan käytöstä poistetun tilin sivulle, eikä hän voi käyttää Tietovarastoa. Tämä poistaa myös Ylläpitäjäkäyttäjät-roolin, henkilöstö-/pääkäyttäjätilan ja suorat Tietovaraston käyttöoikeuslisät."
 
@@ -1832,31 +1856,31 @@ msgstr "Vain historiallinen käyttäjätunnuksen tilannekuva. Tämä suhde ei ta
 msgid "How can we help?"
 msgstr "Miten voimme auttaa?"
 
-#: kb/models.py:1235
+#: kb/models.py:1243
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "Kuinka kauan ylläpitäjä voi olla käyttämättä Django-ylläpitoa ylimääräisen ylläpitäjän MFA-tarkistuksen jälkeen. Oletus on 600 sekuntia (10 minuuttia). Koodin pakottama vähimmäisarvo on 60 sekuntia ja enimmäisarvo 86400 sekuntia."
 
-#: kb/admin.py:263 kb/models.py:1149
+#: kb/admin.py:267 kb/models.py:1149
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "Kuinka kauan poistetut julkaistut artikkelit ovat palautettavissa kohdassa Oma profiili → Ylläpitotyökalut → Poistamisjono ennen pysyvää poistamista. Oletus on 7 päivää. Aseta arvoksi 0, jos haluat poistaa julkaistut artikkelit pysyvästi heti MFA-vahvistuksen jälkeen."
 
-#: kb/admin.py:271
+#: kb/admin.py:276
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "Kuinka kauan epäonnistuneiden kirjautumis-/MFA-yritysten porrastushistoria muistetaan ilman onnistunutta kirjautumista. Onnistunut varmennus poistaa sen välittömästi. Oletus on 604800 sekuntia (7 päivää)."
 
-#: kb/models.py:1226
+#: kb/models.py:1234
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "Kuinka kauan epäonnistuneiden kirjautumis-/MFA-yritysten lukitushistoria muistetaan, jos käyttäjä ei koskaan kirjaudu onnistuneesti sisään. Onnistunut salasanan/MFA:n varmennus nollaa kyseisen lukitushistorian välittömästi. Oletus on 604800 sekuntia (7 päivää)."
 
-#: kb/admin.py:275 kb/models.py:1300
+#: kb/admin.py:280 kb/models.py:1308
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "Kuinka kauan kirjautumis-/MFA-tarkistus on estettynä tämän vaiheen käynnistyttyä."
 
-#: kb/admin.py:276 kb/models.py:1305
+#: kb/admin.py:281 kb/models.py:1313
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "Kuinka monta lukitusta käyttää tätä vaihetta ennen seuraavaan vaiheeseen siirtymistä. Käytä loppuvaiheessa arvoa 0, jos haluat toistaa vaiheen ikuisesti."
 
-#: kb/admin.py:856
+#: kb/admin.py:861
 msgid "How to use these permissions:"
 msgstr "Näiden käyttöoikeuksien käyttöohje:"
 
@@ -1878,7 +1902,7 @@ msgid_plural "I found %(count)d relevant published articles."
 msgstr[0] "Löysin %(count)d aiheeseen liittyvän julkaistun artikkelin."
 msgstr[1] "Löysin %(count)d aiheeseen liittyvää julkaistua artikkelia."
 
-#: kb/admin.py:129 kb/admin.py:145 kb/admin.py:166
+#: kb/admin.py:132 kb/admin.py:148 kb/admin.py:169
 msgid "IP address"
 msgstr "IP-osoite"
 
@@ -1890,7 +1914,7 @@ msgstr "IT-tukikeskus"
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
 msgstr "Jos manifest.json puuttuu, tuontityökalu yrittää tuoda kaikki ZIP-tiedostosta löytyvät Markdown-tiedostot. Jaetuissa paketeissa pura paketti ja tuo jokainen osa-ZIP yksi kerrallaan."
 
-#: kb/admin.py:198
+#: kb/admin.py:201
 msgid "Image assets"
 msgstr "Kuvasisällöt"
 
@@ -1930,7 +1954,7 @@ msgstr "Tähän luonnokseen ladatut kuvat näkyvät tässä. Napsauta X poistaak
 msgid "Immediate"
 msgstr "Välitön"
 
-#: kb/admin.py:2758
+#: kb/admin.py:2845
 msgid "Immediate permanent deletion"
 msgstr "Välitön pysyvä poistaminen"
 
@@ -2002,7 +2026,7 @@ msgstr "Tuodut artikkelit määritetään tuonnin suorittavalle ylläpitäjätil
 msgid "Imported articles will be owned by"
 msgstr "Tuotujen artikkeleiden omistaja on"
 
-#: kb/admin.py:1330 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1335 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "Passiivinen"
 
@@ -2014,15 +2038,15 @@ msgstr "Lisää videolinkki"
 msgid "Internal"
 msgstr "Sisäinen"
 
-#: kb/admin.py:1218 kb/admin.py:813 kb/permissions.py:60
+#: kb/admin.py:1223 kb/admin.py:818 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "Sisäisten artikkelien hyväksyjä"
 
-#: kb/admin.py:1219 kb/admin.py:817 kb/permissions.py:61
+#: kb/admin.py:1224 kb/admin.py:822 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "Sisäisten artikkelien hallinnoija"
 
-#: kb/admin.py:1217 kb/admin.py:809 kb/permissions.py:59
+#: kb/admin.py:1222 kb/admin.py:814 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "Sisäisten artikkelien kirjoittaja"
 
@@ -2034,7 +2058,7 @@ msgstr "Sisäiset artikkelit"
 msgid "Internal Knowledge Repository"
 msgstr "Sisäinen Tietovarasto"
 
-#: kb/admin.py:1216 kb/admin.py:805 kb/permissions.py:58
+#: kb/admin.py:1221 kb/admin.py:810 kb/permissions.py:58
 msgid "Internal User"
 msgstr "Sisäinen käyttäjä"
 
@@ -2050,7 +2074,7 @@ msgstr "Sisäinen artikkeli"
 msgid "Internal article pages"
 msgstr "Sisäisten artikkelien sivut"
 
-#: kb/admin.py:738
+#: kb/admin.py:743
 msgid "Internal article permissions"
 msgstr "Sisäisten artikkelien käyttöoikeudet"
 
@@ -2070,7 +2094,7 @@ msgstr "Omistamasi sisäiset artikkelit."
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "Sisäisten artikkelien hallinnoijan lisärooli. Voi tarkastella julkisia/sisäisiä artikkeleita, luoda, muokata/hallinnoida, tarkistaa, hyväksyä/hylätä sisäisiä lähetyksiä sekä poistaa soveltamisalaan kuuluvia sisäisiä artikkeleita. Julkaistun sisäisen artikkelin poistaminen edellyttää MFA-vahvistusta."
 
-#: kb/admin.py:746
+#: kb/admin.py:751
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "Sisäiset roolit ovat lisäkäyttöoikeuksia. Sisäinen käyttäjä voi edelleen tarkastella yleisiä/julkisia artikkeleita. Käytä aina kun mahdollista Sisäinen käyttäjä / Sisäisten artikkelien kirjoittaja / Sisäisten artikkelien hyväksyjä / Sisäisten artikkelien hallinnoija -ryhmiä; valitse nämä suorat ruudut vain poikkeuksia varten."
 
@@ -2081,6 +2105,10 @@ msgstr "Sisäisen katselijan lisärooli. Voi tarkastella julkisia ja sisäisiä 
 #: kb/permissions.py:166
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "Sisäisten artikkelien kirjoittajan lisärooli. Voi tarkastella julkisia/sisäisiä artikkeleita, luoda tai ylläpitää omia sisäisten artikkeleiden luonnoksiaan/lähetyksiään sekä poistaa omia sisäisiä artikkeleitaan. Julkaistun sisäisen artikkelin poistaminen edellyttää MFA-vahvistusta."
+
+#: kb/admin.py:2621
+msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
+msgstr "Virheellinen IPv4/IPv6-osoite tai CIDR-alue: %(value)s"
 
 #: website/templates/login.html:77
 msgid "Invalid account credentials. Please check your username and password."
@@ -2130,7 +2158,7 @@ msgstr "Tietokanta"
 msgid "Keep update pending / Save review edits"
 msgstr "Pidä päivitys odottamassa / Tallenna tarkistusmuokkaukset"
 
-#: kb/admin.py:180 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:183 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Avainsanat"
 
@@ -2138,11 +2166,11 @@ msgstr "Avainsanat"
 msgid "Keywords: %(keywords)s"
 msgstr "Avainsanat: %(keywords)s"
 
-#: kb/admin.py:1356
+#: kb/admin.py:1361
 msgid "Knowledge Repository Permissions"
 msgstr "Tietovaraston käyttöoikeudet"
 
-#: kb/admin.py:1351
+#: kb/admin.py:1356
 msgid "Knowledge Repository Roles"
 msgstr "Tietovaraston roolit"
 
@@ -2154,11 +2182,11 @@ msgstr "Tietovaraston ylläpitäjä. Voi luoda/julkaista artikkeleita suoraan, j
 msgid "Knowledge Repository article."
 msgstr "Tietovaraston artikkeli."
 
-#: kb/admin.py:1062
+#: kb/admin.py:1067
 msgid "Knowledge Repository role"
 msgstr "Tietovaraston rooli"
 
-#: kb/admin.py:1047
+#: kb/admin.py:1052
 msgid "Knowledge Repository role group"
 msgstr "Tietovaraston rooliryhmä"
 
@@ -2166,11 +2194,11 @@ msgstr "Tietovaraston rooliryhmä"
 msgid "Knowledge Repository role guide"
 msgstr "Tietovaraston rooliopas"
 
-#: kb/admin.py:1058
+#: kb/admin.py:1063
 msgid "Knowledge Repository role information"
 msgstr "Tietovaraston roolitiedot"
 
-#: kb/admin.py:720
+#: kb/admin.py:725
 msgid "Knowledge Repository role permissions"
 msgstr "Tietovaraston roolikäyttöoikeudet"
 
@@ -2178,15 +2206,15 @@ msgstr "Tietovaraston roolikäyttöoikeudet"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "LDAP-tilityyppien on käytettävä Active Directoryä todennuslähteenä."
 
-#: kb/admin.py:589
+#: kb/admin.py:594
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "LDAP-tilityyppien on käytettävä lähteenä Active Directory -käyttäjää. Valitse LDAP-käyttäjä/LDAP-ylläpitäjä ja Active Directory -käyttäjä tai Käyttäjä/Ylläpitäjä ja Paikallinen käyttäjä."
 
-#: kb/admin.py:1339 kb/models.py:35
+#: kb/admin.py:1344 kb/models.py:35
 msgid "LDAP admin"
 msgstr "LDAP-ylläpitäjä"
 
-#: kb/admin.py:1343 kb/models.py:34
+#: kb/admin.py:1348 kb/models.py:34
 msgid "LDAP user"
 msgstr "LDAP-käyttäjä"
 
@@ -2218,23 +2246,23 @@ msgstr "Viimeksi päivitetty"
 msgid "Last verified"
 msgstr "Viimeksi vahvistettu"
 
-#: kb/admin.py:119
+#: kb/admin.py:122
 msgid "Last verified at"
 msgstr "Viimeksi vahvistettu"
 
-#: kb/admin.py:260
+#: kb/admin.py:264
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "Vanha yhteensopivuuskenttä. Käytä käyttäjätilin sisäänrakennettua Aktiivinen-valintaruutua määrittääksesi, voiko käyttäjä kirjautua sisään."
 
-#: kb/admin.py:107
+#: kb/admin.py:110
 msgid "Legacy main-site access"
 msgstr "Vanha pääsivuston käyttöoikeus"
 
-#: kb/admin.py:2559
+#: kb/admin.py:2564
 msgid "Like"
 msgstr "Tykkää"
 
-#: kb/admin.py:2440 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2445 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Tykkäykset"
 
@@ -2258,7 +2286,7 @@ msgstr "Kirjautuminen paikallisella tilillä"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "Paikallisten tilityyppien on käytettävä Paikallista käyttäjää todennuslähteenä."
 
-#: kb/admin.py:597
+#: kb/admin.py:602
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "Paikallisten tilityyppien on käytettävä lähteenä Paikallista käyttäjää. Valitse Käyttäjä/Ylläpitäjä ja Paikallinen käyttäjä tai LDAP-käyttäjä/LDAP-ylläpitäjä ja Active Directory -käyttäjä."
 
@@ -2266,11 +2294,11 @@ msgstr "Paikallisten tilityyppien on käytettävä lähteenä Paikallista käytt
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "Paikalliset tilit vaativat authenticator-vahvistuksen salasanakirjautumisen jälkeen."
 
-#: kb/admin.py:1341
+#: kb/admin.py:1346
 msgid "Local admin"
 msgstr "Paikallinen ylläpitäjä"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3114
 msgid "Local user"
 msgstr "Paikallinen käyttäjä"
 
@@ -2278,11 +2306,11 @@ msgstr "Paikallinen käyttäjä"
 msgid "Local username or email"
 msgstr "Paikallinen käyttäjänimi tai sähköposti"
 
-#: kb/admin.py:1987
+#: kb/admin.py:1992
 msgid "Lockout duration"
 msgstr "Lukituksen kesto"
 
-#: kb/admin.py:1972
+#: kb/admin.py:1977
 msgid "Lockout scope"
 msgstr "Lukituksen kohde"
 
@@ -2294,7 +2322,7 @@ msgstr "Kirjautuneena käyttäjänä"
 msgid "Login"
 msgstr "Kirjaudu sisään"
 
-#: kb/admin.py:128
+#: kb/admin.py:131
 msgid "Login mode"
 msgstr "Kirjautumistila"
 
@@ -2306,7 +2334,7 @@ msgstr "Kirjaudu sisään osallistuaksesi"
 msgid "Logout"
 msgstr "Kirjaudu ulos"
 
-#: kb/admin.py:273 kb/models.py:1290
+#: kb/admin.py:278 kb/models.py:1298
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "Pienemmät numerot suoritetaan ensin. Käytä arvoja 10, 20, 30 jne., jotta voit lisätä vaiheita myöhemmin väliin."
 
@@ -2314,11 +2342,11 @@ msgstr "Pienemmät numerot suoritetaan ensin. Käytä arvoja 10, 20, 30 jne., jo
 msgid "MFA QR code"
 msgstr "MFA QR-koodi"
 
-#: kb/admin.py:1384 kb/admin.py:1840
+#: kb/admin.py:1389 kb/admin.py:1845
 msgid "MFA Reset"
 msgstr "MFA:n nollaus"
 
-#: kb/admin.py:1368
+#: kb/admin.py:1373
 msgid "MFA Status"
 msgstr "MFA-tila"
 
@@ -2330,11 +2358,11 @@ msgstr "Ylläpitäjä nollasi MFA:n"
 msgid "MFA reset by user"
 msgstr "Käyttäjä nollasi MFA:n"
 
-#: kb/admin.py:1865
+#: kb/admin.py:1870
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "MFA nollattiin %(count)d valitulle laitteelle. Käyttäjien on määritettävä uusi authenticator seuraavalla kirjautumisella."
 
-#: kb/admin.py:1536
+#: kb/admin.py:1541
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "MFA nollattiin %(count)d valitulle käyttäjälle. Heidän on määritettävä uusi authenticator seuraavalla kirjautumisella."
 
@@ -2358,7 +2386,7 @@ msgstr "MFA:n käyttöönotto onnistui"
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "MFA-kirjautuminen peruutettiin. Kirjaudu sisään uudelleen."
 
-#: kb/admin.py:1967 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1972 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "MFA-vahvistus"
 
@@ -2370,7 +2398,7 @@ msgstr "MFA-vahvistus epäonnistui"
 msgid "MFA verify success"
 msgstr "MFA-vahvistus onnistui"
 
-#: kb/admin.py:1496
+#: kb/admin.py:1501
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "MFA nollattiin käyttäjälle %(username)s. Käyttäjän on määritettävä uusi authenticator seuraavalla kirjautumisella."
 
@@ -2382,15 +2410,15 @@ msgstr "MFA/OTP-koodi"
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP-koodi on virheellinen."
 
-#: kb/admin.py:91 kb/models.py:73
+#: kb/admin.py:94 kb/models.py:73
 msgid "Main Site User Profile"
 msgstr "Pääsivuston käyttäjäprofiili"
 
-#: kb/admin.py:91 kb/models.py:74
+#: kb/admin.py:94 kb/models.py:74
 msgid "Main Site User Profiles"
 msgstr "Pääsivuston käyttäjäprofiilit"
 
-#: kb/admin.py:709
+#: kb/admin.py:714
 msgid "Main site profile"
 msgstr "Pääsivuston profiili"
 
@@ -2426,23 +2454,23 @@ msgstr "Authenticator-sovelluksen hallinnoima"
 msgid "Manual setup key"
 msgstr "Manuaalinen määritysavain"
 
-#: kb/admin.py:1870
+#: kb/admin.py:1875
 msgid "Mark selected MFA devices as setup pending"
 msgstr "Merkitse valitut MFA-laitteet määritystä odottaviksi"
 
-#: kb/admin.py:2389
+#: kb/admin.py:2394
 msgid "Mark selected articles as pending failed"
 msgstr "Merkitse valitut artikkelit epäonnistuneiksi odottaviksi"
 
-#: kb/admin.py:1890
+#: kb/admin.py:1895
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "MFA-määritys merkittiin odottavaksi käyttäjälle %(username)s"
 
-#: kb/admin.py:2412
+#: kb/admin.py:2417
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "Artikkeli %(title)s merkittiin Django-ylläpidossa tilaan Odottaa: hylätty"
 
-#: kb/admin.py:2400 kb/admin.py:2474
+#: kb/admin.py:2405 kb/admin.py:2479
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Ylläpitäjä merkitsi tämän epäonnistuneeksi odottavaksi. Tarkista artikkeli ja lähetä se uudelleen hyväksyttäväksi."
 
@@ -2450,15 +2478,15 @@ msgstr "Ylläpitäjä merkitsi tämän epäonnistuneeksi odottavaksi. Tarkista a
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Enintään %(limit)s kuvaa artikkelia kohti."
 
-#: kb/admin.py:272 kb/models.py:1245
+#: kb/admin.py:277 kb/models.py:1253
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "Hyväksyttyjen Ask OpenKB AI -kysymysten enimmäismäärä käyttäjää kohden kiinteässä 24 tunnin jaksossa. Ensimmäinen hyväksytty kysymys aloittaa jakson, eivätkä myöhemmät kysymykset pidennä sitä. Oletus: 20."
 
-#: kb/admin.py:265 kb/models.py:1166
+#: kb/admin.py:269 kb/models.py:1166
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "Artikkelien videosoittimien enimmäisnäyttöleveys pikseleinä. Videot mukautuvat näytön kokoon ja säilyttävät 16:9-kuvasuhteen pienemmillä näytöillä. Oletus on 720 px. Sallittu alue: 160–1920 px."
 
-#: kb/admin.py:264 kb/models.py:1157
+#: kb/admin.py:268 kb/models.py:1157
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "Artikkelia kohti sallittujen liitettyjen tai ladattujen kuvien enimmäismäärä, mukaan lukien luonnos-, odottavat, julkaistut ja päivitystä odottavat versiot. Oletus on 50. Aseta arvoksi 0 poistaaksesi artikkelikuvien lataukset käytöstä."
 
@@ -2494,11 +2522,11 @@ msgstr "Eniten tykättyjen artikkelien sivut"
 msgid "Most recent article pages"
 msgstr "Uusimpien artikkelien sivut"
 
-#: kb/admin.py:1276 website/templates/profile.html:190
+#: kb/admin.py:1281 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "Monivaiheinen tunnistautuminen"
 
-#: kb/admin.py:571
+#: kb/admin.py:576
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "On vastattava tilityyppiä. Paikallinen käyttäjä/Paikallinen ylläpitäjä käyttää Paikallista käyttäjää. LDAP-käyttäjä/LDAP-ylläpitäjä käyttää Active Directory -käyttäjää. Muunna LDAP-tili paikalliseksi tiliksi asettamalla tilityypiksi Käyttäjä tai Ylläpitäjä ja lähteeksi Paikallinen käyttäjä, minkä jälkeen aseta paikallinen salasana."
 
@@ -2558,11 +2586,15 @@ msgstr "NextLabs AD -sähköposti tai käyttäjätunnus"
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs IT-tietovarasto"
 
+#: kb/admin.py:2714
+msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
+msgstr "Nginx ei enää ylläpidä staattista Admin-IP-sallittujen luetteloa. Oletuksena kaikki IPv4- ja IPv6-osoitteet pääsevät Djangon Admin-käyttöoikeustarkistuksiin. Rajoita pääsyä syöttämällä sallitut IP/CIDR-alueet ja ottamalla sallittujen luettelo käyttöön. /admin/login/ pysyy piilotettuna 404-vastauksella ja Admin MFA vaaditaan edelleen."
+
 #: kb/admin_audit.py:212
 msgid "No"
 msgstr "Ei"
 
-#: kb/admin.py:1038 kb/admin.py:1089 kb/permissions.py:400
+#: kb/admin.py:1043 kb/admin.py:1094 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "Ei Tietovaraston roolikäyttöoikeuksia"
 
@@ -2650,7 +2682,7 @@ msgstr "Hakua vastaavia odottavia artikkelitarkistuksia ei ole."
 msgid "No pending update"
 msgstr "Ei odottavaa päivitystä"
 
-#: kb/admin.py:1093
+#: kb/admin.py:1098
 msgid "No permissions"
 msgstr "Ei käyttöoikeuksia"
 
@@ -2682,7 +2714,7 @@ msgstr "Poistettavia käyttämättömiä lataustiedostoja ei valittu."
 msgid "No stray uploaded files found."
 msgstr "Käyttämättömiä ladattuja tiedostoja ei löytynyt."
 
-#: kb/admin.py:1075
+#: kb/admin.py:1080
 msgid "No users"
 msgstr "Ei käyttäjiä"
 
@@ -2690,11 +2722,11 @@ msgstr "Ei käyttäjiä"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "Tavallinen vienti muuttuu automaattisesti jaetuksi paketiksi, jos sisältö on liian suuri. Jaetut paketit sisältävät tuotavia osa-ZIP-tiedostoja parts/-kansiossa; pura paketti ja tuo jokainen osa-ZIP järjestyksessä."
 
-#: kb/admin.py:1817
+#: kb/admin.py:1822
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "Ei salattu. Nollaa tämän käyttäjän MFA-laite ja pyydä käyttäjää määrittämään MFA uudelleen."
 
-#: kb/admin.py:2244
+#: kb/admin.py:2249
 msgid "Not found"
 msgstr "Ei löytynyt"
 
@@ -2706,7 +2738,7 @@ msgstr "Ei hyödyllinen"
 msgid "Not required"
 msgstr "Ei vaadita"
 
-#: kb/admin.py:1814
+#: kb/admin.py:1819
 msgid "Not set"
 msgstr "Ei asetettu"
 
@@ -2714,7 +2746,7 @@ msgstr "Ei asetettu"
 msgid "Not set up"
 msgstr "Ei määritetty"
 
-#: kb/admin.py:109
+#: kb/admin.py:112
 msgid "Notes"
 msgstr "Muistiinpanot"
 
@@ -2722,7 +2754,7 @@ msgstr "Muistiinpanot"
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "Julkaistujen artikkeleiden määrä, joka näytetään sivulla haussa/tuloksissa ja kullakin etusivun artikkelipalstalla, kuten Eniten tykätyt ja Uusimmat artikkelit. Suositeltu alue on 5–100. Oletus on 10."
 
-#: kb/admin.py:269 kb/models.py:1208
+#: kb/admin.py:273 kb/models.py:1208
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Rivien määrä, joka näytetään sivulla Django Admin -lokitaulukoissa. Suositeltu alue: 50–500. Oletus on 200."
 
@@ -2730,15 +2762,15 @@ msgstr "Rivien määrä, joka näytetään sivulla Django Admin -lokitaulukoissa
 msgid "Number of unique session views for this article."
 msgstr "Tämän artikkelin yksilöllisten istuntokatselukertojen määrä."
 
-#: kb/admin.py:274 kb/models.py:1295
+#: kb/admin.py:279 kb/models.py:1303
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "Virheellisten salasana-/MFA-yritysten määrä, joka vaaditaan ennen kuin tämä vaihe estää käyttäjän."
 
-#: kb/admin.py:2238
+#: kb/admin.py:2243
 msgid "OK"
 msgstr "OK"
 
-#: kb/admin.py:2228
+#: kb/admin.py:2233
 msgid "Object ID %(object_id)s"
 msgstr "Objektitunnus %(object_id)s"
 
@@ -2757,10 +2789,6 @@ msgstr "Vain .zip-tuontitiedostot ovat sallittuja."
 #: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Vain PNG-, JPG-, GIF- tai WEBP-kuvat ovat sallittuja."
-
-#: kb/admin.py:2655
-msgid "Only superusers connecting from these CIDR/IP ranges can access /admin/. Django Admin also requires an extra MFA verification. The admin MFA idle timeout controls how long the admin area may remain inactive before the admin verification is cleared. Direct /admin/login/ is always hidden with 404. Use comma or newline separated CIDR/IP values, for example: 10.65.0.0/16, 127.0.0.1/32."
-msgstr "Vain näihin CIDR/IP-alueisiin yhdistävät pääkäyttäjät voivat käyttää polkua /admin/. Django-ylläpito edellyttää myös ylimääräistä MFA-varmennusta. Ylläpitäjän MFA:n käyttämättömyyden aikakatkaisu määrittää, kuinka kauan ylläpitoalue voi olla käyttämättä ennen kuin ylläpitäjävarmennus poistetaan. Suora polku /admin/login/ piilotetaan aina 404-virheellä. Käytä pilkuilla tai rivinvaihdoilla erotettuja CIDR/IP-arvoja, esimerkiksi 10.65.0.0/16, 127.0.0.1/32."
 
 #: website/templates/admin_clean_stray_upload_files.html:118
 msgid "Open"
@@ -2786,7 +2814,7 @@ msgstr "OpenKB AI ei ole tilapäisesti käytettävissä. Yritä myöhemmin uudel
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI ajattelee..."
 
-#: kb/admin.py:244 kb/models.py:1244
+#: kb/admin.py:248 kb/models.py:1252
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "OpenKB AI -kehotteet 24 tunnissa"
 
@@ -2798,7 +2826,7 @@ msgstr "OpenKB AI -kysymys"
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI rajoitettu nopeusrajoituksella"
 
-#: kb/admin.py:2642
+#: kb/admin.py:2699
 msgid "OpenKB AI rate limits"
 msgstr "OpenKB AI:n nopeusrajoitukset"
 
@@ -2810,11 +2838,15 @@ msgstr "OpenKB AI:n vastaus kesti liian kauan. Yritä myöhemmin uudelleen tai o
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "OpenKB-datakansiota ei löytynyt. Tarkista OPENKB_DATA_DIR asetustiedostosta settings.py."
 
-#: kb/admin.py:2336
+#: kb/admin.py:2341
 msgid "OpenKB files"
 msgstr "OpenKB-tiedostot"
 
-#: kb/admin.py:218
+#: kb/admin.py:275 kb/models.py:1225
+msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
+msgstr "Valinnaiset IPv4/IPv6-osoitteet tai CIDR-alueet pilkuilla, välilyönneillä tai rivinvaihdoilla erotettuina. Esimerkkejä: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Jätä tyhjäksi, kun sallittujen luettelo ei ole käytössä."
+
+#: kb/admin.py:221
 msgid "Original name"
 msgstr "Alkuperäinen nimi"
 
@@ -2834,7 +2866,7 @@ msgstr "Orpo artikkeli poistettu"
 msgid "Orphan article pages"
 msgstr "Orpojen artikkelien sivut"
 
-#: kb/admin.py:173 website/templates/admin_bulk_articles.html:144 website/templates/admin_deletion_queue.html:122 website/templates/edit_my_suggestions.html:228
+#: kb/admin.py:176 website/templates/admin_bulk_articles.html:144 website/templates/admin_deletion_queue.html:122 website/templates/edit_my_suggestions.html:228
 msgid "Owner"
 msgstr "Omistaja"
 
@@ -2862,7 +2894,7 @@ msgstr "Sivu %(page)s/%(total)s"
 msgid "Page not found"
 msgstr "Sivua ei löytynyt"
 
-#: kb/admin.py:1197 kb/admin.py:1966 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1202 kb/admin.py:1971 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Salasana"
 
@@ -2922,15 +2954,15 @@ msgstr "Salasana synkronoituu yrityksen salasanan kanssa."
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Salasanasi synkronoidaan yrityksesi salasanan kanssa. Vaihda se yrityksen salasanajärjestelmän kautta."
 
-#: kb/admin.py:1789
+#: kb/admin.py:1794
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "Salasana-/MFA-lukituksen laskurit nollattiin %(count)d valitulta profiililta."
 
-#: kb/admin.py:1568
+#: kb/admin.py:1573
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "Salasana-/MFA-lukituksen laskurit nollattiin %(count)d valitulta käyttäjältä."
 
-#: kb/admin.py:1452
+#: kb/admin.py:1457
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "Salasana-/MFA-lukituksen laskurit nollattiin käyttäjältä %(username)s."
 
@@ -2950,7 +2982,7 @@ msgstr "Liitä YouTube- tai Vimeo-linkki tai suora HTTPS-linkki, jonka pääte o
 msgid "Pasted images"
 msgstr "Liitetyt kuvat"
 
-#: kb/admin.py:131 kb/admin.py:147 kb/admin.py:168 kb/admin.py:2100 kb/admin.py:2257
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2105 kb/admin.py:2262
 msgid "Path"
 msgstr "Polku"
 
@@ -2990,23 +3022,23 @@ msgstr "Hylkäyskommenttien historia"
 msgid "Pending update"
 msgstr "Odottava päivitys"
 
-#: kb/admin.py:188 kb/models.py:388
+#: kb/admin.py:191 kb/models.py:388
 msgid "Pending update body"
 msgstr "Odottava päivitys - sisältö"
 
-#: kb/admin.py:190 kb/models.py:400
+#: kb/admin.py:193 kb/models.py:400
 msgid "Pending update image assets"
 msgstr "Odottava päivitys - kuvaresurssit"
 
-#: kb/admin.py:189 kb/models.py:394
+#: kb/admin.py:192 kb/models.py:394
 msgid "Pending update keywords"
 msgstr "Odottava päivitys - avainsanat"
 
-#: kb/admin.py:2325
+#: kb/admin.py:2330
 msgid "Pending update review"
 msgstr "Odottava päivitys - tarkistus"
 
-#: kb/admin.py:187 kb/models.py:383
+#: kb/admin.py:190 kb/models.py:383
 msgid "Pending update title"
 msgstr "Odottava päivitys - otsikko"
 
@@ -3022,7 +3054,7 @@ msgstr "Odottavat päivitykset voidaan vain pitää odottamassa, hyväksyä tila
 msgid "Permalink"
 msgstr "Pysyvä linkki"
 
-#: kb/admin.py:202 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
+#: kb/admin.py:205 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
 msgid "Permanent deletion after"
 msgstr "Pysyvä poistaminen tämän ajan jälkeen"
 
@@ -3042,11 +3074,11 @@ msgstr "Poistettiin pysyvästi %(count)s orpoa artikkelia."
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "Poistettiin pysyvästi %(count)s jonossa olevaa artikkelia."
 
-#: kb/admin.py:874
+#: kb/admin.py:879
 msgid "Permission guide"
 msgstr "Käyttöoikeusopas"
 
-#: kb/admin.py:1100
+#: kb/admin.py:1105
 msgid "Permissions"
 msgstr "Käyttöoikeudet"
 
@@ -3122,7 +3154,7 @@ msgstr "Odota hetki ja yritä uudelleen."
 msgid "Please wait briefly before trying again."
 msgstr "Odota hetki ennen kuin yrität uudelleen."
 
-#: kb/admin.py:2723
+#: kb/admin.py:2781
 msgid "Policy guide"
 msgstr "Käytäntöopas"
 
@@ -3134,11 +3166,11 @@ msgstr "Palvelun tarjoaa"
 msgid "Powered by openKB"
 msgstr "Palvelun tarjoaa openKB"
 
-#: kb/admin.py:108 kb/admin.py:1183
+#: kb/admin.py:111 kb/admin.py:1188
 msgid "Preferred language"
 msgstr "Ensisijainen kieli"
 
-#: kb/admin.py:261 kb/models.py:66
+#: kb/admin.py:265 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "Pääwikin käyttöliittymän ensisijainen kieli."
 
@@ -3162,11 +3194,11 @@ msgstr "Aiempi omistaja"
 msgid "Previous status"
 msgstr "Edellinen tila"
 
-#: kb/admin.py:199 kb/models.py:433
+#: kb/admin.py:202 kb/models.py:433
 msgid "Previous status before deletion queue"
 msgstr "Edellinen tila ennen poistamisjonoa"
 
-#: kb/admin.py:1168
+#: kb/admin.py:1173
 msgid "Profile account type"
 msgstr "Profiilin tilityyppi"
 
@@ -3238,11 +3270,11 @@ msgstr "Asetettu jonoon orpojen artikkelien siivouksessa."
 msgid "Ran admin action '%(action)s'"
 msgstr "Suoritettiin ylläpitotoiminto '%(action)s'"
 
-#: kb/admin.py:2193
+#: kb/admin.py:2198
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "Suoritettiin ylläpitotoiminto '%(action)s' kohteelle %(target)s"
 
-#: kb/admin.py:196
+#: kb/admin.py:199
 msgid "Raw path"
 msgstr "Raakapolku"
 
@@ -3262,7 +3294,7 @@ msgstr "Valmis ajastettuun pysyvään poistamiseen"
 msgid "Recommended articles"
 msgstr "Suositellut artikkelit"
 
-#: kb/admin.py:2240
+#: kb/admin.py:2245
 msgid "Redirect"
 msgstr "Uudelleenohjaus"
 
@@ -3278,7 +3310,7 @@ msgstr "Päivitä"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "Päivitä sivu ja yritä uudelleen. Jos ongelma jatkuu, kirjaudu uudelleen sisään."
 
-#: kb/admin.py:1212 kb/admin.py:781 kb/permissions.py:54
+#: kb/admin.py:1217 kb/admin.py:786 kb/permissions.py:54
 msgid "Regular User"
 msgstr "Tavallinen käyttäjä"
 
@@ -3286,7 +3318,7 @@ msgstr "Tavallinen käyttäjä"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "Tavallinen käyttäjä on julkisten artikkelien varakatselijan rooli. Sisäiset roolit ovat lisärooleja, jotka sisältävät myös julkisten artikkelien katselun. Suoria käyttäjäkohtaisia käyttöoikeuksia voi edelleen valita mukautettuja yhdistelmiä varten. Django arvioi ryhmien käyttöoikeudet ja suorat käyttäjäkohtaiset käyttöoikeudet yhdessä."
 
-#: kb/admin.py:1663
+#: kb/admin.py:1668
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Tavallinen käyttäjä -rooli määritettiin %(count)d valitulle käyttäjälle."
 
@@ -3314,7 +3346,7 @@ msgstr "Poista kohde hakuhistoriasta"
 msgid "Removed by uploader from editor"
 msgstr "Lataaja poisti editorista"
 
-#: kb/admin.py:252 kb/models.py:1304
+#: kb/admin.py:256 kb/models.py:1312
 msgid "Repeat count"
 msgstr "Toistojen määrä"
 
@@ -3322,7 +3354,7 @@ msgstr "Toistojen määrä"
 msgid "Request failed. Check Django terminal logs."
 msgstr "Pyyntö epäonnistui. Tarkista Django-päätelokin tiedot."
 
-#: kb/admin.py:132 kb/admin.py:148 kb/admin.py:169
+#: kb/admin.py:135 kb/admin.py:151 kb/admin.py:172
 msgid "Request method"
 msgstr "Pyyntömenetelmä"
 
@@ -3338,19 +3370,19 @@ msgstr "Pyynnön aikakatkaisu"
 msgid "Request too large"
 msgstr "Pyyntö on liian suuri"
 
-#: kb/admin.py:1377 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1382 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "Nollaa MFA"
 
-#: kb/admin.py:1506
+#: kb/admin.py:1511
 msgid "Reset MFA for %(username)s"
 msgstr "Nollaa MFA käyttäjälle %(username)s"
 
-#: kb/admin.py:1513
+#: kb/admin.py:1518
 msgid "Reset MFA for selected users"
 msgstr "Nollaa valittujen käyttäjien MFA"
 
-#: kb/admin.py:1490 kb/admin.py:1529 kb/admin.py:1858
+#: kb/admin.py:1495 kb/admin.py:1534 kb/admin.py:1863
 msgid "Reset MFA for user %(username)s"
 msgstr "Nollaa MFA käyttäjältä %(username)s"
 
@@ -3358,7 +3390,7 @@ msgstr "Nollaa MFA käyttäjältä %(username)s"
 msgid "Reset MFA now"
 msgstr "Nollaa MFA nyt"
 
-#: kb/admin.py:120
+#: kb/admin.py:123
 msgid "Reset at"
 msgstr "Nollattu"
 
@@ -3366,35 +3398,35 @@ msgstr "Nollattu"
 msgid "Reset lockout now"
 msgstr "Nollaa lukitus nyt"
 
-#: kb/admin.py:1393
+#: kb/admin.py:1398
 msgid "Reset password/MFA lockout"
 msgstr "Nollaa salasana-/MFA-lukitus"
 
-#: kb/admin.py:1460
+#: kb/admin.py:1465
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "Nollaa salasana-/MFA-lukitus käyttäjältä %(username)s"
 
-#: kb/admin.py:1762
+#: kb/admin.py:1767
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "Nollaa salasana-/MFA-lukitus valituilta profiileilta"
 
-#: kb/admin.py:1541
+#: kb/admin.py:1546
 msgid "Reset password/MFA lockout for selected users"
 msgstr "Nollaa salasana-/MFA-lukitus valituilta käyttäjiltä"
 
-#: kb/admin.py:1446 kb/admin.py:1561 kb/admin.py:1782
+#: kb/admin.py:1451 kb/admin.py:1566 kb/admin.py:1787
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "Nollaa salasana-/MFA-lukitus käyttäjältä %(username)s"
 
-#: kb/admin.py:1842
+#: kb/admin.py:1847
 msgid "Reset selected MFA devices"
 msgstr "Nollaa valitut MFA-laitteet"
 
-#: kb/admin.py:1836
+#: kb/admin.py:1841
 msgid "Reset this user's MFA"
 msgstr "Nollaa tämän käyttäjän MFA"
 
-#: kb/admin.py:1378
+#: kb/admin.py:1383
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Nollaa tämän käyttäjän todennussovelluksen ja vaatii uuden QR-määrityksen. Uusi todennusavain on yksityinen eikä sitä näytetä ylläpitäjille."
 
@@ -3458,7 +3490,7 @@ msgstr "Tarkista yleiset ja sisäiset lähetykset yhdeltä sivulta. Vaihda jonoj
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "Tarkista hyväksyntää odottavat yleiset artikkelit ja julkiset päivitykset."
 
-#: kb/admin.py:186 kb/admin.py:2435
+#: kb/admin.py:189 kb/admin.py:2440
 msgid "Review history"
 msgstr "Tarkistushistoria"
 
@@ -3474,7 +3506,7 @@ msgstr "Tarkista hyväksyntää odottavat sisäiset artikkelit."
 msgid "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here."
 msgstr "Tarkistustila: voit muokata tätä odottavaa artikkelia tai päivitystä ja sitten hyväksyä tai hylätä sen. Näkyvyyttä ei voi muuttaa tässä."
 
-#: kb/admin.py:185
+#: kb/admin.py:188
 msgid "Review notes"
 msgstr "Tarkistusmuistiinpanot"
 
@@ -3590,11 +3622,11 @@ msgstr "Valitse kaikki"
 msgid "Select all stray files"
 msgstr "Valitse kaikki ylimääräiset tiedostot"
 
-#: kb/admin.py:899
+#: kb/admin.py:904
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "Valitse käyttäjät, joiden tulee kuulua tähän ryhmään. Hae käyttäjiä vasemman reunan suodatuskentällä, siirrä valitut käyttäjät oikealle ja tallenna. Käyttäjän poistaminen oikealta poistaa vain tämän ryhmäjäsenyyden."
 
-#: kb/admin.py:2246 kb/views/errors.py:65
+#: kb/admin.py:2251 kb/views/errors.py:65
 msgid "Server error"
 msgstr "Palvelinvirhe"
 
@@ -3602,35 +3634,35 @@ msgstr "Palvelinvirhe"
 msgid "Service unavailable"
 msgstr "Palvelu ei ole käytettävissä"
 
-#: kb/admin.py:1639
+#: kb/admin.py:1644
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "Aseta käyttäjän %(username)s rooliksi %(role)s (%(status)s)"
 
-#: kb/admin.py:1696
+#: kb/admin.py:1701
 msgid "Set selected users as Admin Users"
 msgstr "Aseta valitut käyttäjät Ylläpitäjäkäyttäjiksi"
 
-#: kb/admin.py:1676
+#: kb/admin.py:1681
 msgid "Set selected users as Article Approver"
 msgstr "Aseta valitut käyttäjät Artikkelien hyväksyjiksi"
 
-#: kb/admin.py:1686
+#: kb/admin.py:1691
 msgid "Set selected users as Article Manager"
 msgstr "Aseta valitut käyttäjät Artikkelien hallinnoijiksi"
 
-#: kb/admin.py:1666
+#: kb/admin.py:1671
 msgid "Set selected users as Article Writer"
 msgstr "Aseta valitut käyttäjät Artikkelien kirjoittajiksi"
 
-#: kb/admin.py:1572
+#: kb/admin.py:1577
 msgid "Set selected users as Disabled User"
 msgstr "Aseta valitut käyttäjät Käytöstä poistetuiksi käyttäjiksi"
 
-#: kb/admin.py:1656
+#: kb/admin.py:1661
 msgid "Set selected users as Regular User"
 msgstr "Aseta valitut käyttäjät Tavallisiksi käyttäjiksi"
 
-#: kb/admin.py:769
+#: kb/admin.py:774
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Aseta käyttäjän tavallinen rooli Ryhmät-osiosta. Mukautettuja ei-rooliryhmiä voidaan käyttää myöhemmin esimerkiksi ilmoituksiin."
 
@@ -3654,7 +3686,7 @@ msgstr "Määritä MFA ennen julkaistun artikkelin poistamista."
 msgid "Set up authenticator"
 msgstr "Ota authenticator käyttöön"
 
-#: kb/admin.py:1364 kb/mfa.py:136
+#: kb/admin.py:1369 kb/mfa.py:136
 msgid "Setup pending"
 msgstr "Määritys odottaa"
 
@@ -3710,11 +3742,11 @@ msgstr "Kirjaudu sisään paikallisella Tietovarasto-tililläsi."
 msgid "Sign out and go to sign in"
 msgstr "Kirjaudu ulos ja siirry kirjautumiseen"
 
-#: kb/admin.py:248 kb/admin.py:97 kb/models.py:1254
+#: kb/admin.py:100 kb/admin.py:252 kb/models.py:1262
 msgid "Site setting"
 msgstr "Sivuston asetus"
 
-#: kb/admin.py:97 kb/models.py:1255 kb/models.py:1258
+#: kb/admin.py:100 kb/models.py:1263 kb/models.py:1266
 msgid "Site settings"
 msgstr "Sivuston asetukset"
 
@@ -3722,11 +3754,11 @@ msgstr "Sivuston asetukset"
 msgid "Size"
 msgstr "Koko"
 
-#: kb/admin.py:2824
+#: kb/admin.py:2911
 msgid "Size (KB)"
 msgstr "Koko (KB)"
 
-#: kb/admin.py:220
+#: kb/admin.py:223
 msgid "Size bytes"
 msgstr "Koko tavuina"
 
@@ -3778,7 +3810,7 @@ msgstr "Orvon artikkelin toiminnon käsittelyssä tapahtui virhe. Muutoksia ei t
 msgid "Something went wrong."
 msgstr "Jokin meni pieleen."
 
-#: kb/admin.py:106
+#: kb/admin.py:109
 msgid "Source"
 msgstr "Lähde"
 
@@ -3786,15 +3818,15 @@ msgstr "Lähde"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "Jaettu vientipaketti ei sisältänyt tuotavia osien zip-tiedostoja."
 
-#: kb/models.py:1319
+#: kb/models.py:1327
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "Vaihe %(order)s: %(failures)s epäonnistumista -> %(block)s sekuntia, toista %(repeat)s"
 
-#: kb/admin.py:2682
+#: kb/admin.py:2740
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "Vaihe %(order)s: %(failures)s epäonnistumista -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:249 kb/models.py:1289
+#: kb/admin.py:253 kb/models.py:1297
 msgid "Stage order"
 msgstr "Vaihejärjestys"
 
@@ -3802,19 +3834,19 @@ msgstr "Vaihejärjestys"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Aloita otsikon tai artikkelin sisällön kirjoittaminen nähdäksesi vastaavat olemassa olevat avainsanat."
 
-#: kb/admin.py:182 kb/admin.py:2251 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:246
+#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:246
 msgid "Status"
 msgstr "Tila"
 
-#: kb/admin.py:149
+#: kb/admin.py:152
 msgid "Status code"
 msgstr "Tilakoodi"
 
-#: kb/admin.py:2607
+#: kb/admin.py:2664
 msgid "Stray upload cleanup"
 msgstr "Orpojen latausten siivous"
 
-#: kb/admin.py:233 kb/models.py:1139
+#: kb/admin.py:236 kb/models.py:1139
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "Orpojen latausten siivouksen vähimmäisikä (minuuttia)"
 
@@ -3838,11 +3870,11 @@ msgstr "Lähetä päivitys hyväksyttäväksi"
 msgid "Submitted by"
 msgstr "Lähettäjä"
 
-#: kb/admin.py:125
+#: kb/admin.py:128
 msgid "Success"
 msgstr "Onnistui"
 
-#: kb/admin.py:2717
+#: kb/admin.py:2775
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "Onnistunut salasanan varmennus nollaa salasanalukituksen historian. Onnistunut MFA-varmennus nollaa MFA-lukituksen historian. Ylläpitäjät voivat nollata käyttäjän laskurit Käyttäjä-ylläpitosivulta."
 
@@ -3850,11 +3882,11 @@ msgstr "Onnistunut salasanan varmennus nollaa salasanalukituksen historian. Onni
 msgid "Suggest article"
 msgstr "Ehdota artikkelia"
 
-#: kb/admin.py:95 kb/models.py:479
+#: kb/admin.py:98 kb/models.py:479
 msgid "Suggested Article"
 msgstr "Ehdotettu artikkeli"
 
-#: kb/admin.py:95 kb/models.py:480
+#: kb/admin.py:98 kb/models.py:480
 msgid "Suggested Articles"
 msgstr "Ehdotetut artikkelit"
 
@@ -3870,23 +3902,23 @@ msgstr "Ehdotetut avainsanat"
 msgid "Supported zip format"
 msgstr "Tuettu zip-muoto"
 
-#: kb/admin.py:2231
+#: kb/admin.py:2236
 msgid "Target"
 msgstr "Kohde"
 
-#: kb/admin.py:140
+#: kb/admin.py:143
 msgid "Target app"
 msgstr "Kohdesovellus"
 
-#: kb/admin.py:141 kb/admin.py:2208
+#: kb/admin.py:144 kb/admin.py:2213
 msgid "Target model"
 msgstr "Kohdemalli"
 
-#: kb/admin.py:143
+#: kb/admin.py:146
 msgid "Target object"
 msgstr "Kohdeobjekti"
 
-#: kb/admin.py:142
+#: kb/admin.py:145
 msgid "Target object ID"
 msgstr "Kohdeobjektin tunnus"
 
@@ -3894,7 +3926,7 @@ msgstr "Kohdeobjektin tunnus"
 msgid "Thank you. Your vote has been saved."
 msgstr "Kiitos. Äänesi on tallennettu."
 
-#: kb/admin.py:1235
+#: kb/admin.py:1240
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "Aktiivinen-valintaruutu määrittää, voiko tili kirjautua sisään lainkaan. Tavallinen käyttäjä on vain varakatselijan rooli, ja se poistetaan automaattisesti, kun Kirjoittaja-, Hyväksyjä-, Hallinnoija- tai korotettuja sisäisiä rooleja määritetään. Sisäinen käyttäjä on katselijan lisärooli, joka voidaan yhdistää Tavallinen käyttäjä -rooliin. Mukautettuja ei-rooliryhmiä voidaan edelleen käyttää esimerkiksi ilmoituksiin tai osastoryhmittelyyn."
 
@@ -3914,7 +3946,7 @@ msgstr "Sovelluksen vastaaminen kesti liian kauan."
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "Artikkeleita ei voitu määrittää turvallisesti. Määritystä ei tehty. Tarkista lokit ja yritä uudelleen."
 
-#: kb/admin.py:828
+#: kb/admin.py:833
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Alla olevat valintaruudut ovat erityisiä käyttäjäkohtaisia poikkeuksia vain artikkelien käyttöoikeuksiin. Niistä on hyötyä, kun yksi käyttäjä tarvitsee hieman enemmän artikkelien käyttöoikeuksia kuin hänen ryhmänsä ilman uuden ryhmän luomista. Django-ylläpitokäyttö myönnetään vain Ylläpitäjäkäyttäjät-ryhmän/pääkäyttäjätilan kautta."
 
@@ -3962,7 +3994,7 @@ msgstr "Pyyntöä ei voitu vahvistaa."
 msgid "The reset is recorded in the authentication activity log."
 msgstr "Nollaus tallennetaan todennuksen toimintalokiin."
 
-#: kb/admin.py:2710
+#: kb/admin.py:2768
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "Samaa porrastettua käytäntöä käytetään salasana-kirjautumisen ja MFA-koodien epäonnistumisissa, mutta salasana- ja MFA-laskureita seurataan erikseen käyttäjäkohtaisesti."
 
@@ -4074,11 +4106,11 @@ msgstr "Tämä kuva on jo ladattu tähän luonnokseen. Poista se ensin esikatsel
 msgid "This image is not removable from this editing session."
 msgstr "Tätä kuvaa ei voi poistaa tästä muokkausistunnosta."
 
-#: kb/admin.py:842
+#: kb/admin.py:847
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "Tällä rivillä näkyy lopullinen tulos, kun Django yhdistää ryhmien käyttöoikeudet, suorat käyttäjäkohtaiset käyttöoikeudet ja pääkäyttäjätilan."
 
-#: kb/admin.py:835
+#: kb/admin.py:840
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "Tämä poistaa vain suoran käyttäjäkohtaisen käyttöoikeuden. Jos käyttäjän ryhmä myöntää edelleen saman oikeuden, tehokas käyttöoikeus säilyy aktiivisena."
 
@@ -4110,7 +4142,7 @@ msgstr "Peukku alas"
 msgid "Thumbs up"
 msgstr "Peukku ylös"
 
-#: kb/admin.py:2350 kb/admin.py:753
+#: kb/admin.py:2355 kb/admin.py:758
 msgid "Timestamps"
 msgstr "Aikaleimat"
 
@@ -4198,7 +4230,7 @@ msgstr "Poista kaikki valinnat"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "Poista valinta estääksesi käyttäjää käyttämästä pääwiki-sivustoa."
 
-#: kb/admin.py:834
+#: kb/admin.py:839
 msgid "Unticking a checkbox"
 msgstr "Valintaruudun valinnan poistaminen"
 
@@ -4230,23 +4262,23 @@ msgstr "Päivitystä ei hyväksytty — Tarkista ylläpitäjän kommentit, tee m
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Päivityksen edistyminen tallennettiin. Julkaistu versio näkyy edelleen, eikä päivitystä ole vielä lähetetty hyväksyttäväksi."
 
-#: kb/admin.py:193 kb/models.py:418
+#: kb/admin.py:196 kb/models.py:418
 msgid "Update reviewed at"
 msgstr "Päivitys tarkistettu"
 
-#: kb/admin.py:191
+#: kb/admin.py:194
 msgid "Update status"
 msgstr "Päivityksen tila"
 
-#: kb/admin.py:192 kb/models.py:413
+#: kb/admin.py:195 kb/models.py:413
 msgid "Update submitted at"
 msgstr "Päivitys lähetetty"
 
-#: kb/admin.py:111 kb/admin.py:207 kb/admin.py:214 kb/admin.py:245
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:249
 msgid "Updated at"
 msgstr "Päivitetty"
 
-#: kb/admin.py:225
+#: kb/admin.py:228
 msgid "Upload IP address"
 msgstr "Latauksen IP-osoite"
 
@@ -4258,51 +4290,51 @@ msgstr "Lataa tästä järjestelmästä viety zip tai zip, joka sisältää Mark
 msgid "Upload image"
 msgstr "Lataa kuva"
 
-#: kb/admin.py:226
+#: kb/admin.py:229
 msgid "Upload user agent"
 msgstr "Latauksen User-Agent"
 
-#: kb/admin.py:227 website/templates/admin_clean_stray_upload_files.html:99
+#: kb/admin.py:230 website/templates/admin_clean_stray_upload_files.html:99
 msgid "Uploaded at"
 msgstr "Ladattu"
 
-#: kb/admin.py:221 website/templates/admin_clean_stray_upload_files.html:98
+#: kb/admin.py:224 website/templates/admin_clean_stray_upload_files.html:98
 msgid "Uploaded by"
 msgstr "Ladannut"
 
-#: kb/admin.py:224
+#: kb/admin.py:227
 msgid "Uploader account type snapshot"
 msgstr "Lataajan tilityypin tilannevedos"
 
-#: kb/admin.py:2819
+#: kb/admin.py:2906
 msgid "Uploader display"
 msgstr "Lataajan näyttönimi"
 
-#: kb/admin.py:223
+#: kb/admin.py:226
 msgid "Uploader email snapshot"
 msgstr "Lataajan sähköpostin tilannevedos"
 
-#: kb/admin.py:222
+#: kb/admin.py:225
 msgid "Uploader username snapshot"
 msgstr "Lataajan käyttäjänimen tilannevedos"
 
-#: kb/admin.py:731
+#: kb/admin.py:736
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "Käytä Ryhmiä käyttäjän tavallisena julkisten artikkelien roolina. Valitse nämä ruudut vain, kun tämä käyttäjä tarvitsee ryhmänsä ulkopuolisia julkisten artikkelien lisäkäyttöoikeuksia. Käytöstä poistettu käyttäjä -ryhmä ohittaa nämä suorat käyttöoikeuslisät."
 
-#: kb/admin.py:1051
+#: kb/admin.py:1056
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "Lisää tai poista käyttäjiä tästä roolista alla olevalla Ryhmän jäsenet -valitsimella. Kertaluonteisia poikkeuksia varten muokkaa tiettyä käyttäjää ja valitse sen sijaan suorat Tietovaraston käyttöoikeusruudut. Uudet ei-ylläpitäjäkäyttäjät sijoitetaan automaattisesti Tavallinen käyttäjä -rooliin, kun heidän tilinsä luodaan."
 
-#: kb/admin.py:2636
+#: kb/admin.py:2693
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "Hallitse porrastettuja salasana-/MFA-lukituksia alla olevilla sisäkkäisillä riveillä. Anna kestot sekunteina; ylläpitosivu näyttää myös luettavan muunnoksen minuuteiksi/tunneiksi/päiviksi. repeat_count=0 tarkoittaa, että vaihe toistuu ikuisesti, ja sitä tulisi tavallisesti käyttää viimeisellä rivillä."
 
-#: kb/admin.py:1229
+#: kb/admin.py:1234
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "Käytä näitä ryhmiä pääasiallisena käyttömallina. Käytöstä poistettu käyttäjä on aina etusijalla."
 
-#: kb/admin.py:1289
+#: kb/admin.py:1294
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "Käytä tätä, jos käyttäjä on tilapäisesti estetty toistuvien virheellisten salasana- tai MFA-yritysten vuoksi. Se tyhjentää vain tämän käyttäjän salasana- ja MFA-lukituksen laskurit."
 
@@ -4310,43 +4342,43 @@ msgstr "Käytä tätä, jos käyttäjä on tilapäisesti estetty toistuvien virh
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "Käytä tätä vasta, kun olet varmistanut, että avauspyyntö on oikeutettu."
 
-#: kb/admin.py:986
+#: kb/admin.py:991
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "Lisää tai poista käyttäjiä tästä ryhmästä tällä haettavalla vasen/oikea-luettelolla. Oikealla olevat käyttäjät ovat tämän ryhmän jäseniä. Vasemmalla olevat käyttäjät ovat käytettävissä olevia käyttäjiä."
 
-#: kb/admin.py:1279
+#: kb/admin.py:1284
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "Käytä tätä osiota nollataksesi käyttäjän todennussovelluksen määrityksen. Nollaus luo uuden yksityisen todennussalaisuuden ja pakottaa käyttäjän skannaamaan uuden QR-koodin seuraavalla kirjautumisella."
 
-#: kb/admin.py:104 kb/admin.py:114 kb/admin.py:126 kb/admin.py:156 kb/admin.py:211 kb/models.py:33
+#: kb/admin.py:107 kb/admin.py:117 kb/admin.py:129 kb/admin.py:159 kb/admin.py:214 kb/models.py:33
 msgid "User"
 msgstr "Käyttäjä"
 
-#: kb/admin.py:92 kb/models.py:188
+#: kb/admin.py:95 kb/models.py:188
 msgid "User MFA device"
 msgstr "Käyttäjän MFA-laite"
 
-#: kb/admin.py:92 kb/models.py:189
+#: kb/admin.py:95 kb/models.py:189
 msgid "User MFA devices"
 msgstr "Käyttäjän MFA-laitteet"
 
-#: kb/admin.py:130 kb/admin.py:146 kb/admin.py:167 kb/admin.py:1993
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:1998
 msgid "User agent"
 msgstr "Käyttäjäagentti"
 
-#: kb/admin.py:1422 kb/admin.py:1470
+#: kb/admin.py:1427 kb/admin.py:1475
 msgid "User does not exist."
 msgstr "Käyttäjää ei ole olemassa."
 
-#: kb/admin.py:238 kb/models.py:1191
+#: kb/admin.py:241 kb/models.py:1191
 msgid "User session timeout (hours)"
 msgstr "Käyttäjäistunnon aikakatkaisu (tuntia)"
 
-#: kb/admin.py:2748
+#: kb/admin.py:2835
 msgid "User session timeout readable"
 msgstr "Käyttäjäistunnon aikakatkaisu luettavassa muodossa"
 
-#: kb/admin.py:127 kb/admin.py:157 website/templates/profile.html:124
+#: kb/admin.py:130 kb/admin.py:160 website/templates/profile.html:124
 msgid "Username"
 msgstr "Käyttäjänimi"
 
@@ -4354,11 +4386,11 @@ msgstr "Käyttäjänimi"
 msgid "Username changes are managed by administrators."
 msgstr "Käyttäjänimen muutoksia hallitsevat ylläpitäjät."
 
-#: kb/admin.py:1070
+#: kb/admin.py:1075
 msgid "Users"
 msgstr "Käyttäjät"
 
-#: kb/admin.py:897 kb/admin.py:967
+#: kb/admin.py:902 kb/admin.py:972
 msgid "Users in this group"
 msgstr "Tämän ryhmän käyttäjät"
 
@@ -4390,7 +4422,7 @@ msgstr "Näytä"
 msgid "View articles"
 msgstr "Näytä artikkelit"
 
-#: kb/admin.py:194 website/templates/articles.html:315 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
+#: kb/admin.py:197 website/templates/articles.html:315 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "Katselukerrat"
 
@@ -4406,7 +4438,7 @@ msgstr "Näkyvyys"
 msgid "Visibility can be changed only before the article is published."
 msgstr "Näkyvyyttä voi muuttaa vain ennen artikkelin julkaisua."
 
-#: kb/admin.py:212 kb/admin.py:2564
+#: kb/admin.py:215 kb/admin.py:2569
 msgid "Vote"
 msgstr "Äänestä"
 
@@ -4426,7 +4458,7 @@ msgstr "Tervetuloa takaisin, %(name)s."
 msgid "Welcome back."
 msgstr "Tervetuloa takaisin."
 
-#: kb/admin.py:197
+#: kb/admin.py:200
 msgid "Wiki path"
 msgstr "Wiki-polku"
 
@@ -4478,11 +4510,11 @@ msgstr "Sinulla ei ole oikeutta lisätä artikkeleita."
 msgid "You do not have permission to add internal articles."
 msgstr "Sinulla ei ole oikeutta lisätä sisäisiä artikkeleita."
 
-#: kb/admin.py:2358
+#: kb/admin.py:2363
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "Sinulla ei ole oikeutta hyväksyä artikkeleita Django-ylläpidosta."
 
-#: kb/admin.py:1575
+#: kb/admin.py:1580
 msgid "You do not have permission to assign Disabled User."
 msgstr "Sinulla ei ole oikeutta määrittää Käytöstä poistettu käyttäjä -roolia."
 
@@ -4494,15 +4526,15 @@ msgstr "Sinulla ei ole oikeutta hallinnoida artikkeleita."
 msgid "You do not have permission to manage internal articles."
 msgstr "Sinulla ei ole oikeutta hallinnoida sisäisiä artikkeleita."
 
-#: kb/admin.py:1618
+#: kb/admin.py:1623
 msgid "You do not have permission to modify users."
 msgstr "Sinulla ei ole oikeutta muokata käyttäjiä."
 
-#: kb/admin.py:486
+#: kb/admin.py:491
 msgid "You do not have permission to perform this admin reset."
 msgstr "Sinulla ei ole oikeutta suorittaa tätä ylläpitäjän nollausta."
 
-#: kb/admin.py:2392
+#: kb/admin.py:2397
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "Sinulla ei ole oikeutta hylätä artikkeleita Django-ylläpidosta."
 
@@ -4546,7 +4578,7 @@ msgstr "Tilisi on tällä hetkellä poistettu käytöstä, eikä se voi käyttä
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "Ylläpitoistuntosi vanheni käyttämättömyyden vuoksi. Varmenna MFA uudelleen päästäksesi takaisin ylläpitosivustolle."
 
-#: kb/admin.py:1612
+#: kb/admin.py:1617
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Omalle tilillesi määritettiin Käytöstä poistettu käyttäjä -rooli. Seuraavalla pyynnöllä sinut ohjataan käytöstä poistetun tilin sivulle."
 
@@ -4554,7 +4586,7 @@ msgstr "Omalle tilillesi määritettiin Käytöstä poistettu käyttäjä -rooli
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Istuntosi on vanhentunut. Kirjaudu uudelleen sisään ennen kuvan lataamista."
 
-#: kb/middleware.py:251
+#: kb/middleware.py:271
 msgid "Your session has expired. Please sign in again."
 msgstr "Istuntosi on vanhentunut. Kirjaudu uudelleen sisään."
 
@@ -4606,11 +4638,11 @@ msgstr "poistettu-käyttäjä"
 msgid "denied"
 msgstr "estetty"
 
-#: kb/admin.py:2680
+#: kb/admin.py:2738
 msgid "disabled"
 msgstr "poistettu käytöstä"
 
-#: kb/admin.py:2680
+#: kb/admin.py:2738
 msgid "enabled"
 msgstr "käytössä"
 
@@ -4618,7 +4650,7 @@ msgstr "käytössä"
 msgid "failed"
 msgstr "epäonnistui"
 
-#: kb/models.py:1318
+#: kb/models.py:1326
 msgid "forever"
 msgstr "ikuisesti"
 
@@ -4678,11 +4710,11 @@ msgstr "uudelleenohjattu"
 msgid "removed %(items)s"
 msgstr "poistettu %(items)s"
 
-#: kb/admin.py:2679
+#: kb/admin.py:2737
 msgid "repeat %(count)s time(s)"
 msgstr "toista %(count)s kertaa"
 
-#: kb/admin.py:2679
+#: kb/admin.py:2737
 msgid "repeat forever"
 msgstr "toista ikuisesti"
 
@@ -4726,6 +4758,6 @@ msgstr "tuntematon ylläpitäjä"
 msgid "unknown user"
 msgstr "tuntematon käyttäjä"
 
-#: kb/admin.py:898
+#: kb/admin.py:903
 msgid "users"
 msgstr "käyttäjät"

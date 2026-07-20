@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: kb/admin.py:1897
+#: kb/admin.py:1902
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "%(count)d perangkat MFA ditandai sebagai menunggu pengaturan."
 
@@ -26,12 +26,12 @@ msgstr "%(count)s artikel"
 msgid "%(count)s articles total."
 msgstr "%(count)s artikel total."
 
-#: kb/admin.py:301
+#: kb/admin.py:306
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s hari"
 
-#: kb/admin.py:305
+#: kb/admin.py:310
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s jam"
@@ -40,7 +40,7 @@ msgstr[0] "%(count)s jam"
 msgid "%(count)s matching articles found."
 msgstr "%(count)s artikel yang cocok ditemukan."
 
-#: kb/admin.py:309 kb/admin.py:312
+#: kb/admin.py:314 kb/admin.py:317
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s menit"
@@ -49,7 +49,7 @@ msgstr[0] "%(count)s menit"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s hasil ditemukan berdasarkan kecocokan judul artikel dan kata kunci."
 
-#: kb/admin.py:297 kb/admin.py:313 kb/admin.py:326
+#: kb/admin.py:302 kb/admin.py:318 kb/admin.py:331
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s detik"
@@ -58,7 +58,7 @@ msgstr[0] "%(count)s detik"
 msgid "%(count)s total"
 msgstr "total %(count)s"
 
-#: kb/admin.py:2759
+#: kb/admin.py:2846
 msgid "%(days)s day(s)"
 msgstr "%(days)s hari"
 
@@ -66,7 +66,7 @@ msgstr "%(days)s hari"
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s diunggah oleh %(uploader)s"
 
-#: kb/admin.py:2746
+#: kb/admin.py:2833
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s jam"
 
@@ -94,7 +94,7 @@ msgstr "%(prefix)s pada %(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1080
+#: kb/admin.py:1085
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, +%(extra)d lagi"
 
@@ -106,7 +106,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "total %(size)s KB"
 
-#: kb/admin.py:1097
+#: kb/admin.py:1102
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, +%(extra)d lagi"
 
@@ -127,7 +127,7 @@ msgstr ", +%(count)d lagi"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: HASIL PENCARIAN UNTUK \"%(query)s\" :::"
 
-#: kb/admin.py:1837
+#: kb/admin.py:1842
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "Reset menghasilkan kunci autentikator privat baru dan memaksa penyiapan ulang."
 
@@ -135,11 +135,11 @@ msgstr "Reset menghasilkan kunci autentikator privat baru dan memaksa penyiapan 
 msgid "Access denied"
 msgstr "Akses ditolak"
 
-#: kb/admin.py:1346 kb/admin.py:1760
+#: kb/admin.py:1351 kb/admin.py:1765
 msgid "Account Status"
 msgstr "Status Akun"
 
-#: kb/admin.py:105 kb/admin.py:1827
+#: kb/admin.py:108 kb/admin.py:1832
 msgid "Account Type"
 msgstr "Jenis akun"
 
@@ -151,7 +151,7 @@ msgstr "Akun saat ini dinonaktifkan"
 msgid "Account disabled"
 msgstr "Akun dinonaktifkan"
 
-#: kb/admin.py:1178
+#: kb/admin.py:1183
 msgid "Account status"
 msgstr "Status akun"
 
@@ -163,7 +163,7 @@ msgstr "Ringkasan akun"
 msgid "Account type"
 msgstr "Jenis akun"
 
-#: kb/admin.py:2198
+#: kb/admin.py:2203
 msgid "Action"
 msgstr "Tindakan"
 
@@ -175,11 +175,11 @@ msgstr "Tindakan"
 msgid "Active Directory user"
 msgstr "Pengguna Active Directory"
 
-#: kb/admin.py:99 kb/models.py:1059
+#: kb/admin.py:102 kb/models.py:1059
 msgid "Activity log"
 msgstr "Log aktivitas"
 
-#: kb/admin.py:99 kb/models.py:1060
+#: kb/admin.py:102 kb/models.py:1060
 msgid "Activity logs"
 msgstr "Log aktivitas"
 
@@ -187,35 +187,35 @@ msgstr "Log aktivitas"
 msgid "Add Article"
 msgstr "Tambah Artikel"
 
-#: kb/admin.py:1217
+#: kb/admin.py:1222
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "Peran tambahan. Dapat membuat/mengedit artikel internal sendiri dan melihat artikel publik/umum."
 
-#: kb/admin.py:1219
+#: kb/admin.py:1224
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "Peran tambahan. Dapat membuat/mengelola/menghapus artikel internal dan melihat artikel publik/umum."
 
-#: kb/admin.py:1218
+#: kb/admin.py:1223
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "Peran tambahan. Dapat meninjau artikel/pembaruan internal yang menunggu dan melihat artikel publik/umum."
 
-#: kb/admin.py:814
+#: kb/admin.py:819
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "Peran tambahan. Dapat melihat artikel publik/umum serta menyetujui/menolak artikel dan pembaruan internal yang menunggu."
 
-#: kb/admin.py:810
+#: kb/admin.py:815
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "Peran tambahan. Dapat melihat artikel publik/umum serta membuat/mengedit artikel internal sendiri."
 
-#: kb/admin.py:806
+#: kb/admin.py:811
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "Peran tambahan. Dapat melihat artikel publik/umum dan artikel internal, tetapi tidak dapat membuat atau menyetujui artikel internal."
 
-#: kb/admin.py:1216
+#: kb/admin.py:1221
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "Peran tambahan. Dapat melihat artikel publik/umum dan artikel internal."
 
-#: kb/admin.py:818
+#: kb/admin.py:823
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "Peran tambahan. Dapat melihat artikel publik/umum, membuat/mengelola/menghapus artikel internal, dan meninjau artikel internal yang menunggu."
 
@@ -223,11 +223,15 @@ msgstr "Peran tambahan. Dapat melihat artikel publik/umum, membuat/mengelola/men
 msgid "Admin"
 msgstr "Administrator"
 
-#: kb/admin.py:243 kb/models.py:1234
+#: kb/admin.py:2817
+msgid "Admin IP restriction status"
+msgstr "Status pembatasan IP Admin"
+
+#: kb/admin.py:247 kb/models.py:1242
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "Batas waktu tidak aktif MFA admin (detik)"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2824
 msgid "Admin MFA idle timeout readable"
 msgstr "Batas waktu tidak aktif MFA admin dalam format mudah dibaca"
 
@@ -235,11 +239,11 @@ msgstr "Batas waktu tidak aktif MFA admin dalam format mudah dibaca"
 msgid "Admin MFA verification"
 msgstr "Verifikasi MFA admin"
 
-#: kb/admin.py:1220 kb/admin.py:821 kb/permissions.py:62
+#: kb/admin.py:1225 kb/admin.py:826 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "Pengguna Admin"
 
-#: kb/admin.py:1703
+#: kb/admin.py:1708
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "Peran Pengguna Admin ditetapkan kepada %(count)d pengguna yang dipilih."
 
@@ -251,19 +255,19 @@ msgstr "Akses admin memerlukan akun aktif yang dilindungi MFA."
 msgid "Admin action/request"
 msgstr "Tindakan/permintaan admin"
 
-#: kb/admin.py:100 kb/models.py:1119
+#: kb/admin.py:103 kb/models.py:1119
 msgid "Admin activity log"
 msgstr "Log aktivitas admin"
 
-#: kb/admin.py:100 kb/models.py:1120
+#: kb/admin.py:103 kb/models.py:1120
 msgid "Admin activity logs"
 msgstr "Log aktivitas admin"
 
-#: kb/admin.py:241 kb/models.py:1215
+#: kb/admin.py:245 kb/models.py:1224
 msgid "Admin allowed IP ranges"
 msgstr "Rentang IP yang diizinkan untuk admin"
 
-#: kb/admin.py:240 kb/models.py:1207
+#: kb/admin.py:243 kb/models.py:1207
 msgid "Admin log rows per page"
 msgstr "Baris log admin per halaman"
 
@@ -291,11 +295,11 @@ msgstr "Permintaan admin ditolak untuk %(target)s"
 msgid "Admin request failed for %(target)s"
 msgstr "Permintaan admin gagal untuk %(target)s"
 
-#: kb/admin.py:2195
+#: kb/admin.py:2200
 msgid "Admin request failed or denied for %(target)s"
 msgstr "Permintaan admin gagal atau ditolak untuk %(target)s"
 
-#: kb/admin.py:2196 kb/admin_audit.py:175
+#: kb/admin.py:2201 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "Permintaan admin untuk %(target)s"
 
@@ -307,7 +311,7 @@ msgstr "Tindakan alat admin"
 msgid "Admin tools"
 msgstr "Alat admin"
 
-#: kb/admin.py:138
+#: kb/admin.py:141
 msgid "Admin user"
 msgstr "Pengguna admin"
 
@@ -315,7 +319,7 @@ msgstr "Pengguna admin"
 msgid "Admin user who approved this article for public display."
 msgstr "Pengguna admin yang menyetujui artikel ini untuk ditampilkan secara publik."
 
-#: kb/admin.py:139
+#: kb/admin.py:142
 msgid "Admin username"
 msgstr "Nama pengguna admin"
 
@@ -323,11 +327,11 @@ msgstr "Nama pengguna admin"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "Alat khusus admin. Ekspor menyertakan Markdown artikel serta file yang dirujuk di bawah"
 
-#: kb/admin.py:258 kb/models.py:50
+#: kb/admin.py:262 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "Akun admin/admin LDAP dapat mengakses admin Django saat status staf diaktifkan."
 
-#: kb/admin.py:869
+#: kb/admin.py:874
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "Setelah menyimpan, buka kembali pengguna bila perlu dan periksa 'Izin efektif' untuk mengonfirmasi tingkat akses akhir."
 
@@ -343,6 +347,18 @@ msgstr "Semua artikel yang diizinkan"
 msgid "All statuses"
 msgstr "Semua status"
 
+#: kb/admin.py:2792
+msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
+msgstr "Daftar izin dinonaktifkan — semua alamat IPv4 dan IPv6 dapat mencapai pemeriksaan autentikasi/MFA Admin."
+
+#: kb/admin.py:2807
+msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
+msgstr "Daftar izin diaktifkan — %(count)s rentang IP/CIDR diizinkan:"
+
+#: kb/admin.py:2802
+msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
+msgstr "Daftar izin diaktifkan, tetapi tidak ada rentang IP/CIDR valid yang dikonfigurasi. Akses Admin ditolak hingga setidaknya satu rentang valid disimpan."
+
 #: kb/views/services.py:241
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "Artikel dengan judul ‘%(title)s’ sudah ada. Gunakan judul lain."
@@ -355,7 +371,7 @@ msgstr "Artikel dengan judul ini sudah ada. Gunakan judul lain."
 msgid "Apply"
 msgstr "Terapkan"
 
-#: kb/admin.py:2322
+#: kb/admin.py:2327
 msgid "Approval / review"
 msgstr "Persetujuan / tinjauan"
 
@@ -363,7 +379,7 @@ msgstr "Persetujuan / tinjauan"
 msgid "Approve / Publish"
 msgstr "Setujui / Terbitkan"
 
-#: kb/admin.py:2355
+#: kb/admin.py:2360
 msgid "Approve selected pending articles"
 msgstr "Setujui artikel tertunda yang dipilih"
 
@@ -371,15 +387,15 @@ msgstr "Setujui artikel tertunda yang dipilih"
 msgid "Approve update"
 msgstr "Setujui pembaruan"
 
-#: kb/admin.py:2378
+#: kb/admin.py:2383
 msgid "Approved article %(title)s from Django Admin"
 msgstr "Artikel %(title)s disetujui dari Admin Django"
 
-#: kb/admin.py:184 kb/models.py:364
+#: kb/admin.py:187 kb/models.py:364
 msgid "Approved at"
 msgstr "Disetujui pada"
 
-#: kb/admin.py:183 kb/models.py:360
+#: kb/admin.py:186 kb/models.py:360
 msgid "Approved by"
 msgstr "Disetujui oleh"
 
@@ -407,31 +423,31 @@ msgstr "Apakah Anda yakin ingin menghapus file ini?"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Apakah Anda yakin ingin kembali ke versi terakhir yang diterbitkan? Semua perubahan pembaruan yang belum diterbitkan akan dihapus secara permanen."
 
-#: kb/admin.py:158 kb/admin.py:2070 kb/admin.py:210 kb/admin.py:2319 kb/views/services_search.py:111 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:111 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "Artikel"
 
-#: kb/admin.py:1214 kb/admin.py:792 kb/permissions.py:56
+#: kb/admin.py:1219 kb/admin.py:797 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "Penyetuju Artikel"
 
-#: kb/admin.py:1683
+#: kb/admin.py:1688
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "Peran Penyetuju Artikel ditetapkan kepada %(count)d pengguna yang dipilih."
 
-#: kb/admin.py:1215 kb/admin.py:799 kb/permissions.py:57
+#: kb/admin.py:1220 kb/admin.py:804 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "Manajer Artikel"
 
-#: kb/admin.py:1693
+#: kb/admin.py:1698
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "Peran Manajer Artikel ditetapkan kepada %(count)d pengguna yang dipilih."
 
-#: kb/admin.py:1213 kb/admin.py:785 kb/permissions.py:55
+#: kb/admin.py:1218 kb/admin.py:790 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "Penulis Artikel"
 
-#: kb/admin.py:1673
+#: kb/admin.py:1678
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "Peran Penulis Artikel ditetapkan kepada %(count)d pengguna yang dipilih."
 
@@ -455,7 +471,7 @@ msgstr "Penyetuju artikel. Dapat melihat artikel, meninjau artikel/pembaruan pub
 msgid "Article auto-deleted from queue"
 msgstr "Artikel dihapus otomatis dari antrean"
 
-#: kb/admin.py:179
+#: kb/admin.py:182
 msgid "Article body"
 msgstr "Isi artikel"
 
@@ -483,11 +499,11 @@ msgstr "Penghapusan artikel dikonfirmasi setelah MFA."
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Penghapusan artikel dikonfirmasi: %(title)s."
 
-#: kb/admin.py:2614 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2671 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Antrean penghapusan artikel"
 
-#: kb/admin.py:234 kb/models.py:1148
+#: kb/admin.py:237 kb/models.py:1148
 msgid "Article deletion queue retention (days)"
 msgstr "Retensi antrean penghapusan artikel (hari)"
 
@@ -511,7 +527,7 @@ msgstr "Permintaan penghapusan artikel"
 msgid "Article details"
 msgstr "Detail artikel"
 
-#: kb/admin.py:2594
+#: kb/admin.py:2651
 msgid "Article display and upload limits"
 msgstr "Batas tampilan dan unggahan artikel"
 
@@ -523,11 +539,11 @@ msgstr "Gambar artikel"
 msgid "Article image deleted"
 msgstr "Gambar artikel dihapus"
 
-#: kb/admin.py:235 kb/models.py:1156
+#: kb/admin.py:238 kb/models.py:1156
 msgid "Article image upload limit"
 msgstr "Batas unggah gambar artikel"
 
-#: kb/admin.py:98 kb/models.py:869
+#: kb/admin.py:101 kb/models.py:869
 msgid "Article image upload log"
 msgstr "Log unggahan gambar artikel"
 
@@ -539,7 +555,7 @@ msgstr "Catatan log unggahan gambar artikel hanya dapat ditambahkan dan tidak da
 msgid "Article image upload log records cannot be manually deleted."
 msgstr "Catatan log unggahan gambar artikel tidak dapat dihapus secara manual."
 
-#: kb/admin.py:98 kb/models.py:870
+#: kb/admin.py:101 kb/models.py:870
 msgid "Article image upload logs"
 msgstr "Log unggahan gambar artikel"
 
@@ -567,11 +583,11 @@ msgstr "Artikel ditandai sebagai persetujuan gagal."
 msgid "Article marked pending failed"
 msgstr "Artikel ditandai gagal tertunda"
 
-#: kb/admin.py:2094
+#: kb/admin.py:2099
 msgid "Article owner"
 msgstr "Pemilik artikel"
 
-#: kb/admin.py:165
+#: kb/admin.py:168
 msgid "Article owner account type"
 msgstr "Jenis akun pemilik artikel"
 
@@ -579,7 +595,7 @@ msgstr "Jenis akun pemilik artikel"
 msgid "Article owner account type snapshot"
 msgstr "Snapshot jenis akun pemilik artikel"
 
-#: kb/admin.py:164
+#: kb/admin.py:167
 msgid "Article owner email"
 msgstr "Email pemilik artikel"
 
@@ -587,7 +603,7 @@ msgstr "Email pemilik artikel"
 msgid "Article owner email snapshot"
 msgstr "Snapshot email pemilik artikel"
 
-#: kb/admin.py:163
+#: kb/admin.py:166
 msgid "Article owner name"
 msgstr "Nama pemilik artikel"
 
@@ -611,7 +627,7 @@ msgstr "Notifikasi pemilik artikel dikirim"
 msgid "Article owner notification skipped"
 msgstr "Notifikasi pemilik artikel dilewati"
 
-#: kb/admin.py:161
+#: kb/admin.py:164
 msgid "Article owner user ID"
 msgstr "ID pengguna pemilik artikel"
 
@@ -619,7 +635,7 @@ msgstr "ID pengguna pemilik artikel"
 msgid "Article owner user ID snapshot"
 msgstr "Snapshot ID pengguna pemilik artikel"
 
-#: kb/admin.py:162
+#: kb/admin.py:165
 msgid "Article owner username"
 msgstr "Nama pengguna pemilik artikel"
 
@@ -667,11 +683,11 @@ msgstr "Notifikasi peninjauan artikel dikirim"
 msgid "Article review notification skipped"
 msgstr "Notifikasi peninjauan artikel dilewati"
 
-#: kb/admin.py:2339
+#: kb/admin.py:2344
 msgid "Article statistics"
 msgstr "Statistik artikel"
 
-#: kb/admin.py:160
+#: kb/admin.py:163
 msgid "Article status"
 msgstr "Status artikel"
 
@@ -687,7 +703,7 @@ msgstr "Artikel dikirim untuk persetujuan admin."
 msgid "Article submitted for approval"
 msgstr "Artikel dikirim untuk persetujuan"
 
-#: kb/admin.py:159 kb/admin.py:178 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
+#: kb/admin.py:162 kb/admin.py:181 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
 msgid "Article title"
 msgstr "Judul artikel"
 
@@ -719,7 +735,7 @@ msgstr "Artikel diperbarui"
 msgid "Article updated successfully."
 msgstr "Artikel berhasil diperbarui."
 
-#: kb/admin.py:236 kb/models.py:1165
+#: kb/admin.py:239 kb/models.py:1165
 msgid "Article video maximum width (px)"
 msgstr "Lebar maksimum video artikel (px)"
 
@@ -727,11 +743,11 @@ msgstr "Lebar maksimum video artikel (px)"
 msgid "Article viewed"
 msgstr "Artikel dilihat"
 
-#: kb/admin.py:181 kb/models.py:346
+#: kb/admin.py:184 kb/models.py:346
 msgid "Article visibility"
 msgstr "Visibilitas artikel"
 
-#: kb/admin.py:96 kb/models.py:806
+#: kb/admin.py:99 kb/models.py:806
 msgid "Article vote"
 msgstr "Suara artikel"
 
@@ -751,11 +767,11 @@ msgstr "Suara artikel dihapus"
 msgid "Article vote up"
 msgstr "Artikel diberi suara naik"
 
-#: kb/admin.py:96 kb/models.py:807
+#: kb/admin.py:99 kb/models.py:807
 msgid "Article votes"
 msgstr "Suara artikel"
 
-#: kb/admin.py:268 kb/models.py:1200
+#: kb/admin.py:272 kb/models.py:1200
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Log aktivitas artikel/suara/gambar/alat admin/situs admin yang lebih lama dari jumlah hari ini dapat dihapus oleh perintah pembersihan. Gunakan 0 untuk menyimpan log aktivitas umum dan admin tanpa batas waktu."
 
@@ -795,7 +811,7 @@ msgstr "Tetapkan artikel yang dipilih ke"
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "%(count)s artikel yatim ditetapkan ke %(user)s."
 
-#: kb/admin.py:1596
+#: kb/admin.py:1601
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "Peran Pengguna Dinonaktifkan ditetapkan kepada %(username)s"
 
@@ -827,47 +843,47 @@ msgstr "Catatan log audit hanya dapat ditambahkan dan tidak dapat diedit."
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "Catatan log audit tidak dapat dihapus secara manual. Catatan hanya dihapus melalui pembersihan retensi."
 
-#: kb/admin.py:267 kb/models.py:1192
+#: kb/admin.py:271 kb/models.py:1192
 msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
 msgstr "Sesi yang telah diautentikasi dan sesi yang menunggu MFA kedaluwarsa setelah jumlah jam ini sejak masuk. Bawaan adalah 8 jam. Rentang yang diizinkan: 1 hingga 168 jam (7 hari)."
 
-#: kb/admin.py:1400
+#: kb/admin.py:1405
 msgid "Authentication Lockout Reset"
 msgstr "Reset Penguncian Autentikasi"
 
-#: kb/admin.py:93 kb/models.py:291
+#: kb/admin.py:96 kb/models.py:291
 msgid "Authentication activity log"
 msgstr "Log aktivitas autentikasi"
 
-#: kb/admin.py:237 kb/models.py:1182
+#: kb/admin.py:240 kb/models.py:1182
 msgid "Authentication activity log retention (days)"
 msgstr "Retensi log aktivitas autentikasi (hari)"
 
-#: kb/admin.py:93 kb/models.py:292
+#: kb/admin.py:96 kb/models.py:292
 msgid "Authentication activity logs"
 msgstr "Log aktivitas autentikasi"
 
-#: kb/admin.py:2621
+#: kb/admin.py:2678
 msgid "Authentication and session settings"
 msgstr "Pengaturan autentikasi dan sesi"
 
-#: kb/admin.py:1286
+#: kb/admin.py:1291
 msgid "Authentication lockout"
 msgstr "Penguncian autentikasi"
 
-#: kb/admin.py:242 kb/models.py:1225
+#: kb/admin.py:246 kb/models.py:1233
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "Memori eskalasi penguncian autentikasi (detik)"
 
-#: kb/admin.py:2630
+#: kb/admin.py:2687
 msgid "Authentication lockout policy"
 msgstr "Kebijakan penguncian autentikasi"
 
-#: kb/admin.py:94 kb/models.py:1314
+#: kb/admin.py:97 kb/models.py:1322
 msgid "Authentication lockout policy stage"
 msgstr "Tahap kebijakan penguncian autentikasi"
 
-#: kb/admin.py:2693 kb/admin.py:94 kb/models.py:1315
+#: kb/admin.py:2751 kb/admin.py:97 kb/models.py:1323
 msgid "Authentication lockout policy stages"
 msgstr "Tahap kebijakan penguncian autentikasi"
 
@@ -879,11 +895,11 @@ msgstr "Penguncian autentikasi direset oleh admin"
 msgid "Authentication lockout triggered"
 msgstr "Penguncian autentikasi dipicu"
 
-#: kb/admin.py:1173
+#: kb/admin.py:1178
 msgid "Authentication source"
 msgstr "Sumber autentikasi"
 
-#: kb/admin.py:266 kb/models.py:1183
+#: kb/admin.py:270 kb/models.py:1183
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Log pemantauan autentikasi/MFA yang lebih lama dari jumlah hari ini dapat dihapus oleh perintah pembersihan. Gunakan 0 untuk menyimpan log aktivitas autentikasi tanpa batas waktu."
 
@@ -895,7 +911,7 @@ msgstr "Kode MFA/OTP aplikasi autentikator"
 msgid "Authenticator code"
 msgstr "Kode autentikator"
 
-#: kb/admin.py:115 kb/admin.py:1819
+#: kb/admin.py:118 kb/admin.py:1824
 msgid "Authenticator key"
 msgstr "Kunci autentikator"
 
@@ -907,23 +923,23 @@ msgstr "Pengaturan autentikator berhasil diselesaikan."
 msgid "Author"
 msgstr "Penulis"
 
-#: kb/admin.py:177
+#: kb/admin.py:180
 msgid "Author account type snapshot"
 msgstr "Snapshot jenis akun penulis"
 
-#: kb/admin.py:176
+#: kb/admin.py:179
 msgid "Author email snapshot"
 msgstr "Snapshot email penulis"
 
-#: kb/admin.py:175
+#: kb/admin.py:178
 msgid "Author name snapshot"
 msgstr "Snapshot nama penulis"
 
-#: kb/admin.py:2342
+#: kb/admin.py:2347
 msgid "Author snapshot"
 msgstr "Snapshot penulis"
 
-#: kb/admin.py:174
+#: kb/admin.py:177
 msgid "Author username snapshot"
 msgstr "Snapshot nama pengguna penulis"
 
@@ -947,15 +963,15 @@ msgstr "Kembali ke profil"
 msgid "Bad request"
 msgstr "Permintaan tidak valid"
 
-#: kb/admin.py:251 kb/models.py:1299
+#: kb/admin.py:255 kb/models.py:1307
 msgid "Block duration (seconds)"
 msgstr "Durasi blokir (detik)"
 
-#: kb/models.py:1333
+#: kb/models.py:1341
 msgid "Block duration must be at least 60 seconds."
 msgstr "Durasi blokir harus minimal 60 detik."
 
-#: kb/admin.py:2588
+#: kb/admin.py:2593
 msgid "Block duration readable"
 msgstr "Durasi blokir dalam format mudah dibaca"
 
@@ -983,11 +999,11 @@ msgstr "Dapat menambah/mengirim artikel internal untuk persetujuan"
 msgid "Can add/submit public articles for approval"
 msgstr "Dapat menambah/mengirim artikel publik untuk persetujuan"
 
-#: kb/admin.py:661
+#: kb/admin.py:666
 msgid "Can approve/manage internal articles"
 msgstr "Dapat menyetujui/mengelola artikel internal"
 
-#: kb/admin.py:634
+#: kb/admin.py:639
 msgid "Can approve/manage pending articles"
 msgstr "Dapat menyetujui/mengelola artikel yang menunggu"
 
@@ -999,35 +1015,35 @@ msgstr "Dapat menyetujui/mengelola tinjauan artikel internal yang menunggu"
 msgid "Can approve/manage pending public article reviews"
 msgstr "Dapat menyetujui/mengelola tinjauan artikel publik yang menunggu"
 
-#: kb/admin.py:1213
+#: kb/admin.py:1218
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "Dapat membuat draf artikel, mengirim artikel untuk persetujuan, serta mengedit/mengirim ulang artikelnya sendiri. Tidak dapat menyetujui atau menolak artikel. Termasuk akses penampil, sehingga Pengguna Biasa tidak diperlukan."
 
-#: kb/admin.py:786
+#: kb/admin.py:791
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "Dapat membuat draf artikel, mengirim artikel baru untuk persetujuan, serta mengedit/mengirim ulang artikelnya sendiri. Tidak dapat menyetujui atau menolak artikel."
 
-#: kb/admin.py:625
+#: kb/admin.py:630
 msgid "Can create articles"
 msgstr "Dapat membuat artikel"
 
-#: kb/admin.py:800
+#: kb/admin.py:805
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "Dapat membuat artikel, mengedit/mengelola artikel, meninjau artikel/pembaruan yang menunggu, menyetujui/menolak kiriman, dan menghapus artikel."
 
-#: kb/admin.py:1215
+#: kb/admin.py:1220
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "Dapat membuat artikel, mengedit/mengelola artikel, meninjau artikel/pembaruan yang menunggu, menyetujui/menolak kiriman, dan menghapus artikel. Termasuk akses penampil, sehingga Pengguna Biasa tidak diperlukan."
 
-#: kb/admin.py:656
+#: kb/admin.py:661
 msgid "Can create internal articles"
 msgstr "Dapat membuat artikel internal"
 
-#: kb/admin.py:643
+#: kb/admin.py:648
 msgid "Can delete articles"
 msgstr "Dapat menghapus artikel"
 
-#: kb/admin.py:666 kb/permissions.py:36
+#: kb/admin.py:671 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "Dapat menghapus artikel internal"
 
@@ -1035,15 +1051,15 @@ msgstr "Dapat menghapus artikel internal"
 msgid "Can delete public articles"
 msgstr "Dapat menghapus artikel publik"
 
-#: kb/admin.py:793
+#: kb/admin.py:798
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "Dapat meninjau artikel/pembaruan yang menunggu, mengedit konten selama tinjauan menunggu, serta menyetujui atau menolaknya. Secara default tidak dapat mengedit artikel yang sudah diterbitkan atau menghapus artikel. Penyetuju Artikel secara default tidak dapat menambah artikel baru atau menghapus artikel."
 
-#: kb/admin.py:1214
+#: kb/admin.py:1219
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "Dapat meninjau artikel/pembaruan yang menunggu, mengedit konten selama tinjauan menunggu, serta menyetujui atau menolaknya. Secara default tidak dapat mengedit artikel yang sudah diterbitkan atau menghapus artikel. Secara default tidak dapat menambah atau menghapus artikel. Termasuk akses penampil, sehingga Pengguna Biasa tidak diperlukan."
 
-#: kb/admin.py:782
+#: kb/admin.py:787
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "Dapat masuk, melihat/mencari artikel yang diterbitkan, menggunakan halaman artikel normal, dan memberi suara bila pemungutan suara diaktifkan."
 
@@ -1051,11 +1067,11 @@ msgstr "Dapat masuk, melihat/mencari artikel yang diterbitkan, menggunakan halam
 msgid "Can use Knowledge Repository admin tools"
 msgstr "Dapat menggunakan alat admin Repositori Pengetahuan"
 
-#: kb/admin.py:615
+#: kb/admin.py:620
 msgid "Can view articles"
 msgstr "Dapat melihat artikel"
 
-#: kb/admin.py:651 kb/permissions.py:33
+#: kb/admin.py:656 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "Dapat melihat artikel internal"
 
@@ -1063,7 +1079,7 @@ msgstr "Dapat melihat artikel internal"
 msgid "Can view published public articles"
 msgstr "Dapat melihat artikel publik yang diterbitkan"
 
-#: kb/admin.py:1212
+#: kb/admin.py:1217
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Dapat melihat/mencari artikel yang diterbitkan dan memberi suara. Ini adalah peran penampil cadangan dan hanya ditambahkan otomatis ketika pengguna tidak memiliki peran Repositori Pengetahuan standar lain."
 
@@ -1071,7 +1087,7 @@ msgstr "Dapat melihat/mencari artikel yang diterbitkan dan memberi suara. Ini ad
 msgid "Cancel"
 msgstr "Batal"
 
-#: kb/admin.py:150
+#: kb/admin.py:153
 msgid "Change message"
 msgstr "Pesan perubahan"
 
@@ -1079,15 +1095,15 @@ msgstr "Pesan perubahan"
 msgid "Change password"
 msgstr "Ubah kata sandi"
 
-#: kb/admin.py:381
+#: kb/admin.py:386
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "%(target_label)s %(target)s diubah: %(changes)s"
 
-#: kb/admin.py:2187 kb/admin_audit.py:153
+#: kb/admin.py:2192 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "%(target_label)s diubah: %(target)s"
 
-#: kb/admin.py:2182
+#: kb/admin.py:2187
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s diubah: %(target)s — %(changes)s"
 
@@ -1095,11 +1111,11 @@ msgstr "%(target_label)s diubah: %(target)s — %(changes)s"
 msgid "Checking..."
 msgstr "Memeriksa..."
 
-#: kb/admin.py:857
+#: kb/admin.py:862
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Pilih grup terlebih dahulu, lalu gunakan kotak centang langsung hanya untuk pengecualian. Bagi sebagian besar pengguna, grup saja sudah cukup."
 
-#: kb/admin.py:564
+#: kb/admin.py:569
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "Pilih apakah profil ini adalah pengguna/admin lokal atau pengguna/admin LDAP. Jenis akun admin menambahkan peran Pengguna Admin dan menjadi superuser Django. Mengubah kembali ke Pengguna/pengguna LDAP menghapus Pengguna Admin dan menghapus status staf/superuser. Gunakan ini untuk mengubah profil LDAP yang ditinggalkan menjadi profil lokal ketika akun AD telah dihapus tetapi artikel harus dipertahankan."
 
@@ -1123,7 +1139,7 @@ msgstr "Hapus percakapan"
 msgid "Clear search"
 msgstr "Hapus pencarian"
 
-#: kb/admin.py:1394
+#: kb/admin.py:1399
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "Menghapus blokir sementara dan riwayat penguncian progresif untuk pengguna ini. Gunakan setelah memastikan permintaan tersebut sah."
 
@@ -1135,23 +1151,19 @@ msgstr "Klik Muat ulang untuk memindai judul dan isi artikel saat ini guna menca
 msgid "Close"
 msgstr "Tutup"
 
-#: kb/admin.py:270 kb/models.py:1216
-msgid "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."
-msgstr "Daftar izin CIDR/IP yang dipisahkan dengan koma atau baris baru untuk akses Admin Django. Secara default mengizinkan 10.65.0.0/16 dan loopback lokal. Pengguna di luar rentang ini menerima 404 meskipun mengetahui URL admin. Nginx juga dapat menerapkan daftar izin luar yang terpisah di nginx/nginx.conf."
-
-#: kb/middleware.py:520
+#: kb/middleware.py:540
 msgid "Complete MFA before accessing the Django admin site."
 msgstr "Selesaikan MFA sebelum mengakses situs admin Django."
 
-#: kb/middleware.py:454
+#: kb/middleware.py:474
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
 msgstr "Selesaikan MFA sebelum melanjutkan. Anda belum sepenuhnya masuk sampai MFA selesai."
 
-#: kb/middleware.py:481
+#: kb/middleware.py:501
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "Selesaikan MFA sebelum melanjutkan. Anda tidak dapat mengakses Repositori Pengetahuan hingga MFA selesai."
 
-#: kb/admin.py:1362 kb/mfa.py:135
+#: kb/admin.py:1367 kb/mfa.py:135
 msgid "Configured"
 msgstr "Dikonfigurasi"
 
@@ -1179,35 +1191,35 @@ msgstr "Konfirmasi kata sandi salah."
 msgid "Confirm permanent deletion"
 msgstr "Konfirmasi penghapusan permanen"
 
-#: kb/admin.py:116
+#: kb/admin.py:119
 msgid "Confirmed"
 msgstr "Dikonfirmasi"
 
-#: kb/admin.py:118
+#: kb/admin.py:121
 msgid "Confirmed at"
 msgstr "Dikonfirmasi pada"
 
-#: kb/admin.py:219
+#: kb/admin.py:222
 msgid "Content type"
 msgstr "Jenis konten"
 
-#: kb/admin.py:2623
+#: kb/admin.py:2680
 msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
 msgstr "Mengontrol log autentikasi/MFA, log aktivitas umum, baris tampilan log admin, dan masa berlaku sesi pengguna. Retensi log bawaan adalah 30 hari. Tabel log admin menampilkan 200 baris per halaman secara bawaan. Sesi bawaan adalah 8 jam dan dapat diatur dari 1 hingga 168 jam."
 
-#: kb/admin.py:2616
+#: kb/admin.py:2673
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "Mengatur berapa lama artikel yang diterbitkan dan dihapus tetap dapat dipulihkan di Profil Saya → Alat admin → Antrean penghapusan sebelum penghapusan permanen terjadwal. Defaultnya 7 hari. Atur ke 0 untuk penghapusan permanen segera setelah konfirmasi MFA."
 
-#: kb/admin.py:2600
+#: kb/admin.py:2657
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "Mengatur jumlah artikel yang ditampilkan per halaman/di setiap kolom beranda, jumlah gambar yang ditempel/diunggah yang dapat dimuat setiap artikel, dan lebar tampilan maksimum video artikel. Jumlah artikel per halaman secara default adalah 10. Batas unggahan gambar secara default adalah 50; atur ke 0 untuk menonaktifkan unggahan gambar artikel. Lebar video artikel secara default adalah 720 px dan tetap responsif pada layar yang lebih kecil."
 
-#: kb/admin.py:2609
+#: kb/admin.py:2666
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "Mengatur umur minimum yang digunakan oleh Profil Saya → Alat admin → Bersihkan file unggahan tersisa. Gunakan 0 untuk menampilkan file segera."
 
-#: kb/admin.py:259 kb/models.py:56
+#: kb/admin.py:263 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "Mengatur apakah kata sandi dikelola secara lokal di Repositori Pengetahuan atau secara eksternal oleh Active Directory."
 
@@ -1223,15 +1235,15 @@ msgstr "Dibuat"
 msgid "Created %(target)s"
 msgstr "%(target)s dibuat"
 
-#: kb/admin.py:413
+#: kb/admin.py:418
 msgid "Created %(target_label)s %(target)s"
 msgstr "%(target_label)s %(target)s dibuat"
 
-#: kb/admin.py:2179 kb/admin_audit.py:150
+#: kb/admin.py:2184 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "%(target_label)s dibuat: %(target)s"
 
-#: kb/admin.py:110 kb/admin.py:117 kb/admin.py:123 kb/admin.py:136 kb/admin.py:154 kb/admin.py:206 kb/admin.py:213
+#: kb/admin.py:113 kb/admin.py:120 kb/admin.py:126 kb/admin.py:139 kb/admin.py:157 kb/admin.py:209 kb/admin.py:216
 msgid "Created at"
 msgstr "Dibuat pada"
 
@@ -1243,15 +1255,15 @@ msgstr "Status MFA saat ini"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "Umpan balik admin saat ini yang ditampilkan kepada pemilik artikel ketika artikel berstatus Draf atau Persetujuan gagal."
 
-#: kb/admin.py:2430 kb/models.py:371
+#: kb/admin.py:2435 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "Komentar gagal tertunda saat ini"
 
-#: kb/admin.py:1083
+#: kb/admin.py:1088
 msgid "Current users"
 msgstr "Pengguna saat ini"
 
-#: kb/admin.py:1063
+#: kb/admin.py:1068
 msgid "Custom Django group"
 msgstr "Grup Django kustom"
 
@@ -1263,31 +1275,31 @@ msgstr "Tanggal"
 msgid "Date and time when this article was approved for public display."
 msgstr "Tanggal dan waktu ketika artikel ini disetujui untuk ditampilkan secara publik."
 
-#: kb/admin.py:1228
+#: kb/admin.py:1233
 msgid "Default Knowledge Repository groups:"
 msgstr "Grup Repositori Pengetahuan default:"
 
-#: kb/admin.py:1011
+#: kb/admin.py:1016
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "Grup peran Repositori Pengetahuan default tidak dapat dihapus."
 
-#: kb/admin.py:1022
+#: kb/admin.py:1027
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "Grup peran Repositori Pengetahuan default tidak dapat dihapus. %(count)d grup yang dilindungi dilewati."
 
-#: kb/admin.py:1049
+#: kb/admin.py:1054
 msgid "Default permissions:"
 msgstr "Izin default:"
 
-#: kb/admin.py:2714
+#: kb/admin.py:2772
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "Tahap default 1: 10 percobaan salah diblokir selama 5 menit, diulang 2 kali."
 
-#: kb/admin.py:2715
+#: kb/admin.py:2773
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "Tahap default 2: 5 percobaan salah diblokir selama 15 menit, diulang 2 kali."
 
-#: kb/admin.py:2716
+#: kb/admin.py:2774
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "Tahap default 3: 3 percobaan salah diblokir selama 1 jam berulang kali hingga login berhasil atau direset admin."
 
@@ -1299,7 +1311,7 @@ msgstr "Hapus"
 msgid "Delete article"
 msgstr "Hapus artikel"
 
-#: kb/admin.py:230
+#: kb/admin.py:233
 msgid "Delete reason"
 msgstr "Alasan penghapusan"
 
@@ -1315,7 +1327,7 @@ msgstr "Hapus file sisa yang dipilih"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "Hapus file unggahan sisa yang dipilih? Tindakan ini tidak dapat dibatalkan."
 
-#: kb/admin.py:468
+#: kb/admin.py:473
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "%(target_label)s dihapus sebanyak %(count)d: %(preview)s"
 
@@ -1323,15 +1335,15 @@ msgstr "%(target_label)s dihapus sebanyak %(count)d: %(preview)s"
 msgid "Deleted %(target)s"
 msgstr "%(target)s dihapus"
 
-#: kb/admin.py:449
+#: kb/admin.py:454
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "%(target_label)s %(target)s dihapus"
 
-#: kb/admin.py:2189 kb/admin_audit.py:160
+#: kb/admin.py:2194 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "%(target_label)s dihapus: %(target)s"
 
-#: kb/admin.py:2068
+#: kb/admin.py:2073
 msgid "Deleted article"
 msgstr "Artikel dihapus"
 
@@ -1339,11 +1351,11 @@ msgstr "Artikel dihapus"
 msgid "Deleted articles are hidden immediately and remain recoverable here for %(days)s day(s) before permanent deletion."
 msgstr "Artikel yang dihapus segera disembunyikan dan tetap dapat dipulihkan di sini selama %(days)s hari sebelum dihapus permanen."
 
-#: kb/admin.py:228
+#: kb/admin.py:231
 msgid "Deleted at"
 msgstr "Dihapus pada"
 
-#: kb/admin.py:229
+#: kb/admin.py:232
 msgid "Deleted by"
 msgstr "Dihapus oleh"
 
@@ -1387,7 +1399,7 @@ msgstr "Antrean penghapusan"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "Retensi antrean penghapusan diatur ke 0 hari. Penghapusan artikel baru yang diterbitkan akan dihapus permanen segera setelah konfirmasi. Artikel yang sudah berada dalam antrean dan ditampilkan di sini siap untuk dihapus permanen."
 
-#: kb/admin.py:2761
+#: kb/admin.py:2848
 msgid "Deletion queue retention readable"
 msgstr "Retensi antrean penghapusan dalam format mudah dibaca"
 
@@ -1395,15 +1407,15 @@ msgstr "Retensi antrean penghapusan dalam format mudah dibaca"
 msgid "Deletion queued"
 msgstr "Penghapusan dimasukkan ke antrean"
 
-#: kb/admin.py:200 kb/models.py:440
+#: kb/admin.py:203 kb/models.py:440
 msgid "Deletion queued at"
 msgstr "Dimasukkan ke antrean penghapusan pada"
 
-#: kb/admin.py:201 kb/models.py:448
+#: kb/admin.py:204 kb/models.py:448
 msgid "Deletion queued by"
 msgstr "Dimasukkan ke antrean penghapusan oleh"
 
-#: kb/admin.py:205 kb/models.py:472
+#: kb/admin.py:208 kb/models.py:472
 msgid "Deletion reason"
 msgstr "Alasan penghapusan"
 
@@ -1411,67 +1423,67 @@ msgstr "Alasan penghapusan"
 msgid "Deletion rejected"
 msgstr "Penghapusan ditolak"
 
-#: kb/admin.py:203 kb/models.py:460
+#: kb/admin.py:206 kb/models.py:460
 msgid "Deletion restored at"
 msgstr "Penghapusan dipulihkan pada"
 
-#: kb/admin.py:204 kb/models.py:468
+#: kb/admin.py:207 kb/models.py:468
 msgid "Deletion restored by"
 msgstr "Penghapusan dipulihkan oleh"
 
-#: kb/admin.py:2242
+#: kb/admin.py:2247
 msgid "Denied"
 msgstr "Ditolak"
 
-#: kb/admin.py:133 kb/admin.py:151 kb/admin.py:170
+#: kb/admin.py:136 kb/admin.py:154 kb/admin.py:173
 msgid "Details"
 msgstr "Detail"
 
-#: kb/admin.py:1188
+#: kb/admin.py:1193
 msgid "Direct Knowledge Repository permissions"
 msgstr "Izin langsung Repositori Pengetahuan"
 
-#: kb/admin.py:635
+#: kb/admin.py:640
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "Izin pengguna langsung. Mengizinkan akses ke alur kerja persetujuan artikel seperti tinjauan artikel tertunda, tinjauan pembaruan tertunda, tindakan setujui/tolak, dan pengeditan artikel pada tahap tinjauan. Izin ini tidak otomatis mengizinkan pembuatan artikel baru, penghapusan artikel, atau akses penuh Admin Django kecuali diberikan oleh izin/grup lain."
 
-#: kb/admin.py:626
+#: kb/admin.py:631
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna membuat draf artikel, mengirim artikel baru untuk persetujuan, serta mengedit/mengirim ulang artikelnya sendiri atau pembaruan yang menunggu. Izin ini tidak mengizinkan menyetujui/menolak artikel pengguna lain atau menggunakan alat Admin Django."
 
-#: kb/admin.py:616
+#: kb/admin.py:621
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna membuka wiki utama dan membaca artikel yang diterbitkan setelah masuk. Izin ini tidak mengizinkan pembuatan artikel, persetujuan artikel, atau penggunaan alat admin. Tidak dicentang berarti tidak ada pemberian izin langsung; pengguna mungkin masih menerima izin ini dari grupnya. Grup Pengguna Dinonaktifkan menggantikan tambahan izin langsung."
 
-#: kb/admin.py:657
+#: kb/admin.py:662
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna ini membuat dan mengirim artikel internal/pribadi."
 
-#: kb/admin.py:644
+#: kb/admin.py:649
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna ini menghapus artikel. Gunakan secara terbatas; grup Manajer Artikel dan Pengguna Admin standar sudah memberikan izin ini."
 
-#: kb/admin.py:667
+#: kb/admin.py:672
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna ini menghapus artikel internal/pribadi."
 
-#: kb/admin.py:652
+#: kb/admin.py:657
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna ini membuka dan membaca artikel internal/pribadi yang diterbitkan."
 
-#: kb/admin.py:662
+#: kb/admin.py:667
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "Izin pengguna langsung. Mengizinkan pengguna ini meninjau dan mengelola artikel internal/pribadi yang menunggu."
 
-#: kb/admin.py:827
+#: kb/admin.py:832
 msgid "Direct user permissions"
 msgstr "Izin pengguna langsung"
 
-#: kb/admin.py:1211 kb/admin.py:1333 kb/admin.py:774 kb/permissions.py:53
+#: kb/admin.py:1216 kb/admin.py:1338 kb/admin.py:779 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "Pengguna Dinonaktifkan"
 
-#: kb/admin.py:1606
+#: kb/admin.py:1611
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "Peran Pengguna Dinonaktifkan ditetapkan kepada %(count)d pengguna yang dipilih."
 
@@ -1479,11 +1491,15 @@ msgstr "Peran Pengguna Dinonaktifkan ditetapkan kepada %(count)d pengguna yang d
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "Peran akun dinonaktifkan. Akun pengguna tetap berada di Django untuk tujuan audit/riwayat, tetapi tidak dapat menyelesaikan login atau mengakses wiki hingga admin memindahkan pengguna ke peran lain."
 
-#: kb/admin.py:2561
+#: kb/admin.py:274 kb/models.py:1216
+msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
+msgstr "Dinonaktifkan secara default. Saat dinonaktifkan, Django Admin dapat diakses dari alamat IPv4 atau IPv6 mana pun, dengan tetap mengikuti autentikasi normal dan MFA Admin. Saat diaktifkan, hanya rentang IP/CIDR yang dikonfigurasi yang diizinkan."
+
+#: kb/admin.py:2566
 msgid "Dislike"
 msgstr "Tidak suka"
 
-#: kb/admin.py:2445 website/templates/articles.html:277
+#: kb/admin.py:2450 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "Tidak suka"
 
@@ -1495,7 +1511,7 @@ msgstr "DjOpenKB tidak dapat memverifikasi bahwa video SharePoint atau OneDrive 
 msgid "Django Admin MFA lockout triggered"
 msgstr "Penguncian MFA Admin Django dipicu"
 
-#: kb/admin.py:1962 kb/admin.py:1968
+#: kb/admin.py:1967 kb/admin.py:1973
 msgid "Django Admin MFA verification"
 msgstr "Verifikasi MFA Admin Django"
 
@@ -1507,11 +1523,11 @@ msgstr "Verifikasi MFA Admin Django gagal"
 msgid "Django Admin MFA verification success"
 msgstr "Verifikasi MFA Admin Django berhasil"
 
-#: kb/admin.py:2649
+#: kb/admin.py:2706
 msgid "Django Admin access restrictions"
 msgstr "Pembatasan akses Admin Django"
 
-#: kb/admin.py:144
+#: kb/admin.py:147
 msgid "Django admin action flag"
 msgstr "Penanda tindakan admin Django"
 
@@ -1523,11 +1539,11 @@ msgstr "Admin Domain"
 msgid "Domain User"
 msgstr "Pengguna Domain"
 
-#: kb/admin.py:1195
+#: kb/admin.py:1200
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "Kata sandi domain dikelola di Active Directory dan tidak dapat diubah dari admin Django."
 
-#: kb/admin.py:1301
+#: kb/admin.py:1306
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "Kata sandi pengguna domain dikelola di Active Directory."
 
@@ -1547,7 +1563,7 @@ msgstr "Draf berhasil disimpan."
 msgid "Due"
 msgstr "Jatuh tempo"
 
-#: kb/admin.py:2644
+#: kb/admin.py:2701
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Pertanyaan pertama yang diterima dari setiap pengguna memulai jendela tetap 24 jam. Batas lonjakan jangka pendek yang ada tetap aktif secara terpisah."
 
@@ -1583,11 +1599,11 @@ msgstr "Kata kunci yang diedit menunggu persetujuan admin."
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Judul yang diedit menunggu persetujuan admin. Judul yang diterbitkan tetap tidak berubah hingga disetujui."
 
-#: kb/admin.py:841 kb/admin.py:888
+#: kb/admin.py:846 kb/admin.py:893
 msgid "Effective permissions"
 msgstr "Izin efektif"
 
-#: kb/admin.py:881
+#: kb/admin.py:886
 msgid "Effective role groups"
 msgstr "Grup peran efektif"
 
@@ -1599,11 +1615,15 @@ msgstr "Alamat email"
 msgid "Email updated successfully."
 msgstr "Email berhasil diperbarui."
 
-#: kb/admin.py:253 kb/models.py:1309 website/templates/profile.html:195
+#: kb/admin.py:244 kb/models.py:1215
+msgid "Enable Admin IP allowlist"
+msgstr "Aktifkan daftar izin IP Admin"
+
+#: kb/admin.py:257 kb/models.py:1317 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "Aktif"
 
-#: kb/admin.py:1816
+#: kb/admin.py:1821
 msgid "Encrypted and hidden"
 msgstr "Dienkripsi dan disembunyikan"
 
@@ -1619,6 +1639,10 @@ msgstr "Masukkan tautan video yang didukung."
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
 msgstr "Masukkan nama pengguna/email lokal atau AD yang aktif, centang artikel, lalu klik Tetapkan yang dipilih."
 
+#: kb/admin.py:2640
+msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
+msgstr "Masukkan setidaknya satu alamat IPv4/IPv6 atau rentang CIDR yang valid sebelum mengaktifkan daftar izin IP Admin."
+
 #: website/templates/suggest_delete.html:47
 msgid "Enter your 6-digit code"
 msgstr "Masukkan kode 6 digit Anda"
@@ -1631,11 +1655,11 @@ msgstr "Masukkan kode MFA/OTP Anda untuk mengonfirmasi penghapusan ini."
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "Masukkan kembali kode autentikator Anda untuk mengakses situs Admin Django."
 
-#: kb/admin.py:2730
+#: kb/admin.py:2788
 msgid "Escalation memory readable"
 msgstr "Memori eskalasi dalam format mudah dibaca"
 
-#: kb/admin.py:124 kb/admin.py:137 kb/admin.py:155
+#: kb/admin.py:127 kb/admin.py:140 kb/admin.py:158
 msgid "Event type"
 msgstr "Jenis peristiwa"
 
@@ -1667,15 +1691,15 @@ msgstr "Zip ekspor artikel"
 msgid "Export split package"
 msgstr "Ekspor paket terpisah"
 
-#: kb/admin.py:2248
+#: kb/admin.py:2253
 msgid "Failed"
 msgstr "Gagal"
 
-#: kb/admin.py:250 kb/models.py:1294
+#: kb/admin.py:254 kb/models.py:1302
 msgid "Failed attempts before block"
 msgstr "Percobaan gagal sebelum pemblokiran"
 
-#: kb/models.py:1331
+#: kb/models.py:1339
 msgid "Failed attempts must be at least 1."
 msgstr "Percobaan gagal harus minimal 1."
 
@@ -1691,7 +1715,7 @@ msgstr "Bidang"
 msgid "File size"
 msgstr "Ukuran file"
 
-#: kb/admin.py:195 kb/admin.py:217 website/templates/admin_clean_stray_upload_files.html:97
+#: kb/admin.py:198 kb/admin.py:220 website/templates/admin_clean_stray_upload_files.html:97
 msgid "Filename"
 msgstr "Nama file"
 
@@ -1703,7 +1727,7 @@ msgstr "File yang lebih baru dari %(minutes)s menit diabaikan. Ubah nilai ini di
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "File yang lebih baru dari %(minutes)s menit diabaikan. Ubah nilai ini di Django Admin → Pengaturan situs. Gunakan 0 menit untuk menampilkan unggahan sisa segera."
 
-#: kb/admin.py:262 kb/models.py:1140
+#: kb/admin.py:266 kb/models.py:1140
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "File yang lebih baru dari jumlah menit ini akan diabaikan oleh alat pembersihan unggahan tersisa. Default adalah 1440 menit (24 jam) untuk menghindari penghapusan gambar saat pengguna menyusun artikel. Atur ke 0 untuk mendeteksi/menghapus unggahan tersisa segera."
 
@@ -1727,11 +1751,11 @@ msgstr "Menemukan file yang tidak digunakan di"
 msgid "First"
 msgstr "Pertama"
 
-#: kb/admin.py:822
+#: kb/admin.py:827
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "Akses superuser penuh Admin Django. Pengguna Admin memerlukan verifikasi MFA admin tambahan sebelum masuk ke Admin Django."
 
-#: kb/admin.py:1220
+#: kb/admin.py:1225
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "Akses superuser penuh Admin Django. Memerlukan langkah MFA Admin tambahan sebelum masuk ke Admin Django."
 
@@ -1739,7 +1763,7 @@ msgstr "Akses superuser penuh Admin Django. Memerlukan langkah MFA Admin tambaha
 msgid "General"
 msgstr "Umum"
 
-#: kb/admin.py:239 kb/models.py:1199
+#: kb/admin.py:242 kb/models.py:1199
 msgid "General activity log retention (days)"
 msgstr "Retensi log aktivitas umum (hari)"
 
@@ -1763,15 +1787,15 @@ msgstr "Artikel umum milik Anda."
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Dapatkan jawaban instan untuk pertanyaan paling umum dan pelajari cara menggunakan 3 karakter seperti profesional."
 
-#: kb/admin.py:983
+#: kb/admin.py:988
 msgid "Group members"
 msgstr "Anggota grup"
 
-#: kb/admin.py:768
+#: kb/admin.py:773
 msgid "Group permissions"
 msgstr "Izin grup"
 
-#: kb/admin.py:1065
+#: kb/admin.py:1070
 msgid "Group type"
 msgstr "Jenis grup"
 
@@ -1791,11 +1815,11 @@ msgstr "Membantu"
 msgid "Hi, I am OpenKB AI."
 msgstr "Halo, saya OpenKB AI."
 
-#: kb/admin.py:1211
+#: kb/admin.py:1216
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "Prioritas tertinggi. Memblokir akses Repositori Pengetahuan serta menghapus Pengguna Admin, status staf/superuser, dan izin peran langsung."
 
-#: kb/admin.py:775
+#: kb/admin.py:780
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "Prioritas tertinggi. Pengguna dialihkan ke halaman akun dinonaktifkan dan tidak dapat mengakses Repositori Pengetahuan. Ini juga menghapus Pengguna Admin, status staf/superuser, dan tambahan izin langsung Repositori Pengetahuan."
 
@@ -1827,31 +1851,31 @@ msgstr "Hanya snapshot ID pengguna historis. Relasi ini sengaja tidak memberlaku
 msgid "How can we help?"
 msgstr "Bagaimana kami bisa membantu?"
 
-#: kb/models.py:1235
+#: kb/models.py:1243
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "Berapa lama administrator boleh tidak aktif di dalam Admin Django setelah menyelesaikan pemeriksaan MFA admin tambahan. Defaultnya 600 detik (10 menit). Batas minimum yang ditegakkan oleh kode adalah 60 detik; batas maksimum yang ditegakkan oleh kode adalah 86400 detik."
 
-#: kb/admin.py:263 kb/models.py:1149
+#: kb/admin.py:267 kb/models.py:1149
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "Berapa lama artikel yang diterbitkan dan dihapus tetap dapat dipulihkan di Profil Saya → Alat admin → Antrean penghapusan sebelum penghapusan permanen. Defaultnya 7 hari. Atur ke 0 untuk menghapus permanen artikel yang diterbitkan segera setelah konfirmasi MFA."
 
-#: kb/admin.py:271
+#: kb/admin.py:276
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "Berapa lama riwayat eskalasi login/MFA gagal diingat tanpa login berhasil. Verifikasi berhasil segera menghapusnya. Defaultnya 604800 detik (7 hari)."
 
-#: kb/models.py:1226
+#: kb/models.py:1234
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "Berapa lama riwayat penguncian login/MFA gagal diingat jika pengguna tidak pernah berhasil masuk. Verifikasi kata sandi/MFA yang berhasil segera mereset riwayat penguncian terkait. Defaultnya 604800 detik (7 hari)."
 
-#: kb/admin.py:275 kb/models.py:1300
+#: kb/admin.py:280 kb/models.py:1308
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "Berapa lama pemeriksaan login/MFA diblokir setelah tahap ini dipicu."
 
-#: kb/admin.py:276 kb/models.py:1305
+#: kb/admin.py:281 kb/models.py:1313
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "Berapa banyak penguncian yang harus menggunakan tahap ini sebelum berpindah ke tahap berikutnya. Gunakan 0 pada tahap terakhir untuk mengulang selamanya."
 
-#: kb/admin.py:856
+#: kb/admin.py:861
 msgid "How to use these permissions:"
 msgstr "Cara menggunakan izin ini:"
 
@@ -1872,7 +1896,7 @@ msgid "I found %(count)d relevant published article."
 msgid_plural "I found %(count)d relevant published articles."
 msgstr[0] "Saya menemukan %(count)d artikel yang diterbitkan dan relevan."
 
-#: kb/admin.py:129 kb/admin.py:145 kb/admin.py:166
+#: kb/admin.py:132 kb/admin.py:148 kb/admin.py:169
 msgid "IP address"
 msgstr "Alamat IP"
 
@@ -1884,7 +1908,7 @@ msgstr "Pusat Bantuan TI"
 msgid "If manifest.json is missing, the importer will try to import all Markdown files found in the zip. For split packages, extract the package and import each part zip one by one."
 msgstr "Jika manifest.json tidak ada, pengimpor akan mencoba mengimpor semua file Markdown yang ditemukan dalam zip. Untuk paket terbagi, ekstrak paket lalu impor setiap zip bagian satu per satu."
 
-#: kb/admin.py:198
+#: kb/admin.py:201
 msgid "Image assets"
 msgstr "Aset gambar"
 
@@ -1924,7 +1948,7 @@ msgstr "Gambar yang diunggah dalam draf ini muncul di sini. Klik X untuk menghap
 msgid "Immediate"
 msgstr "Segera"
 
-#: kb/admin.py:2758
+#: kb/admin.py:2845
 msgid "Immediate permanent deletion"
 msgstr "Penghapusan permanen segera"
 
@@ -1996,7 +2020,7 @@ msgstr "Artikel yang diimpor ditetapkan ke akun admin yang melakukan impor."
 msgid "Imported articles will be owned by"
 msgstr "Artikel yang diimpor akan dimiliki oleh"
 
-#: kb/admin.py:1330 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1335 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "Tidak aktif"
 
@@ -2008,15 +2032,15 @@ msgstr "Sisipkan tautan video"
 msgid "Internal"
 msgstr "Internal"
 
-#: kb/admin.py:1218 kb/admin.py:813 kb/permissions.py:60
+#: kb/admin.py:1223 kb/admin.py:818 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "Penyetuju Artikel Internal"
 
-#: kb/admin.py:1219 kb/admin.py:817 kb/permissions.py:61
+#: kb/admin.py:1224 kb/admin.py:822 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "Manajer Artikel Internal"
 
-#: kb/admin.py:1217 kb/admin.py:809 kb/permissions.py:59
+#: kb/admin.py:1222 kb/admin.py:814 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "Penulis Artikel Internal"
 
@@ -2028,7 +2052,7 @@ msgstr "Artikel Internal"
 msgid "Internal Knowledge Repository"
 msgstr "Repositori Pengetahuan Internal"
 
-#: kb/admin.py:1216 kb/admin.py:805 kb/permissions.py:58
+#: kb/admin.py:1221 kb/admin.py:810 kb/permissions.py:58
 msgid "Internal User"
 msgstr "Pengguna Internal"
 
@@ -2044,7 +2068,7 @@ msgstr "Artikel internal"
 msgid "Internal article pages"
 msgstr "Halaman artikel internal"
 
-#: kb/admin.py:738
+#: kb/admin.py:743
 msgid "Internal article permissions"
 msgstr "Izin artikel internal"
 
@@ -2064,7 +2088,7 @@ msgstr "Artikel internal milik Anda."
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "Tambahan manajer internal. Dapat melihat artikel publik/internal, membuat, mengedit/mengelola, meninjau, menyetujui/menolak kiriman internal, dan menghapus artikel internal dalam cakupan. Penghapusan artikel internal yang diterbitkan memerlukan konfirmasi MFA."
 
-#: kb/admin.py:746
+#: kb/admin.py:751
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "Peran internal adalah izin tambahan. Pengguna internal tetap dapat melihat artikel umum/publik. Gunakan grup Pengguna Internal / Penulis Artikel Internal / Penyetuju Artikel Internal / Manajer Artikel Internal bila memungkinkan; centang kotak langsung ini hanya untuk pengecualian."
 
@@ -2075,6 +2099,10 @@ msgstr "Tambahan penampil internal. Dapat melihat artikel publik dan artikel int
 #: kb/permissions.py:166
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "Tambahan penulis internal. Dapat melihat artikel publik/internal, membuat atau mengelola draf/kiriman artikel internal sendiri, dan menghapus artikel internal sendiri. Penghapusan artikel internal yang diterbitkan memerlukan konfirmasi MFA."
+
+#: kb/admin.py:2621
+msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
+msgstr "Alamat IPv4/IPv6 atau rentang CIDR tidak valid: %(value)s"
 
 #: website/templates/login.html:77
 msgid "Invalid account credentials. Please check your username and password."
@@ -2124,7 +2152,7 @@ msgstr "Basis Pengetahuan"
 msgid "Keep update pending / Save review edits"
 msgstr "Biarkan pembaruan menunggu / Simpan edit tinjauan"
 
-#: kb/admin.py:180 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:183 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
 msgid "Keywords"
 msgstr "Kata kunci"
 
@@ -2132,11 +2160,11 @@ msgstr "Kata kunci"
 msgid "Keywords: %(keywords)s"
 msgstr "Kata kunci: %(keywords)s"
 
-#: kb/admin.py:1356
+#: kb/admin.py:1361
 msgid "Knowledge Repository Permissions"
 msgstr "Izin Repositori Pengetahuan"
 
-#: kb/admin.py:1351
+#: kb/admin.py:1356
 msgid "Knowledge Repository Roles"
 msgstr "Peran Repositori Pengetahuan"
 
@@ -2148,11 +2176,11 @@ msgstr "Administrator Repositori Pengetahuan. Dapat membuat/menerbitkan artikel 
 msgid "Knowledge Repository article."
 msgstr "Artikel Repositori Pengetahuan."
 
-#: kb/admin.py:1062
+#: kb/admin.py:1067
 msgid "Knowledge Repository role"
 msgstr "Peran Repositori Pengetahuan"
 
-#: kb/admin.py:1047
+#: kb/admin.py:1052
 msgid "Knowledge Repository role group"
 msgstr "Grup peran Repositori Pengetahuan"
 
@@ -2160,11 +2188,11 @@ msgstr "Grup peran Repositori Pengetahuan"
 msgid "Knowledge Repository role guide"
 msgstr "Panduan peran Repositori Pengetahuan"
 
-#: kb/admin.py:1058
+#: kb/admin.py:1063
 msgid "Knowledge Repository role information"
 msgstr "Informasi peran Repositori Pengetahuan"
 
-#: kb/admin.py:720
+#: kb/admin.py:725
 msgid "Knowledge Repository role permissions"
 msgstr "Izin peran Repositori Pengetahuan"
 
@@ -2172,15 +2200,15 @@ msgstr "Izin peran Repositori Pengetahuan"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "Jenis akun LDAP harus menggunakan Active Directory sebagai sumber autentikasi."
 
-#: kb/admin.py:589
+#: kb/admin.py:594
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "Jenis akun LDAP harus menggunakan pengguna Active Directory sebagai sumber. Pilih pengguna LDAP/admin LDAP dengan pengguna Active Directory, atau pilih Pengguna/Admin dengan pengguna Lokal."
 
-#: kb/admin.py:1339 kb/models.py:35
+#: kb/admin.py:1344 kb/models.py:35
 msgid "LDAP admin"
 msgstr "Admin LDAP"
 
-#: kb/admin.py:1343 kb/models.py:34
+#: kb/admin.py:1348 kb/models.py:34
 msgid "LDAP user"
 msgstr "Pengguna LDAP"
 
@@ -2212,23 +2240,23 @@ msgstr "Terakhir diperbarui"
 msgid "Last verified"
 msgstr "Terakhir diverifikasi"
 
-#: kb/admin.py:119
+#: kb/admin.py:122
 msgid "Last verified at"
 msgstr "Terakhir diverifikasi pada"
 
-#: kb/admin.py:260
+#: kb/admin.py:264
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "Bidang kompatibilitas lama. Gunakan kotak centang Aktif bawaan pada akun pengguna untuk mengatur apakah pengguna dapat masuk."
 
-#: kb/admin.py:107
+#: kb/admin.py:110
 msgid "Legacy main-site access"
 msgstr "Akses situs utama lama"
 
-#: kb/admin.py:2559
+#: kb/admin.py:2564
 msgid "Like"
 msgstr "Suka"
 
-#: kb/admin.py:2440 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2445 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Suka"
 
@@ -2252,7 +2280,7 @@ msgstr "Login akun lokal"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "Jenis akun lokal harus menggunakan pengguna Lokal sebagai sumber autentikasi."
 
-#: kb/admin.py:597
+#: kb/admin.py:602
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "Jenis akun lokal harus menggunakan pengguna Lokal sebagai sumber. Pilih Pengguna/Admin dengan pengguna Lokal, atau pilih pengguna LDAP/admin LDAP dengan pengguna Active Directory."
 
@@ -2260,11 +2288,11 @@ msgstr "Jenis akun lokal harus menggunakan pengguna Lokal sebagai sumber. Pilih 
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "Akun lokal memerlukan verifikasi autentikator setelah masuk dengan kata sandi."
 
-#: kb/admin.py:1341
+#: kb/admin.py:1346
 msgid "Local admin"
 msgstr "Admin lokal"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3114
 msgid "Local user"
 msgstr "Pengguna lokal"
 
@@ -2272,11 +2300,11 @@ msgstr "Pengguna lokal"
 msgid "Local username or email"
 msgstr "Nama pengguna atau email lokal"
 
-#: kb/admin.py:1987
+#: kb/admin.py:1992
 msgid "Lockout duration"
 msgstr "Durasi penguncian"
 
-#: kb/admin.py:1972
+#: kb/admin.py:1977
 msgid "Lockout scope"
 msgstr "Cakupan penguncian"
 
@@ -2288,7 +2316,7 @@ msgstr "Masuk sebagai"
 msgid "Login"
 msgstr "Masuk"
 
-#: kb/admin.py:128
+#: kb/admin.py:131
 msgid "Login mode"
 msgstr "Mode masuk"
 
@@ -2300,7 +2328,7 @@ msgstr "Masuk untuk berkontribusi"
 msgid "Logout"
 msgstr "Keluar"
 
-#: kb/admin.py:273 kb/models.py:1290
+#: kb/admin.py:278 kb/models.py:1298
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "Angka yang lebih kecil dijalankan lebih dahulu. Gunakan 10, 20, 30, dan seterusnya agar Anda dapat menyisipkan tahap nanti."
 
@@ -2308,11 +2336,11 @@ msgstr "Angka yang lebih kecil dijalankan lebih dahulu. Gunakan 10, 20, 30, dan 
 msgid "MFA QR code"
 msgstr "Kode QR MFA"
 
-#: kb/admin.py:1384 kb/admin.py:1840
+#: kb/admin.py:1389 kb/admin.py:1845
 msgid "MFA Reset"
 msgstr "Reset MFA"
 
-#: kb/admin.py:1368
+#: kb/admin.py:1373
 msgid "MFA Status"
 msgstr "Status MFA"
 
@@ -2324,11 +2352,11 @@ msgstr "MFA direset oleh admin"
 msgid "MFA reset by user"
 msgstr "MFA direset oleh pengguna"
 
-#: kb/admin.py:1865
+#: kb/admin.py:1870
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "MFA direset untuk %(count)d perangkat yang dipilih. Pengguna harus menyiapkan autentikator baru saat masuk berikutnya."
 
-#: kb/admin.py:1536
+#: kb/admin.py:1541
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "MFA direset untuk %(count)d pengguna yang dipilih. Mereka harus menyiapkan autentikator baru saat masuk berikutnya."
 
@@ -2352,7 +2380,7 @@ msgstr "Pengaturan MFA berhasil"
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "Login MFA dibatalkan. Silakan masuk lagi."
 
-#: kb/admin.py:1967 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1972 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "Verifikasi MFA"
 
@@ -2364,7 +2392,7 @@ msgstr "Verifikasi MFA gagal"
 msgid "MFA verify success"
 msgstr "Verifikasi MFA berhasil"
 
-#: kb/admin.py:1496
+#: kb/admin.py:1501
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "MFA untuk %(username)s telah direset. Pengguna harus menyiapkan autentikator baru saat masuk berikutnya."
 
@@ -2376,15 +2404,15 @@ msgstr "Kode MFA/OTP"
 msgid "MFA/OTP code is incorrect."
 msgstr "Kode MFA/OTP salah."
 
-#: kb/admin.py:91 kb/models.py:73
+#: kb/admin.py:94 kb/models.py:73
 msgid "Main Site User Profile"
 msgstr "Profil pengguna situs utama"
 
-#: kb/admin.py:91 kb/models.py:74
+#: kb/admin.py:94 kb/models.py:74
 msgid "Main Site User Profiles"
 msgstr "Profil pengguna situs utama"
 
-#: kb/admin.py:709
+#: kb/admin.py:714
 msgid "Main site profile"
 msgstr "Profil situs utama"
 
@@ -2420,23 +2448,23 @@ msgstr "Dikelola oleh aplikasi autentikator"
 msgid "Manual setup key"
 msgstr "Kunci penyiapan manual"
 
-#: kb/admin.py:1870
+#: kb/admin.py:1875
 msgid "Mark selected MFA devices as setup pending"
 msgstr "Tandai perangkat MFA yang dipilih sebagai menunggu penyiapan"
 
-#: kb/admin.py:2389
+#: kb/admin.py:2394
 msgid "Mark selected articles as pending failed"
 msgstr "Tandai artikel yang dipilih sebagai gagal tertunda"
 
-#: kb/admin.py:1890
+#: kb/admin.py:1895
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "Penyiapan MFA ditandai sebagai menunggu untuk pengguna %(username)s"
 
-#: kb/admin.py:2412
+#: kb/admin.py:2417
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "Artikel %(title)s ditandai sebagai persetujuan gagal dari Admin Django"
 
-#: kb/admin.py:2400 kb/admin.py:2474
+#: kb/admin.py:2405 kb/admin.py:2479
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Ditandai sebagai gagal tertunda oleh admin. Harap tinjau artikel ini dan kirim ulang untuk persetujuan."
 
@@ -2444,15 +2472,15 @@ msgstr "Ditandai sebagai gagal tertunda oleh admin. Harap tinjau artikel ini dan
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Maksimum %(limit)s gambar per artikel."
 
-#: kb/admin.py:272 kb/models.py:1245
+#: kb/admin.py:277 kb/models.py:1253
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "Jumlah maksimum pertanyaan Ask OpenKB AI yang diterima per pengguna dalam jendela tetap 24 jam. Pertanyaan pertama yang diterima memulai jendela, dan pertanyaan berikutnya tidak memperpanjangnya. Default: 20."
 
-#: kb/admin.py:265 kb/models.py:1166
+#: kb/admin.py:269 kb/models.py:1166
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "Lebar tampilan maksimum pemutar video artikel dalam piksel. Video tetap responsif dan mempertahankan rasio 16:9 pada layar yang lebih kecil. Nilai default adalah 720 px. Rentang yang diizinkan: 160 hingga 1920 px."
 
-#: kb/admin.py:264 kb/models.py:1157
+#: kb/admin.py:268 kb/models.py:1157
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "Jumlah maksimum gambar yang boleh ditempel atau diunggah per artikel, termasuk versi draf, tertunda, dipublikasikan, dan pembaruan tertunda. Defaultnya 50. Atur ke 0 untuk menonaktifkan unggahan gambar artikel."
 
@@ -2488,11 +2516,11 @@ msgstr "Halaman artikel paling disukai"
 msgid "Most recent article pages"
 msgstr "Halaman artikel terbaru"
 
-#: kb/admin.py:1276 website/templates/profile.html:190
+#: kb/admin.py:1281 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "Autentikasi multifaktor"
 
-#: kb/admin.py:571
+#: kb/admin.py:576
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "Harus sesuai dengan Jenis Akun. Pengguna Lokal/Admin Lokal menggunakan pengguna Lokal. Pengguna LDAP/admin LDAP menggunakan pengguna Active Directory. Untuk mengubah akun LDAP menjadi akun lokal, atur Jenis Akun ke Pengguna atau Admin dan Sumber ke pengguna Lokal, lalu atur kata sandi lokal."
 
@@ -2552,11 +2580,15 @@ msgstr "Email atau nama pengguna NextLabs AD"
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs Repositori Pengetahuan TI"
 
+#: kb/admin.py:2714
+msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
+msgstr "Nginx tidak lagi menyimpan daftar izin IP Admin statis. Secara default, semua alamat IPv4 dan IPv6 dapat mencapai pemeriksaan akses Django Admin. Untuk membatasi akses, masukkan rentang IP/CIDR yang diizinkan dan aktifkan daftar izin. /admin/login/ tetap disembunyikan dengan 404 dan MFA Admin tetap diperlukan."
+
 #: kb/admin_audit.py:212
 msgid "No"
 msgstr "Tidak"
 
-#: kb/admin.py:1038 kb/admin.py:1089 kb/permissions.py:400
+#: kb/admin.py:1043 kb/admin.py:1094 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "Tidak ada izin peran Repositori Pengetahuan"
 
@@ -2644,7 +2676,7 @@ msgstr "Tidak ada tinjauan artikel tertunda yang cocok dengan pencarian Anda."
 msgid "No pending update"
 msgstr "Tidak ada pembaruan tertunda"
 
-#: kb/admin.py:1093
+#: kb/admin.py:1098
 msgid "No permissions"
 msgstr "Tidak ada izin"
 
@@ -2676,7 +2708,7 @@ msgstr "Tidak ada file unggahan tak terpakai yang dipilih untuk dihapus."
 msgid "No stray uploaded files found."
 msgstr "Tidak ada file unggahan tidak terpakai yang ditemukan."
 
-#: kb/admin.py:1075
+#: kb/admin.py:1080
 msgid "No users"
 msgstr "Tidak ada pengguna"
 
@@ -2684,11 +2716,11 @@ msgstr "Tidak ada pengguna"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "Ekspor normal otomatis menjadi paket terbagi jika kontennya terlalu besar. Paket terbagi berisi zip bagian yang dapat diimpor di folder parts/; ekstrak paket lalu impor setiap zip bagian secara berurutan."
 
-#: kb/admin.py:1817
+#: kb/admin.py:1822
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "Tidak dienkripsi. Reset perangkat MFA pengguna ini dan minta pengguna menyiapkan MFA lagi."
 
-#: kb/admin.py:2244
+#: kb/admin.py:2249
 msgid "Not found"
 msgstr "Tidak ditemukan"
 
@@ -2700,7 +2732,7 @@ msgstr "Tidak membantu"
 msgid "Not required"
 msgstr "Tidak diperlukan"
 
-#: kb/admin.py:1814
+#: kb/admin.py:1819
 msgid "Not set"
 msgstr "Belum diatur"
 
@@ -2708,7 +2740,7 @@ msgstr "Belum diatur"
 msgid "Not set up"
 msgstr "Belum disiapkan"
 
-#: kb/admin.py:109
+#: kb/admin.py:112
 msgid "Notes"
 msgstr "Catatan"
 
@@ -2716,7 +2748,7 @@ msgstr "Catatan"
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "Jumlah artikel yang diterbitkan yang ditampilkan per halaman pada pencarian/hasil dan pada setiap kolom artikel beranda seperti Topik Tren, Paling Disukai, dan Artikel Terbaru. Rentang yang disarankan: 5 hingga 100. Defaultnya 10."
 
-#: kb/admin.py:269 kb/models.py:1208
+#: kb/admin.py:273 kb/models.py:1208
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Jumlah baris yang ditampilkan per halaman di tabel log Admin Django. Rentang yang disarankan: 50 hingga 500. Default adalah 200."
 
@@ -2724,15 +2756,15 @@ msgstr "Jumlah baris yang ditampilkan per halaman di tabel log Admin Django. Ren
 msgid "Number of unique session views for this article."
 msgstr "Jumlah tampilan sesi unik untuk artikel ini."
 
-#: kb/admin.py:274 kb/models.py:1295
+#: kb/admin.py:279 kb/models.py:1303
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "Jumlah percobaan kata sandi/MFA salah yang diperlukan sebelum tahap ini memblokir pengguna."
 
-#: kb/admin.py:2238
+#: kb/admin.py:2243
 msgid "OK"
 msgstr "OK"
 
-#: kb/admin.py:2228
+#: kb/admin.py:2233
 msgid "Object ID %(object_id)s"
 msgstr "ID Objek %(object_id)s"
 
@@ -2751,10 +2783,6 @@ msgstr "Hanya file impor .zip yang diizinkan."
 #: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Hanya gambar PNG, JPG, GIF, atau WEBP yang diperbolehkan."
-
-#: kb/admin.py:2655
-msgid "Only superusers connecting from these CIDR/IP ranges can access /admin/. Django Admin also requires an extra MFA verification. The admin MFA idle timeout controls how long the admin area may remain inactive before the admin verification is cleared. Direct /admin/login/ is always hidden with 404. Use comma or newline separated CIDR/IP values, for example: 10.65.0.0/16, 127.0.0.1/32."
-msgstr "Hanya superuser yang terhubung dari rentang CIDR/IP ini dapat mengakses /admin/. Admin Django juga memerlukan verifikasi MFA tambahan. Batas waktu tidak aktif MFA admin mengatur berapa lama area admin dapat tetap tidak aktif sebelum verifikasi admin dihapus. /admin/login/ langsung selalu disembunyikan dengan 404. Gunakan nilai CIDR/IP yang dipisahkan dengan koma atau baris baru, misalnya: 10.65.0.0/16, 127.0.0.1/32."
 
 #: website/templates/admin_clean_stray_upload_files.html:118
 msgid "Open"
@@ -2780,7 +2808,7 @@ msgstr "OpenKB AI sementara tidak tersedia. Coba lagi nanti atau hubungi dukunga
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI sedang berpikir..."
 
-#: kb/admin.py:244 kb/models.py:1244
+#: kb/admin.py:248 kb/models.py:1252
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "Permintaan OpenKB AI per 24 jam"
 
@@ -2792,7 +2820,7 @@ msgstr "Pertanyaan OpenKB AI"
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI dibatasi laju"
 
-#: kb/admin.py:2642
+#: kb/admin.py:2699
 msgid "OpenKB AI rate limits"
 msgstr "Batas laju OpenKB AI"
 
@@ -2804,11 +2832,15 @@ msgstr "OpenKB AI terlalu lama merespons. Coba lagi nanti atau hubungi dukungan 
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "Folder data OpenKB tidak ditemukan. Periksa OPENKB_DATA_DIR di settings.py."
 
-#: kb/admin.py:2336
+#: kb/admin.py:2341
 msgid "OpenKB files"
 msgstr "File OpenKB"
 
-#: kb/admin.py:218
+#: kb/admin.py:275 kb/models.py:1225
+msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
+msgstr "Alamat IPv4/IPv6 atau rentang CIDR opsional yang dipisahkan dengan koma, spasi, atau baris baru. Contoh: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Biarkan kosong saat daftar izin dinonaktifkan."
+
+#: kb/admin.py:221
 msgid "Original name"
 msgstr "Nama asli"
 
@@ -2828,7 +2860,7 @@ msgstr "Artikel yatim dihapus"
 msgid "Orphan article pages"
 msgstr "Halaman artikel yatim"
 
-#: kb/admin.py:173 website/templates/admin_bulk_articles.html:144 website/templates/admin_deletion_queue.html:122 website/templates/edit_my_suggestions.html:228
+#: kb/admin.py:176 website/templates/admin_bulk_articles.html:144 website/templates/admin_deletion_queue.html:122 website/templates/edit_my_suggestions.html:228
 msgid "Owner"
 msgstr "Pemilik"
 
@@ -2856,7 +2888,7 @@ msgstr "Halaman %(page)s dari %(total)s"
 msgid "Page not found"
 msgstr "Halaman tidak ditemukan"
 
-#: kb/admin.py:1197 kb/admin.py:1966 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1202 kb/admin.py:1971 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Kata sandi"
 
@@ -2916,15 +2948,15 @@ msgstr "Kata sandi disinkronkan dengan kata sandi perusahaan Anda."
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Kata sandi disinkronkan dengan kata sandi perusahaan Anda. Ubah melalui sistem kata sandi perusahaan."
 
-#: kb/admin.py:1789
+#: kb/admin.py:1794
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "Penghitung penguncian kata sandi/MFA direset untuk %(count)d profil yang dipilih."
 
-#: kb/admin.py:1568
+#: kb/admin.py:1573
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "Penghitung penguncian kata sandi/MFA direset untuk %(count)d pengguna yang dipilih."
 
-#: kb/admin.py:1452
+#: kb/admin.py:1457
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "Penghitung penguncian kata sandi/MFA direset untuk %(username)s."
 
@@ -2944,7 +2976,7 @@ msgstr "Tempel tautan YouTube atau Vimeo, atau tautan HTTPS langsung yang berakh
 msgid "Pasted images"
 msgstr "Gambar yang ditempel"
 
-#: kb/admin.py:131 kb/admin.py:147 kb/admin.py:168 kb/admin.py:2100 kb/admin.py:2257
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2105 kb/admin.py:2262
 msgid "Path"
 msgstr "Jalur"
 
@@ -2984,23 +3016,23 @@ msgstr "Riwayat komentar gagal tertunda"
 msgid "Pending update"
 msgstr "Pembaruan tertunda"
 
-#: kb/admin.py:188 kb/models.py:388
+#: kb/admin.py:191 kb/models.py:388
 msgid "Pending update body"
 msgstr "Pembaruan tertunda - isi"
 
-#: kb/admin.py:190 kb/models.py:400
+#: kb/admin.py:193 kb/models.py:400
 msgid "Pending update image assets"
 msgstr "Pembaruan tertunda - aset gambar"
 
-#: kb/admin.py:189 kb/models.py:394
+#: kb/admin.py:192 kb/models.py:394
 msgid "Pending update keywords"
 msgstr "Pembaruan tertunda - kata kunci"
 
-#: kb/admin.py:2325
+#: kb/admin.py:2330
 msgid "Pending update review"
 msgstr "Pembaruan tertunda - peninjauan"
 
-#: kb/admin.py:187 kb/models.py:383
+#: kb/admin.py:190 kb/models.py:383
 msgid "Pending update title"
 msgstr "Pembaruan tertunda - judul"
 
@@ -3016,7 +3048,7 @@ msgstr "Pembaruan yang menunggu hanya dapat tetap menunggu, disetujui sebagai Di
 msgid "Permalink"
 msgstr "Tautan permanen"
 
-#: kb/admin.py:202 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
+#: kb/admin.py:205 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
 msgid "Permanent deletion after"
 msgstr "Penghapusan permanen setelah"
 
@@ -3036,11 +3068,11 @@ msgstr "%(count)s artikel yatim dihapus permanen."
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "%(count)s artikel dalam antrean dihapus permanen."
 
-#: kb/admin.py:874
+#: kb/admin.py:879
 msgid "Permission guide"
 msgstr "Panduan izin"
 
-#: kb/admin.py:1100
+#: kb/admin.py:1105
 msgid "Permissions"
 msgstr "Izin"
 
@@ -3116,7 +3148,7 @@ msgstr "Tunggu sebentar, lalu coba lagi."
 msgid "Please wait briefly before trying again."
 msgstr "Tunggu sebentar sebelum mencoba lagi."
 
-#: kb/admin.py:2723
+#: kb/admin.py:2781
 msgid "Policy guide"
 msgstr "Panduan kebijakan"
 
@@ -3128,11 +3160,11 @@ msgstr "Didukung oleh"
 msgid "Powered by openKB"
 msgstr "Didukung oleh openKB"
 
-#: kb/admin.py:108 kb/admin.py:1183
+#: kb/admin.py:111 kb/admin.py:1188
 msgid "Preferred language"
 msgstr "Bahasa pilihan"
 
-#: kb/admin.py:261 kb/models.py:66
+#: kb/admin.py:265 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "Bahasa pilihan untuk antarmuka pengguna wiki utama."
 
@@ -3156,11 +3188,11 @@ msgstr "Pemilik sebelumnya"
 msgid "Previous status"
 msgstr "Status sebelumnya"
 
-#: kb/admin.py:199 kb/models.py:433
+#: kb/admin.py:202 kb/models.py:433
 msgid "Previous status before deletion queue"
 msgstr "Status sebelumnya sebelum antrean penghapusan"
 
-#: kb/admin.py:1168
+#: kb/admin.py:1173
 msgid "Profile account type"
 msgstr "Jenis akun profil"
 
@@ -3232,11 +3264,11 @@ msgstr "Dimasukkan ke antrean dari pembersihan artikel yatim."
 msgid "Ran admin action '%(action)s'"
 msgstr "Tindakan admin '%(action)s' dijalankan"
 
-#: kb/admin.py:2193
+#: kb/admin.py:2198
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "Tindakan admin '%(action)s' dijalankan pada %(target)s"
 
-#: kb/admin.py:196
+#: kb/admin.py:199
 msgid "Raw path"
 msgstr "Jalur mentah"
 
@@ -3256,7 +3288,7 @@ msgstr "Siap untuk penghapusan permanen terjadwal"
 msgid "Recommended articles"
 msgstr "Artikel yang direkomendasikan"
 
-#: kb/admin.py:2240
+#: kb/admin.py:2245
 msgid "Redirect"
 msgstr "Alihkan"
 
@@ -3272,7 +3304,7 @@ msgstr "Muat ulang"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "Muat ulang halaman dan coba lagi. Jika masalah berlanjut, masuk kembali."
 
-#: kb/admin.py:1212 kb/admin.py:781 kb/permissions.py:54
+#: kb/admin.py:1217 kb/admin.py:786 kb/permissions.py:54
 msgid "Regular User"
 msgstr "Pengguna Biasa"
 
@@ -3280,7 +3312,7 @@ msgstr "Pengguna Biasa"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "Pengguna Biasa adalah peran penampil publik cadangan. Peran internal adalah peran tambahan yang juga mencakup melihat artikel publik. Izin pengguna langsung masih dapat dicentang untuk kombinasi kustom. Django mengevaluasi izin grup dan izin pengguna langsung secara bersama-sama."
 
-#: kb/admin.py:1663
+#: kb/admin.py:1668
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Peran Pengguna Biasa ditetapkan kepada %(count)d pengguna yang dipilih."
 
@@ -3308,7 +3340,7 @@ msgstr "Hapus item dari riwayat pencarian"
 msgid "Removed by uploader from editor"
 msgstr "Dihapus oleh pengunggah dari editor"
 
-#: kb/admin.py:252 kb/models.py:1304
+#: kb/admin.py:256 kb/models.py:1312
 msgid "Repeat count"
 msgstr "Jumlah pengulangan"
 
@@ -3316,7 +3348,7 @@ msgstr "Jumlah pengulangan"
 msgid "Request failed. Check Django terminal logs."
 msgstr "Permintaan gagal. Periksa log terminal Django."
 
-#: kb/admin.py:132 kb/admin.py:148 kb/admin.py:169
+#: kb/admin.py:135 kb/admin.py:151 kb/admin.py:172
 msgid "Request method"
 msgstr "Metode permintaan"
 
@@ -3332,19 +3364,19 @@ msgstr "Waktu permintaan habis"
 msgid "Request too large"
 msgstr "Permintaan terlalu besar"
 
-#: kb/admin.py:1377 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1382 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "Reset ulang MFA"
 
-#: kb/admin.py:1506
+#: kb/admin.py:1511
 msgid "Reset MFA for %(username)s"
 msgstr "Reset MFA untuk %(username)s"
 
-#: kb/admin.py:1513
+#: kb/admin.py:1518
 msgid "Reset MFA for selected users"
 msgstr "Reset MFA untuk pengguna yang dipilih"
 
-#: kb/admin.py:1490 kb/admin.py:1529 kb/admin.py:1858
+#: kb/admin.py:1495 kb/admin.py:1534 kb/admin.py:1863
 msgid "Reset MFA for user %(username)s"
 msgstr "Reset MFA untuk pengguna %(username)s"
 
@@ -3352,7 +3384,7 @@ msgstr "Reset MFA untuk pengguna %(username)s"
 msgid "Reset MFA now"
 msgstr "Reset MFA sekarang"
 
-#: kb/admin.py:120
+#: kb/admin.py:123
 msgid "Reset at"
 msgstr "Direset pada"
 
@@ -3360,35 +3392,35 @@ msgstr "Direset pada"
 msgid "Reset lockout now"
 msgstr "Reset penguncian sekarang"
 
-#: kb/admin.py:1393
+#: kb/admin.py:1398
 msgid "Reset password/MFA lockout"
 msgstr "Reset penguncian kata sandi/MFA"
 
-#: kb/admin.py:1460
+#: kb/admin.py:1465
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "Reset penguncian kata sandi/MFA untuk %(username)s"
 
-#: kb/admin.py:1762
+#: kb/admin.py:1767
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "Reset penguncian kata sandi/MFA untuk profil yang dipilih"
 
-#: kb/admin.py:1541
+#: kb/admin.py:1546
 msgid "Reset password/MFA lockout for selected users"
 msgstr "Reset penguncian kata sandi/MFA untuk pengguna yang dipilih"
 
-#: kb/admin.py:1446 kb/admin.py:1561 kb/admin.py:1782
+#: kb/admin.py:1451 kb/admin.py:1566 kb/admin.py:1787
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "Reset penguncian kata sandi/MFA untuk pengguna %(username)s"
 
-#: kb/admin.py:1842
+#: kb/admin.py:1847
 msgid "Reset selected MFA devices"
 msgstr "Reset perangkat MFA yang dipilih"
 
-#: kb/admin.py:1836
+#: kb/admin.py:1841
 msgid "Reset this user's MFA"
 msgstr "Reset MFA pengguna ini"
 
-#: kb/admin.py:1378
+#: kb/admin.py:1383
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Mereset autentikator pengguna ini dan memerlukan penyiapan QR baru. Kunci autentikator baru bersifat privat dan tidak ditampilkan kepada admin."
 
@@ -3452,7 +3484,7 @@ msgstr "Tinjau kiriman umum dan internal dari satu halaman. Gunakan menu tarik-t
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "Tinjau artikel umum dan pembaruan publik yang menunggu persetujuan."
 
-#: kb/admin.py:186 kb/admin.py:2435
+#: kb/admin.py:189 kb/admin.py:2440
 msgid "Review history"
 msgstr "Riwayat peninjauan"
 
@@ -3468,7 +3500,7 @@ msgstr "Tinjau artikel internal yang menunggu persetujuan."
 msgid "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here."
 msgstr "Mode tinjauan: Anda dapat mengedit artikel atau pembaruan yang menunggu ini, lalu menyetujui atau menolaknya. Visibilitas tidak dapat diubah di sini."
 
-#: kb/admin.py:185
+#: kb/admin.py:188
 msgid "Review notes"
 msgstr "Catatan tinjauan"
 
@@ -3584,11 +3616,11 @@ msgstr "Pilih semua"
 msgid "Select all stray files"
 msgstr "Pilih semua file sisa"
 
-#: kb/admin.py:899
+#: kb/admin.py:904
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "Pilih pengguna yang harus menjadi anggota grup ini. Gunakan kotak filter di kiri untuk mencari pengguna, pindahkan pengguna yang dipilih ke kanan, lalu simpan. Menghapus pengguna dari kanan hanya menghapus keanggotaan grup ini."
 
-#: kb/admin.py:2246 kb/views/errors.py:65
+#: kb/admin.py:2251 kb/views/errors.py:65
 msgid "Server error"
 msgstr "Kesalahan server"
 
@@ -3596,35 +3628,35 @@ msgstr "Kesalahan server"
 msgid "Service unavailable"
 msgstr "Layanan tidak tersedia"
 
-#: kb/admin.py:1639
+#: kb/admin.py:1644
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "Tetapkan peran untuk pengguna %(username)s menjadi %(role)s (%(status)s)"
 
-#: kb/admin.py:1696
+#: kb/admin.py:1701
 msgid "Set selected users as Admin Users"
 msgstr "Tetapkan pengguna yang dipilih sebagai Pengguna Admin"
 
-#: kb/admin.py:1676
+#: kb/admin.py:1681
 msgid "Set selected users as Article Approver"
 msgstr "Tetapkan pengguna yang dipilih sebagai Penyetuju Artikel"
 
-#: kb/admin.py:1686
+#: kb/admin.py:1691
 msgid "Set selected users as Article Manager"
 msgstr "Tetapkan pengguna yang dipilih sebagai Manajer Artikel"
 
-#: kb/admin.py:1666
+#: kb/admin.py:1671
 msgid "Set selected users as Article Writer"
 msgstr "Tetapkan pengguna yang dipilih sebagai Penulis Artikel"
 
-#: kb/admin.py:1572
+#: kb/admin.py:1577
 msgid "Set selected users as Disabled User"
 msgstr "Tetapkan pengguna yang dipilih sebagai Pengguna Dinonaktifkan"
 
-#: kb/admin.py:1656
+#: kb/admin.py:1661
 msgid "Set selected users as Regular User"
 msgstr "Tetapkan pengguna yang dipilih sebagai Pengguna Biasa"
 
-#: kb/admin.py:769
+#: kb/admin.py:774
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Tetapkan peran normal pengguna dari bagian Grup. Grup kustom non-peran dapat digunakan kemudian untuk hal seperti notifikasi."
 
@@ -3648,7 +3680,7 @@ msgstr "Siapkan MFA sebelum menghapus artikel yang diterbitkan."
 msgid "Set up authenticator"
 msgstr "Siapkan autentikator"
 
-#: kb/admin.py:1364 kb/mfa.py:136
+#: kb/admin.py:1369 kb/mfa.py:136
 msgid "Setup pending"
 msgstr "Menunggu penyiapan"
 
@@ -3704,11 +3736,11 @@ msgstr "Masuk dengan akun Repositori Pengetahuan lokal Anda."
 msgid "Sign out and go to sign in"
 msgstr "Keluar dan buka halaman masuk"
 
-#: kb/admin.py:248 kb/admin.py:97 kb/models.py:1254
+#: kb/admin.py:100 kb/admin.py:252 kb/models.py:1262
 msgid "Site setting"
 msgstr "Pengaturan situs"
 
-#: kb/admin.py:97 kb/models.py:1255 kb/models.py:1258
+#: kb/admin.py:100 kb/models.py:1263 kb/models.py:1266
 msgid "Site settings"
 msgstr "Pengaturan situs"
 
@@ -3716,11 +3748,11 @@ msgstr "Pengaturan situs"
 msgid "Size"
 msgstr "Ukuran"
 
-#: kb/admin.py:2824
+#: kb/admin.py:2911
 msgid "Size (KB)"
 msgstr "Ukuran (KB)"
 
-#: kb/admin.py:220
+#: kb/admin.py:223
 msgid "Size bytes"
 msgstr "Ukuran dalam byte"
 
@@ -3772,7 +3804,7 @@ msgstr "Terjadi kesalahan saat memproses tindakan artikel yatim. Tidak ada perub
 msgid "Something went wrong."
 msgstr "Terjadi kesalahan."
 
-#: kb/admin.py:106
+#: kb/admin.py:109
 msgid "Source"
 msgstr "Sumber"
 
@@ -3780,15 +3812,15 @@ msgstr "Sumber"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "Paket ekspor terpisah tidak berisi file zip bagian yang dapat diimpor."
 
-#: kb/models.py:1319
+#: kb/models.py:1327
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "Tahap %(order)s: %(failures)s kegagalan -> %(block)s detik, ulangi %(repeat)s"
 
-#: kb/admin.py:2682
+#: kb/admin.py:2740
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "Tahap %(order)s: %(failures)s kegagalan -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:249 kb/models.py:1289
+#: kb/admin.py:253 kb/models.py:1297
 msgid "Stage order"
 msgstr "Urutan tahap"
 
@@ -3796,19 +3828,19 @@ msgstr "Urutan tahap"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Mulai ketik judul atau isi artikel untuk melihat kata kunci yang ada dan cocok."
 
-#: kb/admin.py:182 kb/admin.py:2251 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:246
+#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:246
 msgid "Status"
 msgstr "Status artikel"
 
-#: kb/admin.py:149
+#: kb/admin.py:152
 msgid "Status code"
 msgstr "Kode status"
 
-#: kb/admin.py:2607
+#: kb/admin.py:2664
 msgid "Stray upload cleanup"
 msgstr "Pembersihan unggahan tersisa"
 
-#: kb/admin.py:233 kb/models.py:1139
+#: kb/admin.py:236 kb/models.py:1139
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "Umur minimum pembersihan unggahan tersisa (menit)"
 
@@ -3832,11 +3864,11 @@ msgstr "Kirim pembaruan untuk persetujuan"
 msgid "Submitted by"
 msgstr "Dikirim oleh"
 
-#: kb/admin.py:125
+#: kb/admin.py:128
 msgid "Success"
 msgstr "Berhasil"
 
-#: kb/admin.py:2717
+#: kb/admin.py:2775
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "Verifikasi kata sandi yang berhasil mereset riwayat penguncian kata sandi. Verifikasi MFA yang berhasil mereset riwayat penguncian MFA. Admin dapat mereset penghitung pengguna dari halaman admin Pengguna."
 
@@ -3844,11 +3876,11 @@ msgstr "Verifikasi kata sandi yang berhasil mereset riwayat penguncian kata sand
 msgid "Suggest article"
 msgstr "Sarankan artikel"
 
-#: kb/admin.py:95 kb/models.py:479
+#: kb/admin.py:98 kb/models.py:479
 msgid "Suggested Article"
 msgstr "Artikel yang disarankan"
 
-#: kb/admin.py:95 kb/models.py:480
+#: kb/admin.py:98 kb/models.py:480
 msgid "Suggested Articles"
 msgstr "Artikel yang disarankan"
 
@@ -3864,23 +3896,23 @@ msgstr "Kata kunci yang disarankan"
 msgid "Supported zip format"
 msgstr "Format zip yang didukung"
 
-#: kb/admin.py:2231
+#: kb/admin.py:2236
 msgid "Target"
 msgstr "Target"
 
-#: kb/admin.py:140
+#: kb/admin.py:143
 msgid "Target app"
 msgstr "Aplikasi target"
 
-#: kb/admin.py:141 kb/admin.py:2208
+#: kb/admin.py:144 kb/admin.py:2213
 msgid "Target model"
 msgstr "Model target"
 
-#: kb/admin.py:143
+#: kb/admin.py:146
 msgid "Target object"
 msgstr "Objek target"
 
-#: kb/admin.py:142
+#: kb/admin.py:145
 msgid "Target object ID"
 msgstr "ID objek target"
 
@@ -3888,7 +3920,7 @@ msgstr "ID objek target"
 msgid "Thank you. Your vote has been saved."
 msgstr "Terima kasih. Suara Anda telah disimpan."
 
-#: kb/admin.py:1235
+#: kb/admin.py:1240
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "Kotak centang Aktif mengatur apakah akun dapat masuk sama sekali. Pengguna Biasa hanya merupakan peran penampil cadangan dan otomatis dihapus ketika peran Penulis, Penyetuju, Manajer, atau peran internal tingkat tinggi ditetapkan. Pengguna Internal adalah peran penampil tambahan dan dapat digabungkan dengan Pengguna Biasa. Grup kustom non-peran tetap dapat digunakan kemudian untuk notifikasi atau pengelompokan departemen."
 
@@ -3908,7 +3940,7 @@ msgstr "Aplikasi membutuhkan waktu terlalu lama untuk merespons."
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "Artikel tidak dapat ditetapkan dengan aman. Tidak ada penetapan yang diterapkan. Periksa log dan coba lagi."
 
-#: kb/admin.py:828
+#: kb/admin.py:833
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Kotak centang di bawah ini adalah pengecualian khusus per pengguna hanya untuk akses artikel. Kotak ini berguna ketika satu pengguna memerlukan akses artikel sedikit lebih banyak daripada grupnya, tanpa membuat grup baru. Akses Admin Django hanya diberikan melalui grup Pengguna Admin/status superuser."
 
@@ -3956,7 +3988,7 @@ msgstr "Permintaan tidak dapat diverifikasi."
 msgid "The reset is recorded in the authentication activity log."
 msgstr "Reset dicatat dalam log aktivitas autentikasi."
 
-#: kb/admin.py:2710
+#: kb/admin.py:2768
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "Kebijakan progresif yang sama digunakan untuk kegagalan login kata sandi dan kegagalan kode MFA, tetapi penghitung kata sandi dan MFA dilacak terpisah untuk setiap pengguna."
 
@@ -4068,11 +4100,11 @@ msgstr "Gambar ini sudah diunggah dalam draf ini. Gunakan tombol pratinjau X unt
 msgid "This image is not removable from this editing session."
 msgstr "Gambar ini tidak dapat dihapus dari sesi pengeditan ini."
 
-#: kb/admin.py:842
+#: kb/admin.py:847
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "Baris ini menunjukkan hasil akhir setelah Django menggabungkan izin grup, izin pengguna langsung, dan status superuser."
 
-#: kb/admin.py:835
+#: kb/admin.py:840
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "Tindakan ini hanya menghapus izin pengguna langsung. Jika grup pengguna masih memberikan izin yang sama, izin efektif akan tetap aktif."
 
@@ -4104,7 +4136,7 @@ msgstr "Tidak suka"
 msgid "Thumbs up"
 msgstr "Suka"
 
-#: kb/admin.py:2350 kb/admin.py:753
+#: kb/admin.py:2355 kb/admin.py:758
 msgid "Timestamps"
 msgstr "Stempel waktu"
 
@@ -4192,7 +4224,7 @@ msgstr "Batalkan semua pilihan"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "Hapus centang ini untuk memblokir pengguna dari situs wiki utama."
 
-#: kb/admin.py:834
+#: kb/admin.py:839
 msgid "Unticking a checkbox"
 msgstr "Menghapus centang kotak"
 
@@ -4224,23 +4256,23 @@ msgstr "Pembaruan ditolak — Tinjau komentar admin, perbarui perubahan Anda, la
 msgid "Update progress saved. The published version is still visible, and the update has not been submitted for approval yet."
 msgstr "Progres pembaruan telah disimpan. Versi yang diterbitkan tetap terlihat, dan pembaruan belum dikirim untuk persetujuan."
 
-#: kb/admin.py:193 kb/models.py:418
+#: kb/admin.py:196 kb/models.py:418
 msgid "Update reviewed at"
 msgstr "Pembaruan ditinjau pada"
 
-#: kb/admin.py:191
+#: kb/admin.py:194
 msgid "Update status"
 msgstr "Status pembaruan"
 
-#: kb/admin.py:192 kb/models.py:413
+#: kb/admin.py:195 kb/models.py:413
 msgid "Update submitted at"
 msgstr "Pembaruan dikirim pada"
 
-#: kb/admin.py:111 kb/admin.py:207 kb/admin.py:214 kb/admin.py:245
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:249
 msgid "Updated at"
 msgstr "Diperbarui pada"
 
-#: kb/admin.py:225
+#: kb/admin.py:228
 msgid "Upload IP address"
 msgstr "Alamat IP unggahan"
 
@@ -4252,51 +4284,51 @@ msgstr "Unggah zip yang diekspor dari sistem ini, atau zip yang berisi file Mark
 msgid "Upload image"
 msgstr "Unggah gambar"
 
-#: kb/admin.py:226
+#: kb/admin.py:229
 msgid "Upload user agent"
 msgstr "Agen pengguna unggahan"
 
-#: kb/admin.py:227 website/templates/admin_clean_stray_upload_files.html:99
+#: kb/admin.py:230 website/templates/admin_clean_stray_upload_files.html:99
 msgid "Uploaded at"
 msgstr "Diunggah pada"
 
-#: kb/admin.py:221 website/templates/admin_clean_stray_upload_files.html:98
+#: kb/admin.py:224 website/templates/admin_clean_stray_upload_files.html:98
 msgid "Uploaded by"
 msgstr "Diunggah oleh"
 
-#: kb/admin.py:224
+#: kb/admin.py:227
 msgid "Uploader account type snapshot"
 msgstr "Snapshot jenis akun pengunggah"
 
-#: kb/admin.py:2819
+#: kb/admin.py:2906
 msgid "Uploader display"
 msgstr "Tampilan pengunggah"
 
-#: kb/admin.py:223
+#: kb/admin.py:226
 msgid "Uploader email snapshot"
 msgstr "Snapshot email pengunggah"
 
-#: kb/admin.py:222
+#: kb/admin.py:225
 msgid "Uploader username snapshot"
 msgstr "Snapshot nama pengguna pengunggah"
 
-#: kb/admin.py:731
+#: kb/admin.py:736
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "Gunakan Grup sebagai peran artikel publik standar pengguna. Centang kotak ini hanya ketika pengguna tertentu memerlukan izin artikel publik tambahan di luar grupnya. Grup Pengguna Dinonaktifkan menggantikan tambahan izin langsung ini."
 
-#: kb/admin.py:1051
+#: kb/admin.py:1056
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "Gunakan pemilih Anggota grup di bawah untuk menambah atau menghapus pengguna dari peran ini. Untuk pengecualian satu kali, edit pengguna tertentu dan centang kotak izin langsung Repositori Pengetahuan. Pengguna baru non-admin otomatis ditempatkan ke Pengguna Biasa saat akunnya dibuat."
 
-#: kb/admin.py:2636
+#: kb/admin.py:2693
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "Gunakan baris sebaris di bawah untuk mengatur penguncian kata sandi/MFA progresif. Masukkan durasi dalam detik; halaman admin juga menampilkan konversi menit/jam/hari yang mudah dibaca. repeat_count=0 berarti tahap berulang selamanya, yang biasanya digunakan pada baris terakhir."
 
-#: kb/admin.py:1229
+#: kb/admin.py:1234
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "Gunakan grup ini sebagai model akses utama. Pengguna Dinonaktifkan selalu memiliki prioritas tertinggi."
 
-#: kb/admin.py:1289
+#: kb/admin.py:1294
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "Gunakan ini jika pengguna diblokir sementara karena percobaan kata sandi atau MFA yang salah berulang kali. Tindakan ini hanya menghapus penghitung penguncian kata sandi dan MFA untuk pengguna ini."
 
@@ -4304,43 +4336,43 @@ msgstr "Gunakan ini jika pengguna diblokir sementara karena percobaan kata sandi
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "Gunakan ini hanya setelah memverifikasi bahwa permintaan pembukaan kunci sah."
 
-#: kb/admin.py:986
+#: kb/admin.py:991
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "Gunakan daftar kiri/kanan yang dapat dicari ini untuk menambah atau menghapus pengguna dari grup ini. Pengguna di kanan adalah anggota grup ini. Pengguna di kiri adalah pengguna yang tersedia."
 
-#: kb/admin.py:1279
+#: kb/admin.py:1284
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "Gunakan bagian ini untuk mereset penyiapan autentikator pengguna. Reset akan menghasilkan rahasia autentikator privat baru dan memaksa pengguna memindai kode QR baru saat masuk berikutnya."
 
-#: kb/admin.py:104 kb/admin.py:114 kb/admin.py:126 kb/admin.py:156 kb/admin.py:211 kb/models.py:33
+#: kb/admin.py:107 kb/admin.py:117 kb/admin.py:129 kb/admin.py:159 kb/admin.py:214 kb/models.py:33
 msgid "User"
 msgstr "Pengguna"
 
-#: kb/admin.py:92 kb/models.py:188
+#: kb/admin.py:95 kb/models.py:188
 msgid "User MFA device"
 msgstr "Perangkat MFA pengguna"
 
-#: kb/admin.py:92 kb/models.py:189
+#: kb/admin.py:95 kb/models.py:189
 msgid "User MFA devices"
 msgstr "Perangkat MFA pengguna"
 
-#: kb/admin.py:130 kb/admin.py:146 kb/admin.py:167 kb/admin.py:1993
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:1998
 msgid "User agent"
 msgstr "Agen pengguna"
 
-#: kb/admin.py:1422 kb/admin.py:1470
+#: kb/admin.py:1427 kb/admin.py:1475
 msgid "User does not exist."
 msgstr "Pengguna tidak ada."
 
-#: kb/admin.py:238 kb/models.py:1191
+#: kb/admin.py:241 kb/models.py:1191
 msgid "User session timeout (hours)"
 msgstr "Batas waktu sesi pengguna (jam)"
 
-#: kb/admin.py:2748
+#: kb/admin.py:2835
 msgid "User session timeout readable"
 msgstr "Batas waktu sesi pengguna yang mudah dibaca"
 
-#: kb/admin.py:127 kb/admin.py:157 website/templates/profile.html:124
+#: kb/admin.py:130 kb/admin.py:160 website/templates/profile.html:124
 msgid "Username"
 msgstr "Nama pengguna"
 
@@ -4348,11 +4380,11 @@ msgstr "Nama pengguna"
 msgid "Username changes are managed by administrators."
 msgstr "Perubahan nama pengguna dikelola oleh administrator."
 
-#: kb/admin.py:1070
+#: kb/admin.py:1075
 msgid "Users"
 msgstr "Pengguna"
 
-#: kb/admin.py:897 kb/admin.py:967
+#: kb/admin.py:902 kb/admin.py:972
 msgid "Users in this group"
 msgstr "Pengguna dalam grup ini"
 
@@ -4384,7 +4416,7 @@ msgstr "Lihat"
 msgid "View articles"
 msgstr "Lihat artikel"
 
-#: kb/admin.py:194 website/templates/articles.html:315 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
+#: kb/admin.py:197 website/templates/articles.html:315 website/templates/index.html:222 website/templates/index.html:294 website/templates/index.html:365 website/templates/index.html:414 website/templates/index.html:462
 msgid "View count"
 msgstr "Jumlah tayangan"
 
@@ -4400,7 +4432,7 @@ msgstr "Visibilitas"
 msgid "Visibility can be changed only before the article is published."
 msgstr "Visibilitas hanya dapat diubah sebelum artikel diterbitkan."
 
-#: kb/admin.py:212 kb/admin.py:2564
+#: kb/admin.py:215 kb/admin.py:2569
 msgid "Vote"
 msgstr "Suara"
 
@@ -4420,7 +4452,7 @@ msgstr "Selamat datang kembali, %(name)s."
 msgid "Welcome back."
 msgstr "Selamat datang kembali."
 
-#: kb/admin.py:197
+#: kb/admin.py:200
 msgid "Wiki path"
 msgstr "Jalur wiki"
 
@@ -4472,11 +4504,11 @@ msgstr "Anda tidak memiliki izin untuk menambah artikel."
 msgid "You do not have permission to add internal articles."
 msgstr "Anda tidak memiliki izin untuk menambah artikel internal."
 
-#: kb/admin.py:2358
+#: kb/admin.py:2363
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "Anda tidak memiliki izin untuk menyetujui artikel dari Admin Django."
 
-#: kb/admin.py:1575
+#: kb/admin.py:1580
 msgid "You do not have permission to assign Disabled User."
 msgstr "Anda tidak memiliki izin untuk menetapkan Pengguna Dinonaktifkan."
 
@@ -4488,15 +4520,15 @@ msgstr "Anda tidak memiliki izin untuk mengelola artikel."
 msgid "You do not have permission to manage internal articles."
 msgstr "Anda tidak memiliki izin untuk mengelola artikel internal."
 
-#: kb/admin.py:1618
+#: kb/admin.py:1623
 msgid "You do not have permission to modify users."
 msgstr "Anda tidak memiliki izin untuk mengubah pengguna."
 
-#: kb/admin.py:486
+#: kb/admin.py:491
 msgid "You do not have permission to perform this admin reset."
 msgstr "Anda tidak memiliki izin untuk menjalankan reset admin ini."
 
-#: kb/admin.py:2392
+#: kb/admin.py:2397
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "Anda tidak memiliki izin untuk menolak artikel dari Admin Django."
 
@@ -4540,7 +4572,7 @@ msgstr "Akun Anda saat ini dinonaktifkan dan tidak dapat mengakses Repositori Pe
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "Sesi admin Anda berakhir karena tidak aktif. Verifikasi MFA lagi untuk masuk kembali ke situs admin."
 
-#: kb/admin.py:1612
+#: kb/admin.py:1617
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Akun Anda sendiri ditetapkan sebagai Pengguna Dinonaktifkan. Pada permintaan berikutnya, Anda akan dialihkan ke halaman akun dinonaktifkan."
 
@@ -4548,7 +4580,7 @@ msgstr "Akun Anda sendiri ditetapkan sebagai Pengguna Dinonaktifkan. Pada permin
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Sesi Anda telah berakhir. Silakan masuk lagi sebelum mengunggah gambar."
 
-#: kb/middleware.py:251
+#: kb/middleware.py:271
 msgid "Your session has expired. Please sign in again."
 msgstr "Sesi Anda telah berakhir. Masuk lagi."
 
@@ -4600,11 +4632,11 @@ msgstr "pengguna-dihapus"
 msgid "denied"
 msgstr "ditolak"
 
-#: kb/admin.py:2680
+#: kb/admin.py:2738
 msgid "disabled"
 msgstr "dinonaktifkan"
 
-#: kb/admin.py:2680
+#: kb/admin.py:2738
 msgid "enabled"
 msgstr "diaktifkan"
 
@@ -4612,7 +4644,7 @@ msgstr "diaktifkan"
 msgid "failed"
 msgstr "gagal"
 
-#: kb/models.py:1318
+#: kb/models.py:1326
 msgid "forever"
 msgstr "selamanya"
 
@@ -4672,11 +4704,11 @@ msgstr "dialihkan"
 msgid "removed %(items)s"
 msgstr "%(items)s dihapus"
 
-#: kb/admin.py:2679
+#: kb/admin.py:2737
 msgid "repeat %(count)s time(s)"
 msgstr "ulangi %(count)s kali"
 
-#: kb/admin.py:2679
+#: kb/admin.py:2737
 msgid "repeat forever"
 msgstr "ulangi selamanya"
 
@@ -4720,6 +4752,6 @@ msgstr "admin tidak dikenal"
 msgid "unknown user"
 msgstr "pengguna tidak dikenal"
 
-#: kb/admin.py:898
+#: kb/admin.py:903
 msgid "users"
 msgstr "pengguna"

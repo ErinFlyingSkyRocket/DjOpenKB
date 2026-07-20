@@ -41,24 +41,38 @@ def _split_cidr_values(raw_value):
 
 
 def _configured_admin_networks():
-    """Return valid admin allowlist networks from Site settings.
+    """Return ``(enabled, networks)`` for the dynamic Django Admin allowlist.
 
-    If the database is not ready, fall back to the model default. Invalid entries
-    are ignored instead of breaking the whole site, but if no valid network is
-    left, /admin/ is denied closed.
+    The allowlist is disabled by default, which means source IP does not restrict
+    Admin access. When enabled, malformed or empty stored configuration fails
+    closed. The Django Admin form validates and normalises normal administrator
+    edits before they are saved.
     """
     try:
-        raw_value = SiteSetting.load().admin_allowed_cidrs
+        site_setting = SiteSetting.load()
+        enabled = bool(site_setting.admin_ip_allowlist_enabled)
+        raw_value = site_setting.admin_allowed_cidrs
     except Exception:
+        enabled = bool(SiteSetting._meta.get_field("admin_ip_allowlist_enabled").default)
         raw_value = SiteSetting._meta.get_field("admin_allowed_cidrs").default
 
+    if not enabled:
+        return False, []
+
+    values = _split_cidr_values(raw_value)
+    if not values:
+        return True, []
+
     networks = []
-    for value in _split_cidr_values(raw_value):
+    for value in values:
         try:
             networks.append(ipaddress.ip_network(value, strict=False))
         except ValueError:
-            continue
-    return networks
+            # Fail closed if the database was edited outside the validated
+            # Django Admin form and now contains malformed network data.
+            return True, []
+
+    return True, networks
 
 
 def _request_client_ip(request):
@@ -80,7 +94,13 @@ def _request_client_ip(request):
 
 
 def _admin_cidr_allowed(request):
-    networks = _configured_admin_networks()
+    allowlist_enabled, networks = _configured_admin_networks()
+
+    # Default/open mode: IP address is not an Admin access restriction.
+    if not allowlist_enabled:
+        return True
+
+    # Enabled with no valid networks is deliberately fail-closed.
     if not networks:
         return False
 

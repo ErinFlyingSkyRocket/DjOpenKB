@@ -371,23 +371,26 @@ server_name <PUBLIC_HOSTNAME>;
 
 ### 5.2 Django Admin network allowlist
 
-The Nginx `geo $djopenkb_admin_network_allowed` block is an outer access control for `/admin/`. Replace the sample management range with the real management subnet, for example:
+Nginx does not contain a static administrator IP allowlist. By default, source IP does not restrict Django Admin access; normal login/MFA, superuser access, the hidden `/admin/login/` route, and the separate Admin MFA gate still apply.
 
-```nginx
-geo $djopenkb_admin_network_allowed {
-    default 0;
-    <ADMIN_ALLOWED_CIDR> 1;
-    127.0.0.1/32 1;
-    ::1/128 1;
-}
+To enable a network restriction after deployment:
+
+1. Sign in as an Admin User and complete Admin MFA.
+2. Open **Django Admin → Site settings**.
+3. Under **Django Admin access restrictions**, enter the allowed IPv4/IPv6 addresses or CIDR ranges.
+4. Enable **Admin IP allowlist** and save.
+
+Examples:
+
+```text
+192.0.2.50
+10.0.0.0/24
+2001:db8::/32
 ```
 
-Do not use `0.0.0.0/0` for the administrator allowlist. After an Nginx change:
+Plain IPv4 addresses are stored as `/32` networks and plain IPv6 addresses as `/128`. The list is validated and normalised before saving. Changes take effect on the next request and do not require editing `.env`, rebuilding containers, or restarting Nginx.
 
-```bash
-sudo docker compose restart nginx
-sudo docker compose logs --tail=80 nginx
-```
+Keep the allowlist disabled until the correct management addresses/ranges are confirmed. When enabled, an empty or invalid stored configuration fails closed.
 
 ---
 

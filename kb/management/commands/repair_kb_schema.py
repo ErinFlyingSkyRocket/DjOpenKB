@@ -26,6 +26,7 @@ class Command(BaseCommand):
 
         self._repair_suggested_article()
         self._repair_site_setting()
+        self._repair_admin_ip_allowlist_setting()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
 
     def _column_exists(self, table_name, column_name):
@@ -165,4 +166,47 @@ class Command(BaseCommand):
                 return
 
         self.stdout.write("No kb_sitesetting schema drift found.")
+
+    def _repair_admin_ip_allowlist_setting(self):
+        table_name = "kb_sitesetting"
+        column_name = "admin_ip_allowlist_enabled"
+
+        if not self._table_exists(table_name):
+            return
+
+        if self._column_exists(table_name, column_name):
+            return
+
+        legacy_default = "10.65.0.0/16,127.0.0.1/32,::1/128"
+
+        with connection.cursor() as cursor:
+            self.stdout.write(
+                f"Adding missing column: {table_name}.{column_name}"
+            )
+            cursor.execute(
+                """
+                ALTER TABLE kb_sitesetting
+                ADD COLUMN admin_ip_allowlist_enabled boolean NOT NULL DEFAULT FALSE
+                """
+            )
+
+            # The previous project shipped a sample allowlist as the model
+            # default. Clear only that exact untouched sample during this
+            # one-time upgrade. Any custom stored ranges are preserved.
+            if self._column_exists(table_name, "admin_allowed_cidrs"):
+                cursor.execute(
+                    """
+                    UPDATE kb_sitesetting
+                    SET admin_allowed_cidrs = ''
+                    WHERE BTRIM(admin_allowed_cidrs) = %s
+                    """,
+                    [legacy_default],
+                )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Added the dynamic Admin IP allowlist toggle. "
+                "The allowlist is disabled by default, so Admin source-IP access is unrestricted until explicitly enabled."
+            )
+        )
 

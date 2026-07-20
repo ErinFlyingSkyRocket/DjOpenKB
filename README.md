@@ -80,7 +80,7 @@ Important role notes:
 - Published deletion requires an MFA confirmation. Writers use the owner workflow; managers and Admin Users manage published content within their scope.
 - Approvers can edit content only while it is in their scope’s pending-review flow.
 - Article Managers see public dislike counts; Internal Article Managers see internal dislike counts; Admin Users see both.
-- Django Admin requires normal sign-in/MFA, the allowed administrator network, and the separate Admin MFA gate.
+- Django Admin requires normal sign-in/MFA and the separate Admin MFA gate. An optional IPv4/IPv6 allowlist can be enabled dynamically from Site settings.
 
 ### Role interaction rules
 
@@ -119,7 +119,7 @@ Local and AD users are identified from account-source metadata rather than email
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
 | Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets. The bind-mounted app token is root-owned, readable only by the application group, and never stored in source control. |
-| Network and crawler controls | Nginx HTTPS reverse proxy, POST-only edge rate limits, 3 MB ordinary request limit with a 100 MB admin-import exception, configurable trusted hosts/origins, optional admin CIDR/VPN restrictions, private Compose backend networks, `/robots.txt` with `Disallow: /`, and `X-Robots-Tag` no-index defence in depth for Django responses |
+| Network and crawler controls | Nginx HTTPS reverse proxy, POST-only edge rate limits, 3 MB ordinary request limit with a 100 MB admin-import exception, configurable trusted hosts/origins, optional Django-managed IPv4/IPv6 Admin CIDR restrictions, private Compose backend networks, `/robots.txt` with `Disallow: /`, and `X-Robots-Tag` no-index defence in depth for Django responses |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
 
 ## Article Workflow Summary

@@ -1210,14 +1210,22 @@ class SiteSetting(models.Model):
             "Recommended range: 50 to 500. Default is 200."
         ),
     )
+    admin_ip_allowlist_enabled = models.BooleanField(
+        default=False,
+        verbose_name=_("Enable Admin IP allowlist"),
+        help_text=_(
+            "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, "
+            "subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
+        ),
+    )
     admin_allowed_cidrs = models.TextField(
-        default="10.65.0.0/16,127.0.0.1/32,::1/128",
+        default="",
+        blank=True,
         verbose_name=_("Admin allowed IP ranges"),
         help_text=_(
-            "Comma or newline separated CIDR/IP allowlist for Django Admin access. "
-            "Default allows 10.65.0.0/16 and local loopback. "
-            "Users outside this range receive 404 even if they know the admin URL. "
-            "Nginx may also enforce a separate outer allowlist in nginx/nginx.conf."
+            "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. "
+            "Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. "
+            "Leave blank while the allowlist is disabled."
         ),
     )
     auth_lockout_strike_ttl_seconds = models.PositiveIntegerField(

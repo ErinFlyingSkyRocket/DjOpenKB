@@ -1,7 +1,10 @@
+import ipaddress
+import re
+
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.utils import quote
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -238,6 +241,7 @@ def _apply_admin_translation_labels():
             "session_timeout_hours": "User session timeout (hours)",
             "activity_log_retention_days": "General activity log retention (days)",
             "admin_log_rows_per_page": "Admin log rows per page",
+            "admin_ip_allowlist_enabled": "Enable Admin IP allowlist",
             "admin_allowed_cidrs": "Admin allowed IP ranges",
             "auth_lockout_strike_ttl_seconds": "Authentication lockout escalation memory (seconds)",
             "admin_mfa_idle_timeout_seconds": "Admin MFA idle timeout (seconds)",
@@ -267,7 +271,8 @@ def _apply_admin_translation_labels():
         (SiteSetting, "session_timeout_hours"): "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
-        (SiteSetting, "admin_allowed_cidrs"): "Comma or newline separated CIDR/IP allowlist for Django Admin access. Default allows 10.65.0.0/16 and local loopback. Users outside this range receive 404 even if they know the admin URL. Nginx may also enforce a separate outer allowlist in nginx/nginx.conf.",
+        (SiteSetting, "admin_ip_allowlist_enabled"): "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed.",
+        (SiteSetting, "admin_allowed_cidrs"): "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled.",
         (SiteSetting, "auth_lockout_strike_ttl_seconds"): "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days).",
         (SiteSetting, "openkb_ai_prompt_limit_per_24_hours"): "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20.",
         (AuthLockoutPolicyStage, "sort_order"): "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later.",
@@ -2588,8 +2593,60 @@ class AuthLockoutPolicyStageInline(admin.TabularInline):
     block_duration_display.short_description = _("Block duration readable")
 
 
+class SiteSettingAdminForm(forms.ModelForm):
+    """Validate and normalise the dynamic Django Admin IPv4/IPv6 allowlist."""
+
+    class Meta:
+        model = SiteSetting
+        fields = "__all__"
+        widgets = {
+            "admin_allowed_cidrs": forms.Textarea(attrs={"rows": 6}),
+        }
+
+    def clean_admin_allowed_cidrs(self):
+        raw_value = self.cleaned_data.get("admin_allowed_cidrs") or ""
+        values = [
+            item.strip()
+            for item in re.split(r"[,\s]+", raw_value)
+            if item.strip()
+        ]
+
+        normalised = []
+        seen = set()
+        for value in values:
+            try:
+                network = ipaddress.ip_network(value, strict=False)
+            except ValueError as exc:
+                raise ValidationError(
+                    _("Invalid IPv4/IPv6 address or CIDR range: %(value)s")
+                    % {"value": value}
+                ) from exc
+
+            network_value = str(network)
+            if network_value not in seen:
+                seen.add(network_value)
+                normalised.append(network_value)
+
+        return "\n".join(normalised)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if (
+            cleaned_data.get("admin_ip_allowlist_enabled")
+            and not cleaned_data.get("admin_allowed_cidrs")
+        ):
+            self.add_error(
+                "admin_allowed_cidrs",
+                _(
+                    "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
+                ),
+            )
+        return cleaned_data
+
+
 @admin.register(SiteSetting)
 class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
+    form = SiteSettingAdminForm
     fieldsets = (
         (_("Article display and upload limits"), {
             "fields": (
@@ -2648,21 +2705,22 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         }),
         (_("Django Admin access restrictions"), {
             "fields": (
+                "admin_ip_allowlist_status",
+                "admin_ip_allowlist_enabled",
                 "admin_allowed_cidrs",
                 "admin_mfa_idle_timeout_seconds",
                 "admin_mfa_idle_timeout_display",
             ),
             "description": _(
-                "Only superusers connecting from these CIDR/IP ranges can access /admin/. "
-                "Django Admin also requires an extra MFA verification. The admin MFA idle timeout controls "
-                "how long the admin area may remain inactive before the admin verification is cleared. "
-                "Direct /admin/login/ is always hidden with 404. Use comma or newline separated CIDR/IP values, "
-                "for example: 10.65.0.0/16, 127.0.0.1/32."
+                "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses "
+                "can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and "
+                "enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
             ),
         }),
     )
     readonly_fields = (
         "updated_at",
+        "admin_ip_allowlist_status",
         "auth_lockout_policy_guide",
         "auth_lockout_strike_ttl_display",
         "admin_mfa_idle_timeout_display",
@@ -2728,6 +2786,35 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         return format_admin_duration_with_seconds(obj.auth_lockout_strike_ttl_seconds)
 
     auth_lockout_strike_ttl_display.short_description = _("Escalation memory readable")
+
+    def admin_ip_allowlist_status(self, obj):
+        if not obj or not getattr(obj, "admin_ip_allowlist_enabled", False):
+            return _(
+                "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
+            )
+
+        values = [
+            item.strip()
+            for item in re.split(r"[,\s]+", obj.admin_allowed_cidrs or "")
+            if item.strip()
+        ]
+        if not values:
+            return _(
+                "Allowlist enabled, but no valid IP/CIDR ranges are configured. "
+                "Admin access is denied until at least one valid range is saved."
+            )
+
+        heading = _(
+            "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
+        ) % {"count": len(values)}
+        ranges = format_html_join(
+            "",
+            "<code>{}</code><br>",
+            ((value,) for value in values),
+        )
+        return format_html("{}<br>{}", heading, ranges)
+
+    admin_ip_allowlist_status.short_description = _("Admin IP restriction status")
 
     def admin_mfa_idle_timeout_display(self, obj):
         if not obj:

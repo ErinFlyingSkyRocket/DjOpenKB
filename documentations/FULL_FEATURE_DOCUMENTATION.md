@@ -883,7 +883,7 @@ Non-admin users receive 404 responses for admin-only main-site maintenance tools
 
 ### 17.2 Admin Network and Step-Up MFA Restriction
 
-The deployment can restrict Django Admin access by source IP/CIDR, such as a VPN or internal subnet. A correct username/password is not enough if the request source is outside the allowed admin CIDR range.
+The deployment can optionally restrict Django Admin access by IPv4/IPv6 address or CIDR from the singleton Site settings record. The allowlist is disabled by default, so source IP is unrestricted until an administrator explicitly configures ranges and enables it. When enabled, a correct username/password is not enough if the request source is outside the configured ranges.
 
 Django Admin also uses an admin step-up MFA gate. A user must first complete normal login/MFA, then pass the admin gate before entering `/admin/`. The admin gate has its own configurable idle timeout so returning to admin after the timeout requires MFA again. The default is 600 seconds (10 minutes); code enforces a minimum of 60 seconds and a maximum of 86400 seconds.
 
@@ -918,7 +918,8 @@ The singleton **Site settings** record controls the following operational limits
 | User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |
 | General activity/admin-log retention | 30 days | `0` retains general and Django Admin activity logs indefinitely. |
 | Admin log rows per page | 200 | Recommended range is 50-500. |
-| Admin allowed CIDRs | `<ADMIN_ALLOWED_CIDR>`, loopback | Inner Django Admin allowlist. Nginx may enforce an additional outer allowlist. |
+| Enable Admin IP allowlist | Disabled | When disabled, source IP does not restrict Admin access. Enable only after valid IPv4/IPv6 addresses or CIDR ranges are configured. |
+| Admin allowed IP ranges | Blank | Optional IPv4/IPv6 address/CIDR list enforced dynamically by Django when the allowlist is enabled. |
 | Lockout escalation memory | 604800 seconds | Failed password/MFA escalation history is retained for 7 days unless successful authentication or an admin reset clears it. |
 | Admin MFA idle timeout | 600 seconds | 10 minutes by default; code clamps values from 60 to 86400 seconds. |
 | OpenKB AI prompts per 24 hours | 20 prompts | Per-user fixed window. The first accepted prompt starts the 24-hour expiry; later prompts do not extend it. Runtime range is 1-1000. |
