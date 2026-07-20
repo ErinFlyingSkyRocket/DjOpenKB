@@ -166,7 +166,7 @@ from this web server.
 
 The application sends a strict per-response Content Security Policy with a fresh nonce and does not include `'unsafe-inline'`. Project-owned inline script and style blocks that need server-rendered values use this nonce. Inline event attributes and inline `style=` attributes are forbidden, while static JavaScript and CSS remain self-hosted.
 
-The article-video feature adds only narrow external media exceptions: `frame-src` permits `https://www.youtube-nocookie.com` and `https://player.vimeo.com`, while `media-src` permits HTTPS direct video files. The server still generates and sanitises the player markup; arbitrary article-supplied iframe sources are not accepted. SharePoint/OneDrive direct-video validation probes only recognised Microsoft hosts and rejects external authentication redirects.
+The article-video feature permits controlled embeds only from `https://www.youtube-nocookie.com` and `https://player.vimeo.com`. Direct media-file URLs are not converted into players, so protected SharePoint, OneDrive, internal-site, or other external video URLs cannot trigger browser authentication prompts through automatic media loading. Arbitrary article-supplied iframe and video sources are removed by the sanitisation layers.
 
 When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`. Any new external frame/media host must be reviewed deliberately rather than broadly weakening the CSP.
 

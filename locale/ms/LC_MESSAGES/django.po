@@ -515,7 +515,7 @@ msgstr "Butiran artikel"
 msgid "Article display and upload limits"
 msgstr "Had paparan dan muat naik artikel"
 
-#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
+#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
 msgid "Article image"
 msgstr "Imej artikel"
 
@@ -1091,7 +1091,7 @@ msgstr "Mengubah %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Mengubah %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
 msgid "Checking..."
 msgstr "Menyemak..."
 
@@ -1515,11 +1515,11 @@ msgstr "Sekatan akses Django Admin"
 msgid "Django admin action flag"
 msgstr "Bendera tindakan pentadbir Django"
 
-#: kb/views/services.py:3060
+#: kb/views/services.py:3051
 msgid "Domain Admin"
 msgstr "Pentadbir Domain"
 
-#: kb/views/services.py:3058
+#: kb/views/services.py:3049
 msgid "Domain User"
 msgstr "Pengguna Domain"
 
@@ -1611,7 +1611,7 @@ msgstr "Disulitkan dan disembunyikan"
 msgid "Enter MFA/OTP code"
 msgstr "Masukkan kod MFA/OTP"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
 msgid "Enter a supported video link."
 msgstr "Masukkan pautan video yang disokong."
 
@@ -1775,7 +1775,7 @@ msgstr "Kebenaran kumpulan"
 msgid "Group type"
 msgstr "Jenis kumpulan"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3046
 msgid "Guest"
 msgstr "Tetamu"
 
@@ -1892,23 +1892,23 @@ msgstr "Aset imej"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Dimensi imej terlalu besar. Sila muat naik imej yang lebih kecil."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
+#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Imej terlalu besar. Saiz maksimum yang dibenarkan ialah 2 MB."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this article draft."
 msgstr "Imej dibuang daripada draf artikel ini."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Imej dibuang daripada draf ini. Simpan artikel untuk memadamkannya daripada storan."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Muat naik imej tidak tersedia buat sementara waktu. Sila cuba lagi kemudian."
 
-#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
+#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
 msgid "Image uploaded and inserted into the article."
 msgstr "Imej dimuat naik dan dimasukkan ke dalam artikel."
 
@@ -2088,11 +2088,11 @@ msgstr "Kod pengesah tidak sah. Sila cuba lagi."
 msgid "Invalid deletion queue action."
 msgstr "Tindakan baris gilir pemadaman tidak sah."
 
-#: kb/views/suggestions.py:1127
+#: kb/views/suggestions.py:1118
 msgid "Invalid image filename."
 msgstr "Nama fail imej tidak sah."
 
-#: kb/views/suggestions.py:1138
+#: kb/views/suggestions.py:1129
 msgid "Invalid image path."
 msgstr "Laluan imej tidak sah."
 
@@ -2232,11 +2232,11 @@ msgstr "Suka"
 msgid "Likes"
 msgstr "Suka"
 
-#: kb/views/services.py:3064
+#: kb/views/services.py:3055
 msgid "Local Admin"
 msgstr "Pentadbir Tempatan"
 
-#: kb/views/services.py:3062
+#: kb/views/services.py:3053
 msgid "Local User"
 msgstr "Pengguna Tempatan"
 
@@ -2264,7 +2264,7 @@ msgstr "Akaun tempatan memerlukan pengesahan aplikasi pengesah selepas log masuk
 msgid "Local admin"
 msgstr "Pentadbir tempatan"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3105
 msgid "Local user"
 msgstr "Pengguna tempatan"
 
@@ -2584,11 +2584,11 @@ msgstr "Tiada e-mel ditetapkan"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Tiada kata kunci sedia ada yang sepadan dengan tajuk atau isi semasa lagi."
 
-#: kb/views/suggestions.py:1050
+#: kb/views/suggestions.py:1041
 msgid "No image file received."
 msgstr "Tiada fail imej diterima."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1113
 msgid "No image filename received."
 msgstr "Tiada nama fail imej diterima."
 
@@ -2748,7 +2748,7 @@ msgstr "Kata laluan lama tidak betul."
 msgid "Only .zip import files are allowed."
 msgstr "Hanya fail import .zip dibenarkan."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Hanya imej PNG, JPG, GIF atau WEBP dibenarkan."
 
@@ -2876,31 +2876,31 @@ msgstr "Log masuk kata laluan gagal"
 msgid "Password login success"
 msgstr "Log masuk kata laluan berjaya"
 
-#: kb/views/services.py:3152
+#: kb/views/services.py:3143
 msgid "Password must be at least 12 characters long."
 msgstr "Kata laluan mestilah sekurang-kurangnya 12 aksara."
 
-#: kb/views/services.py:3156
+#: kb/views/services.py:3147
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 huruf kecil."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3149
 msgid "Password must include at least 1 number."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 nombor."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3151
 msgid "Password must include at least 1 special character."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 aksara khas."
 
-#: kb/views/services.py:3154
+#: kb/views/services.py:3145
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 huruf besar."
 
-#: kb/views/services.py:3169
+#: kb/views/services.py:3160
 msgid "Password must not contain the name part of your email address."
 msgstr "Kata laluan tidak boleh mengandungi bahagian nama alamat e-mel anda."
 
-#: kb/views/services.py:3167
+#: kb/views/services.py:3158
 msgid "Password must not contain your username."
 msgstr "Kata laluan tidak boleh mengandungi nama pengguna anda."
 
@@ -2937,8 +2937,8 @@ msgid "Passwords match."
 msgstr "Kata laluan sepadan."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
-msgstr "Tampal pautan YouTube atau Vimeo, atau pautan HTTPS terus yang berakhir dengan .mp4, .webm atau .ogg. Artikel akan memaparkan video yang boleh dimainkan."
+msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
+msgstr "Tampal pautan YouTube atau Vimeo. Fail video langsung dan pautan yang mungkin memerlukan log masuk luaran tidak disokong."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3296,7 +3296,7 @@ msgstr "Tolak kemas kini"
 msgid "Related articles"
 msgstr "Artikel berkaitan"
 
-#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
+#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
 msgid "Remove image from article"
 msgstr "Buang imej daripada artikel"
 
@@ -3912,15 +3912,15 @@ msgstr "Artikel tidak dapat ditetapkan dengan selamat. Tiada penetapan digunakan
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Kotak semak di bawah ialah pengecualian khas bagi setiap pengguna untuk akses artikel sahaja. Ia berguna apabila seorang pengguna memerlukan sedikit lebih akses artikel daripada kumpulannya tanpa mencipta kumpulan baharu. Akses Django Admin diberikan hanya melalui kumpulan Pengguna Pentadbir/status superpengguna."
 
-#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "The image could not be uploaded. Please try again."
 msgstr "Imej tidak dapat dimuat naik. Sila cuba lagi."
 
-#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Muat naik imej tidak dapat bersambung ke pelayan. Semak sambungan anda dan cuba lagi."
 
-#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Muat naik imej tidak dibenarkan. Muat semula halaman dan cuba lagi."
 
@@ -3964,11 +3964,11 @@ msgstr "Dasar progresif yang sama digunakan untuk kegagalan log masuk kata lalua
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak lagi wujud. Sila muat semula dan cuba lagi."
 
-#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
 msgid "The selected file is not a valid supported image."
 msgstr "Fail yang dipilih bukan imej sah yang disokong."
 
-#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Imej yang dipilih kosong. Sila pilih imej lain."
 
@@ -4044,7 +4044,7 @@ msgstr "Artikel ini mempunyai %(count)s imej, tetapi maksimum yang dibenarkan ia
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Artikel ini telah mencapai had muat naik sebanyak %(limit)s imej."
 
-#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
+#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Artikel ini telah mencapai had muat naik imej. Sila buang satu imej sebelum memuat naik imej lain."
 
@@ -4060,11 +4060,11 @@ msgstr "Ini mengosongkan sekatan sementara, kaunter percubaan gagal dan sejarah 
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Alamat e-mel ini diuruskan oleh akaun domain anda dan tidak boleh ditukar di sini."
 
-#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
+#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Imej ini sudah dimuat naik dalam draf ini. Gunakan butang pratonton X untuk membuangnya dahulu."
 
-#: kb/views/suggestions.py:1131
+#: kb/views/suggestions.py:1122
 msgid "This image is not removable from this editing session."
 msgstr "Imej ini tidak boleh dibuang daripada sesi penyuntingan ini."
 
@@ -4088,7 +4088,7 @@ msgstr "Alat ini mengutamakan format eksport sistem:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Jenis permintaan ini tidak dibenarkan untuk halaman yang dipilih."
 
-#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
 msgid "This video link could not be validated. Please try another link."
 msgstr "Pautan video ini tidak dapat disahkan. Cuba pautan lain."
 
@@ -4124,7 +4124,7 @@ msgstr "Terlalu banyak soalan OpenKB AI. Sila tunggu sebelum mencuba lagi."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Terlalu banyak percubaan log masuk gagal. Sila cuba lagi dalam %(duration)s."
 
-#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Terlalu banyak percubaan muat naik imej. Tunggu sebentar dan cuba lagi."
 
@@ -4168,11 +4168,11 @@ msgstr "Jenis"
 msgid "Type username or email"
 msgstr "Taip nama pengguna atau e-mel"
 
-#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Tidak dapat mengesahkan pautan video ini. Muat semula halaman dan cuba lagi."
 
-#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Tidak dapat mengesahkan bahawa video ini boleh diakses tanpa log masuk. Sila cuba lagi."
 
@@ -4372,7 +4372,7 @@ msgstr "Versi berjaya dialih keluar."
 msgid "Video link"
 msgstr "Pautan video"
 
-#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
 msgid "Video link inserted into the article."
 msgstr "Pautan video telah dimasukkan ke dalam artikel."
 
@@ -4540,7 +4540,7 @@ msgstr "Sesi pentadbir anda tamat selepas tidak aktif. Sahkan MFA sekali lagi un
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Akaun anda sendiri telah ditetapkan kepada Pengguna Dinyahaktifkan. Pada permintaan seterusnya, anda akan dialihkan ke halaman akaun dinyahaktifkan."
 
-#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Sesi anda telah tamat tempoh. Sila log masuk semula sebelum memuat naik imej."
 

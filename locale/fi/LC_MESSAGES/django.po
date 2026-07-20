@@ -520,7 +520,7 @@ msgstr "Artikkelin tiedot"
 msgid "Article display and upload limits"
 msgstr "Artikkeleiden näyttö- ja latausrajat"
 
-#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
+#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
 msgid "Article image"
 msgstr "Artikkelin kuva"
 
@@ -1096,7 +1096,7 @@ msgstr "Muutettiin %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Muutettiin %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
 msgid "Checking..."
 msgstr "Tarkistetaan..."
 
@@ -1520,11 +1520,11 @@ msgstr "Django-ylläpidon käyttörajoitukset"
 msgid "Django admin action flag"
 msgstr "Django-ylläpidon toimintomerkintä"
 
-#: kb/views/services.py:3060
+#: kb/views/services.py:3051
 msgid "Domain Admin"
 msgstr "Toimialueen ylläpitäjä"
 
-#: kb/views/services.py:3058
+#: kb/views/services.py:3049
 msgid "Domain User"
 msgstr "Toimialueen käyttäjä"
 
@@ -1616,7 +1616,7 @@ msgstr "Salattu ja piilotettu"
 msgid "Enter MFA/OTP code"
 msgstr "Anna MFA/OTP-koodi"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
 msgid "Enter a supported video link."
 msgstr "Anna tuettu videolinkki."
 
@@ -1780,7 +1780,7 @@ msgstr "Ryhmän käyttöoikeudet"
 msgid "Group type"
 msgstr "Ryhmän tyyppi"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3046
 msgid "Guest"
 msgstr "Vieras"
 
@@ -1898,23 +1898,23 @@ msgstr "Kuvasisällöt"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Kuvan mitat ovat liian suuret. Lataa pienempi kuva."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
+#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Kuva on liian suuri. Suurin sallittu koko on 2 Mt."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this article draft."
 msgstr "Kuva poistettiin tästä artikkeliluonnoksesta."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Kuva poistettiin tästä luonnoksesta. Tallenna artikkeli poistaaksesi sen tallennustilasta."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Kuvan lataaminen ei ole tilapäisesti käytettävissä. Yritä myöhemmin uudelleen."
 
-#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
+#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
 msgid "Image uploaded and inserted into the article."
 msgstr "Kuva ladattiin ja lisättiin artikkeliin."
 
@@ -2094,11 +2094,11 @@ msgstr "Virheellinen authenticator-koodi. Yritä uudelleen."
 msgid "Invalid deletion queue action."
 msgstr "Virheellinen poistamisjonon toiminto."
 
-#: kb/views/suggestions.py:1127
+#: kb/views/suggestions.py:1118
 msgid "Invalid image filename."
 msgstr "Virheellinen kuvatiedoston nimi."
 
-#: kb/views/suggestions.py:1138
+#: kb/views/suggestions.py:1129
 msgid "Invalid image path."
 msgstr "Virheellinen kuvapolku."
 
@@ -2238,11 +2238,11 @@ msgstr "Tykkää"
 msgid "Likes"
 msgstr "Tykkäykset"
 
-#: kb/views/services.py:3064
+#: kb/views/services.py:3055
 msgid "Local Admin"
 msgstr "Paikallinen ylläpitäjä"
 
-#: kb/views/services.py:3062
+#: kb/views/services.py:3053
 msgid "Local User"
 msgstr "Paikallinen käyttäjä"
 
@@ -2270,7 +2270,7 @@ msgstr "Paikalliset tilit vaativat authenticator-vahvistuksen salasanakirjautumi
 msgid "Local admin"
 msgstr "Paikallinen ylläpitäjä"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3105
 msgid "Local user"
 msgstr "Paikallinen käyttäjä"
 
@@ -2590,11 +2590,11 @@ msgstr "Sähköpostia ei asetettu"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Nykyistä otsikkoa tai sisältöä vastaavia olemassa olevia avainsanoja ei vielä ole."
 
-#: kb/views/suggestions.py:1050
+#: kb/views/suggestions.py:1041
 msgid "No image file received."
 msgstr "Kuvatiedostoa ei vastaanotettu."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1113
 msgid "No image filename received."
 msgstr "Kuvatiedoston nimeä ei vastaanotettu."
 
@@ -2754,7 +2754,7 @@ msgstr "Vanha salasana on virheellinen."
 msgid "Only .zip import files are allowed."
 msgstr "Vain .zip-tuontitiedostot ovat sallittuja."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Vain PNG-, JPG-, GIF- tai WEBP-kuvat ovat sallittuja."
 
@@ -2882,31 +2882,31 @@ msgstr "Salasanakirjautuminen epäonnistui"
 msgid "Password login success"
 msgstr "Salasanakirjautuminen onnistui"
 
-#: kb/views/services.py:3152
+#: kb/views/services.py:3143
 msgid "Password must be at least 12 characters long."
 msgstr "Salasanassa on oltava vähintään 12 merkkiä."
 
-#: kb/views/services.py:3156
+#: kb/views/services.py:3147
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Salasanassa on oltava vähintään 1 pieni kirjain."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3149
 msgid "Password must include at least 1 number."
 msgstr "Salasanassa on oltava vähintään 1 numero."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3151
 msgid "Password must include at least 1 special character."
 msgstr "Salasanassa on oltava vähintään 1 erikoismerkki."
 
-#: kb/views/services.py:3154
+#: kb/views/services.py:3145
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Salasanassa on oltava vähintään 1 iso kirjain."
 
-#: kb/views/services.py:3169
+#: kb/views/services.py:3160
 msgid "Password must not contain the name part of your email address."
 msgstr "Salasana ei saa sisältää sähköpostiosoitteesi nimiosaa."
 
-#: kb/views/services.py:3167
+#: kb/views/services.py:3158
 msgid "Password must not contain your username."
 msgstr "Salasana ei saa sisältää käyttäjänimeäsi."
 
@@ -2943,8 +2943,8 @@ msgid "Passwords match."
 msgstr "Salasanat täsmäävät."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
-msgstr "Liitä YouTube- tai Vimeo-linkki tai suora HTTPS-linkki, jonka pääte on .mp4, .webm tai .ogg. Artikkelissa näytetään toistettava video."
+msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
+msgstr "Liitä YouTube- tai Vimeo-linkki. Suoria videotiedostoja ja linkkejä, jotka saattavat vaatia ulkoisen kirjautumisen, ei tueta."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3302,7 +3302,7 @@ msgstr "Hylkää päivitys"
 msgid "Related articles"
 msgstr "Liittyvät artikkelit"
 
-#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
+#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
 msgid "Remove image from article"
 msgstr "Poista kuva artikkelista"
 
@@ -3918,15 +3918,15 @@ msgstr "Artikkeleita ei voitu määrittää turvallisesti. Määritystä ei teht
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Alla olevat valintaruudut ovat erityisiä käyttäjäkohtaisia poikkeuksia vain artikkelien käyttöoikeuksiin. Niistä on hyötyä, kun yksi käyttäjä tarvitsee hieman enemmän artikkelien käyttöoikeuksia kuin hänen ryhmänsä ilman uuden ryhmän luomista. Django-ylläpitokäyttö myönnetään vain Ylläpitäjäkäyttäjät-ryhmän/pääkäyttäjätilan kautta."
 
-#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "The image could not be uploaded. Please try again."
 msgstr "Kuvaa ei voitu ladata. Yritä uudelleen."
 
-#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Kuvan lataus ei saanut yhteyttä palvelimeen. Tarkista yhteys ja yritä uudelleen."
 
-#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Kuvan latausta ei valtuutettu. Päivitä sivu ja yritä uudelleen."
 
@@ -3970,11 +3970,11 @@ msgstr "Samaa porrastettua käytäntöä käytetään salasana-kirjautumisen ja 
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Valitut artikkelit eivät ole enää orpoja tai niitä ei enää ole. Päivitä ja yritä uudelleen."
 
-#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
 msgid "The selected file is not a valid supported image."
 msgstr "Valittu tiedosto ei ole kelvollinen tuettu kuva."
 
-#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Valittu kuva on tyhjä. Valitse toinen kuva."
 
@@ -4050,7 +4050,7 @@ msgstr "Tässä artikkelissa on %(count)s kuvaa, mutta enintään %(limit)s kuva
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Tämä artikkeli on saavuttanut %(limit)s kuvan latausrajan."
 
-#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
+#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Tämä artikkeli on saavuttanut kuvien latausrajan. Poista kuva ennen uuden lataamista."
 
@@ -4066,11 +4066,11 @@ msgstr "Tämä poistaa tämän käyttäjän tilapäiset estot, epäonnistuneiden
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Tätä sähköpostiosoitetta hallitaan toimialuetililläsi eikä sitä voi muuttaa täällä."
 
-#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
+#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Tämä kuva on jo ladattu tähän luonnokseen. Poista se ensin esikatselun X-painikkeella."
 
-#: kb/views/suggestions.py:1131
+#: kb/views/suggestions.py:1122
 msgid "This image is not removable from this editing session."
 msgstr "Tätä kuvaa ei voi poistaa tästä muokkausistunnosta."
 
@@ -4094,7 +4094,7 @@ msgstr "Tämä työkalu suosii järjestelmän vientimuotoa:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Tällaista pyyntöä ei sallita valitulla sivulla."
 
-#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
 msgid "This video link could not be validated. Please try another link."
 msgstr "Tätä videolinkkiä ei voitu vahvistaa. Kokeile toista linkkiä."
 
@@ -4130,7 +4130,7 @@ msgstr "OpenKB AI -kysymyksiä on liian paljon. Odota ennen kuin yrität uudelle
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Liian monta epäonnistunutta kirjautumisyritystä. Yritä uudelleen %(duration)s kuluttua."
 
-#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Liian monta kuvan latausyritystä. Odota hetki ja yritä uudelleen."
 
@@ -4174,11 +4174,11 @@ msgstr "Tyyppi"
 msgid "Type username or email"
 msgstr "Kirjoita käyttäjänimi tai sähköposti"
 
-#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Tätä videolinkkiä ei voitu vahvistaa. Päivitä sivu ja yritä uudelleen."
 
-#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Ei voitu varmistaa, että tämä video on käytettävissä ilman kirjautumista. Yritä uudelleen."
 
@@ -4378,7 +4378,7 @@ msgstr "Versio poistettiin onnistuneesti."
 msgid "Video link"
 msgstr "Videolinkki"
 
-#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
 msgid "Video link inserted into the article."
 msgstr "Videolinkki lisättiin artikkeliin."
 
@@ -4546,7 +4546,7 @@ msgstr "Ylläpitoistuntosi vanheni käyttämättömyyden vuoksi. Varmenna MFA uu
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Omalle tilillesi määritettiin Käytöstä poistettu käyttäjä -rooli. Seuraavalla pyynnöllä sinut ohjataan käytöstä poistetun tilin sivulle."
 
-#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Istuntosi on vanhentunut. Kirjaudu uudelleen sisään ennen kuvan lataamista."
 

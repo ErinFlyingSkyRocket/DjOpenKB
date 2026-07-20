@@ -690,11 +690,8 @@ $(document).ready(function(){
             }
         }
 
-        if(parsed.protocol === 'https:' && /\.(mp4|webm|ogg)$/i.test(parsed.pathname)){
-            var escapedUrl = $('<div>').text(rawValue).html();
-            return '<video class="article-video" controls preload="metadata" src="' + escapedUrl + '"></video>';
-        }
-
+        // Direct media-file URLs are intentionally not rendered in the preview.
+        // Loading them could trigger an external HTTP authentication prompt.
         return '';
     }
 
@@ -784,7 +781,7 @@ $(document).ready(function(){
         var cleanHTML = sanitizeHtml(fixed_html, {
             allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
                 'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-                'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'iframe', 'video'
+                'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'img', 'iframe'
             ],
             // Keep the preview aligned with the stricter server-side Bleach policy.
             // Never allow arbitrary HTML attributes such as onerror/onload/style.
@@ -802,8 +799,7 @@ $(document).ready(function(){
                 'h4': [ 'id' ],
                 'h5': [ 'id' ],
                 'h6': [ 'id' ],
-                'iframe': [ 'src', 'class', 'title', 'loading', 'referrerpolicy', 'allow', 'allowfullscreen' ],
-                'video': [ 'src', 'class', 'controls', 'preload' ]
+                'iframe': [ 'src', 'class', 'title', 'loading', 'referrerpolicy', 'allow', 'allowfullscreen' ]
             },
             allowedSchemes: [ 'http', 'https', 'mailto' ]
         });
@@ -864,31 +860,6 @@ $(document).ready(function(){
                 frame.setAttribute('title', 'Vimeo video player');
                 frame.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share');
             }
-        });
-
-        Array.prototype.slice.call(previewContainer.querySelectorAll('video')).forEach(function(video){
-            var src = video.getAttribute('src') || '';
-            var parsed;
-            try{
-                parsed = new URL(src);
-            }catch(error){
-                video.remove();
-                return;
-            }
-
-            if(parsed.protocol !== 'https:' || parsed.username || parsed.password ||
-                    !/\.(mp4|webm|ogg)$/i.test(parsed.pathname)){
-                video.remove();
-                return;
-            }
-
-            Array.prototype.slice.call(video.attributes).forEach(function(attribute){
-                video.removeAttribute(attribute.name);
-            });
-            video.setAttribute('class', 'article-video');
-            video.setAttribute('controls', '');
-            video.setAttribute('preload', 'metadata');
-            video.setAttribute('src', parsed.href);
         });
 
         Array.prototype.slice.call(previewContainer.querySelectorAll('img')).forEach(function(image){

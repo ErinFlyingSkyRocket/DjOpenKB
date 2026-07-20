@@ -1012,9 +1012,9 @@ def delete_suggestion(request, article_id):
 def validate_article_video_link(request):
     """Validate a video link before the editor inserts it into article Markdown.
 
-    Supported links are accepted normally. SharePoint/OneDrive direct videos are
-    additionally checked without credentials so auth-gated links are rejected
-    before they can create a username/password prompt for article viewers.
+    Only supported YouTube and Vimeo links are accepted. Direct external media
+    URLs are rejected so the browser never auto-loads a video source that could
+    trigger an external authentication prompt.
     """
     url = (request.POST.get("url") or "").strip()
     if not url or len(url) > 4096 or not article_video_embed_html(url):
@@ -1022,15 +1022,6 @@ def validate_article_video_link(request):
             "valid": False,
             "error": _("Enter a supported video link."),
         }, status=400)
-
-    if is_microsoft_cloud_video_url(url):
-        result = check_microsoft_video_anonymous_access(url)
-        if not result.get("allowed"):
-            return JsonResponse({
-                "valid": False,
-                "error": article_video_access_error_message(result),
-                "reason": result.get("reason", "unverified"),
-            }, status=400)
 
     return JsonResponse({"valid": True, "url": url})
 

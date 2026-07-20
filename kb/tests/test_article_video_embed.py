@@ -57,14 +57,16 @@ class ArticleVideoEmbedTests(SimpleTestCase):
         )
         self.assertIn('title="Vimeo video player"', rendered)
 
-    def test_direct_https_video_file_uses_native_video_player(self):
+    def test_direct_https_video_file_is_not_auto_embedded(self):
         video_url = "https://cdn.example.com/training/setup-guide.mp4?version=2"
         rendered = render_safe_markdown(video_url)
 
+        # The URL shape may be a valid direct media URL, but direct media is not
+        # embedded because it could trigger an external authentication challenge.
         self.assertTrue(is_safe_direct_video_url(video_url))
-        self.assertIn('<video class="article-video" controls', rendered)
-        self.assertIn('src="https://cdn.example.com/training/setup-guide.mp4?version=2"', rendered)
+        self.assertNotIn("<video", rendered)
         self.assertNotIn("<iframe", rendered)
+        self.assertIn(video_url, rendered)
 
     def test_direct_http_video_file_is_not_auto_embedded(self):
         video_url = "http://cdn.example.com/training/setup-guide.mp4"

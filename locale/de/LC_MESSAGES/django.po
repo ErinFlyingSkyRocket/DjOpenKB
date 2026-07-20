@@ -520,7 +520,7 @@ msgstr "Artikeldetails"
 msgid "Article display and upload limits"
 msgstr "Anzeige- und Uploadgrenzen für Artikel"
 
-#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
+#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
 msgid "Article image"
 msgstr "Artikelbild"
 
@@ -1096,7 +1096,7 @@ msgstr "%(target_label)s geändert: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s geändert: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
 msgid "Checking..."
 msgstr "Überprüfung läuft..."
 
@@ -1520,11 +1520,11 @@ msgstr "Zugriffsbeschränkungen für die Django-Administration"
 msgid "Django admin action flag"
 msgstr "Django-Administratoraktionskennzeichen"
 
-#: kb/views/services.py:3060
+#: kb/views/services.py:3051
 msgid "Domain Admin"
 msgstr "Domänenadministrator"
 
-#: kb/views/services.py:3058
+#: kb/views/services.py:3049
 msgid "Domain User"
 msgstr "Domänenbenutzer"
 
@@ -1616,7 +1616,7 @@ msgstr "Verschlüsselt und ausgeblendet"
 msgid "Enter MFA/OTP code"
 msgstr "MFA/OTP-Code eingeben"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
 msgid "Enter a supported video link."
 msgstr "Geben Sie einen unterstützten Videolink ein."
 
@@ -1780,7 +1780,7 @@ msgstr "Gruppenberechtigungen"
 msgid "Group type"
 msgstr "Gruppentyp"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3046
 msgid "Guest"
 msgstr "Gast"
 
@@ -1898,23 +1898,23 @@ msgstr "Bild-Assets"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Die Bildabmessungen sind zu groß. Bitte laden Sie ein kleineres Bild hoch."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
+#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Das Bild ist zu groß. Die maximal zulässige Größe beträgt 2 MB."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this article draft."
 msgstr "Bild aus diesem Artikelentwurf entfernt."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Bild aus diesem Entwurf entfernt. Speichern Sie den Artikel, um es aus dem Speicher zu löschen."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Der Bildupload ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut."
 
-#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
+#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
 msgid "Image uploaded and inserted into the article."
 msgstr "Bild hochgeladen und in den Artikel eingefügt."
 
@@ -2094,11 +2094,11 @@ msgstr "Ungültiger Authenticator-Code. Bitte versuchen Sie es erneut."
 msgid "Invalid deletion queue action."
 msgstr "Ungültige Aktion für die Löschwarteschlange."
 
-#: kb/views/suggestions.py:1127
+#: kb/views/suggestions.py:1118
 msgid "Invalid image filename."
 msgstr "Ungültiger Bilddateiname."
 
-#: kb/views/suggestions.py:1138
+#: kb/views/suggestions.py:1129
 msgid "Invalid image path."
 msgstr "Ungültiger Bildpfad."
 
@@ -2238,11 +2238,11 @@ msgstr "Gefällt mir"
 msgid "Likes"
 msgstr "Gefällt mir"
 
-#: kb/views/services.py:3064
+#: kb/views/services.py:3055
 msgid "Local Admin"
 msgstr "Lokaler Administrator"
 
-#: kb/views/services.py:3062
+#: kb/views/services.py:3053
 msgid "Local User"
 msgstr "Lokaler Benutzer"
 
@@ -2270,7 +2270,7 @@ msgstr "Lokale Konten erfordern nach der Passwortanmeldung eine Authenticator-Ve
 msgid "Local admin"
 msgstr "Lokaler Administrator"
 
-#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1344 kb/models.py:38 kb/views/services.py:3105
 msgid "Local user"
 msgstr "Lokaler Benutzer"
 
@@ -2590,11 +2590,11 @@ msgstr "Keine E-Mail festgelegt"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Noch keine vorhandenen Schlüsselwörter gefunden, die zum aktuellen Titel oder Text passen."
 
-#: kb/views/suggestions.py:1050
+#: kb/views/suggestions.py:1041
 msgid "No image file received."
 msgstr "Keine Bilddatei empfangen."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1113
 msgid "No image filename received."
 msgstr "Kein Bilddateiname empfangen."
 
@@ -2754,7 +2754,7 @@ msgstr "Das alte Passwort ist falsch."
 msgid "Only .zip import files are allowed."
 msgstr "Es sind nur .zip-Importdateien erlaubt."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Nur PNG-, JPG-, GIF- oder WEBP-Bilder sind erlaubt."
 
@@ -2882,31 +2882,31 @@ msgstr "Passwortanmeldung fehlgeschlagen"
 msgid "Password login success"
 msgstr "Passwortanmeldung erfolgreich"
 
-#: kb/views/services.py:3152
+#: kb/views/services.py:3143
 msgid "Password must be at least 12 characters long."
 msgstr "Das Passwort muss mindestens 12 Zeichen lang sein."
 
-#: kb/views/services.py:3156
+#: kb/views/services.py:3147
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Das Passwort muss mindestens 1 Kleinbuchstaben enthalten."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3149
 msgid "Password must include at least 1 number."
 msgstr "Das Passwort muss mindestens 1 Zahl enthalten."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3151
 msgid "Password must include at least 1 special character."
 msgstr "Das Passwort muss mindestens 1 Sonderzeichen enthalten."
 
-#: kb/views/services.py:3154
+#: kb/views/services.py:3145
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Das Passwort muss mindestens 1 Großbuchstaben enthalten."
 
-#: kb/views/services.py:3169
+#: kb/views/services.py:3160
 msgid "Password must not contain the name part of your email address."
 msgstr "Das Passwort darf den Namensanteil Ihrer E-Mail-Adresse nicht enthalten."
 
-#: kb/views/services.py:3167
+#: kb/views/services.py:3158
 msgid "Password must not contain your username."
 msgstr "Das Passwort darf Ihren Benutzernamen nicht enthalten."
 
@@ -2943,8 +2943,8 @@ msgid "Passwords match."
 msgstr "Passwörter stimmen überein."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
-msgstr "Fügen Sie einen YouTube- oder Vimeo-Link oder einen direkten HTTPS-Link ein, der auf .mp4, .webm oder .ogg endet. Der Artikel zeigt ein abspielbares Video an."
+msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
+msgstr "Fügen Sie einen YouTube- oder Vimeo-Link ein. Direkte Videodateien und Links, die eine externe Anmeldung erfordern können, werden nicht unterstützt."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3302,7 +3302,7 @@ msgstr "Aktualisierung ablehnen"
 msgid "Related articles"
 msgstr "Verwandte Artikel"
 
-#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
+#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
 msgid "Remove image from article"
 msgstr "Bild aus Artikel entfernen"
 
@@ -3918,15 +3918,15 @@ msgstr "Die Artikel konnten nicht sicher zugewiesen werden. Es wurde keine Zuwei
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Die folgenden Kontrollkästchen sind besondere benutzerbezogene Ausnahmen nur für den Artikelzugriff. Sie sind nützlich, wenn ein Benutzer etwas mehr Artikelzugriff als seine Gruppe benötigt, ohne eine neue Gruppe zu erstellen. Zugriff auf die Django-Administration wird nur über die Gruppe Administratorbenutzer/den Superuserstatus gewährt."
 
-#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "The image could not be uploaded. Please try again."
 msgstr "Das Bild konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
 
-#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Beim Bildupload konnte keine Verbindung zum Server hergestellt werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
 
-#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Der Bildupload wurde nicht autorisiert. Aktualisieren Sie die Seite und versuchen Sie es erneut."
 
@@ -3970,11 +3970,11 @@ msgstr "Dieselbe progressive Richtlinie wird für fehlgeschlagene Passwortanmeld
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Die ausgewählten Artikel sind keine verwaisten Artikel mehr oder existieren nicht mehr. Bitte aktualisieren und erneut versuchen."
 
-#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
 msgid "The selected file is not a valid supported image."
 msgstr "Die ausgewählte Datei ist kein gültiges unterstütztes Bild."
 
-#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Das ausgewählte Bild ist leer. Bitte wählen Sie ein anderes Bild."
 
@@ -4050,7 +4050,7 @@ msgstr "Dieser Artikel enthält %(count)s Bild(er), erlaubt sind jedoch höchste
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Dieser Artikel hat das Upload-Limit von %(limit)s Bild(ern) erreicht."
 
-#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
+#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Dieser Artikel hat das Bild-Upload-Limit erreicht. Bitte entfernen Sie ein Bild, bevor Sie ein weiteres hochladen."
 
@@ -4066,11 +4066,11 @@ msgstr "Dies löscht temporäre Sperren, Zähler fehlgeschlagener Versuche und d
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Diese E-Mail-Adresse wird von Ihrem Domänenkonto verwaltet und kann hier nicht geändert werden."
 
-#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
+#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Dieses Bild wurde bereits in diesen Entwurf hochgeladen. Verwenden Sie zuerst die X-Vorschau-Schaltfläche, um es zu entfernen."
 
-#: kb/views/suggestions.py:1131
+#: kb/views/suggestions.py:1122
 msgid "This image is not removable from this editing session."
 msgstr "Dieses Bild kann in dieser Bearbeitungssitzung nicht entfernt werden."
 
@@ -4094,7 +4094,7 @@ msgstr "Dieses Werkzeug bevorzugt das Systemexportformat:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Diese Art von Anfrage ist für die ausgewählte Seite nicht zulässig."
 
-#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
 msgid "This video link could not be validated. Please try another link."
 msgstr "Dieser Videolink konnte nicht validiert werden. Versuchen Sie einen anderen Link."
 
@@ -4130,7 +4130,7 @@ msgstr "Zu viele Fragen an OpenKB AI. Bitte warten Sie, bevor Sie es erneut vers
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Zu viele fehlgeschlagene Anmeldeversuche. Bitte versuchen Sie es in %(duration)s erneut."
 
-#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Zu viele Versuche, Bilder hochzuladen. Warten Sie einen Moment und versuchen Sie es erneut."
 
@@ -4174,11 +4174,11 @@ msgstr "Typ"
 msgid "Type username or email"
 msgstr "Benutzername oder E-Mail eingeben"
 
-#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Dieser Videolink konnte nicht validiert werden. Aktualisieren Sie die Seite und versuchen Sie es erneut."
 
-#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Es konnte nicht überprüft werden, ob dieses Video ohne Anmeldung zugänglich ist. Bitte versuchen Sie es erneut."
 
@@ -4378,7 +4378,7 @@ msgstr "Version erfolgreich entfernt."
 msgid "Video link"
 msgstr "Videolink"
 
-#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
 msgid "Video link inserted into the article."
 msgstr "Der Videolink wurde in den Artikel eingefügt."
 
@@ -4546,7 +4546,7 @@ msgstr "Ihre Administratorsitzung ist nach Inaktivität abgelaufen. Verifizieren
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Ihrem eigenen Konto wurde die Rolle Deaktivierter Benutzer zugewiesen. Bei der nächsten Anfrage werden Sie auf die Seite für deaktivierte Konten umgeleitet."
 
-#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an, bevor Sie das Bild hochladen."
 

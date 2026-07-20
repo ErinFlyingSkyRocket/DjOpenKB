@@ -615,10 +615,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 : "";
         }
 
-        if (parsed.protocol === "https:" && /\.(mp4|webm|ogg)$/i.test(parsed.pathname)) {
-            return rawValue;
-        }
-
+        // Direct media-file links are not embeddable because they may trigger
+        // external authentication prompts in the viewer's browser.
         return "";
     }
 

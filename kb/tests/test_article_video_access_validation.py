@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
 from kb.views.services import (
@@ -86,20 +85,15 @@ class ArticleVideoAnonymousAccessTests(SimpleTestCase):
         self.assertTrue(result["allowed"])
         self.assertEqual(result["reason"], "accessible")
 
-    def test_standalone_video_scan_ignores_fenced_code(self):
+    def test_direct_microsoft_video_is_not_treated_as_embeddable_video(self):
         markdown = """Visible video:\nhttps://tenant.sharepoint.com/sites/help/Videos/public.mp4\n\n```\nhttps://tenant.sharepoint.com/sites/help/Videos/private.mp4\n```\n"""
-        urls = standalone_article_video_urls(markdown)
-        self.assertEqual(
-            urls,
-            ["https://tenant.sharepoint.com/sites/help/Videos/public.mp4"],
-        )
+        self.assertEqual(standalone_article_video_urls(markdown), [])
 
     @patch("kb.views.services.check_microsoft_video_anonymous_access")
-    def test_article_validation_rejects_auth_gated_microsoft_video(self, check_mock):
-        check_mock.return_value = {"allowed": False, "reason": "auth_required", "status": 401}
+    def test_article_validation_does_not_probe_non_embeddable_direct_video(self, check_mock):
         markdown = "https://tenant.sharepoint.com/sites/help/Videos/private.mp4"
-        with self.assertRaises(ValidationError):
-            validate_article_video_links_for_anonymous_access(markdown)
+        validate_article_video_links_for_anonymous_access(markdown)
+        check_mock.assert_not_called()
 
     @patch("kb.views.services._perform_microsoft_video_access_probe")
     def test_access_results_are_cached_briefly(self, probe_mock):

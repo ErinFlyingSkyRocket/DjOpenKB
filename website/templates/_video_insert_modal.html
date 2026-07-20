@@ -10,7 +10,7 @@
                 <div class="form-group">
                     <label for="videoUrl">{% trans "Video link" %}</label>
                     <input type="url" class="form-control" id="videoUrl" placeholder="https://example.com/path/to/video-or-video-page" autocomplete="off">
-                    <p class="help-block">{% trans "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video." %}</p>
+                    <p class="help-block">{% trans "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported." %}</p>
                     <p id="videoUrlError" class="text-danger csp-is-hidden">{% trans "Enter a supported video link." %}</p>
                 </div>
             </div>
