@@ -584,6 +584,19 @@ Then either commit your changes, stash them, or restore unwanted local changes b
 
 ## Useful Maintenance Commands
 
+### Emergency Admin IP Allowlist Recovery
+
+If the Django Admin IP allowlist is enabled with an incorrect IPv4/IPv6 address or CIDR range and you accidentally block your own management device, recover access from the Linux server shell:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec web python manage.py reset_admin_ip_allowlist
+```
+
+This command fully resets the dynamic Admin IP allowlist. It **disables the allowlist and permanently clears all configured IPv4/IPv6 addresses and CIDR ranges** and does **not bypass normal login, superuser access, normal MFA, or the separate Admin MFA gate**. After access is restored, configure a new allowlist from scratch in **Django Admin → Site settings → Django Admin access restrictions**, then enable the allowlist again.
+
+No `.env` or Nginx change is required for this recovery.
+
 Check container status:
 
 ```bash

@@ -390,7 +390,37 @@ Examples:
 
 Plain IPv4 addresses are stored as `/32` networks and plain IPv6 addresses as `/128`. The list is validated and normalised before saving. Changes take effect on the next request and do not require editing `.env`, rebuilding containers, or restarting Nginx.
 
-Keep the allowlist disabled until the correct management addresses/ranges are confirmed. When enabled, an empty or invalid stored configuration fails closed.
+Keep the allowlist disabled until the correct management addresses/ranges are confirmed. When enabled, the policy is **implicit deny**: only configured IPv4/IPv6 addresses or CIDR ranges are allowed to proceed to the Admin authentication checks. An empty or invalid stored configuration fails closed.
+
+#### Emergency recovery if the administrator is accidentally locked out
+
+> **Important recovery command:** keep this command available to the server administrator before enabling the allowlist.
+
+If an incorrect allowlist blocks your own management IP, or you want to discard the current allowlist completely and start again, connect to the Linux server through SSH, console, or another approved server-management method and run:
+
+> **Warning:** this command permanently clears every saved Admin IPv4/IPv6 address and CIDR range.
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec web python manage.py reset_admin_ip_allowlist
+```
+
+The recovery command:
+
+- disables **Enable Admin IP allowlist**;
+- permanently clears all configured IPv4/IPv6 addresses and CIDR ranges;
+- restores the default source-IP policy of allowing all addresses to reach the normal Admin security checks;
+- does not bypass login, superuser requirements, normal MFA, or the separate Admin MFA gate.
+
+After running the command:
+
+1. Sign in normally and complete MFA.
+2. Open **Django Admin → Site settings → Django Admin access restrictions**.
+3. Enter a new set of allowed IP/CIDR ranges.
+4. Confirm your current management address/range is present.
+5. Re-enable **Admin IP allowlist** and save.
+
+No `.env` or Nginx edit is required for this recovery. If the `web` container is not running, start the normal application stack first before running the management command.
 
 ---
 

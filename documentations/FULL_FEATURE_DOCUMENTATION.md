@@ -883,7 +883,15 @@ Non-admin users receive 404 responses for admin-only main-site maintenance tools
 
 ### 17.2 Admin Network and Step-Up MFA Restriction
 
-The deployment can optionally restrict Django Admin access by IPv4/IPv6 address or CIDR from the singleton Site settings record. The allowlist is disabled by default, so source IP is unrestricted until an administrator explicitly configures ranges and enables it. When enabled, a correct username/password is not enough if the request source is outside the configured ranges.
+The deployment can optionally restrict Django Admin access by IPv4/IPv6 address or CIDR from the singleton Site settings record. The allowlist is disabled by default, so source IP is unrestricted until an administrator explicitly configures ranges and enables it. When enabled, the allowlist uses an **implicit-deny** policy: only configured addresses/ranges may continue to the Admin authentication checks.
+
+If an administrator accidentally locks out their own management IP, the supported server-side recovery command is:
+
+```bash
+sudo docker compose exec web python manage.py reset_admin_ip_allowlist
+```
+
+The command disables the IP allowlist toggle and permanently clears the configured IPv4/IPv6/CIDR values so the allowlist can be rebuilt from a clean state. It does not bypass login, superuser permissions, normal MFA, or the Admin MFA gate. After access is restored, the administrator configures a new allowlist in Site settings and explicitly re-enables the allowlist. No `.env` or Nginx change is required.
 
 Django Admin also uses an admin step-up MFA gate. A user must first complete normal login/MFA, then pass the admin gate before entering `/admin/`. The admin gate has its own configurable idle timeout so returning to admin after the timeout requires MFA again. The default is 600 seconds (10 minutes); code enforces a minimum of 60 seconds and a maximum of 86400 seconds.
 

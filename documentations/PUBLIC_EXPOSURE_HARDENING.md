@@ -69,6 +69,23 @@ The reverse proxy now applies these controls before traffic reaches Django or Ac
 
 The rate limits use the TCP peer address seen by Nginx. With direct firewall NAT, this is normally the browser IP. If a CDN or Layer-7 reverse proxy is introduced later, configure `real_ip_header` and `set_real_ip_from` for the known proxy range before relying on IP-based rate limits or audit records. Never trust browser-supplied `X-Forwarded-For` directly.
 
+### 3.1 Emergency recovery from an incorrect Admin IP allowlist
+
+The dynamic Django Admin allowlist intentionally uses an implicit-deny policy when enabled. This means an administrator can lock out their own management device by saving the wrong address or CIDR range.
+
+The supported recovery path is a server-side Django management command:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec web python manage.py reset_admin_ip_allowlist
+```
+
+This is an operational recovery control, not an authentication bypass. The command disables source-IP filtering and permanently clears the configured ranges. Normal account authentication, superuser checks, normal MFA, and the separate Admin MFA gate remain in force.
+
+After recovery, configure a new allowlist in **Django Admin → Site settings → Django Admin access restrictions** before re-enabling the allowlist. There is no permanent emergency allowlist in `.env` or Nginx, reducing the risk of an overlooked fallback network range.
+
+Server shell access is already a privileged administrative capability and should remain restricted to authorised infrastructure administrators.
+
 Nginx uses a read-only root filesystem. Temporary paths are intentionally under the writable `/tmp` `tmpfs`:
 
 ```nginx

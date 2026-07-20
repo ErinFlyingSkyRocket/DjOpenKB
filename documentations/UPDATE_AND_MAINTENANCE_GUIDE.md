@@ -254,7 +254,43 @@ Keep `DJANGO_SECRET_KEY` stable unless there is a deliberate reason to rotate it
 
 ---
 
-## 6. Quick update reference
+## 6. Emergency Admin IP Allowlist Recovery
+
+The Django Admin IPv4/IPv6 allowlist is managed dynamically from **Site settings** and is disabled by default. Once enabled, it uses an **implicit-deny** policy: only configured IP addresses or CIDR ranges can proceed to the Admin authentication checks.
+
+If an administrator accidentally removes their own address/range, enables an incorrect list, or wants to completely discard the current allowlist and start again, recover/reset it directly from the Linux server:
+
+> **Warning:** this reset permanently clears every saved Admin IPv4/IPv6 address and CIDR range.
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec web python manage.py reset_admin_ip_allowlist
+```
+
+Expected behaviour:
+
+- The Admin IP allowlist toggle is disabled immediately.
+- All existing configured IPv4/IPv6/CIDR entries are permanently cleared.
+- Source-IP filtering returns to the default unrestricted state.
+- Normal login, superuser permissions, normal MFA, and Admin MFA are still required.
+
+After recovery, sign in normally, configure a new allowlist under:
+
+```text
+Django Admin → Site settings → Django Admin access restrictions
+```
+
+Then re-enable **Admin IP allowlist** only after confirming that the current management IP or management CIDR is included.
+
+This recovery does **not** require editing `.env` or `nginx/nginx.conf`, and it does not require keeping a permanent emergency IP allowlist.
+
+### Recovery command quick check
+
+If the allowlist is already disabled and the stored IP/CIDR list is already empty, the command reports that it is already fully reset. It is therefore safe to run as a recovery check when the current allowlist state is uncertain.
+
+---
+
+## 7. Quick update reference
 
 | Change | Normal action |
 |---|---|
@@ -264,6 +300,7 @@ Keep `DJANGO_SECRET_KEY` stable unless there is a deliberate reason to rotate it
 | Vault secret | Apply the temporary bootstrap update, remove the bootstrap file, then restart the stack |
 | Nginx configuration | Recreate/restart the stack; rebuild only if another image-based change also requires it |
 | Documentation only | No application rebuild is required unless the documentation is served from the deployed application image |
+| Accidental Admin IP allowlist lockout | From the server, run `sudo docker compose exec web python manage.py reset_admin_ip_allowlist`, configure a new allowlist in Site settings, then re-enable the allowlist |
 
 After any application update, confirm:
 
