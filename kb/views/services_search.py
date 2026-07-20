@@ -4,6 +4,7 @@ This module is imported back by services.py so existing imports continue to work
 """
 
 from .services import *  # noqa: F401,F403
+from django.db.models import Case, IntegerField, Value, When
 from django.utils.translation import gettext as _
 
 def tokenize_search_query(value):
@@ -126,10 +127,11 @@ def build_search_article_card(suggested):
 
 
 def search_public_articles_by_title_keywords(query, limit=None, visibility=None, user=None):
-    """Return published articles matching title/keywords only, newest first.
+    """Return published title/keyword matches with keyword matches first.
 
-    No relevance score is calculated and the article body is not read. The
-    database filter only checks SuggestedArticle.title and SuggestedArticle.keywords.
+    This deliberately uses only a lightweight database-side priority flag rather
+    than a relevance-scoring loop or full-text search. Article bodies are not read.
+    Within the keyword-priority and title-only groups, newer articles remain first.
     """
     query = (query or "").strip()[:120]
     query_words = tokenize_search_query(query)
@@ -139,9 +141,14 @@ def search_public_articles_by_title_keywords(query, limit=None, visibility=None,
     full_query_filter = Q(title__icontains=query) | Q(keywords__icontains=query) if query else Q(pk__in=[])
 
     token_filter = Q()
+    keyword_priority_filter = Q()
+    if query:
+        keyword_priority_filter |= Q(keywords__icontains=query)
+
     if query_words:
         for word in query_words:
             token_filter &= (Q(title__icontains=word) | Q(keywords__icontains=word))
+            keyword_priority_filter |= Q(keywords__icontains=word)
 
     final_filter = full_query_filter | token_filter
 
@@ -160,12 +167,17 @@ def search_public_articles_by_title_keywords(query, limit=None, visibility=None,
     queryset = (
         queryset
         .annotate(
+            keyword_priority=Case(
+                When(keyword_priority_filter, then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            ),
             db_helpful_vote_count=Count(
                 "votes",
                 filter=Q(votes__value=ArticleVote.VoteValue.UP),
-            )
+            ),
         )
-        .order_by("-updated_at", "-pk")
+        .order_by("keyword_priority", "-updated_at", "-pk")
     )
 
     if limit is not None:
