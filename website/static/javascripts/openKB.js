@@ -1,3 +1,12 @@
+function openKbTranslatedText(attributeName, fallbackText){
+    var source = document.querySelector('[data-openkb-search-history-title]');
+    if(!source){
+        return fallbackText;
+    }
+    var value = source.getAttribute(attributeName);
+    return value || fallbackText;
+}
+
 $(document).ready(function(){
 
     // Search history dropdown for normal search bars only.
@@ -94,8 +103,8 @@ $(document).ready(function(){
 
             var storageKey = options.storageKey;
             var $searchHistoryI18n = $('[data-openkb-search-history-title]').first();
-            var title = options.title || $searchHistoryI18n.attr('data-openkb-search-history-title') || 'Search history';
-            var removeLabel = options.removeLabel || $searchHistoryI18n.attr('data-openkb-search-history-remove-label') || 'Remove search history item';
+            var title = options.title || $searchHistoryI18n.attr('data-openkb-search-history-title') || openKbTranslatedText('data-openkb-search-history-title', 'Search history');
+            var removeLabel = options.removeLabel || $searchHistoryI18n.attr('data-openkb-search-history-remove-label') || openKbTranslatedText('data-openkb-search-history-remove-label', 'Remove search history item');
 
             // Keep the dropdown outside Bootstrap's .input-group. The input-group
             // uses table-style layout and absolutely positioned children can collapse to
@@ -360,7 +369,7 @@ $(document).ready(function(){
                             $('#searchResult').addClass('hidden');
                         }else{
                             $('.searchResultList').empty();
-                            $('.searchResultList').append('<li class="list-group-item list-group-heading">Search results</li>');
+                            $('.searchResultList').append($('<li class="list-group-item list-group-heading"></li>').text(openKbTranslatedText('data-openkb-search-results', 'Search results')));
                             $.each(response, function(key, value){
                                 var faqLink = value.kb_permalink;
                                 if(typeof faqLink === 'undefined' || faqLink === ''){
@@ -530,7 +539,7 @@ $(document).ready(function(){
 
         if($('#versionSidebar').length && $('#frm_kb_edit_reason').val() === ''){
             // only save if a version is edited
-            show_notification('Please enter a reason for editing article', 'danger');
+            show_notification(openKbTranslatedText('data-openkb-edit-reason-required', 'Please enter a reason for editing article'), 'danger');
             $('#btnVersionMenu').trigger('click');
             $('#frm_kb_edit_reason').focus();
             return;
@@ -572,7 +581,7 @@ $(document).ready(function(){
         .done(function(article){
             // remove the version elements from DOM
             groupElement.remove();
-            show_notification('Version removed successfully', 'success');
+            show_notification(openKbTranslatedText('data-openkb-version-removed-success', 'Version removed successfully'), 'success');
         })
         .fail(function(msg){
             show_notification(JSON.parse(msg.responseText).message, 'danger');
@@ -948,7 +957,7 @@ $(document).ready(function(){
                 show_notification(msg.responseText, 'danger');
             });
         }else{
-            show_notification('Please enter a permalink to validate', 'danger');
+            show_notification(openKbTranslatedText('data-openkb-permalink-required', 'Please enter a permalink to validate'), 'danger');
         }
     });
 
@@ -1002,7 +1011,7 @@ $(document).ready(function(){
     // search button click event
     $('#btn_search').click(function(event){
         if($('#frm_search').val() === ''){
-            show_notification('Please enter a search value', 'danger');
+            show_notification(openKbTranslatedText('data-openkb-search-value-required', 'Please enter a search value'), 'danger');
             event.preventDefault();
         }
     });
@@ -1027,7 +1036,7 @@ $(document).on('click', '.file_delete_confirm', function(e){
     var fileId = $(this).attr('data-id');
     var filePath = $(this).attr('data-path');
 
-    if(window.confirm('Are you sure you want to delete the file?')){
+    if(window.confirm(openKbTranslatedText('data-openkb-delete-file-confirm', 'Are you sure you want to delete the file?'))){
         $.ajax({
             method: 'POST',
             url: $('#app_context').val() + '/file/delete',
@@ -1054,9 +1063,10 @@ function show_notification(msg, type, reload_page){
     $('#notify_message').stop(true, true);
     $('#notify_message').removeClass();
     $('#notify_message').addClass('notify_message-' + type);
+    var closeLabel = $('<div>').text(openKbTranslatedText('data-openkb-close-label', 'Close')).html();
     $('#notify_message').html(
         '<span class="notify-message-text">' + msg + '</span>' +
-        '<button type="button" class="notify-message-close" aria-label="Close">&times;</button>'
+        '<button type="button" class="notify-message-close" aria-label="' + closeLabel + '">&times;</button>'
     );
 
     $('#notify_message').css('display', 'none');

@@ -1,5 +1,14 @@
 {% load i18n kb_nav %}
-<nav class="navbar navbar-default navbar-static-top" data-openkb-search-history-title="{% trans 'Search history' %}" data-openkb-search-history-remove-label="{% trans 'Remove search history item' %}">
+<nav class="navbar navbar-default navbar-static-top"
+     data-openkb-search-history-title="{% trans 'Search history' %}"
+     data-openkb-search-history-remove-label="{% trans 'Remove search history item' %}"
+     data-openkb-search-results="{% trans 'Search results' %}"
+     data-openkb-edit-reason-required="{% trans 'Please enter a reason for editing article' %}"
+     data-openkb-version-removed-success="{% trans 'Version removed successfully' %}"
+     data-openkb-permalink-required="{% trans 'Please enter a permalink to validate' %}"
+     data-openkb-search-value-required="{% trans 'Please enter a search value' %}"
+     data-openkb-delete-file-confirm="{% trans 'Are you sure you want to delete the file?' %}"
+     data-openkb-close-label="{% trans 'Close' %}">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
