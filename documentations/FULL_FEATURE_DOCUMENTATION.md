@@ -888,6 +888,7 @@ The deployment can optionally restrict Django Admin access by IPv4/IPv6 address 
 If an administrator accidentally locks out their own management IP, the supported server-side recovery command is:
 
 ```bash
+cd /opt/DjOpenKB
 sudo docker compose exec web python manage.py reset_admin_ip_allowlist
 ```
 
