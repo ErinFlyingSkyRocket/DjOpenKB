@@ -8,32 +8,113 @@ Use `documentations/DEPLOYMENT_GUIDE.md` for a fresh server deployment. The norm
 /opt/DjOpenKB
 ```
 
-## 1. Recommended update method: VS Code, Git push, then Git pull
+## 1. Recommended update method: development computer → Git push → server Git pull
 
 This is the recommended method for normal feature, code, template, documentation, and dependency updates.
 
-### 1.1 Make and push the changes from the development computer
+### 1.1 What is required on the development computer
 
-Edit the required files in VS Code. If a Python package version must change, update the required version in:
+Git is the tool used to push and pull project updates. Docker Desktop is **not required** just to update the Git repository.
+
+A normal Windows development computer can use:
+
+- **VS Code** to edit the project files.
+- **Git for Windows** to run `git pull`, `git status`, `git commit`, and `git push`.
+- **GitHub Desktop** as an optional graphical alternative to Git command-line operations.
+- **Docker Desktop** only when the project needs to be built or tested locally with Docker containers before the update is pushed.
+
+The normal update path is therefore:
+
+```text
+Development computer
+        ↓
+Edit and test the project
+        ↓
+Git commit and push
+        ↓
+Git repository
+        ↓
+Linux server git pull
+        ↓
+Docker Compose rebuild/restart
+```
+
+Before editing an existing local project copy, first make sure it is up to date:
+
+```bash
+git status
+git pull
+```
+
+If the local working tree contains unfinished changes, review or commit them before pulling.
+
+### 1.2 Make and push changes from the development computer
+
+Open the local DjOpenKB project folder in VS Code and edit the required files.
+
+If a Python package version must change, update the required version in:
 
 ```text
 requirements.txt
 ```
 
-Then review and push the changes:
+Review the changes before pushing:
 
 ```bash
 git status
+git diff
+```
+
+Then commit and push them:
+
+```bash
 git add .
 git commit -m "Describe the update"
 git push
 ```
 
+The project `.gitignore` excludes normal local/runtime files such as `.env`, Vault runtime files, generated data, and private certificate material. Even so, always review `git status` before committing to make sure no sensitive or unintended file has been staged.
+
+#### Optional GitHub Desktop workflow
+
+Instead of using Git commands, the same development-side workflow can be completed with GitHub Desktop:
+
+1. Open the DjOpenKB repository in GitHub Desktop.
+2. Use **Fetch origin** and then **Pull origin** before starting work.
+3. Edit the files in VS Code.
+4. Return to GitHub Desktop and review the changed files.
+5. Enter a commit summary and select **Commit to main**.
+6. Select **Push origin**.
+
+GitHub Desktop and Git command-line operations perform the same repository update process. Use one approach consistently for a given update to avoid unnecessary confusion.
+
+#### Optional local Docker testing
+
+Docker Desktop is useful only when the development computer needs to run the Docker Compose stack locally before pushing an update.
+
+Typical local testing may include:
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs --tail=120 web
+```
+
+Stop the local test stack when finished:
+
+```bash
+docker compose down
+```
+
+Do not use `docker compose down -v` unless the local test data is intentionally being deleted.
+
+Local Docker Desktop testing is optional. The production Linux server still performs its own Docker image rebuild after pulling the committed update.
+
 Keep dependency versions controlled in `requirements.txt` rather than relying on an unpinned latest version. Update dependencies deliberately and test the application after rebuilding.
 
-### 1.2 Pull and deploy the latest code on the Linux server
+### 1.3 Pull and deploy the latest code on the Linux server
 
-Connect to the Linux server and run:
+After the update has been pushed successfully, connect to the Linux server and run:
 
 ```bash
 cd /opt/DjOpenKB
