@@ -86,14 +86,14 @@ placeholder_len = int(sys.argv[5])
 created_new_file = sys.argv[6] == "1"
 rotate = sys.argv[7] == "1"
 
-for name, value in {
-    "DJANGO_KEY_LENGTH": django_len,
-    "POSTGRES_PASSWORD_LENGTH": postgres_len,
-    "FIELD_ENCRYPTION_KEY_LENGTH": field_key_len,
-    "PLACEHOLDER_PASSWORD_LENGTH": placeholder_len,
-}.items():
-    if value < 1:
-        raise SystemExit(f"ERROR: {name} must be greater than zero.")
+for name, value, minimum in (
+    ("DJANGO_KEY_LENGTH", django_len, 32),
+    ("POSTGRES_PASSWORD_LENGTH", postgres_len, 24),
+    ("FIELD_ENCRYPTION_KEY_LENGTH", field_key_len, 32),
+    ("PLACEHOLDER_PASSWORD_LENGTH", placeholder_len, 24),
+):
+    if value < minimum:
+        raise SystemExit(f"ERROR: {name} must be at least {minimum}.")
 
 alphabet = string.ascii_letters + string.digits
 

@@ -1,190 +1,97 @@
-# OpenKB Local HTTPS Certificate Generator
+# Local HTTPS Certificate Generator
 
-This project uses a local self-signed SSL certificate for HTTPS access through Nginx.
+The project includes synchronized certificate-generation scripts for Linux,
+PowerShell, and Windows Batch.
 
-The generated certificate files are:
-
-```text
-nginx/certs/localhost.crt
-nginx/certs/localhost.key
-````
-
-These files are mounted into the Nginx Docker container and used for:
-
-```text
-https://localhost:8080
-```
-
----
-
-## Windows Certificate Generation
-
-This project includes Windows scripts for generating the local HTTPS certificate.
-
-### Option A: Scripts in `DjOpenKB\nginx\`
-
-Recommended location:
-
-```text
-DjOpenKB\nginx\
-```
-
-Copy these two files into the `nginx` folder:
-
-```text
-nginx\generate-localhost-cert.ps1
-nginx\generate-localhost-cert.bat
-```
-
-Then double-click:
-
-```text
-nginx\generate-localhost-cert.bat
-```
-
-It will generate:
-
-```text
-nginx\certs\localhost.crt
-nginx\certs\localhost.key
-```
-
----
-
-### Option B: Scripts in `DjOpenKB\nginx\certs\`
-
-Alternative location:
-
-```text
-DjOpenKB\nginx\certs\
-```
-
-Copy these two files into the `certs` folder:
-
-```text
-nginx\certs\generate-localhost-cert.ps1
-nginx\certs\generate-localhost-cert.bat
-```
-
-Then double-click:
-
-```text
-nginx\certs\generate-localhost-cert.bat
-```
-
-It will generate:
-
-```text
-nginx\certs\localhost.crt
-nginx\certs\localhost.key
-```
-
----
-
-## Linux Certificate Generation
-
-For Linux machines, use the Bash script:
-
-```text
-nginx/generate-localhost-cert.sh
-```
-
-Make it executable:
-
-```bash
-cd nginx
-chmod +x generate-localhost-cert.sh
-```
-
-Run it:
-
-```bash
-./generate-localhost-cert.sh
-```
-
-It will generate:
+Generated files:
 
 ```text
 nginx/certs/localhost.crt
 nginx/certs/localhost.key
 ```
 
-If OpenSSL is missing, install it first.
+These files match the Nginx container configuration:
 
-Ubuntu/Debian:
+```text
+/etc/nginx/certs/localhost.crt
+/etc/nginx/certs/localhost.key
+```
+
+> These self-signed certificates are for internal development only. For a
+> production/public deployment, use a certificate issued for the final DNS
+> hostname.
+
+## Linux
+
+From the project root:
 
 ```bash
-sudo apt update
-sudo apt install openssl -y
+chmod +x nginx/certs/generate-localhost-cert.sh
+sh nginx/certs/generate-localhost-cert.sh <INTERNAL_SERVER_IP>
 ```
 
-CentOS/RHEL/Fedora:
+Optional second argument: certificate lifetime in days.
 
 ```bash
-sudo dnf install openssl -y
+sh nginx/certs/generate-localhost-cert.sh <INTERNAL_SERVER_IP> 825
 ```
 
----
+Without an IP argument:
 
-## Docker Compose Nginx Mount
-
-Use this in the `nginx` service inside `docker-compose.yml`:
-
-```yaml
-volumes:
-  - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-  - ./nginx/certs:/etc/nginx/certs:ro
-ports:
-  - "8080:8080"
+```bash
+sh nginx/certs/generate-localhost-cert.sh
 ```
 
-This mounts the local cert folder:
+the certificate is generated for local development using `localhost`.
 
-```text
-./nginx/certs
+## Windows PowerShell
+
+From the project root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File nginx/certs/generate-localhost-cert.ps1 <INTERNAL_SERVER_IP>
 ```
 
-into the Nginx container as:
+Optional second argument:
 
-```text
-/etc/nginx/certs
+```powershell
+powershell -ExecutionPolicy Bypass -File nginx/certs/generate-localhost-cert.ps1 <INTERNAL_SERVER_IP> 825
 ```
 
----
+## Windows Batch
 
-## Nginx SSL Configuration
+From the project root:
 
-Inside `nginx/nginx.conf`, use:
-
-```nginx
-ssl_certificate     /etc/nginx/certs/localhost.crt;
-ssl_certificate_key /etc/nginx/certs/localhost.key;
+```bat
+nginx\certs\generate-localhost-cert.bat <INTERNAL_SERVER_IP>
 ```
 
-Nginx will then serve the Django/OpenKB website using HTTPS on:
+Optional second argument:
 
-```text
-https://localhost:8080
+```bat
+nginx\certs\generate-localhost-cert.bat <INTERNAL_SERVER_IP> 825
 ```
 
----
+The Batch file passes all arguments to the PowerShell implementation.
 
-## Browser Warning
+## Shared behaviour
 
-Because this is a self-signed certificate, the browser may show a warning such as:
+All three entry points now use the same defaults and SAN set:
 
-```text
-Your connection is not private
+- Default certificate lifetime: `365` days.
+- DNS SANs: `localhost`, `nginx`, `djopenkb.local`.
+- IP SANs: `127.0.0.1`, `0.0.0.0`.
+- When an IPv4 address is supplied, it is added as another SAN and used as the
+  certificate common name.
+
+After generating or replacing the certificate, recreate/restart Nginx as
+appropriate for the deployment.
+
+For the standard full deployment:
+
+```bash
+sudo docker compose up -d --build
 ```
 
-This is normal for local development.
-
-Continue to:
-
-```text
-https://localhost:8080
-```
-
-after accepting the browser warning.
-
-```
+A browser warning is expected until the self-signed certificate is trusted on
+the client device.

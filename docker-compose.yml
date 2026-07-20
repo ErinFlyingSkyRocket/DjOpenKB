@@ -424,6 +424,7 @@ services:
       VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt
       VAULT_KV_MOUNT: ${VAULT_KV_MOUNT:-secret}
       VAULT_SECRET_PATH: ${VAULT_SECRET_PATH:-djopenkb}
+      CLEANUP_INTERVAL_SECONDS: "${CLEANUP_INTERVAL_SECONDS:-86400}"
       PYTHONUNBUFFERED: "1"
       HOME: /tmp
       TMPDIR: /tmp

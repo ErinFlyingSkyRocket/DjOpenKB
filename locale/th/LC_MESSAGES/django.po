@@ -423,7 +423,7 @@ msgstr "คุณแน่ใจหรือไม่ว่าต้องกา
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการย้อนกลับเป็นเวอร์ชันที่เผยแพร่ล่าสุด การเปลี่ยนแปลงที่ยังไม่ได้เผยแพร่ทั้งหมดจะถูกลบอย่างถาวร"
 
-#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:111 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "บทความ"
 
@@ -531,7 +531,7 @@ msgstr "รายละเอียดบทความ"
 msgid "Article display and upload limits"
 msgstr "ขีดจำกัดการแสดงผลและการอัปโหลดบทความ"
 
-#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
+#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
 msgid "Article image"
 msgstr "รูปภาพบทความ"
 
@@ -1107,7 +1107,7 @@ msgstr "เปลี่ยน %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "เปลี่ยน %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
 msgid "Checking..."
 msgstr "กำลังตรวจสอบ..."
 
@@ -1631,7 +1631,7 @@ msgstr "เข้ารหัสและซ่อนไว้"
 msgid "Enter MFA/OTP code"
 msgstr "กรอกรหัส MFA/OTP"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
 msgid "Enter a supported video link."
 msgstr "ป้อนลิงก์วิดีโอที่รองรับ"
 
@@ -1916,23 +1916,23 @@ msgstr "ไฟล์รูปภาพ"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "ขนาดภาพใหญ่เกินไป โปรดอัปโหลดภาพที่เล็กกว่า"
 
-#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
+#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "รูปภาพมีขนาดใหญ่เกินไป ขนาดสูงสุดที่อนุญาตคือ 2 MB"
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this article draft."
 msgstr "ลบรูปภาพออกจากร่างบทความนี้แล้ว"
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "ลบรูปภาพออกจากร่างนี้แล้ว บันทึกบทความเพื่อลบออกจากที่จัดเก็บ"
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "การอัปโหลดรูปภาพไม่พร้อมใช้งานชั่วคราว โปรดลองอีกครั้งในภายหลัง"
 
-#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
+#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
 msgid "Image uploaded and inserted into the article."
 msgstr "อัปโหลดรูปภาพและแทรกลงในบทความแล้ว"
 
@@ -2116,11 +2116,11 @@ msgstr "รหัสยืนยันตัวตนไม่ถูกต้อ
 msgid "Invalid deletion queue action."
 msgstr "การดำเนินการคิวการลบไม่ถูกต้อง"
 
-#: kb/views/suggestions.py:1127
+#: kb/views/suggestions.py:1118
 msgid "Invalid image filename."
 msgstr "ชื่อไฟล์รูปภาพไม่ถูกต้อง"
 
-#: kb/views/suggestions.py:1138
+#: kb/views/suggestions.py:1129
 msgid "Invalid image path."
 msgstr "เส้นทางรูปภาพไม่ถูกต้อง"
 
@@ -2156,7 +2156,7 @@ msgstr "คงการอัปเดตไว้รออนุมัติ / 
 msgid "Keywords"
 msgstr "คำสำคัญ"
 
-#: kb/views/services_search.py:72
+#: kb/views/services_search.py:73
 msgid "Keywords: %(keywords)s"
 msgstr "คำสำคัญ: %(keywords)s"
 
@@ -2616,11 +2616,11 @@ msgstr "ยังไม่ได้ตั้งค่าอีเมล"
 msgid "No existing keywords match the current title or body yet."
 msgstr "ยังไม่มีคำสำคัญที่มีอยู่ตรงกับชื่อเรื่องหรือเนื้อหาปัจจุบัน"
 
-#: kb/views/suggestions.py:1050
+#: kb/views/suggestions.py:1041
 msgid "No image file received."
 msgstr "ไม่ได้รับไฟล์รูปภาพ"
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1113
 msgid "No image filename received."
 msgstr "ไม่ได้รับชื่อไฟล์รูปภาพ"
 
@@ -2780,7 +2780,7 @@ msgstr "รหัสผ่านเดิมไม่ถูกต้อง"
 msgid "Only .zip import files are allowed."
 msgstr "อนุญาตเฉพาะไฟล์นำเข้า .zip เท่านั้น"
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "อนุญาตเฉพาะรูปภาพ PNG, JPG, GIF หรือ WEBP"
 
@@ -2969,8 +2969,8 @@ msgid "Passwords match."
 msgstr "รหัสผ่านตรงกัน"
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
-msgstr "วางลิงก์ YouTube หรือ Vimeo หรือลิงก์ HTTPS โดยตรงที่ลงท้ายด้วย .mp4, .webm หรือ .ogg บทความจะแสดงวิดีโอที่เล่นได้"
+msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
+msgstr "วางลิงก์ YouTube หรือ Vimeo ไม่รองรับไฟล์วิดีโอโดยตรงและลิงก์ที่อาจต้องลงชื่อเข้าใช้จากภายนอก"
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3328,7 +3328,7 @@ msgstr "ปฏิเสธการอัปเดต"
 msgid "Related articles"
 msgstr "บทความที่เกี่ยวข้อง"
 
-#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
+#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
 msgid "Remove image from article"
 msgstr "ลบรูปภาพออกจากบทความ"
 
@@ -3944,15 +3944,15 @@ msgstr "ไม่สามารถมอบหมายบทความได
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "ช่องทำเครื่องหมายด้านล่างเป็นข้อยกเว้นพิเศษต่อผู้ใช้สำหรับการเข้าถึงบทความเท่านั้น มีประโยชน์เมื่อผู้ใช้คนหนึ่งต้องการสิทธิ์บทความมากกว่ากลุ่มของตนเล็กน้อย โดยไม่ต้องสร้างกลุ่มใหม่ การเข้าถึง Django Admin จะได้รับผ่านกลุ่มผู้ใช้ผู้ดูแลระบบ/สถานะ superuser เท่านั้น"
 
-#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "The image could not be uploaded. Please try again."
 msgstr "ไม่สามารถอัปโหลดรูปภาพได้ โปรดลองอีกครั้ง"
 
-#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "การอัปโหลดรูปภาพไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง"
 
-#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "การอัปโหลดรูปภาพไม่ได้รับอนุญาต โปรดรีเฟรชหน้าแล้วลองอีกครั้ง"
 
@@ -3996,11 +3996,11 @@ msgstr "ใช้นโยบายเพิ่มระดับเดียว
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "บทความที่เลือกไม่ใช่บทความกำพร้าแล้วหรือไม่มีอยู่แล้ว โปรดรีเฟรชและลองอีกครั้ง"
 
-#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
 msgid "The selected file is not a valid supported image."
 msgstr "ไฟล์ที่เลือกไม่ใช่รูปภาพที่รองรับและถูกต้อง"
 
-#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
 msgid "The selected image is empty. Please choose a different image."
 msgstr "รูปภาพที่เลือกว่างเปล่า โปรดเลือกรูปภาพอื่น"
 
@@ -4076,7 +4076,7 @@ msgstr "บทความนี้มีรูปภาพ %(count)s รูป 
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "บทความนี้ถึงขีดจำกัดการอัปโหลดรูปภาพ %(limit)s รูปแล้ว"
 
-#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
+#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "บทความนี้ถึงขีดจำกัดการอัปโหลดรูปภาพแล้ว โปรดลบรูปภาพหนึ่งรูปก่อนอัปโหลดรูปใหม่"
 
@@ -4092,11 +4092,11 @@ msgstr "การดำเนินการนี้ล้างการบล
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "อีเมลนี้ถูกจัดการโดยบัญชีโดเมนของคุณและไม่สามารถเปลี่ยนที่นี่ได้"
 
-#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
+#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "รูปภาพนี้ถูกอัปโหลดในร่างนี้แล้ว ใช้ปุ่ม X ในตัวอย่างเพื่อลบก่อน"
 
-#: kb/views/suggestions.py:1131
+#: kb/views/suggestions.py:1122
 msgid "This image is not removable from this editing session."
 msgstr "ไม่สามารถลบรูปภาพนี้ออกจากเซสชันการแก้ไขนี้ได้"
 
@@ -4120,7 +4120,7 @@ msgstr "เครื่องมือนี้แนะนำให้ใช้
 msgid "This type of request is not allowed for the selected page."
 msgstr "ไม่อนุญาตคำขอประเภทนี้สำหรับหน้าที่เลือก"
 
-#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
 msgid "This video link could not be validated. Please try another link."
 msgstr "ไม่สามารถตรวจสอบลิงก์วิดีโอนี้ได้ โปรดลองใช้ลิงก์อื่น"
 
@@ -4156,7 +4156,7 @@ msgstr "มีคำถาม OpenKB AI มากเกินไป โปรด
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "มีความพยายามลงชื่อเข้าใช้ที่ล้มเหลวมากเกินไป โปรดลองอีกครั้งใน %(duration)s"
 
-#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "มีการพยายามอัปโหลดรูปภาพมากเกินไป โปรดรอสักครู่แล้วลองอีกครั้ง"
 
@@ -4200,11 +4200,11 @@ msgstr "ประเภท"
 msgid "Type username or email"
 msgstr "พิมพ์ชื่อผู้ใช้หรืออีเมล"
 
-#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "ไม่สามารถตรวจสอบลิงก์วิดีโอนี้ได้ โปรดรีเฟรชหน้าแล้วลองอีกครั้ง"
 
-#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "ไม่สามารถตรวจสอบได้ว่าวิดีโอนี้เข้าถึงได้โดยไม่ต้องลงชื่อเข้าใช้หรือไม่ โปรดลองอีกครั้ง"
 
@@ -4404,7 +4404,7 @@ msgstr "ลบเวอร์ชันเรียบร้อยแล้ว"
 msgid "Video link"
 msgstr "ลิงก์วิดีโอ"
 
-#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
 msgid "Video link inserted into the article."
 msgstr "แทรกลิงก์วิดีโอลงในบทความแล้ว"
 
@@ -4576,7 +4576,7 @@ msgstr "เซสชันผู้ดูแลระบบของคุณห
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "บัญชีของคุณเองได้รับบทบาทผู้ใช้ที่ปิดใช้งาน ในคำขอถัดไป คุณจะถูกเปลี่ยนเส้นทางไปยังหน้าบัญชีที่ปิดใช้งาน"
 
-#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "เซสชันของคุณหมดอายุแล้ว โปรดลงชื่อเข้าใช้อีกครั้งก่อนอัปโหลดรูปภาพ"
 

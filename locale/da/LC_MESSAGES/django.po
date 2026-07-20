@@ -428,7 +428,7 @@ msgstr "Er du sikker på, at du vil slette filen?"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Er du sikker på, at du vil gå tilbage til den senest udgivne version? Alle ikke-udgivne opdateringsændringer fjernes permanent."
 
-#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:111 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "Artikel"
 
@@ -536,7 +536,7 @@ msgstr "Artikeldetaljer"
 msgid "Article display and upload limits"
 msgstr "Grænser for artikelvisning og upload"
 
-#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
+#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
 msgid "Article image"
 msgstr "Artikelbillede"
 
@@ -1112,7 +1112,7 @@ msgstr "Ændrede %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Ændrede %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
 msgid "Checking..."
 msgstr "Kontrollerer..."
 
@@ -1636,7 +1636,7 @@ msgstr "Krypteret og skjult"
 msgid "Enter MFA/OTP code"
 msgstr "Indtast MFA/OTP-kode"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
 msgid "Enter a supported video link."
 msgstr "Indtast et understøttet videolink."
 
@@ -1922,23 +1922,23 @@ msgstr "Billedaktiver"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Billedets dimensioner er for store. Upload et mindre billede."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
+#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Billedet er for stort. Den maksimalt tilladte størrelse er 2 MB."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this article draft."
 msgstr "Billedet blev fjernet fra dette artikeludkast."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Billedet blev fjernet fra dette udkast. Gem artiklen for at slette det fra lageret."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Billedupload er midlertidigt utilgængelig. Prøv igen senere."
 
-#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
+#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
 msgid "Image uploaded and inserted into the article."
 msgstr "Billedet blev uploadet og indsat i artiklen."
 
@@ -2122,11 +2122,11 @@ msgstr "Ugyldig authenticator-kode. Prøv igen."
 msgid "Invalid deletion queue action."
 msgstr "Ugyldig handling i slettelseskøen."
 
-#: kb/views/suggestions.py:1127
+#: kb/views/suggestions.py:1118
 msgid "Invalid image filename."
 msgstr "Ugyldigt filnavn for billede."
 
-#: kb/views/suggestions.py:1138
+#: kb/views/suggestions.py:1129
 msgid "Invalid image path."
 msgstr "Ugyldig billedsti."
 
@@ -2162,7 +2162,7 @@ msgstr "Behold opdatering som afventende / Gem gennemgangsredigeringer"
 msgid "Keywords"
 msgstr "Nøgleord"
 
-#: kb/views/services_search.py:72
+#: kb/views/services_search.py:73
 msgid "Keywords: %(keywords)s"
 msgstr "Nøgleord: %(keywords)s"
 
@@ -2622,11 +2622,11 @@ msgstr "Ingen e-mail angivet"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Ingen eksisterende nøgleord matcher endnu den aktuelle titel eller tekst."
 
-#: kb/views/suggestions.py:1050
+#: kb/views/suggestions.py:1041
 msgid "No image file received."
 msgstr "Ingen billedfil modtaget."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1113
 msgid "No image filename received."
 msgstr "Intet filnavn for billede modtaget."
 
@@ -2786,7 +2786,7 @@ msgstr "Den gamle adgangskode er forkert."
 msgid "Only .zip import files are allowed."
 msgstr "Kun .zip-importfiler er tilladt."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Kun PNG-, JPG-, GIF- eller WEBP-billeder er tilladt."
 
@@ -2975,8 +2975,8 @@ msgid "Passwords match."
 msgstr "Adgangskoderne matcher."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
-msgstr "Indsæt et YouTube- eller Vimeo-link eller et direkte HTTPS-link, der slutter på .mp4, .webm eller .ogg. Artiklen viser en video, der kan afspilles."
+msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
+msgstr "Indsæt et YouTube- eller Vimeo-link. Direkte videofiler og links, der kan kræve eksternt login, understøttes ikke."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3334,7 +3334,7 @@ msgstr "Afvis opdatering"
 msgid "Related articles"
 msgstr "Relaterede artikler"
 
-#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
+#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
 msgid "Remove image from article"
 msgstr "Fjern billede fra artikel"
 
@@ -3950,15 +3950,15 @@ msgstr "Artiklerne kunne ikke tildeles sikkert. Ingen tildeling blev anvendt. Tj
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Afkrydsningsfelterne nedenfor er særlige undtagelser pr. bruger kun for artikeladgang. De er nyttige, når én bruger behøver lidt mere artikeladgang end sin gruppe, uden at der oprettes en ny gruppe. Django-administratoradgang gives kun gennem gruppen Administratorbrugere/superbrugerstatus."
 
-#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "The image could not be uploaded. Please try again."
 msgstr "Billedet kunne ikke uploades. Prøv igen."
 
-#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Billedupload kunne ikke oprette forbindelse til serveren. Kontrollér din forbindelse, og prøv igen."
 
-#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Billedupload blev ikke godkendt. Opdater siden, og prøv igen."
 
@@ -4002,11 +4002,11 @@ msgstr "Den samme progressive politik bruges til fejl ved adgangskodelogin og MF
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "De valgte artikler er ikke længere forældreløse eller findes ikke længere. Opdater siden, og prøv igen."
 
-#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
 msgid "The selected file is not a valid supported image."
 msgstr "Den valgte fil er ikke et gyldigt understøttet billede."
 
-#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Det valgte billede er tomt. Vælg et andet billede."
 
@@ -4082,7 +4082,7 @@ msgstr "Denne artikel har %(count)s billede(r), men det maksimalt tilladte er %(
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Denne artikel har nået uploadgrænsen på %(limit)s billede(r)."
 
-#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
+#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Denne artikel har nået uploadgrænsen for billeder. Fjern et billede, før du uploader et nyt."
 
@@ -4098,11 +4098,11 @@ msgstr "Dette rydder midlertidige blokeringer, tællere for mislykkede forsøg o
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Denne e-mailadresse administreres af din domænekonto og kan ikke ændres her."
 
-#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
+#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Dette billede er allerede uploadet i dette udkast. Brug først X-forhåndsvisningsknappen til at fjerne det."
 
-#: kb/views/suggestions.py:1131
+#: kb/views/suggestions.py:1122
 msgid "This image is not removable from this editing session."
 msgstr "Dette billede kan ikke fjernes fra denne redigeringssession."
 
@@ -4126,7 +4126,7 @@ msgstr "Dette værktøj foretrækker systemets eksportformat:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Denne type anmodning er ikke tilladt for den valgte side."
 
-#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
 msgid "This video link could not be validated. Please try another link."
 msgstr "Dette videolink kunne ikke valideres. Prøv et andet link."
 
@@ -4162,7 +4162,7 @@ msgstr "For mange OpenKB AI-spørgsmål. Vent venligst, før du prøver igen."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "For mange mislykkede loginforsøg. Prøv igen om %(duration)s."
 
-#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "For mange forsøg på at uploade billeder. Vent et øjeblik, og prøv igen."
 
@@ -4206,11 +4206,11 @@ msgstr "Kontotype"
 msgid "Type username or email"
 msgstr "Indtast brugernavn eller e-mail"
 
-#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Dette videolink kunne ikke valideres. Opdater siden, og prøv igen."
 
-#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Det kunne ikke bekræftes, at denne video er tilgængelig uden login. Prøv igen."
 
@@ -4410,7 +4410,7 @@ msgstr "Versionen blev fjernet."
 msgid "Video link"
 msgstr "Videolink"
 
-#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
 msgid "Video link inserted into the article."
 msgstr "Videolinket blev indsat i artiklen."
 
@@ -4582,7 +4582,7 @@ msgstr "Din administratorsession udløb på grund af inaktivitet. Bekræft MFA i
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Din egen konto blev tildelt Deaktiveret bruger. Ved næste anmodning omdirigeres du til siden med deaktiveret konto."
 
-#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Din session er udløbet. Log ind igen, før du uploader billedet."
 

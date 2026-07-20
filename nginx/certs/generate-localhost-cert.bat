@@ -1,14 +1,32 @@
 @echo off
-setlocal
+setlocal EnableExtensions DisableDelayedExpansion
 
-REM Generate a local self-signed HTTPS certificate for DjOpenKB Nginx.
-REM Output files:
-REM   nginx\certs\localhost.crt
-REM   nginx\certs\localhost.key
+REM Generate a self-signed development TLS certificate for DjOpenKB Nginx.
 REM
-REM Run from the project root:
+REM Optional arguments:
+REM   1. Browser-facing server IPv4 address.
+REM   2. Certificate lifetime in days. Default: 365.
+REM
+REM Examples:
 REM   nginx\certs\generate-localhost-cert.bat
+REM   nginx\certs\generate-localhost-cert.bat <INTERNAL_SERVER_IP>
+REM   nginx\certs\generate-localhost-cert.bat <INTERNAL_SERVER_IP> 825
 
-powershell -ExecutionPolicy Bypass -File "%~dp0generate-localhost-cert.ps1"
+set "SCRIPT=%~dp0generate-localhost-cert.ps1"
 
-endlocal
+if not exist "%SCRIPT%" (
+    echo ERROR: Could not find "%SCRIPT%".
+    endlocal & exit /b 1
+)
+
+REM Pass all arguments through so the Batch, PowerShell, and Linux versions
+REM support the same optional target IPv4 address and certificate lifetime.
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT%" %*
+set "EXIT_CODE=%ERRORLEVEL%"
+
+if not "%EXIT_CODE%"=="0" (
+    echo.
+    echo Certificate generation failed. Review the error above.
+)
+
+endlocal & exit /b %EXIT_CODE%

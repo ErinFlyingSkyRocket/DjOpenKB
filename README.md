@@ -4,7 +4,7 @@ DjOpenKB is a Docker-based internal IT knowledge base built with Django. It prov
 
 The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required during development: users on the reachable internal network can use the browser-facing server IP over HTTPS, for example `https://<INTERNAL_SERVER_IP>:8080`. Replace `<INTERNAL_SERVER_IP>` with the approved internal address for the deployment. `localhost` and `127.0.0.1` refer only to the Linux server itself and are not remote-user addresses. When a firewall and final DNS name are later introduced, publish only HTTPS and update the trusted host/origin settings to the exact public address.
 
-For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GUIDE.md). For later code, dependency, `.env`, or Vault secret changes, follow [Update and Maintenance Guide](documentations/UPDATE_AND_MAINTENANCE_GUIDE.md). Optional SMTP relay setup, certificate preparation, workflow notifications, and authentication-lockout alerts are covered in [SMTP Relay Setup and Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md).
+For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GUIDE.md). For later code, dependency, `.env`, or Vault secret changes, follow [Update and Maintenance Guide](documentations/UPDATE_AND_MAINTENANCE_GUIDE.md). For a central map of `.env`, Vault secrets, Django Site settings, Nginx, Docker Compose, and restart requirements, use [Configuration Reference](documentations/CONFIGURATION_REFERENCE.md). Optional SMTP relay setup, certificate preparation, workflow notifications, and authentication-lockout alerts are covered in [SMTP Relay Setup and Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md).
 
 ---
 
@@ -309,6 +309,7 @@ Contains the main documentation files for setup, testing, and feature explanatio
 
 ```text
 documentations/DEPLOYMENT_GUIDE.md
+documentations/CONFIGURATION_REFERENCE.md
 documentations/UPDATE_AND_MAINTENANCE_GUIDE.md
 documentations/FULL_FEATURE_DOCUMENTATION.md
 documentations/LDAP_LDAPS_SETUP.md

@@ -423,7 +423,7 @@ msgstr "Apakah Anda yakin ingin menghapus file ini?"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Apakah Anda yakin ingin kembali ke versi terakhir yang diterbitkan? Semua perubahan pembaruan yang belum diterbitkan akan dihapus secara permanen."
 
-#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:111 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "Artikel"
 
@@ -531,7 +531,7 @@ msgstr "Detail artikel"
 msgid "Article display and upload limits"
 msgstr "Batas tampilan dan unggahan artikel"
 
-#: website/templates/suggest.html:635 website/templates/suggest_edit.html:856
+#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
 msgid "Article image"
 msgstr "Gambar artikel"
 
@@ -1107,7 +1107,7 @@ msgstr "%(target_label)s diubah: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s diubah: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:447 website/templates/suggest_edit.html:668
+#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
 msgid "Checking..."
 msgstr "Memeriksa..."
 
@@ -1631,7 +1631,7 @@ msgstr "Dienkripsi dan disembunyikan"
 msgid "Enter MFA/OTP code"
 msgstr "Masukkan kode MFA/OTP"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:411 website/templates/suggest.html:424 website/templates/suggest_edit.html:632 website/templates/suggest_edit.html:645
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
 msgid "Enter a supported video link."
 msgstr "Masukkan tautan video yang didukung."
 
@@ -1916,23 +1916,23 @@ msgstr "Aset gambar"
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Dimensi gambar terlalu besar. Unggah gambar yang lebih kecil."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:593 website/templates/suggest.html:687 website/templates/suggest_edit.html:814 website/templates/suggest_edit.html:914
+#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Gambar terlalu besar. Ukuran maksimum yang diizinkan adalah 2 MB."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this article draft."
 msgstr "Gambar dihapus dari draf artikel ini."
 
-#: website/templates/suggest.html:668 website/templates/suggest_edit.html:892
+#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Gambar dihapus dari draf ini. Simpan artikel untuk menghapusnya dari penyimpanan."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Unggah gambar sementara tidak tersedia. Silakan coba lagi nanti."
 
-#: website/templates/suggest.html:736 website/templates/suggest_edit.html:963
+#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
 msgid "Image uploaded and inserted into the article."
 msgstr "Gambar diunggah dan dimasukkan ke artikel."
 
@@ -2116,11 +2116,11 @@ msgstr "Kode autentikator tidak valid. Coba lagi."
 msgid "Invalid deletion queue action."
 msgstr "Tindakan antrean penghapusan tidak valid."
 
-#: kb/views/suggestions.py:1127
+#: kb/views/suggestions.py:1118
 msgid "Invalid image filename."
 msgstr "Nama file gambar tidak valid."
 
-#: kb/views/suggestions.py:1138
+#: kb/views/suggestions.py:1129
 msgid "Invalid image path."
 msgstr "Jalur gambar tidak valid."
 
@@ -2156,7 +2156,7 @@ msgstr "Biarkan pembaruan menunggu / Simpan edit tinjauan"
 msgid "Keywords"
 msgstr "Kata kunci"
 
-#: kb/views/services_search.py:72
+#: kb/views/services_search.py:73
 msgid "Keywords: %(keywords)s"
 msgstr "Kata kunci: %(keywords)s"
 
@@ -2616,11 +2616,11 @@ msgstr "Belum ada email"
 msgid "No existing keywords match the current title or body yet."
 msgstr "Belum ada kata kunci yang cocok dengan judul atau isi saat ini."
 
-#: kb/views/suggestions.py:1050
+#: kb/views/suggestions.py:1041
 msgid "No image file received."
 msgstr "Tidak ada file gambar yang diterima."
 
-#: kb/views/suggestions.py:1122
+#: kb/views/suggestions.py:1113
 msgid "No image filename received."
 msgstr "Tidak ada nama file gambar yang diterima."
 
@@ -2780,7 +2780,7 @@ msgstr "Kata sandi lama salah."
 msgid "Only .zip import files are allowed."
 msgstr "Hanya file impor .zip yang diizinkan."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:679 website/templates/suggest.html:748 website/templates/suggest.html:773 website/templates/suggest_edit.html:1003 website/templates/suggest_edit.html:906 website/templates/suggest_edit.html:975
+#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Hanya gambar PNG, JPG, GIF, atau WEBP yang diperbolehkan."
 
@@ -2969,8 +2969,8 @@ msgid "Passwords match."
 msgstr "Kata sandi cocok."
 
 #: website/templates/_video_insert_modal.html:13
-msgid "Paste a YouTube or Vimeo link, or a direct HTTPS link ending in .mp4, .webm, or .ogg. The article will display a playable video."
-msgstr "Tempel tautan YouTube atau Vimeo, atau tautan HTTPS langsung yang berakhiran .mp4, .webm, atau .ogg. Artikel akan menampilkan video yang dapat diputar."
+msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
+msgstr "Tempel tautan YouTube atau Vimeo. File video langsung dan tautan yang mungkin memerlukan proses masuk eksternal tidak didukung."
 
 #: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
 msgid "Pasted images"
@@ -3328,7 +3328,7 @@ msgstr "Tolak pembaruan"
 msgid "Related articles"
 msgstr "Artikel terkait"
 
-#: website/templates/suggest.html:640 website/templates/suggest.html:641 website/templates/suggest_edit.html:864 website/templates/suggest_edit.html:865
+#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
 msgid "Remove image from article"
 msgstr "Hapus gambar dari artikel"
 
@@ -3944,15 +3944,15 @@ msgstr "Artikel tidak dapat ditetapkan dengan aman. Tidak ada penetapan yang dit
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Kotak centang di bawah ini adalah pengecualian khusus per pengguna hanya untuk akses artikel. Kotak ini berguna ketika satu pengguna memerlukan akses artikel sedikit lebih banyak daripada grupnya, tanpa membuat grup baru. Akses Admin Django hanya diberikan melalui grup Pengguna Admin/status superuser."
 
-#: website/templates/suggest.html:607 website/templates/suggest_edit.html:828
+#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
 msgid "The image could not be uploaded. Please try again."
 msgstr "Gambar tidak dapat diunggah. Silakan coba lagi."
 
-#: website/templates/suggest.html:739 website/templates/suggest_edit.html:966
+#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Unggah gambar tidak dapat terhubung ke server. Periksa koneksi Anda dan coba lagi."
 
-#: website/templates/suggest.html:599 website/templates/suggest_edit.html:820
+#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Unggah gambar tidak diizinkan. Muat ulang halaman dan coba lagi."
 
@@ -3996,11 +3996,11 @@ msgstr "Kebijakan progresif yang sama digunakan untuk kegagalan login kata sandi
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak ada lagi. Muat ulang dan coba lagi."
 
-#: website/templates/suggest.html:602 website/templates/suggest_edit.html:823
+#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
 msgid "The selected file is not a valid supported image."
 msgstr "File yang dipilih bukan gambar valid yang didukung."
 
-#: website/templates/suggest.html:683 website/templates/suggest_edit.html:910
+#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Gambar yang dipilih kosong. Silakan pilih gambar lain."
 
@@ -4076,7 +4076,7 @@ msgstr "Artikel ini memiliki %(count)s gambar, tetapi maksimum yang diizinkan ad
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Artikel ini telah mencapai batas unggah %(limit)s gambar."
 
-#: website/templates/suggest.html:691 website/templates/suggest_edit.html:918
+#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Artikel ini telah mencapai batas unggah gambar. Hapus satu gambar sebelum mengunggah gambar lain."
 
@@ -4092,11 +4092,11 @@ msgstr "Tindakan ini menghapus blokir sementara, penghitung percobaan gagal, dan
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Alamat email ini dikelola oleh akun domain Anda dan tidak dapat diubah di sini."
 
-#: website/templates/suggest.html:702 website/templates/suggest_edit.html:929
+#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Gambar ini sudah diunggah dalam draf ini. Gunakan tombol pratinjau X untuk menghapusnya terlebih dahulu."
 
-#: kb/views/suggestions.py:1131
+#: kb/views/suggestions.py:1122
 msgid "This image is not removable from this editing session."
 msgstr "Gambar ini tidak dapat dihapus dari sesi pengeditan ini."
 
@@ -4120,7 +4120,7 @@ msgstr "Alat ini lebih memilih format ekspor sistem:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Jenis permintaan ini tidak diizinkan untuk halaman yang dipilih."
 
-#: website/templates/suggest.html:472 website/templates/suggest_edit.html:693
+#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
 msgid "This video link could not be validated. Please try another link."
 msgstr "Tautan video ini tidak dapat divalidasi. Coba tautan lain."
 
@@ -4156,7 +4156,7 @@ msgstr "Terlalu banyak pertanyaan OpenKB AI. Tunggu sebelum mencoba lagi."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Terlalu banyak percobaan masuk yang gagal. Coba lagi dalam %(duration)s."
 
-#: website/templates/suggest.html:596 website/templates/suggest_edit.html:817
+#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Terlalu banyak percobaan unggah gambar. Tunggu sebentar dan coba lagi."
 
@@ -4200,11 +4200,11 @@ msgstr "Jenis"
 msgid "Type username or email"
 msgstr "Ketik nama pengguna atau email"
 
-#: website/templates/suggest.html:438 website/templates/suggest_edit.html:659
+#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Tidak dapat memvalidasi tautan video ini. Muat ulang halaman dan coba lagi."
 
-#: website/templates/suggest.html:485 website/templates/suggest_edit.html:706
+#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Tidak dapat memverifikasi bahwa video ini dapat diakses tanpa masuk. Silakan coba lagi."
 
@@ -4404,7 +4404,7 @@ msgstr "Versi berhasil dihapus."
 msgid "Video link"
 msgstr "Tautan video"
 
-#: website/templates/suggest.html:482 website/templates/suggest_edit.html:703
+#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
 msgid "Video link inserted into the article."
 msgstr "Tautan video telah disisipkan ke dalam artikel."
 
@@ -4576,7 +4576,7 @@ msgstr "Sesi admin Anda berakhir karena tidak aktif. Verifikasi MFA lagi untuk m
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Akun Anda sendiri ditetapkan sebagai Pengguna Dinonaktifkan. Pada permintaan berikutnya, Anda akan dialihkan ke halaman akun dinonaktifkan."
 
-#: website/templates/suggest.html:590 website/templates/suggest_edit.html:811
+#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Sesi Anda telah berakhir. Silakan masuk lagi sebelum mengunggah gambar."
 

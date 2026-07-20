@@ -232,7 +232,7 @@ The default is **20**. The first accepted prompt starts a fixed 24-hour window; 
 
 Use only model strings supported by the installed OpenKB/LiteLLM version and by the selected provider account. Test a model change in a controlled environment before making it available to users.
 
-**Current implementation note:** Django reads `AI_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`. However, the current `vault/scripts/init.sh` writes only `AI_API_KEY` into Vault during its normal bootstrap process. Therefore, use `AI_API_KEY` as the supported standard for all provider choices unless the Vault init script is deliberately extended and tested to store provider-specific keys.
+**Current implementation note:** Django and the Vault bootstrap workflow support `AI_API_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`. Use the provider-specific key that matches `OPENKB_AI_MODEL` where possible; `AI_API_KEY` remains available as the general fallback key.
 
 ### 4.3 AD user search scope
 
