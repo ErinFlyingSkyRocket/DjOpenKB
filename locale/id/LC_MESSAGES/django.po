@@ -1171,7 +1171,7 @@ msgstr "Konfirmasi tindakan artikel yatim"
 msgid "Confirm password"
 msgstr "Konfirmasi kata sandi"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:452
+#: kb/views/auth.py:508 kb/views/mfa.py:459
 msgid "Confirm password is incorrect."
 msgstr "Konfirmasi kata sandi salah."
 
@@ -2080,7 +2080,7 @@ msgstr "Tambahan penulis internal. Dapat melihat artikel publik/internal, membua
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Kredensial akun tidak valid. Periksa nama pengguna dan kata sandi."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
 msgid "Invalid authenticator code. Please try again."
 msgstr "Kode autentikator tidak valid. Coba lagi."
 
@@ -2332,7 +2332,7 @@ msgstr "MFA direset untuk %(count)d perangkat yang dipilih. Pengguna harus menyi
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "MFA direset untuk %(count)d pengguna yang dipilih. Mereka harus menyiapkan autentikator baru saat masuk berikutnya."
 
-#: kb/views/mfa.py:551
+#: kb/views/mfa.py:558
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Reset MFA tersedia untuk akun Repositori Pengetahuan Anda."
 
@@ -2372,7 +2372,7 @@ msgstr "MFA untuk %(username)s telah direset. Pengguna harus menyiapkan autentik
 msgid "MFA/OTP code"
 msgstr "Kode MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
+#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "Kode MFA/OTP salah."
 
@@ -3636,7 +3636,7 @@ msgstr "Siapkan MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Siapkan MFA sebelum mengakses situs admin."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:471
+#: kb/views/auth.py:392 kb/views/mfa.py:478
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Siapkan MFA sebelum mengubah detail akun sensitif."
 
@@ -4008,7 +4008,7 @@ msgstr "Komentar ini ditampilkan kepada pemilik artikel saat artikel atau pembar
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "File ini tampaknya tidak digunakan. Periksa detail pengunggah, lalu hapus hanya file yang tidak lagi diperlukan."
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:477
+#: kb/views/mfa.py:307 kb/views/mfa.py:484
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Perangkat MFA ini tidak dapat diverifikasi karena rahasianya tidak dapat dibaca. Minta admin mereset MFA Anda, atau reset dari baris perintah server jika admin terkunci."
 
@@ -4120,7 +4120,7 @@ msgstr "Alihkan navigasi"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Terlalu banyak pertanyaan OpenKB AI. Tunggu sebelum mencoba lagi."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Terlalu banyak percobaan masuk yang gagal. Coba lagi dalam %(duration)s."
 
@@ -4128,7 +4128,7 @@ msgstr "Terlalu banyak percobaan masuk yang gagal. Coba lagi dalam %(duration)s.
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Terlalu banyak percobaan unggah gambar. Tunggu sebentar dan coba lagi."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Terlalu banyak kode MFA yang salah. Coba lagi dalam %(duration)s."
 
@@ -4413,8 +4413,12 @@ msgid "Was this article helpful?"
 msgstr "Apakah artikel ini membantu?"
 
 #: kb/views/mfa.py:353
-msgid "Welcome back, %(username)s."
-msgstr "Selamat datang kembali, %(username)s."
+msgid "Welcome back, %(name)s."
+msgstr "Selamat datang kembali, %(name)s."
+
+#: kb/views/mfa.py:359
+msgid "Welcome back."
+msgstr "Selamat datang kembali."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4524,7 +4528,7 @@ msgstr "Anda akan diminta mengonfirmasi sebelum perubahan diterapkan. Artikel ya
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Anda akan diminta mengonfirmasi sebelum perubahan diterapkan. Artikel yang dipilih akan segera dihapus permanen."
 
-#: kb/views/mfa.py:587
+#: kb/views/mfa.py:594
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA Anda telah direset. Selesaikan penyiapan autentikator sekarang untuk terus menggunakan Repositori Pengetahuan."
 

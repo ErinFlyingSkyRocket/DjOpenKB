@@ -1176,7 +1176,7 @@ msgstr "Sahipsiz makale işlemini onayla"
 msgid "Confirm password"
 msgstr "Şifreyi onayla"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:452
+#: kb/views/auth.py:508 kb/views/mfa.py:459
 msgid "Confirm password is incorrect."
 msgstr "Onay şifresi yanlış."
 
@@ -2086,7 +2086,7 @@ msgstr "İç yazar eklentisi. Herkese açık/iç makaleleri görüntüleyebilir,
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Hesap bilgileri geçersiz. Lütfen kullanıcı adı ve parolayı kontrol edin."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
 msgid "Invalid authenticator code. Please try again."
 msgstr "Kimlik doğrulayıcı kodu geçersiz. Lütfen tekrar deneyin."
 
@@ -2338,7 +2338,7 @@ msgstr "Seçili %(count)d cihaz için MFA sıfırlandı. Kullanıcılar bir sonr
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "Seçili %(count)d kullanıcı için MFA sıfırlandı. Bir sonraki oturum açışlarında yeni bir kimlik doğrulayıcı ayarlamalıdırlar."
 
-#: kb/views/mfa.py:551
+#: kb/views/mfa.py:558
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Bilgi Deposu hesabınız için MFA sıfırlama kullanılabilir."
 
@@ -2378,7 +2378,7 @@ msgstr "%(username)s için MFA sıfırlandı. Kullanıcı bir sonraki oturum aç
 msgid "MFA/OTP code"
 msgstr "MFA/OTP kodu"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
+#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP kodu yanlış."
 
@@ -3642,7 +3642,7 @@ msgstr "MFA'yı ayarla"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Yönetici sitesine erişmeden önce MFA'yı kurun."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:471
+#: kb/views/auth.py:392 kb/views/mfa.py:478
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Hassas hesap ayrıntılarını değiştirmeden önce MFA kurun."
 
@@ -4014,7 +4014,7 @@ msgstr "Makale veya güncelleme Reddedildi olarak işaretlendiğinde bu yorumlar
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Bu dosyalar kullanılmıyor gibi görünüyor. Yükleyen bilgilerini kontrol edin ve yalnızca artık gerekli olmayan dosyaları silin."
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:477
+#: kb/views/mfa.py:307 kb/views/mfa.py:484
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Gizli anahtarı okunamadığından bu MFA cihazı doğrulanamıyor. Bir yöneticiden MFA'nızı sıfırlamasını isteyin veya yöneticilerin erişimi kilitliyse sunucu komut satırından sıfırlayın."
 
@@ -4126,7 +4126,7 @@ msgstr "Gezinmeyi aç/kapat"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Çok fazla OpenKB AI sorusu. Lütfen yeniden denemeden önce bekleyin."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonra yeniden deneyin."
 
@@ -4134,7 +4134,7 @@ msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonr
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Çok fazla görsel yükleme denemesi yapıldı. Bir süre bekleyip tekrar deneyin."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Çok fazla yanlış MFA kodu. Lütfen %(duration)s sonra yeniden deneyin."
 
@@ -4419,8 +4419,12 @@ msgid "Was this article helpful?"
 msgstr "Bu makale faydalı oldu mu?"
 
 #: kb/views/mfa.py:353
-msgid "Welcome back, %(username)s."
-msgstr "Tekrar hoş geldiniz, %(username)s."
+msgid "Welcome back, %(name)s."
+msgstr "Tekrar hoş geldiniz, %(name)s."
+
+#: kb/views/mfa.py:359
+msgid "Welcome back."
+msgstr "Tekrar hoş geldiniz."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4530,7 +4534,7 @@ msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Yayınlanmış 
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Seçilen makaleler hemen kalıcı olarak silinir."
 
-#: kb/views/mfa.py:587
+#: kb/views/mfa.py:594
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA'nız sıfırlandı. Bilgi Deposunu kullanmaya devam etmek için şimdi kimlik doğrulayıcı kurulumunu tamamlayın."
 

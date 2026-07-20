@@ -1181,7 +1181,7 @@ msgstr "Potwierdź działanie dla osieroconych artykułów"
 msgid "Confirm password"
 msgstr "Potwierdź hasło"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:452
+#: kb/views/auth.py:508 kb/views/mfa.py:459
 msgid "Confirm password is incorrect."
 msgstr "Hasło potwierdzające jest nieprawidłowe."
 
@@ -2092,7 +2092,7 @@ msgstr "Dodatkowa rola autora wewnętrznego. Może wyświetlać artykuły public
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Nieprawidłowe dane konta. Sprawdź nazwę użytkownika i hasło."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
 msgid "Invalid authenticator code. Please try again."
 msgstr "Nieprawidłowy kod aplikacji uwierzytelniającej. Spróbuj ponownie."
 
@@ -2344,7 +2344,7 @@ msgstr "Zresetowano MFA dla %(count)d wybranego/wybranych urządzeń. Użytkowni
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "Zresetowano MFA dla %(count)d wybranego/wybranych użytkowników. Muszą skonfigurować nową aplikację uwierzytelniającą przy następnym logowaniu."
 
-#: kb/views/mfa.py:551
+#: kb/views/mfa.py:558
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Reset MFA jest dostępny dla Twojego konta Repozytorium wiedzy."
 
@@ -2384,7 +2384,7 @@ msgstr "MFA zostało zresetowane dla %(username)s. Użytkownik musi skonfigurowa
 msgid "MFA/OTP code"
 msgstr "Kod MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
+#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "Kod MFA/OTP jest nieprawidłowy."
 
@@ -3648,7 +3648,7 @@ msgstr "Skonfiguruj MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Skonfiguruj MFA przed uzyskaniem dostępu do witryny administratora."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:471
+#: kb/views/auth.py:392 kb/views/mfa.py:478
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Skonfiguruj MFA przed zmianą wrażliwych danych konta."
 
@@ -4020,7 +4020,7 @@ msgstr "Te komentarze są pokazywane właścicielowi artykułu, gdy artykuł lub
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Te pliki wyglądają na nieużywane. Sprawdź dane przesyłającego, a następnie usuń tylko pliki, które nie są już potrzebne."
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:477
+#: kb/views/mfa.py:307 kb/views/mfa.py:484
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Tego urządzenia MFA nie można zweryfikować, ponieważ nie można było odczytać jego sekretu. Poproś administratora o zresetowanie MFA albo zresetuj je z wiersza poleceń serwera, jeśli administratorzy są zablokowani."
 
@@ -4132,7 +4132,7 @@ msgstr "Przełącz nawigację"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Zbyt wiele pytań do OpenKB AI. Odczekaj przed ponowną próbą."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za %(duration)s."
 
@@ -4140,7 +4140,7 @@ msgstr "Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za %(duration)s
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Zbyt wiele prób przesłania obrazu. Poczekaj chwilę i spróbuj ponownie."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Zbyt wiele nieprawidłowych kodów MFA. Spróbuj ponownie za %(duration)s."
 
@@ -4425,8 +4425,12 @@ msgid "Was this article helpful?"
 msgstr "Czy ten artykuł był pomocny?"
 
 #: kb/views/mfa.py:353
-msgid "Welcome back, %(username)s."
-msgstr "Witamy ponownie, %(username)s."
+msgid "Welcome back, %(name)s."
+msgstr "Witamy ponownie, %(name)s."
+
+#: kb/views/mfa.py:359
+msgid "Welcome back."
+msgstr "Witamy ponownie."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4536,7 +4540,7 @@ msgstr "Przed zastosowaniem zmian pojawi się prośba o potwierdzenie. Opublikow
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Przed zastosowaniem zmian pojawi się prośba o potwierdzenie. Wybrane artykuły zostaną natychmiast trwale usunięte."
 
-#: kb/views/mfa.py:587
+#: kb/views/mfa.py:594
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "Twoje MFA zostało zresetowane. Ukończ teraz konfigurację aplikacji uwierzytelniającej, aby nadal korzystać z Repozytorium wiedzy."
 

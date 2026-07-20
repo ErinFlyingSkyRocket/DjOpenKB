@@ -1176,7 +1176,7 @@ msgstr "Bekræft handling for forældreløse artikler"
 msgid "Confirm password"
 msgstr "Bekræft adgangskode"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:452
+#: kb/views/auth.py:508 kb/views/mfa.py:459
 msgid "Confirm password is incorrect."
 msgstr "Bekræftelsesadgangskoden er forkert."
 
@@ -2086,7 +2086,7 @@ msgstr "Supplerende rolle for intern forfatter. Kan se offentlige/interne artikl
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Ugyldige kontooplysninger. Kontrollér brugernavn og adgangskode."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:381
+#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
 msgid "Invalid authenticator code. Please try again."
 msgstr "Ugyldig authenticator-kode. Prøv igen."
 
@@ -2338,7 +2338,7 @@ msgstr "MFA blev nulstillet for %(count)d valgte enhed(er). Brugere skal opsætt
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "MFA blev nulstillet for %(count)d valgte bruger(e). De skal opsætte en ny authenticator ved næste login."
 
-#: kb/views/mfa.py:551
+#: kb/views/mfa.py:558
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "MFA-nulstilling er tilgængelig for din konto i Vidensarkiv."
 
@@ -2378,7 +2378,7 @@ msgstr "MFA blev nulstillet for %(username)s. Brugeren skal opsætte en ny authe
 msgid "MFA/OTP code"
 msgstr "MFA/OTP-kode"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:530 kb/views/services.py:810
+#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:810
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP-koden er forkert."
 
@@ -3642,7 +3642,7 @@ msgstr "Opsæt MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Opsæt MFA, før du åbner administratorsitet."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:471
+#: kb/views/auth.py:392 kb/views/mfa.py:478
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Opsæt MFA, før du ændrer følsomme kontooplysninger."
 
@@ -4014,7 +4014,7 @@ msgstr "Disse kommentarer vises til artiklens ejer, når artiklen eller opdateri
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Disse filer ser ud til at være ubrugte. Tjek uploaderoplysningerne, og slet kun de filer, der ikke længere er nødvendige."
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:477
+#: kb/views/mfa.py:307 kb/views/mfa.py:484
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Denne MFA-enhed kan ikke bekræftes, fordi dens hemmelige nøgle ikke kunne læses. Bed en administrator om at nulstille din MFA, eller nulstil den fra serverens kommandolinje, hvis administratorer er låst ude."
 
@@ -4126,7 +4126,7 @@ msgstr "Skift navigation"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "For mange OpenKB AI-spørgsmål. Vent venligst, før du prøver igen."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:415
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "For mange mislykkede loginforsøg. Prøv igen om %(duration)s."
 
@@ -4134,7 +4134,7 @@ msgstr "For mange mislykkede loginforsøg. Prøv igen om %(duration)s."
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "For mange forsøg på at uploade billeder. Vent et øjeblik, og prøv igen."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:369 kb/views/mfa.py:505 kb/views/services.py:782
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:782
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "For mange forkerte MFA-koder. Prøv igen om %(duration)s."
 
@@ -4419,8 +4419,12 @@ msgid "Was this article helpful?"
 msgstr "Var denne artikel nyttig?"
 
 #: kb/views/mfa.py:353
-msgid "Welcome back, %(username)s."
-msgstr "Velkommen tilbage, %(username)s."
+msgid "Welcome back, %(name)s."
+msgstr "Velkommen tilbage, %(name)s."
+
+#: kb/views/mfa.py:359
+msgid "Welcome back."
+msgstr "Velkommen tilbage."
 
 #: kb/admin.py:197
 msgid "Wiki path"
@@ -4530,7 +4534,7 @@ msgstr "Du bliver bedt om at bekræfte, før ændringer anvendes. Udgivne artikl
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Du bliver bedt om at bekræfte, før ændringer anvendes. Valgte artikler slettes permanent med det samme."
 
-#: kb/views/mfa.py:587
+#: kb/views/mfa.py:594
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "Din MFA blev nulstillet. Fuldfør opsætningen af authenticator nu for at fortsætte med at bruge Vidensarkiv."
 
