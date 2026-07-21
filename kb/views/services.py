@@ -89,6 +89,7 @@ ALLOWED_ARTICLE_IMAGE_FORMATS = {
 }
 MAX_ARTICLE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024
 MAX_ARTICLE_IMAGE_PIXELS = 16_000_000
+MAX_ARTICLE_IMAGE_DISPLAY_WIDTH_PX = 1200
 # Match the server-generated Markdown and common safe manual edits made by users,
 # including changed alt text, optional angle brackets, query/hash suffixes, and
 # an optional Markdown image title. This keeps an uploaded file associated with
@@ -96,6 +97,13 @@ MAX_ARTICLE_IMAGE_PIXELS = 16_000_000
 ARTICLE_IMAGE_RE = re.compile(
     r"!\[[^\]\n]*\]\(\s*<?/wiki/uploads/([^)/?#>\s]+)"
     r"(?:[?#][^\s)>]*)?>?(?:\s+[\"'][^\n\"']*[\"'])?\s*\)"
+)
+# Resized editor images are stored as a tightly controlled local HTML <img> tag
+# with a numeric width. Track those references exactly like Markdown images so
+# image cleanup/import/export logic never treats a resized image as unused.
+ARTICLE_HTML_IMAGE_RE = re.compile(
+    r"<img\b[^>]*\bsrc\s*=\s*[\"']?/wiki/uploads/([^\"'\s>?#]+)",
+    re.IGNORECASE,
 )
 
 VIDEO_STANDALONE_URL_RE = re.compile(r"^ {0,3}<?(https?://[^\s<>]+)>? *$", re.IGNORECASE)
@@ -1264,11 +1272,14 @@ def uploaded_image_content_type(filename):
 
 
 def extract_article_image_filenames(markdown_text):
-    """Return unique uploaded image filenames referenced in Markdown body."""
+    """Return unique uploaded image filenames referenced in Markdown or safe HTML."""
     seen = []
-    for filename in ARTICLE_IMAGE_RE.findall(markdown_text or ""):
-        if filename not in seen and "/" not in filename and "\\" not in filename:
-            seen.append(filename)
+    text = markdown_text or ""
+
+    for pattern in (ARTICLE_IMAGE_RE, ARTICLE_HTML_IMAGE_RE):
+        for filename in pattern.findall(text):
+            if filename not in seen and "/" not in filename and "\\" not in filename:
+                seen.append(filename)
     return seen
 
 
@@ -2677,6 +2688,16 @@ def article_html_attribute_filter(tag, name, value):
             return is_safe_article_upload_src(tag, name, value)
         if name in {"alt", "title"}:
             return True
+        if name == "width":
+            # The editor stores only width so the browser can preserve the
+            # original aspect ratio with responsive height:auto rendering.
+            # Reject non-numeric or excessive values even when raw HTML is
+            # entered manually instead of using the image-size dialog.
+            try:
+                width = int(str(value).strip())
+            except (TypeError, ValueError):
+                return False
+            return 1 <= width <= MAX_ARTICLE_IMAGE_DISPLAY_WIDTH_PX and str(width) == str(value).strip()
         return False
 
     if tag == "iframe":

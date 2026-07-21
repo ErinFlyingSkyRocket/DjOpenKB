@@ -47,8 +47,10 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
     <script src="{% static 'javascripts/openKB.js' %}"></script>
     <style nonce="{{ csp_nonce }}">
-        .suggest-preview { min-height: 390px; height: auto; overflow: auto; background: #fff; }
-        .CodeMirror { min-height: 360px; }
+        .suggest-preview { min-height: 480px; height: 480px; overflow: auto; background: #fff; }
+        .CodeMirror { min-height: 480px; height: 480px; }
+        .suggest-preview img { max-width: 100%; max-height: 1200px; height: auto; object-fit: contain; }
+        .suggest-preview img:not([width]) { max-height: 520px; }
 
         .pasted-image-panel {
             display: block;
@@ -90,6 +92,19 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             width: 100%;
             height: 92px;
             object-fit: contain;
+        }
+        .pasted-image-size-summary {
+            min-height: 34px;
+            margin-top: 6px;
+            color: #777;
+            font-size: 11px;
+            line-height: 1.35;
+            text-align: center;
+        }
+        .pasted-image-size-button {
+            display: block;
+            width: 100%;
+            margin-top: 4px;
         }
         .pasted-image-remove {
             position: absolute;
@@ -244,6 +259,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         </div>
     </div>
     {% include "_video_insert_modal.html" %}
+    {% include "_image_size_modal.html" %}
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
     <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
     <input type="hidden" value="" id="app_context">
@@ -531,15 +547,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     }
 
     function removeMarkdownForFilename(filename, fallbackMarkdown) {
-        const escapedFilename = escapeRegExp(filename);
         const currentValue = getEditorValue();
-        const imageMarkdown = "!\\[[^\\]\\n]*\\]\\(\\s*<?/wiki/uploads/" + escapedFilename
-            + "(?:[?#][^\\s)>]*)?>?(?:\\s+[\\\"'][^\\n\\\"']*[\\\"'])?\\s*\\)";
-        const linkedImagePattern = new RegExp("\\n?\\[" + imageMarkdown + "\\]\\([^\\n)]*\\)\\n?", "g");
-        const imagePattern = new RegExp("\\n?" + imageMarkdown + "\\n?", "g");
+        const imageMarkdownPattern = getImageMarkdownPattern(filename);
+        const linkedImagePattern = new RegExp(
+            "\\n?\\[" + imageMarkdownPattern.source + "\\]\\([^\\n)]*\\)\\n?",
+            "g"
+        );
         const updatedValue = currentValue
             .replace(linkedImagePattern, "\n")
-            .replace(imagePattern, "\n");
+            .replace(getImageMarkdownPattern(filename), "\n")
+            .replace(getImageHtmlPattern(filename), "\n");
         if (updatedValue !== currentValue) {
             setEditorValue(updatedValue);
             return;
@@ -548,6 +565,274 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             removeMarkdown(fallbackMarkdown);
         }
     }
+
+    function getImageHtmlPattern(filename) {
+        const escapedFilename = escapeRegExp(filename);
+        return new RegExp(
+            "<img\\b(?=[^>]*\\bsrc\\s*=\\s*[\\x22\\x27]/wiki/uploads/" + escapedFilename
+                + "(?:[?#][^\\x22\\x27]*)?[\\x22\\x27])[^>]*>",
+            "gi"
+        );
+    }
+
+    function getImageMarkdownPattern(filename) {
+        const escapedFilename = escapeRegExp(filename);
+        return new RegExp(
+            "!\\[[^\\]\\n]*\\]\\(\\s*<?/wiki/uploads/" + escapedFilename
+                + "(?:[?#][^\\s)>]*)?>?(?:\\s+[\\x22\\x27][^\\n\\x22\\x27]*[\\x22\\x27])?\\s*\\)",
+            "g"
+        );
+    }
+
+    function getConfiguredImageWidth(filename) {
+        const match = getEditorValue().match(getImageHtmlPattern(filename));
+        if (!match || !match.length) {
+            return null;
+        }
+        const widthMatch = match[0].match(/\bwidth\s*=\s*[\"']?(\d{1,4})[\"']?/i);
+        if (!widthMatch) {
+            return null;
+        }
+        const width = parseInt(widthMatch[1], 10);
+        return Number.isFinite(width) && width >= 1 && width <= maxArticleImageDisplayPx ? width : null;
+    }
+
+    function fitImageDimensionsFromWidth(width, naturalWidth, naturalHeight) {
+        let targetWidth = Math.max(1, Math.min(maxArticleImageDisplayPx, Math.round(Number(width) || 0)));
+        let targetHeight = Math.max(1, Math.round(targetWidth * naturalHeight / naturalWidth));
+        if (targetHeight > maxArticleImageDisplayPx) {
+            const scale = maxArticleImageDisplayPx / targetHeight;
+            targetHeight = maxArticleImageDisplayPx;
+            targetWidth = Math.max(1, Math.round(targetWidth * scale));
+        }
+        return { width: targetWidth, height: targetHeight };
+    }
+
+    function fitImageDimensionsFromHeight(height, naturalWidth, naturalHeight) {
+        let targetHeight = Math.max(1, Math.min(maxArticleImageDisplayPx, Math.round(Number(height) || 0)));
+        let targetWidth = Math.max(1, Math.round(targetHeight * naturalWidth / naturalHeight));
+        if (targetWidth > maxArticleImageDisplayPx) {
+            const scale = maxArticleImageDisplayPx / targetWidth;
+            targetWidth = maxArticleImageDisplayPx;
+            targetHeight = Math.max(1, Math.round(targetHeight * scale));
+        }
+        return { width: targetWidth, height: targetHeight };
+    }
+
+    function buildSizedImageHtml(filename, width) {
+        return '<img src="/wiki/uploads/' + filename + '" alt="image" width="' + width + '">';
+    }
+
+    function replaceImageReferenceWithSizedHtml(filename, width) {
+        const currentValue = getEditorValue();
+        const sizedHtml = buildSizedImageHtml(filename, width);
+        let updatedValue = currentValue.replace(getImageHtmlPattern(filename), sizedHtml);
+        updatedValue = updatedValue.replace(getImageMarkdownPattern(filename), sizedHtml);
+        if (updatedValue === currentValue) {
+            return false;
+        }
+        setEditorValue(updatedValue);
+        return true;
+    }
+
+    function resetImageReferenceToMarkdown(info) {
+        const currentValue = getEditorValue();
+        const markdown = info.markdown || ('![image](/wiki/uploads/' + info.filename + ')');
+        const updatedValue = currentValue.replace(getImageHtmlPattern(info.filename), markdown);
+        if (updatedValue !== currentValue) {
+            setEditorValue(updatedValue);
+        }
+        return true;
+    }
+
+    function updateImageSizeSummary(info, image, summary) {
+        if (!summary || !image || !image.naturalWidth || !image.naturalHeight) {
+            return;
+        }
+        const configuredWidth = getConfiguredImageWidth(info.filename);
+        if (configuredWidth) {
+            const dimensions = fitImageDimensionsFromWidth(configuredWidth, image.naturalWidth, image.naturalHeight);
+            summary.textContent = dimensions.width + " × " + dimensions.height + " px";
+        } else {
+            summary.textContent = "{% trans 'Original size' %}: " + image.naturalWidth + " × " + image.naturalHeight + " px";
+        }
+    }
+
+    function setImageSizeInputs(dimensions) {
+        const widthInput = document.getElementById("imageSizeWidth");
+        const heightInput = document.getElementById("imageSizeHeight");
+        if (!widthInput || !heightInput || !dimensions) {
+            return;
+        }
+        updatingImageSizeInputs = true;
+        widthInput.value = dimensions.width;
+        heightInput.value = dimensions.height;
+        updatingImageSizeInputs = false;
+    }
+
+    function showImageSizeError(message) {
+        const error = document.getElementById("imageSizeError");
+        if (!error) {
+            return;
+        }
+        error.textContent = message || "";
+        error.classList.toggle("csp-is-hidden", !message);
+    }
+
+    function openImageSizeDialog(info, image, summary) {
+        if (!image || !image.naturalWidth || !image.naturalHeight) {
+            showPasteMessage("{% trans 'The image dimensions are not available yet. Please try again in a moment.' %}", "warning");
+            return;
+        }
+
+        activeImageSizeContext = {
+            info: info,
+            image: image,
+            summary: summary,
+            naturalWidth: image.naturalWidth,
+            naturalHeight: image.naturalHeight
+        };
+
+        const original = document.getElementById("imageSizeOriginalDimensions");
+        if (original) {
+            original.textContent = "{% trans 'Original size' %}: " + image.naturalWidth + " × " + image.naturalHeight + " px";
+        }
+
+        const configuredWidth = getConfiguredImageWidth(info.filename);
+        const startingWidth = configuredWidth || image.naturalWidth;
+        setImageSizeInputs(fitImageDimensionsFromWidth(startingWidth, image.naturalWidth, image.naturalHeight));
+        showImageSizeError("");
+        $("#imageSizeModal").modal("show");
+    }
+
+    function addImageSizeControls(card, image, info) {
+        const summary = document.createElement("div");
+        summary.className = "pasted-image-size-summary";
+        summary.textContent = "{% trans 'Loading dimensions...' %}";
+        card.appendChild(summary);
+
+        const refreshSummary = function () {
+            updateImageSizeSummary(info, image, summary);
+        };
+        if (image.complete && image.naturalWidth) {
+            refreshSummary();
+        } else {
+            image.addEventListener("load", refreshSummary, { once: true });
+        }
+
+        const readOnly = typeof isReadOnlyArticleEditor !== "undefined" && isReadOnlyArticleEditor;
+        if (readOnly) {
+            return;
+        }
+
+        const sizeButton = document.createElement("button");
+        sizeButton.type = "button";
+        sizeButton.className = "btn btn-default btn-xs pasted-image-size-button";
+        sizeButton.innerHTML = '<i class="fa fa-arrows-alt"></i> {% trans "Set size" %}';
+        sizeButton.addEventListener("click", function () {
+            openImageSizeDialog(info, image, summary);
+        });
+        card.appendChild(sizeButton);
+    }
+
+    const maxArticleImageDisplayPx = 1200;
+    let activeImageSizeContext = null;
+    let updatingImageSizeInputs = false;
+
+    const imageSizeWidthInput = document.getElementById("imageSizeWidth");
+    const imageSizeHeightInput = document.getElementById("imageSizeHeight");
+    const applyImageSizeButton = document.getElementById("applyImageSizeButton");
+    const resetImageSizeButton = document.getElementById("resetImageSizeButton");
+
+    if (imageSizeWidthInput) {
+        imageSizeWidthInput.addEventListener("input", function () {
+            if (updatingImageSizeInputs || !activeImageSizeContext) {
+                return;
+            }
+            setImageSizeInputs(fitImageDimensionsFromWidth(
+                imageSizeWidthInput.value,
+                activeImageSizeContext.naturalWidth,
+                activeImageSizeContext.naturalHeight
+            ));
+        });
+    }
+
+    if (imageSizeHeightInput) {
+        imageSizeHeightInput.addEventListener("input", function () {
+            if (updatingImageSizeInputs || !activeImageSizeContext) {
+                return;
+            }
+            setImageSizeInputs(fitImageDimensionsFromHeight(
+                imageSizeHeightInput.value,
+                activeImageSizeContext.naturalWidth,
+                activeImageSizeContext.naturalHeight
+            ));
+        });
+    }
+
+    document.querySelectorAll(".image-size-preset").forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (!activeImageSizeContext) {
+                return;
+            }
+            const percent = parseInt(button.dataset.imageSizePercent, 10);
+            if (!Number.isFinite(percent) || percent <= 0) {
+                return;
+            }
+            const requestedWidth = activeImageSizeContext.naturalWidth * percent / 100;
+            setImageSizeInputs(fitImageDimensionsFromWidth(
+                requestedWidth,
+                activeImageSizeContext.naturalWidth,
+                activeImageSizeContext.naturalHeight
+            ));
+        });
+    });
+
+    if (applyImageSizeButton) {
+        applyImageSizeButton.addEventListener("click", function () {
+            if (!activeImageSizeContext || !imageSizeWidthInput) {
+                return;
+            }
+            const dimensions = fitImageDimensionsFromWidth(
+                imageSizeWidthInput.value,
+                activeImageSizeContext.naturalWidth,
+                activeImageSizeContext.naturalHeight
+            );
+            if (!dimensions.width || dimensions.width > maxArticleImageDisplayPx || dimensions.height > maxArticleImageDisplayPx) {
+                showImageSizeError("{% trans 'Enter an image size between 1 and 1200 pixels.' %}");
+                return;
+            }
+            if (!replaceImageReferenceWithSizedHtml(activeImageSizeContext.info.filename, dimensions.width)) {
+                showImageSizeError("{% trans 'The image reference could not be found in the article content.' %}");
+                return;
+            }
+            updateImageSizeSummary(activeImageSizeContext.info, activeImageSizeContext.image, activeImageSizeContext.summary);
+            $("#imageSizeModal").modal("hide");
+            showPasteMessage("{% trans 'Image display size updated.' %}", "success");
+        });
+    }
+
+    if (resetImageSizeButton) {
+        resetImageSizeButton.addEventListener("click", function () {
+            if (!activeImageSizeContext) {
+                return;
+            }
+            resetImageReferenceToMarkdown(activeImageSizeContext.info);
+            updateImageSizeSummary(activeImageSizeContext.info, activeImageSizeContext.image, activeImageSizeContext.summary);
+            $("#imageSizeModal").modal("hide");
+            showPasteMessage("{% trans 'Image display size reset to the original responsive size.' %}", "success");
+        });
+    }
+
+    $("#imageSizeModal").on("shown.bs.modal", function () {
+        if (imageSizeWidthInput) {
+            imageSizeWidthInput.focus();
+            imageSizeWidthInput.select();
+        }
+    }).on("hidden.bs.modal", function () {
+        activeImageSizeContext = null;
+        showImageSizeError("");
+    });
 
     function showPasteMessage(message, type) {
         if (window.show_notification) {
@@ -667,6 +952,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         });
 
         card.appendChild(image);
+        addImageSizeControls(card, image, info);
         card.appendChild(removeButton);
         list.appendChild(card);
         ensureImagePanelVisible();

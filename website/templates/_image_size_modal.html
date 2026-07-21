@@ -1,0 +1,46 @@
+{% load i18n %}
+<div class="modal fade" id="imageSizeModal" tabindex="-1" role="dialog" aria-labelledby="imageSizeModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="imageSizeModalLabel">{% trans "Image size" %}</h4>
+            </div>
+            <div class="modal-body">
+                <p id="imageSizeOriginalDimensions" class="text-muted"></p>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="imageSizeWidth">{% trans "Width" %}</label>
+                            <div class="input-group">
+                                <input type="number" id="imageSizeWidth" class="form-control" min="1" max="1200" step="1">
+                                <span class="input-group-addon">px</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="imageSizeHeight">{% trans "Height" %}</label>
+                            <div class="input-group">
+                                <input type="number" id="imageSizeHeight" class="form-control" min="1" max="1200" step="1">
+                                <span class="input-group-addon">px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="help-block"><i class="fa fa-lock"></i> {% trans "The image aspect ratio is preserved automatically. The maximum display size is 1200 pixels in either direction." %}</p>
+                <div class="btn-group btn-group-sm" role="group" aria-label="{% trans 'Image size presets' %}">
+                    <button type="button" class="btn btn-default image-size-preset" data-image-size-percent="25">25%</button>
+                    <button type="button" class="btn btn-default image-size-preset" data-image-size-percent="50">50%</button>
+                    <button type="button" class="btn btn-default image-size-preset" data-image-size-percent="75">75%</button>
+                </div>
+                <p id="imageSizeError" class="text-danger csp-is-hidden"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="resetImageSizeButton" class="btn btn-default pull-left">{% trans "Reset to original" %}</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" id="applyImageSizeButton" class="btn btn-primary">{% trans "Apply" %}</button>
+            </div>
+        </div>
+    </div>
+</div>

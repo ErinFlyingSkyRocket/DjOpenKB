@@ -466,33 +466,138 @@ $(document).ready(function(){
                 }, renderDelayTime);
             });
 
-            // Syncs scroll  editor -> preview
-            var cScroll = false;
-            var pScroll = false;
-            simplemde.codemirror.on('scroll', function(v){
-                if(cScroll){
-                    cScroll = false;
+            // Block-aware editor/preview scroll synchronisation. The previous
+            // percentage-based approach drifted badly when one Markdown line
+            // rendered as a very tall image. Preview blocks now carry their
+            // source line and the two panes interpolate between those anchors.
+            var syncingPreviewFromEditor = false;
+            var syncingEditorFromPreview = false;
+
+            function clampScrollValue(value, minimum, maximum){
+                return Math.min(Math.max(value, minimum), maximum);
+            }
+
+            function getPreviewSyncAnchors(){
+                var cm = simplemde.codemirror;
+                var maxEditorLine = Math.max(cm.lineCount() - 1, 0);
+                var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
+                var previewRect = preview.getBoundingClientRect();
+                var anchors = [{line: 0, top: 0}];
+
+                Array.prototype.slice.call(preview.querySelectorAll('[data-source-line]')).forEach(function(element){
+                    var line = parseInt(element.getAttribute('data-source-line'), 10);
+                    if(!Number.isFinite(line)){
+                        return;
+                    }
+
+                    var elementTop = element.getBoundingClientRect().top - previewRect.top + preview.scrollTop;
+                    anchors.push({
+                        line: clampScrollValue(line, 0, maxEditorLine),
+                        top: clampScrollValue(elementTop, 0, maxPreviewScroll)
+                    });
+                });
+
+                anchors.push({line: maxEditorLine, top: maxPreviewScroll});
+                anchors.sort(function(left, right){
+                    if(left.line === right.line){
+                        return left.top - right.top;
+                    }
+                    return left.line - right.line;
+                });
+
+                var deduplicated = [];
+                anchors.forEach(function(anchor){
+                    var previous = deduplicated[deduplicated.length - 1];
+                    if(previous && previous.line === anchor.line){
+                        previous.top = Math.max(previous.top, anchor.top);
+                        return;
+                    }
+                    deduplicated.push(anchor);
+                });
+                return deduplicated;
+            }
+
+            function previewTopForEditorLine(line){
+                var anchors = getPreviewSyncAnchors();
+                if(anchors.length < 2){
+                    return 0;
+                }
+
+                for(var index = 0; index < anchors.length - 1; index++){
+                    var current = anchors[index];
+                    var next = anchors[index + 1];
+                    if(line <= next.line){
+                        if(next.line <= current.line){
+                            return current.top;
+                        }
+                        var ratio = (line - current.line) / (next.line - current.line);
+                        return current.top + ((next.top - current.top) * clampScrollValue(ratio, 0, 1));
+                    }
+                }
+                return anchors[anchors.length - 1].top;
+            }
+
+            function editorLineForPreviewTop(top){
+                var anchors = getPreviewSyncAnchors().slice().sort(function(left, right){
+                    if(left.top === right.top){
+                        return left.line - right.line;
+                    }
+                    return left.top - right.top;
+                });
+                if(anchors.length < 2){
+                    return 0;
+                }
+
+                for(var index = 0; index < anchors.length - 1; index++){
+                    var current = anchors[index];
+                    var next = anchors[index + 1];
+                    if(top <= next.top){
+                        if(next.top <= current.top){
+                            return current.line;
+                        }
+                        var ratio = (top - current.top) / (next.top - current.top);
+                        return current.line + ((next.line - current.line) * clampScrollValue(ratio, 0, 1));
+                    }
+                }
+                return anchors[anchors.length - 1].line;
+            }
+
+            // Sync editor -> preview using the Markdown line currently at the top.
+            simplemde.codemirror.on('scroll', function(cm){
+                if(syncingEditorFromPreview){
                     return;
                 }
-                pScroll = true;
-                var height = v.getScrollInfo().height - v.getScrollInfo().clientHeight;
-                var ratio = parseFloat(v.getScrollInfo().top) / height;
-                var move = (preview.scrollHeight - preview.clientHeight) * ratio;
-                preview.scrollTop = move;
+
+                var scrollInfo = cm.getScrollInfo();
+                var topLine = cm.lineAtHeight(scrollInfo.top, 'local');
+                var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
+                var targetTop = clampScrollValue(previewTopForEditorLine(topLine), 0, maxPreviewScroll);
+
+                syncingPreviewFromEditor = true;
+                preview.scrollTop = targetTop;
+                window.requestAnimationFrame(function(){
+                    syncingPreviewFromEditor = false;
+                });
             });
 
-            // Syncs scroll  preview -> editor
-            preview.onscroll = function(){
-                if(pScroll){
-                    pScroll = false;
+            // Sync preview -> editor by mapping the preview block position back
+            // to the corresponding Markdown source line.
+            preview.addEventListener('scroll', function(){
+                if(syncingPreviewFromEditor){
                     return;
                 }
-                cScroll = true;
-                var height = preview.scrollHeight - preview.clientHeight;
-                var ratio = parseFloat(preview.scrollTop) / height;
-                var move = (simplemde.codemirror.getScrollInfo().height - simplemde.codemirror.getScrollInfo().clientHeight) * ratio;
-                simplemde.codemirror.scrollTo(0, move);
-            };
+
+                var cm = simplemde.codemirror;
+                var targetLine = Math.round(editorLineForPreviewTop(preview.scrollTop));
+                targetLine = clampScrollValue(targetLine, 0, Math.max(cm.lineCount() - 1, 0));
+                var targetEditorTop = cm.heightAtLine(targetLine, 'local');
+
+                syncingEditorFromPreview = true;
+                cm.scrollTo(null, targetEditorTop);
+                window.requestAnimationFrame(function(){
+                    syncingEditorFromPreview = false;
+                });
+            });
         }
     }
 
@@ -772,7 +877,33 @@ $(document).ready(function(){
             }
         }
 
-        var html = mark_it_down.render(expandPreviewVideoLinks(simplemde.value()));
+        // Add source-line markers to top-level rendered blocks. These markers
+        // are preview-only and power block-aware scroll synchronisation.
+        var previewMarkdown = expandPreviewVideoLinks(simplemde.value());
+        var previewEnvironment = {};
+        var previewTokens = mark_it_down.parse(previewMarkdown, previewEnvironment);
+        previewTokens.forEach(function(token){
+            if(!token.map || token.map.length < 1 || token.level !== 0 || token.type === 'html_block'){
+                return;
+            }
+            if(token.nesting === 1 || token.type === 'fence' || token.type === 'code_block'){
+                token.attrSet('data-source-line', String(token.map[0]));
+            }
+        });
+
+        // markdown-it does not apply token attributes to raw html_block tokens,
+        // so wrap those blocks in a harmless preview-only source anchor. This is
+        // especially important for resized raw <img> tags.
+        var defaultHtmlBlockRule = mark_it_down.renderer.rules.html_block;
+        mark_it_down.renderer.rules.html_block = function(tokens, idx, options, env, slf){
+            var rendered = defaultHtmlBlockRule
+                ? defaultHtmlBlockRule(tokens, idx, options, env, slf)
+                : tokens[idx].content;
+            var sourceLine = tokens[idx].map && tokens[idx].map.length ? tokens[idx].map[0] : 0;
+            return '<div class="preview-source-block" data-source-line="' + sourceLine + '">' + rendered + '</div>';
+        };
+
+        var html = mark_it_down.renderer.render(previewTokens, mark_it_down.options, previewEnvironment);
 
         // add responsive images and tables
         var fixed_html = html.replace(/<img/g, "<img class='img-responsive' ");
@@ -787,18 +918,23 @@ $(document).ready(function(){
             // Never allow arbitrary HTML attributes such as onerror/onload/style.
             allowedAttributes: {
                 'a': [ 'href', 'title' ],
-                'img': [ 'src', 'alt', 'title', 'class' ],
-                'code': [ 'class' ],
-                'pre': [ 'class' ],
-                'table': [ 'class' ],
+                'img': [ 'src', 'alt', 'title', 'class', 'width' ],
+                'code': [ 'class', 'data-source-line' ],
+                'pre': [ 'class', 'data-source-line' ],
+                'div': [ 'class', 'data-source-line' ],
+                'p': [ 'data-source-line' ],
+                'blockquote': [ 'data-source-line' ],
+                'ul': [ 'data-source-line' ],
+                'ol': [ 'data-source-line' ],
+                'table': [ 'class', 'data-source-line' ],
                 'th': [ 'align', 'colspan', 'rowspan' ],
                 'td': [ 'align', 'colspan', 'rowspan' ],
-                'h1': [ 'id' ],
-                'h2': [ 'id' ],
-                'h3': [ 'id' ],
-                'h4': [ 'id' ],
-                'h5': [ 'id' ],
-                'h6': [ 'id' ],
+                'h1': [ 'id', 'data-source-line' ],
+                'h2': [ 'id', 'data-source-line' ],
+                'h3': [ 'id', 'data-source-line' ],
+                'h4': [ 'id', 'data-source-line' ],
+                'h5': [ 'id', 'data-source-line' ],
+                'h6': [ 'id', 'data-source-line' ],
                 'iframe': [ 'src', 'class', 'title', 'loading', 'referrerpolicy', 'allow', 'allowfullscreen' ]
             },
             allowedSchemes: [ 'http', 'https', 'mailto' ]
@@ -867,6 +1003,19 @@ $(document).ready(function(){
             var safeUpload = /^\/wiki\/uploads\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:png|jpe?g|gif|webp)$/i.test(src);
             if(!safeUpload){
                 image.removeAttribute('src');
+            }
+
+            // Match the server-side image width policy. Invalid raw HTML width
+            // values are removed instead of being allowed into the live preview.
+            var widthValue = image.getAttribute('width');
+            if(widthValue !== null){
+                var normalizedWidth = String(widthValue).trim();
+                var parsedWidth = parseInt(normalizedWidth, 10);
+                if(!/^\d+$/.test(normalizedWidth) || parsedWidth < 1 || parsedWidth > 1200){
+                    image.removeAttribute('width');
+                }else{
+                    image.setAttribute('width', String(parsedWidth));
+                }
             }
         });
 

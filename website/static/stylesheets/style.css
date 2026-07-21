@@ -338,3 +338,10 @@ body > .footer.openkb-site-footer,
 body > .openkb-site-footer {
     width: 100%;
 }
+
+/* Keep article images responsive while enforcing the editor's display-size cap. */
+.body_text img {
+    max-width: 100%;
+    max-height: 1200px;
+    object-fit: contain;
+}
