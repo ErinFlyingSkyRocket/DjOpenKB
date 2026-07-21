@@ -466,19 +466,14 @@ $(document).ready(function(){
                 }, renderDelayTime);
             });
 
-            // Block-aware editor/preview scroll synchronisation.
+            // One-way block-aware editor -> preview scroll synchronisation.
             //
-            // A tall image may represent only one Markdown source line, so
-            // percentage-based scrolling and line-to-height interpolation both
-            // drift badly in image-heavy articles. Instead, both panes follow
-            // the content block that crosses a guide line near the top of each
-            // viewport. While the user scrolls inside one tall image, the editor
-            // intentionally stays on that image's source block until the next
-            // article block reaches the guide line.
+            // The Markdown editor is the only pane that drives synchronisation.
+            // Scrolling the preview never moves the editor, so users can inspect
+            // large or image-heavy sections independently. As soon as the editor
+            // is scrolled again, the preview re-aligns to the matching source block.
             var suppressPreviewScrollUntil = 0;
-            var suppressEditorScrollUntil = 0;
             var editorToPreviewFrame = null;
-            var previewToEditorFrame = null;
             var lastScrollDriver = 'editor';
 
             function syncNowMilliseconds(){
@@ -582,37 +577,6 @@ $(document).ready(function(){
                 return blocks[blocks.length - 1];
             }
 
-            function findPreviewBlockAtGuide(guideTop, blocks){
-                if(!blocks.length){
-                    return null;
-                }
-
-                for(var index = blocks.length - 1; index >= 0; index--){
-                    if(guideTop >= blocks[index].top){
-                        return blocks[index];
-                    }
-                }
-                return blocks[0];
-            }
-
-            function sourceLineWithinBlock(block, guideTop){
-                if(!block){
-                    return 0;
-                }
-
-                var sourceSpan = Math.max(block.endLine - block.startLine, 1);
-                if(sourceSpan <= 1){
-                    return block.startLine;
-                }
-
-                // Interpolate only inside genuinely multi-line source blocks.
-                // A one-line image block remains pinned to its source line even
-                // when the rendered image is hundreds of pixels tall.
-                var visualSpan = Math.max(block.bottom - block.top, 1);
-                var ratio = clampScrollValue((guideTop - block.top) / visualSpan, 0, 0.999999);
-                return block.startLine + Math.floor(ratio * sourceSpan);
-            }
-
             function previewPositionForEditorLine(line, block){
                 if(!block){
                     return 0;
@@ -651,29 +615,6 @@ $(document).ready(function(){
                 preview.scrollTop = targetTop;
             }
 
-            function syncEditorToPreviewBlock(){
-                var cm = simplemde.codemirror;
-                var blocks = getPreviewSyncBlocks();
-                if(!blocks.length){
-                    return;
-                }
-
-                var previewGuide = getPreviewGuideOffset();
-                var guideTop = preview.scrollTop + previewGuide;
-                var block = findPreviewBlockAtGuide(guideTop, blocks);
-                if(!block){
-                    return;
-                }
-
-                var targetLine = sourceLineWithinBlock(block, guideTop);
-                targetLine = clampScrollValue(targetLine, 0, Math.max(cm.lineCount() - 1, 0));
-                var editorGuide = getEditorGuideOffset();
-                var targetEditorTop = Math.max(0, cm.heightAtLine(targetLine, 'local') - editorGuide);
-
-                suppressEditorScrollUntil = syncNowMilliseconds() + 120;
-                cm.scrollTo(null, targetEditorTop);
-            }
-
             function schedulePreviewFromEditor(){
                 if(editorToPreviewFrame !== null){
                     window.cancelAnimationFrame(editorToPreviewFrame);
@@ -684,35 +625,24 @@ $(document).ready(function(){
                 });
             }
 
-            function scheduleEditorFromPreview(){
-                if(previewToEditorFrame !== null){
-                    window.cancelAnimationFrame(previewToEditorFrame);
-                }
-                previewToEditorFrame = window.requestAnimationFrame(function(){
-                    previewToEditorFrame = null;
-                    syncEditorToPreviewBlock();
-                });
-            }
-
             simplemde.codemirror.on('scroll', function(){
-                if(syncNowMilliseconds() < suppressEditorScrollUntil){
-                    return;
-                }
                 lastScrollDriver = 'editor';
                 schedulePreviewFromEditor();
             });
 
+            // Preview scrolling is intentionally independent. Record that the
+            // user is inspecting the preview so late-loading images do not pull
+            // it back to the editor position. The editor itself is never moved.
             preview.addEventListener('scroll', function(){
                 if(syncNowMilliseconds() < suppressPreviewScrollUntil){
                     return;
                 }
                 lastScrollDriver = 'preview';
-                scheduleEditorFromPreview();
             });
 
-            // Images may finish loading after the preview HTML is rendered. If
-            // the editor was the pane the user last controlled, re-align the
-            // preview after each image changes the rendered block heights.
+            // Images may finish loading after the preview HTML is rendered. Only
+            // re-align when the editor was the pane the user last controlled.
+            // If the user manually scrolled the preview, leave it exactly there.
             preview.addEventListener('load', function(event){
                 if(event.target && event.target.tagName === 'IMG' && lastScrollDriver === 'editor'){
                     schedulePreviewFromEditor();
@@ -752,7 +682,6 @@ $(document).ready(function(){
                             suppressPreviewScrollUntil = syncNowMilliseconds() + 160;
                             preview.scrollTop = targetTop;
                             lastScrollDriver = 'preview';
-                            scheduleEditorFromPreview();
                             return;
                         }
                     }
