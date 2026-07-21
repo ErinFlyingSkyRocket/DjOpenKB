@@ -466,15 +466,17 @@ $(document).ready(function(){
                 }, renderDelayTime);
             });
 
-            // One-way block-aware editor -> preview scroll synchronisation.
+            // One-way relative block-aware editor -> preview scroll synchronisation.
             //
-            // The Markdown editor is the only pane that drives synchronisation.
-            // Scrolling the preview never moves the editor, so users can inspect
-            // large or image-heavy sections independently. As soon as the editor
-            // is scrolled again, the preview re-aligns to the matching source block.
+            // The preview is fully independent: scrolling it never moves the editor.
+            // When the user manually places the preview somewhere, remember that
+            // visual offset from the editor's normal block-mapped position. Future
+            // editor scrolling then continues from the preview's chosen position
+            // instead of snapping the preview back to the editor's absolute block.
             var suppressPreviewScrollUntil = 0;
             var editorToPreviewFrame = null;
             var lastScrollDriver = 'editor';
+            var previewScrollOffsetFromEditor = 0;
 
             function syncNowMilliseconds(){
                 if(window.performance && typeof window.performance.now === 'function'){
@@ -591,11 +593,11 @@ $(document).ready(function(){
                 return block.top + ((block.bottom - block.top) * ratio);
             }
 
-            function syncPreviewToEditorBlock(){
+            function getMappedPreviewScrollTop(){
                 var cm = simplemde.codemirror;
                 var blocks = getPreviewSyncBlocks();
                 if(!blocks.length){
-                    return;
+                    return null;
                 }
 
                 var scrollInfo = cm.getScrollInfo();
@@ -603,13 +605,39 @@ $(document).ready(function(){
                 var editorLine = cm.lineAtHeight(scrollInfo.top + editorGuide, 'local');
                 var block = findPreviewBlockForEditorLine(editorLine, blocks);
                 if(!block){
-                    return;
+                    return null;
                 }
 
                 var previewGuide = getPreviewGuideOffset();
                 var blockPosition = previewPositionForEditorLine(editorLine, block);
                 var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
-                var targetTop = clampScrollValue(blockPosition - previewGuide, 0, maxPreviewScroll);
+                return clampScrollValue(blockPosition - previewGuide, 0, maxPreviewScroll);
+            }
+
+            function updatePreviewScrollOffsetFromCurrentPosition(){
+                var mappedTop = getMappedPreviewScrollTop();
+                if(mappedTop === null){
+                    return;
+                }
+
+                // Preserve where the user manually left the preview. The next
+                // editor scroll applies only the editor's block-mapped movement
+                // on top of this offset, rather than overwriting the preview.
+                previewScrollOffsetFromEditor = preview.scrollTop - mappedTop;
+            }
+
+            function syncPreviewToEditorBlock(){
+                var mappedTop = getMappedPreviewScrollTop();
+                if(mappedTop === null){
+                    return;
+                }
+
+                var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
+                var targetTop = clampScrollValue(
+                    mappedTop + previewScrollOffsetFromEditor,
+                    0,
+                    maxPreviewScroll
+                );
 
                 suppressPreviewScrollUntil = syncNowMilliseconds() + 120;
                 preview.scrollTop = targetTop;
@@ -630,14 +658,15 @@ $(document).ready(function(){
                 schedulePreviewFromEditor();
             });
 
-            // Preview scrolling is intentionally independent. Record that the
-            // user is inspecting the preview so late-loading images do not pull
-            // it back to the editor position. The editor itself is never moved.
+            // Preview scrolling is fully independent. Each manual preview scroll
+            // becomes the new visual anchor. The editor never moves, and the next
+            // editor scroll continues the preview from this chosen position.
             preview.addEventListener('scroll', function(){
                 if(syncNowMilliseconds() < suppressPreviewScrollUntil){
                     return;
                 }
                 lastScrollDriver = 'preview';
+                updatePreviewScrollOffsetFromCurrentPosition();
             });
 
             // Images may finish loading after the preview HTML is rendered. Only
@@ -682,6 +711,7 @@ $(document).ready(function(){
                             suppressPreviewScrollUntil = syncNowMilliseconds() + 160;
                             preview.scrollTop = targetTop;
                             lastScrollDriver = 'preview';
+                            updatePreviewScrollOffsetFromCurrentPosition();
                             return;
                         }
                     }
