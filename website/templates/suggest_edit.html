@@ -527,7 +527,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     function setEditorValue(value) {
         const cm = getEditorCodeMirror();
         if (cm) {
+            const cursor = cm.getCursor();
+            const scrollInfo = cm.getScrollInfo();
             cm.setValue(value);
+            const lastLine = Math.max(cm.lineCount() - 1, 0);
+            const restoredLine = Math.min(cursor.line, lastLine);
+            const restoredCharacter = Math.min(cursor.ch, cm.getLine(restoredLine).length);
+            cm.setCursor({ line: restoredLine, ch: restoredCharacter });
+            cm.scrollTo(scrollInfo.left, scrollInfo.top);
             cm.save();
             return;
         }
@@ -866,6 +873,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         return true;
     }
 
+    function refreshArticlePreviewForImage(filename) {
+        if (typeof window.openKbRefreshArticlePreview !== "function") {
+            return;
+        }
+        window.openKbRefreshArticlePreview({
+            focusImageSrc: "/wiki/uploads/" + filename
+        });
+    }
+
     function updateImageSizeSummary(info, image, summary) {
         if (!summary || !image || !image.naturalWidth || !image.naturalHeight) {
             return;
@@ -879,6 +895,22 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
     }
 
+    function updateImageSizeLivePreview(dimensions) {
+        const previewImage = document.getElementById("imageSizePreviewImage");
+        const previewDimensions = document.getElementById("imageSizePreviewDimensions");
+        if (!previewImage || !dimensions) {
+            return;
+        }
+
+        if (activeImageSizeContext && activeImageSizeContext.image) {
+            previewImage.src = activeImageSizeContext.image.src;
+        }
+        previewImage.setAttribute("width", String(dimensions.width));
+        if (previewDimensions) {
+            previewDimensions.textContent = dimensions.width + " × " + dimensions.height + " px";
+        }
+    }
+
     function setImageSizeInputs(dimensions) {
         const widthInput = document.getElementById("imageSizeWidth");
         const heightInput = document.getElementById("imageSizeHeight");
@@ -889,6 +921,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         widthInput.value = dimensions.width;
         heightInput.value = dimensions.height;
         updatingImageSizeInputs = false;
+        updateImageSizeLivePreview(dimensions);
     }
 
     function showImageSizeError(message) {
@@ -1028,6 +1061,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 return;
             }
             updateImageSizeSummary(activeImageSizeContext.info, activeImageSizeContext.image, activeImageSizeContext.summary);
+            refreshArticlePreviewForImage(activeImageSizeContext.info.filename);
             $("#imageSizeModal").modal("hide");
             showPasteMessage("{% trans 'Image display size updated.' %}", "success");
         });
@@ -1040,6 +1074,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             }
             resetImageReferenceToMarkdown(activeImageSizeContext.info);
             updateImageSizeSummary(activeImageSizeContext.info, activeImageSizeContext.image, activeImageSizeContext.summary);
+            refreshArticlePreviewForImage(activeImageSizeContext.info.filename);
             $("#imageSizeModal").modal("hide");
             showPasteMessage("{% trans 'Image display size reset to the original responsive size.' %}", "success");
         });
@@ -1052,6 +1087,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
     }).on("hidden.bs.modal", function () {
         activeImageSizeContext = null;
+        const previewImage = document.getElementById("imageSizePreviewImage");
+        const previewDimensions = document.getElementById("imageSizePreviewDimensions");
+        if (previewImage) {
+            previewImage.removeAttribute("src");
+            previewImage.removeAttribute("width");
+        }
+        if (previewDimensions) {
+            previewDimensions.textContent = "";
+        }
         showImageSizeError("");
     });
 

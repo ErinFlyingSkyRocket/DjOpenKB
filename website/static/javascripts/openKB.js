@@ -466,138 +466,300 @@ $(document).ready(function(){
                 }, renderDelayTime);
             });
 
-            // Block-aware editor/preview scroll synchronisation. The previous
-            // percentage-based approach drifted badly when one Markdown line
-            // rendered as a very tall image. Preview blocks now carry their
-            // source line and the two panes interpolate between those anchors.
-            var syncingPreviewFromEditor = false;
-            var syncingEditorFromPreview = false;
+            // Block-aware editor/preview scroll synchronisation.
+            //
+            // A tall image may represent only one Markdown source line, so
+            // percentage-based scrolling and line-to-height interpolation both
+            // drift badly in image-heavy articles. Instead, both panes follow
+            // the content block that crosses a guide line near the top of each
+            // viewport. While the user scrolls inside one tall image, the editor
+            // intentionally stays on that image's source block until the next
+            // article block reaches the guide line.
+            var suppressPreviewScrollUntil = 0;
+            var suppressEditorScrollUntil = 0;
+            var editorToPreviewFrame = null;
+            var previewToEditorFrame = null;
+            var lastScrollDriver = 'editor';
+
+            function syncNowMilliseconds(){
+                if(window.performance && typeof window.performance.now === 'function'){
+                    return window.performance.now();
+                }
+                return Date.now();
+            }
 
             function clampScrollValue(value, minimum, maximum){
                 return Math.min(Math.max(value, minimum), maximum);
             }
 
-            function getPreviewSyncAnchors(){
+            function getEditorGuideOffset(){
+                var cmScroller = simplemde.codemirror.getScrollerElement();
+                return Math.min(88, Math.max(28, cmScroller.clientHeight * 0.18));
+            }
+
+            function getPreviewGuideOffset(){
+                return Math.min(88, Math.max(28, preview.clientHeight * 0.18));
+            }
+
+            function getPreviewSyncBlocks(){
                 var cm = simplemde.codemirror;
                 var maxEditorLine = Math.max(cm.lineCount() - 1, 0);
-                var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
                 var previewRect = preview.getBoundingClientRect();
-                var anchors = [{line: 0, top: 0}];
+                var blocks = [];
 
                 Array.prototype.slice.call(preview.querySelectorAll('[data-source-line]')).forEach(function(element){
-                    var line = parseInt(element.getAttribute('data-source-line'), 10);
-                    if(!Number.isFinite(line)){
+                    // Only use the outermost source marker. This prevents a code
+                    // block or other nested rendered element from creating two
+                    // competing anchors for the same Markdown block.
+                    var markedParent = element.parentElement ? element.parentElement.closest('[data-source-line]') : null;
+                    if(markedParent && preview.contains(markedParent)){
                         return;
                     }
 
-                    var elementTop = element.getBoundingClientRect().top - previewRect.top + preview.scrollTop;
-                    anchors.push({
-                        line: clampScrollValue(line, 0, maxEditorLine),
-                        top: clampScrollValue(elementTop, 0, maxPreviewScroll)
+                    var startLine = parseInt(element.getAttribute('data-source-line'), 10);
+                    var endLine = parseInt(element.getAttribute('data-source-end-line'), 10);
+                    if(!Number.isFinite(startLine)){
+                        return;
+                    }
+
+                    startLine = clampScrollValue(startLine, 0, maxEditorLine);
+                    if(!Number.isFinite(endLine) || endLine <= startLine){
+                        endLine = startLine + 1;
+                    }
+                    endLine = clampScrollValue(endLine, startLine + 1, maxEditorLine + 1);
+
+                    var elementRect = element.getBoundingClientRect();
+                    var top = elementRect.top - previewRect.top + preview.scrollTop;
+                    var bottom = elementRect.bottom - previewRect.top + preview.scrollTop;
+                    blocks.push({
+                        element: element,
+                        startLine: startLine,
+                        endLine: endLine,
+                        top: Math.max(0, top),
+                        bottom: Math.max(top + 1, bottom)
                     });
                 });
 
-                anchors.push({line: maxEditorLine, top: maxPreviewScroll});
-                anchors.sort(function(left, right){
-                    if(left.line === right.line){
-                        return left.top - right.top;
-                    }
-                    return left.line - right.line;
-                });
-
-                var deduplicated = [];
-                anchors.forEach(function(anchor){
-                    var previous = deduplicated[deduplicated.length - 1];
-                    if(previous && previous.line === anchor.line){
-                        previous.top = Math.max(previous.top, anchor.top);
-                        return;
-                    }
-                    deduplicated.push(anchor);
-                });
-                return deduplicated;
-            }
-
-            function previewTopForEditorLine(line){
-                var anchors = getPreviewSyncAnchors();
-                if(anchors.length < 2){
-                    return 0;
-                }
-
-                for(var index = 0; index < anchors.length - 1; index++){
-                    var current = anchors[index];
-                    var next = anchors[index + 1];
-                    if(line <= next.line){
-                        if(next.line <= current.line){
-                            return current.top;
-                        }
-                        var ratio = (line - current.line) / (next.line - current.line);
-                        return current.top + ((next.top - current.top) * clampScrollValue(ratio, 0, 1));
-                    }
-                }
-                return anchors[anchors.length - 1].top;
-            }
-
-            function editorLineForPreviewTop(top){
-                var anchors = getPreviewSyncAnchors().slice().sort(function(left, right){
+                blocks.sort(function(left, right){
                     if(left.top === right.top){
-                        return left.line - right.line;
+                        return left.startLine - right.startLine;
                     }
                     return left.top - right.top;
                 });
-                if(anchors.length < 2){
+
+                // Collapse exact duplicate anchors while keeping the largest
+                // visual boundary. This can occur with renderer wrappers.
+                var deduplicated = [];
+                blocks.forEach(function(block){
+                    var previous = deduplicated[deduplicated.length - 1];
+                    if(previous && previous.startLine === block.startLine && Math.abs(previous.top - block.top) < 1){
+                        previous.endLine = Math.max(previous.endLine, block.endLine);
+                        previous.bottom = Math.max(previous.bottom, block.bottom);
+                        return;
+                    }
+                    deduplicated.push(block);
+                });
+
+                return deduplicated;
+            }
+
+            function findPreviewBlockForEditorLine(line, blocks){
+                if(!blocks.length){
+                    return null;
+                }
+
+                var previous = blocks[0];
+                for(var index = 0; index < blocks.length; index++){
+                    var block = blocks[index];
+                    if(line >= block.startLine && line < block.endLine){
+                        return block;
+                    }
+                    if(block.startLine > line){
+                        return previous;
+                    }
+                    previous = block;
+                }
+                return blocks[blocks.length - 1];
+            }
+
+            function findPreviewBlockAtGuide(guideTop, blocks){
+                if(!blocks.length){
+                    return null;
+                }
+
+                for(var index = blocks.length - 1; index >= 0; index--){
+                    if(guideTop >= blocks[index].top){
+                        return blocks[index];
+                    }
+                }
+                return blocks[0];
+            }
+
+            function sourceLineWithinBlock(block, guideTop){
+                if(!block){
                     return 0;
                 }
 
-                for(var index = 0; index < anchors.length - 1; index++){
-                    var current = anchors[index];
-                    var next = anchors[index + 1];
-                    if(top <= next.top){
-                        if(next.top <= current.top){
-                            return current.line;
-                        }
-                        var ratio = (top - current.top) / (next.top - current.top);
-                        return current.line + ((next.line - current.line) * clampScrollValue(ratio, 0, 1));
-                    }
+                var sourceSpan = Math.max(block.endLine - block.startLine, 1);
+                if(sourceSpan <= 1){
+                    return block.startLine;
                 }
-                return anchors[anchors.length - 1].line;
+
+                // Interpolate only inside genuinely multi-line source blocks.
+                // A one-line image block remains pinned to its source line even
+                // when the rendered image is hundreds of pixels tall.
+                var visualSpan = Math.max(block.bottom - block.top, 1);
+                var ratio = clampScrollValue((guideTop - block.top) / visualSpan, 0, 0.999999);
+                return block.startLine + Math.floor(ratio * sourceSpan);
             }
 
-            // Sync editor -> preview using the Markdown line currently at the top.
-            simplemde.codemirror.on('scroll', function(cm){
-                if(syncingEditorFromPreview){
+            function previewPositionForEditorLine(line, block){
+                if(!block){
+                    return 0;
+                }
+
+                var sourceSpan = Math.max(block.endLine - block.startLine, 1);
+                if(sourceSpan <= 1){
+                    return block.top;
+                }
+
+                var ratio = clampScrollValue((line - block.startLine) / sourceSpan, 0, 0.999999);
+                return block.top + ((block.bottom - block.top) * ratio);
+            }
+
+            function syncPreviewToEditorBlock(){
+                var cm = simplemde.codemirror;
+                var blocks = getPreviewSyncBlocks();
+                if(!blocks.length){
                     return;
                 }
 
                 var scrollInfo = cm.getScrollInfo();
-                var topLine = cm.lineAtHeight(scrollInfo.top, 'local');
-                var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
-                var targetTop = clampScrollValue(previewTopForEditorLine(topLine), 0, maxPreviewScroll);
-
-                syncingPreviewFromEditor = true;
-                preview.scrollTop = targetTop;
-                window.requestAnimationFrame(function(){
-                    syncingPreviewFromEditor = false;
-                });
-            });
-
-            // Sync preview -> editor by mapping the preview block position back
-            // to the corresponding Markdown source line.
-            preview.addEventListener('scroll', function(){
-                if(syncingPreviewFromEditor){
+                var editorGuide = getEditorGuideOffset();
+                var editorLine = cm.lineAtHeight(scrollInfo.top + editorGuide, 'local');
+                var block = findPreviewBlockForEditorLine(editorLine, blocks);
+                if(!block){
                     return;
                 }
 
-                var cm = simplemde.codemirror;
-                var targetLine = Math.round(editorLineForPreviewTop(preview.scrollTop));
-                targetLine = clampScrollValue(targetLine, 0, Math.max(cm.lineCount() - 1, 0));
-                var targetEditorTop = cm.heightAtLine(targetLine, 'local');
+                var previewGuide = getPreviewGuideOffset();
+                var blockPosition = previewPositionForEditorLine(editorLine, block);
+                var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
+                var targetTop = clampScrollValue(blockPosition - previewGuide, 0, maxPreviewScroll);
 
-                syncingEditorFromPreview = true;
+                suppressPreviewScrollUntil = syncNowMilliseconds() + 120;
+                preview.scrollTop = targetTop;
+            }
+
+            function syncEditorToPreviewBlock(){
+                var cm = simplemde.codemirror;
+                var blocks = getPreviewSyncBlocks();
+                if(!blocks.length){
+                    return;
+                }
+
+                var previewGuide = getPreviewGuideOffset();
+                var guideTop = preview.scrollTop + previewGuide;
+                var block = findPreviewBlockAtGuide(guideTop, blocks);
+                if(!block){
+                    return;
+                }
+
+                var targetLine = sourceLineWithinBlock(block, guideTop);
+                targetLine = clampScrollValue(targetLine, 0, Math.max(cm.lineCount() - 1, 0));
+                var editorGuide = getEditorGuideOffset();
+                var targetEditorTop = Math.max(0, cm.heightAtLine(targetLine, 'local') - editorGuide);
+
+                suppressEditorScrollUntil = syncNowMilliseconds() + 120;
                 cm.scrollTo(null, targetEditorTop);
-                window.requestAnimationFrame(function(){
-                    syncingEditorFromPreview = false;
+            }
+
+            function schedulePreviewFromEditor(){
+                if(editorToPreviewFrame !== null){
+                    window.cancelAnimationFrame(editorToPreviewFrame);
+                }
+                editorToPreviewFrame = window.requestAnimationFrame(function(){
+                    editorToPreviewFrame = null;
+                    syncPreviewToEditorBlock();
                 });
+            }
+
+            function scheduleEditorFromPreview(){
+                if(previewToEditorFrame !== null){
+                    window.cancelAnimationFrame(previewToEditorFrame);
+                }
+                previewToEditorFrame = window.requestAnimationFrame(function(){
+                    previewToEditorFrame = null;
+                    syncEditorToPreviewBlock();
+                });
+            }
+
+            simplemde.codemirror.on('scroll', function(){
+                if(syncNowMilliseconds() < suppressEditorScrollUntil){
+                    return;
+                }
+                lastScrollDriver = 'editor';
+                schedulePreviewFromEditor();
             });
+
+            preview.addEventListener('scroll', function(){
+                if(syncNowMilliseconds() < suppressPreviewScrollUntil){
+                    return;
+                }
+                lastScrollDriver = 'preview';
+                scheduleEditorFromPreview();
+            });
+
+            // Images may finish loading after the preview HTML is rendered. If
+            // the editor was the pane the user last controlled, re-align the
+            // preview after each image changes the rendered block heights.
+            preview.addEventListener('load', function(event){
+                if(event.target && event.target.tagName === 'IMG' && lastScrollDriver === 'editor'){
+                    schedulePreviewFromEditor();
+                }
+            }, true);
+
+            // Article image controls can request an immediate preview redraw
+            // rather than waiting for the normal typing debounce. Optionally
+            // focus the resized image so the new size is visible straight away.
+            window.openKbRefreshArticlePreview = function(options){
+                options = options || {};
+                if(timer !== null){
+                    clearTimeout(timer);
+                    timer = null;
+                }
+                convertTextAreaToMarkdown(false);
+
+                window.requestAnimationFrame(function(){
+                    var focusSrc = options.focusImageSrc || '';
+                    if(focusSrc){
+                        var images = Array.prototype.slice.call(preview.querySelectorAll('img'));
+                        var targetImage = images.find(function(image){
+                            return (image.getAttribute('src') || '') === focusSrc;
+                        });
+
+                        if(targetImage){
+                            var previewRect = preview.getBoundingClientRect();
+                            var imageRect = targetImage.getBoundingClientRect();
+                            var imageTop = imageRect.top - previewRect.top + preview.scrollTop;
+                            var maxPreviewScroll = Math.max(preview.scrollHeight - preview.clientHeight, 0);
+                            var targetTop = clampScrollValue(
+                                imageTop - Math.max(24, preview.clientHeight * 0.16),
+                                0,
+                                maxPreviewScroll
+                            );
+
+                            suppressPreviewScrollUntil = syncNowMilliseconds() + 160;
+                            preview.scrollTop = targetTop;
+                            lastScrollDriver = 'preview';
+                            scheduleEditorFromPreview();
+                            return;
+                        }
+                    }
+
+                    schedulePreviewFromEditor();
+                });
+            };
         }
     }
 
@@ -888,6 +1050,7 @@ $(document).ready(function(){
             }
             if(token.nesting === 1 || token.type === 'fence' || token.type === 'code_block'){
                 token.attrSet('data-source-line', String(token.map[0]));
+                token.attrSet('data-source-end-line', String(token.map[1] || (token.map[0] + 1)));
             }
         });
 
@@ -900,7 +1063,8 @@ $(document).ready(function(){
                 ? defaultHtmlBlockRule(tokens, idx, options, env, slf)
                 : tokens[idx].content;
             var sourceLine = tokens[idx].map && tokens[idx].map.length ? tokens[idx].map[0] : 0;
-            return '<div class="preview-source-block" data-source-line="' + sourceLine + '">' + rendered + '</div>';
+            var sourceEndLine = tokens[idx].map && tokens[idx].map.length > 1 ? tokens[idx].map[1] : (sourceLine + 1);
+            return '<div class="preview-source-block" data-source-line="' + sourceLine + '" data-source-end-line="' + sourceEndLine + '">' + rendered + '</div>';
         };
 
         var html = mark_it_down.renderer.render(previewTokens, mark_it_down.options, previewEnvironment);
@@ -919,22 +1083,22 @@ $(document).ready(function(){
             allowedAttributes: {
                 'a': [ 'href', 'title' ],
                 'img': [ 'src', 'alt', 'title', 'class', 'width' ],
-                'code': [ 'class', 'data-source-line' ],
-                'pre': [ 'class', 'data-source-line' ],
-                'div': [ 'class', 'data-source-line' ],
-                'p': [ 'data-source-line' ],
-                'blockquote': [ 'data-source-line' ],
-                'ul': [ 'data-source-line' ],
-                'ol': [ 'data-source-line' ],
-                'table': [ 'class', 'data-source-line' ],
+                'code': [ 'class', 'data-source-line', 'data-source-end-line' ],
+                'pre': [ 'class', 'data-source-line', 'data-source-end-line' ],
+                'div': [ 'class', 'data-source-line', 'data-source-end-line' ],
+                'p': [ 'data-source-line', 'data-source-end-line' ],
+                'blockquote': [ 'data-source-line', 'data-source-end-line' ],
+                'ul': [ 'data-source-line', 'data-source-end-line' ],
+                'ol': [ 'data-source-line', 'data-source-end-line' ],
+                'table': [ 'class', 'data-source-line', 'data-source-end-line' ],
                 'th': [ 'align', 'colspan', 'rowspan' ],
                 'td': [ 'align', 'colspan', 'rowspan' ],
-                'h1': [ 'id', 'data-source-line' ],
-                'h2': [ 'id', 'data-source-line' ],
-                'h3': [ 'id', 'data-source-line' ],
-                'h4': [ 'id', 'data-source-line' ],
-                'h5': [ 'id', 'data-source-line' ],
-                'h6': [ 'id', 'data-source-line' ],
+                'h1': [ 'id', 'data-source-line', 'data-source-end-line' ],
+                'h2': [ 'id', 'data-source-line', 'data-source-end-line' ],
+                'h3': [ 'id', 'data-source-line', 'data-source-end-line' ],
+                'h4': [ 'id', 'data-source-line', 'data-source-end-line' ],
+                'h5': [ 'id', 'data-source-line', 'data-source-end-line' ],
+                'h6': [ 'id', 'data-source-line', 'data-source-end-line' ],
                 'iframe': [ 'src', 'class', 'title', 'loading', 'referrerpolicy', 'allow', 'allowfullscreen' ]
             },
             allowedSchemes: [ 'http', 'https', 'mailto' ]

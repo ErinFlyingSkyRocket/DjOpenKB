@@ -345,3 +345,28 @@ body > .openkb-site-footer {
     max-height: 1200px;
     object-fit: contain;
 }
+
+/* Live preview shown while adjusting an article image display size. */
+.image-size-live-preview {
+    min-height: 140px;
+    max-height: 260px;
+    margin: 8px 0 6px;
+    padding: 12px;
+    overflow: auto;
+    border: 1px solid #d9e2e8;
+    border-radius: 4px;
+    background: #f8fafb;
+    text-align: center;
+}
+
+.image-size-live-preview img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.image-size-preview-dimensions {
+    min-height: 20px;
+    margin-bottom: 14px;
+}
