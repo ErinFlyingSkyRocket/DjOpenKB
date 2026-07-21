@@ -369,7 +369,7 @@ msgstr "Lista dozwolonych włączona — dozwolonych zakresów IP/CIDR: %(count)
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "Lista dozwolonych jest włączona, ale nie skonfigurowano prawidłowych zakresów IP/CIDR. Dostęp administratora jest blokowany do czasu zapisania co najmniej jednego prawidłowego zakresu."
 
-#: kb/views/services.py:241
+#: kb/views/services.py:249
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "Artykuł o tytule „%(title)s” już istnieje. Użyj innego tytułu."
 
@@ -377,7 +377,7 @@ msgstr "Artykuł o tytule „%(title)s” już istnieje. Użyj innego tytułu."
 msgid "An article with this title already exists. Please use a different title."
 msgstr "Artykuł o tym tytule już istnieje. Użyj innego tytułu."
 
-#: website/templates/admin/base_site.html:64
+#: website/templates/_image_size_modal.html:46 website/templates/admin/base_site.html:64
 msgid "Apply"
 msgstr "Zastosuj"
 
@@ -385,7 +385,7 @@ msgstr "Zastosuj"
 msgid "Approval / review"
 msgstr "Zatwierdzenie / przegląd"
 
-#: website/templates/suggest_edit.html:257
+#: website/templates/suggest_edit.html:272
 msgid "Approve / Publish"
 msgstr "Zatwierdź / Opublikuj"
 
@@ -393,7 +393,7 @@ msgstr "Zatwierdź / Opublikuj"
 msgid "Approve selected pending articles"
 msgstr "Zatwierdź wybrane oczekujące artykuły"
 
-#: website/templates/suggest_edit.html:251
+#: website/templates/suggest_edit.html:266
 msgid "Approve update"
 msgstr "Zatwierdź aktualizację"
 
@@ -429,7 +429,7 @@ msgstr "Czy na pewno chcesz usunąć <strong>%(title)s</strong>?"
 msgid "Are you sure you want to delete the file?"
 msgstr "Czy na pewno chcesz usunąć ten plik?"
 
-#: website/templates/suggest_edit.html:298
+#: website/templates/suggest_edit.html:313
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Czy na pewno chcesz przywrócić ostatnio opublikowaną wersję? Wszystkie nieopublikowane zmiany aktualizacji zostaną trwale usunięte."
 
@@ -485,7 +485,7 @@ msgstr "Artykuł automatycznie usunięty z kolejki"
 msgid "Article body"
 msgstr "Treść artykułu"
 
-#: website/templates/suggest.html:216 website/templates/suggest_edit.html:399
+#: website/templates/suggest.html:231 website/templates/suggest_edit.html:414
 msgid "Article body (Markdown)"
 msgstr "Treść artykułu (Markdown)"
 
@@ -541,7 +541,7 @@ msgstr "Szczegóły artykułu"
 msgid "Article display and upload limits"
 msgstr "Limity wyświetlania i przesyłania artykułów"
 
-#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
+#: website/templates/suggest.html:962 website/templates/suggest_edit.html:1183
 msgid "Article image"
 msgstr "Obraz artykułu"
 
@@ -573,7 +573,7 @@ msgstr "Dzienniki przesyłania obrazów artykułu"
 msgid "Article image uploaded"
 msgstr "Obraz artykułu przesłany"
 
-#: kb/views/services.py:1316
+#: kb/views/services.py:1327
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Przesyłanie obrazów artykułów jest obecnie wyłączone przez administratora."
 
@@ -713,7 +713,7 @@ msgstr "Artykuł przesłano do zatwierdzenia przez administratora."
 msgid "Article submitted for approval"
 msgstr "Artykuł przesłany do zatwierdzenia"
 
-#: kb/admin.py:162 kb/admin.py:181 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
+#: kb/admin.py:162 kb/admin.py:181 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:190 website/templates/suggest_edit.html:255
 msgid "Article title"
 msgstr "Tytuł artykułu"
 
@@ -1093,7 +1093,7 @@ msgstr "Może wyświetlać opublikowane artykuły publiczne"
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Może wyświetlać/wyszukiwać opublikowane artykuły i głosować. Jest to zapasowa rola przeglądającego i jest dodawana automatycznie tylko wtedy, gdy użytkownik nie ma innej standardowej roli Repozytorium wiedzy."
 
-#: website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
+#: website/templates/_image_size_modal.html:45 website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
 msgid "Cancel"
 msgstr "Anuluj"
 
@@ -1117,7 +1117,7 @@ msgstr "Zmieniono %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Zmieniono %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
+#: website/templates/suggest.html:468 website/templates/suggest_edit.html:689
 msgid "Checking..."
 msgstr "Sprawdzanie..."
 
@@ -1157,7 +1157,7 @@ msgstr "Usuwa tymczasowe blokady i historię stopniowej blokady dla tego użytko
 msgid "Click Refresh to scan the current title and article body for existing keywords."
 msgstr "Kliknij Odśwież, aby przeskanować bieżący tytuł i treść artykułu pod kątem istniejących słów kluczowych."
 
-#: website/templates/_navbar.html:11 website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
+#: website/templates/_image_size_modal.html:6 website/templates/_navbar.html:11 website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
 msgid "Close"
 msgstr "Zamknij"
 
@@ -1513,7 +1513,7 @@ msgstr "Nie lubię"
 msgid "Dislikes"
 msgstr "Nie lubię"
 
-#: kb/views/services.py:2465
+#: kb/views/services.py:2476
 msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
 msgstr "DjOpenKB nie mógł zweryfikować, czy ten film z SharePoint lub OneDrive jest dostępny bez logowania. Sprawdź uprawnienia udostępniania i spróbuj ponownie."
 
@@ -1541,11 +1541,11 @@ msgstr "Ograniczenia dostępu do Django Admin"
 msgid "Django admin action flag"
 msgstr "Flaga działania administratora Django"
 
-#: kb/views/services.py:3060
+#: kb/views/services.py:3081
 msgid "Domain Admin"
 msgstr "Administrator domeny"
 
-#: kb/views/services.py:3058
+#: kb/views/services.py:3079
 msgid "Domain User"
 msgstr "Użytkownik domeny"
 
@@ -1561,7 +1561,7 @@ msgstr "Hasła użytkowników domenowych są zarządzane w Active Directory."
 msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
 msgstr "Pobierz zip zawierający wszystkie artykuły zarządzane przez Django, ich treść Markdown, jeden"
 
-#: kb/models.py:312 website/templates/edit_my_suggestions.html:162 website/templates/edit_my_suggestions.html:275 website/templates/suggest_edit.html:254 website/templates/suggest_edit.html:269
+#: kb/models.py:312 website/templates/edit_my_suggestions.html:162 website/templates/edit_my_suggestions.html:275 website/templates/suggest_edit.html:269 website/templates/suggest_edit.html:284
 msgid "Draft"
 msgstr "Szkic"
 
@@ -1641,13 +1641,17 @@ msgstr "Zaszyfrowane i ukryte"
 msgid "Enter MFA/OTP code"
 msgstr "Wpisz kod MFA/OTP"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:432 website/templates/suggest.html:445 website/templates/suggest_edit.html:653 website/templates/suggest_edit.html:666
 msgid "Enter a supported video link."
 msgstr "Wprowadź obsługiwany link do filmu."
 
 #: website/templates/admin_orphan_articles.html:268
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
 msgstr "Wprowadź aktywną lokalną lub AD nazwę użytkownika/e-mail, zaznacz artykuły i kliknij Przypisz wybrane."
+
+#: website/templates/suggest.html:835 website/templates/suggest_edit.html:1056
+msgid "Enter an image size between 1 and 1200 pixels."
+msgstr "Wprowadź rozmiar obrazu od 1 do 1200 pikseli."
 
 #: kb/admin.py:2640
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
@@ -1681,7 +1685,7 @@ msgstr "Przykład:"
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "Istniejące uwierzytelnione sesje tego użytkownika zostaną unieważnione."
 
-#: website/templates/suggest_edit.html:334
+#: website/templates/suggest_edit.html:349
 msgid "Explain what the user needs to fix before resubmitting this article or update."
 msgstr "Wyjaśnij, co użytkownik musi poprawić przed ponownym przesłaniem tego artykułu lub aktualizacji."
 
@@ -1809,9 +1813,13 @@ msgstr "Uprawnienia grupy"
 msgid "Group type"
 msgstr "Typ grupy"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3076
 msgid "Guest"
 msgstr "Gość"
+
+#: website/templates/_image_size_modal.html:27
+msgid "Height"
+msgstr "Wysokość"
 
 #: kb/views/services_ai.py:286
 msgid "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
@@ -1924,27 +1932,47 @@ msgstr "Jeśli brakuje manifest.json, importer spróbuje zaimportować wszystkie
 msgid "Image assets"
 msgstr "Zasoby obrazów"
 
-#: kb/views/services.py:1234
+#: kb/views/services.py:1242
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Wymiary obrazu są zbyt duże. Prześlij mniejszy obraz."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
+#: website/templates/suggest.html:858 website/templates/suggest_edit.html:1079
+msgid "Image display size reset to the original responsive size."
+msgstr "Rozmiar wyświetlania obrazu został przywrócony do pierwotnego rozmiaru responsywnego."
+
+#: website/templates/suggest.html:845 website/templates/suggest_edit.html:1066
+msgid "Image display size updated."
+msgstr "Rozmiar wyświetlania obrazu został zaktualizowany."
+
+#: kb/views/services.py:1221 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Obraz jest zbyt duży. Maksymalny dozwolony rozmiar to 2 MB."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:995 website/templates/suggest_edit.html:1220
 msgid "Image removed from this article draft."
 msgstr "Obraz usunięto z tego szkicu artykułu."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:995 website/templates/suggest_edit.html:1220
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Obraz usunięto z tego szkicu. Zapisz artykuł, aby usunąć go z pamięci."
 
-#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
+#: website/templates/_image_size_modal.html:7
+msgid "Image size"
+msgstr "Rozmiar obrazu"
+
+#: website/templates/_image_size_modal.html:36
+msgid "Image size presets"
+msgstr "Ustawienia wstępne rozmiaru obrazu"
+
+#: website/templates/_image_size_modal.html:12
+msgid "Image size preview"
+msgstr "Podgląd rozmiaru obrazu"
+
+#: website/templates/suggest.html:932 website/templates/suggest_edit.html:1153
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Przesyłanie obrazów jest chwilowo niedostępne. Spróbuj ponownie później."
 
-#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
+#: website/templates/suggest.html:1064 website/templates/suggest_edit.html:1291
 msgid "Image uploaded and inserted into the article."
 msgstr "Obraz przesłano i wstawiono do artykułu."
 
@@ -1952,7 +1980,7 @@ msgstr "Obraz przesłano i wstawiono do artykułu."
 msgid "Images referenced by the pending update draft."
 msgstr "Obrazy, do których odwołuje się szkic oczekującej aktualizacji."
 
-#: website/templates/suggest.html:208 website/templates/suggest_edit.html:390
+#: website/templates/suggest.html:223 website/templates/suggest_edit.html:405
 msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
 msgstr "Obrazy przesłane w tym szkicu pojawiają się tutaj. Kliknij X, aby usunąć obraz z artykułu i usunąć przesłany plik."
 
@@ -2036,7 +2064,7 @@ msgstr "Zaimportowane artykuły będą należeć do"
 msgid "Inactive"
 msgstr "Nieaktywny"
 
-#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:220 website/templates/suggest_edit.html:404
+#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:235 website/templates/suggest_edit.html:419
 msgid "Insert video link"
 msgstr "Wstaw link do filmu"
 
@@ -2072,7 +2100,7 @@ msgstr "Użytkownik wewnętrzny"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "Dodatkowa rola zatwierdzającego wewnętrznego. Może wyświetlać artykuły publiczne/wewnętrzne, edytować treść, gdy artykuły/aktualizacje wewnętrzne pozostają oczekujące, zachowywać je jako oczekujące po edycjach w trakcie przeglądu oraz zatwierdzać lub odrzucać oczekujące artykuły/aktualizacje wewnętrzne. Domyślnie nie może usuwać ani edytować już opublikowanych artykułów wewnętrznych."
 
-#: kb/models.py:325 kb/views/services.py:443 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
+#: kb/models.py:325 kb/views/services.py:451 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
 msgid "Internal article"
 msgstr "Artykuł wewnętrzny"
 
@@ -2088,7 +2116,7 @@ msgstr "Uprawnienia do artykułów wewnętrznych"
 msgid "Internal articles"
 msgstr "Artykuły wewnętrzne"
 
-#: website/templates/suggest.html:198
+#: website/templates/suggest.html:213
 msgid "Internal articles are visible only to internal users."
 msgstr "Artykuły wewnętrzne są widoczne tylko dla użytkowników wewnętrznych."
 
@@ -2160,11 +2188,11 @@ msgstr "Nieprawidłowy plik ZIP."
 msgid "KB"
 msgstr "Baza wiedzy"
 
-#: website/templates/suggest_edit.html:250
+#: website/templates/suggest_edit.html:265
 msgid "Keep update pending / Save review edits"
 msgstr "Pozostaw aktualizację jako oczekującą / Zapisz zmiany z przeglądu"
 
-#: kb/admin.py:183 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:183 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:251 website/templates/suggest_edit.html:436
 msgid "Keywords"
 msgstr "Słowa kluczowe"
 
@@ -2184,7 +2212,7 @@ msgstr "Role Repozytorium wiedzy"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "Administrator Repozytorium wiedzy. Może bezpośrednio tworzyć/publikować artykuły i jest synchronizowany z dostępem personelu/superużytkownika Django w celu pełnego zarządzania przez Django Admin."
 
-#: kb/views/services.py:1766
+#: kb/views/services.py:1777
 msgid "Knowledge Repository article."
 msgstr "Artykuł Repozytorium wiedzy."
 
@@ -2272,11 +2300,15 @@ msgstr "Lubię to"
 msgid "Likes"
 msgstr "Polubienia"
 
-#: kb/views/services.py:3064
+#: website/templates/suggest.html:744 website/templates/suggest_edit.html:965
+msgid "Loading dimensions..."
+msgstr "Ładowanie wymiarów..."
+
+#: kb/views/services.py:3085
 msgid "Local Admin"
 msgstr "Lokalny administrator"
 
-#: kb/views/services.py:3062
+#: kb/views/services.py:3083
 msgid "Local User"
 msgstr "Lokalny użytkownik"
 
@@ -2304,7 +2336,7 @@ msgstr "Konta lokalne wymagają weryfikacji aplikacją uwierzytelniającą po za
 msgid "Local admin"
 msgstr "Administrator lokalny"
 
-#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3135
 msgid "Local user"
 msgstr "Użytkownik lokalny"
 
@@ -2412,7 +2444,7 @@ msgstr "MFA zostało zresetowane dla %(username)s. Użytkownik musi skonfigurowa
 msgid "MFA/OTP code"
 msgstr "Kod MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:810
+#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:818
 msgid "MFA/OTP code is incorrect."
 msgstr "Kod MFA/OTP jest nieprawidłowy."
 
@@ -2480,7 +2512,7 @@ msgstr "Oznaczono artykuł %(title)s jako Zatwierdzenie nieudane w Django Admin"
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Oznaczone przez administratora jako niepowodzenie oczekiwania. Sprawdź ten artykuł i prześlij go ponownie do zatwierdzenia."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
+#: website/templates/suggest.html:232 website/templates/suggest_edit.html:415
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Maksymalnie %(limit)s obrazów na artykuł."
 
@@ -2792,7 +2824,7 @@ msgstr "Stare hasło jest nieprawidłowe."
 msgid "Only .zip import files are allowed."
 msgstr "Dozwolone są tylko pliki importu .zip."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
+#: kb/views/services.py:1218 kb/views/services.py:1239 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Dozwolone są tylko obrazy PNG, JPG, GIF lub WEBP."
 
@@ -2855,6 +2887,10 @@ msgstr "Opcjonalne adresy IPv4/IPv6 lub zakresy CIDR rozdzielone przecinkami, sp
 #: kb/admin.py:221
 msgid "Original name"
 msgstr "Nazwa oryginalna"
+
+#: website/templates/suggest.html:673 website/templates/suggest.html:731 website/templates/suggest_edit.html:894 website/templates/suggest_edit.html:952
+msgid "Original size"
+msgstr "Oryginalny rozmiar"
 
 #: kb/models.py:434
 msgid "Original workflow status saved so the article can be restored from the deletion queue."
@@ -2920,31 +2956,31 @@ msgstr "Logowanie hasłem nie powiodło się"
 msgid "Password login success"
 msgstr "Logowanie hasłem zakończone"
 
-#: kb/views/services.py:3152
+#: kb/views/services.py:3173
 msgid "Password must be at least 12 characters long."
 msgstr "Hasło musi mieć co najmniej 12 znaków."
 
-#: kb/views/services.py:3156
+#: kb/views/services.py:3177
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Hasło musi zawierać co najmniej 1 małą literę."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3179
 msgid "Password must include at least 1 number."
 msgstr "Hasło musi zawierać co najmniej 1 cyfrę."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3181
 msgid "Password must include at least 1 special character."
 msgstr "Hasło musi zawierać co najmniej 1 znak specjalny."
 
-#: kb/views/services.py:3154
+#: kb/views/services.py:3175
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Hasło musi zawierać co najmniej 1 wielką literę."
 
-#: kb/views/services.py:3169
+#: kb/views/services.py:3190
 msgid "Password must not contain the name part of your email address."
 msgstr "Hasło nie może zawierać części nazwy z Twojego adresu e-mail."
 
-#: kb/views/services.py:3167
+#: kb/views/services.py:3188
 msgid "Password must not contain your username."
 msgstr "Hasło nie może zawierać Twojej nazwy użytkownika."
 
@@ -2984,7 +3020,7 @@ msgstr "Hasła są zgodne."
 msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
 msgstr "Wklej link do YouTube lub Vimeo. Bezpośrednie pliki wideo oraz linki, które mogą wymagać zewnętrznego logowania, nie są obsługiwane."
 
-#: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
+#: website/templates/suggest.html:222 website/templates/suggest_edit.html:403
 msgid "Pasted images"
 msgstr "Wklejone obrazy"
 
@@ -2992,7 +3028,7 @@ msgstr "Wklejone obrazy"
 msgid "Path"
 msgstr "Ścieżka"
 
-#: kb/models.py:313 website/templates/suggest_edit.html:255
+#: kb/models.py:313 website/templates/suggest_edit.html:270
 msgid "Pending"
 msgstr "Oczekujące"
 
@@ -3000,7 +3036,7 @@ msgstr "Oczekujące"
 msgid "Pending MFA created"
 msgstr "Utworzono oczekujące MFA"
 
-#: website/templates/admin_pending_articles.html:128 website/templates/edit_my_suggestions.html:160 website/templates/edit_my_suggestions.html:271 website/templates/suggest_edit.html:271
+#: website/templates/admin_pending_articles.html:128 website/templates/edit_my_suggestions.html:160 website/templates/edit_my_suggestions.html:271 website/templates/suggest_edit.html:286
 msgid "Pending approval"
 msgstr "Oczekuje na zatwierdzenie"
 
@@ -3012,11 +3048,11 @@ msgstr "Strony oczekujących artykułów"
 msgid "Pending deletion approval"
 msgstr "Oczekuje na zatwierdzenie usunięcia"
 
-#: kb/models.py:314 website/templates/edit_my_suggestions.html:161 website/templates/edit_my_suggestions.html:273 website/templates/suggest_edit.html:273
+#: kb/models.py:314 website/templates/edit_my_suggestions.html:161 website/templates/edit_my_suggestions.html:273 website/templates/suggest_edit.html:288
 msgid "Pending failed"
 msgstr "Zatwierdzenie nieudane"
 
-#: website/templates/suggest_edit.html:333 website/templates/suggest_edit.html:346
+#: website/templates/suggest_edit.html:348 website/templates/suggest_edit.html:361
 msgid "Pending failed comments"
 msgstr "Komentarze do odrzuconej recenzji"
 
@@ -3024,7 +3060,7 @@ msgstr "Komentarze do odrzuconej recenzji"
 msgid "Pending failed comments history"
 msgstr "Historia komentarzy odrzucenia"
 
-#: kb/models.py:320 website/templates/admin_pending_articles.html:125 website/templates/edit_my_suggestions.html:163 website/templates/edit_my_suggestions.html:263 website/templates/suggest_edit.html:263
+#: kb/models.py:320 website/templates/admin_pending_articles.html:125 website/templates/edit_my_suggestions.html:163 website/templates/edit_my_suggestions.html:263 website/templates/suggest_edit.html:278
 msgid "Pending update"
 msgstr "Oczekująca aktualizacja"
 
@@ -3048,7 +3084,7 @@ msgstr "Oczekująca aktualizacja - weryfikacja"
 msgid "Pending update title"
 msgstr "Oczekująca aktualizacja - tytuł"
 
-#: website/templates/suggest_edit.html:434
+#: website/templates/suggest_edit.html:450
 msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
 msgstr "Aktualizacja oczekuje — Ta edycja czeka na zatwierdzenie przez administratora. Bieżąca opublikowana wersja nadal jest widoczna dla użytkowników."
 
@@ -3180,7 +3216,7 @@ msgstr "Preferowany język"
 msgid "Preferred language for the main wiki user interface."
 msgstr "Preferowany język głównego interfejsu wiki."
 
-#: website/templates/suggest.html:228 website/templates/suggest_edit.html:413
+#: website/templates/suggest.html:243 website/templates/suggest_edit.html:428
 msgid "Preview"
 msgstr "Podgląd"
 
@@ -3216,7 +3252,7 @@ msgstr "Zaktualizowano e-mail profilu"
 msgid "Profile password changed"
 msgstr "Zmieniono hasło profilu"
 
-#: kb/models.py:324 kb/views/services.py:444
+#: kb/models.py:324 kb/views/services.py:452
 msgid "Public article"
 msgstr "Artykuł publiczny"
 
@@ -3224,11 +3260,11 @@ msgstr "Artykuł publiczny"
 msgid "Public articles are visible to normal wiki users. Internal articles are visible only to users with internal article access."
 msgstr "Artykuły publiczne są widoczne dla zwykłych użytkowników wiki. Artykuły wewnętrzne są widoczne tylko dla użytkowników z dostępem do artykułów wewnętrznych."
 
-#: website/templates/suggest.html:182
+#: website/templates/suggest.html:197
 msgid "Publish article"
 msgstr "Opublikuj artykuł"
 
-#: kb/models.py:315 website/templates/edit_my_suggestions.html:159 website/templates/edit_my_suggestions.html:269 website/templates/suggest_edit.html:275
+#: kb/models.py:315 website/templates/edit_my_suggestions.html:159 website/templates/edit_my_suggestions.html:269 website/templates/suggest_edit.html:290
 msgid "Published"
 msgstr "Opublikowano"
 
@@ -3328,11 +3364,11 @@ msgstr "Zwykły użytkownik jest zapasową publiczną rolą przeglądającego. R
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Przypisano rolę Zwykły użytkownik do %(count)d wybranych użytkowników."
 
-#: website/templates/suggest_edit.html:256
+#: website/templates/suggest_edit.html:271
 msgid "Reject / Pending failed"
 msgstr "Odrzuć / Zatwierdzenie nieudane"
 
-#: website/templates/suggest_edit.html:252
+#: website/templates/suggest_edit.html:267
 msgid "Reject update"
 msgstr "Odrzuć aktualizację"
 
@@ -3340,7 +3376,7 @@ msgstr "Odrzuć aktualizację"
 msgid "Related articles"
 msgstr "Powiązane artykuły"
 
-#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
+#: website/templates/suggest.html:967 website/templates/suggest.html:968 website/templates/suggest_edit.html:1192 website/templates/suggest_edit.html:1193
 msgid "Remove image from article"
 msgstr "Usuń obraz z artykułu"
 
@@ -3432,6 +3468,10 @@ msgstr "Zresetuj wybrane urządzenia MFA"
 msgid "Reset this user's MFA"
 msgstr "Zresetuj MFA tego użytkownika"
 
+#: website/templates/_image_size_modal.html:44
+msgid "Reset to original"
+msgstr "Przywróć oryginalny rozmiar"
+
 #: kb/admin.py:1383
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Resetuje aplikację uwierzytelniającą tego użytkownika i wymaga ponownej konfiguracji QR. Nowy klucz aplikacji uwierzytelniającej jest prywatny i nie jest wyświetlany administratorom."
@@ -3460,7 +3500,7 @@ msgstr "Wróć do poprzedniej strony i użyj dostępnych elementów sterujących
 msgid "Return to the previous page or contact an administrator if access is required."
 msgstr "Wróć do poprzedniej strony lub skontaktuj się z administratorem, jeśli potrzebujesz dostępu."
 
-#: website/templates/suggest_edit.html:301 website/templates/suggest_edit.html:306 website/templates/suggest_edit.html:310 website/templates/suggest_edit.html:313 website/templates/suggest_edit.html:317
+#: website/templates/suggest_edit.html:316 website/templates/suggest_edit.html:321 website/templates/suggest_edit.html:325 website/templates/suggest_edit.html:328 website/templates/suggest_edit.html:332
 msgid "Revert to last published version"
 msgstr "Przywróć ostatnio opublikowaną wersję"
 
@@ -3476,7 +3516,7 @@ msgstr "Przegląd"
 msgid "Review before deleting"
 msgstr "Sprawdź przed usunięciem"
 
-#: website/templates/suggest_edit.html:364
+#: website/templates/suggest_edit.html:379
 msgid "Review comments history"
 msgstr "Historia komentarzy recenzji"
 
@@ -3508,7 +3548,7 @@ msgstr "Przeglądaj artykuły wewnętrzne i oczekujące aktualizacje wewnętrzne
 msgid "Review internal articles waiting for approval."
 msgstr "Przeglądaj artykuły wewnętrzne czekające na zatwierdzenie."
 
-#: website/templates/suggest_edit.html:235
+#: website/templates/suggest_edit.html:250
 msgid "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here."
 msgstr "Tryb przeglądu: możesz edytować ten oczekujący artykuł lub aktualizację, a następnie go zatwierdzić lub odrzucić. Widoczności nie można tutaj zmienić."
 
@@ -3524,11 +3564,11 @@ msgstr "Przeglądaj przesłane artykuły i oczekujące aktualizacje w dozwolonym
 msgid "Review user-submitted general articles waiting for approval."
 msgstr "Przeglądaj przesłane przez użytkowników artykuły ogólne czekające na zatwierdzenie."
 
-#: website/templates/suggest_edit.html:303
+#: website/templates/suggest_edit.html:318
 msgid "Save"
 msgstr "Zapisz"
 
-#: website/templates/suggest.html:180 website/templates/suggest_edit.html:322
+#: website/templates/suggest.html:195 website/templates/suggest_edit.html:337
 msgid "Save draft"
 msgstr "Zapisz szkic"
 
@@ -3540,19 +3580,19 @@ msgstr "Zapisz e-mail"
 msgid "Save language"
 msgstr "Zapisz język"
 
-#: website/templates/suggest_edit.html:303
+#: website/templates/suggest_edit.html:318
 msgid "Save review action"
 msgstr "Zapisz działanie przeglądu"
 
-#: website/templates/suggest_edit.html:307 website/templates/suggest_edit.html:311 website/templates/suggest_edit.html:314 website/templates/suggest_edit.html:318
+#: website/templates/suggest_edit.html:322 website/templates/suggest_edit.html:326 website/templates/suggest_edit.html:329 website/templates/suggest_edit.html:333
 msgid "Save update progress"
 msgstr "Zapisz postęp aktualizacji"
 
-#: website/templates/suggest_edit.html:267
+#: website/templates/suggest_edit.html:282
 msgid "Saved update draft"
 msgstr "Zapisano szkic aktualizacji"
 
-#: website/templates/suggest_edit.html:434
+#: website/templates/suggest_edit.html:450
 msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
 msgstr "Zapisano szkic aktualizacji — Edytujesz zapisane zmiany dla tego opublikowanego artykułu. Bieżąca opublikowana wersja pozostanie widoczna, dopóki nie prześlesz tej aktualizacji do zatwierdzenia."
 
@@ -3668,6 +3708,10 @@ msgstr "Ustaw wybranych użytkowników jako Wyłączonych użytkowników"
 msgid "Set selected users as Regular User"
 msgstr "Ustaw wybranych użytkowników jako Zwykłych użytkowników"
 
+#: website/templates/suggest.html:764 website/templates/suggest_edit.html:985
+msgid "Set size"
+msgstr "Ustaw rozmiar"
+
 #: kb/admin.py:774
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Ustaw zwykłą rolę użytkownika w sekcji Grupy. Niestandardowe grupy nieról mogą być później używane na przykład do powiadomień."
@@ -3684,7 +3728,7 @@ msgstr "Skonfiguruj MFA przed uzyskaniem dostępu do witryny administratora."
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Skonfiguruj MFA przed zmianą wrażliwych danych konta."
 
-#: kb/views/services.py:757
+#: kb/views/services.py:765
 msgid "Set up MFA before deleting a published article."
 msgstr "Skonfiguruj MFA przed usunięciem opublikowanego artykułu."
 
@@ -3840,7 +3884,7 @@ msgstr "Kolejność etapu"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Zacznij wpisywać tytuł lub treść artykułu, aby zobaczyć pasujące istniejące słowa kluczowe."
 
-#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:246
+#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "Stan"
 
@@ -3860,15 +3904,15 @@ msgstr "Minimalny wiek czyszczenia osieroconych przesyłek (minuty)"
 msgid "Submit article"
 msgstr "Prześlij artykuł"
 
-#: website/templates/suggest.html:184 website/templates/suggest_edit.html:323
+#: website/templates/suggest.html:199 website/templates/suggest_edit.html:338
 msgid "Submit for approval"
 msgstr "Prześlij do zatwierdzenia"
 
-#: website/templates/suggest_edit.html:308
+#: website/templates/suggest_edit.html:323
 msgid "Submit update again"
 msgstr "Prześlij aktualizację ponownie"
 
-#: website/templates/suggest_edit.html:315 website/templates/suggest_edit.html:319
+#: website/templates/suggest_edit.html:330 website/templates/suggest_edit.html:334
 msgid "Submit update for approval"
 msgstr "Prześlij aktualizację do zatwierdzenia"
 
@@ -3956,15 +4000,27 @@ msgstr "Nie można było bezpiecznie przypisać artykułów. Nie zastosowano prz
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Poniższe pola wyboru są specjalnymi wyjątkami dla pojedynczego użytkownika wyłącznie w zakresie dostępu do artykułów. Są przydatne, gdy jeden użytkownik potrzebuje nieco większego dostępu do artykułów niż jego grupa, bez tworzenia nowej grupy. Dostęp do Django Admin jest przyznawany wyłącznie przez grupę Użytkownicy administratora/status superużytkownika."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/_image_size_modal.html:35
+msgid "The image aspect ratio is preserved automatically. The maximum display size is 1200 pixels in either direction."
+msgstr "Proporcje obrazu są zachowywane automatycznie. Maksymalny rozmiar wyświetlania wynosi 1200 pikseli w każdym wymiarze."
+
+#: website/templates/suggest.html:934 website/templates/suggest_edit.html:1155
 msgid "The image could not be uploaded. Please try again."
 msgstr "Nie udało się przesłać obrazu. Spróbuj ponownie."
 
-#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
+#: website/templates/suggest.html:717 website/templates/suggest_edit.html:938
+msgid "The image dimensions are not available yet. Please try again in a moment."
+msgstr "Wymiary obrazu nie są jeszcze dostępne. Spróbuj ponownie za chwilę."
+
+#: website/templates/suggest.html:839 website/templates/suggest_edit.html:1060
+msgid "The image reference could not be found in the article content."
+msgstr "Nie znaleziono odwołania do obrazu w treści artykułu."
+
+#: website/templates/suggest.html:1067 website/templates/suggest_edit.html:1294
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Podczas przesyłania obrazu nie udało się połączyć z serwerem. Sprawdź połączenie i spróbuj ponownie."
 
-#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
+#: website/templates/suggest.html:926 website/templates/suggest_edit.html:1147
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Przesyłanie obrazu nie zostało autoryzowane. Odśwież stronę i spróbuj ponownie."
 
@@ -4008,11 +4064,11 @@ msgstr "Te same stopniowe zasady są używane dla niepowodzeń logowania hasłem
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Wybrane artykuły nie są już osierocone albo już nie istnieją. Odśwież i spróbuj ponownie."
 
-#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
+#: website/templates/suggest.html:929 website/templates/suggest_edit.html:1150
 msgid "The selected file is not a valid supported image."
 msgstr "Wybrany plik nie jest prawidłowym obsługiwanym obrazem."
 
-#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
+#: website/templates/suggest.html:1011 website/templates/suggest_edit.html:1238
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Wybrany obraz jest pusty. Wybierz inny obraz."
 
@@ -4036,7 +4092,7 @@ msgstr "Serwer nie mógł zrealizować żądania."
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "Przesłany plik lub żądanie przekracza dozwolony limit."
 
-#: kb/views/services.py:1222
+#: kb/views/services.py:1230
 msgid "The uploaded file is not a valid image."
 msgstr "Przesłany plik nie jest prawidłowym obrazem."
 
@@ -4044,7 +4100,7 @@ msgstr "Przesłany plik nie jest prawidłowym obrazem."
 msgid "There are no pending article reviews right now."
 msgstr "Obecnie nie ma oczekujących recenzji artykułów."
 
-#: website/templates/suggest_edit.html:335
+#: website/templates/suggest_edit.html:350
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
 msgstr "Te komentarze są pokazywane właścicielowi artykułu, gdy artykuł lub aktualizacja zostanie oznaczona jako odrzucona."
 
@@ -4060,15 +4116,15 @@ msgstr "Tego urządzenia MFA nie można zweryfikować, ponieważ nie można był
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Tego urządzenia MFA nie można zweryfikować, ponieważ nie można było odczytać jego sekretu. Poproś innego administratora o zresetowanie MFA dla tego konta."
 
-#: kb/views/services.py:2456
+#: kb/views/services.py:2467
 msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
 msgstr "Ten link SharePoint lub OneDrive nie udostępnia filmu, który można odtworzyć bezpośrednio bez logowania. Użyj bezpośredniego linku do filmu, który można obejrzeć bez logowania."
 
-#: kb/views/services.py:2461
+#: kb/views/services.py:2472
 msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
 msgstr "Ten film z SharePoint lub OneDrive nie jest dostępny bez logowania. Sprawdź uprawnienia udostępniania i użyj linku, który można otworzyć bez logowania."
 
-#: kb/views/services.py:2451
+#: kb/views/services.py:2462
 msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
 msgstr "Ten film z SharePoint lub OneDrive wymaga zewnętrznego logowania i nie może zostać osadzony. Użyj linku do filmu, który można obejrzeć bez logowania."
 
@@ -4080,15 +4136,15 @@ msgstr "Tej operacji nie można cofnąć."
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "Ten artykuł ma również oczekującą aktualizację, ale nadal jest traktowany jako opublikowany artykuł."
 
-#: kb/views/services.py:1319
+#: kb/views/services.py:1330
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "Ten artykuł ma %(count)s obrazów, ale maksymalnie dozwolone jest %(limit)s obrazów. Usuń część obrazów przed zapisaniem."
 
-#: kb/views/services.py:1318
+#: kb/views/services.py:1329
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Ten artykuł osiągnął limit przesyłania wynoszący %(limit)s obrazów."
 
-#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
+#: website/templates/suggest.html:1019 website/templates/suggest_edit.html:1246
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Ten artykuł osiągnął limit przesyłania obrazów. Usuń obraz przed przesłaniem kolejnego."
 
@@ -4104,7 +4160,7 @@ msgstr "Ta czynność usuwa tymczasowe blokady, liczniki nieudanych prób i hist
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Ten adres e-mail jest zarządzany przez konto domenowe i nie można go tutaj zmienić."
 
-#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
+#: website/templates/suggest.html:1030 website/templates/suggest_edit.html:1257
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Ten obraz został już przesłany w tym szkicu. Najpierw użyj przycisku X w podglądzie, aby go usunąć."
 
@@ -4132,7 +4188,7 @@ msgstr "To narzędzie preferuje systemowy format eksportu:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Ten typ żądania nie jest dozwolony dla wybranej strony."
 
-#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
+#: website/templates/suggest.html:493 website/templates/suggest_edit.html:714
 msgid "This video link could not be validated. Please try another link."
 msgstr "Nie udało się zweryfikować tego linku do filmu. Spróbuj użyć innego linku."
 
@@ -4168,11 +4224,11 @@ msgstr "Zbyt wiele pytań do OpenKB AI. Odczekaj przed ponowną próbą."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za %(duration)s."
 
-#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
+#: website/templates/suggest.html:923 website/templates/suggest_edit.html:1144
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Zbyt wiele prób przesłania obrazu. Poczekaj chwilę i spróbuj ponownie."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:782
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:790
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Zbyt wiele nieprawidłowych kodów MFA. Spróbuj ponownie za %(duration)s."
 
@@ -4212,11 +4268,11 @@ msgstr "Typ"
 msgid "Type username or email"
 msgstr "Wpisz nazwę użytkownika lub e-mail"
 
-#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
+#: website/templates/suggest.html:459 website/templates/suggest_edit.html:680
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Nie można zweryfikować tego linku do filmu. Odśwież stronę i spróbuj ponownie."
 
-#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
+#: website/templates/suggest.html:506 website/templates/suggest_edit.html:727
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Nie można zweryfikować, czy ten film jest dostępny bez logowania. Spróbuj ponownie."
 
@@ -4256,11 +4312,11 @@ msgstr "Status zatwierdzenia aktualizacji"
 msgid "Update password"
 msgstr "Aktualizuj hasło"
 
-#: kb/models.py:321 website/templates/edit_my_suggestions.html:164 website/templates/edit_my_suggestions.html:266 website/templates/suggest_edit.html:265
+#: kb/models.py:321 website/templates/edit_my_suggestions.html:164 website/templates/edit_my_suggestions.html:266 website/templates/suggest_edit.html:280
 msgid "Update pending failed"
 msgstr "Aktualizacja odrzucona"
 
-#: website/templates/suggest_edit.html:434
+#: website/templates/suggest_edit.html:450
 msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
 msgstr "Aktualizacja odrzucona — Sprawdź komentarze administratora, popraw zmiany i prześlij ponownie."
 
@@ -4292,7 +4348,7 @@ msgstr "Adres IP przesyłania"
 msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
 msgstr "Prześlij zip wyeksportowany z tego systemu albo zip zawierający pliki Markdown i opcjonalny"
 
-#: website/templates/suggest.html:219 website/templates/suggest_edit.html:403
+#: website/templates/suggest.html:234 website/templates/suggest_edit.html:418
 msgid "Upload image"
 msgstr "Prześlij obraz"
 
@@ -4416,7 +4472,7 @@ msgstr "Wersja została pomyślnie usunięta."
 msgid "Video link"
 msgstr "Link do filmu"
 
-#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
+#: website/templates/suggest.html:503 website/templates/suggest_edit.html:724
 msgid "Video link inserted into the article."
 msgstr "Link do filmu został wstawiony do artykułu."
 
@@ -4436,11 +4492,11 @@ msgstr "Liczba wyświetleń"
 msgid "View internal articles"
 msgstr "Wyświetl artykuły wewnętrzne"
 
-#: website/templates/admin_deletion_queue.html:120 website/templates/admin_deletion_queue_confirm.html:37 website/templates/admin_pending_articles.html:112 website/templates/admin_pending_articles.html:62 website/templates/edit_my_suggestions.html:146 website/templates/edit_my_suggestions.html:229 website/templates/suggest.html:192 website/templates/suggest_edit.html:284
+#: website/templates/admin_deletion_queue.html:120 website/templates/admin_deletion_queue_confirm.html:37 website/templates/admin_pending_articles.html:112 website/templates/admin_pending_articles.html:62 website/templates/edit_my_suggestions.html:146 website/templates/edit_my_suggestions.html:229 website/templates/suggest.html:207 website/templates/suggest_edit.html:299
 msgid "Visibility"
 msgstr "Widoczność"
 
-#: website/templates/suggest_edit.html:290
+#: website/templates/suggest_edit.html:305
 msgid "Visibility can be changed only before the article is published."
 msgstr "Widoczność można zmienić tylko przed opublikowaniem artykułu."
 
@@ -4463,6 +4519,10 @@ msgstr "Witamy ponownie, %(name)s."
 #: kb/views/mfa.py:359
 msgid "Welcome back."
 msgstr "Witamy ponownie."
+
+#: website/templates/_image_size_modal.html:18
+msgid "Width"
+msgstr "Szerokość"
 
 #: kb/admin.py:200
 msgid "Wiki path"
@@ -4500,7 +4560,7 @@ msgstr "Zamierzasz zresetować MFA dla użytkownika <strong>%(username)s</strong
 msgid "You are about to reset password/MFA lockout counters for user <strong>%(username)s</strong>."
 msgstr "Za chwilę zresetujesz liczniki blokady hasła/MFA dla użytkownika <strong>%(username)s</strong>."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
+#: website/templates/suggest.html:232 website/templates/suggest_edit.html:415
 msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
 msgstr "Możesz wkleić małe obrazy PNG/JPG/GIF/WEBP bezpośrednio do edytora albo przesłać jeden przyciskiem. Maksymalnie 2 MB każdy."
 
@@ -4588,7 +4648,7 @@ msgstr "Twoja sesja administratora wygasła z powodu bezczynności. Zweryfikuj p
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Do Twojego konta przypisano rolę Wyłączony użytkownik. Przy następnym żądaniu zostaniesz przekierowany na stronę wyłączonego konta."
 
-#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
+#: website/templates/suggest.html:917 website/templates/suggest_edit.html:1138
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Twoja sesja wygasła. Zaloguj się ponownie przed przesłaniem obrazu."
 

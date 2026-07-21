@@ -359,7 +359,7 @@ msgstr "Senarai dibenarkan diaktifkan — %(count)s julat IP/CIDR dibenarkan:"
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "Senarai dibenarkan diaktifkan, tetapi tiada julat IP/CIDR sah dikonfigurasi. Akses Admin ditolak sehingga sekurang-kurangnya satu julat sah disimpan."
 
-#: kb/views/services.py:241
+#: kb/views/services.py:249
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "Artikel dengan tajuk ‘%(title)s’ sudah wujud. Sila gunakan tajuk lain."
 
@@ -367,7 +367,7 @@ msgstr "Artikel dengan tajuk ‘%(title)s’ sudah wujud. Sila gunakan tajuk lai
 msgid "An article with this title already exists. Please use a different title."
 msgstr "Artikel dengan tajuk ini sudah wujud. Sila gunakan tajuk lain."
 
-#: website/templates/admin/base_site.html:64
+#: website/templates/_image_size_modal.html:46 website/templates/admin/base_site.html:64
 msgid "Apply"
 msgstr "Guna"
 
@@ -375,7 +375,7 @@ msgstr "Guna"
 msgid "Approval / review"
 msgstr "Kelulusan / semakan"
 
-#: website/templates/suggest_edit.html:257
+#: website/templates/suggest_edit.html:272
 msgid "Approve / Publish"
 msgstr "Luluskan / Terbitkan"
 
@@ -383,7 +383,7 @@ msgstr "Luluskan / Terbitkan"
 msgid "Approve selected pending articles"
 msgstr "Luluskan artikel menunggu semakan yang dipilih"
 
-#: website/templates/suggest_edit.html:251
+#: website/templates/suggest_edit.html:266
 msgid "Approve update"
 msgstr "Luluskan kemas kini"
 
@@ -419,7 +419,7 @@ msgstr "Adakah anda pasti mahu memadam <strong>%(title)s</strong>?"
 msgid "Are you sure you want to delete the file?"
 msgstr "Adakah anda pasti mahu memadam fail ini?"
 
-#: website/templates/suggest_edit.html:298
+#: website/templates/suggest_edit.html:313
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Adakah anda pasti mahu kembali kepada versi terakhir yang diterbitkan? Semua perubahan kemas kini yang belum diterbitkan akan dipadamkan secara kekal."
 
@@ -475,7 +475,7 @@ msgstr "Artikel dipadamkan secara automatik daripada baris gilir"
 msgid "Article body"
 msgstr "Isi artikel"
 
-#: website/templates/suggest.html:216 website/templates/suggest_edit.html:399
+#: website/templates/suggest.html:231 website/templates/suggest_edit.html:414
 msgid "Article body (Markdown)"
 msgstr "Kandungan artikel (Markdown)"
 
@@ -531,7 +531,7 @@ msgstr "Butiran artikel"
 msgid "Article display and upload limits"
 msgstr "Had paparan dan muat naik artikel"
 
-#: website/templates/suggest.html:633 website/templates/suggest_edit.html:854
+#: website/templates/suggest.html:962 website/templates/suggest_edit.html:1183
 msgid "Article image"
 msgstr "Imej artikel"
 
@@ -563,7 +563,7 @@ msgstr "Log muat naik imej artikel"
 msgid "Article image uploaded"
 msgstr "Imej artikel dimuat naik"
 
-#: kb/views/services.py:1316
+#: kb/views/services.py:1327
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Muat naik imej artikel sedang dinyahaktifkan oleh pentadbir."
 
@@ -703,7 +703,7 @@ msgstr "Artikel dihantar untuk kelulusan pentadbir."
 msgid "Article submitted for approval"
 msgstr "Artikel dihantar untuk kelulusan"
 
-#: kb/admin.py:162 kb/admin.py:181 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:175 website/templates/suggest_edit.html:240
+#: kb/admin.py:162 kb/admin.py:181 website/templates/admin_deletion_queue_confirm.html:36 website/templates/admin_orphan_articles.html:287 website/templates/admin_orphan_articles_confirm.html:47 website/templates/admin_pending_articles.html:111 website/templates/edit_my_suggestions.html:227 website/templates/suggest.html:190 website/templates/suggest_edit.html:255
 msgid "Article title"
 msgstr "Tajuk artikel"
 
@@ -1083,7 +1083,7 @@ msgstr "Boleh melihat artikel awam yang diterbitkan"
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Boleh melihat/mencari artikel diterbitkan dan mengundi. Ini ialah peranan pembaca sandaran dan hanya ditambah secara automatik apabila pengguna tidak mempunyai peranan Repositori Pengetahuan standard lain."
 
-#: website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
+#: website/templates/_image_size_modal.html:45 website/templates/_video_insert_modal.html:18 website/templates/admin/kb/reset_auth_lockout_confirm.html:30 website/templates/admin/kb/reset_mfa_confirm.html:30 website/templates/admin_deletion_queue_confirm.html:62 website/templates/admin_orphan_articles_confirm.html:85 website/templates/profile.html:159 website/templates/profile.html:369 website/templates/profile.html:419 website/templates/suggest_delete.html:52
 msgid "Cancel"
 msgstr "Batal"
 
@@ -1107,7 +1107,7 @@ msgstr "Mengubah %(target_label)s: %(target)s"
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Mengubah %(target_label)s: %(target)s — %(changes)s"
 
-#: website/templates/suggest.html:445 website/templates/suggest_edit.html:666
+#: website/templates/suggest.html:468 website/templates/suggest_edit.html:689
 msgid "Checking..."
 msgstr "Menyemak..."
 
@@ -1147,7 +1147,7 @@ msgstr "Mengosongkan sekatan sementara dan sejarah sekatan progresif bagi penggu
 msgid "Click Refresh to scan the current title and article body for existing keywords."
 msgstr "Klik Muat Semula untuk mengimbas tajuk semasa dan isi artikel bagi kata kunci sedia ada."
 
-#: website/templates/_navbar.html:11 website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
+#: website/templates/_image_size_modal.html:6 website/templates/_navbar.html:11 website/templates/_video_insert_modal.html:6 website/templates/admin_bulk_articles.html:124 website/templates/admin_bulk_articles.html:186 website/templates/admin_orphan_articles.html:162 website/templates/profile.html:352 website/templates/profile.html:385
 msgid "Close"
 msgstr "Tutup"
 
@@ -1503,7 +1503,7 @@ msgstr "Tidak suka"
 msgid "Dislikes"
 msgstr "Tidak suka"
 
-#: kb/views/services.py:2465
+#: kb/views/services.py:2476
 msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
 msgstr "DjOpenKB tidak dapat mengesahkan bahawa video SharePoint atau OneDrive ini boleh diakses tanpa log masuk. Semak kebenaran perkongsiannya dan cuba lagi."
 
@@ -1531,11 +1531,11 @@ msgstr "Sekatan akses Django Admin"
 msgid "Django admin action flag"
 msgstr "Bendera tindakan pentadbir Django"
 
-#: kb/views/services.py:3060
+#: kb/views/services.py:3081
 msgid "Domain Admin"
 msgstr "Pentadbir Domain"
 
-#: kb/views/services.py:3058
+#: kb/views/services.py:3079
 msgid "Domain User"
 msgstr "Pengguna Domain"
 
@@ -1551,7 +1551,7 @@ msgstr "Kata laluan pengguna domain diurus dalam Active Directory."
 msgid "Download a zip containing all Django-managed articles, their Markdown content, a"
 msgstr "Muat turun zip yang mengandungi semua artikel yang diurus Django, kandungan Markdown, satu"
 
-#: kb/models.py:312 website/templates/edit_my_suggestions.html:162 website/templates/edit_my_suggestions.html:275 website/templates/suggest_edit.html:254 website/templates/suggest_edit.html:269
+#: kb/models.py:312 website/templates/edit_my_suggestions.html:162 website/templates/edit_my_suggestions.html:275 website/templates/suggest_edit.html:269 website/templates/suggest_edit.html:284
 msgid "Draft"
 msgstr "Draf"
 
@@ -1631,13 +1631,17 @@ msgstr "Disulitkan dan disembunyikan"
 msgid "Enter MFA/OTP code"
 msgstr "Masukkan kod MFA/OTP"
 
-#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:409 website/templates/suggest.html:422 website/templates/suggest_edit.html:630 website/templates/suggest_edit.html:643
+#: kb/views/suggestions.py:1023 website/templates/_video_insert_modal.html:14 website/templates/suggest.html:432 website/templates/suggest.html:445 website/templates/suggest_edit.html:653 website/templates/suggest_edit.html:666
 msgid "Enter a supported video link."
 msgstr "Masukkan pautan video yang disokong."
 
 #: website/templates/admin_orphan_articles.html:268
 msgid "Enter an active local or AD username/email, then tick articles and click Assign selected."
 msgstr "Masukkan nama pengguna/e-mel tempatan atau AD yang aktif, kemudian tandakan artikel dan klik Tetapkan dipilih."
+
+#: website/templates/suggest.html:835 website/templates/suggest_edit.html:1056
+msgid "Enter an image size between 1 and 1200 pixels."
+msgstr "Masukkan saiz imej antara 1 hingga 1200 piksel."
 
 #: kb/admin.py:2640
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
@@ -1671,7 +1675,7 @@ msgstr "Contoh:"
 msgid "Existing authenticated sessions for this user will be invalidated."
 msgstr "Sesi disahkan yang sedia ada untuk pengguna ini akan dibatalkan."
 
-#: website/templates/suggest_edit.html:334
+#: website/templates/suggest_edit.html:349
 msgid "Explain what the user needs to fix before resubmitting this article or update."
 msgstr "Terangkan perkara yang perlu dibetulkan oleh pengguna sebelum menghantar semula artikel atau kemas kini ini."
 
@@ -1799,9 +1803,13 @@ msgstr "Kebenaran kumpulan"
 msgid "Group type"
 msgstr "Jenis kumpulan"
 
-#: kb/views/services.py:3055
+#: kb/views/services.py:3076
 msgid "Guest"
 msgstr "Tetamu"
+
+#: website/templates/_image_size_modal.html:27
+msgid "Height"
+msgstr "Ketinggian"
 
 #: kb/views/services_ai.py:286
 msgid "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
@@ -1912,27 +1920,47 @@ msgstr "Jika manifest.json tiada, pengimport akan cuba mengimport semua fail Mar
 msgid "Image assets"
 msgstr "Aset imej"
 
-#: kb/views/services.py:1234
+#: kb/views/services.py:1242
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Dimensi imej terlalu besar. Sila muat naik imej yang lebih kecil."
 
-#: kb/views/services.py:1213 website/templates/suggest.html:591 website/templates/suggest.html:685 website/templates/suggest_edit.html:812 website/templates/suggest_edit.html:912
+#: website/templates/suggest.html:858 website/templates/suggest_edit.html:1079
+msgid "Image display size reset to the original responsive size."
+msgstr "Saiz paparan imej telah ditetapkan semula kepada saiz responsif asal."
+
+#: website/templates/suggest.html:845 website/templates/suggest_edit.html:1066
+msgid "Image display size updated."
+msgstr "Saiz paparan imej telah dikemas kini."
+
+#: kb/views/services.py:1221 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Imej terlalu besar. Saiz maksimum yang dibenarkan ialah 2 MB."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:995 website/templates/suggest_edit.html:1220
 msgid "Image removed from this article draft."
 msgstr "Imej dibuang daripada draf artikel ini."
 
-#: website/templates/suggest.html:666 website/templates/suggest_edit.html:890
+#: website/templates/suggest.html:995 website/templates/suggest_edit.html:1220
 msgid "Image removed from this draft. Save the article to delete it from storage."
 msgstr "Imej dibuang daripada draf ini. Simpan artikel untuk memadamkannya daripada storan."
 
-#: website/templates/suggest.html:603 website/templates/suggest_edit.html:824
+#: website/templates/_image_size_modal.html:7
+msgid "Image size"
+msgstr "Saiz imej"
+
+#: website/templates/_image_size_modal.html:36
+msgid "Image size presets"
+msgstr "Pratetap saiz imej"
+
+#: website/templates/_image_size_modal.html:12
+msgid "Image size preview"
+msgstr "Pratonton saiz imej"
+
+#: website/templates/suggest.html:932 website/templates/suggest_edit.html:1153
 msgid "Image upload is temporarily unavailable. Please try again later."
 msgstr "Muat naik imej tidak tersedia buat sementara waktu. Sila cuba lagi kemudian."
 
-#: website/templates/suggest.html:734 website/templates/suggest_edit.html:961
+#: website/templates/suggest.html:1064 website/templates/suggest_edit.html:1291
 msgid "Image uploaded and inserted into the article."
 msgstr "Imej dimuat naik dan dimasukkan ke dalam artikel."
 
@@ -1940,7 +1968,7 @@ msgstr "Imej dimuat naik dan dimasukkan ke dalam artikel."
 msgid "Images referenced by the pending update draft."
 msgstr "Imej yang dirujuk oleh draf kemas kini yang menunggu."
 
-#: website/templates/suggest.html:208 website/templates/suggest_edit.html:390
+#: website/templates/suggest.html:223 website/templates/suggest_edit.html:405
 msgid "Images uploaded in this draft appear here. Click X to remove the image from the article and delete the uploaded file."
 msgstr "Imej yang dimuat naik dalam draf ini akan muncul di sini. Klik X untuk membuang imej daripada artikel dan memadam fail yang dimuat naik."
 
@@ -2024,7 +2052,7 @@ msgstr "Artikel yang diimport akan dimiliki oleh"
 msgid "Inactive"
 msgstr "Tidak aktif"
 
-#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:220 website/templates/suggest_edit.html:404
+#: website/templates/_video_insert_modal.html:19 website/templates/_video_insert_modal.html:7 website/templates/suggest.html:235 website/templates/suggest_edit.html:419
 msgid "Insert video link"
 msgstr "Masukkan pautan video"
 
@@ -2060,7 +2088,7 @@ msgstr "Pengguna Dalaman"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "Peranan tambahan pelulus dalaman. Boleh melihat artikel awam/dalaman, menyunting kandungan semasa artikel/kemas kini dalaman kekal menunggu, mengekalkannya sebagai menunggu selepas suntingan semakan, dan meluluskan atau menolak artikel/kemas kini dalaman yang menunggu. Secara lalai tidak boleh memadam atau menyunting artikel dalaman yang telah diterbitkan."
 
-#: kb/models.py:325 kb/views/services.py:443 website/templates/suggest.html:201 website/templates/suggest_edit.html:293
+#: kb/models.py:325 kb/views/services.py:451 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
 msgid "Internal article"
 msgstr "Artikel dalaman"
 
@@ -2076,7 +2104,7 @@ msgstr "Kebenaran artikel dalaman"
 msgid "Internal articles"
 msgstr "Artikel dalaman"
 
-#: website/templates/suggest.html:198
+#: website/templates/suggest.html:213
 msgid "Internal articles are visible only to internal users."
 msgstr "Artikel dalaman hanya boleh dilihat oleh pengguna dalaman."
 
@@ -2148,11 +2176,11 @@ msgstr "Fail zip tidak sah."
 msgid "KB"
 msgstr "Pangkalan Pengetahuan"
 
-#: website/templates/suggest_edit.html:250
+#: website/templates/suggest_edit.html:265
 msgid "Keep update pending / Save review edits"
 msgstr "Kekalkan kemas kini sebagai menunggu / Simpan suntingan semakan"
 
-#: kb/admin.py:183 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:236 website/templates/suggest_edit.html:421
+#: kb/admin.py:183 website/templates/articles.html:332 website/templates/index.html:228 website/templates/suggest.html:251 website/templates/suggest_edit.html:436
 msgid "Keywords"
 msgstr "Kata kunci"
 
@@ -2172,7 +2200,7 @@ msgstr "Peranan Repositori Pengetahuan"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "Pentadbir Repositori Pengetahuan. Boleh mencipta/menerbitkan artikel secara langsung dan disegerakkan kepada akses staf/superpengguna Django untuk pengurusan penuh Django Admin."
 
-#: kb/views/services.py:1766
+#: kb/views/services.py:1777
 msgid "Knowledge Repository article."
 msgstr "Artikel Repositori Pengetahuan."
 
@@ -2260,11 +2288,15 @@ msgstr "Suka"
 msgid "Likes"
 msgstr "Suka"
 
-#: kb/views/services.py:3064
+#: website/templates/suggest.html:744 website/templates/suggest_edit.html:965
+msgid "Loading dimensions..."
+msgstr "Memuatkan dimensi..."
+
+#: kb/views/services.py:3085
 msgid "Local Admin"
 msgstr "Pentadbir Tempatan"
 
-#: kb/views/services.py:3062
+#: kb/views/services.py:3083
 msgid "Local User"
 msgstr "Pengguna Tempatan"
 
@@ -2292,7 +2324,7 @@ msgstr "Akaun tempatan memerlukan pengesahan aplikasi pengesah selepas log masuk
 msgid "Local admin"
 msgstr "Pentadbir tempatan"
 
-#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3114
+#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3135
 msgid "Local user"
 msgstr "Pengguna tempatan"
 
@@ -2400,7 +2432,7 @@ msgstr "MFA telah ditetapkan semula untuk %(username)s. Pengguna mesti menyediak
 msgid "MFA/OTP code"
 msgstr "Kod MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:810
+#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:818
 msgid "MFA/OTP code is incorrect."
 msgstr "Kod MFA/OTP tidak betul."
 
@@ -2468,7 +2500,7 @@ msgstr "Menandakan artikel %(title)s sebagai menunggu gagal daripada Django Admi
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Ditandakan sebagai gagal semakan oleh pentadbir. Sila semak artikel ini dan hantar semula untuk kelulusan."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
+#: website/templates/suggest.html:232 website/templates/suggest_edit.html:415
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Maksimum %(limit)s imej bagi setiap artikel."
 
@@ -2780,7 +2812,7 @@ msgstr "Kata laluan lama tidak betul."
 msgid "Only .zip import files are allowed."
 msgstr "Hanya fail import .zip dibenarkan."
 
-#: kb/views/services.py:1210 kb/views/services.py:1231 website/templates/suggest.html:677 website/templates/suggest.html:746 website/templates/suggest.html:771 website/templates/suggest_edit.html:1001 website/templates/suggest_edit.html:904 website/templates/suggest_edit.html:973
+#: kb/views/services.py:1218 kb/views/services.py:1239 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Hanya imej PNG, JPG, GIF atau WEBP dibenarkan."
 
@@ -2843,6 +2875,10 @@ msgstr "Alamat IPv4/IPv6 atau julat CIDR pilihan yang dipisahkan dengan koma, ru
 #: kb/admin.py:221
 msgid "Original name"
 msgstr "Nama asal"
+
+#: website/templates/suggest.html:673 website/templates/suggest.html:731 website/templates/suggest_edit.html:894 website/templates/suggest_edit.html:952
+msgid "Original size"
+msgstr "Saiz asal"
 
 #: kb/models.py:434
 msgid "Original workflow status saved so the article can be restored from the deletion queue."
@@ -2908,31 +2944,31 @@ msgstr "Log masuk kata laluan gagal"
 msgid "Password login success"
 msgstr "Log masuk kata laluan berjaya"
 
-#: kb/views/services.py:3152
+#: kb/views/services.py:3173
 msgid "Password must be at least 12 characters long."
 msgstr "Kata laluan mestilah sekurang-kurangnya 12 aksara."
 
-#: kb/views/services.py:3156
+#: kb/views/services.py:3177
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 huruf kecil."
 
-#: kb/views/services.py:3158
+#: kb/views/services.py:3179
 msgid "Password must include at least 1 number."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 nombor."
 
-#: kb/views/services.py:3160
+#: kb/views/services.py:3181
 msgid "Password must include at least 1 special character."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 aksara khas."
 
-#: kb/views/services.py:3154
+#: kb/views/services.py:3175
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Kata laluan mesti mengandungi sekurang-kurangnya 1 huruf besar."
 
-#: kb/views/services.py:3169
+#: kb/views/services.py:3190
 msgid "Password must not contain the name part of your email address."
 msgstr "Kata laluan tidak boleh mengandungi bahagian nama alamat e-mel anda."
 
-#: kb/views/services.py:3167
+#: kb/views/services.py:3188
 msgid "Password must not contain your username."
 msgstr "Kata laluan tidak boleh mengandungi nama pengguna anda."
 
@@ -2972,7 +3008,7 @@ msgstr "Kata laluan sepadan."
 msgid "Paste a YouTube or Vimeo link. Direct video files and links that may require external sign-in are not supported."
 msgstr "Tampal pautan YouTube atau Vimeo. Fail video langsung dan pautan yang mungkin memerlukan log masuk luaran tidak disokong."
 
-#: website/templates/suggest.html:207 website/templates/suggest_edit.html:388
+#: website/templates/suggest.html:222 website/templates/suggest_edit.html:403
 msgid "Pasted images"
 msgstr "Imej yang ditampal"
 
@@ -2980,7 +3016,7 @@ msgstr "Imej yang ditampal"
 msgid "Path"
 msgstr "Laluan"
 
-#: kb/models.py:313 website/templates/suggest_edit.html:255
+#: kb/models.py:313 website/templates/suggest_edit.html:270
 msgid "Pending"
 msgstr "Menunggu"
 
@@ -2988,7 +3024,7 @@ msgstr "Menunggu"
 msgid "Pending MFA created"
 msgstr "MFA tertunda dibuat"
 
-#: website/templates/admin_pending_articles.html:128 website/templates/edit_my_suggestions.html:160 website/templates/edit_my_suggestions.html:271 website/templates/suggest_edit.html:271
+#: website/templates/admin_pending_articles.html:128 website/templates/edit_my_suggestions.html:160 website/templates/edit_my_suggestions.html:271 website/templates/suggest_edit.html:286
 msgid "Pending approval"
 msgstr "Menunggu kelulusan"
 
@@ -3000,11 +3036,11 @@ msgstr "Halaman artikel tertunda"
 msgid "Pending deletion approval"
 msgstr "Kelulusan pemadaman menunggu"
 
-#: kb/models.py:314 website/templates/edit_my_suggestions.html:161 website/templates/edit_my_suggestions.html:273 website/templates/suggest_edit.html:273
+#: kb/models.py:314 website/templates/edit_my_suggestions.html:161 website/templates/edit_my_suggestions.html:273 website/templates/suggest_edit.html:288
 msgid "Pending failed"
 msgstr "Kelulusan gagal"
 
-#: website/templates/suggest_edit.html:333 website/templates/suggest_edit.html:346
+#: website/templates/suggest_edit.html:348 website/templates/suggest_edit.html:361
 msgid "Pending failed comments"
 msgstr "Komen gagal menunggu"
 
@@ -3012,7 +3048,7 @@ msgstr "Komen gagal menunggu"
 msgid "Pending failed comments history"
 msgstr "Sejarah komen kegagalan semakan"
 
-#: kb/models.py:320 website/templates/admin_pending_articles.html:125 website/templates/edit_my_suggestions.html:163 website/templates/edit_my_suggestions.html:263 website/templates/suggest_edit.html:263
+#: kb/models.py:320 website/templates/admin_pending_articles.html:125 website/templates/edit_my_suggestions.html:163 website/templates/edit_my_suggestions.html:263 website/templates/suggest_edit.html:278
 msgid "Pending update"
 msgstr "Kemas kini tertunda"
 
@@ -3036,7 +3072,7 @@ msgstr "Kemas kini tertunda - semakan"
 msgid "Pending update title"
 msgstr "Kemas kini tertunda - tajuk"
 
-#: website/templates/suggest_edit.html:434
+#: website/templates/suggest_edit.html:450
 msgid "Pending update — This edit is waiting for admin approval. The current published version is still visible to users."
 msgstr "Kemas kini menunggu kelulusan — Suntingan ini sedang menunggu kelulusan pentadbir. Versi semasa yang diterbitkan masih dapat dilihat oleh pengguna."
 
@@ -3168,7 +3204,7 @@ msgstr "Bahasa pilihan"
 msgid "Preferred language for the main wiki user interface."
 msgstr "Bahasa pilihan untuk antara muka pengguna wiki utama."
 
-#: website/templates/suggest.html:228 website/templates/suggest_edit.html:413
+#: website/templates/suggest.html:243 website/templates/suggest_edit.html:428
 msgid "Preview"
 msgstr "Pratonton"
 
@@ -3204,7 +3240,7 @@ msgstr "E-mel profil dikemas kini"
 msgid "Profile password changed"
 msgstr "Kata laluan profil ditukar"
 
-#: kb/models.py:324 kb/views/services.py:444
+#: kb/models.py:324 kb/views/services.py:452
 msgid "Public article"
 msgstr "Artikel awam"
 
@@ -3212,11 +3248,11 @@ msgstr "Artikel awam"
 msgid "Public articles are visible to normal wiki users. Internal articles are visible only to users with internal article access."
 msgstr "Artikel awam boleh dilihat oleh pengguna wiki biasa. Artikel dalaman hanya boleh dilihat oleh pengguna yang mempunyai akses artikel dalaman."
 
-#: website/templates/suggest.html:182
+#: website/templates/suggest.html:197
 msgid "Publish article"
 msgstr "Terbitkan artikel"
 
-#: kb/models.py:315 website/templates/edit_my_suggestions.html:159 website/templates/edit_my_suggestions.html:269 website/templates/suggest_edit.html:275
+#: kb/models.py:315 website/templates/edit_my_suggestions.html:159 website/templates/edit_my_suggestions.html:269 website/templates/suggest_edit.html:290
 msgid "Published"
 msgstr "Diterbitkan"
 
@@ -3316,11 +3352,11 @@ msgstr "Pengguna Biasa ialah peranan pembaca awam sandaran. Peranan dalaman iala
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Peranan Pengguna Biasa ditetapkan kepada %(count)d pengguna yang dipilih."
 
-#: website/templates/suggest_edit.html:256
+#: website/templates/suggest_edit.html:271
 msgid "Reject / Pending failed"
 msgstr "Tolak / Menunggu gagal"
 
-#: website/templates/suggest_edit.html:252
+#: website/templates/suggest_edit.html:267
 msgid "Reject update"
 msgstr "Tolak kemas kini"
 
@@ -3328,7 +3364,7 @@ msgstr "Tolak kemas kini"
 msgid "Related articles"
 msgstr "Artikel berkaitan"
 
-#: website/templates/suggest.html:638 website/templates/suggest.html:639 website/templates/suggest_edit.html:862 website/templates/suggest_edit.html:863
+#: website/templates/suggest.html:967 website/templates/suggest.html:968 website/templates/suggest_edit.html:1192 website/templates/suggest_edit.html:1193
 msgid "Remove image from article"
 msgstr "Buang imej daripada artikel"
 
@@ -3420,6 +3456,10 @@ msgstr "Tetapkan semula peranti MFA yang dipilih"
 msgid "Reset this user's MFA"
 msgstr "Tetapkan semula MFA pengguna ini"
 
+#: website/templates/_image_size_modal.html:44
+msgid "Reset to original"
+msgstr "Tetapkan semula kepada saiz asal"
+
 #: kb/admin.py:1383
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Menetapkan semula pengesah pengguna ini dan memerlukan persediaan QR baharu. Kunci pengesah baharu adalah peribadi dan tidak dipaparkan kepada pentadbir."
@@ -3448,7 +3488,7 @@ msgstr "Kembali ke halaman sebelumnya dan gunakan kawalan yang tersedia."
 msgid "Return to the previous page or contact an administrator if access is required."
 msgstr "Kembali ke halaman sebelumnya atau hubungi pentadbir jika akses diperlukan."
 
-#: website/templates/suggest_edit.html:301 website/templates/suggest_edit.html:306 website/templates/suggest_edit.html:310 website/templates/suggest_edit.html:313 website/templates/suggest_edit.html:317
+#: website/templates/suggest_edit.html:316 website/templates/suggest_edit.html:321 website/templates/suggest_edit.html:325 website/templates/suggest_edit.html:328 website/templates/suggest_edit.html:332
 msgid "Revert to last published version"
 msgstr "Kembali kepada versi terakhir yang diterbitkan"
 
@@ -3464,7 +3504,7 @@ msgstr "Semak"
 msgid "Review before deleting"
 msgstr "Semak sebelum memadam"
 
-#: website/templates/suggest_edit.html:364
+#: website/templates/suggest_edit.html:379
 msgid "Review comments history"
 msgstr "Sejarah komen semakan"
 
@@ -3496,7 +3536,7 @@ msgstr "Semak artikel dalaman dan kemas kini dalaman yang menunggu kelulusan."
 msgid "Review internal articles waiting for approval."
 msgstr "Semak artikel dalaman yang menunggu kelulusan."
 
-#: website/templates/suggest_edit.html:235
+#: website/templates/suggest_edit.html:250
 msgid "Review mode: you can edit this pending article or update, then approve or reject it. Visibility cannot be changed here."
 msgstr "Mod semakan: anda boleh menyunting artikel atau kemas kini yang menunggu ini, kemudian meluluskan atau menolaknya. Keterlihatan tidak boleh diubah di sini."
 
@@ -3512,11 +3552,11 @@ msgstr "Semak artikel yang dihantar dan kemas kini yang menunggu dalam skop arti
 msgid "Review user-submitted general articles waiting for approval."
 msgstr "Semak artikel umum yang dihantar pengguna dan menunggu kelulusan."
 
-#: website/templates/suggest_edit.html:303
+#: website/templates/suggest_edit.html:318
 msgid "Save"
 msgstr "Simpan"
 
-#: website/templates/suggest.html:180 website/templates/suggest_edit.html:322
+#: website/templates/suggest.html:195 website/templates/suggest_edit.html:337
 msgid "Save draft"
 msgstr "Simpan draf"
 
@@ -3528,19 +3568,19 @@ msgstr "Simpan e-mel"
 msgid "Save language"
 msgstr "Simpan bahasa"
 
-#: website/templates/suggest_edit.html:303
+#: website/templates/suggest_edit.html:318
 msgid "Save review action"
 msgstr "Simpan tindakan semakan"
 
-#: website/templates/suggest_edit.html:307 website/templates/suggest_edit.html:311 website/templates/suggest_edit.html:314 website/templates/suggest_edit.html:318
+#: website/templates/suggest_edit.html:322 website/templates/suggest_edit.html:326 website/templates/suggest_edit.html:329 website/templates/suggest_edit.html:333
 msgid "Save update progress"
 msgstr "Simpan kemajuan kemas kini"
 
-#: website/templates/suggest_edit.html:267
+#: website/templates/suggest_edit.html:282
 msgid "Saved update draft"
 msgstr "Draf kemas kini disimpan"
 
-#: website/templates/suggest_edit.html:434
+#: website/templates/suggest_edit.html:450
 msgid "Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval."
 msgstr "Draf kemas kini disimpan — Anda sedang menyunting perubahan yang disimpan untuk artikel yang telah diterbitkan ini. Versi semasa yang diterbitkan masih dapat dilihat sehingga anda menghantar kemas kini ini untuk kelulusan."
 
@@ -3656,6 +3696,10 @@ msgstr "Tetapkan pengguna dipilih sebagai Pengguna Dinyahaktifkan"
 msgid "Set selected users as Regular User"
 msgstr "Tetapkan pengguna dipilih sebagai Pengguna Biasa"
 
+#: website/templates/suggest.html:764 website/templates/suggest_edit.html:985
+msgid "Set size"
+msgstr "Tetapkan saiz"
+
 #: kb/admin.py:774
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Tetapkan peranan biasa pengguna daripada bahagian Kumpulan. Kumpulan tersuai bukan peranan boleh digunakan kemudian untuk perkara seperti pemberitahuan."
@@ -3672,7 +3716,7 @@ msgstr "Sediakan MFA sebelum mengakses laman pentadbir."
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Sediakan MFA sebelum menukar butiran akaun sensitif."
 
-#: kb/views/services.py:757
+#: kb/views/services.py:765
 msgid "Set up MFA before deleting a published article."
 msgstr "Sediakan MFA sebelum memadam artikel yang diterbitkan."
 
@@ -3828,7 +3872,7 @@ msgstr "Susunan peringkat"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Mula menaip tajuk atau isi artikel untuk melihat kata kunci sedia ada yang sepadan."
 
-#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:246
+#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "Status artikel"
 
@@ -3848,15 +3892,15 @@ msgstr "Umur minimum pembersihan muat naik tidak digunakan (minit)"
 msgid "Submit article"
 msgstr "Hantar artikel"
 
-#: website/templates/suggest.html:184 website/templates/suggest_edit.html:323
+#: website/templates/suggest.html:199 website/templates/suggest_edit.html:338
 msgid "Submit for approval"
 msgstr "Hantar untuk kelulusan"
 
-#: website/templates/suggest_edit.html:308
+#: website/templates/suggest_edit.html:323
 msgid "Submit update again"
 msgstr "Hantar kemas kini semula"
 
-#: website/templates/suggest_edit.html:315 website/templates/suggest_edit.html:319
+#: website/templates/suggest_edit.html:330 website/templates/suggest_edit.html:334
 msgid "Submit update for approval"
 msgstr "Hantar kemas kini untuk kelulusan"
 
@@ -3944,15 +3988,27 @@ msgstr "Artikel tidak dapat ditetapkan dengan selamat. Tiada penetapan digunakan
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Kotak semak di bawah ialah pengecualian khas bagi setiap pengguna untuk akses artikel sahaja. Ia berguna apabila seorang pengguna memerlukan sedikit lebih akses artikel daripada kumpulannya tanpa mencipta kumpulan baharu. Akses Django Admin diberikan hanya melalui kumpulan Pengguna Pentadbir/status superpengguna."
 
-#: website/templates/suggest.html:605 website/templates/suggest_edit.html:826
+#: website/templates/_image_size_modal.html:35
+msgid "The image aspect ratio is preserved automatically. The maximum display size is 1200 pixels in either direction."
+msgstr "Nisbah aspek imej dikekalkan secara automatik. Saiz paparan maksimum ialah 1200 piksel bagi setiap dimensi."
+
+#: website/templates/suggest.html:934 website/templates/suggest_edit.html:1155
 msgid "The image could not be uploaded. Please try again."
 msgstr "Imej tidak dapat dimuat naik. Sila cuba lagi."
 
-#: website/templates/suggest.html:737 website/templates/suggest_edit.html:964
+#: website/templates/suggest.html:717 website/templates/suggest_edit.html:938
+msgid "The image dimensions are not available yet. Please try again in a moment."
+msgstr "Dimensi imej belum tersedia. Sila cuba lagi sebentar lagi."
+
+#: website/templates/suggest.html:839 website/templates/suggest_edit.html:1060
+msgid "The image reference could not be found in the article content."
+msgstr "Rujukan imej tidak dapat ditemui dalam kandungan artikel."
+
+#: website/templates/suggest.html:1067 website/templates/suggest_edit.html:1294
 msgid "The image upload could not connect to the server. Please check your connection and try again."
 msgstr "Muat naik imej tidak dapat bersambung ke pelayan. Semak sambungan anda dan cuba lagi."
 
-#: website/templates/suggest.html:597 website/templates/suggest_edit.html:818
+#: website/templates/suggest.html:926 website/templates/suggest_edit.html:1147
 msgid "The image upload was not authorised. Refresh the page and try again."
 msgstr "Muat naik imej tidak dibenarkan. Muat semula halaman dan cuba lagi."
 
@@ -3996,11 +4052,11 @@ msgstr "Dasar progresif yang sama digunakan untuk kegagalan log masuk kata lalua
 msgid "The selected articles are no longer orphan articles or no longer exist. Please refresh and try again."
 msgstr "Artikel yang dipilih bukan lagi artikel yatim atau tidak lagi wujud. Sila muat semula dan cuba lagi."
 
-#: website/templates/suggest.html:600 website/templates/suggest_edit.html:821
+#: website/templates/suggest.html:929 website/templates/suggest_edit.html:1150
 msgid "The selected file is not a valid supported image."
 msgstr "Fail yang dipilih bukan imej sah yang disokong."
 
-#: website/templates/suggest.html:681 website/templates/suggest_edit.html:908
+#: website/templates/suggest.html:1011 website/templates/suggest_edit.html:1238
 msgid "The selected image is empty. Please choose a different image."
 msgstr "Imej yang dipilih kosong. Sila pilih imej lain."
 
@@ -4024,7 +4080,7 @@ msgstr "Pelayan tidak dapat melengkapkan permintaan anda."
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "Fail atau permintaan yang dihantar melebihi had yang dibenarkan."
 
-#: kb/views/services.py:1222
+#: kb/views/services.py:1230
 msgid "The uploaded file is not a valid image."
 msgstr "Fail yang dimuat naik bukan imej yang sah."
 
@@ -4032,7 +4088,7 @@ msgstr "Fail yang dimuat naik bukan imej yang sah."
 msgid "There are no pending article reviews right now."
 msgstr "Tiada semakan artikel tertunda buat masa ini."
 
-#: website/templates/suggest_edit.html:335
+#: website/templates/suggest_edit.html:350
 msgid "These comments are shown to the article owner when the article or update is marked as Pending failed."
 msgstr "Komen ini ditunjukkan kepada pemilik artikel apabila artikel atau kemas kini ditandakan sebagai Gagal kelulusan."
 
@@ -4048,15 +4104,15 @@ msgstr "Peranti MFA ini tidak dapat disahkan kerana rahsianya tidak dapat dibaca
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Peranti MFA ini tidak dapat disahkan kerana rahsianya tidak dapat dibaca. Minta pentadbir lain menetapkan semula MFA untuk akaun ini."
 
-#: kb/views/services.py:2456
+#: kb/views/services.py:2467
 msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
 msgstr "Pautan SharePoint atau OneDrive ini tidak menyediakan video yang boleh dimainkan secara terus tanpa log masuk. Gunakan pautan video terus yang boleh dilihat tanpa log masuk."
 
-#: kb/views/services.py:2461
+#: kb/views/services.py:2472
 msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
 msgstr "Video SharePoint atau OneDrive ini tidak boleh diakses tanpa log masuk. Semak kebenaran perkongsiannya dan gunakan pautan yang boleh dilihat tanpa log masuk."
 
-#: kb/views/services.py:2451
+#: kb/views/services.py:2462
 msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
 msgstr "Video SharePoint atau OneDrive ini memerlukan log masuk luaran dan tidak boleh dibenamkan. Gunakan pautan video yang boleh dilihat tanpa log masuk."
 
@@ -4068,15 +4124,15 @@ msgstr "Tindakan ini tidak boleh dikembalikan."
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "Artikel ini juga mempunyai kemas kini yang menunggu, tetapi masih dianggap sebagai artikel diterbitkan."
 
-#: kb/views/services.py:1319
+#: kb/views/services.py:1330
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "Artikel ini mempunyai %(count)s imej, tetapi maksimum yang dibenarkan ialah %(limit)s imej. Sila buang beberapa imej sebelum menyimpan."
 
-#: kb/views/services.py:1318
+#: kb/views/services.py:1329
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Artikel ini telah mencapai had muat naik sebanyak %(limit)s imej."
 
-#: website/templates/suggest.html:689 website/templates/suggest_edit.html:916
+#: website/templates/suggest.html:1019 website/templates/suggest_edit.html:1246
 msgid "This article has reached the image upload limit. Please remove an image before uploading another one."
 msgstr "Artikel ini telah mencapai had muat naik imej. Sila buang satu imej sebelum memuat naik imej lain."
 
@@ -4092,7 +4148,7 @@ msgstr "Ini mengosongkan sekatan sementara, kaunter percubaan gagal dan sejarah 
 msgid "This email address is managed by your domain account and cannot be changed here."
 msgstr "Alamat e-mel ini diuruskan oleh akaun domain anda dan tidak boleh ditukar di sini."
 
-#: website/templates/suggest.html:700 website/templates/suggest_edit.html:927
+#: website/templates/suggest.html:1030 website/templates/suggest_edit.html:1257
 msgid "This image is already uploaded in this draft. Use the X preview button to remove it first."
 msgstr "Imej ini sudah dimuat naik dalam draf ini. Gunakan butang pratonton X untuk membuangnya dahulu."
 
@@ -4120,7 +4176,7 @@ msgstr "Alat ini mengutamakan format eksport sistem:"
 msgid "This type of request is not allowed for the selected page."
 msgstr "Jenis permintaan ini tidak dibenarkan untuk halaman yang dipilih."
 
-#: website/templates/suggest.html:470 website/templates/suggest_edit.html:691
+#: website/templates/suggest.html:493 website/templates/suggest_edit.html:714
 msgid "This video link could not be validated. Please try another link."
 msgstr "Pautan video ini tidak dapat disahkan. Cuba pautan lain."
 
@@ -4156,11 +4212,11 @@ msgstr "Terlalu banyak soalan OpenKB AI. Sila tunggu sebelum mencuba lagi."
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Terlalu banyak percubaan log masuk gagal. Sila cuba lagi dalam %(duration)s."
 
-#: website/templates/suggest.html:594 website/templates/suggest_edit.html:815
+#: website/templates/suggest.html:923 website/templates/suggest_edit.html:1144
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Terlalu banyak percubaan muat naik imej. Tunggu sebentar dan cuba lagi."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:782
+#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:790
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Terlalu banyak kod MFA yang salah. Sila cuba lagi dalam %(duration)s."
 
@@ -4200,11 +4256,11 @@ msgstr "Jenis"
 msgid "Type username or email"
 msgstr "Taip nama pengguna atau e-mel"
 
-#: website/templates/suggest.html:436 website/templates/suggest_edit.html:657
+#: website/templates/suggest.html:459 website/templates/suggest_edit.html:680
 msgid "Unable to validate this video link. Refresh the page and try again."
 msgstr "Tidak dapat mengesahkan pautan video ini. Muat semula halaman dan cuba lagi."
 
-#: website/templates/suggest.html:483 website/templates/suggest_edit.html:704
+#: website/templates/suggest.html:506 website/templates/suggest_edit.html:727
 msgid "Unable to verify that this video is accessible without signing in. Please try again."
 msgstr "Tidak dapat mengesahkan bahawa video ini boleh diakses tanpa log masuk. Sila cuba lagi."
 
@@ -4244,11 +4300,11 @@ msgstr "Status kelulusan kemas kini"
 msgid "Update password"
 msgstr "Kemas kini kata laluan"
 
-#: kb/models.py:321 website/templates/edit_my_suggestions.html:164 website/templates/edit_my_suggestions.html:266 website/templates/suggest_edit.html:265
+#: kb/models.py:321 website/templates/edit_my_suggestions.html:164 website/templates/edit_my_suggestions.html:266 website/templates/suggest_edit.html:280
 msgid "Update pending failed"
 msgstr "Kemas kini gagal kelulusan"
 
-#: website/templates/suggest_edit.html:434
+#: website/templates/suggest_edit.html:450
 msgid "Update pending failed — Please review the admin comments, update your changes, and submit again."
 msgstr "Kemas kini tidak diluluskan — Sila semak komen pentadbir, kemas kini perubahan anda dan hantar semula."
 
@@ -4280,7 +4336,7 @@ msgstr "Alamat IP muat naik"
 msgid "Upload a zip exported from this system, or a zip containing Markdown files and an optional"
 msgstr "Muat naik zip yang dieksport daripada sistem ini, atau zip yang mengandungi fail Markdown dan pilihan"
 
-#: website/templates/suggest.html:219 website/templates/suggest_edit.html:403
+#: website/templates/suggest.html:234 website/templates/suggest_edit.html:418
 msgid "Upload image"
 msgstr "Muat naik imej"
 
@@ -4404,7 +4460,7 @@ msgstr "Versi berjaya dialih keluar."
 msgid "Video link"
 msgstr "Pautan video"
 
-#: website/templates/suggest.html:480 website/templates/suggest_edit.html:701
+#: website/templates/suggest.html:503 website/templates/suggest_edit.html:724
 msgid "Video link inserted into the article."
 msgstr "Pautan video telah dimasukkan ke dalam artikel."
 
@@ -4424,11 +4480,11 @@ msgstr "Bilangan paparan"
 msgid "View internal articles"
 msgstr "Lihat artikel dalaman"
 
-#: website/templates/admin_deletion_queue.html:120 website/templates/admin_deletion_queue_confirm.html:37 website/templates/admin_pending_articles.html:112 website/templates/admin_pending_articles.html:62 website/templates/edit_my_suggestions.html:146 website/templates/edit_my_suggestions.html:229 website/templates/suggest.html:192 website/templates/suggest_edit.html:284
+#: website/templates/admin_deletion_queue.html:120 website/templates/admin_deletion_queue_confirm.html:37 website/templates/admin_pending_articles.html:112 website/templates/admin_pending_articles.html:62 website/templates/edit_my_suggestions.html:146 website/templates/edit_my_suggestions.html:229 website/templates/suggest.html:207 website/templates/suggest_edit.html:299
 msgid "Visibility"
 msgstr "Keterlihatan"
 
-#: website/templates/suggest_edit.html:290
+#: website/templates/suggest_edit.html:305
 msgid "Visibility can be changed only before the article is published."
 msgstr "Keterlihatan hanya boleh diubah sebelum artikel diterbitkan."
 
@@ -4451,6 +4507,10 @@ msgstr "Selamat datang kembali, %(name)s."
 #: kb/views/mfa.py:359
 msgid "Welcome back."
 msgstr "Selamat datang kembali."
+
+#: website/templates/_image_size_modal.html:18
+msgid "Width"
+msgstr "Lebar"
 
 #: kb/admin.py:200
 msgid "Wiki path"
@@ -4488,7 +4548,7 @@ msgstr "Anda akan menetapkan semula MFA untuk pengguna <strong>%(username)s</str
 msgid "You are about to reset password/MFA lockout counters for user <strong>%(username)s</strong>."
 msgstr "Anda akan menetapkan semula kaunter sekatan kata laluan/MFA bagi pengguna <strong>%(username)s</strong>."
 
-#: website/templates/suggest.html:217 website/templates/suggest_edit.html:400
+#: website/templates/suggest.html:232 website/templates/suggest_edit.html:415
 msgid "You can paste small PNG/JPG/GIF/WEBP images directly into the editor or upload one using the button. Maximum 2 MB each."
 msgstr "Anda boleh menampal imej kecil PNG/JPG/GIF/WEBP terus ke editor atau memuat naik satu menggunakan butang. Maksimum 2 MB setiap satu."
 
@@ -4576,7 +4636,7 @@ msgstr "Sesi pentadbir anda tamat selepas tidak aktif. Sahkan MFA sekali lagi un
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Akaun anda sendiri telah ditetapkan kepada Pengguna Dinyahaktifkan. Pada permintaan seterusnya, anda akan dialihkan ke halaman akaun dinyahaktifkan."
 
-#: website/templates/suggest.html:588 website/templates/suggest_edit.html:809
+#: website/templates/suggest.html:917 website/templates/suggest_edit.html:1138
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Sesi anda telah tamat tempoh. Sila log masuk semula sebelum memuat naik imej."
 
