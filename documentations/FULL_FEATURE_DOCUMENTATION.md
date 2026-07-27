@@ -632,7 +632,7 @@ The setting is validated in admin and also clamped at runtime for safety.
 
 ### 11.7 View Counts
 
-Each article stores a `view_count`. Views are tracked per user session to avoid simply refreshing the same article repeatedly to increase the count. View access is still checked against the article visibility.
+Each article stores a cumulative `view_count`. A published article contributes at most one counted view for each authenticated user on each local calendar day. Refreshing, signing out and back in, changing browser, or changing device on the same day does not increase the count again. The same user can contribute one new view when visiting on a later day. Draft, pending, failed, and deletion-queued previews are not counted, and normal article visibility checks still apply.
 
 ### 11.8 Voting and Dislike Count Visibility
 

@@ -127,7 +127,7 @@ def article_detail(request, article_id):
     if not user_can_view_article_detail(request.user, article):
         raise Http404("Article not found")
 
-    record_article_session_view(request, article)
+    record_article_daily_user_view(request, article)
 
     raw_markdown = build_article_markdown(article)
     display_markdown = prepare_article_display_markdown(raw_markdown, article.title, article)

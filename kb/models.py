@@ -417,10 +417,7 @@ class SuggestedArticle(models.Model):
         blank=True,
         verbose_name=_("Update reviewed at"),
     )
-    view_count = models.PositiveIntegerField(
-        default=0,
-        help_text=_("Number of unique session views for this article."),
-    )
+    view_count = models.PositiveIntegerField(default=0)
     filename = models.CharField(max_length=255, unique=True, blank=True)
     raw_path = models.CharField(max_length=500, blank=True)
     wiki_path = models.CharField(max_length=500, blank=True)
@@ -698,6 +695,52 @@ class SuggestedArticle(models.Model):
     @property
     def total_vote_count(self):
         return self.votes.count()
+
+
+class ArticleDailyView(models.Model):
+    """One counted article view per authenticated user per local calendar day.
+
+    The user relation intentionally has no database constraint and uses
+    ``DO_NOTHING`` so historical view statistics remain available if an account
+    is later removed. The application only creates rows for active, currently
+    authenticated users.
+    """
+
+    article = models.ForeignKey(
+        SuggestedArticle,
+        on_delete=models.CASCADE,
+        related_name="daily_views",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
+        related_name="daily_article_views",
+    )
+    view_date = models.DateField(default=timezone.localdate, db_index=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("article", "user", "view_date"),
+                name="kb_art_daily_user_date_uniq",
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=("article", "view_date"),
+                name="kb_artview_article_date_idx",
+            ),
+            models.Index(
+                fields=("user", "view_date"),
+                name="kb_artview_user_date_idx",
+            ),
+        ]
+        ordering = ("-view_date", "-created_at")
+
+    def __str__(self):
+        return f"{self.article_id}:{self.user_id}:{self.view_date.isoformat()}"
 
 
 class ArticleDeletionRequest(models.Model):
