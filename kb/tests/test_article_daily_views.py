@@ -1,62 +1,62 @@
-from datetime import date
-from unittest.mock import patch
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase
 
-from kb.models import ActivityLog, ArticleDailyView, SuggestedArticle
-from kb.views.services import record_article_daily_user_view
+from kb.models import ActivityLog, SuggestedArticle
+from kb.views.services import record_article_session_view
 
 
-class ArticleDailyViewTests(TestCase):
+class ArticleSessionViewTests(TestCase):
     def setUp(self):
         User = get_user_model()
         self.owner = User.objects.create_user(
-            username="daily-view-owner",
-            email="daily-view-owner@example.invalid",
+            username="session-view-owner",
+            email="session-view-owner@example.invalid",
             password="safe-test-password",
         )
         self.viewer = User.objects.create_user(
-            username="daily-view-user",
-            email="daily-view-user@example.invalid",
-            password="safe-test-password",
-        )
-        self.other_viewer = User.objects.create_user(
-            username="daily-view-other",
-            email="daily-view-other@example.invalid",
+            username="session-view-user",
+            email="session-view-user@example.invalid",
             password="safe-test-password",
         )
         self.article = SuggestedArticle.objects.create(
             owner=self.owner,
-            title="Daily unique view article",
+            title="Session view article",
             body="Published article body.",
-            filename="daily-unique-view-article.md",
+            filename="session-view-article.md",
             status=SuggestedArticle.Status.PUBLISHED,
             visibility=SuggestedArticle.Visibility.PUBLIC,
         )
         self.factory = RequestFactory()
 
-    def _request(self, user, *, method="GET"):
+    def _request(self, user, *, method="GET", shared_session=None):
         request = (
             self.factory.get(f"/articles/{self.article.pk}/")
             if method == "GET"
             else self.factory.post(f"/articles/{self.article.pk}/")
         )
         request.user = user
+        if shared_session is None:
+            SessionMiddleware(lambda _request: None).process_request(request)
+        else:
+            request.session = shared_session
         return request
 
-    @patch("kb.views.services.timezone.localdate", return_value=date(2026, 7, 27))
-    def test_same_user_is_counted_only_once_on_same_day(self, _localdate):
-        request = self._request(self.viewer)
+    def test_same_browser_session_counts_article_only_once(self):
+        first_request = self._request(self.viewer)
 
-        self.assertTrue(record_article_daily_user_view(request, self.article))
-        self.assertFalse(record_article_daily_user_view(request, self.article))
-        self.assertFalse(record_article_daily_user_view(self._request(self.viewer), self.article))
+        self.assertTrue(record_article_session_view(first_request, self.article))
+        self.assertFalse(record_article_session_view(first_request, self.article))
+        self.assertFalse(
+            record_article_session_view(
+                self._request(self.viewer, shared_session=first_request.session),
+                self.article,
+            )
+        )
 
         self.article.refresh_from_db()
         self.assertEqual(self.article.view_count, 1)
-        self.assertEqual(ArticleDailyView.objects.count(), 1)
         self.assertEqual(
             ActivityLog.objects.filter(
                 event_type=ActivityLog.EventType.ARTICLE_VIEWED,
@@ -66,44 +66,46 @@ class ArticleDailyViewTests(TestCase):
             1,
         )
 
-    def test_same_user_can_add_one_new_view_on_later_day(self):
-        with patch("kb.views.services.timezone.localdate", return_value=date(2026, 7, 27)):
-            self.assertTrue(
-                record_article_daily_user_view(self._request(self.viewer), self.article)
-            )
+    def test_new_browser_or_login_session_can_add_another_view(self):
+        first_browser = self._request(self.viewer)
+        second_browser = self._request(self.viewer)
 
-        with patch("kb.views.services.timezone.localdate", return_value=date(2026, 7, 28)):
-            self.assertTrue(
-                record_article_daily_user_view(self._request(self.viewer), self.article)
-            )
-            self.assertFalse(
-                record_article_daily_user_view(self._request(self.viewer), self.article)
-            )
+        self.assertTrue(record_article_session_view(first_browser, self.article))
+        self.assertTrue(record_article_session_view(second_browser, self.article))
+        self.assertFalse(record_article_session_view(second_browser, self.article))
 
         self.article.refresh_from_db()
         self.assertEqual(self.article.view_count, 2)
-        self.assertEqual(ArticleDailyView.objects.count(), 2)
 
-    @patch("kb.views.services.timezone.localdate", return_value=date(2026, 7, 27))
-    def test_different_users_each_add_one_view_on_same_day(self, _localdate):
-        self.assertTrue(
-            record_article_daily_user_view(self._request(self.viewer), self.article)
+    def test_each_article_is_tracked_separately_in_the_session(self):
+        other_article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Second session view article",
+            body="Another published article body.",
+            filename="second-session-view-article.md",
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
         )
-        self.assertTrue(
-            record_article_daily_user_view(self._request(self.other_viewer), self.article)
-        )
+        request = self._request(self.viewer)
+
+        self.assertTrue(record_article_session_view(request, self.article))
+        self.assertTrue(record_article_session_view(request, other_article))
+        self.assertFalse(record_article_session_view(request, self.article))
 
         self.article.refresh_from_db()
-        self.assertEqual(self.article.view_count, 2)
-        self.assertEqual(ArticleDailyView.objects.count(), 2)
+        other_article.refresh_from_db()
+        self.assertEqual(self.article.view_count, 1)
+        self.assertEqual(other_article.view_count, 1)
 
-    @patch("kb.views.services.timezone.localdate", return_value=date(2026, 7, 27))
-    def test_anonymous_post_and_unpublished_previews_are_not_counted(self, _localdate):
+    def test_anonymous_post_and_unpublished_previews_are_not_counted(self):
         self.assertFalse(
-            record_article_daily_user_view(self._request(AnonymousUser()), self.article)
+            record_article_session_view(
+                self._request(AnonymousUser()),
+                self.article,
+            )
         )
         self.assertFalse(
-            record_article_daily_user_view(
+            record_article_session_view(
                 self._request(self.viewer, method="POST"),
                 self.article,
             )
@@ -112,23 +114,22 @@ class ArticleDailyViewTests(TestCase):
         self.article.status = SuggestedArticle.Status.DRAFT
         self.article.save(update_fields=["status"])
         self.assertFalse(
-            record_article_daily_user_view(self._request(self.viewer), self.article)
+            record_article_session_view(self._request(self.viewer), self.article)
         )
 
         self.article.refresh_from_db()
         self.assertEqual(self.article.view_count, 0)
-        self.assertFalse(ArticleDailyView.objects.exists())
-
-    @patch("kb.views.services.timezone.localdate", return_value=date(2026, 7, 27))
-    def test_historical_marker_remains_if_user_is_deleted(self, _localdate):
-        viewer_id = self.viewer.pk
-        self.assertTrue(
-            record_article_daily_user_view(self._request(self.viewer), self.article)
+        self.assertFalse(
+            ActivityLog.objects.filter(
+                event_type=ActivityLog.EventType.ARTICLE_VIEWED,
+                article_id=self.article.pk,
+            ).exists()
         )
 
-        self.viewer.delete()
+    def test_missing_session_is_a_safe_no_op(self):
+        request = self.factory.get(f"/articles/{self.article.pk}/")
+        request.user = self.viewer
 
-        marker = ArticleDailyView.objects.get()
-        self.assertEqual(marker.user_id, viewer_id)
+        self.assertFalse(record_article_session_view(request, self.article))
         self.article.refresh_from_db()
-        self.assertEqual(self.article.view_count, 1)
+        self.assertEqual(self.article.view_count, 0)

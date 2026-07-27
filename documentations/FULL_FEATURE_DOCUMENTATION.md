@@ -632,7 +632,7 @@ The setting is validated in admin and also clamped at runtime for safety.
 
 ### 11.7 View Counts
 
-Each article stores a cumulative `view_count`. A published article contributes at most one counted view for each authenticated user on each local calendar day. Refreshing, signing out and back in, changing browser, or changing device on the same day does not increase the count again. The same user can contribute one new view when visiting on a later day. Draft, pending, failed, and deletion-queued previews are not counted, and normal article visibility checks still apply.
+Each article stores a cumulative `view_count`. A published article contributes at most one counted view in each active browser session. Refreshing or reopening the same article in that session does not increase the count again. A new login session, another browser, another device, or an expired session can contribute another view. Draft, pending, failed, and deletion-queued previews are not counted, and normal article visibility checks still apply. This method uses Django's existing session and does not require a separate worker, scheduled task, Redis marker, or permanent per-view database table.
 
 ### 11.8 Voting and Dislike Count Visibility
 

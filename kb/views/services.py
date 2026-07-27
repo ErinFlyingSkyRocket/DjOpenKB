@@ -40,7 +40,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ActivityLog, ArticleDailyView, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
+from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
 from ..mfa import user_requires_mfa, verify_totp_code
 from ..auth_monitoring import (
     format_retry_after,
@@ -2920,14 +2920,15 @@ def get_article_metadata_by_wiki_path(wiki_path):
         return None
 
 
-def record_article_daily_user_view(request, article):
-    """Count one published-article view per authenticated user per local day.
+def record_article_session_view(request, article):
+    """Count one published-article view per browser session.
 
-    Refreshing, signing in again, changing browser, or changing device on the
-    same calendar day does not add another view. A later local calendar day can
-    add one new view for the same user.
+    Refreshing or reopening the same article in the same active Django session
+    does not add another view. A new login session, another browser, another
+    device, or an expired session can contribute another view.
     """
-    user = getattr(request, "user", None)
+    user = getattr(request, "user", None) if request is not None else None
+    session = getattr(request, "session", None) if request is not None else None
     if (
         request is None
         or getattr(request, "method", "GET") != "GET"
@@ -2938,39 +2939,36 @@ def record_article_daily_user_view(request, article):
         or not getattr(user, "is_authenticated", False)
         or not getattr(user, "is_active", False)
         or not user.pk
+        or session is None
     ):
         return False
 
-    view_date = timezone.localdate()
+    session_key = "viewed_suggested_article_ids"
+    viewed_ids = session.get(session_key, [])
+    if not isinstance(viewed_ids, list):
+        viewed_ids = []
 
-    with transaction.atomic():
-        _daily_view, created = ArticleDailyView.objects.get_or_create(
-            article_id=article.pk,
-            user_id=user.pk,
-            view_date=view_date,
-        )
-        if not created:
-            return False
+    article_key = str(article.pk)
+    viewed_ids = [str(value) for value in viewed_ids]
+    if article_key in viewed_ids:
+        return False
 
-        updated = SuggestedArticle.objects.filter(
-            pk=article.pk,
-            status=SuggestedArticle.Status.PUBLISHED,
-        ).update(view_count=F("view_count") + 1)
+    updated = SuggestedArticle.objects.filter(
+        pk=article.pk,
+        status=SuggestedArticle.Status.PUBLISHED,
+    ).update(view_count=F("view_count") + 1)
+    if not updated:
+        return False
 
-        if not updated:
-            # The article changed state between the initial permission check and
-            # the atomic update. Remove the marker so a later valid visit can be
-            # counted correctly.
-            ArticleDailyView.objects.filter(
-                article_id=article.pk,
-                user_id=user.pk,
-                view_date=view_date,
-            ).delete()
-            return False
+    article.view_count = SuggestedArticle.objects.values_list(
+        "view_count", flat=True
+    ).get(pk=article.pk)
 
-        article.view_count = SuggestedArticle.objects.values_list(
-            "view_count", flat=True
-        ).get(pk=article.pk)
+    # Bound the session payload so long-running sessions cannot grow without
+    # limit. The newest 1,000 viewed article IDs are retained.
+    viewed_ids.append(article_key)
+    session[session_key] = viewed_ids[-1000:]
+    session.modified = True
 
     log_activity(
         request,
@@ -2978,8 +2976,7 @@ def record_article_daily_user_view(request, article):
         article=article,
         details={
             "view_count_after": article.view_count,
-            "view_date": view_date.isoformat(),
-            "counting_method": "daily_unique_authenticated_user",
+            "counting_method": "unique_browser_session",
         },
     )
     return True
