@@ -259,7 +259,7 @@ ALLOWED_HOSTS = _csv_config(
 )
 CSRF_TRUSTED_ORIGINS = _csv_config(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
-    "https://localhost:8080,https://127.0.0.1:8080" if DEBUG else "",
+    "https://localhost,https://127.0.0.1" if DEBUG else "",
 )
 
 if not DEBUG and not ALLOWED_HOSTS:
@@ -515,7 +515,7 @@ if EMAIL_NOTIFICATIONS_ENABLED:
     if parsed_site_url.scheme != "https" or not parsed_site_url.netloc or parsed_site_url.query or parsed_site_url.fragment:
         raise ImproperlyConfigured(
             "SITE_BASE_URL must be the exact HTTPS browser origin, for example "
-            "https://<PUBLIC_HOSTNAME> or https://<INTERNAL_SERVER_IP>:8080."
+            "https://<PUBLIC_HOSTNAME> or https://<INTERNAL_SERVER_IP>."
         )
 
     if SMTP_RELAY_CA_CERT_FILE and not Path(SMTP_RELAY_CA_CERT_FILE).is_file():

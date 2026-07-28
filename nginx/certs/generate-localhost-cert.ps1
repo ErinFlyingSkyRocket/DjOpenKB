@@ -108,10 +108,10 @@ try {
     Write-Host ""
     Write-Host "Browser URL:"
     if (-not [string]::IsNullOrWhiteSpace($TargetIp)) {
-        Write-Host "  https://$TargetIp`:8080"
+        Write-Host "  https://$TargetIp"
     }
     else {
-        Write-Host "  https://localhost:8080"
+        Write-Host "  https://localhost"
     }
 
     Write-Host ""

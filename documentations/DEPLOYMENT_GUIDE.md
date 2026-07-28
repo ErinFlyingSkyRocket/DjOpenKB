@@ -13,7 +13,7 @@ It intentionally covers **first-time deployment and day-to-day service operation
 - Ubuntu/Debian-style Linux host.
 - Project directory: `/opt/DjOpenKB`.
 - Docker Compose services: `vault`, `vault-init`, `vault-auto-unseal`, `db`, `redis`, `app-permissions-init`, `web`, `ai-worker`, `nginx`, and `cleanup-scheduler`.
-- Nginx listens on host port `8080` for direct internal development. A perimeter firewall may later translate public TCP `443` to this private service port.
+- Nginx listens on standard host HTTPS port `443`. A perimeter firewall may later forward public TCP `443` to the same private host port.
 - The initial certificate is self-signed. Use a certificate trusted by intended client devices for an internet-facing deployment.
 - The bundled OpenKB source is in `OpenKB-main/`.
 
@@ -73,11 +73,11 @@ If UFW is enabled, allow the Nginx host port only from the perimeter firewall, V
 
 ```bash
 # Example only: replace <FIREWALL_OR_VPN_CIDR> with the real trusted source.
-sudo ufw allow from <FIREWALL_OR_VPN_CIDR> to any port 8080 proto tcp
+sudo ufw allow from <FIREWALL_OR_VPN_CIDR> to any port 443 proto tcp
 sudo ufw status verbose
 ```
 
-Use cloud firewall/security-group controls as the primary Internet boundary. Expose only public TCP `443` at that boundary, translating it to host port `8080` if needed. Do not expose Vault port `8200`, PostgreSQL port `5432`, Redis port `6379`, or Gunicorn port `8000` to the network.
+Use cloud firewall/security-group controls as the primary Internet boundary. Expose only public TCP `443` at that boundary and forward it to host TCP `443` when required. Do not expose Vault port `8200`, PostgreSQL port `5432`, Redis port `6379`, or Gunicorn port `8000` to the network.
 
 ---
 
@@ -125,7 +125,7 @@ nano .env
 
 ### 4.1 Browser address, host, and CSRF settings
 
-Choose values based on the **exact URL users open in their browser**. The direct internal-IP phase and later firewall/public-DNS phase use different CSRF origins.
+Choose values based on the **exact URL users open in their browser**. Standard HTTPS uses port `443`, so the origin normally does not include an explicit port suffix.
 
 ```env
 DJANGO_DEBUG=false
@@ -134,7 +134,7 @@ DJANGO_DEBUG=false
 # not localhost/127.0.0.1 and not the AD Domain Controller IP.
 # Replace <INTERNAL_SERVER_IP> with the browser-facing internal server IP.
 DJANGO_ALLOWED_HOSTS=<INTERNAL_SERVER_IP>
-DJANGO_CSRF_TRUSTED_ORIGINS=https://<INTERNAL_SERVER_IP>:8080
+DJANGO_CSRF_TRUSTED_ORIGINS=https://<INTERNAL_SERVER_IP>
 
 # Safe startup fallback; Django Admin Site settings is the runtime source of truth.
 DJANGO_SESSION_TIMEOUT_HOURS=8
@@ -162,7 +162,7 @@ Use `hostname -I` to identify the Linux host IP address:
 hostname -I
 ```
 
-When a perimeter firewall later publishes public TCP `443` to this host’s internal TCP `8080`, browsers do not see `:8080`. Use the public IP or final DNS name exactly as seen by the browser:
+When a perimeter firewall or public address is introduced, continue to expose HTTPS on TCP `443` and use the public IP or final DNS name exactly as seen by the browser:
 
 ```env
 # Public-IP phase before DNS
@@ -329,7 +329,7 @@ SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
 # The address Exchange permits the SMTP mailbox to send as.
 SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=<ALLOWED_RECIPIENT_DOMAIN>
-SITE_BASE_URL=https://<INTERNAL_SERVER_IP>:8080
+SITE_BASE_URL=https://<INTERNAL_SERVER_IP>
 EMAIL_SUBJECT_PREFIX=[Knowledge Repository]
 ```
 
@@ -812,8 +812,8 @@ sudo docker compose exec web python manage.py check_internal_article_isolation -
 Basic browser/crawler checks using the same direct address users open:
 
 ```bash
-curl -k https://<INTERNAL_SERVER_IP>:8080/robots.txt
-curl -k -I https://<INTERNAL_SERVER_IP>:8080/login/
+curl -k https://<INTERNAL_SERVER_IP>/robots.txt
+curl -k -I https://<INTERNAL_SERVER_IP>/login/
 ```
 
 Expected results include:
@@ -828,8 +828,8 @@ X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 Open the service in a browser:
 
 ```text
-# Current direct internal development
-https://<INTERNAL_SERVER_IP>:8080
+# Current direct internal deployment on standard HTTPS port 443
+https://<INTERNAL_SERVER_IP>
 
 # Later, after firewall/public-DNS publication
 https://<PUBLIC_HOSTNAME>
@@ -841,7 +841,7 @@ The default Django `/admin/login/` route is intentionally hidden. Sign in throug
 
 After the `createsuperuser` command succeeds, complete the initial administrator setup through the browser:
 
-1. Browse to the exact deployed address: currently `https://<INTERNAL_SERVER_IP>:8080`, or later `https://<PUBLIC_HOSTNAME>` after firewall/DNS publication.
+1. Browse to the exact deployed address: `https://<INTERNAL_SERVER_IP>` for direct internal access, or `https://<PUBLIC_HOSTNAME>` after firewall/DNS publication.
 2. Sign in with the local superuser username and password created above.
 3. Complete the normal MFA enrolment and verify the code.
 4. Confirm the browser/client IP is included in the Nginx Django Admin allowlist from Section 5.2.
@@ -1595,8 +1595,8 @@ sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missi
 sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 sudo docker compose exec web python manage.py check_internal_article_isolation --sync-first
 
-curl -k https://<INTERNAL_SERVER_IP>:8080/robots.txt
-curl -k -I https://<INTERNAL_SERVER_IP>:8080/login/
+curl -k https://<INTERNAL_SERVER_IP>/robots.txt
+curl -k -I https://<INTERNAL_SERVER_IP>/login/
 ```
 
 For application functionality, security controls, user workflows, and role descriptions, use `documentations/FULL_FEATURE_DOCUMENTATION.md` rather than this deployment guide.

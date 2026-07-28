@@ -4,17 +4,17 @@ This document records the security hardening applied to the firewall-published K
 
 ## 1. Current direct internal-IP development
 
-While users reach the service directly on the Linux host listener, the browser URL includes port `8080`. For the current development VM, an example is:
+Users reach the service directly on the Linux host through standard HTTPS port `443`, so the browser URL does not require a port suffix. For the current development VM, an example is:
 
 ```text
-https://<INTERNAL_SERVER_IP>:8080
+https://<INTERNAL_SERVER_IP>
 ```
 
 Use the exact reachable server IP in `.env`:
 
 ```env
 DJANGO_ALLOWED_HOSTS=<INTERNAL_SERVER_IP>
-DJANGO_CSRF_TRUSTED_ORIGINS=https://<INTERNAL_SERVER_IP>:8080
+DJANGO_CSRF_TRUSTED_ORIGINS=https://<INTERNAL_SERVER_IP>
 DJANGO_SESSION_TIMEOUT_HOURS=8
 ```
 
@@ -38,7 +38,7 @@ The certificate remains self-signed. Trust its `.crt` on the approved developmen
 
 ## 2. Later firewall and public-DNS configuration
 
-When a perimeter firewall publishes standard HTTPS on public TCP `443` and translates it to this host’s port `8080`, browsers no longer see `:8080`. Use the public IP or final DNS hostname exactly as seen by the browser:
+When a perimeter firewall or public address is introduced, publish only standard HTTPS on public TCP `443` and forward it to host TCP `443`. Use the public IP or final DNS hostname exactly as seen by the browser:
 
 ```env
 # Public-IP phase, before DNS exists
@@ -54,7 +54,7 @@ Before making the service broadly reachable, replace `server_name _;` with the f
 
 ## 3. Implemented Nginx edge controls
 
-Nginx is the only service published to the network on host port `8080`. PostgreSQL, Redis, Gunicorn, and Docker are not published. Vault is bound only to host loopback (`127.0.0.1:8200`) for local administrator access and is not externally reachable through the network firewall.
+Nginx is the only service published to the network on standard host HTTPS port `443`. PostgreSQL, Redis, Gunicorn, and Docker are not published. Vault is bound only to host loopback (`127.0.0.1:8200`) for local administrator access and is not externally reachable through the network firewall.
 
 The reverse proxy now applies these controls before traffic reaches Django or Active Directory:
 
@@ -201,8 +201,8 @@ sudo docker compose exec web python manage.py check --deploy
 For the current direct internal deployment, test the browser-facing address rather than `localhost`:
 
 ```bash
-curl -k https://<INTERNAL_SERVER_IP>:8080/robots.txt
-curl -k -I https://<INTERNAL_SERVER_IP>:8080/login/
+curl -k https://<INTERNAL_SERVER_IP>/robots.txt
+curl -k -I https://<INTERNAL_SERVER_IP>/login/
 ```
 
 Do not use `docker compose down -v` for routine troubleshooting or configuration changes. The `-v` option removes named volumes and can destroy persistent state.

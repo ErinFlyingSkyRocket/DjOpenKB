@@ -104,11 +104,11 @@ echo "  $KEY_FILE"
 if [ -n "$TARGET_IP" ]; then
     echo
     echo "Browser URL:"
-    echo "  https://$TARGET_IP:8080"
+    echo "  https://$TARGET_IP"
 else
     echo
     echo "Browser URL:"
-    echo "  https://localhost:8080"
+    echo "  https://localhost"
 fi
 echo
 echo "Trust the certificate on the development browser to avoid its self-signed warning."

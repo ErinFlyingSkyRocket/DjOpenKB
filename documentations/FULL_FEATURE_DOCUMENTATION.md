@@ -18,7 +18,7 @@ The Docker Compose stack contains the following main services:
 |---|---|
 | `web` | Django application served by Gunicorn. Handles website requests, article workflow, direct post-commit SMTP review notifications, authentication, MFA, queue submission/status endpoints, logging, and admin tools. |
 | `ai-worker` | Dedicated Celery worker for OpenKB AI jobs. Runs OpenKB/provider work outside Gunicorn so an AI response can continue while the user navigates the normal site. |
-| `nginx` | Reverse proxy that serves HTTPS on port `8080`, forwards requests to Django, and serves collected static files. |
+| `nginx` | Reverse proxy that serves HTTPS on standard port `443`, forwards requests to Django, and serves collected static files. |
 | `db` | PostgreSQL database used by Django. The database password is loaded from Vault. |
 | `redis` | Shared production cache for authentication lockouts, AI burst limits/cooldowns, fixed 24-hour per-user quotas, encrypted temporary AI job records, and query concurrency controls. Redis DB 2 is used as the Celery broker by default. |
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, field-encryption key, PostgreSQL password, AI provider API keys, and LDAP bind password. |
@@ -1191,7 +1191,7 @@ The encryption strength depends on the TLS cipher negotiated by the server and c
 
 ## 21. HTTPS and Nginx Security Headers
 
-Nginx serves the application on host port `8080`; a perimeter firewall can safely publish only standard HTTPS port `443` and translate it to this private host port. The project includes security headers such as:
+Nginx serves the application on standard host HTTPS port `443`; a perimeter firewall can safely publish or forward only TCP `443` to this host port. The project includes security headers such as:
 
 - `Strict-Transport-Security`
 - `X-Content-Type-Options`
@@ -1331,8 +1331,8 @@ stat -c '%u:%g %a %n' vault/keys/djopenkb-app-token.txt
 Verify crawler controls through Nginx:
 
 ```bash
-curl -k https://<server-ip>:8080/robots.txt
-curl -k -I https://<server-ip>:8080/login/
+curl -k https://<server-ip>/robots.txt
+curl -k -I https://<server-ip>/login/
 ```
 
 Test LDAPS from the Django container:
@@ -1390,7 +1390,7 @@ docker compose up -d
 ## 28. Operational Notes for Administrators
 
 - Keep `DJANGO_DEBUG=false` for deployment.
-- Match `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` to the exact browser URL: direct internal-IP access includes `:8080`; later public firewall/DNS access on 443 does not.
+- Match `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` to the exact browser URL. Standard HTTPS port `443` does not require an explicit port suffix.
 - Keep Vault secrets out of shared packages.
 - Confirm `app-permissions-init` exits successfully and `vault/keys/djopenkb-app-token.txt` remains `0:10001` with mode `0440` after Vault maintenance.
 - Do not weaken Nginx read-only filesystem settings to solve temporary-path errors; retain the direct `/tmp/*_temp` paths instead.

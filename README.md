@@ -2,7 +2,7 @@
 
 DjOpenKB is a Docker-based internal IT knowledge base built with Django. It provides a secure article website for IT documentation, public/internal article separation, user article suggestions, role-based review workflows, Active Directory / LDAPS login, local Django login, MFA, Vault-backed secrets, PostgreSQL, Nginx HTTPS, activity logging, and an integrated OpenKB AI chatbot.
 
-The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required during development: users on the reachable internal network can use the browser-facing server IP over HTTPS, for example `https://<INTERNAL_SERVER_IP>:8080`. Replace `<INTERNAL_SERVER_IP>` with the approved internal address for the deployment. `localhost` and `127.0.0.1` refer only to the Linux server itself and are not remote-user addresses. When a firewall and final DNS name are later introduced, publish only HTTPS and update the trusted host/origin settings to the exact public address.
+The project is designed for a local VM, lab, or intranet-style deployment. A paid public domain is not required during development: users on the reachable internal network can use the browser-facing server IP over standard HTTPS port `443`, for example `https://<INTERNAL_SERVER_IP>`. Replace `<INTERNAL_SERVER_IP>` with the approved internal address for the deployment. `localhost` and `127.0.0.1` refer only to the Linux server itself and are not remote-user addresses. When a firewall and final DNS name are later introduced, publish only HTTPS and update the trusted host/origin settings to the exact public address.
 
 For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GUIDE.md). For later code, dependency, `.env`, or Vault secret changes, follow [Update and Maintenance Guide](documentations/UPDATE_AND_MAINTENANCE_GUIDE.md). For a central map of `.env`, Vault secrets, Django Site settings, Nginx, Docker Compose, and restart requirements, use [Configuration Reference](documentations/CONFIGURATION_REFERENCE.md). Optional SMTP relay setup, certificate preparation, workflow notifications, and authentication-lockout alerts are covered in [SMTP Relay Setup and Notifications](documentations/SMTP_RELAY_NOTIFICATIONS.md).
 
@@ -39,7 +39,7 @@ For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GU
 - Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, AI, and SMTP relay credentials.
 - PostgreSQL database through Docker Compose.
 - Redis-backed production cache for authentication lockouts, AI rate limits, fixed 24-hour AI quotas, background AI jobs, and query concurrency controls.
-- Nginx HTTPS reverse proxy on host port `8080` for direct internal development; a perimeter firewall may later publish public TCP `443` and translate it to this listener. Nginx applies per-IP POST rate limits to login, MFA, admin MFA, AI, upload, and bulk-import submissions.
+- Nginx HTTPS reverse proxy on standard host port `443` for direct internal access. A perimeter firewall may later forward public TCP `443` to the same host port. Nginx applies per-IP POST rate limits to login, MFA, admin MFA, AI, upload, and bulk-import submissions.
 - Persistent OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`. Questions run as short-lived Celery jobs so they continue while a signed-in user moves between normal site pages.
 - AI resource controls: prompt length limit, short-burst rate limit and cooldown, a per-user fixed 24-hour quota, worker/query concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and privacy-safe activity metadata.
 - Markdown article rendering with sanitization, plus controlled playable video links for supported YouTube, Vimeo, and direct HTTPS `.mp4`/`.webm`/`.ogg` sources. SharePoint/OneDrive direct-video links are checked for anonymous accessibility before acceptance so viewers are not sent into an external sign-in flow.
@@ -326,7 +326,7 @@ Use the deployment guide for first-time Linux server setup, initial `createsuper
 
 Contains the Nginx reverse proxy configuration.
 
-Nginx provides HTTPS access to the Django web container. The project uses host port `8080` for direct internal development. A future perimeter firewall can publish only external TCP `443` and translate it to this internal listener. Nginx uses a read-only root filesystem with a writable `/tmp` `tmpfs`; its temporary request paths are configured directly below `/tmp` so uploads and proxied requests continue to work without weakening the container filesystem.
+Nginx provides HTTPS access to the Django web container on standard host port `443`. A perimeter firewall can publish or forward only external TCP `443` to the same host port. Nginx uses a read-only root filesystem with a writable `/tmp` `tmpfs`; its temporary request paths are configured directly below `/tmp` so uploads and proxied requests continue to work without weakening the container filesystem.
 
 Important paths:
 
@@ -517,7 +517,7 @@ Keep `OPENKB_AI_WORKER_CONCURRENCY=1` for the current single-VM deployment unles
 
 ## Public-Exposure Hardening
 
-Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, read-only filesystems with controlled `tmpfs` storage, a fixed maximum session lifetime (8 hours by default), Vault token group permissions, and configurable AD search-scope controls. During the current direct internal-IP phase, `DJANGO_ALLOWED_HOSTS` uses the reachable server IP and `DJANGO_CSRF_TRUSTED_ORIGINS` must include the visible `:8080` port. After a firewall publishes external `443`, use the public IP or DNS origin without `:8080`.
+Before the perimeter firewall permits public traffic, follow `documentations/PUBLIC_EXPOSURE_HARDENING.md`. This release adds Nginx edge throttling, smaller default request limits, private Docker backend networks, unprivileged Django/Celery containers, read-only filesystems with controlled `tmpfs` storage, a fixed maximum session lifetime (8 hours by default), Vault token group permissions, and configurable AD search-scope controls. During direct internal-IP access, `DJANGO_ALLOWED_HOSTS` uses the reachable server IP and `DJANGO_CSRF_TRUSTED_ORIGINS` uses the exact standard HTTPS origin, such as `https://<INTERNAL_SERVER_IP>`. After a firewall or DNS name is introduced, update both values to the exact public address seen by the browser.
 
 ## Quick Deployment Summary
 
@@ -552,7 +552,7 @@ docker compose exec web python manage.py check --deploy
 Access the website using:
 
 ```text
-https://<server-ip>:8080
+https://<server-ip>
 ```
 
 For host-reboot persistence, enable the `djopenkb.service` systemd unit documented in `documentations/DEPLOYMENT_GUIDE.md`. The boot service starts existing Compose containers with `docker compose up -d`; normal code deployments still use `docker compose up -d --build`. The long-running Compose services also retain `restart: unless-stopped` policies for individual container recovery.
@@ -648,8 +648,8 @@ docker compose exec web python manage.py cleanup_article_deletion_queue --noinpu
 Verify crawler controls after deployment:
 
 ```bash
-curl -k https://<server-ip>:8080/robots.txt
-curl -k -I https://<server-ip>:8080/login/
+curl -k https://<server-ip>/robots.txt
+curl -k -I https://<server-ip>/login/
 ```
 
 Expected results are `User-agent: *` plus `Disallow: /` from `/robots.txt`, and an `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet, noimageindex` header on the login response.
