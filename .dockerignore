@@ -109,3 +109,13 @@ token.json
 
 # Internal/private OpenKB runtime data generated from Django articles.
 openkb-data-internal/
+
+# Defensive local-model exclusions. The normal deployment uses the ollama_data
+# Docker named volume, but these prevent accidental commits/build context if a
+# future test bind-mounts model files into the project directory.
+.ollama/
+ollama-data/
+ollama_data/
+models/
+*.gguf
+*.safetensors

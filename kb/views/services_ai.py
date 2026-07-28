@@ -62,8 +62,14 @@ _quota_redis_client_url = None
 
 def get_openkb_ai_model():
     """Return the configured OpenKB/LiteLLM model name."""
-    model = getattr(settings, "OPENKB_AI_MODEL", "gemini/gemini-2.5-flash")
-    return (model or "gemini/gemini-2.5-flash").strip()
+    model = getattr(settings, "OPENKB_AI_MODEL", "ollama_chat/granite4:3b")
+    return (model or "ollama_chat/granite4:3b").strip()
+
+
+def is_ollama_model(model=None):
+    """Return True when the selected LiteLLM model is served by Ollama."""
+    selected = (model or get_openkb_ai_model()).strip().lower()
+    return selected.startswith(("ollama/", "ollama_chat/"))
 
 
 def scrub_openkb_runtime_log_files(data_dir=None):
@@ -176,28 +182,44 @@ def run_openkb_query(question, *, include_internal=False):
         scrub_openkb_runtime_log_files(query_data_dir)
 
         env = os.environ.copy()
-
-        ai_api_key = getattr(settings, "AI_API_KEY", "")
-        if ai_api_key:
-            # Development/simple-deployment fallback. Provider-specific keys below
-            # take precedence when configured in Vault/env for production.
-            env["AI_API_KEY"] = ai_api_key
-            env["LLM_API_KEY"] = ai_api_key
-            env.setdefault("GEMINI_API_KEY", ai_api_key)
-            env.setdefault("OPENAI_API_KEY", ai_api_key)
-            env.setdefault("ANTHROPIC_API_KEY", ai_api_key)
-
-        provider_keys = {
-            "OPENAI_API_KEY": getattr(settings, "OPENAI_API_KEY", ""),
-            "GEMINI_API_KEY": getattr(settings, "GEMINI_API_KEY", ""),
-            "ANTHROPIC_API_KEY": getattr(settings, "ANTHROPIC_API_KEY", ""),
-        }
-        for name, value in provider_keys.items():
-            if value:
-                env[name] = value
-
+        selected_model = get_openkb_ai_model()
         env["OPENKB_AI_PROVIDER"] = getattr(settings, "OPENKB_AI_PROVIDER", "openkb-cli")
-        env["OPENKB_AI_MODEL"] = get_openkb_ai_model()
+        env["OPENKB_AI_MODEL"] = selected_model
+
+        if is_ollama_model(selected_model):
+            # Keep the local subprocess independent of any cloud credentials that
+            # may remain in Vault for rollback to the cloud-model checkpoint.
+            for name in ("AI_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"):
+                env.pop(name, None)
+
+            # LiteLLM uses OLLAMA_API_BASE both for inference and for querying
+            # model capabilities such as native tool/function calling support.
+            env["OLLAMA_API_BASE"] = getattr(
+                settings, "OLLAMA_API_BASE", "http://host.docker.internal:11434"
+            ).rstrip("/")
+            # Bundled OpenKB otherwise prints a missing-key warning to stdout.
+            # Ollama's private local API does not require a real credential.
+            env["LLM_API_KEY"] = "ollama-local"
+        else:
+            ai_api_key = getattr(settings, "AI_API_KEY", "")
+            if ai_api_key:
+                # Development/simple-deployment fallback. Provider-specific keys
+                # below take precedence when configured in Vault/env.
+                env["AI_API_KEY"] = ai_api_key
+                env["LLM_API_KEY"] = ai_api_key
+                env.setdefault("GEMINI_API_KEY", ai_api_key)
+                env.setdefault("OPENAI_API_KEY", ai_api_key)
+                env.setdefault("ANTHROPIC_API_KEY", ai_api_key)
+
+            provider_keys = {
+                "OPENAI_API_KEY": getattr(settings, "OPENAI_API_KEY", ""),
+                "GEMINI_API_KEY": getattr(settings, "GEMINI_API_KEY", ""),
+                "ANTHROPIC_API_KEY": getattr(settings, "ANTHROPIC_API_KEY", ""),
+            }
+            for name, value in provider_keys.items():
+                if value:
+                    env[name] = value
+
         env["LITELLM_DROP_PARAMS"] = "true"
         env["DROP_PARAMS"] = "true"
         env["OPENKB_DIR"] = str(query_data_dir)

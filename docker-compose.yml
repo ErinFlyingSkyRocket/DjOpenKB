@@ -191,15 +191,18 @@ services:
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
       OPENKB_INTERNAL_DATA_DIR: ${OPENKB_INTERNAL_DATA_DIR:-openkb-data-internal}
       OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
-      OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-gemini/gemini-2.5-flash}
+      OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-ollama_chat/granite4:3b}
+      OLLAMA_API_BASE: ${OLLAMA_API_BASE:-http://host.docker.internal:11434}
+      LLM_API_KEY: ${OLLAMA_DUMMY_API_KEY:-ollama-local}
+      OPENKB_AI_MAX_TURNS: "${OPENKB_AI_MAX_TURNS:-12}"
       LITELLM_DROP_PARAMS: ${LITELLM_DROP_PARAMS:-true}
       OPENKB_AI_MAX_PROMPT_CHARS: "${OPENKB_AI_MAX_PROMPT_CHARS:-1000}"
       OPENKB_AI_RATE_LIMIT_MAX_REQUESTS: "${OPENKB_AI_RATE_LIMIT_MAX_REQUESTS:-5}"
       OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS: "${OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS:-60}"
       OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS: "${OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS:-1800}"
-      OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-90}"
-      OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-2}"
-      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-180}"
+      OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-300}"
+      OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-1}"
+      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-390}"
       OPENKB_AI_JOB_TTL_SECONDS: "${OPENKB_AI_JOB_TTL_SECONDS:-1800}"
       OPENKB_AI_JOB_BUSY_RETRIES: "${OPENKB_AI_JOB_BUSY_RETRIES:-12}"
       OPENKB_AI_POLL_INTERVAL_MILLISECONDS: "${OPENKB_AI_POLL_INTERVAL_MILLISECONDS:-2000}"
@@ -311,12 +314,15 @@ services:
       OPENKB_DATA_DIR: ${OPENKB_DATA_DIR:-openkb-data}
       OPENKB_INTERNAL_DATA_DIR: ${OPENKB_INTERNAL_DATA_DIR:-openkb-data-internal}
       OPENKB_AI_PROVIDER: ${OPENKB_AI_PROVIDER:-openkb-cli}
-      OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-gemini/gemini-2.5-flash}
+      OPENKB_AI_MODEL: ${OPENKB_AI_MODEL:-ollama_chat/granite4:3b}
+      OLLAMA_API_BASE: ${OLLAMA_API_BASE:-http://host.docker.internal:11434}
+      LLM_API_KEY: ${OLLAMA_DUMMY_API_KEY:-ollama-local}
+      OPENKB_AI_MAX_TURNS: "${OPENKB_AI_MAX_TURNS:-12}"
       LITELLM_DROP_PARAMS: ${LITELLM_DROP_PARAMS:-true}
       OPENKB_AI_MAX_PROMPT_CHARS: "${OPENKB_AI_MAX_PROMPT_CHARS:-1000}"
-      OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-90}"
-      OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-2}"
-      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-180}"
+      OPENKB_AI_TIMEOUT_SECONDS: "${OPENKB_AI_TIMEOUT_SECONDS:-300}"
+      OPENKB_AI_CONCURRENCY_LIMIT: "${OPENKB_AI_CONCURRENCY_LIMIT:-1}"
+      OPENKB_AI_CONCURRENCY_LOCK_SECONDS: "${OPENKB_AI_CONCURRENCY_LOCK_SECONDS:-390}"
       OPENKB_AI_JOB_TTL_SECONDS: "${OPENKB_AI_JOB_TTL_SECONDS:-1800}"
       OPENKB_AI_JOB_BUSY_RETRIES: "${OPENKB_AI_JOB_BUSY_RETRIES:-12}"
       OPENKB_AI_CELERY_QUEUE: "${OPENKB_AI_CELERY_QUEUE:-openkb_ai}"
@@ -339,9 +345,15 @@ services:
       - ./openkb-data:/app/openkb-data
       - ./openkb-data-internal:/app/openkb-data-internal
       - ./vault/keys/djopenkb-app-token.txt:/run/vault-keys/djopenkb-app-token.txt:ro
+    # Linux Docker does not create host.docker.internal automatically.
+    # host-gateway resolves it to the Ubuntu host's Docker bridge address.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - app_backend
       - vault_backend
+      # Provides the route to the Ubuntu host-gateway. The local-model code
+      # targets Ollama and removes cloud API keys from the OpenKB subprocess.
       - egress
     command: >
       sh -c "
@@ -457,9 +469,10 @@ networks:
   # Vault is isolated from both public Nginx and the AI provider egress path.
   vault_backend:
     internal: true
-  # The web service uses this network only for authenticated SMTP submission to
-  # the internal Exchange relay; the AI worker uses it for its configured AI
-  # provider. Database and Vault services have no arbitrary outbound path.
+  # The web service uses this network for authenticated SMTP submission. The
+  # AI worker uses it to route to the host-installed Ollama endpoint through
+  # host.docker.internal. This is a routable bridge, not a strict no-egress
+  # network; database and Vault services remain isolated.
   egress:
     driver: bridge
 

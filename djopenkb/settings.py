@@ -147,10 +147,17 @@ AI_API_KEY = secret_value("AI_API_KEY", "")
 
 # General LiteLLM/OpenKB model name.
 # Use OPENKB_AI_MODEL for all providers, for example:
+#   ollama_chat/granite4:3b
 #   gemini/gemini-2.5-flash
 #   openai/gpt-5.5
 #   anthropic/claude-3-5-sonnet-latest
-OPENKB_AI_MODEL = config_value("OPENKB_AI_MODEL", "gemini/gemini-2.5-flash").strip()
+OPENKB_AI_MODEL = config_value("OPENKB_AI_MODEL", "ollama_chat/granite4:3b").strip()
+
+# Docker AI workers reach the host-installed Ollama service through the Linux
+# host-gateway mapping. This is not a browser-facing URL.
+OLLAMA_API_BASE = config_value(
+    "OLLAMA_API_BASE", "http://host.docker.internal:11434"
+).strip().rstrip("/")
 
 # Prefer provider-specific keys in production. AI_API_KEY is kept as a simple
 # development fallback so the current free-tier key setup still works.
@@ -196,8 +203,8 @@ OPENKB_AI_MAX_PROMPT_CHARS = int_config("OPENKB_AI_MAX_PROMPT_CHARS", 1000, mini
 OPENKB_AI_RATE_LIMIT_MAX_REQUESTS = int_config("OPENKB_AI_RATE_LIMIT_MAX_REQUESTS", 5, minimum=1, maximum=100)
 OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS = int_config("OPENKB_AI_RATE_LIMIT_WINDOW_SECONDS", 60, minimum=10, maximum=3600)
 OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS = int_config("OPENKB_AI_RATE_LIMIT_BLOCK_SECONDS", 1800, minimum=60, maximum=86400)
-OPENKB_AI_TIMEOUT_SECONDS = int_config("OPENKB_AI_TIMEOUT_SECONDS", 90, minimum=10, maximum=300)
-OPENKB_AI_CONCURRENCY_LIMIT = int_config("OPENKB_AI_CONCURRENCY_LIMIT", 2, minimum=1, maximum=20)
+OPENKB_AI_TIMEOUT_SECONDS = int_config("OPENKB_AI_TIMEOUT_SECONDS", 300, minimum=10, maximum=300)
+OPENKB_AI_CONCURRENCY_LIMIT = int_config("OPENKB_AI_CONCURRENCY_LIMIT", 1, minimum=1, maximum=20)
 # This Redis slot protects both on-disk OpenKB synchronisation and the provider
 # query. Keep it safely beyond the worker hard time limit so a long-running task
 # cannot briefly overlap another query after its slot expires.

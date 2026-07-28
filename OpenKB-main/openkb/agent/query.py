@@ -1,6 +1,7 @@
 """Q&A agent for querying the OpenKB knowledge base."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from agents import Agent, Runner, function_tool
@@ -8,7 +9,16 @@ from agents import Agent, Runner, function_tool
 from agents import ToolOutputImage, ToolOutputText
 from openkb.agent.tools import get_wiki_page_content, read_wiki_file, read_wiki_image
 
-MAX_TURNS = 50
+def _configured_max_turns() -> int:
+    """Bound agent tool loops for resource-constrained local deployments."""
+    try:
+        value = int(os.environ.get("OPENKB_AI_MAX_TURNS", "50"))
+    except (TypeError, ValueError):
+        value = 50
+    return max(2, min(value, 50))
+
+
+MAX_TURNS = _configured_max_turns()
 from openkb.schema import get_agents_md
 
 _QUERY_INSTRUCTIONS_TEMPLATE = """\
