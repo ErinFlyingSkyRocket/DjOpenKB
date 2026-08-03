@@ -227,9 +227,18 @@ def get_or_create_mfa_device(user):
         user=user,
         defaults={"secret": pyotp.random_base32()},
     )
-    if not device.get_secret():
+
+    secret_is_readable = bool(device.get_secret())
+    if not secret_is_readable and not device.confirmed:
+        # An unconfirmed setup may safely receive a fresh secret because the
+        # user will see the replacement QR/manual key before confirming it.
         device.set_secret(pyotp.random_base32())
         device.save(update_fields=["secret"])
+
+    # Never silently replace an unreadable secret on a confirmed device. The
+    # user would have no copy of that newly generated secret and would be
+    # permanently unable to verify it. Callers deliberately detect this state
+    # with mfa_device_secret_is_readable() and direct the user/admin to reset MFA.
     return device
 
 

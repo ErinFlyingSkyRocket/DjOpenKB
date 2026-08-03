@@ -1,0 +1,12 @@
+{% if lockout_active %}
+<p
+    class="help-block text-center text-danger auth-lockout-countdown"
+    role="status"
+    aria-live="polite"
+    data-remaining-seconds="{{ lockout_remaining_seconds }}"
+    data-message-template="{{ lockout_message_template }}"
+    data-lockout-group="{{ lockout_group|default:'default' }}"
+>
+    {{ lockout_initial_message }}
+</p>
+{% endif %}

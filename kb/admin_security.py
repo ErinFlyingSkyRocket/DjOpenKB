@@ -14,6 +14,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
 from .auth_monitoring import (
+    build_auth_lockout_ui_context,
     format_retry_after,
     get_auth_lockout_status,
     log_auth_event,
@@ -296,6 +297,19 @@ def _discard_pending_messages(request) -> None:
 def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
     _discard_pending_messages(request)
     remaining = admin_mfa_seconds_remaining(request)
+    locked, retry_after, _identifier = get_auth_lockout_status(
+        request,
+        user=getattr(request, "user", None),
+        purpose="admin_mfa",
+    )
+    rate_limit_context = build_auth_lockout_ui_context(
+        locked=locked,
+        retry_after_seconds=retry_after,
+        message=_(
+            "Too many incorrect admin MFA codes. Please try again in %(duration)s."
+        ),
+        prefix="admin_mfa_rate_limit",
+    )
     response = render(
         request,
         "admin_mfa_verify.html",
@@ -305,6 +319,7 @@ def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
             "admin_mfa_timeout_active": remaining is not None,
             "admin_mfa_timeout_remaining_seconds": remaining,
             "admin_mfa_timeout_expired": admin_mfa_challenge_is_expired_state(request),
+            **rate_limit_context,
         },
     )
     return set_strict_no_cache_headers(response)
@@ -403,8 +418,22 @@ def admin_mfa_verify(request):
     action = (request.POST.get("action") or "").strip().lower()
 
     if action == "restart":
-        # Restart is accepted only after an actual expiry. A crafted early POST
-        # cannot extend an active fixed deadline.
+        # Restart is accepted only after an actual expiry and after any active
+        # admin-MFA cooldown ends. A crafted POST cannot bypass either control.
+        locked, retry_after, _identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="admin_mfa",
+        )
+        if locked:
+            return _render_admin_mfa_verify(
+                request,
+                next_url,
+                [
+                    _("Too many incorrect admin MFA codes. Please try again in %(duration)s.")
+                    % {"duration": format_retry_after(retry_after)}
+                ],
+            )
         if admin_mfa_challenge_is_expired_state(request):
             clear_admin_mfa_challenge(request)
             ensure_admin_mfa_challenge_deadline(request)

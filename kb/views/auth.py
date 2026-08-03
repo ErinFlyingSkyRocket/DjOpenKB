@@ -4,6 +4,7 @@ from django.contrib.messages import get_messages
 from django.shortcuts import redirect, render
 from .services import *
 from ..auth_monitoring import (
+    build_auth_lockout_ui_context,
     format_retry_after,
     get_auth_lockout_status,
     get_browser_auth_lockout_status,
@@ -101,6 +102,34 @@ def root_entry(request):
 class OpenKBLoginView(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = False
+    lockout_username_session_key = "_djopenkb_last_login_username"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        username = (
+            (self.request.POST.get("username") or "").strip()
+            or (self.request.session.get(self.lockout_username_session_key) or "").strip()
+        )
+        account_locked, account_retry_after, _account_identifier = get_auth_lockout_status(
+            self.request,
+            username=username,
+            purpose="password",
+        )
+        browser_locked, browser_retry_after, _browser_identifier = get_browser_auth_lockout_status(
+            self.request,
+            purpose="password",
+        )
+        context.update(
+            build_auth_lockout_ui_context(
+                locked=account_locked or browser_locked,
+                retry_after_seconds=max(account_retry_after, browser_retry_after),
+                message=_(
+                    "Too many failed sign-in attempts. Please try again in %(duration)s."
+                ),
+                prefix="login_lockout",
+            )
+        )
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -134,6 +163,8 @@ class OpenKBLoginView(LoginView):
 
         if request.method == "POST":
             username = (request.POST.get("username") or "").strip()
+            if username:
+                request.session[self.lockout_username_session_key] = username[:255]
             account_locked, account_retry_after, account_identifier = get_auth_lockout_status(
                 request,
                 username=username,
@@ -171,7 +202,17 @@ class OpenKBLoginView(LoginView):
                     _("Too many failed sign-in attempts. Please try again in %(duration)s.")
                     % {"duration": format_retry_after(retry_after)},
                 )
-                form = self.get_form()
+                # Do not create a bound AuthenticationForm while the server-side
+                # cooldown is active. Rendering a bound form causes Django to
+                # validate it when the template accesses ``form.errors``, which
+                # would call the password/LDAP backend even though this request
+                # has already been blocked. Keep the username visible using an
+                # unbound form and let the cache lockout remain authoritative.
+                form_class = self.get_form_class()
+                form = form_class(
+                    request=request,
+                    initial={"username": username},
+                )
                 return self.render_to_response(self.get_context_data(form=form))
 
         return super().dispatch(request, *args, **kwargs)
@@ -224,6 +265,7 @@ class OpenKBLoginView(LoginView):
     def form_valid(self, form):
         user = form.get_user()
         login_mode = (self.request.POST.get("login_mode") or "").strip().lower()
+        self.request.session.pop(self.lockout_username_session_key, None)
 
         record_auth_success(
             self.request,
@@ -378,6 +420,74 @@ def set_site_language(request):
     return response
 
 
+def _verify_profile_password(request, user, submitted_password, *, source, invalid_message):
+    """Rate-limit fresh local-password confirmation for sensitive profile actions."""
+    locked, retry_after, identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="password",
+    )
+    if locked:
+        log_auth_event(
+            request,
+            event_type="password_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={
+                "reason": "temporary_lockout",
+                "source": source,
+                "lockout_identifier": identifier,
+                "retry_after_seconds": retry_after,
+            },
+        )
+        messages.error(
+            request,
+            _("Too many failed sign-in attempts. Please try again in %(duration)s.")
+            % {"duration": format_retry_after(retry_after)},
+        )
+        return False
+
+    if not user.check_password(submitted_password):
+        lockout = record_auth_failure(request, user=user, purpose="password")
+        details = {
+            "reason": "invalid_profile_password_confirmation",
+            "source": source,
+            "lockout_identifier": lockout.get("identifier"),
+            "failure_count": lockout.get("failure_count"),
+            "failure_limit": lockout.get("failure_limit"),
+        }
+        if lockout.get("locked"):
+            details["reason"] = "temporary_lockout_created"
+            details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+            messages.error(
+                request,
+                _("Too many failed sign-in attempts. Please try again in %(duration)s.")
+                % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+            )
+        log_auth_event(
+            request,
+            event_type="password_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details=details,
+        )
+        messages.error(request, invalid_message)
+        return False
+
+    record_auth_success(request, user=user, purpose="password")
+    log_auth_event(
+        request,
+        event_type="password_success",
+        success=True,
+        user=user,
+        username=user.get_username(),
+        details={"source": source},
+    )
+    return True
+
+
 def _verify_profile_mfa_code(request, user):
     """Require a fresh MFA/OTP code before sensitive profile changes.
 
@@ -455,7 +565,11 @@ def _verify_profile_mfa_code(request, user):
 
 @main_site_login_required
 def profile(request):
-    return render(request, "profile.html", get_profile_account_context(request.user))
+    return render(
+        request,
+        "profile.html",
+        get_profile_account_context(request.user, request=request),
+    )
 
 
 @main_site_login_required
@@ -504,8 +618,13 @@ def update_profile(request):
 
         if user.has_usable_password():
             current_password = request.POST.get("current_password", "")
-            if not user.check_password(current_password):
-                messages.error(request, _("Confirm password is incorrect."))
+            if not _verify_profile_password(
+                request,
+                user,
+                current_password,
+                source="profile_email_update",
+                invalid_message=_("Confirm password is incorrect."),
+            ):
                 return redirect("profile")
 
         if not _verify_profile_mfa_code(request, user):
@@ -549,8 +668,13 @@ def change_password(request):
     new_password1 = request.POST.get("new_password1", "")
     new_password2 = request.POST.get("new_password2", "")
 
-    if not user.check_password(old_password):
-        messages.error(request, _("Old password is incorrect."))
+    if not _verify_profile_password(
+        request,
+        user,
+        old_password,
+        source="profile_password_change",
+        invalid_message=_("Old password is incorrect."),
+    ):
         return redirect("profile")
 
     if new_password1 != new_password2:

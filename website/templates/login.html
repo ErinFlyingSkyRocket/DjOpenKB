@@ -53,7 +53,7 @@
 {% include "_navbar.html" %}
 <div class="container-fluid">
     <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 login-wrap">
-        <form class="form-signin" action="{% url 'login' %}" method="post" role="form" data-toggle="validator">
+        <form class="form-signin" action="{% url 'login' %}" method="post" role="form" data-toggle="validator" data-auth-lockout-scope>
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
 
@@ -80,7 +80,7 @@
 
             <div class="form-group">
                 <label id="username-label" class="sr-only" for="id_username">{% trans "NextLabs AD email or username" %}</label>
-                <input id="id_username" type="text" name="username" class="form-control" placeholder="{% trans 'NextLabs AD email or username' %}" value="{{ form.username.value|default:'' }}" required autofocus>
+                <input id="id_username" type="text" name="username" class="form-control" placeholder="{% trans 'NextLabs AD email or username' %}" value="{{ form.username.value|default:'' }}" required {% if login_lockout_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="login">
                 <p id="ad-login-help" class="help-block login-help">
                     {% trans "Example:" %} <code>&lt;username&gt;@nextlabs.com</code>, <code>&lt;username&gt;</code>, {% trans "or" %} <code>NEXTLABS\&lt;username&gt;</code>.
                 </p>
@@ -90,10 +90,12 @@
             </div>
             <div class="form-group">
                 <label class="sr-only" for="id_password">{% trans "Password" %}</label>
-                <input id="id_password" type="password" name="password" class="form-control" placeholder="{% trans 'Password' %}" value="" required>
+                <input id="id_password" type="password" name="password" class="form-control" placeholder="{% trans 'Password' %}" value="" required {% if login_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="login">
             </div>
 
-            <button id="login-submit-button" class="btn btn-lg btn-primary btn-block" type="submit">
+            {% include "_auth_lockout_countdown.html" with lockout_active=login_lockout_active lockout_remaining_seconds=login_lockout_remaining_seconds lockout_message_template=login_lockout_message_template lockout_initial_message=login_lockout_initial_message lockout_group='login' only %}
+
+            <button id="login-submit-button" class="btn btn-lg btn-primary btn-block" type="submit" {% if login_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="login">
                 <i id="login-submit-icon" class="fa fa-windows" aria-hidden="true"></i>
                 <span id="login-submit-text">{% trans "Sign in with NextLabs AD" %}</span>
             </button>
@@ -144,7 +146,7 @@
                         if (localHelp) { localHelp.classList.toggle('csp-is-hidden', !isLocal); }
                         localLink.classList.toggle('csp-is-hidden', isLocal);
                         adLink.classList.toggle('csp-is-hidden', !isLocal);
-                        if (focusUsername) {
+                        if (focusUsername && !usernameInput.disabled) {
                             usernameInput.focus();
                         }
                     }
@@ -166,15 +168,20 @@
                     // field so the user can correct it immediately. A fresh login page still
                     // starts at the username field.
                     {% if request.method == "POST" %}
-                    if (passwordInput) {
+                    if (passwordInput && !passwordInput.disabled) {
                         passwordInput.focus();
                     }
                     {% else %}
-                    usernameInput.focus();
+                    if (!usernameInput.disabled) {
+                        usernameInput.focus();
+                    }
                     {% endif %}
                 }());
             </script>
         </form>
+        {% if login_lockout_active %}
+            <script src="{% static 'javascripts/auth-lockout-countdown.js' %}?v=20260803-1" defer></script>
+        {% endif %}
     </div>
 </div>
 

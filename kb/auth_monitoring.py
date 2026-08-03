@@ -536,6 +536,57 @@ def format_retry_after(seconds):
     return _format_retry_after_unit(days, "%(count)s day", "%(count)s days")
 
 
+AUTH_LOCKOUT_COUNTDOWN_MARKER = "__DJOPENKB_AUTH_LOCKOUT_COUNTDOWN__"
+
+
+def format_auth_lockout_countdown(seconds):
+    """Return a compact live-countdown label such as ``4m 59s`` or ``58s``."""
+    try:
+        seconds = max(0, int(seconds))
+    except (TypeError, ValueError):
+        seconds = 0
+
+    minutes, remaining_seconds = divmod(seconds, 60)
+    if minutes:
+        return f"{minutes}m {remaining_seconds}s"
+    return f"{remaining_seconds}s"
+
+
+def build_auth_lockout_ui_context(*, locked, retry_after_seconds, message, prefix="auth_lockout"):
+    """Build safe template values for a server-backed authentication cooldown.
+
+    The cache lockout remains authoritative.  JavaScript only updates the text
+    and reloads when the displayed cooldown reaches zero; the relevant views
+    still reject crafted submissions while the server-side block is active.
+    ``message`` must use the existing ``%(duration)s`` placeholder so current
+    locale translations can be reused without adding duplicate message IDs.
+    """
+    try:
+        remaining = max(0, int(retry_after_seconds or 0))
+    except (TypeError, ValueError):
+        remaining = 0
+
+    active = bool(locked and remaining > 0)
+    template = ""
+    initial_message = ""
+    if active:
+        try:
+            template = str(message) % {"duration": AUTH_LOCKOUT_COUNTDOWN_MARKER}
+        except (TypeError, ValueError, KeyError):
+            template = f"{message} {AUTH_LOCKOUT_COUNTDOWN_MARKER}".strip()
+        initial_message = template.replace(
+            AUTH_LOCKOUT_COUNTDOWN_MARKER,
+            format_auth_lockout_countdown(remaining),
+        )
+
+    return {
+        f"{prefix}_active": active,
+        f"{prefix}_remaining_seconds": remaining if active else 0,
+        f"{prefix}_message_template": template,
+        f"{prefix}_initial_message": initial_message,
+    }
+
+
 def log_auth_event(request=None, event_type="", success=False, user=None, username="", login_mode="", details=None):
     """Record a best-effort auth/MFA audit event without breaking login flows."""
     if not event_type:

@@ -43,6 +43,7 @@ from django.views.decorators.http import require_POST
 from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
 from ..mfa import user_requires_mfa, verify_totp_code
 from ..auth_monitoring import (
+    build_auth_lockout_ui_context,
     format_retry_after,
     get_auth_lockout_status,
     log_auth_event,
@@ -3143,7 +3144,7 @@ def paginate_articles(request, articles, per_page=20, page_param="page"):
     return page_obj
 
 
-def get_profile_account_context(user):
+def get_profile_account_context(user, request=None):
     user_is_ldap_managed = is_ldap_managed_user(user)
     profile, created = UserProfile.objects.get_or_create(user=user)
     mfa_device = getattr(user, "kb_mfa_device", None)
@@ -3153,6 +3154,22 @@ def get_profile_account_context(user):
     authorable_visibilities = allowed_article_visibility_values_for_user(user, action="add")
     workspace_visibilities = article_workspace_visibility_values_for_user(user)
     workspace_articles = article_workspace_queryset_for_user(user)
+
+    password_locked = False
+    password_retry_after = 0
+    mfa_locked = False
+    mfa_retry_after = 0
+    if request is not None:
+        password_locked, password_retry_after, _password_identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="password",
+        )
+        mfa_locked, mfa_retry_after, _mfa_identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="mfa",
+        )
 
     return {
         "total_user_article_count": user_articles.count(),
@@ -3189,6 +3206,22 @@ def get_profile_account_context(user):
         "mfa_device": mfa_device,
         "mfa_enabled": bool(mfa_device and mfa_device.confirmed),
         "mfa_last_verified_at": getattr(mfa_device, "last_verified_at", None),
+        **build_auth_lockout_ui_context(
+            locked=password_locked,
+            retry_after_seconds=password_retry_after,
+            message=_(
+                "Too many failed sign-in attempts. Please try again in %(duration)s."
+            ),
+            prefix="profile_password_lockout",
+        ),
+        **build_auth_lockout_ui_context(
+            locked=mfa_locked,
+            retry_after_seconds=mfa_retry_after,
+            message=_(
+                "Too many incorrect MFA codes. Please try again in %(duration)s."
+            ),
+            prefix="profile_mfa_lockout",
+        ),
     }
 
 

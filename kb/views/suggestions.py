@@ -15,6 +15,34 @@ import re
 from django.utils.translation import gettext as _
 from urllib.parse import quote
 
+from ..auth_monitoring import build_auth_lockout_ui_context, get_auth_lockout_status
+
+
+def _article_delete_lockout_context(request, requires_mfa):
+    if not requires_mfa:
+        return build_auth_lockout_ui_context(
+            locked=False,
+            retry_after_seconds=0,
+            message=_(
+                "Too many incorrect MFA codes. Please try again in %(duration)s."
+            ),
+            prefix="article_delete_mfa_lockout",
+        )
+
+    locked, retry_after, _identifier = get_auth_lockout_status(
+        request,
+        user=request.user,
+        purpose="mfa",
+    )
+    return build_auth_lockout_ui_context(
+        locked=locked,
+        retry_after_seconds=retry_after,
+        message=_(
+            "Too many incorrect MFA codes. Please try again in %(duration)s."
+        ),
+        prefix="article_delete_mfa_lockout",
+    )
+
 
 def _article_editor_review_mode(request):
     """Return True when the edit form is being used as a reviewer screen.
@@ -948,6 +976,7 @@ def delete_suggestion(request, article_id):
                 "return_url": return_url,
                 "delete_action": delete_action,
                 "requires_mfa": requires_mfa,
+                **_article_delete_lockout_context(request, requires_mfa),
             })
 
         title = article.title
@@ -1004,6 +1033,7 @@ def delete_suggestion(request, article_id):
         "return_url": return_url,
         "delete_action": delete_action,
         "requires_mfa": requires_mfa,
+        **_article_delete_lockout_context(request, requires_mfa),
     })
 
 

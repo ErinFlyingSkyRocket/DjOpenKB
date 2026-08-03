@@ -94,6 +94,16 @@
             white-space: nowrap;
             color: #1f2937;
         }
+        .auth-lockout-countdown {
+            margin: 12px 0 0;
+            text-align: center;
+            color: #b91c1c;
+            font-weight: 700;
+        }
+        input:disabled, button:disabled {
+            cursor: not-allowed;
+            opacity: 0.58;
+        }
     </style>
     <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
@@ -111,18 +121,21 @@
         {% endif %}
 
         {% if admin_mfa_timeout_expired %}
-            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate>
+            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate data-auth-lockout-scope>
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
                 <input type="hidden" name="action" value="restart">
-                <button type="submit">{% trans "Start new verification window" %}</button>
+                {% include "_auth_lockout_countdown.html" with lockout_active=admin_mfa_rate_limit_active lockout_remaining_seconds=admin_mfa_rate_limit_remaining_seconds lockout_message_template=admin_mfa_rate_limit_message_template lockout_initial_message=admin_mfa_rate_limit_initial_message lockout_group='admin_mfa' only %}
+                <button type="submit" {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="admin_mfa">{% trans "Start new verification window" %}</button>
             </form>
         {% else %}
-            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate>
+            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate data-auth-lockout-scope>
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
                 <label for="id_code">{% trans "Authenticator code" %}</label>
-                <input id="id_code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" required autofocus>
+                <input id="id_code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" required {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="admin_mfa">
+
+                {% include "_auth_lockout_countdown.html" with lockout_active=admin_mfa_rate_limit_active lockout_remaining_seconds=admin_mfa_rate_limit_remaining_seconds lockout_message_template=admin_mfa_rate_limit_message_template lockout_initial_message=admin_mfa_rate_limit_initial_message lockout_group='admin_mfa' only %}
 
                 {% if admin_mfa_timeout_active %}
                     <p
@@ -139,7 +152,7 @@
                     </p>
                 {% endif %}
 
-                <button type="submit">{% trans "Verify and continue to admin" %}</button>
+                <button type="submit" {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="admin_mfa">{% trans "Verify and continue to admin" %}</button>
             </form>
         {% endif %}
 
@@ -147,6 +160,9 @@
     </main>
     {% if admin_mfa_timeout_active %}
         <script src="{% static 'javascripts/admin-mfa-timeout.js' %}?v=20260803-1" defer></script>
+    {% endif %}
+    {% if admin_mfa_rate_limit_active %}
+        <script src="{% static 'javascripts/auth-lockout-countdown.js' %}?v=20260803-1" defer></script>
     {% endif %}
 </body>
 </html>

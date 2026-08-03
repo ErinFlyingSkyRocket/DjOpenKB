@@ -171,6 +171,30 @@ class MFALoginTimeoutTests(TestCase):
         )
         self.assertNotIn(PRE_MFA_USER_ID_SESSION_KEY, self.client.session)
 
+    def test_confirmed_unreadable_mfa_secret_is_not_silently_replaced(self):
+        self.device.secret = "fernet$invalid-confirmed-secret"
+        self.device.confirmed = True
+        self.device.save(update_fields=["secret", "confirmed"])
+        original_encrypted_value = self.device.secret
+
+        device = get_or_create_mfa_device(self.user)
+
+        self.assertTrue(device.confirmed)
+        self.assertEqual(device.secret, original_encrypted_value)
+        self.assertFalse(device.get_secret())
+
+    def test_unconfirmed_unreadable_mfa_secret_is_regenerated_for_setup(self):
+        self.device.secret = "fernet$invalid-unconfirmed-secret"
+        self.device.confirmed = False
+        self.device.save(update_fields=["secret", "confirmed"])
+        original_encrypted_value = self.device.secret
+
+        device = get_or_create_mfa_device(self.user)
+
+        self.assertFalse(device.confirmed)
+        self.assertNotEqual(device.secret, original_encrypted_value)
+        self.assertTrue(device.get_secret())
+
     def test_site_setting_admin_exposes_mfa_timeout_control(self):
         model_admin = admin.site._registry[SiteSetting]
         field_names = {

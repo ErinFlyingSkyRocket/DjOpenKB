@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from .services import is_ldap_managed_user, main_site_login_required
 
 from ..auth_monitoring import (
+    build_auth_lockout_ui_context,
     format_retry_after,
     get_auth_lockout_status,
     log_auth_event,
@@ -177,6 +178,23 @@ def _ensure_pending_mfa_login_for_timeout(request):
         backend=backend,
     )
     return user
+
+
+def _mfa_rate_limit_context(request, user):
+    """Return the current MFA cooldown UI without changing the lockout."""
+    locked, retry_after, _identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="mfa",
+    )
+    return build_auth_lockout_ui_context(
+        locked=locked,
+        retry_after_seconds=retry_after,
+        message=_(
+            "Too many incorrect MFA codes. Please try again in %(duration)s."
+        ),
+        prefix="mfa_rate_limit",
+    )
 
 
 def _mfa_timeout_context(request):
@@ -384,6 +402,7 @@ def mfa_setup(request):
             "next": _safe_next_url(request),
             "mfa_user": user,
             **_mfa_timeout_context(request),
+            **_mfa_rate_limit_context(request, user),
         },
     )
 
@@ -432,6 +451,7 @@ def mfa_verify(request):
                 "next": _safe_next_url(request),
                 "mfa_user": user,
                 **_mfa_timeout_context(request),
+                **_mfa_rate_limit_context(request, user),
             },
         )
 
@@ -518,6 +538,7 @@ def mfa_verify(request):
             "next": _safe_next_url(request),
             "mfa_user": user,
             **_mfa_timeout_context(request),
+            **_mfa_rate_limit_context(request, user),
         },
     )
 

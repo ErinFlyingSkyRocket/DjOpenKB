@@ -53,17 +53,19 @@
                     {% trans "Manual setup key" %}: <code>{{ manual_secret }}</code>
                 </p>
 
-                <form method="post" action="{% url 'mfa_setup' %}">
+                <form method="post" action="{% url 'mfa_setup' %}" data-auth-lockout-scope>
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ next }}">
                     <div class="form-group">
                         <label for="id_code">{% trans "MFA/OTP code" %}</label>
-                        <input id="id_code" name="code" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required autofocus>
+                        <input id="id_code" name="code" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required {% if mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="mfa">
                     </div>
+
+                    {% include "_auth_lockout_countdown.html" with lockout_active=mfa_rate_limit_active lockout_remaining_seconds=mfa_rate_limit_remaining_seconds lockout_message_template=mfa_rate_limit_message_template lockout_initial_message=mfa_rate_limit_initial_message lockout_group='mfa' only %}
 
                     {% include "_mfa_login_timeout.html" %}
 
-                    <button class="btn btn-primary btn-block" type="submit">
+                    <button class="btn btn-primary btn-block" type="submit" {% if mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
                         <i class="fa fa-check"></i> {% trans "Verify" %}
                     </button>
                 </form>
@@ -79,5 +81,8 @@
     </div>
 </div>
 {% include "_footer.html" %}
+{% if mfa_rate_limit_active %}
+<script src="{% static 'javascripts/auth-lockout-countdown.js' %}?v=20260803-1" defer></script>
+{% endif %}
 </body>
 </html>

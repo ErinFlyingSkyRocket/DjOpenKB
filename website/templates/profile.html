@@ -138,7 +138,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     </button>
 
                                     <div class="collapse profile-account-edit" id="editEmailBox">
-                                        <form method="post" action="{% url 'update_profile' %}">
+                                        <form method="post" action="{% url 'update_profile' %}" data-auth-lockout-scope>
                                             {% csrf_token %}
                                             <input type="hidden" name="profile_action" value="email">
                                             <div class="form-group">
@@ -148,14 +148,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             {% if can_confirm_profile_changes %}
                                                 <div class="form-group">
                                                     <label>{% trans "Confirm password" %}</label>
-                                                    <input type="password" name="current_password" class="form-control" required>
+                                                    <input type="password" name="current_password" class="form-control" required {% if profile_password_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password">
+                                                    {% include "_auth_lockout_countdown.html" with lockout_active=profile_password_lockout_active lockout_remaining_seconds=profile_password_lockout_remaining_seconds lockout_message_template=profile_password_lockout_message_template lockout_initial_message=profile_password_lockout_initial_message lockout_group='password' only %}
                                                 </div>
                                             {% endif %}
                                             <div class="form-group">
                                                 <label>{% trans "Authenticator MFA/OTP code" %}</label>
-                                                <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required>
+                                                <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
+                                                {% include "_auth_lockout_countdown.html" with lockout_active=profile_mfa_lockout_active lockout_remaining_seconds=profile_mfa_lockout_remaining_seconds lockout_message_template=profile_mfa_lockout_message_template lockout_initial_message=profile_mfa_lockout_initial_message lockout_group='mfa' only %}
                                             </div>
-                                            <button class="btn btn-primary" type="submit">{% trans "Save email" %}</button>
+                                            <button class="btn btn-primary" type="submit" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Save email" %}</button>
                                             <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#editEmailBox">{% trans "Cancel" %}</button>
                                         </form>
                                     </div>
@@ -346,7 +348,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <div class="modal fade" id="resetMfaModal" tabindex="-1" role="dialog" aria-labelledby="resetMfaModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form method="post" action="{% url 'reset_mfa' %}">
+                <form method="post" action="{% url 'reset_mfa' %}" data-auth-lockout-scope>
                     {% csrf_token %}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
@@ -358,16 +360,18 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="form-group">
                             <label>{% trans "Confirm password" %}</label>
-                            <input type="password" name="current_password" class="form-control" autocomplete="current-password" required>
+                            <input type="password" name="current_password" class="form-control" autocomplete="current-password" required {% if profile_password_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password">
+                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_password_lockout_active lockout_remaining_seconds=profile_password_lockout_remaining_seconds lockout_message_template=profile_password_lockout_message_template lockout_initial_message=profile_password_lockout_initial_message lockout_group='password' only %}
                         </div>
                         <div class="form-group">
                             <label>{% trans "Authenticator MFA/OTP code" %}</label>
-                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
+                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_mfa_lockout_active lockout_remaining_seconds=profile_mfa_lockout_remaining_seconds lockout_message_template=profile_mfa_lockout_message_template lockout_initial_message=profile_mfa_lockout_initial_message lockout_group='mfa' only %}
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-warning">{% trans "Reset MFA" %}</button>
+                        <button type="submit" class="btn btn-warning" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Reset MFA" %}</button>
                     </div>
                 </form>
             </div>
@@ -379,7 +383,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form method="post" action="{% url 'change_password' %}">
+                <form method="post" action="{% url 'change_password' %}" data-auth-lockout-scope>
                     {% csrf_token %}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
@@ -388,7 +392,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div class="modal-body">
                         <div class="form-group">
                             <label>{% trans "Old password" %}</label>
-                            <input type="password" name="old_password" class="form-control" required>
+                            <input type="password" name="old_password" class="form-control" required {% if profile_password_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password">
+                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_password_lockout_active lockout_remaining_seconds=profile_password_lockout_remaining_seconds lockout_message_template=profile_password_lockout_message_template lockout_initial_message=profile_password_lockout_initial_message lockout_group='password' only %}
                         </div>
                         <div class="form-group">
                             <label>{% trans "New password" %}</label>
@@ -412,12 +417,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="form-group">
                             <label>{% trans "Authenticator MFA/OTP code" %}</label>
-                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required>
+                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
+                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_mfa_lockout_active lockout_remaining_seconds=profile_mfa_lockout_remaining_seconds lockout_message_template=profile_mfa_lockout_message_template lockout_initial_message=profile_mfa_lockout_initial_message lockout_group='mfa' only %}
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-primary">{% trans "Update password" %}</button>
+                        <button type="submit" class="btn btn-primary" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Update password" %}</button>
                     </div>
                 </form>
             </div>
@@ -496,5 +502,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     </script>
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}
+    {% if profile_password_lockout_active or profile_mfa_lockout_active %}
+    <script src="{% static 'javascripts/auth-lockout-countdown.js' %}?v=20260803-1" defer></script>
+    {% endif %}
 </body>
 </html>
