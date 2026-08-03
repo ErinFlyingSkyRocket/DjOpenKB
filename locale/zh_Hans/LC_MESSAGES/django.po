@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: kb/admin.py:1902
+#: kb/admin.py:1904
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "已将 %(count)d 个 MFA 设备标记为等待设置。"
 
@@ -26,12 +26,12 @@ msgstr "%(count)s 篇文章"
 msgid "%(count)s articles total."
 msgstr "共 %(count)s 篇文章。"
 
-#: kb/admin.py:306
+#: kb/admin.py:308
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s 天"
 
-#: kb/admin.py:310
+#: kb/admin.py:312
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s 小时"
@@ -40,7 +40,7 @@ msgstr[0] "%(count)s 小时"
 msgid "%(count)s matching articles found."
 msgstr "找到 %(count)s 篇匹配文章。"
 
-#: kb/admin.py:314 kb/admin.py:317
+#: kb/admin.py:316 kb/admin.py:319
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s 分钟"
@@ -49,7 +49,7 @@ msgstr[0] "%(count)s 分钟"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "通过匹配文章标题和关键词找到 %(count)s 个结果。"
 
-#: kb/admin.py:302 kb/admin.py:318 kb/admin.py:331
+#: kb/admin.py:304 kb/admin.py:320 kb/admin.py:333
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s 秒"
@@ -58,15 +58,15 @@ msgstr[0] "%(count)s 秒"
 msgid "%(count)s total"
 msgstr "共 %(count)s 个"
 
-#: kb/admin.py:2846
+#: kb/admin.py:2877
 msgid "%(days)s day(s)"
 msgstr "%(days)s 天"
 
-#: kb/models.py:879
+#: kb/models.py:877
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s 由 %(uploader)s 上传"
 
-#: kb/admin.py:2833
+#: kb/admin.py:2853
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s 小时"
 
@@ -94,7 +94,7 @@ msgstr "%(prefix)s：%(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1085
+#: kb/admin.py:1087
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s，另有 %(extra)d 项"
 
@@ -106,7 +106,7 @@ msgstr "%(role)s：%(description)s"
 msgid "%(size)s KB total"
 msgstr "共 %(size)s KB"
 
-#: kb/admin.py:1102
+#: kb/admin.py:1104
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s，另有 %(extra)d 项"
 
@@ -127,7 +127,7 @@ msgstr "，另有 %(count)d 项"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: “%(query)s”的搜索结果 :::"
 
-#: kb/admin.py:1842
+#: kb/admin.py:1844
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "重置会生成新的私密身份验证器密钥，并强制用户重新设置。"
 
@@ -135,11 +135,11 @@ msgstr "重置会生成新的私密身份验证器密钥，并强制用户重新
 msgid "Access denied"
 msgstr "访问被拒绝"
 
-#: kb/admin.py:1351 kb/admin.py:1765
+#: kb/admin.py:1353 kb/admin.py:1767
 msgid "Account Status"
 msgstr "账户状态"
 
-#: kb/admin.py:108 kb/admin.py:1832
+#: kb/admin.py:108 kb/admin.py:1834
 msgid "Account Type"
 msgstr "账户类型"
 
@@ -151,7 +151,7 @@ msgstr "账户目前已禁用"
 msgid "Account disabled"
 msgstr "账户已禁用"
 
-#: kb/admin.py:1183
+#: kb/admin.py:1185
 msgid "Account status"
 msgstr "账户状态"
 
@@ -163,7 +163,7 @@ msgstr "账户摘要"
 msgid "Account type"
 msgstr "账户类型"
 
-#: kb/admin.py:2203
+#: kb/admin.py:2205
 msgid "Action"
 msgstr "操作"
 
@@ -175,11 +175,11 @@ msgstr "操作"
 msgid "Active Directory user"
 msgstr "Active Directory 用户"
 
-#: kb/admin.py:102 kb/models.py:1059
+#: kb/admin.py:102 kb/models.py:1057
 msgid "Activity log"
 msgstr "活动日志"
 
-#: kb/admin.py:102 kb/models.py:1060
+#: kb/admin.py:102 kb/models.py:1058
 msgid "Activity logs"
 msgstr "活动日志"
 
@@ -187,51 +187,51 @@ msgstr "活动日志"
 msgid "Add Article"
 msgstr "新增文章"
 
-#: kb/admin.py:1222
+#: kb/admin.py:1224
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "附加角色。可创建或编辑自己的内部文章，并查看公开/常规文章。"
 
-#: kb/admin.py:1224
+#: kb/admin.py:1226
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "附加角色。可创建、管理或删除内部文章，并查看公开/常规文章。"
 
-#: kb/admin.py:1223
+#: kb/admin.py:1225
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "附加角色。可审核内部待审文章/更新，并查看公开/常规文章。"
 
-#: kb/admin.py:819
+#: kb/admin.py:821
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "附加角色。可查看公开/常规文章，并批准或拒绝内部待审文章和更新。"
 
-#: kb/admin.py:815
+#: kb/admin.py:817
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "附加角色。可查看公开/常规文章，并创建或编辑自己的内部文章。"
 
-#: kb/admin.py:811
+#: kb/admin.py:813
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "附加角色。可查看公开/常规文章和内部文章，但不能创建或批准内部文章。"
 
-#: kb/admin.py:1221
+#: kb/admin.py:1223
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "附加角色。可查看公开/常规文章及内部文章。"
 
-#: kb/admin.py:823
+#: kb/admin.py:825
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "附加角色。可查看公开/常规文章、创建/管理/删除内部文章，并审核内部待审文章。"
 
-#: kb/models.py:32 kb/models.py:638 kb/models.py:686 website/templates/_navbar.html:55
+#: kb/models.py:32 kb/models.py:635 kb/models.py:683 website/templates/_navbar.html:55
 msgid "Admin"
 msgstr "管理员"
 
-#: kb/admin.py:2817
+#: kb/admin.py:2837
 msgid "Admin IP restriction status"
 msgstr "管理员 IP 限制状态"
 
-#: kb/admin.py:247 kb/models.py:1242
+#: kb/admin.py:248 kb/models.py:1251
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "管理员 MFA 空闲超时（秒）"
 
-#: kb/admin.py:2824
+#: kb/admin.py:2844
 msgid "Admin MFA idle timeout readable"
 msgstr "管理员 MFA 空闲超时（易读格式）"
 
@@ -239,11 +239,11 @@ msgstr "管理员 MFA 空闲超时（易读格式）"
 msgid "Admin MFA verification"
 msgstr "管理员 MFA 验证"
 
-#: kb/admin.py:1225 kb/admin.py:826 kb/permissions.py:62
+#: kb/admin.py:1227 kb/admin.py:828 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "管理员用户"
 
-#: kb/admin.py:1708
+#: kb/admin.py:1710
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "已将“管理员用户”角色分配给 %(count)d 个所选用户。"
 
@@ -251,35 +251,35 @@ msgstr "已将“管理员用户”角色分配给 %(count)d 个所选用户。"
 msgid "Admin access requires an active MFA-protected account."
 msgstr "访问管理后台需要已启用且受 MFA 保护的账户。"
 
-#: kb/models.py:1087
+#: kb/models.py:1085
 msgid "Admin action/request"
 msgstr "管理员操作/请求"
 
-#: kb/admin.py:103 kb/models.py:1119
+#: kb/admin.py:103 kb/models.py:1117
 msgid "Admin activity log"
 msgstr "管理员活动日志"
 
-#: kb/admin.py:103 kb/models.py:1120
+#: kb/admin.py:103 kb/models.py:1118
 msgid "Admin activity logs"
 msgstr "管理员活动日志"
 
-#: kb/admin.py:245 kb/models.py:1224
+#: kb/admin.py:246 kb/models.py:1233
 msgid "Admin allowed IP ranges"
 msgstr "管理员允许的 IP 范围"
 
-#: kb/admin.py:243 kb/models.py:1207
+#: kb/admin.py:244 kb/models.py:1216
 msgid "Admin log rows per page"
 msgstr "管理日志每页行数"
 
-#: kb/models.py:1085
+#: kb/models.py:1083
 msgid "Admin object changed"
 msgstr "管理员对象已更改"
 
-#: kb/models.py:1084
+#: kb/models.py:1082
 msgid "Admin object created"
 msgstr "管理员对象已创建"
 
-#: kb/models.py:1086
+#: kb/models.py:1084
 msgid "Admin object deleted"
 msgstr "管理员对象已删除"
 
@@ -295,15 +295,15 @@ msgstr "%(target)s 的管理员请求被拒绝"
 msgid "Admin request failed for %(target)s"
 msgstr "%(target)s 的管理员请求失败"
 
-#: kb/admin.py:2200
+#: kb/admin.py:2202
 msgid "Admin request failed or denied for %(target)s"
 msgstr "%(target)s 的管理员请求失败或被拒绝"
 
-#: kb/admin.py:2201 kb/admin_audit.py:175
+#: kb/admin.py:2203 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "%(target)s 的管理员请求"
 
-#: kb/models.py:990
+#: kb/models.py:988
 msgid "Admin tool action"
 msgstr "管理工具操作"
 
@@ -327,15 +327,15 @@ msgstr "管理员用户名"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "仅管理员工具。导出内容包括文章 Markdown 以及以下位置引用的文件"
 
-#: kb/admin.py:262 kb/models.py:50
+#: kb/admin.py:263 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "管理员/LDAP 管理员账户在启用员工状态后可以访问 Django 管理后台。"
 
-#: kb/admin.py:874
+#: kb/admin.py:876
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "保存后，如有需要请重新打开该用户，并检查“有效权限”以确认最终访问级别。"
 
-#: kb/models.py:455
+#: kb/models.py:452
 msgid "After this time, the queued article can be permanently deleted by the scheduled cleanup."
 msgstr "在此时间之后，计划清理任务可以永久删除队列中的文章。"
 
@@ -347,23 +347,23 @@ msgstr "所有允许访问的文章"
 msgid "All statuses"
 msgstr "所有状态"
 
-#: kb/admin.py:2792
+#: kb/admin.py:2812
 msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
 msgstr "允许列表已关闭 — 所有 IPv4 和 IPv6 地址都可以到达管理员身份验证/MFA 检查。"
 
-#: kb/admin.py:2807
+#: kb/admin.py:2827
 msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
 msgstr "允许列表已启用 — 允许 %(count)s 个 IP/CIDR 范围："
 
-#: kb/admin.py:2802
+#: kb/admin.py:2822
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "允许列表已启用，但未配置有效的 IP/CIDR 范围。在至少保存一个有效范围之前，管理员访问将被拒绝。"
 
-#: kb/views/services.py:249
+#: kb/views/services.py:250
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "标题为“%(title)s”的文章已存在。请使用其他标题。"
 
-#: kb/models.py:500
+#: kb/models.py:497
 msgid "An article with this title already exists. Please use a different title."
 msgstr "已有相同标题的文章。请使用其他标题。"
 
@@ -371,7 +371,7 @@ msgstr "已有相同标题的文章。请使用其他标题。"
 msgid "Apply"
 msgstr "应用"
 
-#: kb/admin.py:2327
+#: kb/admin.py:2329
 msgid "Approval / review"
 msgstr "审批 / 审核"
 
@@ -379,7 +379,7 @@ msgstr "审批 / 审核"
 msgid "Approve / Publish"
 msgstr "批准 / 发布"
 
-#: kb/admin.py:2360
+#: kb/admin.py:2362
 msgid "Approve selected pending articles"
 msgstr "批准所选待审核文章"
 
@@ -387,7 +387,7 @@ msgstr "批准所选待审核文章"
 msgid "Approve update"
 msgstr "批准更新"
 
-#: kb/admin.py:2383
+#: kb/admin.py:2385
 msgid "Approved article %(title)s from Django Admin"
 msgstr "已通过 Django 管理后台批准文章 %(title)s"
 
@@ -423,31 +423,31 @@ msgstr "确定要删除此文件吗？"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "确定要还原到上次发布版本吗？所有未发布的更新更改都将被永久删除。"
 
-#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:112 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2077 kb/admin.py:213 kb/admin.py:2326 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "文章"
 
-#: kb/admin.py:1219 kb/admin.py:797 kb/permissions.py:56
+#: kb/admin.py:1221 kb/admin.py:799 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "文章审批员"
 
-#: kb/admin.py:1688
+#: kb/admin.py:1690
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "已将“文章审批员”角色分配给 %(count)d 个所选用户。"
 
-#: kb/admin.py:1220 kb/admin.py:804 kb/permissions.py:57
+#: kb/admin.py:1222 kb/admin.py:806 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "文章管理员"
 
-#: kb/admin.py:1698
+#: kb/admin.py:1700
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "已将“文章管理员”角色分配给 %(count)d 个所选用户。"
 
-#: kb/admin.py:1218 kb/admin.py:790 kb/permissions.py:55
+#: kb/admin.py:1220 kb/admin.py:792 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "文章撰写者"
 
-#: kb/admin.py:1678
+#: kb/admin.py:1680
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "已将“文章撰写者”角色分配给 %(count)d 个所选用户。"
 
@@ -459,7 +459,7 @@ msgstr "文章和更新审核"
 msgid "Article approved and published."
 msgstr "文章已批准并发布。"
 
-#: kb/models.py:942
+#: kb/models.py:940
 msgid "Article approved/published"
 msgstr "文章已批准/发布"
 
@@ -467,7 +467,7 @@ msgstr "文章已批准/发布"
 msgid "Article approver. Can view articles, review pending public articles/updates, edit content while articles/updates remain pending, keep them pending after review edits, and approve or reject them; cannot create, delete, or edit already-published articles by default. Regular User is not required."
 msgstr "文章审批员。可查看文章、审核待审公开文章/更新、在文章/更新保持待审期间编辑内容、在审核编辑后继续保持待审，并批准或拒绝它们；默认不能创建、删除或编辑已发布文章。无需“普通用户”角色。"
 
-#: kb/models.py:937
+#: kb/models.py:935
 msgid "Article auto-deleted from queue"
 msgstr "文章已从队列中自动删除"
 
@@ -483,11 +483,11 @@ msgstr "文章正文（Markdown）"
 msgid "Article contributor. Can view articles, create articles, save drafts, submit for approval, manage their own article drafts/updates, and delete their own articles. Published article deletion requires MFA confirmation. Regular User is not required."
 msgstr "文章投稿者。可查看文章、创建文章、保存草稿、提交审批、管理自己的文章草稿/更新，以及删除自己的文章。删除已发布文章需要 MFA 确认。无需“普通用户”角色。"
 
-#: kb/models.py:931
+#: kb/models.py:929
 msgid "Article created"
 msgstr "文章已创建"
 
-#: kb/models.py:933
+#: kb/models.py:931
 msgid "Article deleted"
 msgstr "文章已删除"
 
@@ -499,27 +499,27 @@ msgstr "已在 MFA 验证后确认删除文章。"
 msgid "Article deletion confirmed: %(title)s."
 msgstr "已确认删除文章：%(title)s。"
 
-#: kb/admin.py:2671 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2674 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "文章删除队列"
 
-#: kb/admin.py:237 kb/models.py:1148
+#: kb/admin.py:237 kb/models.py:1146
 msgid "Article deletion queue retention (days)"
 msgstr "文章删除队列保留期（天）"
 
-#: kb/models.py:939
+#: kb/models.py:937
 msgid "Article deletion rejected"
 msgstr "文章删除被拒绝"
 
-#: kb/models.py:755
+#: kb/models.py:753
 msgid "Article deletion request"
 msgstr "文章删除请求"
 
-#: kb/models.py:938
+#: kb/models.py:936
 msgid "Article deletion requested"
 msgstr "已请求删除文章"
 
-#: kb/models.py:756
+#: kb/models.py:754
 msgid "Article deletion requests"
 msgstr "文章删除请求"
 
@@ -527,7 +527,7 @@ msgstr "文章删除请求"
 msgid "Article details"
 msgstr "文章详情"
 
-#: kb/admin.py:2651
+#: kb/admin.py:2654
 msgid "Article display and upload limits"
 msgstr "文章显示和上传限制"
 
@@ -535,35 +535,35 @@ msgstr "文章显示和上传限制"
 msgid "Article image"
 msgstr "文章图片"
 
-#: kb/models.py:984
+#: kb/models.py:982
 msgid "Article image deleted"
 msgstr "文章图片已删除"
 
-#: kb/admin.py:238 kb/models.py:1156
+#: kb/admin.py:238 kb/models.py:1154
 msgid "Article image upload limit"
 msgstr "文章图片上传限制"
 
-#: kb/admin.py:101 kb/models.py:869
+#: kb/admin.py:101 kb/models.py:867
 msgid "Article image upload log"
 msgstr "文章图片上传日志"
 
-#: kb/models.py:907
+#: kb/models.py:905
 msgid "Article image upload log records are append-only and cannot be edited."
 msgstr "文章图片上传日志记录仅可追加，不能编辑。"
 
-#: kb/models.py:913
+#: kb/models.py:911
 msgid "Article image upload log records cannot be manually deleted."
 msgstr "文章图片上传日志记录不能手动删除。"
 
-#: kb/admin.py:101 kb/models.py:870
+#: kb/admin.py:101 kb/models.py:868
 msgid "Article image upload logs"
 msgstr "文章图片上传日志"
 
-#: kb/models.py:983
+#: kb/models.py:981
 msgid "Article image uploaded"
 msgstr "文章图片已上传"
 
-#: kb/views/services.py:1327
+#: kb/views/services.py:1328
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "管理员当前已禁用文章图片上传。"
 
@@ -579,11 +579,11 @@ msgstr "文章管理员。可查看公开文章、创建公开文章、编辑/�
 msgid "Article marked as pending failed."
 msgstr "文章已标记为审核未通过。"
 
-#: kb/models.py:943
+#: kb/models.py:941
 msgid "Article marked pending failed"
 msgstr "文章已标记为审核未通过"
 
-#: kb/admin.py:2099
+#: kb/admin.py:2101
 msgid "Article owner"
 msgstr "文章所有者"
 
@@ -591,7 +591,7 @@ msgstr "文章所有者"
 msgid "Article owner account type"
 msgstr "文章所有者账户类型"
 
-#: kb/models.py:1048
+#: kb/models.py:1046
 msgid "Article owner account type snapshot"
 msgstr "文章所有者账户类型快照"
 
@@ -599,7 +599,7 @@ msgstr "文章所有者账户类型快照"
 msgid "Article owner email"
 msgstr "文章所有者电子邮件"
 
-#: kb/models.py:1042
+#: kb/models.py:1040
 msgid "Article owner email snapshot"
 msgstr "文章所有者电子邮件快照"
 
@@ -607,23 +607,23 @@ msgstr "文章所有者电子邮件快照"
 msgid "Article owner name"
 msgstr "文章所有者姓名"
 
-#: kb/models.py:1038
+#: kb/models.py:1036
 msgid "Article owner name snapshot"
 msgstr "文章所有者姓名快照"
 
-#: kb/models.py:970
+#: kb/models.py:968
 msgid "Article owner notification failed"
 msgstr "文章所有者通知发送失败"
 
-#: kb/models.py:962
+#: kb/models.py:960
 msgid "Article owner notification queued"
 msgstr "文章所有者通知已加入队列"
 
-#: kb/models.py:966
+#: kb/models.py:964
 msgid "Article owner notification sent"
 msgstr "文章所有者通知已发送"
 
-#: kb/models.py:974
+#: kb/models.py:972
 msgid "Article owner notification skipped"
 msgstr "文章所有者通知已跳过"
 
@@ -631,7 +631,7 @@ msgstr "文章所有者通知已跳过"
 msgid "Article owner user ID"
 msgstr "文章所有者用户 ID"
 
-#: kb/models.py:1026
+#: kb/models.py:1024
 msgid "Article owner user ID snapshot"
 msgstr "文章所有者用户 ID 快照"
 
@@ -639,7 +639,7 @@ msgstr "文章所有者用户 ID 快照"
 msgid "Article owner username"
 msgstr "文章所有者用户名"
 
-#: kb/models.py:1033
+#: kb/models.py:1031
 msgid "Article owner username snapshot"
 msgstr "文章所有者用户名快照"
 
@@ -647,7 +647,7 @@ msgstr "文章所有者用户名快照"
 msgid "Article pagination"
 msgstr "文章分页"
 
-#: kb/models.py:936
+#: kb/models.py:934
 msgid "Article permanently deleted"
 msgstr "文章已永久删除"
 
@@ -659,31 +659,31 @@ msgstr "文章已永久删除：%(title)s。"
 msgid "Article published successfully."
 msgstr "文章已成功发布。"
 
-#: kb/models.py:934
+#: kb/models.py:932
 msgid "Article queued for deletion"
 msgstr "文章已加入删除队列"
 
-#: kb/models.py:935
+#: kb/models.py:933
 msgid "Article restored from deletion queue"
 msgstr "文章已从删除队列恢复"
 
-#: kb/models.py:954
+#: kb/models.py:952
 msgid "Article review notification failed"
 msgstr "文章审核通知发送失败"
 
-#: kb/models.py:946
+#: kb/models.py:944
 msgid "Article review notification queued"
 msgstr "文章审核通知已加入队列"
 
-#: kb/models.py:950
+#: kb/models.py:948
 msgid "Article review notification sent"
 msgstr "文章审核通知已发送"
 
-#: kb/models.py:958
+#: kb/models.py:956
 msgid "Article review notification skipped"
 msgstr "文章审核通知已跳过"
 
-#: kb/admin.py:2344
+#: kb/admin.py:2346
 msgid "Article statistics"
 msgstr "文章统计"
 
@@ -691,7 +691,7 @@ msgstr "文章统计"
 msgid "Article status"
 msgstr "文章状态"
 
-#: kb/models.py:940
+#: kb/models.py:938
 msgid "Article status changed"
 msgstr "文章状态已更改"
 
@@ -699,7 +699,7 @@ msgstr "文章状态已更改"
 msgid "Article submitted for admin approval."
 msgstr "文章已提交给管理员审批。"
 
-#: kb/models.py:941
+#: kb/models.py:939
 msgid "Article submitted for approval"
 msgstr "文章已提交审核"
 
@@ -727,7 +727,7 @@ msgstr "文章更新已标记为待处理失败。当前已发布版本仍然可
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
 msgstr "文章更新已提交给管理员审核。更新获批前，已发布版本仍然可见。"
 
-#: kb/models.py:932
+#: kb/models.py:930
 msgid "Article updated"
 msgstr "文章已更新"
 
@@ -735,11 +735,11 @@ msgstr "文章已更新"
 msgid "Article updated successfully."
 msgstr "文章已成功更新。"
 
-#: kb/admin.py:239 kb/models.py:1165
+#: kb/admin.py:239 kb/models.py:1163
 msgid "Article video maximum width (px)"
 msgstr "文章视频最大宽度（px）"
 
-#: kb/models.py:978
+#: kb/models.py:976
 msgid "Article viewed"
 msgstr "文章已查看"
 
@@ -747,31 +747,31 @@ msgstr "文章已查看"
 msgid "Article visibility"
 msgstr "文章可见性"
 
-#: kb/admin.py:99 kb/models.py:806
+#: kb/admin.py:99 kb/models.py:804
 msgid "Article vote"
 msgstr "文章投票"
 
-#: kb/models.py:981
+#: kb/models.py:979
 msgid "Article vote changed"
 msgstr "文章投票已更改"
 
-#: kb/models.py:980
+#: kb/models.py:978
 msgid "Article vote down"
 msgstr "文章点踩"
 
-#: kb/models.py:982
+#: kb/models.py:980
 msgid "Article vote removed"
 msgstr "文章投票已移除"
 
-#: kb/models.py:979
+#: kb/models.py:977
 msgid "Article vote up"
 msgstr "文章点赞"
 
-#: kb/admin.py:99 kb/models.py:807
+#: kb/admin.py:99 kb/models.py:805
 msgid "Article votes"
 msgstr "文章投票"
 
-#: kb/admin.py:272 kb/models.py:1200
+#: kb/admin.py:274 kb/models.py:1209
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "早于指定天数的文章/投票/图片/管理工具/管理后台活动日志可由清理命令删除。设为 0 可无限期保留常规和管理员活动日志。"
 
@@ -779,7 +779,7 @@ msgstr "早于指定天数的文章/投票/图片/管理工具/管理后台活�
 msgid "Articles"
 msgstr "文章"
 
-#: kb/models.py:1174
+#: kb/models.py:1172
 msgid "Articles per page"
 msgstr "每页文章数"
 
@@ -811,7 +811,7 @@ msgstr "将选中文章分配给"
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "已将 %(count)s 篇孤立文章分配给 %(user)s。"
 
-#: kb/admin.py:1601
+#: kb/admin.py:1603
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "已向 %(username)s 分配“禁用用户”角色"
 
@@ -843,11 +843,11 @@ msgstr "审计日志记录仅可追加，不能编辑。"
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "审计日志记录不能手动删除，仅可通过保留期清理移除。"
 
-#: kb/admin.py:271 kb/models.py:1192
-msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
-msgstr "已认证会话和待 MFA 会话会在登录后的指定小时数后过期。默认值为 8 小时。允许范围：1 到 168 小时（7 天）。"
+#: kb/admin.py:272 kb/models.py:1190
+msgid "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "已通过身份验证的会话会在登录后的指定小时数到期。等待完成 MFA 的会话不得超过此时长，但通常会根据单独的 MFA 登录完成超时设置更早到期。默认值为 8 小时。允许范围：1 至 168 小时（7 天）。"
 
-#: kb/admin.py:1405
+#: kb/admin.py:1407
 msgid "Authentication Lockout Reset"
 msgstr "认证锁定重置"
 
@@ -855,7 +855,7 @@ msgstr "认证锁定重置"
 msgid "Authentication activity log"
 msgstr "认证活动日志"
 
-#: kb/admin.py:240 kb/models.py:1182
+#: kb/admin.py:240 kb/models.py:1180
 msgid "Authentication activity log retention (days)"
 msgstr "身份验证活动日志保留时间（天）"
 
@@ -863,27 +863,27 @@ msgstr "身份验证活动日志保留时间（天）"
 msgid "Authentication activity logs"
 msgstr "认证活动日志"
 
-#: kb/admin.py:2678
+#: kb/admin.py:2681
 msgid "Authentication and session settings"
 msgstr "身份验证与会话设置"
 
-#: kb/admin.py:1291
+#: kb/admin.py:1293
 msgid "Authentication lockout"
 msgstr "认证锁定"
 
-#: kb/admin.py:246 kb/models.py:1233
+#: kb/admin.py:247 kb/models.py:1242
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "认证锁定升级记录保留期（秒）"
 
-#: kb/admin.py:2687
+#: kb/admin.py:2706
 msgid "Authentication lockout policy"
 msgstr "认证锁定策略"
 
-#: kb/admin.py:97 kb/models.py:1322
+#: kb/admin.py:97 kb/models.py:1331
 msgid "Authentication lockout policy stage"
 msgstr "认证锁定策略阶段"
 
-#: kb/admin.py:2751 kb/admin.py:97 kb/models.py:1323
+#: kb/admin.py:2771 kb/admin.py:97 kb/models.py:1332
 msgid "Authentication lockout policy stages"
 msgstr "认证锁定策略阶段"
 
@@ -895,11 +895,11 @@ msgstr "管理员已重置认证锁定"
 msgid "Authentication lockout triggered"
 msgstr "已触发身份验证锁定"
 
-#: kb/admin.py:1178
+#: kb/admin.py:1180
 msgid "Authentication source"
 msgstr "认证来源"
 
-#: kb/admin.py:270 kb/models.py:1183
+#: kb/admin.py:271 kb/models.py:1181
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "清理命令可以删除超过此天数的身份验证/MFA 监控日志。设置为 0 可永久保留身份验证活动日志。"
 
@@ -911,11 +911,11 @@ msgstr "身份验证器 MFA/OTP 代码"
 msgid "Authenticator code"
 msgstr "身份验证器代码"
 
-#: kb/admin.py:118 kb/admin.py:1824
+#: kb/admin.py:118 kb/admin.py:1826
 msgid "Authenticator key"
 msgstr "身份验证器密钥"
 
-#: kb/views/mfa.py:239
+#: kb/views/mfa.py:350
 msgid "Authenticator setup completed successfully."
 msgstr "身份验证器设置已成功完成。"
 
@@ -935,7 +935,7 @@ msgstr "作者邮箱快照"
 msgid "Author name snapshot"
 msgstr "作者姓名快照"
 
-#: kb/admin.py:2347
+#: kb/admin.py:2349
 msgid "Author snapshot"
 msgstr "作者快照"
 
@@ -943,7 +943,7 @@ msgstr "作者快照"
 msgid "Author username snapshot"
 msgstr "作者用户名快照"
 
-#: website/templates/_page_back_button.html:7 website/templates/articles.html:208 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:71 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:57
+#: website/templates/_page_back_button.html:7 website/templates/articles.html:208 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:74 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:58
 msgid "Back"
 msgstr "返回"
 
@@ -963,15 +963,15 @@ msgstr "返回个人资料"
 msgid "Bad request"
 msgstr "错误的请求"
 
-#: kb/admin.py:255 kb/models.py:1307
+#: kb/admin.py:256 kb/models.py:1316
 msgid "Block duration (seconds)"
 msgstr "锁定时长（秒）"
 
-#: kb/models.py:1341
+#: kb/models.py:1350
 msgid "Block duration must be at least 60 seconds."
 msgstr "锁定时长至少应为 60 秒。"
 
-#: kb/admin.py:2593
+#: kb/admin.py:2595
 msgid "Block duration readable"
 msgstr "锁定时长（易读格式）"
 
@@ -983,7 +983,7 @@ msgstr "底部文章分页"
 msgid "Bulk Import / Export Articles"
 msgstr "文章批量导入 / 导出"
 
-#: kb/models.py:987
+#: kb/models.py:985
 msgid "Bulk article import"
 msgstr "批量文章导入"
 
@@ -999,11 +999,11 @@ msgstr "可新增/提交内部文章以供审批"
 msgid "Can add/submit public articles for approval"
 msgstr "可新增/提交公开文章以供审批"
 
-#: kb/admin.py:666
+#: kb/admin.py:668
 msgid "Can approve/manage internal articles"
 msgstr "可批准/管理内部文章"
 
-#: kb/admin.py:639
+#: kb/admin.py:641
 msgid "Can approve/manage pending articles"
 msgstr "可批准/管理待审文章"
 
@@ -1015,35 +1015,35 @@ msgstr "可批准/管理待审内部文章审核"
 msgid "Can approve/manage pending public article reviews"
 msgstr "可批准/管理待审公开文章审核"
 
-#: kb/admin.py:1218
+#: kb/admin.py:1220
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "可创建文章草稿、提交文章审批，并编辑/重新提交自己的文章。不能批准或拒绝文章。包含查看者访问权限，因此无需“普通用户”角色。"
 
-#: kb/admin.py:791
+#: kb/admin.py:793
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "可创建文章草稿、提交新文章审批，并编辑/重新提交自己的文章。不能批准或拒绝文章。"
 
-#: kb/admin.py:630
+#: kb/admin.py:632
 msgid "Can create articles"
 msgstr "可创建文章"
 
-#: kb/admin.py:805
+#: kb/admin.py:807
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "可创建文章、编辑/管理文章、审核待审文章/更新、批准/拒绝提交内容，并删除文章。"
 
-#: kb/admin.py:1220
+#: kb/admin.py:1222
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "可创建文章、编辑/管理文章、审核待审文章/更新、批准/拒绝提交内容，并删除文章。包含查看者访问权限，因此无需“普通用户”角色。"
 
-#: kb/admin.py:661
+#: kb/admin.py:663
 msgid "Can create internal articles"
 msgstr "可创建内部文章"
 
-#: kb/admin.py:648
+#: kb/admin.py:650
 msgid "Can delete articles"
 msgstr "可删除文章"
 
-#: kb/admin.py:671 kb/permissions.py:36
+#: kb/admin.py:673 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "可删除内部文章"
 
@@ -1051,15 +1051,15 @@ msgstr "可删除内部文章"
 msgid "Can delete public articles"
 msgstr "可删除公开文章"
 
-#: kb/admin.py:798
+#: kb/admin.py:800
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "可审核待审文章/更新、在待审审核期间编辑内容，并批准或拒绝它们。默认不能编辑已发布文章或删除文章。文章审批员默认不能新增或删除文章。"
 
-#: kb/admin.py:1219
+#: kb/admin.py:1221
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "可审核待审文章/更新、在待审审核期间编辑内容，并批准或拒绝它们。默认不能编辑已发布文章或删除文章，也不能新增或删除文章。包含查看者访问权限，因此无需“普通用户”角色。"
 
-#: kb/admin.py:787
+#: kb/admin.py:789
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "可登录、查看/搜索已发布文章、使用常规文章页面，并在启用投票时投票。"
 
@@ -1067,11 +1067,11 @@ msgstr "可登录、查看/搜索已发布文章、使用常规文章页面，�
 msgid "Can use Knowledge Repository admin tools"
 msgstr "可使用知识库管理工具"
 
-#: kb/admin.py:620
+#: kb/admin.py:622
 msgid "Can view articles"
 msgstr "可查看文章"
 
-#: kb/admin.py:656 kb/permissions.py:33
+#: kb/admin.py:658 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "可查看内部文章"
 
@@ -1079,7 +1079,7 @@ msgstr "可查看内部文章"
 msgid "Can view published public articles"
 msgstr "可查看已发布公开文章"
 
-#: kb/admin.py:1217
+#: kb/admin.py:1219
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "可查看/搜索已发布文章并投票。这是后备查看者角色，仅在用户没有其他标准知识库角色时自动添加。"
 
@@ -1095,15 +1095,15 @@ msgstr "更改消息"
 msgid "Change password"
 msgstr "更改密码"
 
-#: kb/admin.py:386
+#: kb/admin.py:388
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "已更改 %(target_label)s %(target)s：%(changes)s"
 
-#: kb/admin.py:2192 kb/admin_audit.py:153
+#: kb/admin.py:2194 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "已更改 %(target_label)s：%(target)s"
 
-#: kb/admin.py:2187
+#: kb/admin.py:2189
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "已更改 %(target_label)s：%(target)s — %(changes)s"
 
@@ -1111,11 +1111,11 @@ msgstr "已更改 %(target_label)s：%(target)s — %(changes)s"
 msgid "Checking..."
 msgstr "正在检查..."
 
-#: kb/admin.py:862
+#: kb/admin.py:864
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "请先选择一个群组，然后仅在例外情况下使用直接权限复选框。对大多数用户而言，仅使用群组已足够。"
 
-#: kb/admin.py:569
+#: kb/admin.py:571
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "选择此配置文件是本地用户/管理员还是 LDAP 用户/管理员。管理员账户类型会添加“管理员用户”角色并成为 Django 超级用户。改回“用户/LDAP 用户”会移除“管理员用户”并清除员工/超级用户状态。若 AD 账户已删除但需保留文章，可使用此功能将废弃的 LDAP 配置文件转换为本地配置文件。"
 
@@ -1139,7 +1139,7 @@ msgstr "清除聊天记录"
 msgid "Clear search"
 msgstr "清除搜索"
 
-#: kb/admin.py:1399
+#: kb/admin.py:1401
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "清除此用户的临时锁定和渐进式锁定历史记录。请仅在确认请求合法后使用。"
 
@@ -1151,19 +1151,19 @@ msgstr "点击“刷新”以扫描当前标题和文章正文中的现有关键
 msgid "Close"
 msgstr "关闭"
 
-#: kb/middleware.py:540
+#: kb/middleware.py:541
 msgid "Complete MFA before accessing the Django admin site."
 msgstr "请先完成 MFA，再访问 Django 管理站点。"
 
-#: kb/middleware.py:474
+#: kb/middleware.py:475
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
 msgstr "请先完成 MFA 再继续。完成 MFA 前，你尚未完全登录。"
 
-#: kb/middleware.py:501
+#: kb/middleware.py:502
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "请先完成 MFA 验证再继续。完成 MFA 前无法访问知识库。"
 
-#: kb/admin.py:1367 kb/mfa.py:135
+#: kb/admin.py:1369 kb/mfa.py:243
 msgid "Configured"
 msgstr "已配置"
 
@@ -1183,7 +1183,7 @@ msgstr "确认孤立文章操作"
 msgid "Confirm password"
 msgstr "确认密码"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:459
+#: kb/views/auth.py:508 kb/views/mfa.py:592
 msgid "Confirm password is incorrect."
 msgstr "确认密码不正确。"
 
@@ -1203,23 +1203,27 @@ msgstr "确认时间"
 msgid "Content type"
 msgstr "内容类型"
 
-#: kb/admin.py:2680
-msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
-msgstr "控制身份验证/MFA 日志、常规活动日志、管理日志显示行数以及用户会话生命周期。默认日志保留期为 30 天。管理日志表默认每页显示 200 行。会话默认持续 8 小时，可设置为 1 到 168 小时。"
+#: kb/admin.py:2689
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and the signed-in session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
+msgstr "控制身份验证/MFA 日志、常规活动日志、管理日志每页显示的行数以及登录会话的有效期。日志默认保留 30 天。管理日志表默认每页显示 200 行。会话默认时长为 8 小时。"
 
-#: kb/admin.py:2673
+#: kb/admin.py:2676
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "控制已删除的已发布文章在“我的个人资料 → 管理工具 → 删除队列”中可恢复多久，之后将由计划任务永久删除。默认值为 7 天。设为 0 则在 MFA 确认后立即永久删除。"
 
-#: kb/admin.py:2657
+#: kb/admin.py:2660
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "控制每页/首页每个栏目显示的文章数量、每篇文章可包含的粘贴/上传图片数量，以及文章视频的最大显示宽度。每页文章数默认为 10。图片上传上限默认为 50；设为 0 可禁用文章图片上传。文章视频宽度默认为 720 px，并会在较小屏幕上保持响应式显示。"
 
-#: kb/admin.py:2666
+#: kb/admin.py:2700
+msgid "Controls the fixed window that starts immediately after username/password verification succeeds. The user must finish MFA before this countdown reaches zero or sign in with username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "控制用户名和密码验证成功后立即开始的固定时间窗口。用户必须在倒计时归零前完成 MFA，否则需要使用用户名和密码重新登录。默认值为 60 秒。允许范围：30 至 900 秒（15 分钟）。"
+
+#: kb/admin.py:2669
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "控制“我的资料 → 管理工具 → 清理未使用上传文件”使用的最小文件时间。设置为 0 可立即显示文件。"
 
-#: kb/admin.py:263 kb/models.py:56
+#: kb/admin.py:264 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "控制密码是在知识库中本地管理，还是由 Active Directory 在外部管理。"
 
@@ -1235,11 +1239,11 @@ msgstr "已创建"
 msgid "Created %(target)s"
 msgstr "已创建 %(target)s"
 
-#: kb/admin.py:418
+#: kb/admin.py:420
 msgid "Created %(target_label)s %(target)s"
 msgstr "已创建 %(target_label)s %(target)s"
 
-#: kb/admin.py:2184 kb/admin_audit.py:150
+#: kb/admin.py:2186 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "已创建 %(target_label)s：%(target)s"
 
@@ -1255,15 +1259,15 @@ msgstr "当前 MFA 状态"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "当文章处于“草稿”或“待审失败”状态时，向文章所有者显示的当前管理员反馈。"
 
-#: kb/admin.py:2435 kb/models.py:371
+#: kb/admin.py:2437 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "当前待处理失败备注"
 
-#: kb/admin.py:1088
+#: kb/admin.py:1090
 msgid "Current users"
 msgstr "当前用户"
 
-#: kb/admin.py:1068
+#: kb/admin.py:1070
 msgid "Custom Django group"
 msgstr "自定义 Django 群组"
 
@@ -1275,31 +1279,31 @@ msgstr "日期"
 msgid "Date and time when this article was approved for public display."
 msgstr "此文章获批公开显示的日期和时间。"
 
-#: kb/admin.py:1233
+#: kb/admin.py:1235
 msgid "Default Knowledge Repository groups:"
 msgstr "默认知识库群组："
 
-#: kb/admin.py:1016
+#: kb/admin.py:1018
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "默认知识库角色群组不能删除。"
 
-#: kb/admin.py:1027
+#: kb/admin.py:1029
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "默认知识库角色群组不能删除。已跳过 %(count)d 个受保护群组。"
 
-#: kb/admin.py:1054
+#: kb/admin.py:1056
 msgid "Default permissions:"
 msgstr "默认权限："
 
-#: kb/admin.py:2772
+#: kb/admin.py:2792
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "默认阶段 1：错误尝试 10 次后锁定 5 分钟，重复 2 次。"
 
-#: kb/admin.py:2773
+#: kb/admin.py:2793
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "默认阶段 2：错误尝试 5 次后锁定 15 分钟，重复 2 次。"
 
-#: kb/admin.py:2774
+#: kb/admin.py:2794
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "默认阶段 3：错误尝试 3 次后锁定 1 小时，持续重复，直到成功登录或由管理员重置。"
 
@@ -1327,7 +1331,7 @@ msgstr "删除选中的无用文件"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "删除选中的无用上传文件？此操作无法撤销。"
 
-#: kb/admin.py:473
+#: kb/admin.py:475
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "已删除 %(count)d 个 %(target_label)s：%(preview)s"
 
@@ -1335,15 +1339,15 @@ msgstr "已删除 %(count)d 个 %(target_label)s：%(preview)s"
 msgid "Deleted %(target)s"
 msgstr "已删除 %(target)s"
 
-#: kb/admin.py:454
+#: kb/admin.py:456
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "已删除 %(target_label)s %(target)s"
 
-#: kb/admin.py:2194 kb/admin_audit.py:160
+#: kb/admin.py:2196 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "已删除 %(target_label)s：%(target)s"
 
-#: kb/admin.py:2073
+#: kb/admin.py:2075
 msgid "Deleted article"
 msgstr "已删除文章"
 
@@ -1359,11 +1363,11 @@ msgstr "删除时间"
 msgid "Deleted by"
 msgstr "删除者"
 
-#: kb/models.py:825
+#: kb/models.py:823
 msgid "Deleted by admin stray-file cleanup"
 msgstr "由管理员无用文件清理删除"
 
-#: kb/models.py:826
+#: kb/models.py:824
 msgid "Deleted by automatic stray-file cleanup"
 msgstr "由自动无用文件清理删除"
 
@@ -1383,11 +1387,11 @@ msgstr "已从文章页面删除。"
 msgid "Deleted from orphan article cleanup."
 msgstr "已通过孤立文章清理删除。"
 
-#: kb/models.py:662
+#: kb/models.py:659
 msgid "Deleted user"
 msgstr "已删除用户"
 
-#: kb/models.py:713
+#: kb/models.py:711
 msgid "Deletion approved"
 msgstr "删除已批准"
 
@@ -1399,7 +1403,7 @@ msgstr "删除队列"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "删除队列保留期设置为 0 天。新删除的已发布文章会在确认后立即永久删除。此处显示的现有队列文章已准备好永久删除。"
 
-#: kb/admin.py:2848
+#: kb/admin.py:2879
 msgid "Deletion queue retention readable"
 msgstr "删除队列保留期（易读格式）"
 
@@ -1407,31 +1411,31 @@ msgstr "删除队列保留期（易读格式）"
 msgid "Deletion queued"
 msgstr "已加入删除队列"
 
-#: kb/admin.py:203 kb/models.py:440
+#: kb/admin.py:203 kb/models.py:437
 msgid "Deletion queued at"
 msgstr "加入删除队列时间"
 
-#: kb/admin.py:204 kb/models.py:448
+#: kb/admin.py:204 kb/models.py:445
 msgid "Deletion queued by"
 msgstr "加入删除队列者"
 
-#: kb/admin.py:208 kb/models.py:472
+#: kb/admin.py:208 kb/models.py:469
 msgid "Deletion reason"
 msgstr "删除原因"
 
-#: kb/models.py:714
+#: kb/models.py:712
 msgid "Deletion rejected"
 msgstr "删除已拒绝"
 
-#: kb/admin.py:206 kb/models.py:460
+#: kb/admin.py:206 kb/models.py:457
 msgid "Deletion restored at"
 msgstr "恢复时间"
 
-#: kb/admin.py:207 kb/models.py:468
+#: kb/admin.py:207 kb/models.py:465
 msgid "Deletion restored by"
 msgstr "恢复操作人"
 
-#: kb/admin.py:2247
+#: kb/admin.py:2249
 msgid "Denied"
 msgstr "已拒绝"
 
@@ -1439,51 +1443,51 @@ msgstr "已拒绝"
 msgid "Details"
 msgstr "详情"
 
-#: kb/admin.py:1193
+#: kb/admin.py:1195
 msgid "Direct Knowledge Repository permissions"
 msgstr "直接知识库权限"
 
-#: kb/admin.py:640
+#: kb/admin.py:642
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "直接用户权限。允许访问文章审批工作流，例如待审文章审核、待审更新审核、批准/拒绝操作，以及审核阶段的文章编辑。除非其他权限/群组授予，否则不会自动允许创建新文章、删除文章或完整访问 Django 管理后台。"
 
-#: kb/admin.py:631
+#: kb/admin.py:633
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "直接用户权限。允许用户创建文章草稿、提交新文章审批，并编辑/重新提交自己的文章或待审更新。不允许批准/拒绝其他用户的文章，也不允许使用 Django 管理工具。"
 
-#: kb/admin.py:621
+#: kb/admin.py:623
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "直接用户权限。允许用户登录后打开主知识库并阅读已发布文章。不允许创建文章、批准文章或使用管理工具。未勾选表示未直接授予用户；用户仍可能从所属群组获得此权限。“禁用用户”群组会覆盖直接权限附加项。"
 
-#: kb/admin.py:662
+#: kb/admin.py:664
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "直接用户权限。允许此用户创建并提交内部/私有文章。"
 
-#: kb/admin.py:649
+#: kb/admin.py:651
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "直接用户权限。允许此用户删除文章。请谨慎使用；标准“文章管理员”和“管理员用户”群组已授予此权限。"
 
-#: kb/admin.py:672
+#: kb/admin.py:674
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "直接用户权限。允许此用户删除内部/私有文章。"
 
-#: kb/admin.py:657
+#: kb/admin.py:659
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "直接用户权限。允许此用户打开并阅读已发布的内部/私有文章。"
 
-#: kb/admin.py:667
+#: kb/admin.py:669
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "直接用户权限。允许此用户审核和管理待审内部/私有文章。"
 
-#: kb/admin.py:832
+#: kb/admin.py:834
 msgid "Direct user permissions"
 msgstr "直接用户权限"
 
-#: kb/admin.py:1216 kb/admin.py:1338 kb/admin.py:779 kb/permissions.py:53
+#: kb/admin.py:1218 kb/admin.py:1340 kb/admin.py:781 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "禁用用户"
 
-#: kb/admin.py:1611
+#: kb/admin.py:1613
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "已将“禁用用户”角色分配给 %(count)d 个所选用户。"
 
@@ -1491,19 +1495,19 @@ msgstr "已将“禁用用户”角色分配给 %(count)d 个所选用户。"
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "禁用账户角色。该用户账户会保留在 Django 中以满足审计/历史记录需要，但在管理员将用户移至其他角色前，无法完成登录或访问知识库。"
 
-#: kb/admin.py:274 kb/models.py:1216
+#: kb/admin.py:276 kb/models.py:1225
 msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
 msgstr "默认关闭。关闭时，在满足正常身份验证和管理员 MFA 的前提下，可从任何 IPv4 或 IPv6 地址访问 Django Admin。启用后，仅允许已配置的 IP/CIDR 范围。"
 
-#: kb/admin.py:2566
+#: kb/admin.py:2568
 msgid "Dislike"
 msgstr "踩"
 
-#: kb/admin.py:2450 website/templates/articles.html:277
+#: kb/admin.py:2452 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "点踩"
 
-#: kb/views/services.py:2476
+#: kb/views/services.py:2477
 msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
 msgstr "DjOpenKB 无法验证此 SharePoint 或 OneDrive 视频是否可以在不登录的情况下访问。请检查其共享权限后重试。"
 
@@ -1511,7 +1515,7 @@ msgstr "DjOpenKB 无法验证此 SharePoint 或 OneDrive 视频是否可以在�
 msgid "Django Admin MFA lockout triggered"
 msgstr "Django 管理后台 MFA 锁定已触发"
 
-#: kb/admin.py:1967 kb/admin.py:1973
+#: kb/admin.py:1969 kb/admin.py:1975
 msgid "Django Admin MFA verification"
 msgstr "Django 管理后台 MFA 验证"
 
@@ -1523,7 +1527,7 @@ msgstr "Django 管理后台 MFA 验证失败"
 msgid "Django Admin MFA verification success"
 msgstr "Django 管理后台 MFA 验证成功"
 
-#: kb/admin.py:2706
+#: kb/admin.py:2725
 msgid "Django Admin access restrictions"
 msgstr "Django 管理后台访问限制"
 
@@ -1531,19 +1535,19 @@ msgstr "Django 管理后台访问限制"
 msgid "Django admin action flag"
 msgstr "Django 管理操作标记"
 
-#: kb/views/services.py:3081
+#: kb/views/services.py:3113
 msgid "Domain Admin"
 msgstr "域管理员"
 
-#: kb/views/services.py:3079
+#: kb/views/services.py:3111
 msgid "Domain User"
 msgstr "域用户"
 
-#: kb/admin.py:1200
+#: kb/admin.py:1202
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "域账户密码由 Active Directory 管理，不能从 Django 管理后台更改。"
 
-#: kb/admin.py:1306
+#: kb/admin.py:1308
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "域用户密码由 Active Directory 管理。"
 
@@ -1563,7 +1567,7 @@ msgstr "草稿已成功保存。"
 msgid "Due"
 msgstr "到期"
 
-#: kb/admin.py:2701
+#: kb/admin.py:2720
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "每位用户第一个被接受的问题会开始固定的 24 小时窗口。现有的短时突发限制仍会单独生效。"
 
@@ -1599,11 +1603,11 @@ msgstr "已编辑的关键词正在等待管理员审批。"
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "已编辑的标题正在等待管理员审批。获批前，已发布标题保持不变。"
 
-#: kb/admin.py:846 kb/admin.py:893
+#: kb/admin.py:848 kb/admin.py:895
 msgid "Effective permissions"
 msgstr "有效权限"
 
-#: kb/admin.py:886
+#: kb/admin.py:888
 msgid "Effective role groups"
 msgstr "有效角色群组"
 
@@ -1615,19 +1619,19 @@ msgstr "电子邮件"
 msgid "Email updated successfully."
 msgstr "电子邮件已成功更新。"
 
-#: kb/admin.py:244 kb/models.py:1215
+#: kb/admin.py:245 kb/models.py:1224
 msgid "Enable Admin IP allowlist"
 msgstr "启用管理员 IP 允许列表"
 
-#: kb/admin.py:257 kb/models.py:1317 website/templates/profile.html:195
+#: kb/admin.py:258 kb/models.py:1326 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "已启用"
 
-#: kb/admin.py:1821
+#: kb/admin.py:1823
 msgid "Encrypted and hidden"
 msgstr "已加密并隐藏"
 
-#: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:47
+#: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:45
 msgid "Enter MFA/OTP code"
 msgstr "输入 MFA/OTP 代码"
 
@@ -1643,7 +1647,7 @@ msgstr "输入活跃的本地或 AD 用户名/电子邮件，然后勾选文章�
 msgid "Enter an image size between 1 and 1200 pixels."
 msgstr "请输入 1 到 1200 像素之间的图片尺寸。"
 
-#: kb/admin.py:2640
+#: kb/admin.py:2642
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
 msgstr "启用管理员 IP 允许列表前，请至少输入一个有效的 IPv4/IPv6 地址或 CIDR 范围。"
 
@@ -1659,7 +1663,7 @@ msgstr "输入您的 MFA/OTP 代码以确认删除。"
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "请再次输入身份验证器代码以访问 Django 管理后台。"
 
-#: kb/admin.py:2788
+#: kb/admin.py:2808
 msgid "Escalation memory readable"
 msgstr "升级记录保留期（易读格式）"
 
@@ -1695,15 +1699,15 @@ msgstr "导出文章 zip"
 msgid "Export split package"
 msgstr "导出分卷包"
 
-#: kb/admin.py:2253
+#: kb/admin.py:2255
 msgid "Failed"
 msgstr "失败"
 
-#: kb/admin.py:254 kb/models.py:1302
+#: kb/admin.py:255 kb/models.py:1311
 msgid "Failed attempts before block"
 msgstr "锁定前失败尝试次数"
 
-#: kb/models.py:1339
+#: kb/models.py:1348
 msgid "Failed attempts must be at least 1."
 msgstr "失败尝试次数至少应为 1。"
 
@@ -1731,7 +1735,7 @@ msgstr "早于 %(minutes)s 分钟以内的文件会被忽略。可在 Django 管
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "早于 %(minutes)s 分钟以内的文件会被忽略。可在 Django 管理后台 → 站点设置中更改此值。使用 0 分钟可立即显示无用上传文件。"
 
-#: kb/admin.py:266 kb/models.py:1140
+#: kb/admin.py:267 kb/models.py:1138
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "未使用上传文件清理工具会忽略比此分钟数更新的文件。默认值为 1440 分钟（24 小时），以避免删除用户正在撰写文章时使用的图片。设置为 0 可立即检测/删除未使用上传文件。"
 
@@ -1755,11 +1759,11 @@ msgstr "查找未使用文件的位置"
 msgid "First"
 msgstr "第一页"
 
-#: kb/admin.py:827
+#: kb/admin.py:829
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "拥有完整 Django 管理后台超级用户访问权限。管理员用户在进入 Django 管理后台前需要通过额外的管理员 MFA 验证。"
 
-#: kb/admin.py:1225
+#: kb/admin.py:1227
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "拥有完整 Django 管理后台超级用户访问权限。进入 Django 管理后台前需要额外的管理员 MFA 验证步骤。"
 
@@ -1767,7 +1771,7 @@ msgstr "拥有完整 Django 管理后台超级用户访问权限。进入 Django
 msgid "General"
 msgstr "常规"
 
-#: kb/admin.py:242 kb/models.py:1199
+#: kb/admin.py:243 kb/models.py:1208
 msgid "General activity log retention (days)"
 msgstr "一般活动日志保留时间（天）"
 
@@ -1791,19 +1795,19 @@ msgstr "您拥有的常规文章。"
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "即时获取最常见问题的答案，并学习如何像专业人士一样使用 3 个字符。"
 
-#: kb/admin.py:988
+#: kb/admin.py:990
 msgid "Group members"
 msgstr "群组成员"
 
-#: kb/admin.py:773
+#: kb/admin.py:775
 msgid "Group permissions"
 msgstr "群组权限"
 
-#: kb/admin.py:1070
+#: kb/admin.py:1072
 msgid "Group type"
 msgstr "群组类型"
 
-#: kb/views/services.py:3076
+#: kb/views/services.py:3108
 msgid "Guest"
 msgstr "访客"
 
@@ -1815,7 +1819,7 @@ msgstr "高度"
 msgid "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
 msgstr "您好！我是 OpenKB AI。您可以向我询问有关知识库的问题，或要求我推荐已发布文章。"
 
-#: kb/models.py:786 kb/models.py:810
+#: kb/models.py:784 kb/models.py:808
 msgid "Helpful"
 msgstr "有帮助"
 
@@ -1823,19 +1827,19 @@ msgstr "有帮助"
 msgid "Hi, I am OpenKB AI."
 msgstr "你好，我是 OpenKB AI。"
 
-#: kb/admin.py:1216
+#: kb/admin.py:1218
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "最高优先级。会阻止访问知识库，并清除“管理员用户”、员工/超级用户状态及直接角色权限。"
 
-#: kb/admin.py:780
+#: kb/admin.py:782
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "最高优先级。用户会被重定向到“账户已禁用”页面且无法访问知识库。它还会清除“管理员用户”、员工/超级用户状态及直接知识库权限附加项。"
 
-#: kb/models.py:1096
+#: kb/models.py:1094
 msgid "Historical admin user snapshot only. This relation intentionally does not enforce a database constraint because admin audit logs must remain immutable when users are deleted."
 msgstr "仅为历史管理员用户快照。由于管理员审计日志必须在用户删除后保持不可变，此关系有意不强制数据库约束。"
 
-#: kb/models.py:858
+#: kb/models.py:856
 msgid "Historical deleter ID snapshot only. Image deletion activity is appended into ActivityLog rather than editing this upload log row."
 msgstr "仅为历史删除者 ID 快照。图片删除活动会追加到 ActivityLog，而不是编辑此上传日志行。"
 
@@ -1843,15 +1847,15 @@ msgstr "仅为历史删除者 ID 快照。图片删除活动会追加到 Activit
 msgid "Historical review feedback entries from previous rejection/resubmission rounds."
 msgstr "来自先前拒绝/重新提交轮次的历史审核反馈条目。"
 
-#: kb/models.py:838
+#: kb/models.py:836
 msgid "Historical uploader ID snapshot only. The username/email snapshot fields keep the log readable after the user account is changed or deleted."
 msgstr "仅为历史上传者 ID 快照。用户账户更改或删除后，用户名/电子邮件快照字段仍可使日志保持可读。"
 
-#: kb/models.py:1027
+#: kb/models.py:1025
 msgid "Historical user ID of the account that owned the article when this log was created."
 msgstr "创建此日志时拥有该文章的账户的历史用户 ID。"
 
-#: kb/models.py:274 kb/models.py:999
+#: kb/models.py:274 kb/models.py:997
 msgid "Historical user ID snapshot only. This relation intentionally does not enforce a database constraint because audit logs must remain immutable when users are deleted."
 msgstr "仅为历史用户 ID 快照。由于审计日志必须在用户删除后保持不可变，此关系有意不强制数据库约束。"
 
@@ -1859,31 +1863,31 @@ msgstr "仅为历史用户 ID 快照。由于审计日志必须在用户删除�
 msgid "How can we help?"
 msgstr "我们可以如何帮助？"
 
-#: kb/models.py:1243
+#: kb/models.py:1252
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "管理员完成额外管理员 MFA 检查后，可在 Django 管理后台保持空闲的最长时间。默认值为 600 秒（10 分钟）。代码强制的最小值为 60 秒，最大值为 86400 秒。"
 
-#: kb/admin.py:267 kb/models.py:1149
+#: kb/admin.py:268 kb/models.py:1147
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "已删除的已发布文章在“我的个人资料 → 管理工具 → 删除队列”中，在永久删除前可恢复的时长。默认值为 7 天。设为 0 则在 MFA 确认后立即永久删除已发布文章。"
 
-#: kb/admin.py:276
+#: kb/admin.py:278
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "在未成功登录的情况下，失败登录/MFA 升级历史会保留多久。成功验证会立即清除它。默认值为 604800 秒（7 天）。"
 
-#: kb/models.py:1234
+#: kb/models.py:1243
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "如果用户始终未成功登录，失败登录/MFA 锁定历史会保留多久。成功完成密码/MFA 验证会立即重置相关锁定历史。默认值为 604800 秒（7 天）。"
 
-#: kb/admin.py:280 kb/models.py:1308
+#: kb/admin.py:282 kb/models.py:1317
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "此阶段触发后，登录/MFA 检查被锁定的时长。"
 
-#: kb/admin.py:281 kb/models.py:1313
+#: kb/admin.py:283 kb/models.py:1322
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "在进入下一阶段前，此阶段应应用于多少次锁定。最终阶段设为 0 可无限重复。"
 
-#: kb/admin.py:861
+#: kb/admin.py:863
 msgid "How to use these permissions:"
 msgstr "如何使用这些权限："
 
@@ -1920,7 +1924,7 @@ msgstr "如果缺少 manifest.json，导入器会尝试导入 zip 中找到的�
 msgid "Image assets"
 msgstr "图片资源"
 
-#: kb/views/services.py:1242
+#: kb/views/services.py:1243
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "图片尺寸过大。请上传尺寸较小的图片。"
 
@@ -1932,7 +1936,7 @@ msgstr "图片显示尺寸已重置为原始响应式尺寸。"
 msgid "Image display size updated."
 msgstr "图片显示尺寸已更新。"
 
-#: kb/views/services.py:1221 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
+#: kb/views/services.py:1222 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "图片过大。允许的最大大小为 2 MB。"
 
@@ -1976,7 +1980,7 @@ msgstr "此草稿中上传的图片会显示在这里。点击 X 可从文章中
 msgid "Immediate"
 msgstr "立即"
 
-#: kb/admin.py:2845
+#: kb/admin.py:2876
 msgid "Immediate permanent deletion"
 msgstr "立即永久删除"
 
@@ -2048,7 +2052,7 @@ msgstr "导入的文章将分配给执行导入的管理员账户。"
 msgid "Imported articles will be owned by"
 msgstr "导入的文章将归属于"
 
-#: kb/admin.py:1335 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1337 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "已停用"
 
@@ -2060,15 +2064,15 @@ msgstr "插入视频链接"
 msgid "Internal"
 msgstr "内部"
 
-#: kb/admin.py:1223 kb/admin.py:818 kb/permissions.py:60
+#: kb/admin.py:1225 kb/admin.py:820 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "内部文章审批员"
 
-#: kb/admin.py:1224 kb/admin.py:822 kb/permissions.py:61
+#: kb/admin.py:1226 kb/admin.py:824 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "内部文章管理员"
 
-#: kb/admin.py:1222 kb/admin.py:814 kb/permissions.py:59
+#: kb/admin.py:1224 kb/admin.py:816 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "内部文章撰写者"
 
@@ -2080,7 +2084,7 @@ msgstr "内部文章"
 msgid "Internal Knowledge Repository"
 msgstr "内部知识库"
 
-#: kb/admin.py:1221 kb/admin.py:810 kb/permissions.py:58
+#: kb/admin.py:1223 kb/admin.py:812 kb/permissions.py:58
 msgid "Internal User"
 msgstr "内部用户"
 
@@ -2088,7 +2092,7 @@ msgstr "内部用户"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "内部审批员附加角色。可查看公开/内部文章、在内部文章/更新保持待审期间编辑内容、在审核编辑后继续保持待审，并批准或拒绝内部待审文章/更新。默认不能删除或编辑已发布内部文章。"
 
-#: kb/models.py:325 kb/views/services.py:451 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
+#: kb/models.py:325 kb/views/services.py:452 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
 msgid "Internal article"
 msgstr "内部文章"
 
@@ -2096,7 +2100,7 @@ msgstr "内部文章"
 msgid "Internal article pages"
 msgstr "内部文章页面"
 
-#: kb/admin.py:743
+#: kb/admin.py:745
 msgid "Internal article permissions"
 msgstr "内部文章权限"
 
@@ -2116,7 +2120,7 @@ msgstr "您拥有的内部文章。"
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "内部管理员附加角色。可查看公开/内部文章、创建、编辑/管理、审核、批准/拒绝内部提交内容，并删除职责范围内的内部文章。删除已发布内部文章需要 MFA 确认。"
 
-#: kb/admin.py:751
+#: kb/admin.py:753
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "内部角色属于附加权限。内部用户仍可查看常规/公开文章。请尽量使用“内部用户/内部文章撰写者/内部文章审批员/内部文章管理员”群组；仅在例外情况下勾选这些直接权限。"
 
@@ -2128,7 +2132,7 @@ msgstr "内部查看者附加角色。可查看公开文章和内部文章，但
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "内部撰写者附加角色。可查看公开/内部文章、创建或维护自己的内部文章草稿/提交内容，并删除自己的内部文章。删除已发布内部文章需要 MFA 确认。"
 
-#: kb/admin.py:2621
+#: kb/admin.py:2623
 msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
 msgstr "无效的 IPv4/IPv6 地址或 CIDR 范围：%(value)s"
 
@@ -2136,7 +2140,7 @@ msgstr "无效的 IPv4/IPv6 地址或 CIDR 范围：%(value)s"
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "账户凭据无效。请检查用户名和密码。"
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
+#: kb/admin_security.py:317 kb/views/mfa.py:377 kb/views/mfa.py:513
 msgid "Invalid authenticator code. Please try again."
 msgstr "身份验证器代码无效。请重试。"
 
@@ -2188,11 +2192,11 @@ msgstr "关键词"
 msgid "Keywords: %(keywords)s"
 msgstr "关键词：%(keywords)s"
 
-#: kb/admin.py:1361
+#: kb/admin.py:1363
 msgid "Knowledge Repository Permissions"
 msgstr "知识库权限"
 
-#: kb/admin.py:1356
+#: kb/admin.py:1358
 msgid "Knowledge Repository Roles"
 msgstr "知识库角色"
 
@@ -2200,15 +2204,15 @@ msgstr "知识库角色"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "知识库管理员。可直接创建/发布文章，并同步为 Django 员工/超级用户，以便进行完整 Django 管理后台管理。"
 
-#: kb/views/services.py:1777
+#: kb/views/services.py:1778
 msgid "Knowledge Repository article."
 msgstr "知识库文章。"
 
-#: kb/admin.py:1067
+#: kb/admin.py:1069
 msgid "Knowledge Repository role"
 msgstr "知识库角色"
 
-#: kb/admin.py:1052
+#: kb/admin.py:1054
 msgid "Knowledge Repository role group"
 msgstr "知识库角色群组"
 
@@ -2216,11 +2220,11 @@ msgstr "知识库角色群组"
 msgid "Knowledge Repository role guide"
 msgstr "知识库角色指南"
 
-#: kb/admin.py:1063
+#: kb/admin.py:1065
 msgid "Knowledge Repository role information"
 msgstr "知识库角色信息"
 
-#: kb/admin.py:725
+#: kb/admin.py:727
 msgid "Knowledge Repository role permissions"
 msgstr "知识库角色权限"
 
@@ -2228,15 +2232,15 @@ msgstr "知识库角色权限"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "LDAP 账户类型必须使用 Active Directory 作为认证来源。"
 
-#: kb/admin.py:594
+#: kb/admin.py:596
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "LDAP 账户类型必须使用 Active Directory 用户作为来源。请将 LDAP 用户/LDAP 管理员与 Active Directory 用户配合使用，或将用户/管理员与本地用户配合使用。"
 
-#: kb/admin.py:1344 kb/models.py:35
+#: kb/admin.py:1346 kb/models.py:35
 msgid "LDAP admin"
 msgstr "LDAP 管理员"
 
-#: kb/admin.py:1348 kb/models.py:34
+#: kb/admin.py:1350 kb/models.py:34
 msgid "LDAP user"
 msgstr "LDAP 用户"
 
@@ -2272,7 +2276,7 @@ msgstr "上次验证"
 msgid "Last verified at"
 msgstr "最后验证时间"
 
-#: kb/admin.py:264
+#: kb/admin.py:265
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "旧版兼容字段。请使用用户账户内置的“启用”复选框控制用户是否可以登录。"
 
@@ -2280,11 +2284,11 @@ msgstr "旧版兼容字段。请使用用户账户内置的“启用”复选框
 msgid "Legacy main-site access"
 msgstr "旧版主站访问权限"
 
-#: kb/admin.py:2564
+#: kb/admin.py:2566
 msgid "Like"
 msgstr "赞"
 
-#: kb/admin.py:2445 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2447 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "点赞"
 
@@ -2292,11 +2296,11 @@ msgstr "点赞"
 msgid "Loading dimensions..."
 msgstr "正在加载尺寸..."
 
-#: kb/views/services.py:3085
+#: kb/views/services.py:3117
 msgid "Local Admin"
 msgstr "本地管理员"
 
-#: kb/views/services.py:3083
+#: kb/views/services.py:3115
 msgid "Local User"
 msgstr "本地用户"
 
@@ -2312,7 +2316,7 @@ msgstr "本地账户登录"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "本地账户类型必须使用本地用户作为认证来源。"
 
-#: kb/admin.py:602
+#: kb/admin.py:604
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "本地账户类型必须使用本地用户作为来源。请将用户/管理员与本地用户配合使用，或将 LDAP 用户/LDAP 管理员与 Active Directory 用户配合使用。"
 
@@ -2320,11 +2324,11 @@ msgstr "本地账户类型必须使用本地用户作为来源。请将用户/�
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "本地账户在密码登录后需要身份验证器验证。"
 
-#: kb/admin.py:1346
+#: kb/admin.py:1348
 msgid "Local admin"
 msgstr "本地管理员"
 
-#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3135
+#: kb/admin.py:1351 kb/models.py:38 kb/views/services.py:3167
 msgid "Local user"
 msgstr "本地用户"
 
@@ -2332,11 +2336,11 @@ msgstr "本地用户"
 msgid "Local username or email"
 msgstr "本地用户名或邮箱"
 
-#: kb/admin.py:1992
+#: kb/admin.py:1994
 msgid "Lockout duration"
 msgstr "锁定时长"
 
-#: kb/admin.py:1977
+#: kb/admin.py:1979
 msgid "Lockout scope"
 msgstr "锁定范围"
 
@@ -2360,7 +2364,7 @@ msgstr "登录以贡献"
 msgid "Logout"
 msgstr "登出"
 
-#: kb/admin.py:278 kb/models.py:1298
+#: kb/admin.py:280 kb/models.py:1307
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "数值较小的阶段先执行。请使用 10、20、30 等数值，以便日后插入阶段。"
 
@@ -2368,13 +2372,25 @@ msgstr "数值较小的阶段先执行。请使用 10、20、30 等数值，以�
 msgid "MFA QR code"
 msgstr "MFA 二维码"
 
-#: kb/admin.py:1389 kb/admin.py:1845
+#: kb/admin.py:1391 kb/admin.py:1847
 msgid "MFA Reset"
 msgstr "MFA 重置"
 
-#: kb/admin.py:1373
+#: kb/admin.py:1375
 msgid "MFA Status"
 msgstr "MFA 状态"
+
+#: kb/admin.py:2695
+msgid "MFA login completion timeout"
+msgstr "MFA 登录完成超时"
+
+#: kb/admin.py:242 kb/models.py:1199
+msgid "MFA login completion timeout (seconds)"
+msgstr "MFA 登录完成超时（秒）"
+
+#: kb/admin.py:2866
+msgid "MFA login timeout readable"
+msgstr "MFA 登录超时（可读）"
 
 #: kb/models.py:260
 msgid "MFA reset by admin"
@@ -2384,15 +2400,15 @@ msgstr "管理员已重置 MFA"
 msgid "MFA reset by user"
 msgstr "用户已重置 MFA"
 
-#: kb/admin.py:1870
+#: kb/admin.py:1872
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "已重置 %(count)d 个选中设备的 MFA。用户下次登录时必须设置新的身份验证器。"
 
-#: kb/admin.py:1541
+#: kb/admin.py:1543
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "已重置 %(count)d 个选中用户的 MFA。他们下次登录时必须设置新的身份验证器。"
 
-#: kb/views/mfa.py:558
+#: kb/views/mfa.py:691
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "您的知识库账户可重置 MFA。"
 
@@ -2408,13 +2424,17 @@ msgstr "必须完成 MFA 设置才能继续。"
 msgid "MFA setup success"
 msgstr "MFA 设置成功"
 
-#: kb/views/mfa.py:168
+#: kb/views/mfa.py:274
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "MFA 登录已取消。请重新登录。"
 
-#: kb/admin.py:1972 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1974 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "MFA 验证"
+
+#: kb/views/mfa.py:221
+msgid "MFA verification timed out. Please enter your username and password again."
+msgstr "MFA 验证已超时。请重新输入用户名和密码。"
 
 #: kb/models.py:256
 msgid "MFA verify failure"
@@ -2424,15 +2444,15 @@ msgstr "MFA 验证失败"
 msgid "MFA verify success"
 msgstr "MFA 验证成功"
 
-#: kb/admin.py:1501
+#: kb/admin.py:1503
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "已重置 %(username)s 的 MFA。该用户下次登录时必须设置新的身份验证器。"
 
-#: website/templates/mfa_setup.html:60 website/templates/mfa_verify.html:46 website/templates/suggest_delete.html:46
+#: website/templates/mfa_setup.html:60 website/templates/mfa_verify.html:44 website/templates/suggest_delete.html:46
 msgid "MFA/OTP code"
 msgstr "MFA/OTP 代码"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:818
+#: kb/views/auth.py:440 kb/views/mfa.py:670 kb/views/services.py:819
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP 代码不正确。"
 
@@ -2444,7 +2464,7 @@ msgstr "主站用户配置文件"
 msgid "Main Site User Profiles"
 msgstr "主站用户配置文件"
 
-#: kb/admin.py:714
+#: kb/admin.py:716
 msgid "Main site profile"
 msgstr "主站个人资料"
 
@@ -2480,23 +2500,23 @@ msgstr "由身份验证器应用管理"
 msgid "Manual setup key"
 msgstr "手动设置密钥"
 
-#: kb/admin.py:1875
+#: kb/admin.py:1877
 msgid "Mark selected MFA devices as setup pending"
 msgstr "将所选 MFA 设备标记为待设置"
 
-#: kb/admin.py:2394
+#: kb/admin.py:2396
 msgid "Mark selected articles as pending failed"
 msgstr "将所选文章标记为审核未通过"
 
-#: kb/admin.py:1895
+#: kb/admin.py:1897
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "已将用户 %(username)s 的 MFA 设置标记为等待设置"
 
-#: kb/admin.py:2417
+#: kb/admin.py:2419
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "已通过 Django 管理后台将文章 %(title)s 标记为“待审失败”"
 
-#: kb/admin.py:2405 kb/admin.py:2479
+#: kb/admin.py:2407 kb/admin.py:2481
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "管理员已将其标记为审核未通过。请检查此文章并重新提交审核。"
 
@@ -2504,17 +2524,21 @@ msgstr "管理员已将其标记为审核未通过。请检查此文章并重新
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "每篇文章最多 %(limit)s 张图片。"
 
-#: kb/admin.py:277 kb/models.py:1253
+#: kb/admin.py:279 kb/models.py:1262
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "每位用户在固定 24 小时窗口内可提交的已接受 Ask OpenKB AI 问题的最大数量。第一个被接受的问题会开始该窗口，后续问题不会延长窗口。默认值：20。"
 
-#: kb/admin.py:269 kb/models.py:1166
+#: kb/admin.py:270 kb/models.py:1164
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "文章中视频播放器的最大显示宽度（以像素为单位）。视频会保持响应式显示，并在较小屏幕上维持 16:9 的宽高比。默认值为 720 px。允许范围：160 至 1920 px。"
 
-#: kb/admin.py:268 kb/models.py:1157
+#: kb/admin.py:269 kb/models.py:1155
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "每篇文章允许粘贴或上传的图片最大数量，包括草稿、待审核、已发布和待更新版本。默认值为 50。设置为 0 可禁用文章图片上传。"
+
+#: kb/admin.py:273 kb/models.py:1200
+msgid "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "用户名和密码步骤成功后，允许完成 MFA 的最长时间。倒计时归零时，待完成的登录会被清除，用户必须重新输入用户名和密码。默认值为 60 秒。允许范围：30 至 900 秒（15 分钟）。"
 
 #: website/templates/admin_bulk_articles.html:87
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -2548,11 +2572,11 @@ msgstr "最多点赞文章页面"
 msgid "Most recent article pages"
 msgstr "最新文章页面"
 
-#: kb/admin.py:1281 website/templates/profile.html:190
+#: kb/admin.py:1283 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "多因素身份验证"
 
-#: kb/admin.py:576
+#: kb/admin.py:578
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "必须与账户类型匹配。本地用户/本地管理员使用本地用户。LDAP 用户/LDAP 管理员使用 Active Directory 用户。要将 LDAP 账户转换为本地账户，请将“账户类型”设为用户或管理员，将“来源”设为本地用户，然后设置本地密码。"
 
@@ -2612,7 +2636,7 @@ msgstr "NextLabs AD 邮箱或用户名"
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs 信息技术知识库"
 
-#: kb/admin.py:2714
+#: kb/admin.py:2733
 msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
 msgstr "Nginx 不再维护静态管理员 IP 允许列表。默认情况下，所有 IPv4 和 IPv6 地址都可以到达 Django Admin 的访问检查。要限制访问，请输入允许的 IP/CIDR 范围并启用允许列表。/admin/login/ 仍会返回 404 隐藏，管理员 MFA 仍然是必需的。"
 
@@ -2620,7 +2644,7 @@ msgstr "Nginx 不再维护静态管理员 IP 允许列表。默认情况下，�
 msgid "No"
 msgstr "否"
 
-#: kb/admin.py:1043 kb/admin.py:1094 kb/permissions.py:400
+#: kb/admin.py:1045 kb/admin.py:1096 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "没有知识库角色权限"
 
@@ -2708,7 +2732,7 @@ msgstr "没有符合搜索条件的待审核文章。"
 msgid "No pending update"
 msgstr "没有待审核更新"
 
-#: kb/admin.py:1098
+#: kb/admin.py:1100
 msgid "No permissions"
 msgstr "无权限"
 
@@ -2740,7 +2764,7 @@ msgstr "未选择要删除的无用上传文件。"
 msgid "No stray uploaded files found."
 msgstr "未找到未使用的上传文件。"
 
-#: kb/admin.py:1080
+#: kb/admin.py:1082
 msgid "No users"
 msgstr "没有用户"
 
@@ -2748,27 +2772,27 @@ msgstr "没有用户"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "如果内容过大，普通导出会自动变成分卷包。分卷包在 parts/ 文件夹下包含可导入的 part zip；请解压该包并按顺序导入每个 part zip。"
 
-#: kb/admin.py:1822
+#: kb/admin.py:1824
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "未加密。请重置此用户的 MFA 设备，并要求用户重新设置 MFA。"
 
-#: kb/admin.py:2249
+#: kb/admin.py:2251
 msgid "Not found"
 msgstr "未找到"
 
-#: kb/models.py:787 kb/models.py:810
+#: kb/models.py:785 kb/models.py:808
 msgid "Not helpful"
 msgstr "没有帮助"
 
-#: kb/mfa.py:131
+#: kb/mfa.py:239
 msgid "Not required"
 msgstr "不需要"
 
-#: kb/admin.py:1819
+#: kb/admin.py:1821
 msgid "Not set"
 msgstr "未设置"
 
-#: kb/mfa.py:133
+#: kb/mfa.py:241
 msgid "Not set up"
 msgstr "未设置"
 
@@ -2776,27 +2800,23 @@ msgstr "未设置"
 msgid "Notes"
 msgstr "备注"
 
-#: kb/models.py:1175
+#: kb/models.py:1173
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "搜索/结果页面及首页各文章栏目（如“热门主题”“最多点赞”“最新文章”）每页显示的已发布文章数量。建议范围：5 至 100。默认值为 10。"
 
-#: kb/admin.py:273 kb/models.py:1208
+#: kb/admin.py:275 kb/models.py:1217
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Django 管理后台日志表每页显示的行数。建议范围：50 到 500。默认值为 200。"
 
-#: kb/models.py:422
-msgid "Number of unique session views for this article."
-msgstr "此文章的唯一会话浏览次数。"
-
-#: kb/admin.py:279 kb/models.py:1303
+#: kb/admin.py:281 kb/models.py:1312
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "此阶段锁定用户前所需的错误密码/MFA 尝试次数。"
 
-#: kb/admin.py:2243
+#: kb/admin.py:2245
 msgid "OK"
 msgstr "确定"
 
-#: kb/admin.py:2233
+#: kb/admin.py:2235
 msgid "Object ID %(object_id)s"
 msgstr "对象 ID %(object_id)s"
 
@@ -2812,7 +2832,7 @@ msgstr "旧密码不正确。"
 msgid "Only .zip import files are allowed."
 msgstr "只允许导入 .zip 文件。"
 
-#: kb/views/services.py:1218 kb/views/services.py:1239 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
+#: kb/views/services.py:1219 kb/views/services.py:1240 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "只允许 PNG、JPG、GIF 或 WEBP 图片。"
 
@@ -2840,19 +2860,19 @@ msgstr "OpenKB AI 暂时不可用。请稍后重试；若问题持续，请联�
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI 正在思考..."
 
-#: kb/admin.py:248 kb/models.py:1252
+#: kb/admin.py:249 kb/models.py:1261
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "每 24 小时的 OpenKB AI 提问次数"
 
-#: kb/models.py:985
+#: kb/models.py:983
 msgid "OpenKB AI question"
 msgstr "OpenKB AI 问题"
 
-#: kb/models.py:986
+#: kb/models.py:984
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI 已限流"
 
-#: kb/admin.py:2699
+#: kb/admin.py:2718
 msgid "OpenKB AI rate limits"
 msgstr "OpenKB AI 速率限制"
 
@@ -2864,11 +2884,11 @@ msgstr "OpenKB AI 响应时间过长。请稍后重试；若问题持续，请�
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "未找到 OpenKB 数据文件夹。请检查 settings.py 中的 OPENKB_DATA_DIR。"
 
-#: kb/admin.py:2341
+#: kb/admin.py:2343
 msgid "OpenKB files"
 msgstr "OpenKB 文件"
 
-#: kb/admin.py:275 kb/models.py:1225
+#: kb/admin.py:277 kb/models.py:1234
 msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
 msgstr "可选的 IPv4/IPv6 地址或 CIDR 范围，可使用逗号、空格或换行分隔。例如：192.0.2.50、10.0.0.0/24、2001:db8::/32。允许列表关闭时可留空。"
 
@@ -2880,15 +2900,15 @@ msgstr "原始名称"
 msgid "Original size"
 msgstr "原始尺寸"
 
-#: kb/models.py:434
+#: kb/models.py:431
 msgid "Original workflow status saved so the article can be restored from the deletion queue."
 msgstr "已保存原始工作流状态，以便从删除队列恢复文章。"
 
-#: kb/models.py:976
+#: kb/models.py:974
 msgid "Orphan article assigned"
 msgstr "孤立文章已分配"
 
-#: kb/models.py:977
+#: kb/models.py:975
 msgid "Orphan article deleted"
 msgstr "孤立文章已删除"
 
@@ -2924,7 +2944,7 @@ msgstr "第 %(page)s / %(total)s 页"
 msgid "Page not found"
 msgstr "页面未找到"
 
-#: kb/admin.py:1202 kb/admin.py:1971 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1204 kb/admin.py:1973 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "密码"
 
@@ -2944,31 +2964,31 @@ msgstr "密码登录失败"
 msgid "Password login success"
 msgstr "密码登录成功"
 
-#: kb/views/services.py:3173
+#: kb/views/services.py:3205
 msgid "Password must be at least 12 characters long."
 msgstr "密码长度至少应为 12 个字符。"
 
-#: kb/views/services.py:3177
+#: kb/views/services.py:3209
 msgid "Password must include at least 1 lowercase letter."
 msgstr "密码必须至少包含 1 个小写字母。"
 
-#: kb/views/services.py:3179
+#: kb/views/services.py:3211
 msgid "Password must include at least 1 number."
 msgstr "密码必须至少包含 1 个数字。"
 
-#: kb/views/services.py:3181
+#: kb/views/services.py:3213
 msgid "Password must include at least 1 special character."
 msgstr "密码必须至少包含 1 个特殊字符。"
 
-#: kb/views/services.py:3175
+#: kb/views/services.py:3207
 msgid "Password must include at least 1 uppercase letter."
 msgstr "密码必须至少包含 1 个大写字母。"
 
-#: kb/views/services.py:3190
+#: kb/views/services.py:3222
 msgid "Password must not contain the name part of your email address."
 msgstr "密码不得包含您电子邮件地址中的名称部分。"
 
-#: kb/views/services.py:3188
+#: kb/views/services.py:3220
 msgid "Password must not contain your username."
 msgstr "密码不得包含您的用户名。"
 
@@ -2984,15 +3004,15 @@ msgstr "密码与你的公司密码同步。"
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "密码与您的公司密码同步。请通过公司密码系统更改密码。"
 
-#: kb/admin.py:1794
+#: kb/admin.py:1796
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "已重置 %(count)d 个所选个人资料的密码/MFA 锁定计数器。"
 
-#: kb/admin.py:1573
+#: kb/admin.py:1575
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "已重置 %(count)d 个所选用户的密码/MFA 锁定计数器。"
 
-#: kb/admin.py:1457
+#: kb/admin.py:1459
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "已重置 %(username)s 的密码/MFA 锁定计数器。"
 
@@ -3012,7 +3032,7 @@ msgstr "粘贴 YouTube 或 Vimeo 链接。不支持直接视频文件以及可�
 msgid "Pasted images"
 msgstr "粘贴的图片"
 
-#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2105 kb/admin.py:2262
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2107 kb/admin.py:2264
 msgid "Path"
 msgstr "路径"
 
@@ -3032,7 +3052,7 @@ msgstr "待审批"
 msgid "Pending article pages"
 msgstr "待处理文章页面"
 
-#: kb/models.py:712
+#: kb/models.py:710
 msgid "Pending deletion approval"
 msgstr "待审删除批准"
 
@@ -3064,7 +3084,7 @@ msgstr "待审核更新 - 图片资源"
 msgid "Pending update keywords"
 msgstr "待审核更新 - 关键词"
 
-#: kb/admin.py:2330
+#: kb/admin.py:2332
 msgid "Pending update review"
 msgstr "待审核更新 - 审核"
 
@@ -3084,7 +3104,7 @@ msgstr "待审更新只能保持待审、批准为“已发布”，或标记为
 msgid "Permalink"
 msgstr "永久链接"
 
-#: kb/admin.py:205 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
+#: kb/admin.py:205 kb/models.py:451 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
 msgid "Permanent deletion after"
 msgstr "永久删除时间"
 
@@ -3104,11 +3124,11 @@ msgstr "已永久删除 %(count)s 篇孤立文章。"
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "已永久删除 %(count)s 篇队列文章。"
 
-#: kb/admin.py:879
+#: kb/admin.py:881
 msgid "Permission guide"
 msgstr "权限指南"
 
-#: kb/admin.py:1105
+#: kb/admin.py:1107
 msgid "Permissions"
 msgstr "权限"
 
@@ -3140,7 +3160,7 @@ msgstr "请输入搜索内容。"
 msgid "Please enter a username or email to assign the selected articles to."
 msgstr "请输入要分配给的用户名或电子邮件。"
 
-#: website/templates/mfa_verify.html:39
+#: website/templates/_mfa_login_timeout.html:11
 msgid "Please enter your MFA/OTP code to continue."
 msgstr "请输入 MFA/OTP 代码以继续。"
 
@@ -3148,11 +3168,11 @@ msgstr "请输入 MFA/OTP 代码以继续。"
 msgid "Please select at least one orphan article first."
 msgstr "请先选择至少一篇孤立文章。"
 
-#: kb/views/mfa.py:184
+#: kb/views/mfa.py:295
 msgid "Please sign in before setting up MFA."
 msgstr "请先登录再设置 MFA。"
 
-#: kb/views/mfa.py:283
+#: kb/views/mfa.py:400
 msgid "Please sign in before verifying MFA."
 msgstr "请先登录再验证 MFA。"
 
@@ -3184,7 +3204,7 @@ msgstr "请稍等片刻，然后重试。"
 msgid "Please wait briefly before trying again."
 msgstr "请稍等片刻后再重试。"
 
-#: kb/admin.py:2781
+#: kb/admin.py:2801
 msgid "Policy guide"
 msgstr "策略指南"
 
@@ -3196,11 +3216,11 @@ msgstr "技术支持"
 msgid "Powered by openKB"
 msgstr "由 openKB 提供支持"
 
-#: kb/admin.py:111 kb/admin.py:1188
+#: kb/admin.py:111 kb/admin.py:1190
 msgid "Preferred language"
 msgstr "首选语言"
 
-#: kb/admin.py:265 kb/models.py:66
+#: kb/admin.py:266 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "主知识库用户界面的首选语言。"
 
@@ -3224,23 +3244,23 @@ msgstr "之前的所有者"
 msgid "Previous status"
 msgstr "先前状态"
 
-#: kb/admin.py:202 kb/models.py:433
+#: kb/admin.py:202 kb/models.py:430
 msgid "Previous status before deletion queue"
 msgstr "加入删除队列前的状态"
 
-#: kb/admin.py:1173
+#: kb/admin.py:1175
 msgid "Profile account type"
 msgstr "个人资料账户类型"
 
-#: kb/models.py:988
+#: kb/models.py:986
 msgid "Profile email updated"
 msgstr "个人资料电子邮件已更新"
 
-#: kb/models.py:989
+#: kb/models.py:987
 msgid "Profile password changed"
 msgstr "个人资料密码已更改"
 
-#: kb/models.py:324 kb/views/services.py:452
+#: kb/models.py:324 kb/views/services.py:453
 msgid "Public article"
 msgstr "公开文章"
 
@@ -3300,7 +3320,7 @@ msgstr "已通过孤立文章清理加入队列。"
 msgid "Ran admin action '%(action)s'"
 msgstr "已执行管理员操作“%(action)s”"
 
-#: kb/admin.py:2198
+#: kb/admin.py:2200
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "已对 %(target)s 执行管理员操作“%(action)s”"
 
@@ -3324,7 +3344,7 @@ msgstr "已准备好由计划任务永久删除"
 msgid "Recommended articles"
 msgstr "推荐文章"
 
-#: kb/admin.py:2245
+#: kb/admin.py:2247
 msgid "Redirect"
 msgstr "重定向"
 
@@ -3340,7 +3360,7 @@ msgstr "刷新"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "请刷新页面并重试。如果问题仍然存在，请重新登录。"
 
-#: kb/admin.py:1217 kb/admin.py:786 kb/permissions.py:54
+#: kb/admin.py:1219 kb/admin.py:788 kb/permissions.py:54
 msgid "Regular User"
 msgstr "普通用户"
 
@@ -3348,7 +3368,7 @@ msgstr "普通用户"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "“普通用户”是后备公开查看者角色。内部角色是附加角色，也包含公开文章查看权限。仍可勾选直接用户权限以创建自定义组合。Django 会同时评估群组权限和直接用户权限。"
 
-#: kb/admin.py:1668
+#: kb/admin.py:1670
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "已将“普通用户”角色分配给 %(count)d 个所选用户。"
 
@@ -3372,11 +3392,11 @@ msgstr "从文章中移除图片"
 msgid "Remove search history item"
 msgstr "从搜索历史中移除项目"
 
-#: kb/models.py:824
+#: kb/models.py:822
 msgid "Removed by uploader from editor"
 msgstr "由上传者从编辑器中移除"
 
-#: kb/admin.py:256 kb/models.py:1312
+#: kb/admin.py:257 kb/models.py:1321
 msgid "Repeat count"
 msgstr "重复次数"
 
@@ -3400,19 +3420,19 @@ msgstr "请求超时"
 msgid "Request too large"
 msgstr "请求过大"
 
-#: kb/admin.py:1382 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1384 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "重置 MFA"
 
-#: kb/admin.py:1511
+#: kb/admin.py:1513
 msgid "Reset MFA for %(username)s"
 msgstr "重置 %(username)s 的 MFA"
 
-#: kb/admin.py:1518
+#: kb/admin.py:1520
 msgid "Reset MFA for selected users"
 msgstr "重置所选用户的 MFA"
 
-#: kb/admin.py:1495 kb/admin.py:1534 kb/admin.py:1863
+#: kb/admin.py:1497 kb/admin.py:1536 kb/admin.py:1865
 msgid "Reset MFA for user %(username)s"
 msgstr "为用户 %(username)s 重置 MFA"
 
@@ -3428,31 +3448,31 @@ msgstr "重置时间"
 msgid "Reset lockout now"
 msgstr "立即重置锁定"
 
-#: kb/admin.py:1398
+#: kb/admin.py:1400
 msgid "Reset password/MFA lockout"
 msgstr "重置密码/MFA 锁定"
 
-#: kb/admin.py:1465
+#: kb/admin.py:1467
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "重置 %(username)s 的密码/MFA 锁定"
 
-#: kb/admin.py:1767
+#: kb/admin.py:1769
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "重置所选个人资料的密码/MFA 锁定"
 
-#: kb/admin.py:1546
+#: kb/admin.py:1548
 msgid "Reset password/MFA lockout for selected users"
 msgstr "重置所选用户的密码/MFA 锁定"
 
-#: kb/admin.py:1451 kb/admin.py:1566 kb/admin.py:1787
+#: kb/admin.py:1453 kb/admin.py:1568 kb/admin.py:1789
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "重置用户 %(username)s 的密码/MFA 锁定"
 
-#: kb/admin.py:1847
+#: kb/admin.py:1849
 msgid "Reset selected MFA devices"
 msgstr "重置所选 MFA 设备"
 
-#: kb/admin.py:1841
+#: kb/admin.py:1843
 msgid "Reset this user's MFA"
 msgstr "重置此用户的 MFA"
 
@@ -3460,7 +3480,7 @@ msgstr "重置此用户的 MFA"
 msgid "Reset to original"
 msgstr "重置为原始尺寸"
 
-#: kb/admin.py:1383
+#: kb/admin.py:1385
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "重置此用户的身份验证器，并要求重新扫描二维码进行设置。新的身份验证器密钥属于私密信息，不会向管理员显示。"
 
@@ -3524,7 +3544,7 @@ msgstr "在一个页面审核常规和内部提交内容。使用范围下拉菜
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "审核等待批准的常规文章和公开待审更新。"
 
-#: kb/admin.py:189 kb/admin.py:2440
+#: kb/admin.py:189 kb/admin.py:2442
 msgid "Review history"
 msgstr "审核历史"
 
@@ -3656,11 +3676,11 @@ msgstr "全选"
 msgid "Select all stray files"
 msgstr "选择所有无用文件"
 
-#: kb/admin.py:904
+#: kb/admin.py:906
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "选择应属于此群组的用户。使用左侧筛选框搜索用户，将所选用户移至右侧，然后保存。从右侧移除用户只会移除其在此群组中的成员资格。"
 
-#: kb/admin.py:2251 kb/views/errors.py:65
+#: kb/admin.py:2253 kb/views/errors.py:65
 msgid "Server error"
 msgstr "服务器错误"
 
@@ -3668,31 +3688,31 @@ msgstr "服务器错误"
 msgid "Service unavailable"
 msgstr "服务不可用"
 
-#: kb/admin.py:1644
+#: kb/admin.py:1646
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "将用户 %(username)s 的角色设为 %(role)s（%(status)s）"
 
-#: kb/admin.py:1701
+#: kb/admin.py:1703
 msgid "Set selected users as Admin Users"
 msgstr "将所选用户设为管理员用户"
 
-#: kb/admin.py:1681
+#: kb/admin.py:1683
 msgid "Set selected users as Article Approver"
 msgstr "将所选用户设为文章审批员"
 
-#: kb/admin.py:1691
+#: kb/admin.py:1693
 msgid "Set selected users as Article Manager"
 msgstr "将所选用户设为文章管理员"
 
-#: kb/admin.py:1671
+#: kb/admin.py:1673
 msgid "Set selected users as Article Writer"
 msgstr "将所选用户设为文章撰写者"
 
-#: kb/admin.py:1577
+#: kb/admin.py:1579
 msgid "Set selected users as Disabled User"
 msgstr "将所选用户设为禁用用户"
 
-#: kb/admin.py:1661
+#: kb/admin.py:1663
 msgid "Set selected users as Regular User"
 msgstr "将所选用户设为普通用户"
 
@@ -3700,7 +3720,7 @@ msgstr "将所选用户设为普通用户"
 msgid "Set size"
 msgstr "设置尺寸"
 
-#: kb/admin.py:774
+#: kb/admin.py:776
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "请在“群组”部分设置用户的常规角色。自定义非角色群组可在日后用于通知等用途。"
 
@@ -3712,11 +3732,11 @@ msgstr "设置 MFA"
 msgid "Set up MFA before accessing the admin site."
 msgstr "请先设置 MFA 再访问管理后台。"
 
-#: kb/views/auth.py:392 kb/views/mfa.py:478
+#: kb/views/auth.py:392 kb/views/mfa.py:611
 msgid "Set up MFA before changing sensitive account details."
 msgstr "更改敏感账号信息前请先设置 MFA。"
 
-#: kb/views/services.py:765
+#: kb/views/services.py:766
 msgid "Set up MFA before deleting a published article."
 msgstr "请先设置 MFA 再删除已发布文章。"
 
@@ -3724,7 +3744,7 @@ msgstr "请先设置 MFA 再删除已发布文章。"
 msgid "Set up authenticator"
 msgstr "设置身份验证器"
 
-#: kb/admin.py:1369 kb/mfa.py:136
+#: kb/admin.py:1371 kb/mfa.py:244
 msgid "Setup pending"
 msgstr "待设置"
 
@@ -3780,11 +3800,11 @@ msgstr "使用您的本地知识库账户登录。"
 msgid "Sign out and go to sign in"
 msgstr "退出登录并返回登录页"
 
-#: kb/admin.py:100 kb/admin.py:252 kb/models.py:1262
+#: kb/admin.py:100 kb/admin.py:253 kb/models.py:1271
 msgid "Site setting"
 msgstr "站点设置"
 
-#: kb/admin.py:100 kb/models.py:1263 kb/models.py:1266
+#: kb/admin.py:100 kb/models.py:1272 kb/models.py:1275
 msgid "Site settings"
 msgstr "站点设置"
 
@@ -3792,7 +3812,7 @@ msgstr "站点设置"
 msgid "Size"
 msgstr "大小"
 
-#: kb/admin.py:2911
+#: kb/admin.py:2942
 msgid "Size (KB)"
 msgstr "大小 (KB)"
 
@@ -3816,7 +3836,7 @@ msgstr "已跳过导入 zip 内的重复标题：%(title)s"
 msgid "Skipped invalid path: %(filename)s"
 msgstr "已跳过无效路径：%(filename)s"
 
-#: kb/models.py:1015
+#: kb/models.py:1013
 msgid "Snapshot fields keep the audit trail after an article is deleted. This relation intentionally does not enforce a database constraint because audit logs are append-only."
 msgstr "快照字段会在文章删除后保留审计记录。由于审计日志仅可追加，此关系有意不强制数据库约束。"
 
@@ -3856,15 +3876,15 @@ msgstr "来源"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "分卷导出包不包含任何可导入的分卷 zip 文件。"
 
-#: kb/models.py:1327
+#: kb/models.py:1336
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "阶段 %(order)s：%(failures)s 次失败 → %(block)s 秒，重复 %(repeat)s"
 
-#: kb/admin.py:2740
+#: kb/admin.py:2760
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "阶段 %(order)s：%(failures)s 次失败 → %(duration)s，%(repeat)s，%(enabled)s"
 
-#: kb/admin.py:253 kb/models.py:1297
+#: kb/admin.py:254 kb/models.py:1306
 msgid "Stage order"
 msgstr "阶段顺序"
 
@@ -3872,7 +3892,7 @@ msgstr "阶段顺序"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "开始输入标题或文章正文以查看匹配的现有关键词。"
 
-#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
+#: kb/admin.py:185 kb/admin.py:2258 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "状态"
 
@@ -3880,11 +3900,11 @@ msgstr "状态"
 msgid "Status code"
 msgstr "状态代码"
 
-#: kb/admin.py:2664
+#: kb/admin.py:2667
 msgid "Stray upload cleanup"
 msgstr "未使用上传文件清理"
 
-#: kb/admin.py:236 kb/models.py:1139
+#: kb/admin.py:236 kb/models.py:1137
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "未使用上传文件清理最小时间（分钟）"
 
@@ -3912,7 +3932,7 @@ msgstr "提交者"
 msgid "Success"
 msgstr "成功"
 
-#: kb/admin.py:2775
+#: kb/admin.py:2795
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "成功的密码验证会重置密码锁定历史。成功的 MFA 验证会重置 MFA 锁定历史。管理员可在用户管理页面重置用户的计数器。"
 
@@ -3920,11 +3940,11 @@ msgstr "成功的密码验证会重置密码锁定历史。成功的 MFA 验证�
 msgid "Suggest article"
 msgstr "建议文章"
 
-#: kb/admin.py:98 kb/models.py:479
+#: kb/admin.py:98 kb/models.py:476
 msgid "Suggested Article"
 msgstr "建议文章"
 
-#: kb/admin.py:98 kb/models.py:480
+#: kb/admin.py:98 kb/models.py:477
 msgid "Suggested Articles"
 msgstr "建议文章"
 
@@ -3940,7 +3960,7 @@ msgstr "建议关键词"
 msgid "Supported zip format"
 msgstr "支持的 zip 格式"
 
-#: kb/admin.py:2236
+#: kb/admin.py:2238
 msgid "Target"
 msgstr "目标"
 
@@ -3948,7 +3968,7 @@ msgstr "目标"
 msgid "Target app"
 msgstr "目标应用"
 
-#: kb/admin.py:144 kb/admin.py:2213
+#: kb/admin.py:144 kb/admin.py:2215
 msgid "Target model"
 msgstr "目标模型"
 
@@ -3964,7 +3984,7 @@ msgstr "目标对象 ID"
 msgid "Thank you. Your vote has been saved."
 msgstr "谢谢，你的投票已保存。"
 
-#: kb/admin.py:1240
+#: kb/admin.py:1242
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "“启用”复选框控制账户是否可以登录。“普通用户”仅是后备查看者角色，在分配撰写者、审批员、管理员或更高权限的内部角色后会自动移除。“内部用户”是附加查看者角色，可与“普通用户”组合。自定义非角色群组仍可用于通知或部门分组。"
 
@@ -3984,7 +4004,7 @@ msgstr "应用程序响应时间过长。"
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "无法安全分配文章。未应用任何分配。请检查日志后重试。"
 
-#: kb/admin.py:833
+#: kb/admin.py:835
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "以下复选框仅适用于文章访问的特殊单用户例外。当某个用户需要比其群组略多的文章访问权限而无需创建新群组时，它们会很有用。Django 管理后台访问权限仅通过“管理员用户”群组/超级用户状态授予。"
 
@@ -4044,7 +4064,7 @@ msgstr "无法验证该请求。"
 msgid "The reset is recorded in the authentication activity log."
 msgstr "此重置操作会记录在认证活动日志中。"
 
-#: kb/admin.py:2768
+#: kb/admin.py:2788
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "密码登录失败和 MFA 代码失败使用相同的渐进式策略，但每个用户的密码和 MFA 计数器会分别跟踪。"
 
@@ -4080,7 +4100,7 @@ msgstr "服务器无法完成您的请求。"
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "提交的文件或请求超过了允许的大小限制。"
 
-#: kb/views/services.py:1230
+#: kb/views/services.py:1231
 msgid "The uploaded file is not a valid image."
 msgstr "上传的文件不是有效图片。"
 
@@ -4096,7 +4116,7 @@ msgstr "当文章或更新被标记为审核未通过时，这些备注会显示
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "这些文件似乎未被使用。请检查上传者详情，然后只删除不再需要的文件。"
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:484
+#: kb/views/mfa.py:424 kb/views/mfa.py:617
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "由于无法读取密钥，无法验证此 MFA 设备。请让管理员重置您的 MFA；若管理员被锁定，请从服务器命令行重置。"
 
@@ -4104,15 +4124,15 @@ msgstr "由于无法读取密钥，无法验证此 MFA 设备。请让管理员�
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "由于无法读取密钥，无法验证此 MFA 设备。请让另一位管理员重置此账户的 MFA。"
 
-#: kb/views/services.py:2467
+#: kb/views/services.py:2468
 msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
 msgstr "此 SharePoint 或 OneDrive 链接未提供可在无需登录的情况下直接播放的视频。请使用无需登录即可查看的直接视频链接。"
 
-#: kb/views/services.py:2472
+#: kb/views/services.py:2473
 msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
 msgstr "无法在不登录的情况下访问此 SharePoint 或 OneDrive 视频。请检查其共享权限，并使用无需登录即可查看的链接。"
 
-#: kb/views/services.py:2462
+#: kb/views/services.py:2463
 msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
 msgstr "此 SharePoint 或 OneDrive 视频需要外部登录，因此无法嵌入。请使用无需登录即可查看的视频链接。"
 
@@ -4124,11 +4144,11 @@ msgstr "此操作无法撤销。"
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "此文章还有待审更新，但仍被视为已发布文章。"
 
-#: kb/views/services.py:1330
+#: kb/views/services.py:1331
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "本文包含 %(count)s 张图片，但最多只允许 %(limit)s 张。请先删除一些图片后再保存。"
 
-#: kb/views/services.py:1329
+#: kb/views/services.py:1330
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "本文已达到 %(limit)s 张图片的上传限制。"
 
@@ -4156,11 +4176,11 @@ msgstr "此图片已上传到该草稿中。请先使用预览中的 X 按钮将
 msgid "This image is not removable from this editing session."
 msgstr "此图片无法从当前编辑会话中移除。"
 
-#: kb/admin.py:847
+#: kb/admin.py:849
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "此行显示 Django 合并群组权限、直接用户权限和超级用户状态后的最终结果。"
 
-#: kb/admin.py:840
+#: kb/admin.py:842
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "此操作仅移除直接用户权限。如果用户所属群组仍授予相同权限，有效权限仍会保持启用。"
 
@@ -4192,7 +4212,7 @@ msgstr "点踩"
 msgid "Thumbs up"
 msgstr "点赞"
 
-#: kb/admin.py:2355 kb/admin.py:758
+#: kb/admin.py:2357 kb/admin.py:760
 msgid "Timestamps"
 msgstr "时间戳"
 
@@ -4208,7 +4228,7 @@ msgstr "切换导航"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "OpenKB AI 问题过多。请稍候再试。"
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:555
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "失败登录尝试次数过多。请在 %(duration)s 后重试。"
 
@@ -4216,7 +4236,7 @@ msgstr "失败登录尝试次数过多。请在 %(duration)s 后重试。"
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "图片上传尝试次数过多。请稍候再试。"
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:790
+#: kb/views/auth.py:416 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/mfa.py:460 kb/views/mfa.py:501 kb/views/mfa.py:645 kb/views/services.py:791
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "错误 MFA 代码次数过多。请在 %(duration)s 后重试。"
 
@@ -4280,7 +4300,7 @@ msgstr "取消全选"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "取消勾选可阻止用户访问主知识库站点。"
 
-#: kb/admin.py:839
+#: kb/admin.py:841
 msgid "Unticking a checkbox"
 msgstr "取消勾选复选框"
 
@@ -4324,7 +4344,7 @@ msgstr "更新状态"
 msgid "Update submitted at"
 msgstr "更新提交时间"
 
-#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:249
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:250
 msgid "Updated at"
 msgstr "更新时间"
 
@@ -4356,7 +4376,7 @@ msgstr "上传者"
 msgid "Uploader account type snapshot"
 msgstr "上传者账户类型快照"
 
-#: kb/admin.py:2906
+#: kb/admin.py:2937
 msgid "Uploader display"
 msgstr "上传者显示名称"
 
@@ -4368,23 +4388,23 @@ msgstr "上传者邮箱快照"
 msgid "Uploader username snapshot"
 msgstr "上传者用户名快照"
 
-#: kb/admin.py:736
+#: kb/admin.py:738
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "使用“群组”作为用户的标准公开文章角色。仅当该用户需要其群组之外的额外公开文章权限时才勾选这些复选框。“禁用用户”群组会覆盖这些直接权限附加项。"
 
-#: kb/admin.py:1056
+#: kb/admin.py:1058
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "使用下方“群组成员”选择器将用户添加到或从此角色移除。对于一次性例外，请编辑特定用户并改为勾选直接知识库权限复选框。创建账户时，新建非管理员用户会自动加入“普通用户”。"
 
-#: kb/admin.py:2693
+#: kb/admin.py:2712
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "使用下方内联行控制渐进式密码/MFA 锁定。以秒为单位输入时长；管理页面也会显示易读的分钟/小时/天换算。repeat_count=0 表示该阶段无限重复，通常应在最后一行使用。"
 
-#: kb/admin.py:1234
+#: kb/admin.py:1236
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "请使用这些群组作为主要访问模型。“禁用用户”始终具有最高优先级。"
 
-#: kb/admin.py:1294
+#: kb/admin.py:1296
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "当用户因多次输错密码或 MFA 而被临时锁定时，请使用此操作。它仅清除此用户的密码和 MFA 锁定计数器。"
 
@@ -4392,11 +4412,11 @@ msgstr "当用户因多次输错密码或 MFA 而被临时锁定时，请使用�
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "请仅在确认解锁请求合法后使用。"
 
-#: kb/admin.py:991
+#: kb/admin.py:993
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "使用此可搜索的左右列表将用户添加到或从此群组移除。右侧用户是该群组成员，左侧用户是可选用户。"
 
-#: kb/admin.py:1284
+#: kb/admin.py:1286
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "使用此部分重置用户的身份验证器设置。重置会生成新的私密身份验证器密钥，并强制用户在下次登录时扫描新的二维码。"
 
@@ -4412,19 +4432,19 @@ msgstr "用户 MFA 设备"
 msgid "User MFA devices"
 msgstr "用户 MFA 设备"
 
-#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:1998
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2000
 msgid "User agent"
 msgstr "用户代理"
 
-#: kb/admin.py:1427 kb/admin.py:1475
+#: kb/admin.py:1429 kb/admin.py:1477
 msgid "User does not exist."
 msgstr "用户不存在。"
 
-#: kb/admin.py:241 kb/models.py:1191
+#: kb/admin.py:241 kb/models.py:1189
 msgid "User session timeout (hours)"
 msgstr "用户会话超时（小时）"
 
-#: kb/admin.py:2835
+#: kb/admin.py:2855
 msgid "User session timeout readable"
 msgstr "用户会话超时（可读）"
 
@@ -4436,15 +4456,15 @@ msgstr "用户名"
 msgid "Username changes are managed by administrators."
 msgstr "用户名更改由管理员管理。"
 
-#: kb/admin.py:1075
+#: kb/admin.py:1077
 msgid "Users"
 msgstr "用户"
 
-#: kb/admin.py:902 kb/admin.py:972
+#: kb/admin.py:904 kb/admin.py:974
 msgid "Users in this group"
 msgstr "此群组中的用户"
 
-#: website/templates/mfa_setup.html:64 website/templates/mfa_verify.html:50
+#: website/templates/mfa_setup.html:67 website/templates/mfa_verify.html:51
 msgid "Verify"
 msgstr "验证"
 
@@ -4488,7 +4508,7 @@ msgstr "可见性"
 msgid "Visibility can be changed only before the article is published."
 msgstr "只能在文章发布前更改可见性。"
 
-#: kb/admin.py:215 kb/admin.py:2569
+#: kb/admin.py:215 kb/admin.py:2571
 msgid "Vote"
 msgstr "投票"
 
@@ -4500,11 +4520,11 @@ msgstr "警告 / 错误"
 msgid "Was this article helpful?"
 msgstr "这篇文章有帮助吗？"
 
-#: kb/views/mfa.py:353
+#: kb/views/mfa.py:478
 msgid "Welcome back, %(name)s."
 msgstr "欢迎回来，%(name)s。"
 
-#: kb/views/mfa.py:359
+#: kb/views/mfa.py:484
 msgid "Welcome back."
 msgstr "欢迎回来。"
 
@@ -4564,11 +4584,11 @@ msgstr "您没有新增文章的权限。"
 msgid "You do not have permission to add internal articles."
 msgstr "您没有新增内部文章的权限。"
 
-#: kb/admin.py:2363
+#: kb/admin.py:2365
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "您没有从 Django 管理后台批准文章的权限。"
 
-#: kb/admin.py:1580
+#: kb/admin.py:1582
 msgid "You do not have permission to assign Disabled User."
 msgstr "您没有分配“禁用用户”角色的权限。"
 
@@ -4580,15 +4600,15 @@ msgstr "您没有管理文章的权限。"
 msgid "You do not have permission to manage internal articles."
 msgstr "您没有管理内部文章的权限。"
 
-#: kb/admin.py:1623
+#: kb/admin.py:1625
 msgid "You do not have permission to modify users."
 msgstr "您没有修改用户的权限。"
 
-#: kb/admin.py:491
+#: kb/admin.py:493
 msgid "You do not have permission to perform this admin reset."
 msgstr "您没有执行此管理员重置操作的权限。"
 
-#: kb/admin.py:2397
+#: kb/admin.py:2399
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "您没有从 Django 管理后台拒绝文章的权限。"
 
@@ -4620,7 +4640,7 @@ msgstr "应用更改前会要求您确认。已发布文章会加入队列且可
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "应用更改前会要求您确认。所选文章会立即永久删除。"
 
-#: kb/views/mfa.py:594
+#: kb/views/mfa.py:727
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "您的 MFA 已重置。请立即完成身份验证器设置以继续使用知识库。"
 
@@ -4632,7 +4652,7 @@ msgstr "您的账户目前已禁用，无法访问知识库。如您认为这不
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "您的管理员会话因长时间无活动而过期。请再次验证 MFA 以重新进入管理后台。"
 
-#: kb/admin.py:1617
+#: kb/admin.py:1619
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "您自己的账户已被分配“禁用用户”角色。下次请求时，您会被重定向到“账户已禁用”页面。"
 
@@ -4640,7 +4660,7 @@ msgstr "您自己的账户已被分配“禁用用户”角色。下次请求时
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "您的会话已过期。请在上传图片前重新登录。"
 
-#: kb/middleware.py:271
+#: kb/middleware.py:272
 msgid "Your session has expired. Please sign in again."
 msgstr "你的会话已过期。请重新登录。"
 
@@ -4664,7 +4684,7 @@ msgstr "管理区域"
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
 msgstr "以及所有引用的上传文件。包含待审核更新数据，以便导入后数据库和 OpenKB 文件保持同步。"
 
-#: kb/models.py:1070
+#: kb/models.py:1068
 msgid "anonymous"
 msgstr "匿名"
 
@@ -4684,7 +4704,7 @@ msgstr "文章/更新"
 msgid "confirmed"
 msgstr "已确认"
 
-#: kb/models.py:669
+#: kb/models.py:666
 msgid "deleted-user"
 msgstr "已删除用户"
 
@@ -4692,11 +4712,11 @@ msgstr "已删除用户"
 msgid "denied"
 msgstr "已拒绝"
 
-#: kb/admin.py:2738
+#: kb/admin.py:2758
 msgid "disabled"
 msgstr "已禁用"
 
-#: kb/admin.py:2738
+#: kb/admin.py:2758
 msgid "enabled"
 msgstr "已启用"
 
@@ -4704,7 +4724,7 @@ msgstr "已启用"
 msgid "failed"
 msgstr "失败"
 
-#: kb/models.py:1326
+#: kb/models.py:1335
 msgid "forever"
 msgstr "永久"
 
@@ -4764,11 +4784,11 @@ msgstr "已重定向"
 msgid "removed %(items)s"
 msgstr "已移除 %(items)s"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2757
 msgid "repeat %(count)s time(s)"
 msgstr "重复 %(count)s 次"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2757
 msgid "repeat forever"
 msgstr "无限重复"
 
@@ -4804,14 +4824,14 @@ msgstr "成功"
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "不再被任何文章或 wiki Markdown 文件引用的内容。"
 
-#: kb/models.py:1129
+#: kb/models.py:1127
 msgid "unknown admin"
 msgstr "未知管理员"
 
-#: kb/models.py:878
+#: kb/models.py:876
 msgid "unknown user"
 msgstr "未知用户"
 
-#: kb/admin.py:903
+#: kb/admin.py:905
 msgid "users"
 msgstr "用户"

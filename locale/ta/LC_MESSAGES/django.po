@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: kb/admin.py:1902
+#: kb/admin.py:1904
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "%(count)d MFA சாதனம்(கள்) அமைப்பு நிலுவையில் எனக் குறிக்கப்பட்டன."
 
@@ -26,13 +26,13 @@ msgstr "%(count)s கட்டுரைகள்"
 msgid "%(count)s articles total."
 msgstr "மொத்தம் %(count)s கட்டுரைகள்."
 
-#: kb/admin.py:306
+#: kb/admin.py:308
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s நாள்"
 msgstr[1] "%(count)s நாட்கள்"
 
-#: kb/admin.py:310
+#: kb/admin.py:312
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s மணிநேரம்"
@@ -42,7 +42,7 @@ msgstr[1] "%(count)s மணிநேரங்கள்"
 msgid "%(count)s matching articles found."
 msgstr "%(count)s பொருந்தும் கட்டுரைகள் கண்டறியப்பட்டன."
 
-#: kb/admin.py:314 kb/admin.py:317
+#: kb/admin.py:316 kb/admin.py:319
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s நிமிடம்"
@@ -52,7 +52,7 @@ msgstr[1] "%(count)s நிமிடங்கள்"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "%(count)s முடிவு(கள்) கட்டுரைத் தலைப்பு மற்றும் முக்கியச் சொற்களைப் பொருத்தி கண்டறியப்பட்டன."
 
-#: kb/admin.py:302 kb/admin.py:318 kb/admin.py:331
+#: kb/admin.py:304 kb/admin.py:320 kb/admin.py:333
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s விநாடி"
@@ -62,15 +62,15 @@ msgstr[1] "%(count)s விநாடிகள்"
 msgid "%(count)s total"
 msgstr "மொத்தம் %(count)s"
 
-#: kb/admin.py:2846
+#: kb/admin.py:2877
 msgid "%(days)s day(s)"
 msgstr "%(days)s நாள்(கள்)"
 
-#: kb/models.py:879
+#: kb/models.py:877
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s ஐ %(uploader)s பதிவேற்றினார்"
 
-#: kb/admin.py:2833
+#: kb/admin.py:2853
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s மணி நேரம்"
 
@@ -98,7 +98,7 @@ msgstr "%(target)s இல் %(prefix)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1085
+#: kb/admin.py:1087
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, மேலும் +%(extra)d"
 
@@ -110,7 +110,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "மொத்தம் %(size)s KB"
 
-#: kb/admin.py:1102
+#: kb/admin.py:1104
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, மேலும் +%(extra)d"
 
@@ -132,7 +132,7 @@ msgstr ", மேலும் +%(count)d"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: \"%(query)s\" க்கான தேடல் முடிவுகள் :::"
 
-#: kb/admin.py:1842
+#: kb/admin.py:1844
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "மீட்டமைப்பு புதிய தனிப்பட்ட அங்கீகரிப்பு விசையை உருவாக்கி, அமைப்பை மீண்டும் கட்டாயப்படுத்தும்."
 
@@ -140,11 +140,11 @@ msgstr "மீட்டமைப்பு புதிய தனிப்பட�
 msgid "Access denied"
 msgstr "அணுகல் மறுக்கப்பட்டது"
 
-#: kb/admin.py:1351 kb/admin.py:1765
+#: kb/admin.py:1353 kb/admin.py:1767
 msgid "Account Status"
 msgstr "கணக்கு நிலை"
 
-#: kb/admin.py:108 kb/admin.py:1832
+#: kb/admin.py:108 kb/admin.py:1834
 msgid "Account Type"
 msgstr "கணக்கு வகை"
 
@@ -156,7 +156,7 @@ msgstr "கணக்கு தற்போது முடக்கப்பட�
 msgid "Account disabled"
 msgstr "கணக்கு முடக்கப்பட்டது"
 
-#: kb/admin.py:1183
+#: kb/admin.py:1185
 msgid "Account status"
 msgstr "கணக்கு நிலை"
 
@@ -168,7 +168,7 @@ msgstr "கணக்கு சுருக்கம்"
 msgid "Account type"
 msgstr "கணக்கு வகை"
 
-#: kb/admin.py:2203
+#: kb/admin.py:2205
 msgid "Action"
 msgstr "செயல்"
 
@@ -180,11 +180,11 @@ msgstr "செயல்கள்"
 msgid "Active Directory user"
 msgstr "Active Directory பயனர்"
 
-#: kb/admin.py:102 kb/models.py:1059
+#: kb/admin.py:102 kb/models.py:1057
 msgid "Activity log"
 msgstr "செயல்பாட்டு பதிவு"
 
-#: kb/admin.py:102 kb/models.py:1060
+#: kb/admin.py:102 kb/models.py:1058
 msgid "Activity logs"
 msgstr "செயல்பாட்டு பதிவுகள்"
 
@@ -192,51 +192,51 @@ msgstr "செயல்பாட்டு பதிவுகள்"
 msgid "Add Article"
 msgstr "கட்டுரையைச் சேர்"
 
-#: kb/admin.py:1222
+#: kb/admin.py:1224
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "கூடுதல் பங்கு. சொந்த உள் கட்டுரைகளை உருவாக்க/திருத்தலாம் மற்றும் பொதுவான/பொது கட்டுரைகளைப் பார்க்கலாம்."
 
-#: kb/admin.py:1224
+#: kb/admin.py:1226
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "கூடுதல் பங்கு. உள் கட்டுரைகளை உருவாக்க/நிர்வகிக்க/நீக்கலாம் மற்றும் பொதுவான/பொது கட்டுரைகளைப் பார்க்கலாம்."
 
-#: kb/admin.py:1223
+#: kb/admin.py:1225
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "கூடுதல் பங்கு. நிலுவையிலுள்ள உள் கட்டுரைகள்/புதுப்பிப்புகளை மதிப்பாய்வு செய்யலாம் மற்றும் பொதுவான/பொது கட்டுரைகளைப் பார்க்கலாம்."
 
-#: kb/admin.py:819
+#: kb/admin.py:821
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "கூடுதல் பங்கு. பொதுவான/பொது கட்டுரைகளைப் பார்க்கலாம் மற்றும் நிலுவையிலுள்ள உள் கட்டுரைகள் மற்றும் புதுப்பிப்புகளை அங்கீகரிக்க/நிராகரிக்கலாம்."
 
-#: kb/admin.py:815
+#: kb/admin.py:817
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "கூடுதல் பங்கு. பொதுவான/பொது கட்டுரைகளைப் பார்க்கலாம் மற்றும் சொந்த உள் கட்டுரைகளை உருவாக்க/திருத்தலாம்."
 
-#: kb/admin.py:811
+#: kb/admin.py:813
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "கூடுதல் பங்கு. பொதுவான/பொது மற்றும் உள் கட்டுரைகளைப் பார்க்கலாம்; ஆனால் உள் கட்டுரைகளை உருவாக்கவோ அங்கீகரிக்கவோ முடியாது."
 
-#: kb/admin.py:1221
+#: kb/admin.py:1223
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "கூடுதல் பங்கு. பொதுவான/பொது கட்டுரைகளுடன் உள் கட்டுரைகளையும் பார்க்கலாம்."
 
-#: kb/admin.py:823
+#: kb/admin.py:825
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "கூடுதல் பங்கு. பொதுவான/பொது கட்டுரைகளைப் பார்க்கலாம், உள் கட்டுரைகளை உருவாக்க/நிர்வகிக்க/நீக்கலாம் மற்றும் நிலுவையிலுள்ள உள் கட்டுரைகளை மதிப்பாய்வு செய்யலாம்."
 
-#: kb/models.py:32 kb/models.py:638 kb/models.py:686 website/templates/_navbar.html:55
+#: kb/models.py:32 kb/models.py:635 kb/models.py:683 website/templates/_navbar.html:55
 msgid "Admin"
 msgstr "நிர்வாகி"
 
-#: kb/admin.py:2817
+#: kb/admin.py:2837
 msgid "Admin IP restriction status"
 msgstr "நிர்வாக IP கட்டுப்பாட்டு நிலை"
 
-#: kb/admin.py:247 kb/models.py:1242
+#: kb/admin.py:248 kb/models.py:1251
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "நிர்வாக MFA செயலற்ற நேரவரம்பு (விநாடிகள்)"
 
-#: kb/admin.py:2824
+#: kb/admin.py:2844
 msgid "Admin MFA idle timeout readable"
 msgstr "நிர்வாக MFA செயலற்ற நேரவரம்பின் வாசிக்கத்தக்க வடிவம்"
 
@@ -244,11 +244,11 @@ msgstr "நிர்வாக MFA செயலற்ற நேரவரம்ப
 msgid "Admin MFA verification"
 msgstr "நிர்வாக MFA சரிபார்ப்பு"
 
-#: kb/admin.py:1225 kb/admin.py:826 kb/permissions.py:62
+#: kb/admin.py:1227 kb/admin.py:828 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "நிர்வாக பயனர்கள்"
 
-#: kb/admin.py:1708
+#: kb/admin.py:1710
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கு) நிர்வாக பயனர்கள் பங்கு ஒதுக்கப்பட்டது."
 
@@ -256,35 +256,35 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d ப�
 msgid "Admin access requires an active MFA-protected account."
 msgstr "நிர்வாக அணுகலுக்கு செயலில் உள்ள MFA-பாதுகாக்கப்பட்ட கணக்கு தேவை."
 
-#: kb/models.py:1087
+#: kb/models.py:1085
 msgid "Admin action/request"
 msgstr "நிர்வாக செயல்/கோரிக்கை"
 
-#: kb/admin.py:103 kb/models.py:1119
+#: kb/admin.py:103 kb/models.py:1117
 msgid "Admin activity log"
 msgstr "நிர்வாக செயல்பாட்டு பதிவு"
 
-#: kb/admin.py:103 kb/models.py:1120
+#: kb/admin.py:103 kb/models.py:1118
 msgid "Admin activity logs"
 msgstr "நிர்வாக செயல்பாட்டு பதிவுகள்"
 
-#: kb/admin.py:245 kb/models.py:1224
+#: kb/admin.py:246 kb/models.py:1233
 msgid "Admin allowed IP ranges"
 msgstr "நிர்வாகம் அனுமதிக்கும் IP வரம்புகள்"
 
-#: kb/admin.py:243 kb/models.py:1207
+#: kb/admin.py:244 kb/models.py:1216
 msgid "Admin log rows per page"
 msgstr "ஒரு பக்கத்திற்கான நிர்வாக பதிவு வரிசைகள்"
 
-#: kb/models.py:1085
+#: kb/models.py:1083
 msgid "Admin object changed"
 msgstr "நிர்வாகப் பொருள் மாற்றப்பட்டது"
 
-#: kb/models.py:1084
+#: kb/models.py:1082
 msgid "Admin object created"
 msgstr "நிர்வாகப் பொருள் உருவாக்கப்பட்டது"
 
-#: kb/models.py:1086
+#: kb/models.py:1084
 msgid "Admin object deleted"
 msgstr "நிர்வாகப் பொருள் நீக்கப்பட்டது"
 
@@ -300,15 +300,15 @@ msgstr "%(target)s க்கான நிர்வாகக் கோரிக�
 msgid "Admin request failed for %(target)s"
 msgstr "%(target)s க்கான நிர்வாகக் கோரிக்கை தோல்வியடைந்தது"
 
-#: kb/admin.py:2200
+#: kb/admin.py:2202
 msgid "Admin request failed or denied for %(target)s"
 msgstr "%(target)s க்கான நிர்வாகக் கோரிக்கை தோல்வியடைந்தது அல்லது மறுக்கப்பட்டது"
 
-#: kb/admin.py:2201 kb/admin_audit.py:175
+#: kb/admin.py:2203 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "%(target)s க்கான நிர்வாகக் கோரிக்கை"
 
-#: kb/models.py:990
+#: kb/models.py:988
 msgid "Admin tool action"
 msgstr "நிர்வாக கருவி செயல்"
 
@@ -332,15 +332,15 @@ msgstr "நிர்வாக பயனர்பெயர்"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "நிர்வாகிகளுக்கான கருவி மட்டும். ஏற்றுமதிகளில் கட்டுரை Markdown மற்றும் கீழே குறிப்பிடப்பட்ட கோப்புகள் அடங்கும்"
 
-#: kb/admin.py:262 kb/models.py:50
+#: kb/admin.py:263 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "பணியாளர் நிலை இயக்கப்பட்டிருக்கும்போது நிர்வாகி/LDAP நிர்வாகி கணக்குகள் Django நிர்வாகத்தை அணுக முடியும்."
 
-#: kb/admin.py:874
+#: kb/admin.py:876
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "சேமித்த பிறகு, தேவைப்பட்டால் பயனரை மீண்டும் திறந்து, இறுதி அணுகல் நிலையை உறுதிப்படுத்த ‘செயல்பாட்டு அனுமதிகள்’ என்பதைச் சரிபார்க்கவும்."
 
-#: kb/models.py:455
+#: kb/models.py:452
 msgid "After this time, the queued article can be permanently deleted by the scheduled cleanup."
 msgstr "இந்தக் காலத்திற்குப் பிறகு, வரிசையில் உள்ள கட்டுரையை திட்டமிட்ட சுத்திகரிப்பு மூலம் நிரந்தரமாக நீக்கலாம்."
 
@@ -352,23 +352,23 @@ msgstr "அனுமதிக்கப்பட்ட அனைத்து க�
 msgid "All statuses"
 msgstr "அனைத்து நிலைகள்"
 
-#: kb/admin.py:2792
+#: kb/admin.py:2812
 msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
 msgstr "அனுமதி பட்டியல் முடக்கப்பட்டுள்ளது — அனைத்து IPv4 மற்றும் IPv6 முகவரிகளும் நிர்வாக அங்கீகாரம்/MFA சரிபார்ப்புகளை அடையலாம்."
 
-#: kb/admin.py:2807
+#: kb/admin.py:2827
 msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
 msgstr "அனுமதி பட்டியல் இயக்கப்பட்டுள்ளது — %(count)s IP/CIDR வரம்பு(கள்) அனுமதிக்கப்பட்டுள்ளன:"
 
-#: kb/admin.py:2802
+#: kb/admin.py:2822
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "அனுமதி பட்டியல் இயக்கப்பட்டுள்ளது, ஆனால் செல்லுபடியாகும் IP/CIDR வரம்புகள் அமைக்கப்படவில்லை. குறைந்தது ஒரு செல்லுபடியாகும் வரம்பு சேமிக்கப்படும் வரை நிர்வாக அணுகல் மறுக்கப்படும்."
 
-#: kb/views/services.py:249
+#: kb/views/services.py:250
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "‘%(title)s’ என்ற தலைப்பில் ஒரு கட்டுரை ஏற்கனவே உள்ளது. வேறு தலைப்பைப் பயன்படுத்தவும்."
 
-#: kb/models.py:500
+#: kb/models.py:497
 msgid "An article with this title already exists. Please use a different title."
 msgstr "இந்த தலைப்பில் ஒரு கட்டுரை ஏற்கனவே உள்ளது. வேறு தலைப்பைப் பயன்படுத்தவும்."
 
@@ -376,7 +376,7 @@ msgstr "இந்த தலைப்பில் ஒரு கட்டுரை
 msgid "Apply"
 msgstr "பயன்படுத்து"
 
-#: kb/admin.py:2327
+#: kb/admin.py:2329
 msgid "Approval / review"
 msgstr "ஒப்புதல் / மதிப்பாய்வு"
 
@@ -384,7 +384,7 @@ msgstr "ஒப்புதல் / மதிப்பாய்வு"
 msgid "Approve / Publish"
 msgstr "ஒப்புதல் / வெளியிடு"
 
-#: kb/admin.py:2360
+#: kb/admin.py:2362
 msgid "Approve selected pending articles"
 msgstr "தேர்ந்தெடுக்கப்பட்ட நிலுவையிலுள்ள கட்டுரைகளை ஒப்புதல்"
 
@@ -392,7 +392,7 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட நிலு�
 msgid "Approve update"
 msgstr "புதுப்பிப்பை ஒப்புதல்"
 
-#: kb/admin.py:2383
+#: kb/admin.py:2385
 msgid "Approved article %(title)s from Django Admin"
 msgstr "Django நிர்வாகத்திலிருந்து %(title)s கட்டுரை அங்கீகரிக்கப்பட்டது"
 
@@ -428,31 +428,31 @@ msgstr "இந்தக் கோப்பை நீக்க விரும்
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "கடைசியாக வெளியிடப்பட்ட பதிப்பிற்கு மீட்டமைக்க விரும்புகிறீர்களா? வெளியிடப்படாத அனைத்து புதுப்பிப்பு மாற்றங்களும் நிரந்தரமாக அகற்றப்படும்."
 
-#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:112 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2077 kb/admin.py:213 kb/admin.py:2326 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "கட்டுரை"
 
-#: kb/admin.py:1219 kb/admin.py:797 kb/permissions.py:56
+#: kb/admin.py:1221 kb/admin.py:799 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "கட்டுரை அங்கீகரிப்பாளர்"
 
-#: kb/admin.py:1688
+#: kb/admin.py:1690
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கு) கட்டுரை அங்கீகரிப்பாளர் பங்கு ஒதுக்கப்பட்டது."
 
-#: kb/admin.py:1220 kb/admin.py:804 kb/permissions.py:57
+#: kb/admin.py:1222 kb/admin.py:806 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "கட்டுரை மேலாளர்"
 
-#: kb/admin.py:1698
+#: kb/admin.py:1700
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கு) கட்டுரை மேலாளர் பங்கு ஒதுக்கப்பட்டது."
 
-#: kb/admin.py:1218 kb/admin.py:790 kb/permissions.py:55
+#: kb/admin.py:1220 kb/admin.py:792 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "கட்டுரை எழுத்தாளர்"
 
-#: kb/admin.py:1678
+#: kb/admin.py:1680
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கு) கட்டுரை எழுத்தாளர் பங்கு ஒதுக்கப்பட்டது."
 
@@ -464,7 +464,7 @@ msgstr "கட்டுரை மற்றும் புதுப்பிப�
 msgid "Article approved and published."
 msgstr "கட்டுரை ஒப்புதல் பெற்று வெளியிடப்பட்டது."
 
-#: kb/models.py:942
+#: kb/models.py:940
 msgid "Article approved/published"
 msgstr "கட்டுரை ஒப்புதல்/வெளியிடப்பட்டது"
 
@@ -472,7 +472,7 @@ msgstr "கட்டுரை ஒப்புதல்/வெளியிடப�
 msgid "Article approver. Can view articles, review pending public articles/updates, edit content while articles/updates remain pending, keep them pending after review edits, and approve or reject them; cannot create, delete, or edit already-published articles by default. Regular User is not required."
 msgstr "கட்டுரை அங்கீகரிப்பாளர். கட்டுரைகளைப் பார்க்கலாம், நிலுவையிலுள்ள பொது கட்டுரைகள்/புதுப்பிப்புகளை மதிப்பாய்வு செய்யலாம், கட்டுரைகள்/புதுப்பிப்புகள் நிலுவையில் இருக்கும் போது உள்ளடக்கத்தைத் திருத்தலாம், மதிப்பாய்வு திருத்தங்களுக்குப் பின் அவற்றை நிலுவையில் வைத்திருக்கலாம், அங்கீகரிக்கவோ நிராகரிக்கவோ முடியும்; இயல்பாக ஏற்கனவே வெளியிடப்பட்ட கட்டுரைகளை உருவாக்கவோ, நீக்கவோ, திருத்தவோ முடியாது. சாதாரண பயனர் தேவையில்லை."
 
-#: kb/models.py:937
+#: kb/models.py:935
 msgid "Article auto-deleted from queue"
 msgstr "வரிசையிலிருந்து கட்டுரை தானாக நீக்கப்பட்டது"
 
@@ -488,11 +488,11 @@ msgstr "கட்டுரை உள்ளடக்கம் (Markdown)"
 msgid "Article contributor. Can view articles, create articles, save drafts, submit for approval, manage their own article drafts/updates, and delete their own articles. Published article deletion requires MFA confirmation. Regular User is not required."
 msgstr "கட்டுரை பங்களிப்பாளர். கட்டுரைகளைப் பார்க்கலாம், கட்டுரைகளை உருவாக்கலாம், வரைவுகளைச் சேமிக்கலாம், ஒப்புதலுக்காகச் சமர்ப்பிக்கலாம், சொந்த கட்டுரை வரைவுகள்/புதுப்பிப்புகளை நிர்வகிக்கலாம் மற்றும் சொந்த கட்டுரைகளை நீக்கலாம். வெளியிடப்பட்ட கட்டுரையை நீக்க MFA உறுதிப்படுத்தல் தேவை. சாதாரண பயனர் தேவையில்லை."
 
-#: kb/models.py:931
+#: kb/models.py:929
 msgid "Article created"
 msgstr "கட்டுரை உருவாக்கப்பட்டது"
 
-#: kb/models.py:933
+#: kb/models.py:931
 msgid "Article deleted"
 msgstr "கட்டுரை நீக்கப்பட்டது"
 
@@ -504,27 +504,27 @@ msgstr "MFA உறுதிப்படுத்தலுக்குப் ப�
 msgid "Article deletion confirmed: %(title)s."
 msgstr "கட்டுரை நீக்கம் உறுதிப்படுத்தப்பட்டது: %(title)s."
 
-#: kb/admin.py:2671 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2674 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "கட்டுரை நீக்க வரிசை"
 
-#: kb/admin.py:237 kb/models.py:1148
+#: kb/admin.py:237 kb/models.py:1146
 msgid "Article deletion queue retention (days)"
 msgstr "கட்டுரை நீக்க வரிசை சேமிப்பு காலம் (நாட்கள்)"
 
-#: kb/models.py:939
+#: kb/models.py:937
 msgid "Article deletion rejected"
 msgstr "கட்டுரை நீக்கம் நிராகரிக்கப்பட்டது"
 
-#: kb/models.py:755
+#: kb/models.py:753
 msgid "Article deletion request"
 msgstr "கட்டுரை நீக்க கோரிக்கை"
 
-#: kb/models.py:938
+#: kb/models.py:936
 msgid "Article deletion requested"
 msgstr "கட்டுரை நீக்கம் கோரப்பட்டது"
 
-#: kb/models.py:756
+#: kb/models.py:754
 msgid "Article deletion requests"
 msgstr "கட்டுரை நீக்க கோரிக்கைகள்"
 
@@ -532,7 +532,7 @@ msgstr "கட்டுரை நீக்க கோரிக்கைகள்"
 msgid "Article details"
 msgstr "கட்டுரை விவரங்கள்"
 
-#: kb/admin.py:2651
+#: kb/admin.py:2654
 msgid "Article display and upload limits"
 msgstr "கட்டுரை காட்சி மற்றும் பதிவேற்ற வரம்புகள்"
 
@@ -540,35 +540,35 @@ msgstr "கட்டுரை காட்சி மற்றும் பதி
 msgid "Article image"
 msgstr "கட்டுரை படம்"
 
-#: kb/models.py:984
+#: kb/models.py:982
 msgid "Article image deleted"
 msgstr "கட்டுரை படம் நீக்கப்பட்டது"
 
-#: kb/admin.py:238 kb/models.py:1156
+#: kb/admin.py:238 kb/models.py:1154
 msgid "Article image upload limit"
 msgstr "கட்டுரை பட பதிவேற்ற வரம்பு"
 
-#: kb/admin.py:101 kb/models.py:869
+#: kb/admin.py:101 kb/models.py:867
 msgid "Article image upload log"
 msgstr "கட்டுரை பட பதிவேற்ற பதிவு"
 
-#: kb/models.py:907
+#: kb/models.py:905
 msgid "Article image upload log records are append-only and cannot be edited."
 msgstr "கட்டுரை படப் பதிவேற்றப் பதிவு வரிசைகள் சேர்க்கை மட்டும்; அவற்றைத் திருத்த முடியாது."
 
-#: kb/models.py:913
+#: kb/models.py:911
 msgid "Article image upload log records cannot be manually deleted."
 msgstr "கட்டுரை படப் பதிவேற்றப் பதிவு வரிசைகளை கைமுறையாக நீக்க முடியாது."
 
-#: kb/admin.py:101 kb/models.py:870
+#: kb/admin.py:101 kb/models.py:868
 msgid "Article image upload logs"
 msgstr "கட்டுரை பட பதிவேற்ற பதிவுகள்"
 
-#: kb/models.py:983
+#: kb/models.py:981
 msgid "Article image uploaded"
 msgstr "கட்டுரை படம் பதிவேற்றப்பட்டது"
 
-#: kb/views/services.py:1327
+#: kb/views/services.py:1328
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "கட்டுரை பட பதிவேற்றங்கள் தற்போது நிர்வாகியால் முடக்கப்பட்டுள்ளன."
 
@@ -584,11 +584,11 @@ msgstr "கட்டுரை மேலாளர். பொது கட்ட�
 msgid "Article marked as pending failed."
 msgstr "கட்டுரை நிலுவை தோல்வியடைந்தது என குறிக்கப்பட்டது."
 
-#: kb/models.py:943
+#: kb/models.py:941
 msgid "Article marked pending failed"
 msgstr "கட்டுரை நிலுவை தோல்வி என குறிக்கப்பட்டது"
 
-#: kb/admin.py:2099
+#: kb/admin.py:2101
 msgid "Article owner"
 msgstr "கட்டுரை உரிமையாளர்"
 
@@ -596,7 +596,7 @@ msgstr "கட்டுரை உரிமையாளர்"
 msgid "Article owner account type"
 msgstr "கட்டுரை உரிமையாளர் கணக்கு வகை"
 
-#: kb/models.py:1048
+#: kb/models.py:1046
 msgid "Article owner account type snapshot"
 msgstr "கட்டுரை உரிமையாளர் கணக்கு வகை ஸ்னாப்ஷாட்"
 
@@ -604,7 +604,7 @@ msgstr "கட்டுரை உரிமையாளர் கணக்கு 
 msgid "Article owner email"
 msgstr "கட்டுரை உரிமையாளர் மின்னஞ்சல்"
 
-#: kb/models.py:1042
+#: kb/models.py:1040
 msgid "Article owner email snapshot"
 msgstr "கட்டுரை உரிமையாளர் மின்னஞ்சல் ஸ்னாப்ஷாட்"
 
@@ -612,23 +612,23 @@ msgstr "கட்டுரை உரிமையாளர் மின்னஞ�
 msgid "Article owner name"
 msgstr "கட்டுரை உரிமையாளர் பெயர்"
 
-#: kb/models.py:1038
+#: kb/models.py:1036
 msgid "Article owner name snapshot"
 msgstr "கட்டுரை உரிமையாளர் பெயர் ஸ்னாப்ஷாட்"
 
-#: kb/models.py:970
+#: kb/models.py:968
 msgid "Article owner notification failed"
 msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு தோல்வியடைந்தது"
 
-#: kb/models.py:962
+#: kb/models.py:960
 msgid "Article owner notification queued"
 msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு வரிசையில் சேர்க்கப்பட்டது"
 
-#: kb/models.py:966
+#: kb/models.py:964
 msgid "Article owner notification sent"
 msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு அனுப்பப்பட்டது"
 
-#: kb/models.py:974
+#: kb/models.py:972
 msgid "Article owner notification skipped"
 msgstr "கட்டுரை உரிமையாளர் அறிவிப்பு தவிர்க்கப்பட்டது"
 
@@ -636,7 +636,7 @@ msgstr "கட்டுரை உரிமையாளர் அறிவிப�
 msgid "Article owner user ID"
 msgstr "கட்டுரை உரிமையாளர் பயனர் ID"
 
-#: kb/models.py:1026
+#: kb/models.py:1024
 msgid "Article owner user ID snapshot"
 msgstr "கட்டுரை உரிமையாளர் பயனர் ID ஸ்னாப்ஷாட்"
 
@@ -644,7 +644,7 @@ msgstr "கட்டுரை உரிமையாளர் பயனர் ID 
 msgid "Article owner username"
 msgstr "கட்டுரை உரிமையாளர் பயனர்பெயர்"
 
-#: kb/models.py:1033
+#: kb/models.py:1031
 msgid "Article owner username snapshot"
 msgstr "கட்டுரை உரிமையாளர் பயனர்பெயர் ஸ்னாப்ஷாட்"
 
@@ -652,7 +652,7 @@ msgstr "கட்டுரை உரிமையாளர் பயனர்ப�
 msgid "Article pagination"
 msgstr "கட்டுரை பக்கப்பிரிவு"
 
-#: kb/models.py:936
+#: kb/models.py:934
 msgid "Article permanently deleted"
 msgstr "கட்டுரை நிரந்தரமாக நீக்கப்பட்டது"
 
@@ -664,31 +664,31 @@ msgstr "கட்டுரை நிரந்தரமாக நீக்கப�
 msgid "Article published successfully."
 msgstr "கட்டுரை வெற்றிகரமாக வெளியிடப்பட்டது."
 
-#: kb/models.py:934
+#: kb/models.py:932
 msgid "Article queued for deletion"
 msgstr "கட்டுரை நீக்கத்திற்காக வரிசைப்படுத்தப்பட்டது"
 
-#: kb/models.py:935
+#: kb/models.py:933
 msgid "Article restored from deletion queue"
 msgstr "கட்டுரை நீக்க வரிசையிலிருந்து மீட்டெடுக்கப்பட்டது"
 
-#: kb/models.py:954
+#: kb/models.py:952
 msgid "Article review notification failed"
 msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு தோல்வியடைந்தது"
 
-#: kb/models.py:946
+#: kb/models.py:944
 msgid "Article review notification queued"
 msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு வரிசையில் சேர்க்கப்பட்டது"
 
-#: kb/models.py:950
+#: kb/models.py:948
 msgid "Article review notification sent"
 msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு அனுப்பப்பட்டது"
 
-#: kb/models.py:958
+#: kb/models.py:956
 msgid "Article review notification skipped"
 msgstr "கட்டுரை மதிப்பாய்வு அறிவிப்பு தவிர்க்கப்பட்டது"
 
-#: kb/admin.py:2344
+#: kb/admin.py:2346
 msgid "Article statistics"
 msgstr "கட்டுரை புள்ளிவிவரங்கள்"
 
@@ -696,7 +696,7 @@ msgstr "கட்டுரை புள்ளிவிவரங்கள்"
 msgid "Article status"
 msgstr "கட்டுரை நிலை"
 
-#: kb/models.py:940
+#: kb/models.py:938
 msgid "Article status changed"
 msgstr "கட்டுரை நிலை மாற்றப்பட்டது"
 
@@ -704,7 +704,7 @@ msgstr "கட்டுரை நிலை மாற்றப்பட்டத�
 msgid "Article submitted for admin approval."
 msgstr "கட்டுரை நிர்வாகி ஒப்புதலுக்கு சமர்ப்பிக்கப்பட்டது."
 
-#: kb/models.py:941
+#: kb/models.py:939
 msgid "Article submitted for approval"
 msgstr "கட்டுரை ஒப்புதலுக்காக சமர்ப்பிக்கப்பட்டது"
 
@@ -732,7 +732,7 @@ msgstr "கட்டுரை புதுப்பிப்பு நிலு�
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
 msgstr "கட்டுரை புதுப்பிப்பு நிர்வாகி ஒப்புதலுக்காக சமர்ப்பிக்கப்பட்டது. புதுப்பிப்பு ஒப்புதல் பெறும் வரை வெளியிடப்பட்ட பதிப்பு தொடர்ந்து காணப்படும்."
 
-#: kb/models.py:932
+#: kb/models.py:930
 msgid "Article updated"
 msgstr "கட்டுரை புதுப்பிக்கப்பட்டது"
 
@@ -740,11 +740,11 @@ msgstr "கட்டுரை புதுப்பிக்கப்பட்�
 msgid "Article updated successfully."
 msgstr "கட்டுரை வெற்றிகரமாக புதுப்பிக்கப்பட்டது."
 
-#: kb/admin.py:239 kb/models.py:1165
+#: kb/admin.py:239 kb/models.py:1163
 msgid "Article video maximum width (px)"
 msgstr "கட்டுரை வீடியோவின் அதிகபட்ச அகலம் (px)"
 
-#: kb/models.py:978
+#: kb/models.py:976
 msgid "Article viewed"
 msgstr "கட்டுரை பார்க்கப்பட்டது"
 
@@ -752,31 +752,31 @@ msgstr "கட்டுரை பார்க்கப்பட்டது"
 msgid "Article visibility"
 msgstr "கட்டுரை தெரிவுநிலை"
 
-#: kb/admin.py:99 kb/models.py:806
+#: kb/admin.py:99 kb/models.py:804
 msgid "Article vote"
 msgstr "கட்டுரை வாக்கு"
 
-#: kb/models.py:981
+#: kb/models.py:979
 msgid "Article vote changed"
 msgstr "கட்டுரை வாக்கு மாற்றப்பட்டது"
 
-#: kb/models.py:980
+#: kb/models.py:978
 msgid "Article vote down"
 msgstr "கட்டுரைக்கு எதிர்ப்பு வாக்கு"
 
-#: kb/models.py:982
+#: kb/models.py:980
 msgid "Article vote removed"
 msgstr "கட்டுரை வாக்கு அகற்றப்பட்டது"
 
-#: kb/models.py:979
+#: kb/models.py:977
 msgid "Article vote up"
 msgstr "கட்டுரைக்கு ஆதரவு வாக்கு"
 
-#: kb/admin.py:99 kb/models.py:807
+#: kb/admin.py:99 kb/models.py:805
 msgid "Article votes"
 msgstr "கட்டுரை வாக்குகள்"
 
-#: kb/admin.py:272 kb/models.py:1200
+#: kb/admin.py:274 kb/models.py:1209
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "இந்த அளவு நாட்களை விடப் பழைய கட்டுரை/வாக்கு/படம்/நிர்வாகக் கருவி/நிர்வாகத் தள செயல்பாட்டு பதிவுகளை சுத்திகரிப்பு கட்டளையால் நீக்கலாம். பொது மற்றும் நிர்வாக செயல்பாட்டு பதிவுகளை காலவரையின்றி வைத்திருக்க 0 ஐப் பயன்படுத்தவும்."
 
@@ -784,7 +784,7 @@ msgstr "இந்த அளவு நாட்களை விடப் பழ�
 msgid "Articles"
 msgstr "கட்டுரைகள்"
 
-#: kb/models.py:1174
+#: kb/models.py:1172
 msgid "Articles per page"
 msgstr "ஒரு பக்கத்திற்கு கட்டுரைகள்"
 
@@ -816,7 +816,7 @@ msgstr "தேர்ந்தெடுத்த கட்டுரைகளை �
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "%(count)s உரிமையாளர் இல்லாத கட்டுரை(கள்) %(user)s க்கு ஒதுக்கப்பட்டன."
 
-#: kb/admin.py:1601
+#: kb/admin.py:1603
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "%(username)s க்கு முடக்கப்பட்ட பயனர் பங்கு ஒதுக்கப்பட்டது"
 
@@ -848,11 +848,11 @@ msgstr "தணிக்கைப் பதிவு வரிசைகள் ச
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "தணிக்கைப் பதிவு வரிசைகளை கைமுறையாக நீக்க முடியாது. அவை சேமிப்பு-கால சுத்திகரிப்பால் மட்டுமே அகற்றப்படுகின்றன."
 
-#: kb/admin.py:271 kb/models.py:1192
-msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
-msgstr "அங்கீகரிக்கப்பட்ட மற்றும் MFA நிலுவையில் உள்ள அமர்வுகள் உள்நுழைந்ததிலிருந்து இந்த எண்ணிக்கை மணி நேரத்திற்கு பிறகு காலாவதியாகும். இயல்புநிலை 8 மணி நேரம். அனுமதிக்கப்பட்ட வரம்பு: 1 முதல் 168 மணி நேரம் (7 நாட்கள்)."
+#: kb/admin.py:272 kb/models.py:1190
+msgid "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "அங்கீகரிக்கப்பட்ட அமர்வுகள் உள்நுழைந்ததிலிருந்து இந்த எண்ணிக்கையிலான மணி நேரத்திற்குப் பிறகு காலாவதியாகும். MFA நிறைவு நிலுவையில் உள்ள அமர்வுகள் இந்த கால அளவை மீற முடியாது; ஆனால் தனித்த MFA உள்நுழைவு நிறைவு நேரக்கெட்டின்படி அவை பொதுவாக இதற்கு முன்பே காலாவதியாகும். இயல்புநிலை 8 மணி நேரம். அனுமதிக்கப்பட்ட வரம்பு: 1 முதல் 168 மணி நேரம் (7 நாட்கள்)."
 
-#: kb/admin.py:1405
+#: kb/admin.py:1407
 msgid "Authentication Lockout Reset"
 msgstr "அங்கீகார பூட்டல் மீட்டமைப்பு"
 
@@ -860,7 +860,7 @@ msgstr "அங்கீகார பூட்டல் மீட்டமைப�
 msgid "Authentication activity log"
 msgstr "அங்கீகார செயல்பாட்டு பதிவு"
 
-#: kb/admin.py:240 kb/models.py:1182
+#: kb/admin.py:240 kb/models.py:1180
 msgid "Authentication activity log retention (days)"
 msgstr "அங்கீகார செயல்பாட்டு பதிவு சேமிப்பு (நாட்கள்)"
 
@@ -868,27 +868,27 @@ msgstr "அங்கீகார செயல்பாட்டு பதிவ�
 msgid "Authentication activity logs"
 msgstr "அங்கீகார செயல்பாட்டு பதிவுகள்"
 
-#: kb/admin.py:2678
+#: kb/admin.py:2681
 msgid "Authentication and session settings"
 msgstr "அங்கீகாரம் மற்றும் அமர்வு அமைப்புகள்"
 
-#: kb/admin.py:1291
+#: kb/admin.py:1293
 msgid "Authentication lockout"
 msgstr "அங்கீகார பூட்டல்"
 
-#: kb/admin.py:246 kb/models.py:1233
+#: kb/admin.py:247 kb/models.py:1242
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "அங்கீகார பூட்டல் அதிகரிப்பு நினைவக காலம் (விநாடிகள்)"
 
-#: kb/admin.py:2687
+#: kb/admin.py:2706
 msgid "Authentication lockout policy"
 msgstr "அங்கீகார பூட்டல் கொள்கை"
 
-#: kb/admin.py:97 kb/models.py:1322
+#: kb/admin.py:97 kb/models.py:1331
 msgid "Authentication lockout policy stage"
 msgstr "அங்கீகார பூட்டல் கொள்கை நிலை"
 
-#: kb/admin.py:2751 kb/admin.py:97 kb/models.py:1323
+#: kb/admin.py:2771 kb/admin.py:97 kb/models.py:1332
 msgid "Authentication lockout policy stages"
 msgstr "அங்கீகார பூட்டல் கொள்கை நிலைகள்"
 
@@ -900,11 +900,11 @@ msgstr "நிர்வாகியால் அங்கீகார பூட�
 msgid "Authentication lockout triggered"
 msgstr "அங்கீகார பூட்டல் செயல்படுத்தப்பட்டது"
 
-#: kb/admin.py:1178
+#: kb/admin.py:1180
 msgid "Authentication source"
 msgstr "அங்கீகார மூலம்"
 
-#: kb/admin.py:270 kb/models.py:1183
+#: kb/admin.py:271 kb/models.py:1181
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "இந்த அளவு நாட்களுக்கும் பழைய அங்கீகாரம்/MFA கண்காணிப்பு பதிவுகளை சுத்தம் செய்யும் கட்டளையால் நீக்கலாம். அங்கீகார செயல்பாட்டு பதிவுகளை காலவரையின்றி வைத்திருக்க 0 பயன்படுத்தவும்."
 
@@ -916,11 +916,11 @@ msgstr "அங்கீகரிப்பு செயலி MFA/OTP குற�
 msgid "Authenticator code"
 msgstr "அங்கீகரிப்பு செயலி குறியீடு"
 
-#: kb/admin.py:118 kb/admin.py:1824
+#: kb/admin.py:118 kb/admin.py:1826
 msgid "Authenticator key"
 msgstr "அங்கீகரிப்பு செயலி விசை"
 
-#: kb/views/mfa.py:239
+#: kb/views/mfa.py:350
 msgid "Authenticator setup completed successfully."
 msgstr "அங்கீகரிப்பு செயலி அமைப்பு வெற்றிகரமாக முடிந்தது."
 
@@ -940,7 +940,7 @@ msgstr "ஆசிரியர் மின்னஞ்சல் பதிவு 
 msgid "Author name snapshot"
 msgstr "ஆசிரியர் பெயர் பதிவு நகல்"
 
-#: kb/admin.py:2347
+#: kb/admin.py:2349
 msgid "Author snapshot"
 msgstr "ஆசிரியர் பதிவு நகல்"
 
@@ -948,7 +948,7 @@ msgstr "ஆசிரியர் பதிவு நகல்"
 msgid "Author username snapshot"
 msgstr "ஆசிரியர் பயனர்பெயர் பதிவு நகல்"
 
-#: website/templates/_page_back_button.html:7 website/templates/articles.html:208 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:71 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:57
+#: website/templates/_page_back_button.html:7 website/templates/articles.html:208 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:74 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:58
 msgid "Back"
 msgstr "திரும்பு"
 
@@ -968,15 +968,15 @@ msgstr "சுயவிவரத்திற்குத் திரும்�
 msgid "Bad request"
 msgstr "தவறான கோரிக்கை"
 
-#: kb/admin.py:255 kb/models.py:1307
+#: kb/admin.py:256 kb/models.py:1316
 msgid "Block duration (seconds)"
 msgstr "தடை காலம் (விநாடிகள்)"
 
-#: kb/models.py:1341
+#: kb/models.py:1350
 msgid "Block duration must be at least 60 seconds."
 msgstr "தடை காலம் குறைந்தது 60 விநாடிகள் இருக்க வேண்டும்."
 
-#: kb/admin.py:2593
+#: kb/admin.py:2595
 msgid "Block duration readable"
 msgstr "தடை காலத்தின் வாசிக்கத்தக்க வடிவம்"
 
@@ -988,7 +988,7 @@ msgstr "கீழ் கட்டுரை பக்கப்பிரிவு"
 msgid "Bulk Import / Export Articles"
 msgstr "கட்டுரைகளை மொத்தமாக இறக்குமதி / ஏற்றுமதி செய்"
 
-#: kb/models.py:987
+#: kb/models.py:985
 msgid "Bulk article import"
 msgstr "மொத்த கட்டுரை இறக்குமதி"
 
@@ -1004,11 +1004,11 @@ msgstr "உள் கட்டுரைகளைச் சேர்த்து 
 msgid "Can add/submit public articles for approval"
 msgstr "பொது கட்டுரைகளைச் சேர்த்து ஒப்புதலுக்காகச் சமர்ப்பிக்கலாம்"
 
-#: kb/admin.py:666
+#: kb/admin.py:668
 msgid "Can approve/manage internal articles"
 msgstr "உள் கட்டுரைகளை அங்கீகரிக்க/நிர்வகிக்கலாம்"
 
-#: kb/admin.py:639
+#: kb/admin.py:641
 msgid "Can approve/manage pending articles"
 msgstr "நிலுவையிலுள்ள கட்டுரைகளை அங்கீகரிக்க/நிர்வகிக்கலாம்"
 
@@ -1020,35 +1020,35 @@ msgstr "நிலுவையிலுள்ள உள் கட்டுரை 
 msgid "Can approve/manage pending public article reviews"
 msgstr "நிலுவையிலுள்ள பொது கட்டுரை மதிப்பாய்வுகளை அங்கீகரிக்க/நிர்வகிக்கலாம்"
 
-#: kb/admin.py:1218
+#: kb/admin.py:1220
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "கட்டுரை வரைவுகளை உருவாக்கலாம், கட்டுரைகளை ஒப்புதலுக்காகச் சமர்ப்பிக்கலாம் மற்றும் சொந்த கட்டுரைகளைத் திருத்தி மீண்டும் சமர்ப்பிக்கலாம். கட்டுரைகளை அங்கீகரிக்கவோ நிராகரிக்கவோ முடியாது. பார்வையாளர் அணுகல் இதில் அடங்குவதால், சாதாரண பயனர் தேவையில்லை."
 
-#: kb/admin.py:791
+#: kb/admin.py:793
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "கட்டுரை வரைவுகளை உருவாக்கலாம், புதிய கட்டுரைகளை ஒப்புதலுக்காகச் சமர்ப்பிக்கலாம் மற்றும் சொந்த கட்டுரைகளைத் திருத்தி மீண்டும் சமர்ப்பிக்கலாம். கட்டுரைகளை அங்கீகரிக்கவோ நிராகரிக்கவோ முடியாது."
 
-#: kb/admin.py:630
+#: kb/admin.py:632
 msgid "Can create articles"
 msgstr "கட்டுரைகளை உருவாக்கலாம்"
 
-#: kb/admin.py:805
+#: kb/admin.py:807
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "கட்டுரைகளை உருவாக்கலாம், கட்டுரைகளைத் திருத்த/நிர்வகிக்கலாம், நிலுவையிலுள்ள கட்டுரைகள்/புதுப்பிப்புகளை மதிப்பாய்வு செய்யலாம், சமர்ப்பிப்புகளை அங்கீகரிக்க/நிராகரிக்கலாம் மற்றும் கட்டுரைகளை நீக்கலாம்."
 
-#: kb/admin.py:1220
+#: kb/admin.py:1222
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "கட்டுரைகளை உருவாக்கலாம், கட்டுரைகளைத் திருத்த/நிர்வகிக்கலாம், நிலுவையிலுள்ள கட்டுரைகள்/புதுப்பிப்புகளை மதிப்பாய்வு செய்யலாம், சமர்ப்பிப்புகளை அங்கீகரிக்க/நிராகரிக்கலாம் மற்றும் கட்டுரைகளை நீக்கலாம். பார்வையாளர் அணுகல் இதில் அடங்குவதால், சாதாரண பயனர் தேவையில்லை."
 
-#: kb/admin.py:661
+#: kb/admin.py:663
 msgid "Can create internal articles"
 msgstr "உள் கட்டுரைகளை உருவாக்கலாம்"
 
-#: kb/admin.py:648
+#: kb/admin.py:650
 msgid "Can delete articles"
 msgstr "கட்டுரைகளை நீக்கலாம்"
 
-#: kb/admin.py:671 kb/permissions.py:36
+#: kb/admin.py:673 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "உள் கட்டுரைகளை நீக்கலாம்"
 
@@ -1056,15 +1056,15 @@ msgstr "உள் கட்டுரைகளை நீக்கலாம்"
 msgid "Can delete public articles"
 msgstr "பொது கட்டுரைகளை நீக்கலாம்"
 
-#: kb/admin.py:798
+#: kb/admin.py:800
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "நிலுவையிலுள்ள கட்டுரைகள்/புதுப்பிப்புகளை மதிப்பாய்வு செய்யலாம், நிலுவை மதிப்பாய்வின்போது உள்ளடக்கத்தைத் திருத்தலாம் மற்றும் அவற்றை அங்கீகரிக்கவோ நிராகரிக்கவோலாம். இயல்பாக ஏற்கனவே வெளியிடப்பட்ட கட்டுரைகளைத் திருத்தவோ கட்டுரைகளை நீக்கவோ முடியாது. கட்டுரை அங்கீகரிப்பாளர்கள் இயல்பாக புதிய கட்டுரைகளைச் சேர்க்கவோ கட்டுரைகளை நீக்கவோ முடியாது."
 
-#: kb/admin.py:1219
+#: kb/admin.py:1221
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "நிலுவையிலுள்ள கட்டுரைகள்/புதுப்பிப்புகளை மதிப்பாய்வு செய்யலாம், நிலுவை மதிப்பாய்வின்போது உள்ளடக்கத்தைத் திருத்தலாம் மற்றும் அவற்றை அங்கீகரிக்கவோ நிராகரிக்கவோலாம். இயல்பாக ஏற்கனவே வெளியிடப்பட்ட கட்டுரைகளைத் திருத்தவோ கட்டுரைகளை நீக்கவோ முடியாது. இயல்பாக கட்டுரைகளைச் சேர்க்கவோ நீக்கவோ முடியாது. பார்வையாளர் அணுகல் இதில் அடங்குவதால், சாதாரண பயனர் தேவையில்லை."
 
-#: kb/admin.py:787
+#: kb/admin.py:789
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "உள்நுழையலாம், வெளியிடப்பட்ட கட்டுரைகளைப் பார்க்க/தேடலாம், வழக்கமான கட்டுரை பக்கங்களைப் பயன்படுத்தலாம் மற்றும் வாக்குப்பதிவு இயங்கும்போது வாக்களிக்கலாம்."
 
@@ -1072,11 +1072,11 @@ msgstr "உள்நுழையலாம், வெளியிடப்பட�
 msgid "Can use Knowledge Repository admin tools"
 msgstr "அறிவு களஞ்சிய நிர்வாக கருவிகளைப் பயன்படுத்தலாம்"
 
-#: kb/admin.py:620
+#: kb/admin.py:622
 msgid "Can view articles"
 msgstr "கட்டுரைகளைப் பார்க்கலாம்"
 
-#: kb/admin.py:656 kb/permissions.py:33
+#: kb/admin.py:658 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "உள் கட்டுரைகளைப் பார்க்கலாம்"
 
@@ -1084,7 +1084,7 @@ msgstr "உள் கட்டுரைகளைப் பார்க்கல�
 msgid "Can view published public articles"
 msgstr "வெளியிடப்பட்ட பொது கட்டுரைகளைப் பார்க்கலாம்"
 
-#: kb/admin.py:1217
+#: kb/admin.py:1219
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "வெளியிடப்பட்ட கட்டுரைகளைப் பார்க்க/தேட மற்றும் வாக்களிக்கலாம். இது மாற்று பார்வையாளர் பங்கு; பயனருக்கு வேறு நிலையான அறிவு களஞ்சிய பங்கு இல்லாதபோது மட்டுமே தானாகச் சேர்க்கப்படும்."
 
@@ -1100,15 +1100,15 @@ msgstr "மாற்றச் செய்தி"
 msgid "Change password"
 msgstr "கடவுச்சொல்லை மாற்று"
 
-#: kb/admin.py:386
+#: kb/admin.py:388
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "%(target_label)s %(target)s மாற்றப்பட்டது: %(changes)s"
 
-#: kb/admin.py:2192 kb/admin_audit.py:153
+#: kb/admin.py:2194 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "%(target_label)s மாற்றப்பட்டது: %(target)s"
 
-#: kb/admin.py:2187
+#: kb/admin.py:2189
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s மாற்றப்பட்டது: %(target)s — %(changes)s"
 
@@ -1116,11 +1116,11 @@ msgstr "%(target_label)s மாற்றப்பட்டது: %(target)s —
 msgid "Checking..."
 msgstr "சரிபார்க்கிறது..."
 
-#: kb/admin.py:862
+#: kb/admin.py:864
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "முதலில் ஒரு குழுவைத் தேர்ந்தெடுக்கவும்; பின்னர் விதிவிலக்குகளுக்கு மட்டும் நேரடி தேர்வுப் பெட்டிகளைப் பயன்படுத்தவும். பெரும்பாலான பயனர்களுக்கு குழு மட்டுமே போதுமானதாக இருக்கும்."
 
-#: kb/admin.py:569
+#: kb/admin.py:571
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "இந்தச் சுயவிவரம் உள்ளூர் பயனர்/நிர்வாகியா அல்லது LDAP பயனர்/நிர்வாகியா என்பதைத் தேர்ந்தெடுக்கவும். நிர்வாக கணக்கு வகைகள் நிர்வாக பயனர்கள் பங்கைச் சேர்த்து Django சூப்பர் பயனர்களாக மாறும். பயனர்/LDAP பயனராக மாற்றினால் நிர்வாக பயனர்கள் அகற்றப்பட்டு பணியாளர்/சூப்பர் பயனர் நிலை நீக்கப்படும். AD கணக்கு நீக்கப்பட்டிருந்தாலும் கட்டுரைகளை வைத்திருக்க வேண்டியபோது, கைவிடப்பட்ட LDAP சுயவிவரத்தை உள்ளூர் சுயவிவரமாக மாற்ற இதைப் பயன்படுத்தவும்."
 
@@ -1144,7 +1144,7 @@ msgstr "அரட்டையை அழி"
 msgid "Clear search"
 msgstr "தேடலை அழி"
 
-#: kb/admin.py:1399
+#: kb/admin.py:1401
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "இந்தப் பயனரின் தற்காலிகத் தடைகளையும் படிப்படியான பூட்டல் வரலாறையும் அழிக்கிறது. கோரிக்கை சட்டபூர்வமானது என்பதை உறுதிப்படுத்திய பின் இதைப் பயன்படுத்தவும்."
 
@@ -1156,19 +1156,19 @@ msgstr "ஏற்கனவே உள்ள முக்கியச் சொற
 msgid "Close"
 msgstr "மூடு"
 
-#: kb/middleware.py:540
+#: kb/middleware.py:541
 msgid "Complete MFA before accessing the Django admin site."
 msgstr "Django நிர்வாக தளத்தை அணுகும் முன் MFA ஐ முடிக்கவும்."
 
-#: kb/middleware.py:474
+#: kb/middleware.py:475
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
 msgstr "தொடருவதற்கு முன் MFA ஐ முடிக்கவும். MFA முடியும் வரை நீங்கள் முழுமையாக உள்நுழைந்ததாகாது."
 
-#: kb/middleware.py:501
+#: kb/middleware.py:502
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "தொடர்வதற்கு முன் MFA ஐ முடிக்கவும். MFA முடியும் வரை அறிவு களஞ்சியத்தை அணுக முடியாது."
 
-#: kb/admin.py:1367 kb/mfa.py:135
+#: kb/admin.py:1369 kb/mfa.py:243
 msgid "Configured"
 msgstr "கட்டமைக்கப்பட்டது"
 
@@ -1188,7 +1188,7 @@ msgstr "உரிமையாளர் இல்லாத கட்டுரை 
 msgid "Confirm password"
 msgstr "கடவுச்சொல்லை உறுதிப்படுத்து"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:459
+#: kb/views/auth.py:508 kb/views/mfa.py:592
 msgid "Confirm password is incorrect."
 msgstr "உறுதிப்படுத்தும் கடவுச்சொல் தவறானது."
 
@@ -1208,23 +1208,27 @@ msgstr "உறுதிப்படுத்தப்பட்ட நேரம�
 msgid "Content type"
 msgstr "உள்ளடக்க வகை"
 
-#: kb/admin.py:2680
-msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
-msgstr "அங்கீகாரம்/MFA பதிவுகள், பொது செயல்பாட்டு பதிவுகள், நிர்வாக பதிவு காட்சி வரிகள் மற்றும் பயனர் அமர்வு ஆயுட்காலத்தை கட்டுப்படுத்துகிறது. இயல்புநிலை பதிவு வைத்திருப்பு 30 நாட்கள். நிர்வாக பதிவு அட்டவணைகள் இயல்பாக ஒரு பக்கத்திற்கு 200 வரிகளை காட்டும். அமர்வுகள் இயல்பாக 8 மணி நேரம்; 1 முதல் 168 மணி நேரம் வரை அமைக்கலாம்."
+#: kb/admin.py:2689
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and the signed-in session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
+msgstr "அங்கீகார/MFA பதிவுகள், பொதுச் செயல்பாட்டு பதிவுகள், நிர்வாகப் பதிவுகளில் ஒரு பக்கத்தில் காட்டப்படும் வரிகளின் எண்ணிக்கை மற்றும் உள்நுழைந்த அமர்வின் கால அளவை கட்டுப்படுத்துகிறது. பதிவுகளின் இயல்புநிலை சேமிப்புக் காலம் 30 நாட்கள். நிர்வாகப் பதிவு அட்டவணைகள் இயல்பாக ஒரு பக்கத்திற்கு 200 வரிகளைக் காட்டும். அமர்வுகளின் இயல்புநிலை 8 மணி நேரம்."
 
-#: kb/admin.py:2673
+#: kb/admin.py:2676
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "என் சுயவிவரம் → நிர்வாக கருவிகள் → நீக்க வரிசையில் நீக்கப்பட்ட வெளியிடப்பட்ட கட்டுரைகள் திட்டமிட்ட நிரந்தர நீக்கத்திற்கு முன் எவ்வளவு நேரம் மீட்டெடுக்கக்கூடியதாக இருக்கும் என்பதை கட்டுப்படுத்துகிறது. இயல்புநிலை 7 நாட்கள். MFA உறுதிப்படுத்தலுக்குப் பின் உடனடி நிரந்தர நீக்கத்திற்கு 0 என அமைக்கவும்."
 
-#: kb/admin.py:2657
+#: kb/admin.py:2660
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "ஒவ்வொரு பக்கத்திலும்/முகப்புப் பக்கத்தின் ஒவ்வொரு நெடுவரிசையிலும் காட்டப்படும் கட்டுரைகளின் எண்ணிக்கை, ஒவ்வொரு கட்டுரையிலும் ஒட்டப்பட்ட/பதிவேற்றப்பட்ட படங்களின் எண்ணிக்கை மற்றும் கட்டுரை வீடியோக்களின் அதிகபட்ச காட்சி அகலத்தை கட்டுப்படுத்துகிறது. ஒரு பக்கத்திற்கான கட்டுரைகளின் இயல்புநிலை 10. படப் பதிவேற்ற வரம்பின் இயல்புநிலை 50; கட்டுரை படப் பதிவேற்றத்தை முடக்க 0 ஆக அமைக்கவும். கட்டுரை வீடியோ அகலத்தின் இயல்புநிலை 720 px; இது சிறிய திரைகளிலும் பதிலளிக்கும் வடிவில் இருக்கும்."
 
-#: kb/admin.py:2666
+#: kb/admin.py:2700
+msgid "Controls the fixed window that starts immediately after username/password verification succeeds. The user must finish MFA before this countdown reaches zero or sign in with username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "பயனர் பெயரும் கடவுச்சொல்லும் வெற்றிகரமாகச் சரிபார்க்கப்பட்ட உடனே தொடங்கும் நிலையான காலச் சாளரத்தை இது கட்டுப்படுத்துகிறது. கவுண்ட்டவுன் பூஜ்ஜியத்தை அடையும் முன் பயனர் MFA-ஐ முடிக்க வேண்டும்; இல்லையெனில் பயனர் பெயர் மற்றும் கடவுச்சொல்லைப் பயன்படுத்தி மீண்டும் உள்நுழைய வேண்டும். இயல்புநிலை 60 வினாடிகள். அனுமதிக்கப்பட்ட வரம்பு: 30 முதல் 900 வினாடிகள் (15 நிமிடங்கள்)."
+
+#: kb/admin.py:2669
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "என் சுயவிவரம் → நிர்வாக கருவிகள் → பயன்படாத பதிவேற்ற கோப்புகளை சுத்தம் செய் என்பதில் பயன்படுத்தப்படும் குறைந்தபட்ச வயதை கட்டுப்படுத்துகிறது. கோப்புகளை உடனே காட்ட 0 பயன்படுத்தவும்."
 
-#: kb/admin.py:263 kb/models.py:56
+#: kb/admin.py:264 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "கடவுச்சொல் அறிவு களஞ்சியத்தில் உள்ளூராக நிர்வகிக்கப்படுகிறதா அல்லது Active Directory மூலம் வெளிப்புறமாக நிர்வகிக்கப்படுகிறதா என்பதை கட்டுப்படுத்துகிறது."
 
@@ -1240,11 +1244,11 @@ msgstr "உருவாக்கப்பட்டது"
 msgid "Created %(target)s"
 msgstr "%(target)s உருவாக்கப்பட்டது"
 
-#: kb/admin.py:418
+#: kb/admin.py:420
 msgid "Created %(target_label)s %(target)s"
 msgstr "%(target_label)s %(target)s உருவாக்கப்பட்டது"
 
-#: kb/admin.py:2184 kb/admin_audit.py:150
+#: kb/admin.py:2186 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "%(target_label)s உருவாக்கப்பட்டது: %(target)s"
 
@@ -1260,15 +1264,15 @@ msgstr "தற்போதைய MFA நிலை"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "கட்டுரை வரைவு அல்லது நிலுவை தோல்வி நிலையில் இருக்கும்போது கட்டுரை உரிமையாளருக்குக் காட்டப்படும் தற்போதைய நிர்வாக கருத்து."
 
-#: kb/admin.py:2435 kb/models.py:371
+#: kb/admin.py:2437 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "தற்போதைய நிலுவை தோல்வி கருத்துகள்"
 
-#: kb/admin.py:1088
+#: kb/admin.py:1090
 msgid "Current users"
 msgstr "தற்போதைய பயனர்கள்"
 
-#: kb/admin.py:1068
+#: kb/admin.py:1070
 msgid "Custom Django group"
 msgstr "தனிப்பயன் Django குழு"
 
@@ -1280,31 +1284,31 @@ msgstr "தேதி"
 msgid "Date and time when this article was approved for public display."
 msgstr "இந்தக் கட்டுரை பொது காட்சிக்காக அங்கீகரிக்கப்பட்ட தேதி மற்றும் நேரம்."
 
-#: kb/admin.py:1233
+#: kb/admin.py:1235
 msgid "Default Knowledge Repository groups:"
 msgstr "இயல்புநிலை அறிவு களஞ்சியக் குழுக்கள்:"
 
-#: kb/admin.py:1016
+#: kb/admin.py:1018
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "இயல்புநிலை அறிவு களஞ்சிய பங்கு குழுக்களை நீக்க முடியாது."
 
-#: kb/admin.py:1027
+#: kb/admin.py:1029
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "இயல்புநிலை அறிவு களஞ்சிய பங்கு குழுக்களை நீக்க முடியாது. %(count)d பாதுகாக்கப்பட்ட குழு(கள்) தவிர்க்கப்பட்டன."
 
-#: kb/admin.py:1054
+#: kb/admin.py:1056
 msgid "Default permissions:"
 msgstr "இயல்புநிலை அனுமதிகள்:"
 
-#: kb/admin.py:2772
+#: kb/admin.py:2792
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "இயல்புநிலை நிலை 1: 10 தவறான முயற்சிகள் 5 நிமிடத் தடையை ஏற்படுத்தும்; 2 முறை மீண்டும் செய்யப்படும்."
 
-#: kb/admin.py:2773
+#: kb/admin.py:2793
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "இயல்புநிலை நிலை 2: 5 தவறான முயற்சிகள் 15 நிமிடத் தடையை ஏற்படுத்தும்; 2 முறை மீண்டும் செய்யப்படும்."
 
-#: kb/admin.py:2774
+#: kb/admin.py:2794
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "இயல்புநிலை நிலை 3: 3 தவறான முயற்சிகள் வெற்றிகரமான உள்நுழைவு அல்லது நிர்வாக மீட்டமைப்பு வரை மீண்டும் மீண்டும் 1 மணி நேரத் தடையை ஏற்படுத்தும்."
 
@@ -1332,7 +1336,7 @@ msgstr "தேர்ந்தெடுத்த தனிமைப்படு�
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "தேர்ந்தெடுத்த பயன்படுத்தப்படாத பதிவேற்ற கோப்புகளை நீக்கவா? இதை மீளச் செய்ய முடியாது."
 
-#: kb/admin.py:473
+#: kb/admin.py:475
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "%(count)d %(target_label)s நீக்கப்பட்டது: %(preview)s"
 
@@ -1340,15 +1344,15 @@ msgstr "%(count)d %(target_label)s நீக்கப்பட்டது: %(pr
 msgid "Deleted %(target)s"
 msgstr "%(target)s நீக்கப்பட்டது"
 
-#: kb/admin.py:454
+#: kb/admin.py:456
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "%(target_label)s %(target)s நீக்கப்பட்டது"
 
-#: kb/admin.py:2194 kb/admin_audit.py:160
+#: kb/admin.py:2196 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "%(target_label)s நீக்கப்பட்டது: %(target)s"
 
-#: kb/admin.py:2073
+#: kb/admin.py:2075
 msgid "Deleted article"
 msgstr "நீக்கப்பட்ட கட்டுரை"
 
@@ -1364,11 +1368,11 @@ msgstr "நீக்கப்பட்ட நேரம்"
 msgid "Deleted by"
 msgstr "நீக்கியவர்"
 
-#: kb/models.py:825
+#: kb/models.py:823
 msgid "Deleted by admin stray-file cleanup"
 msgstr "நிர்வாகி பயன்படுத்தப்படாத கோப்பு சுத்தம் மூலம் நீக்கப்பட்டது"
 
-#: kb/models.py:826
+#: kb/models.py:824
 msgid "Deleted by automatic stray-file cleanup"
 msgstr "தானியங்கி பயன்படுத்தப்படாத கோப்பு சுத்தம் மூலம் நீக்கப்பட்டது"
 
@@ -1388,11 +1392,11 @@ msgstr "கட்டுரை பக்கத்திலிருந்து �
 msgid "Deleted from orphan article cleanup."
 msgstr "உரிமையற்ற கட்டுரை சுத்திகரிப்பிலிருந்து நீக்கப்பட்டது."
 
-#: kb/models.py:662
+#: kb/models.py:659
 msgid "Deleted user"
 msgstr "நீக்கப்பட்ட பயனர்"
 
-#: kb/models.py:713
+#: kb/models.py:711
 msgid "Deletion approved"
 msgstr "நீக்கம் அங்கீகரிக்கப்பட்டது"
 
@@ -1404,7 +1408,7 @@ msgstr "நீக்க வரிசை"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "நீக்க வரிசை சேமிப்பு காலம் 0 நாட்களாக அமைக்கப்பட்டுள்ளது. புதிய வெளியிடப்பட்ட கட்டுரை நீக்கங்கள் உறுதிப்படுத்தலுக்குப் பின் உடனடியாக நிரந்தரமாக நீக்கப்படும். இங்கு காட்டப்படும் ஏற்கனவே வரிசைப்படுத்தப்பட்ட கட்டுரைகள் நிரந்தர நீக்கத்திற்குத் தயாராக உள்ளன."
 
-#: kb/admin.py:2848
+#: kb/admin.py:2879
 msgid "Deletion queue retention readable"
 msgstr "நீக்க வரிசை சேமிப்பு காலத்தின் வாசிக்கத்தக்க வடிவம்"
 
@@ -1412,31 +1416,31 @@ msgstr "நீக்க வரிசை சேமிப்பு காலத்
 msgid "Deletion queued"
 msgstr "நீக்கம் வரிசைப்படுத்தப்பட்டது"
 
-#: kb/admin.py:203 kb/models.py:440
+#: kb/admin.py:203 kb/models.py:437
 msgid "Deletion queued at"
 msgstr "நீக்க வரிசையில் சேர்க்கப்பட்ட நேரம்"
 
-#: kb/admin.py:204 kb/models.py:448
+#: kb/admin.py:204 kb/models.py:445
 msgid "Deletion queued by"
 msgstr "நீக்க வரிசையில் சேர்த்தவர்"
 
-#: kb/admin.py:208 kb/models.py:472
+#: kb/admin.py:208 kb/models.py:469
 msgid "Deletion reason"
 msgstr "நீக்கக் காரணம்"
 
-#: kb/models.py:714
+#: kb/models.py:712
 msgid "Deletion rejected"
 msgstr "நீக்கம் நிராகரிக்கப்பட்டது"
 
-#: kb/admin.py:206 kb/models.py:460
+#: kb/admin.py:206 kb/models.py:457
 msgid "Deletion restored at"
 msgstr "நீக்கம் மீட்டெடுக்கப்பட்ட நேரம்"
 
-#: kb/admin.py:207 kb/models.py:468
+#: kb/admin.py:207 kb/models.py:465
 msgid "Deletion restored by"
 msgstr "நீக்கத்தை மீட்டெடுத்தவர்"
 
-#: kb/admin.py:2247
+#: kb/admin.py:2249
 msgid "Denied"
 msgstr "மறுக்கப்பட்டது"
 
@@ -1444,51 +1448,51 @@ msgstr "மறுக்கப்பட்டது"
 msgid "Details"
 msgstr "விவரங்கள்"
 
-#: kb/admin.py:1193
+#: kb/admin.py:1195
 msgid "Direct Knowledge Repository permissions"
 msgstr "நேரடி அறிவு களஞ்சிய அனுமதிகள்"
 
-#: kb/admin.py:640
+#: kb/admin.py:642
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "நேரடி பயனர் அனுமதி. நிலுவையிலுள்ள கட்டுரை மதிப்பாய்வு, நிலுவையிலுள்ள புதுப்பிப்பு மதிப்பாய்வு, அங்கீகரிப்பு/நிராகரிப்பு செயல்கள் மற்றும் மதிப்பாய்வு நிலை கட்டுரைத் திருத்தம் போன்ற கட்டுரை அங்கீகார பணிப்பாய்வுகளுக்கான அணுகலை வழங்குகிறது. வேறு அனுமதி/குழு வழங்காவிட்டால் புதிய கட்டுரைகளை உருவாக்க, கட்டுரைகளை நீக்க அல்லது முழு Django நிர்வாக அணுகலை இது தானாக வழங்காது."
 
-#: kb/admin.py:631
+#: kb/admin.py:633
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "நேரடி பயனர் அனுமதி. கட்டுரை வரைவுகளை உருவாக்க, புதிய கட்டுரைகளை ஒப்புதலுக்காகச் சமர்ப்பிக்க மற்றும் சொந்த கட்டுரைகள் அல்லது நிலுவையிலுள்ள புதுப்பிப்புகளைத் திருத்தி மீண்டும் சமர்ப்பிக்க பயனருக்கு அனுமதிக்கிறது. பிற பயனர்களின் கட்டுரைகளை அங்கீகரிக்க/நிராகரிக்க அல்லது Django நிர்வாக கருவிகளைப் பயன்படுத்த அனுமதிக்காது."
 
-#: kb/admin.py:621
+#: kb/admin.py:623
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "நேரடி பயனர் அனுமதி. உள்நுழைந்த பின் முதன்மை விக்கியைத் திறந்து வெளியிடப்பட்ட கட்டுரைகளைப் படிக்க பயனருக்கு அனுமதிக்கிறது. கட்டுரைகளை உருவாக்க, கட்டுரைகளை அங்கீகரிக்க அல்லது நிர்வாக கருவிகளைப் பயன்படுத்த அனுமதிக்காது. குறிக்கப்படாதது நேரடி பயனர் வழங்கல் இல்லை என்பதைக் குறிக்கும்; பயனர் தமது குழுவிலிருந்து இந்த அனுமதியைப் பெறலாம். முடக்கப்பட்ட பயனர் குழு நேரடி அனுமதி கூடுதல்களை மீறுகிறது."
 
-#: kb/admin.py:662
+#: kb/admin.py:664
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "நேரடி பயனர் அனுமதி. இந்தப் பயனருக்கு உள்/தனியார் கட்டுரைகளை உருவாக்கவும் சமர்ப்பிக்கவும் அனுமதிக்கிறது."
 
-#: kb/admin.py:649
+#: kb/admin.py:651
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "நேரடி பயனர் அனுமதி. இந்தப் பயனருக்கு கட்டுரைகளை நீக்க அனுமதிக்கிறது. குறைவாகப் பயன்படுத்தவும்; நிலையான கட்டுரை மேலாளர் மற்றும் நிர்வாக பயனர்கள் குழுக்கள் இதை ஏற்கனவே வழங்குகின்றன."
 
-#: kb/admin.py:672
+#: kb/admin.py:674
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "நேரடி பயனர் அனுமதி. இந்தப் பயனருக்கு உள்/தனியார் கட்டுரைகளை நீக்க அனுமதிக்கிறது."
 
-#: kb/admin.py:657
+#: kb/admin.py:659
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "நேரடி பயனர் அனுமதி. இந்தப் பயனருக்கு உள்/தனியார் வெளியிடப்பட்ட கட்டுரைகளைத் திறந்து படிக்க அனுமதிக்கிறது."
 
-#: kb/admin.py:667
+#: kb/admin.py:669
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "நேரடி பயனர் அனுமதி. இந்தப் பயனருக்கு நிலுவையிலுள்ள உள்/தனியார் கட்டுரைகளை மதிப்பாய்வு செய்து நிர்வகிக்க அனுமதிக்கிறது."
 
-#: kb/admin.py:832
+#: kb/admin.py:834
 msgid "Direct user permissions"
 msgstr "நேரடி பயனர் அனுமதிகள்"
 
-#: kb/admin.py:1216 kb/admin.py:1338 kb/admin.py:779 kb/permissions.py:53
+#: kb/admin.py:1218 kb/admin.py:1340 kb/admin.py:781 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "முடக்கப்பட்ட பயனர்"
 
-#: kb/admin.py:1611
+#: kb/admin.py:1613
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கு) முடக்கப்பட்ட பயனர் பங்கு ஒதுக்கப்பட்டது."
 
@@ -1496,19 +1500,19 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d ப�
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "முடக்கப்பட்ட கணக்கு பங்கு. பயனர் கணக்கு தணிக்கை/வரலாறு நோக்கங்களுக்காக Django இல் தொடரும்; ஆனால் நிர்வாகி பயனரை வேறு பங்கிற்கு மாற்றும் வரை உள்நுழைவை முடிக்கவோ விக்கியை அணுகவோ முடியாது."
 
-#: kb/admin.py:274 kb/models.py:1216
+#: kb/admin.py:276 kb/models.py:1225
 msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
 msgstr "இயல்பாக முடக்கப்பட்டுள்ளது. முடக்கப்பட்டிருக்கும்போது, சாதாரண அங்கீகாரம் மற்றும் நிர்வாக MFA நிபந்தனைகளுடன் எந்த IPv4 அல்லது IPv6 முகவரியிலிருந்தும் Django Admin அணுகப்படலாம். இயக்கப்பட்டால், அமைக்கப்பட்ட IP/CIDR வரம்புகள் மட்டுமே அனுமதிக்கப்படும்."
 
-#: kb/admin.py:2566
+#: kb/admin.py:2568
 msgid "Dislike"
 msgstr "விருப்பமில்லை"
 
-#: kb/admin.py:2450 website/templates/articles.html:277
+#: kb/admin.py:2452 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "பிடிக்காதவை"
 
-#: kb/views/services.py:2476
+#: kb/views/services.py:2477
 msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
 msgstr "உள்நுழையாமல் இந்த SharePoint அல்லது OneDrive வீடியோவை அணுக முடியுமா என்பதை DjOpenKB சரிபார்க்க முடியவில்லை. அதன் பகிர்வு அனுமதிகளைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்."
 
@@ -1516,7 +1520,7 @@ msgstr "உள்நுழையாமல் இந்த SharePoint அல்�
 msgid "Django Admin MFA lockout triggered"
 msgstr "Django நிர்வாக MFA பூட்டல் செயல்படுத்தப்பட்டது"
 
-#: kb/admin.py:1967 kb/admin.py:1973
+#: kb/admin.py:1969 kb/admin.py:1975
 msgid "Django Admin MFA verification"
 msgstr "Django நிர்வாக MFA சரிபார்ப்பு"
 
@@ -1528,7 +1532,7 @@ msgstr "Django நிர்வாக MFA சரிபார்ப்பு த�
 msgid "Django Admin MFA verification success"
 msgstr "Django நிர்வாக MFA சரிபார்ப்பு வெற்றி"
 
-#: kb/admin.py:2706
+#: kb/admin.py:2725
 msgid "Django Admin access restrictions"
 msgstr "Django நிர்வாக அணுகல் கட்டுப்பாடுகள்"
 
@@ -1536,19 +1540,19 @@ msgstr "Django நிர்வாக அணுகல் கட்டுப்ப
 msgid "Django admin action flag"
 msgstr "Django நிர்வாக செயல் குறி"
 
-#: kb/views/services.py:3081
+#: kb/views/services.py:3113
 msgid "Domain Admin"
 msgstr "டொமைன் நிர்வாகி"
 
-#: kb/views/services.py:3079
+#: kb/views/services.py:3111
 msgid "Domain User"
 msgstr "டொமைன் பயனர்"
 
-#: kb/admin.py:1200
+#: kb/admin.py:1202
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "டொமைன் கடவுச்சொல் Active Directory-யில் நிர்வகிக்கப்படுகிறது; அதை Django நிர்வாகத்தில் மாற்ற முடியாது."
 
-#: kb/admin.py:1306
+#: kb/admin.py:1308
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "டொமைன் பயனர்களின் கடவுச்சொற்கள் Active Directory-யில் நிர்வகிக்கப்படுகின்றன."
 
@@ -1568,7 +1572,7 @@ msgstr "வரைவு வெற்றிகரமாக சேமிக்க�
 msgid "Due"
 msgstr "காலக்கெடு"
 
-#: kb/admin.py:2701
+#: kb/admin.py:2720
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "ஒவ்வொரு பயனரின் முதல் ஏற்கப்பட்ட கேள்வியும் நிலையான 24 மணிநேர காலச்சாளரத்தைத் தொடங்கும். தற்போதுள்ள குறுகியகால திடீர் கோரிக்கை வரம்பு தனியாக செயல்பாட்டில் தொடரும்."
 
@@ -1604,11 +1608,11 @@ msgstr "நிர்வாக ஒப்புதலுக்காக காத�
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "நிர்வாக ஒப்புதலுக்காக காத்திருக்கும் திருத்தப்பட்ட தலைப்பு. ஒப்புதல் கிடைக்கும் வரை வெளியிடப்பட்ட தலைப்பு மாறாது."
 
-#: kb/admin.py:846 kb/admin.py:893
+#: kb/admin.py:848 kb/admin.py:895
 msgid "Effective permissions"
 msgstr "செயல்பாட்டு அனுமதிகள்"
 
-#: kb/admin.py:886
+#: kb/admin.py:888
 msgid "Effective role groups"
 msgstr "செயல்பாட்டு பங்கு குழுக்கள்"
 
@@ -1620,19 +1624,19 @@ msgstr "மின்னஞ்சல்"
 msgid "Email updated successfully."
 msgstr "மின்னஞ்சல் வெற்றிகரமாக புதுப்பிக்கப்பட்டது."
 
-#: kb/admin.py:244 kb/models.py:1215
+#: kb/admin.py:245 kb/models.py:1224
 msgid "Enable Admin IP allowlist"
 msgstr "நிர்வாக IP அனுமதி பட்டியலை இயக்கவும்"
 
-#: kb/admin.py:257 kb/models.py:1317 website/templates/profile.html:195
+#: kb/admin.py:258 kb/models.py:1326 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "இயக்கப்பட்டது"
 
-#: kb/admin.py:1821
+#: kb/admin.py:1823
 msgid "Encrypted and hidden"
 msgstr "குறியாக்கப்பட்டு மறைக்கப்பட்டது"
 
-#: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:47
+#: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:45
 msgid "Enter MFA/OTP code"
 msgstr "MFA/OTP குறியீட்டை உள்ளிடவும்"
 
@@ -1648,7 +1652,7 @@ msgstr "செயலில் உள்ள உள்ளூர் அல்லத
 msgid "Enter an image size between 1 and 1200 pixels."
 msgstr "1 முதல் 1200 பிக்சல்கள் வரை உள்ள பட அளவை உள்ளிடவும்."
 
-#: kb/admin.py:2640
+#: kb/admin.py:2642
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
 msgstr "நிர்வாக IP அனுமதி பட்டியலை இயக்குவதற்கு முன் குறைந்தது ஒரு செல்லுபடியாகும் IPv4/IPv6 முகவரி அல்லது CIDR வரம்பை உள்ளிடவும்."
 
@@ -1664,7 +1668,7 @@ msgstr "இந்த நீக்கத்தை உறுதிப்படு�
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "Django நிர்வாகத் தளத்தை அணுக உங்கள் அங்கீகரிப்பு செயலி குறியீட்டை மீண்டும் உள்ளிடவும்."
 
-#: kb/admin.py:2788
+#: kb/admin.py:2808
 msgid "Escalation memory readable"
 msgstr "அதிகரிப்பு நினைவக காலத்தின் வாசிக்கத்தக்க வடிவம்"
 
@@ -1700,15 +1704,15 @@ msgstr "கட்டுரை ஏற்றுமதி zip"
 msgid "Export split package"
 msgstr "பிரிக்கப்பட்ட தொகுப்பை ஏற்றுமதி செய்"
 
-#: kb/admin.py:2253
+#: kb/admin.py:2255
 msgid "Failed"
 msgstr "தோல்வி"
 
-#: kb/admin.py:254 kb/models.py:1302
+#: kb/admin.py:255 kb/models.py:1311
 msgid "Failed attempts before block"
 msgstr "தடைக்கு முன் தோல்வியடைந்த முயற்சிகள்"
 
-#: kb/models.py:1339
+#: kb/models.py:1348
 msgid "Failed attempts must be at least 1."
 msgstr "தோல்வியடைந்த முயற்சிகள் குறைந்தது 1 ஆக இருக்க வேண்டும்."
 
@@ -1736,7 +1740,7 @@ msgstr "%(minutes)s நிமிடத்திற்குள் புதி�
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "%(minutes)s நிமிடங்களுக்குள் புதிய கோப்புகள் புறக்கணிக்கப்படும். இந்த மதிப்பை Django Admin → Site settings இல் மாற்றவும். பயன்படுத்தப்படாத பதிவேற்றங்களை உடனே காட்ட 0 நிமிடங்களைப் பயன்படுத்தவும்."
 
-#: kb/admin.py:266 kb/models.py:1140
+#: kb/admin.py:267 kb/models.py:1138
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "இந்த அளவு நிமிடங்களுக்குக் குறைவான புதிய கோப்புகள் பயன்படாத பதிவேற்ற சுத்தம் செய்யும் கருவியால் புறக்கணிக்கப்படும். பயனர்கள் கட்டுரை வரைவை உருவாக்கும் போது படங்கள் நீக்கப்படாமல் இருக்க இயல்புநிலை 1440 நிமிடங்கள் (24 மணி நேரம்). பயன்படாத பதிவேற்றங்களை உடனடியாக கண்டறிந்து/நீக்க 0 என அமைக்கவும்."
 
@@ -1760,11 +1764,11 @@ msgstr "இதில் பயன்படுத்தப்படாத கோ�
 msgid "First"
 msgstr "முதல்"
 
-#: kb/admin.py:827
+#: kb/admin.py:829
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "முழு Django நிர்வாக சூப்பர் பயனர் அணுகல். நிர்வாக பயனர்கள் Django நிர்வாகத்துக்குள் நுழைவதற்கு முன் கூடுதல் நிர்வாக MFA சரிபார்ப்பை முடிக்க வேண்டும்."
 
-#: kb/admin.py:1225
+#: kb/admin.py:1227
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "முழு Django நிர்வாக சூப்பர் பயனர் அணுகல். Django நிர்வாகத்துக்குள் நுழைவதற்கு முன் கூடுதல் நிர்வாக MFA படி தேவை."
 
@@ -1772,7 +1776,7 @@ msgstr "முழு Django நிர்வாக சூப்பர் பய�
 msgid "General"
 msgstr "பொதுவான"
 
-#: kb/admin.py:242 kb/models.py:1199
+#: kb/admin.py:243 kb/models.py:1208
 msgid "General activity log retention (days)"
 msgstr "பொது செயல்பாட்டு பதிவு சேமிப்பு (நாட்கள்)"
 
@@ -1796,19 +1800,19 @@ msgstr "உங்களுக்குச் சொந்தமான பொத�
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "மிகவும் பொதுவான கேள்விகளுக்கான உடனடி பதில்களைப் பெறுங்கள் மற்றும் 3 எழுத்துகளை தொழில்முறை நபரைப் போல பயன்படுத்த கற்றுக்கொள்ளுங்கள்."
 
-#: kb/admin.py:988
+#: kb/admin.py:990
 msgid "Group members"
 msgstr "குழு உறுப்பினர்கள்"
 
-#: kb/admin.py:773
+#: kb/admin.py:775
 msgid "Group permissions"
 msgstr "குழு அனுமதிகள்"
 
-#: kb/admin.py:1070
+#: kb/admin.py:1072
 msgid "Group type"
 msgstr "குழு வகை"
 
-#: kb/views/services.py:3076
+#: kb/views/services.py:3108
 msgid "Guest"
 msgstr "விருந்தினர்"
 
@@ -1820,7 +1824,7 @@ msgstr "உயரம்"
 msgid "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
 msgstr "வணக்கம்! நான் OpenKB AI. அறிவு களஞ்சியத்தைப் பற்றி கேள்வி கேளுங்கள் அல்லது வெளியிடப்பட்ட கட்டுரைகளைப் பரிந்துரைக்கச் சொல்லுங்கள்."
 
-#: kb/models.py:786 kb/models.py:810
+#: kb/models.py:784 kb/models.py:808
 msgid "Helpful"
 msgstr "உதவிகரமானது"
 
@@ -1828,19 +1832,19 @@ msgstr "உதவிகரமானது"
 msgid "Hi, I am OpenKB AI."
 msgstr "வணக்கம், நான் OpenKB AI."
 
-#: kb/admin.py:1216
+#: kb/admin.py:1218
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "அதிகபட்ச முன்னுரிமை. அறிவு களஞ்சிய அணுகலைத் தடுத்து, நிர்வாக பயனர்கள், பணியாளர்/சூப்பர் பயனர் நிலை மற்றும் நேரடி பங்கு அனுமதிகளை அழிக்கிறது."
 
-#: kb/admin.py:780
+#: kb/admin.py:782
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "அதிகபட்ச முன்னுரிமை. பயனர் கணக்கு முடக்கப்பட்ட பக்கத்திற்குத் திருப்பிவிடப்படுவார்; அறிவு களஞ்சியத்தை அணுக முடியாது. இது நிர்வாக பயனர்கள், பணியாளர்/சூப்பர் பயனர் நிலை மற்றும் நேரடி அறிவு களஞ்சிய அனுமதி கூடுதல்களையும் அழிக்கிறது."
 
-#: kb/models.py:1096
+#: kb/models.py:1094
 msgid "Historical admin user snapshot only. This relation intentionally does not enforce a database constraint because admin audit logs must remain immutable when users are deleted."
 msgstr "வரலாற்று நிர்வாக பயனர் ஸ்னாப்ஷாட் மட்டும். பயனர்கள் நீக்கப்பட்ட பின்னரும் நிர்வாகத் தணிக்கை பதிவுகள் மாற்றமற்றதாக இருக்க வேண்டியதால், இந்த உறவு திட்டமிட்டு தரவுத்தள கட்டுப்பாட்டை அமல்படுத்தாது."
 
-#: kb/models.py:858
+#: kb/models.py:856
 msgid "Historical deleter ID snapshot only. Image deletion activity is appended into ActivityLog rather than editing this upload log row."
 msgstr "வரலாற்று நீக்குநர் ID ஸ்னாப்ஷாட் மட்டும். இந்தப் பதிவேற்றப் பதிவு வரிசையைத் திருத்துவதற்கு பதிலாக, படம் நீக்கல் செயல்பாடு ActivityLog இல் சேர்க்கப்படுகிறது."
 
@@ -1848,15 +1852,15 @@ msgstr "வரலாற்று நீக்குநர் ID ஸ்னாப�
 msgid "Historical review feedback entries from previous rejection/resubmission rounds."
 msgstr "முந்தைய நிராகரிப்பு/மீண்டும் சமர்ப்பிப்பு சுற்றுகளின் வரலாற்று மதிப்பாய்வு கருத்துப் பதிவுகள்."
 
-#: kb/models.py:838
+#: kb/models.py:836
 msgid "Historical uploader ID snapshot only. The username/email snapshot fields keep the log readable after the user account is changed or deleted."
 msgstr "வரலாற்று பதிவேற்றுநர் ID ஸ்னாப்ஷாட் மட்டும். பயனர் கணக்கு மாற்றப்பட்டாலோ நீக்கப்பட்டாலோ பதிவை வாசிக்கக்கூடியதாக வைத்திருக்க பயனர்பெயர்/மின்னஞ்சல் ஸ்னாப்ஷாட் புலங்கள் உதவுகின்றன."
 
-#: kb/models.py:1027
+#: kb/models.py:1025
 msgid "Historical user ID of the account that owned the article when this log was created."
 msgstr "இந்தப் பதிவு உருவாக்கப்பட்டபோது கட்டுரைக்கு உரிமையாளர் இருந்த கணக்கின் வரலாற்று பயனர் ID."
 
-#: kb/models.py:274 kb/models.py:999
+#: kb/models.py:274 kb/models.py:997
 msgid "Historical user ID snapshot only. This relation intentionally does not enforce a database constraint because audit logs must remain immutable when users are deleted."
 msgstr "வரலாற்று பயனர் ID ஸ்னாப்ஷாட் மட்டும். பயனர்கள் நீக்கப்பட்ட பின்னரும் தணிக்கை பதிவுகள் மாற்றமற்றதாக இருக்க வேண்டியதால், இந்த உறவு திட்டமிட்டு தரவுத்தள கட்டுப்பாட்டை அமல்படுத்தாது."
 
@@ -1864,31 +1868,31 @@ msgstr "வரலாற்று பயனர் ID ஸ்னாப்ஷாட�
 msgid "How can we help?"
 msgstr "நாங்கள் எப்படி உதவலாம்?"
 
-#: kb/models.py:1243
+#: kb/models.py:1252
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "கூடுதல் நிர்வாக MFA சரிபார்ப்பை முடித்த பின், Django நிர்வாகத்திற்குள் ஒரு நிர்வாகி எவ்வளவு நேரம் செயலற்ற நிலையில் இருக்கலாம். இயல்புநிலை 600 விநாடிகள் (10 நிமிடங்கள்). குறியீடு அமல்படுத்தும் குறைந்தபட்சம் 60 விநாடிகள்; அதிகபட்சம் 86400 விநாடிகள்."
 
-#: kb/admin.py:267 kb/models.py:1149
+#: kb/admin.py:268 kb/models.py:1147
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "என் சுயவிவரம் → நிர்வாக கருவிகள் → நீக்க வரிசையில் நீக்கப்பட்ட வெளியிடப்பட்ட கட்டுரைகள் நிரந்தர நீக்கத்திற்கு முன் எவ்வளவு காலம் மீட்டெடுக்கக்கூடியதாக இருக்கும். இயல்புநிலை 7 நாட்கள். MFA உறுதிப்படுத்தலுக்குப் பின் வெளியிடப்பட்ட கட்டுரைகளை உடனடியாக நிரந்தரமாக நீக்க 0 என அமைக்கவும்."
 
-#: kb/admin.py:276
+#: kb/admin.py:278
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "வெற்றிகரமான உள்நுழைவு இல்லாமல் தோல்வியடைந்த உள்நுழைவு/MFA அதிகரிப்பு வரலாறு எவ்வளவு காலம் நினைவில் வைக்கப்படும். வெற்றிகரமான சரிபார்ப்பு இதை உடனடியாக அழிக்கும். இயல்புநிலை 604800 விநாடிகள் (7 நாட்கள்)."
 
-#: kb/models.py:1234
+#: kb/models.py:1243
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "பயனர் ஒருபோதும் வெற்றிகரமாக உள்நுழையாவிட்டால் தோல்வியடைந்த உள்நுழைவு/MFA பூட்டல் வரலாறு எவ்வளவு காலம் நினைவில் வைக்கப்படும். வெற்றிகரமான கடவுச்சொல்/MFA சரிபார்ப்பு தொடர்புடைய பூட்டல் வரலாற்றை உடனடியாக மீட்டமைக்கும். இயல்புநிலை 604800 விநாடிகள் (7 நாட்கள்)."
 
-#: kb/admin.py:280 kb/models.py:1308
+#: kb/admin.py:282 kb/models.py:1317
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "இந்த நிலை செயல்பட்ட பின் உள்நுழைவு/MFA சரிபார்ப்பு எவ்வளவு காலம் தடுக்கப்படும்."
 
-#: kb/admin.py:281 kb/models.py:1313
+#: kb/admin.py:283 kb/models.py:1322
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "அடுத்த நிலைக்குச் செல்லும் முன் எத்தனை பூட்டல்கள் இந்த நிலையைப் பயன்படுத்த வேண்டும். இறுதி நிலையில் முடிவில்லாமல் மீண்டும் செய்ய 0 ஐப் பயன்படுத்தவும்."
 
-#: kb/admin.py:861
+#: kb/admin.py:863
 msgid "How to use these permissions:"
 msgstr "இந்த அனுமதிகளைப் பயன்படுத்துவது எப்படி:"
 
@@ -1926,7 +1930,7 @@ msgstr "manifest.json இல்லை என்றால், zip இல் உ�
 msgid "Image assets"
 msgstr "பட வளங்கள்"
 
-#: kb/views/services.py:1242
+#: kb/views/services.py:1243
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "படத்தின் பரிமாணங்கள் மிகப் பெரியவை. சிறிய படத்தைப் பதிவேற்றவும்."
 
@@ -1938,7 +1942,7 @@ msgstr "படத்தின் காட்சி அளவு அசல் �
 msgid "Image display size updated."
 msgstr "படத்தின் காட்சி அளவு புதுப்பிக்கப்பட்டது."
 
-#: kb/views/services.py:1221 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
+#: kb/views/services.py:1222 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "படம் மிகப் பெரியது. அனுமதிக்கப்பட்ட அதிகபட்ச அளவு 2 MB."
 
@@ -1982,7 +1986,7 @@ msgstr "இந்த வரைவில் பதிவேற்றப்பட�
 msgid "Immediate"
 msgstr "உடனடி"
 
-#: kb/admin.py:2845
+#: kb/admin.py:2876
 msgid "Immediate permanent deletion"
 msgstr "உடனடி நிரந்தர நீக்கம்"
 
@@ -2054,7 +2058,7 @@ msgstr "இறக்குமதி செய்யப்பட்ட கட்�
 msgid "Imported articles will be owned by"
 msgstr "இறக்குமதி செய்யப்பட்ட கட்டுரைகள் இவருடையதாக இருக்கும்"
 
-#: kb/admin.py:1335 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1337 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "செயலற்றது"
 
@@ -2066,15 +2070,15 @@ msgstr "வீடியோ இணைப்பைச் செருகு"
 msgid "Internal"
 msgstr "உள்"
 
-#: kb/admin.py:1223 kb/admin.py:818 kb/permissions.py:60
+#: kb/admin.py:1225 kb/admin.py:820 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "உள் கட்டுரை அங்கீகரிப்பாளர்"
 
-#: kb/admin.py:1224 kb/admin.py:822 kb/permissions.py:61
+#: kb/admin.py:1226 kb/admin.py:824 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "உள் கட்டுரை மேலாளர்"
 
-#: kb/admin.py:1222 kb/admin.py:814 kb/permissions.py:59
+#: kb/admin.py:1224 kb/admin.py:816 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "உள் கட்டுரை எழுத்தாளர்"
 
@@ -2086,7 +2090,7 @@ msgstr "உள் கட்டுரைகள்"
 msgid "Internal Knowledge Repository"
 msgstr "உள் அறிவு களஞ்சியம்"
 
-#: kb/admin.py:1221 kb/admin.py:810 kb/permissions.py:58
+#: kb/admin.py:1223 kb/admin.py:812 kb/permissions.py:58
 msgid "Internal User"
 msgstr "உள் பயனர்"
 
@@ -2094,7 +2098,7 @@ msgstr "உள் பயனர்"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "உள் அங்கீகரிப்பாளர் கூடுதல் பங்கு. பொது/உள் கட்டுரைகளைப் பார்க்கலாம், உள் கட்டுரைகள்/புதுப்பிப்புகள் நிலுவையில் இருக்கும் போது உள்ளடக்கத்தைத் திருத்தலாம், மதிப்பாய்வு திருத்தங்களுக்குப் பின் அவற்றை நிலுவையில் வைத்திருக்கலாம், மற்றும் நிலுவையிலுள்ள உள் கட்டுரைகள்/புதுப்பிப்புகளை அங்கீகரிக்கவோ நிராகரிக்கவோலாம். இயல்பாக வெளியிடப்பட்ட உள் கட்டுரைகளை நீக்கவோ திருத்தவோ முடியாது."
 
-#: kb/models.py:325 kb/views/services.py:451 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
+#: kb/models.py:325 kb/views/services.py:452 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
 msgid "Internal article"
 msgstr "உள் கட்டுரை"
 
@@ -2102,7 +2106,7 @@ msgstr "உள் கட்டுரை"
 msgid "Internal article pages"
 msgstr "உள் கட்டுரை பக்கங்கள்"
 
-#: kb/admin.py:743
+#: kb/admin.py:745
 msgid "Internal article permissions"
 msgstr "உள் கட்டுரை அனுமதிகள்"
 
@@ -2122,7 +2126,7 @@ msgstr "உங்களுக்குச் சொந்தமான உள் 
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "உள் மேலாளர் கூடுதல் பங்கு. பொது/உள் கட்டுரைகளைப் பார்க்கலாம், உருவாக்கலாம், திருத்த/நிர்வகிக்கலாம், மதிப்பாய்வு செய்யலாம், உள் சமர்ப்பிப்புகளை அங்கீகரிக்க/நிராகரிக்கலாம் மற்றும் வரம்புக்குள் உள் கட்டுரைகளை நீக்கலாம். வெளியிடப்பட்ட உள் கட்டுரையை நீக்க MFA உறுதிப்படுத்தல் தேவை."
 
-#: kb/admin.py:751
+#: kb/admin.py:753
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "உள் பங்குகள் கூடுதல் அனுமதிகள். உள் பயனர் பொதுவான/பொது கட்டுரைகளையும் தொடர்ந்து பார்க்க முடியும். முடிந்தவரை உள் பயனர் / உள் கட்டுரை எழுத்தாளர் / உள் கட்டுரை அங்கீகரிப்பாளர் / உள் கட்டுரை மேலாளர் குழுக்களைப் பயன்படுத்தவும்; விதிவிலக்குகளுக்கு மட்டும் இந்த நேரடிப் பெட்டிகளைத் தேர்வு செய்யவும்."
 
@@ -2134,7 +2138,7 @@ msgstr "உள் பார்வையாளர் கூடுதல் பங
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "உள் எழுத்தாளர் கூடுதல் பங்கு. பொது/உள் கட்டுரைகளைப் பார்க்கலாம், சொந்த உள் கட்டுரை வரைவுகள்/சமர்ப்பிப்புகளை உருவாக்க அல்லது பராமரிக்கலாம் மற்றும் சொந்த உள் கட்டுரைகளை நீக்கலாம். வெளியிடப்பட்ட உள் கட்டுரையை நீக்க MFA உறுதிப்படுத்தல் தேவை."
 
-#: kb/admin.py:2621
+#: kb/admin.py:2623
 msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
 msgstr "செல்லுபடியாகாத IPv4/IPv6 முகவரி அல்லது CIDR வரம்பு: %(value)s"
 
@@ -2142,7 +2146,7 @@ msgstr "செல்லுபடியாகாத IPv4/IPv6 முகவரி 
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "கணக்கு சான்றுகள் தவறானவை. பயனர்பெயர் மற்றும் கடவுச்சொல்லைச் சரிபார்க்கவும்."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
+#: kb/admin_security.py:317 kb/views/mfa.py:377 kb/views/mfa.py:513
 msgid "Invalid authenticator code. Please try again."
 msgstr "அங்கீகரிப்பு குறியீடு தவறானது. மீண்டும் முயற்சிக்கவும்."
 
@@ -2194,11 +2198,11 @@ msgstr "முக்கிய சொற்கள்"
 msgid "Keywords: %(keywords)s"
 msgstr "முக்கியச் சொற்கள்: %(keywords)s"
 
-#: kb/admin.py:1361
+#: kb/admin.py:1363
 msgid "Knowledge Repository Permissions"
 msgstr "அறிவு களஞ்சிய அனுமதிகள்"
 
-#: kb/admin.py:1356
+#: kb/admin.py:1358
 msgid "Knowledge Repository Roles"
 msgstr "அறிவு களஞ்சிய பங்குகள்"
 
@@ -2206,15 +2210,15 @@ msgstr "அறிவு களஞ்சிய பங்குகள்"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "அறிவு களஞ்சிய நிர்வாகி. கட்டுரைகளை நேரடியாக உருவாக்க/வெளியிடலாம்; முழு Django நிர்வாக மேலாண்மைக்காக Django பணியாளர்/சூப்பர் பயனர் அணுகலுடன் ஒத்திசைக்கப்படுகிறது."
 
-#: kb/views/services.py:1777
+#: kb/views/services.py:1778
 msgid "Knowledge Repository article."
 msgstr "அறிவு களஞ்சியக் கட்டுரை."
 
-#: kb/admin.py:1067
+#: kb/admin.py:1069
 msgid "Knowledge Repository role"
 msgstr "அறிவு களஞ்சிய பங்கு"
 
-#: kb/admin.py:1052
+#: kb/admin.py:1054
 msgid "Knowledge Repository role group"
 msgstr "அறிவு களஞ்சிய பங்கு குழு"
 
@@ -2222,11 +2226,11 @@ msgstr "அறிவு களஞ்சிய பங்கு குழு"
 msgid "Knowledge Repository role guide"
 msgstr "அறிவு களஞ்சிய பங்கு வழிகாட்டி"
 
-#: kb/admin.py:1063
+#: kb/admin.py:1065
 msgid "Knowledge Repository role information"
 msgstr "அறிவு களஞ்சிய பங்கு தகவல்"
 
-#: kb/admin.py:725
+#: kb/admin.py:727
 msgid "Knowledge Repository role permissions"
 msgstr "அறிவு களஞ்சிய பங்கு அனுமதிகள்"
 
@@ -2234,15 +2238,15 @@ msgstr "அறிவு களஞ்சிய பங்கு அனுமதி
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "LDAP கணக்கு வகைகள் அங்கீகார மூலமாக Active Directory ஐப் பயன்படுத்த வேண்டும்."
 
-#: kb/admin.py:594
+#: kb/admin.py:596
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "LDAP கணக்கு வகைகள் மூலமாக Active Directory பயனரைப் பயன்படுத்த வேண்டும். Active Directory பயனருடன் LDAP பயனர்/LDAP நிர்வாகியைத் தேர்ந்தெடுக்கவும் அல்லது உள்ளூர் பயனருடன் பயனர்/நிர்வாகியைத் தேர்ந்தெடுக்கவும்."
 
-#: kb/admin.py:1344 kb/models.py:35
+#: kb/admin.py:1346 kb/models.py:35
 msgid "LDAP admin"
 msgstr "LDAP நிர்வாகி"
 
-#: kb/admin.py:1348 kb/models.py:34
+#: kb/admin.py:1350 kb/models.py:34
 msgid "LDAP user"
 msgstr "LDAP பயனர்"
 
@@ -2278,7 +2282,7 @@ msgstr "கடைசியாக சரிபார்க்கப்பட்�
 msgid "Last verified at"
 msgstr "கடைசியாக சரிபார்க்கப்பட்ட நேரம்"
 
-#: kb/admin.py:264
+#: kb/admin.py:265
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "பழைய இணக்கத்தன்மைப் புலம். பயனர் உள்நுழையலாமா என்பதை கட்டுப்படுத்த பயனர் கணக்கில் உள்ளமைக்கப்பட்ட செயலில் உள்ள தேர்வுப் பெட்டியைப் பயன்படுத்தவும்."
 
@@ -2286,11 +2290,11 @@ msgstr "பழைய இணக்கத்தன்மைப் புலம்.
 msgid "Legacy main-site access"
 msgstr "பழைய முதன்மைத் தள அணுகல்"
 
-#: kb/admin.py:2564
+#: kb/admin.py:2566
 msgid "Like"
 msgstr "விருப்பம்"
 
-#: kb/admin.py:2445 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2447 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "பிடித்தவை"
 
@@ -2298,11 +2302,11 @@ msgstr "பிடித்தவை"
 msgid "Loading dimensions..."
 msgstr "பரிமாணங்கள் ஏற்றப்படுகின்றன..."
 
-#: kb/views/services.py:3085
+#: kb/views/services.py:3117
 msgid "Local Admin"
 msgstr "உள்ளூர் நிர்வாகி"
 
-#: kb/views/services.py:3083
+#: kb/views/services.py:3115
 msgid "Local User"
 msgstr "உள்ளூர் பயனர்"
 
@@ -2318,7 +2322,7 @@ msgstr "உள்ளூர் கணக்கு உள்நுழைவு"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "உள்ளூர் கணக்கு வகைகள் அங்கீகார மூலமாக உள்ளூர் பயனரைப் பயன்படுத்த வேண்டும்."
 
-#: kb/admin.py:602
+#: kb/admin.py:604
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "உள்ளூர் கணக்கு வகைகள் மூலமாக உள்ளூர் பயனரைப் பயன்படுத்த வேண்டும். உள்ளூர் பயனருடன் பயனர்/நிர்வாகியைத் தேர்ந்தெடுக்கவும் அல்லது Active Directory பயனருடன் LDAP பயனர்/LDAP நிர்வாகியைத் தேர்ந்தெடுக்கவும்."
 
@@ -2326,11 +2330,11 @@ msgstr "உள்ளூர் கணக்கு வகைகள் மூலம
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "உள்ளூர் கணக்குகளுக்கு கடவுச்சொல் உள்நுழைவுக்குப் பிறகு அங்கீகரிப்பு செயலி சரிபார்ப்பு தேவை."
 
-#: kb/admin.py:1346
+#: kb/admin.py:1348
 msgid "Local admin"
 msgstr "உள்ளூர் நிர்வாகி"
 
-#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3135
+#: kb/admin.py:1351 kb/models.py:38 kb/views/services.py:3167
 msgid "Local user"
 msgstr "உள்ளூர் பயனர்"
 
@@ -2338,11 +2342,11 @@ msgstr "உள்ளூர் பயனர்"
 msgid "Local username or email"
 msgstr "உள்ளூர் பயனர்பெயர் அல்லது மின்னஞ்சல்"
 
-#: kb/admin.py:1992
+#: kb/admin.py:1994
 msgid "Lockout duration"
 msgstr "பூட்டல் காலம்"
 
-#: kb/admin.py:1977
+#: kb/admin.py:1979
 msgid "Lockout scope"
 msgstr "பூட்டல் வரம்பு"
 
@@ -2366,7 +2370,7 @@ msgstr "பங்களிக்க உள்நுழை"
 msgid "Logout"
 msgstr "வெளியேறு"
 
-#: kb/admin.py:278 kb/models.py:1298
+#: kb/admin.py:280 kb/models.py:1307
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "குறைந்த எண்கள் முதலில் செயல்படும். பின்னர் நிலைகளைச் சேர்க்க 10, 20, 30 போன்றவற்றைப் பயன்படுத்தவும்."
 
@@ -2374,13 +2378,25 @@ msgstr "குறைந்த எண்கள் முதலில் செய
 msgid "MFA QR code"
 msgstr "MFA QR குறியீடு"
 
-#: kb/admin.py:1389 kb/admin.py:1845
+#: kb/admin.py:1391 kb/admin.py:1847
 msgid "MFA Reset"
 msgstr "MFA மீட்டமைப்பு"
 
-#: kb/admin.py:1373
+#: kb/admin.py:1375
 msgid "MFA Status"
 msgstr "MFA நிலை"
+
+#: kb/admin.py:2695
+msgid "MFA login completion timeout"
+msgstr "MFA உள்நுழைவு நிறைவு நேரக்கெடு"
+
+#: kb/admin.py:242 kb/models.py:1199
+msgid "MFA login completion timeout (seconds)"
+msgstr "MFA உள்நுழைவு நிறைவு நேரக்கெடு (வினாடிகள்)"
+
+#: kb/admin.py:2866
+msgid "MFA login timeout readable"
+msgstr "படிக்கக்கூடிய MFA உள்நுழைவு நேரக்கெடு"
 
 #: kb/models.py:260
 msgid "MFA reset by admin"
@@ -2390,15 +2406,15 @@ msgstr "MFA நிர்வாகியால் மீட்டமைக்க�
 msgid "MFA reset by user"
 msgstr "MFA பயனரால் மீட்டமைக்கப்பட்டது"
 
-#: kb/admin.py:1870
+#: kb/admin.py:1872
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "தேர்ந்தெடுத்த %(count)d சாதனங்களுக்கு MFA மீட்டமைக்கப்பட்டது. பயனர்கள் அடுத்த உள்நுழைவில் புதிய அங்கீகரிப்பு செயலியை அமைக்க வேண்டும்."
 
-#: kb/admin.py:1541
+#: kb/admin.py:1543
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "தேர்ந்தெடுத்த %(count)d பயனர்களுக்கு MFA மீட்டமைக்கப்பட்டது. அவர்கள் அடுத்த உள்நுழைவில் புதிய அங்கீகரிப்பு செயலியை அமைக்க வேண்டும்."
 
-#: kb/views/mfa.py:558
+#: kb/views/mfa.py:691
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "உங்கள் அறிவு களஞ்சியக் கணக்கிற்கு MFA மீட்டமைப்பு கிடைக்கிறது."
 
@@ -2414,13 +2430,17 @@ msgstr "தொடர MFA அமைப்பு தேவை."
 msgid "MFA setup success"
 msgstr "MFA அமைப்பு வெற்றி"
 
-#: kb/views/mfa.py:168
+#: kb/views/mfa.py:274
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "MFA உள்நுழைவு ரத்து செய்யப்பட்டது. மீண்டும் உள்நுழையவும்."
 
-#: kb/admin.py:1972 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1974 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "MFA சரிபார்ப்பு"
+
+#: kb/views/mfa.py:221
+msgid "MFA verification timed out. Please enter your username and password again."
+msgstr "MFA சரிபார்ப்பு நேரம் முடிந்தது. உங்கள் பயனர் பெயர் மற்றும் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்."
 
 #: kb/models.py:256
 msgid "MFA verify failure"
@@ -2430,15 +2450,15 @@ msgstr "MFA சரிபார்ப்பு தோல்வி"
 msgid "MFA verify success"
 msgstr "MFA சரிபார்ப்பு வெற்றி"
 
-#: kb/admin.py:1501
+#: kb/admin.py:1503
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "%(username)s க்கான MFA மீட்டமைக்கப்பட்டது. பயனர் அடுத்த உள்நுழைவில் புதிய அங்கீகரிப்பு செயலியை அமைக்க வேண்டும்."
 
-#: website/templates/mfa_setup.html:60 website/templates/mfa_verify.html:46 website/templates/suggest_delete.html:46
+#: website/templates/mfa_setup.html:60 website/templates/mfa_verify.html:44 website/templates/suggest_delete.html:46
 msgid "MFA/OTP code"
 msgstr "MFA/OTP குறியீடு"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:818
+#: kb/views/auth.py:440 kb/views/mfa.py:670 kb/views/services.py:819
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP குறியீடு தவறானது."
 
@@ -2450,7 +2470,7 @@ msgstr "முதன்மை தள பயனர் சுயவிவரம்
 msgid "Main Site User Profiles"
 msgstr "முதன்மை தள பயனர் சுயவிவரங்கள்"
 
-#: kb/admin.py:714
+#: kb/admin.py:716
 msgid "Main site profile"
 msgstr "முதன்மைத் தள சுயவிவரம்"
 
@@ -2486,23 +2506,23 @@ msgstr "அங்கீகரிப்பு செயலியால் நி�
 msgid "Manual setup key"
 msgstr "கைமுறை அமைப்பு விசை"
 
-#: kb/admin.py:1875
+#: kb/admin.py:1877
 msgid "Mark selected MFA devices as setup pending"
 msgstr "தேர்ந்தெடுக்கப்பட்ட MFA சாதனங்களை அமைப்பு நிலுவையில் என குறி"
 
-#: kb/admin.py:2394
+#: kb/admin.py:2396
 msgid "Mark selected articles as pending failed"
 msgstr "தேர்ந்தெடுக்கப்பட்ட கட்டுரைகளை நிலுவை தோல்வி என குறி"
 
-#: kb/admin.py:1895
+#: kb/admin.py:1897
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "%(username)s பயனருக்கான MFA அமைப்பு நிலுவையில் எனக் குறிக்கப்பட்டது"
 
-#: kb/admin.py:2417
+#: kb/admin.py:2419
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "Django நிர்வாகத்திலிருந்து %(title)s கட்டுரை நிலுவை தோல்வி எனக் குறிக்கப்பட்டது"
 
-#: kb/admin.py:2405 kb/admin.py:2479
+#: kb/admin.py:2407 kb/admin.py:2481
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "நிர்வாகியால் நிலுவை தோல்வி என குறிக்கப்பட்டது. இந்த கட்டுரையை மதிப்பாய்வு செய்து, ஒப்புதலுக்காக மீண்டும் சமர்ப்பிக்கவும்."
 
@@ -2510,17 +2530,21 @@ msgstr "நிர்வாகியால் நிலுவை தோல்வ�
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "ஒரு கட்டுரைக்கு அதிகபட்சம் %(limit)s படங்கள்."
 
-#: kb/admin.py:277 kb/models.py:1253
+#: kb/admin.py:279 kb/models.py:1262
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "நிலையான 24 மணிநேர காலச்சாளரத்தில் ஒவ்வொரு பயனருக்கும் ஏற்கப்படும் Ask OpenKB AI கேள்விகளின் அதிகபட்ச எண்ணிக்கை. முதல் ஏற்கப்பட்ட கேள்வி காலச்சாளரத்தைத் தொடங்கும்; பின்னர் வரும் கேள்விகள் அதை நீட்டிக்காது. இயல்புநிலை: 20."
 
-#: kb/admin.py:269 kb/models.py:1166
+#: kb/admin.py:270 kb/models.py:1164
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "கட்டுரைகளில் உள்ள வீடியோ பிளேயர்களின் அதிகபட்ச காட்சி அகலம் பிக்சல்களில். வீடியோக்கள் பதிலளிக்கும் வடிவில் இருந்து, சிறிய திரைகளில் 16:9 விகிதத்தைப் பேணும். இயல்புநிலை 720 px. அனுமதிக்கப்பட்ட வரம்பு: 160 முதல் 1920 px வரை."
 
-#: kb/admin.py:268 kb/models.py:1157
+#: kb/admin.py:269 kb/models.py:1155
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "ஒவ்வொரு கட்டுரைக்கும் ஒட்டப்பட்ட அல்லது பதிவேற்றப்பட்ட படங்களின் அதிகபட்ச எண்ணிக்கை. இதில் வரைவு, நிலுவையில் உள்ள, வெளியிடப்பட்ட மற்றும் நிலுவையில் உள்ள புதுப்பிப்பு பதிப்புகள் அடங்கும். இயல்புநிலை 50. கட்டுரை பட பதிவேற்றங்களை முடக்க 0 ஆக அமைக்கவும்."
+
+#: kb/admin.py:273 kb/models.py:1200
+msgid "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "பயனர் பெயர் மற்றும் கடவுச்சொல் படி வெற்றிகரமாக முடிந்த பின் MFA-ஐ நிறைவு செய்ய அனுமதிக்கப்படும் அதிகபட்ச நேரம். கவுண்ட்டவுன் பூஜ்ஜியத்தை அடைந்ததும், நிலுவையிலுள்ள உள்நுழைவு அழிக்கப்படும்; பயனர் தனது பயனர் பெயர் மற்றும் கடவுச்சொல்லை மீண்டும் உள்ளிட வேண்டும். இயல்புநிலை 60 வினாடிகள். அனுமதிக்கப்பட்ட வரம்பு: 30 முதல் 900 வினாடிகள் (15 நிமிடங்கள்)."
 
 #: website/templates/admin_bulk_articles.html:87
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -2554,11 +2578,11 @@ msgstr "மிகவும் விரும்பப்பட்ட கட்�
 msgid "Most recent article pages"
 msgstr "மிக சமீபத்திய கட்டுரை பக்கங்கள்"
 
-#: kb/admin.py:1281 website/templates/profile.html:190
+#: kb/admin.py:1283 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "பல காரணி அங்கீகாரம்"
 
-#: kb/admin.py:576
+#: kb/admin.py:578
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "கணக்கு வகையுடன் பொருந்த வேண்டும். உள்ளூர் பயனர்/உள்ளூர் நிர்வாகி உள்ளூர் பயனரைப் பயன்படுத்துவர். LDAP பயனர்/LDAP நிர்வாகி Active Directory பயனரைப் பயன்படுத்துவர். LDAP கணக்கை உள்ளூர் கணக்காக மாற்ற, கணக்கு வகையை பயனர் அல்லது நிர்வாகி என்றும் மூலத்தை உள்ளூர் பயனர் என்றும் அமைத்து, பின்னர் உள்ளூர் கடவுச்சொல்லை அமைக்கவும்."
 
@@ -2618,7 +2642,7 @@ msgstr "NextLabs AD மின்னஞ்சல் அல்லது பயன�
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs தகவல் தொழில்நுட்ப அறிவுக் களஞ்சியம்"
 
-#: kb/admin.py:2714
+#: kb/admin.py:2733
 msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
 msgstr "Nginx இனி நிலையான நிர்வாக IP அனுமதி பட்டியலை பராமரிக்காது. இயல்பாக அனைத்து IPv4 மற்றும் IPv6 முகவரிகளும் Django Admin அணுகல் சரிபார்ப்புகளை அடையலாம். அணுகலை கட்டுப்படுத்த அனுமதிக்கப்பட்ட IP/CIDR வரம்புகளை உள்ளிட்டு அனுமதி பட்டியலை இயக்கவும். /admin/login/ தொடர்ந்து 404 மூலம் மறைக்கப்படும்; நிர்வாக MFA இன்னும் அவசியம்."
 
@@ -2626,7 +2650,7 @@ msgstr "Nginx இனி நிலையான நிர்வாக IP அனு
 msgid "No"
 msgstr "இல்லை"
 
-#: kb/admin.py:1043 kb/admin.py:1094 kb/permissions.py:400
+#: kb/admin.py:1045 kb/admin.py:1096 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "அறிவு களஞ்சிய பங்கு அனுமதிகள் இல்லை"
 
@@ -2714,7 +2738,7 @@ msgstr "உங்கள் தேடலுக்கு பொருந்து�
 msgid "No pending update"
 msgstr "நிலுவையிலுள்ள புதுப்பிப்பு இல்லை"
 
-#: kb/admin.py:1098
+#: kb/admin.py:1100
 msgid "No permissions"
 msgstr "அனுமதிகள் இல்லை"
 
@@ -2746,7 +2770,7 @@ msgstr "நீக்க எந்த stray upload கோப்புகளும
 msgid "No stray uploaded files found."
 msgstr "பயன்படுத்தாத பதிவேற்ற கோப்புகள் எதுவும் கிடைக்கவில்லை."
 
-#: kb/admin.py:1080
+#: kb/admin.py:1082
 msgid "No users"
 msgstr "பயனர்கள் இல்லை"
 
@@ -2754,27 +2778,27 @@ msgstr "பயனர்கள் இல்லை"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "உள்ளடக்கம் மிகப் பெரியதாக இருந்தால் சாதாரண ஏற்றுமதி தானாகவே பிரிக்கப்பட்ட தொகுப்பாக மாறும். பிரிக்கப்பட்ட தொகுப்புகளில் parts/ கோப்புறையில் இறக்குமதி செய்யக்கூடிய part zip கள் இருக்கும்; தொகுப்பை பிரித்து ஒவ்வொரு part zip ஐ வரிசையாக இறக்குமதி செய்யவும்."
 
-#: kb/admin.py:1822
+#: kb/admin.py:1824
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "குறியாக்கப்படவில்லை. இந்த பயனரின் MFA சாதனத்தை மீட்டமைத்து, MFA-வை மீண்டும் அமைக்க பயனரிடம் கேளுங்கள்."
 
-#: kb/admin.py:2249
+#: kb/admin.py:2251
 msgid "Not found"
 msgstr "கிடைக்கவில்லை"
 
-#: kb/models.py:787 kb/models.py:810
+#: kb/models.py:785 kb/models.py:808
 msgid "Not helpful"
 msgstr "உதவிகரமல்ல"
 
-#: kb/mfa.py:131
+#: kb/mfa.py:239
 msgid "Not required"
 msgstr "தேவையில்லை"
 
-#: kb/admin.py:1819
+#: kb/admin.py:1821
 msgid "Not set"
 msgstr "அமைக்கப்படவில்லை"
 
-#: kb/mfa.py:133
+#: kb/mfa.py:241
 msgid "Not set up"
 msgstr "அமைக்கப்படவில்லை"
 
@@ -2782,27 +2806,23 @@ msgstr "அமைக்கப்படவில்லை"
 msgid "Notes"
 msgstr "குறிப்புகள்"
 
-#: kb/models.py:1175
+#: kb/models.py:1173
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "தேடல்/முடிவுகளில் ஒரு பக்கத்திலும், டிரெண்டிங் தலைப்புகள், மிகவும் விரும்பப்பட்டவை மற்றும் மிக சமீபத்திய கட்டுரைகள் போன்ற முகப்புப் பக்க கட்டுரை நெடுவரிசைகளிலும் காட்டப்படும் வெளியிடப்பட்ட கட்டுரைகளின் எண்ணிக்கை. பரிந்துரைக்கப்படும் வரம்பு: 5 முதல் 100. இயல்புநிலை 10."
 
-#: kb/admin.py:273 kb/models.py:1208
+#: kb/admin.py:275 kb/models.py:1217
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Django Admin பதிவு அட்டவணைகளில் ஒரு பக்கத்திற்கு காட்ட வேண்டிய வரிசைகளின் எண்ணிக்கை. பரிந்துரைக்கப்படும் வரம்பு: 50 முதல் 500 வரை. இயல்புநிலை 200."
 
-#: kb/models.py:422
-msgid "Number of unique session views for this article."
-msgstr "இந்தக் கட்டுரைக்கான தனிப்பட்ட அமர்வு பார்வைகளின் எண்ணிக்கை."
-
-#: kb/admin.py:279 kb/models.py:1303
+#: kb/admin.py:281 kb/models.py:1312
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "இந்த நிலை பயனரைத் தடுக்கும் முன் தேவைப்படும் தவறான கடவுச்சொல்/MFA முயற்சிகளின் எண்ணிக்கை."
 
-#: kb/admin.py:2243
+#: kb/admin.py:2245
 msgid "OK"
 msgstr "சரி"
 
-#: kb/admin.py:2233
+#: kb/admin.py:2235
 msgid "Object ID %(object_id)s"
 msgstr "பொருள் ID %(object_id)s"
 
@@ -2818,7 +2838,7 @@ msgstr "பழைய கடவுச்சொல் தவறானது."
 msgid "Only .zip import files are allowed."
 msgstr ".zip இறக்குமதி கோப்புகள் மட்டுமே அனுமதிக்கப்படும்."
 
-#: kb/views/services.py:1218 kb/views/services.py:1239 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
+#: kb/views/services.py:1219 kb/views/services.py:1240 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "PNG, JPG, GIF, அல்லது WEBP படங்கள் மட்டுமே அனுமதிக்கப்படும்."
 
@@ -2846,19 +2866,19 @@ msgstr "OpenKB AI தற்காலிகமாகக் கிடைக்க�
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI சிந்திக்கிறது..."
 
-#: kb/admin.py:248 kb/models.py:1252
+#: kb/admin.py:249 kb/models.py:1261
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "24 மணிநேரத்திற்கு OpenKB AI கேள்விகள்"
 
-#: kb/models.py:985
+#: kb/models.py:983
 msgid "OpenKB AI question"
 msgstr "OpenKB AI கேள்வி"
 
-#: kb/models.py:986
+#: kb/models.py:984
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI விகித வரம்பிற்கு உட்பட்டது"
 
-#: kb/admin.py:2699
+#: kb/admin.py:2718
 msgid "OpenKB AI rate limits"
 msgstr "OpenKB AI வீத வரம்புகள்"
 
@@ -2870,11 +2890,11 @@ msgstr "OpenKB AI பதிலளிக்க அதிக நேரம் எ�
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "OpenKB தரவு கோப்புறை கிடைக்கவில்லை. settings.py இல் OPENKB_DATA_DIR ஐச் சரிபார்க்கவும்."
 
-#: kb/admin.py:2341
+#: kb/admin.py:2343
 msgid "OpenKB files"
 msgstr "OpenKB கோப்புகள்"
 
-#: kb/admin.py:275 kb/models.py:1225
+#: kb/admin.py:277 kb/models.py:1234
 msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
 msgstr "கமா, இடைவெளி அல்லது புதிய வரியால் பிரிக்கப்பட்ட விருப்ப IPv4/IPv6 முகவரிகள் அல்லது CIDR வரம்புகள். எடுத்துக்காட்டுகள்: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. அனுமதி பட்டியல் முடக்கப்பட்டிருக்கும்போது காலியாக விடவும்."
 
@@ -2886,15 +2906,15 @@ msgstr "மூலப் பெயர்"
 msgid "Original size"
 msgstr "அசல் அளவு"
 
-#: kb/models.py:434
+#: kb/models.py:431
 msgid "Original workflow status saved so the article can be restored from the deletion queue."
 msgstr "கட்டுரையை நீக்க வரிசையிலிருந்து மீட்டெடுக்க முடியும் என்பதற்காக மூல பணிப்பாய்வு நிலை சேமிக்கப்பட்டது."
 
-#: kb/models.py:976
+#: kb/models.py:974
 msgid "Orphan article assigned"
 msgstr "உரிமையற்ற கட்டுரை ஒதுக்கப்பட்டது"
 
-#: kb/models.py:977
+#: kb/models.py:975
 msgid "Orphan article deleted"
 msgstr "உரிமையற்ற கட்டுரை நீக்கப்பட்டது"
 
@@ -2930,7 +2950,7 @@ msgstr "பக்கம் %(page)s / %(total)s"
 msgid "Page not found"
 msgstr "பக்கம் கிடைக்கவில்லை"
 
-#: kb/admin.py:1202 kb/admin.py:1971 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1204 kb/admin.py:1973 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "கடவுச்சொல்"
 
@@ -2950,31 +2970,31 @@ msgstr "கடவுச்சொல் உள்நுழைவு தோல்�
 msgid "Password login success"
 msgstr "கடவுச்சொல் உள்நுழைவு வெற்றி"
 
-#: kb/views/services.py:3173
+#: kb/views/services.py:3205
 msgid "Password must be at least 12 characters long."
 msgstr "கடவுச்சொல் குறைந்தது 12 எழுத்துகள் நீளமாக இருக்க வேண்டும்."
 
-#: kb/views/services.py:3177
+#: kb/views/services.py:3209
 msgid "Password must include at least 1 lowercase letter."
 msgstr "கடவுச்சொலில் குறைந்தது 1 சிறிய எழுத்து இருக்க வேண்டும்."
 
-#: kb/views/services.py:3179
+#: kb/views/services.py:3211
 msgid "Password must include at least 1 number."
 msgstr "கடவுச்சொலில் குறைந்தது 1 எண் இருக்க வேண்டும்."
 
-#: kb/views/services.py:3181
+#: kb/views/services.py:3213
 msgid "Password must include at least 1 special character."
 msgstr "கடவுச்சொலில் குறைந்தது 1 சிறப்பு எழுத்து இருக்க வேண்டும்."
 
-#: kb/views/services.py:3175
+#: kb/views/services.py:3207
 msgid "Password must include at least 1 uppercase letter."
 msgstr "கடவுச்சொலில் குறைந்தது 1 பெரிய எழுத்து இருக்க வேண்டும்."
 
-#: kb/views/services.py:3190
+#: kb/views/services.py:3222
 msgid "Password must not contain the name part of your email address."
 msgstr "கடவுச்சொல்லில் உங்கள் மின்னஞ்சல் முகவரியின் பெயர்ப் பகுதி இருக்கக்கூடாது."
 
-#: kb/views/services.py:3188
+#: kb/views/services.py:3220
 msgid "Password must not contain your username."
 msgstr "கடவுச்சொல்லில் உங்கள் பயனர்பெயர் இருக்கக்கூடாது."
 
@@ -2990,15 +3010,15 @@ msgstr "கடவுச்சொல் உங்கள் நிறுவன க
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "கடவுச்சொல் உங்கள் நிறுவனக் கடவுச்சொல்லுடன் ஒத்திசைக்கப்படுகிறது. நிறுவனக் கடவுச்சொல் அமைப்பின் மூலம் அதை மாற்றவும்."
 
-#: kb/admin.py:1794
+#: kb/admin.py:1796
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d சுயவிவர(ங்)களுக்கான கடவுச்சொல்/MFA பூட்டல் எண்ணிக்கைகள் மீட்டமைக்கப்பட்டன."
 
-#: kb/admin.py:1573
+#: kb/admin.py:1575
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கான) கடவுச்சொல்/MFA பூட்டல் எண்ணிக்கைகள் மீட்டமைக்கப்பட்டன."
 
-#: kb/admin.py:1457
+#: kb/admin.py:1459
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "%(username)s க்கான கடவுச்சொல்/MFA பூட்டல் எண்ணிக்கைகள் மீட்டமைக்கப்பட்டன."
 
@@ -3018,7 +3038,7 @@ msgstr "YouTube அல்லது Vimeo இணைப்பை ஒட்டவ�
 msgid "Pasted images"
 msgstr "ஒட்டப்பட்ட படங்கள்"
 
-#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2105 kb/admin.py:2262
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2107 kb/admin.py:2264
 msgid "Path"
 msgstr "பாதை"
 
@@ -3038,7 +3058,7 @@ msgstr "ஒப்புதல் நிலுவையில்"
 msgid "Pending article pages"
 msgstr "நிலுவை கட்டுரை பக்கங்கள்"
 
-#: kb/models.py:712
+#: kb/models.py:710
 msgid "Pending deletion approval"
 msgstr "நிலுவை நீக்க அங்கீகாரம்"
 
@@ -3070,7 +3090,7 @@ msgstr "நிலுவையிலுள்ள புதுப்பிப்�
 msgid "Pending update keywords"
 msgstr "நிலுவையிலுள்ள புதுப்பிப்பு - முக்கிய சொற்கள்"
 
-#: kb/admin.py:2330
+#: kb/admin.py:2332
 msgid "Pending update review"
 msgstr "நிலுவையிலுள்ள புதுப்பிப்பு - மதிப்பாய்வு"
 
@@ -3090,7 +3110,7 @@ msgstr "நிலுவையிலுள்ள புதுப்பிப்�
 msgid "Permalink"
 msgstr "நிரந்தர இணைப்பு"
 
-#: kb/admin.py:205 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
+#: kb/admin.py:205 kb/models.py:451 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
 msgid "Permanent deletion after"
 msgstr "இதற்குப் பின் நிரந்தர நீக்கம்"
 
@@ -3110,11 +3130,11 @@ msgstr "%(count)s உரிமையற்ற கட்டுரை(கள்) �
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "%(count)s வரிசைப்படுத்தப்பட்ட கட்டுரை(கள்) நிரந்தரமாக நீக்கப்பட்டன."
 
-#: kb/admin.py:879
+#: kb/admin.py:881
 msgid "Permission guide"
 msgstr "அனுமதி வழிகாட்டி"
 
-#: kb/admin.py:1105
+#: kb/admin.py:1107
 msgid "Permissions"
 msgstr "அனுமதிகள்"
 
@@ -3146,7 +3166,7 @@ msgstr "தேடல் மதிப்பை உள்ளிடவும்."
 msgid "Please enter a username or email to assign the selected articles to."
 msgstr "தேர்ந்தெடுத்த கட்டுரைகளை ஒதுக்க பயனர்பெயர் அல்லது மின்னஞ்சலை உள்ளிடவும்."
 
-#: website/templates/mfa_verify.html:39
+#: website/templates/_mfa_login_timeout.html:11
 msgid "Please enter your MFA/OTP code to continue."
 msgstr "தொடர உங்கள் MFA/OTP குறியீட்டை உள்ளிடவும்."
 
@@ -3154,11 +3174,11 @@ msgstr "தொடர உங்கள் MFA/OTP குறியீட்டை �
 msgid "Please select at least one orphan article first."
 msgstr "முதலில் குறைந்தது ஒரு உரிமையாளர் இல்லாத கட்டுரையைத் தேர்ந்தெடுக்கவும்."
 
-#: kb/views/mfa.py:184
+#: kb/views/mfa.py:295
 msgid "Please sign in before setting up MFA."
 msgstr "MFA அமைப்பதற்கு முன் உள்நுழையவும்."
 
-#: kb/views/mfa.py:283
+#: kb/views/mfa.py:400
 msgid "Please sign in before verifying MFA."
 msgstr "MFA சரிபார்ப்பதற்கு முன் உள்நுழையவும்."
 
@@ -3190,7 +3210,7 @@ msgstr "சிறிது நேரம் காத்திருந்து 
 msgid "Please wait briefly before trying again."
 msgstr "மீண்டும் முயற்சிப்பதற்கு முன் சிறிது நேரம் காத்திருக்கவும்."
 
-#: kb/admin.py:2781
+#: kb/admin.py:2801
 msgid "Policy guide"
 msgstr "கொள்கை வழிகாட்டி"
 
@@ -3202,11 +3222,11 @@ msgstr "மூலம் இயக்கப்படுகிறது"
 msgid "Powered by openKB"
 msgstr "openKB மூலம் இயக்கப்படுகிறது"
 
-#: kb/admin.py:111 kb/admin.py:1188
+#: kb/admin.py:111 kb/admin.py:1190
 msgid "Preferred language"
 msgstr "விருப்ப மொழி"
 
-#: kb/admin.py:265 kb/models.py:66
+#: kb/admin.py:266 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "முக்கிய விக்கி பயனர் இடைமுகத்திற்கான விருப்ப மொழி."
 
@@ -3230,23 +3250,23 @@ msgstr "முந்தைய உரிமையாளர்"
 msgid "Previous status"
 msgstr "முந்தைய நிலை"
 
-#: kb/admin.py:202 kb/models.py:433
+#: kb/admin.py:202 kb/models.py:430
 msgid "Previous status before deletion queue"
 msgstr "நீக்க வரிசைக்கு முன் இருந்த முந்தைய நிலை"
 
-#: kb/admin.py:1173
+#: kb/admin.py:1175
 msgid "Profile account type"
 msgstr "சுயவிவர கணக்கு வகை"
 
-#: kb/models.py:988
+#: kb/models.py:986
 msgid "Profile email updated"
 msgstr "சுயவிவர மின்னஞ்சல் புதுப்பிக்கப்பட்டது"
 
-#: kb/models.py:989
+#: kb/models.py:987
 msgid "Profile password changed"
 msgstr "சுயவிவர கடவுச்சொல் மாற்றப்பட்டது"
 
-#: kb/models.py:324 kb/views/services.py:452
+#: kb/models.py:324 kb/views/services.py:453
 msgid "Public article"
 msgstr "பொது கட்டுரை"
 
@@ -3306,7 +3326,7 @@ msgstr "உரிமையற்ற கட்டுரை சுத்திக�
 msgid "Ran admin action '%(action)s'"
 msgstr "நிர்வாக செயல் ‘%(action)s’ இயக்கப்பட்டது"
 
-#: kb/admin.py:2198
+#: kb/admin.py:2200
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "%(target)s மீது நிர்வாக செயல் ‘%(action)s’ இயக்கப்பட்டது"
 
@@ -3330,7 +3350,7 @@ msgstr "திட்டமிட்ட நிரந்தர நீக்கத�
 msgid "Recommended articles"
 msgstr "பரிந்துரைக்கப்பட்ட கட்டுரைகள்"
 
-#: kb/admin.py:2245
+#: kb/admin.py:2247
 msgid "Redirect"
 msgstr "திருப்பிவிடு"
 
@@ -3346,7 +3366,7 @@ msgstr "புதுப்பி"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "பக்கத்தைப் புதுப்பித்து மீண்டும் முயற்சிக்கவும். சிக்கல் தொடர்ந்தால் மீண்டும் உள்நுழையவும்."
 
-#: kb/admin.py:1217 kb/admin.py:786 kb/permissions.py:54
+#: kb/admin.py:1219 kb/admin.py:788 kb/permissions.py:54
 msgid "Regular User"
 msgstr "சாதாரண பயனர்"
 
@@ -3354,7 +3374,7 @@ msgstr "சாதாரண பயனர்"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "சாதாரண பயனர் மாற்று பொது பார்வையாளர் பங்கு. உள் பங்குகள் பொது கட்டுரை பார்வையையும் உள்ளடக்கும் கூடுதல் பங்குகள். தனிப்பயன் சேர்க்கைகளுக்காக நேரடி பயனர் அனுமதிகளைத் தொடர்ந்து தேர்வு செய்யலாம். Django குழு அனுமதிகளையும் நேரடி பயனர் அனுமதிகளையும் ஒன்றாக மதிப்பீடு செய்கிறது."
 
-#: kb/admin.py:1668
+#: kb/admin.py:1670
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "தேர்ந்தெடுக்கப்பட்ட %(count)d பயனர்(களுக்கு) சாதாரண பயனர் பங்கு ஒதுக்கப்பட்டது."
 
@@ -3378,11 +3398,11 @@ msgstr "கட்டுரையிலிருந்து படத்தை �
 msgid "Remove search history item"
 msgstr "தேடல் வரலாற்றிலிருந்து உருப்படியை அகற்று"
 
-#: kb/models.py:824
+#: kb/models.py:822
 msgid "Removed by uploader from editor"
 msgstr "பதிவேற்றியவர் எடிட்டரிலிருந்து அகற்றினார்"
 
-#: kb/admin.py:256 kb/models.py:1312
+#: kb/admin.py:257 kb/models.py:1321
 msgid "Repeat count"
 msgstr "மீளும் எண்ணிக்கை"
 
@@ -3406,19 +3426,19 @@ msgstr "கோரிக்கைக்கான நேரம் முடிந�
 msgid "Request too large"
 msgstr "கோரிக்கை மிகவும் பெரியது"
 
-#: kb/admin.py:1382 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1384 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "MFA ஐ மீட்டமை"
 
-#: kb/admin.py:1511
+#: kb/admin.py:1513
 msgid "Reset MFA for %(username)s"
 msgstr "%(username)s க்கு MFA மீட்டமை"
 
-#: kb/admin.py:1518
+#: kb/admin.py:1520
 msgid "Reset MFA for selected users"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களுக்கான MFA-வை மீட்டமை"
 
-#: kb/admin.py:1495 kb/admin.py:1534 kb/admin.py:1863
+#: kb/admin.py:1497 kb/admin.py:1536 kb/admin.py:1865
 msgid "Reset MFA for user %(username)s"
 msgstr "%(username)s பயனருக்கான MFA ஐ மீட்டமை"
 
@@ -3434,31 +3454,31 @@ msgstr "மீட்டமைக்கப்பட்ட நேரம்"
 msgid "Reset lockout now"
 msgstr "பூட்டலை இப்போது மீட்டமை"
 
-#: kb/admin.py:1398
+#: kb/admin.py:1400
 msgid "Reset password/MFA lockout"
 msgstr "கடவுச்சொல்/MFA பூட்டலை மீட்டமை"
 
-#: kb/admin.py:1465
+#: kb/admin.py:1467
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "%(username)s க்கான கடவுச்சொல்/MFA பூட்டலை மீட்டமை"
 
-#: kb/admin.py:1767
+#: kb/admin.py:1769
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "தேர்ந்தெடுக்கப்பட்ட சுயவிவரங்களுக்கான கடவுச்சொல்/MFA பூட்டலை மீட்டமை"
 
-#: kb/admin.py:1546
+#: kb/admin.py:1548
 msgid "Reset password/MFA lockout for selected users"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களுக்கான கடவுச்சொல்/MFA பூட்டலை மீட்டமை"
 
-#: kb/admin.py:1451 kb/admin.py:1566 kb/admin.py:1787
+#: kb/admin.py:1453 kb/admin.py:1568 kb/admin.py:1789
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "%(username)s பயனருக்கான கடவுச்சொல்/MFA பூட்டலை மீட்டமை"
 
-#: kb/admin.py:1847
+#: kb/admin.py:1849
 msgid "Reset selected MFA devices"
 msgstr "தேர்ந்தெடுக்கப்பட்ட MFA சாதனங்களை மீட்டமை"
 
-#: kb/admin.py:1841
+#: kb/admin.py:1843
 msgid "Reset this user's MFA"
 msgstr "இந்த பயனரின் MFA-வை மீட்டமை"
 
@@ -3466,7 +3486,7 @@ msgstr "இந்த பயனரின் MFA-வை மீட்டமை"
 msgid "Reset to original"
 msgstr "அசல் அளவிற்கு மீட்டமை"
 
-#: kb/admin.py:1383
+#: kb/admin.py:1385
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "இந்த பயனரின் அங்கீகரிப்பு செயலியை மீட்டமைத்து, புதிய QR அமைப்பை தேவைப்படுத்துகிறது. புதிய அங்கீகரிப்பு விசை தனிப்பட்டது; அது நிர்வாகிகளுக்கு காட்டப்படாது."
 
@@ -3530,7 +3550,7 @@ msgstr "ஒரே பக்கத்தில் பொதுவான மற்
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "ஒப்புதலுக்காக காத்திருக்கும் பொதுவான கட்டுரைகள் மற்றும் பொது நிலுவை புதுப்பிப்புகளை மதிப்பாய்வு செய்யவும்."
 
-#: kb/admin.py:189 kb/admin.py:2440
+#: kb/admin.py:189 kb/admin.py:2442
 msgid "Review history"
 msgstr "மதிப்பாய்வு வரலாறு"
 
@@ -3662,11 +3682,11 @@ msgstr "அனைத்தையும் தேர்ந்தெடு"
 msgid "Select all stray files"
 msgstr "அனைத்து பயன்படுத்தப்படாத கோப்புகளையும் தேர்ந்தெடு"
 
-#: kb/admin.py:904
+#: kb/admin.py:906
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "இந்தக் குழுவில் இருக்க வேண்டிய பயனர்களைத் தேர்ந்தெடுக்கவும். பயனர்களைத் தேட இடதுபுற வடிகட்டி பெட்டியைப் பயன்படுத்தி, தேர்ந்தெடுக்கப்பட்ட பயனர்களை வலப்புறம் நகர்த்தி, பின்னர் சேமிக்கவும். வலப்புறத்திலிருந்து பயனரை அகற்றுவது இந்தக் குழு உறுப்பினர்தன்மையை மட்டுமே அகற்றும்."
 
-#: kb/admin.py:2251 kb/views/errors.py:65
+#: kb/admin.py:2253 kb/views/errors.py:65
 msgid "Server error"
 msgstr "சேவையகப் பிழை"
 
@@ -3674,31 +3694,31 @@ msgstr "சேவையகப் பிழை"
 msgid "Service unavailable"
 msgstr "சேவை கிடைக்கவில்லை"
 
-#: kb/admin.py:1644
+#: kb/admin.py:1646
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "%(username)s பயனரின் பங்கை %(role)s (%(status)s) என அமைக்கவும்"
 
-#: kb/admin.py:1701
+#: kb/admin.py:1703
 msgid "Set selected users as Admin Users"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை நிர்வாக பயனர்களாக அமைக்கவும்"
 
-#: kb/admin.py:1681
+#: kb/admin.py:1683
 msgid "Set selected users as Article Approver"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை கட்டுரை அங்கீகரிப்பாளர்களாக அமைக்கவும்"
 
-#: kb/admin.py:1691
+#: kb/admin.py:1693
 msgid "Set selected users as Article Manager"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை கட்டுரை மேலாளர்களாக அமைக்கவும்"
 
-#: kb/admin.py:1671
+#: kb/admin.py:1673
 msgid "Set selected users as Article Writer"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை கட்டுரை எழுத்தாளர்களாக அமைக்கவும்"
 
-#: kb/admin.py:1577
+#: kb/admin.py:1579
 msgid "Set selected users as Disabled User"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை முடக்கப்பட்ட பயனர்களாக அமைக்கவும்"
 
-#: kb/admin.py:1661
+#: kb/admin.py:1663
 msgid "Set selected users as Regular User"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர்களை சாதாரண பயனர்களாக அமைக்கவும்"
 
@@ -3706,7 +3726,7 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட பயனர�
 msgid "Set size"
 msgstr "அளவை அமை"
 
-#: kb/admin.py:774
+#: kb/admin.py:776
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "குழுக்கள் பிரிவில் இருந்து பயனரின் வழக்கமான பங்கை அமைக்கவும். அறிவிப்புகள் போன்றவற்றுக்கு தனிப்பயன் பங்கு அல்லாத குழுக்களை பின்னர் பயன்படுத்தலாம்."
 
@@ -3718,11 +3738,11 @@ msgstr "MFA அமைக்கவும்"
 msgid "Set up MFA before accessing the admin site."
 msgstr "நிர்வாகத் தளத்தை அணுகும் முன் MFA ஐ அமைக்கவும்."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:478
+#: kb/views/auth.py:392 kb/views/mfa.py:611
 msgid "Set up MFA before changing sensitive account details."
 msgstr "முக்கியமான கணக்கு விவரங்களை மாற்றுவதற்கு முன் MFA அமைக்கவும்."
 
-#: kb/views/services.py:765
+#: kb/views/services.py:766
 msgid "Set up MFA before deleting a published article."
 msgstr "வெளியிடப்பட்ட கட்டுரையை நீக்கும் முன் MFA ஐ அமைக்கவும்."
 
@@ -3730,7 +3750,7 @@ msgstr "வெளியிடப்பட்ட கட்டுரையை ந�
 msgid "Set up authenticator"
 msgstr "அங்கீகரிப்பு செயலியை அமை"
 
-#: kb/admin.py:1369 kb/mfa.py:136
+#: kb/admin.py:1371 kb/mfa.py:244
 msgid "Setup pending"
 msgstr "அமைப்பு நிலுவையில்"
 
@@ -3786,11 +3806,11 @@ msgstr "உங்கள் உள்ளூர் அறிவு களஞ்ச
 msgid "Sign out and go to sign in"
 msgstr "வெளியேறி உள்நுழைவுக்குச் செல்லவும்"
 
-#: kb/admin.py:100 kb/admin.py:252 kb/models.py:1262
+#: kb/admin.py:100 kb/admin.py:253 kb/models.py:1271
 msgid "Site setting"
 msgstr "தள அமைப்பு"
 
-#: kb/admin.py:100 kb/models.py:1263 kb/models.py:1266
+#: kb/admin.py:100 kb/models.py:1272 kb/models.py:1275
 msgid "Site settings"
 msgstr "தள அமைப்புகள்"
 
@@ -3798,7 +3818,7 @@ msgstr "தள அமைப்புகள்"
 msgid "Size"
 msgstr "அளவு"
 
-#: kb/admin.py:2911
+#: kb/admin.py:2942
 msgid "Size (KB)"
 msgstr "அளவு (KB)"
 
@@ -3822,7 +3842,7 @@ msgstr "இறக்குமதி zip கோப்புக்குள் உ
 msgid "Skipped invalid path: %(filename)s"
 msgstr "தவறான பாதை தவிர்க்கப்பட்டது: %(filename)s"
 
-#: kb/models.py:1015
+#: kb/models.py:1013
 msgid "Snapshot fields keep the audit trail after an article is deleted. This relation intentionally does not enforce a database constraint because audit logs are append-only."
 msgstr "கட்டுரை நீக்கப்பட்ட பின்னரும் ஸ்னாப்ஷாட் புலங்கள் தணிக்கைத் தடத்தை வைத்திருக்கும். தணிக்கை பதிவுகள் சேர்க்கை மட்டும் என்பதால், இந்த உறவு திட்டமிட்டு தரவுத்தள கட்டுப்பாட்டை அமல்படுத்தாது."
 
@@ -3862,15 +3882,15 @@ msgstr "மூலம்"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "பிரிக்கப்பட்ட ஏற்றுமதி தொகுப்பில் இறக்குமதி செய்யக்கூடிய பகுதி zip கோப்புகள் எதுவும் இல்லை."
 
-#: kb/models.py:1327
+#: kb/models.py:1336
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "நிலை %(order)s: %(failures)s தோல்விகள் -> %(block)s விநாடிகள், மீண்டும் %(repeat)s"
 
-#: kb/admin.py:2740
+#: kb/admin.py:2760
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "நிலை %(order)s: %(failures)s தோல்விகள் -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:253 kb/models.py:1297
+#: kb/admin.py:254 kb/models.py:1306
 msgid "Stage order"
 msgstr "நிலை வரிசை"
 
@@ -3878,7 +3898,7 @@ msgstr "நிலை வரிசை"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "பொருந்தும் ஏற்கனவே உள்ள முக்கியச் சொற்களைக் காண தலைப்பு அல்லது கட்டுரை உள்ளடக்கத்தைத் தட்டச்சு செய்யத் தொடங்கவும்."
 
-#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
+#: kb/admin.py:185 kb/admin.py:2258 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "நிலை"
 
@@ -3886,11 +3906,11 @@ msgstr "நிலை"
 msgid "Status code"
 msgstr "நிலை குறியீடு"
 
-#: kb/admin.py:2664
+#: kb/admin.py:2667
 msgid "Stray upload cleanup"
 msgstr "பயன்படாத பதிவேற்றங்களை சுத்தம் செய்தல்"
 
-#: kb/admin.py:236 kb/models.py:1139
+#: kb/admin.py:236 kb/models.py:1137
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "பயன்படாத பதிவேற்ற சுத்தம் செய்யும் குறைந்தபட்ச வயது (நிமிடங்கள்)"
 
@@ -3918,7 +3938,7 @@ msgstr "சமர்ப்பித்தவர்"
 msgid "Success"
 msgstr "வெற்றி"
 
-#: kb/admin.py:2775
+#: kb/admin.py:2795
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "வெற்றிகரமான கடவுச்சொல் சரிபார்ப்பு கடவுச்சொல் பூட்டல் வரலாற்றை மீட்டமைக்கிறது. வெற்றிகரமான MFA சரிபார்ப்பு MFA பூட்டல் வரலாற்றை மீட்டமைக்கிறது. நிர்வாகிகள் பயனர் நிர்வாகப் பக்கத்தில் இருந்து பயனரின் எண்ணிக்கைகளை மீட்டமைக்கலாம்."
 
@@ -3926,11 +3946,11 @@ msgstr "வெற்றிகரமான கடவுச்சொல் சர�
 msgid "Suggest article"
 msgstr "கட்டுரையை பரிந்துரை"
 
-#: kb/admin.py:98 kb/models.py:479
+#: kb/admin.py:98 kb/models.py:476
 msgid "Suggested Article"
 msgstr "பரிந்துரைக்கப்பட்ட கட்டுரை"
 
-#: kb/admin.py:98 kb/models.py:480
+#: kb/admin.py:98 kb/models.py:477
 msgid "Suggested Articles"
 msgstr "பரிந்துரைக்கப்பட்ட கட்டுரைகள்"
 
@@ -3946,7 +3966,7 @@ msgstr "பரிந்துரைக்கப்பட்ட முக்க�
 msgid "Supported zip format"
 msgstr "ஆதரிக்கப்படும் zip வடிவம்"
 
-#: kb/admin.py:2236
+#: kb/admin.py:2238
 msgid "Target"
 msgstr "இலக்கு"
 
@@ -3954,7 +3974,7 @@ msgstr "இலக்கு"
 msgid "Target app"
 msgstr "இலக்கு பயன்பாடு"
 
-#: kb/admin.py:144 kb/admin.py:2213
+#: kb/admin.py:144 kb/admin.py:2215
 msgid "Target model"
 msgstr "இலக்கு மாதிரி"
 
@@ -3970,7 +3990,7 @@ msgstr "இலக்கு பொருள் ID"
 msgid "Thank you. Your vote has been saved."
 msgstr "நன்றி. உங்கள் வாக்கு சேமிக்கப்பட்டது."
 
-#: kb/admin.py:1240
+#: kb/admin.py:1242
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "செயலில் உள்ளது தேர்வுப் பெட்டி கணக்கு முற்றிலும் உள்நுழையலாமா என்பதை கட்டுப்படுத்துகிறது. சாதாரண பயனர் மாற்று பார்வையாளர் பங்கு மட்டுமே; எழுத்தாளர், அங்கீகரிப்பாளர், மேலாளர் அல்லது உயர்ந்த உள் பங்குகள் ஒதுக்கப்படும்போது தானாக அகற்றப்படும். உள் பயனர் கூடுதல் பார்வையாளர் பங்கு; அதை சாதாரண பயனருடன் இணைக்கலாம். அறிவிப்புகள் அல்லது துறை குழுவாக்கம் போன்றவற்றுக்கு தனிப்பயன் பங்கு அல்லாத குழுக்களை பின்னரும் பயன்படுத்தலாம்."
 
@@ -3990,7 +4010,7 @@ msgstr "பயன்பாடு பதிலளிக்க அதிக நே
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "கட்டுரைகளை பாதுகாப்பாக ஒதுக்க முடியவில்லை. எந்த ஒதுக்கீடும் பயன்படுத்தப்படவில்லை. பதிவுகளைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்."
 
-#: kb/admin.py:833
+#: kb/admin.py:835
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "கீழுள்ள தேர்வுப் பெட்டிகள் கட்டுரை அணுகலுக்கான சிறப்பு ஒவ்வொரு பயனர் விதிவிலக்குகள் மட்டுமே. புதிய குழுவை உருவாக்காமல் ஒருவருக்கு அவரது குழுவை விடச் சிறிது கூடுதல் கட்டுரை அணுகல் தேவைப்படும் போது அவை பயனுள்ளதாக இருக்கும். Django நிர்வாக அணுகல் நிர்வாக பயனர்கள் குழு/சூப்பர் பயனர் நிலை மூலமாக மட்டுமே வழங்கப்படும்."
 
@@ -4050,7 +4070,7 @@ msgstr "கோரிக்கையைச் சரிபார்க்க ம�
 msgid "The reset is recorded in the authentication activity log."
 msgstr "மீட்டமைப்பு அங்கீகார செயல்பாட்டு பதிவில் பதிவு செய்யப்பட்டது."
 
-#: kb/admin.py:2768
+#: kb/admin.py:2788
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "கடவுச்சொல் உள்நுழைவு தோல்விகளுக்கும் MFA குறியீட்டு தோல்விகளுக்கும் அதே படிப்படியான கொள்கை பயன்படுத்தப்படுகிறது; ஆனால் கடவுச்சொல் மற்றும் MFA எண்ணிக்கைகள் ஒவ்வொரு பயனருக்கும் தனித்தனியாக கண்காணிக்கப்படுகின்றன."
 
@@ -4086,7 +4106,7 @@ msgstr "சேவையகத்தால் உங்கள் கோரிக�
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "சமர்ப்பிக்கப்பட்ட கோப்பு அல்லது கோரிக்கை அனுமதிக்கப்பட்ட வரம்பை விட பெரியது."
 
-#: kb/views/services.py:1230
+#: kb/views/services.py:1231
 msgid "The uploaded file is not a valid image."
 msgstr "பதிவேற்றப்பட்ட கோப்பு சரியான படம் அல்ல."
 
@@ -4102,7 +4122,7 @@ msgstr "கட்டுரை அல்லது புதுப்பிப்�
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "இந்த கோப்புகள் பயன்படுத்தப்படாததாகத் தெரிகின்றன. பதிவேற்றியவர் விவரங்களைச் சரிபார்த்து, இனி தேவையில்லாத கோப்புகளை மட்டும் நீக்கவும்."
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:484
+#: kb/views/mfa.py:424 kb/views/mfa.py:617
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "இந்த MFA சாதனத்தின் இரகசியத்தைப் படிக்க முடியாததால் அதைச் சரிபார்க்க முடியாது. உங்கள் MFA ஐ மீட்டமைக்க நிர்வாகியிடம் கேட்கவும் அல்லது நிர்வாகிகள் பூட்டப்பட்டிருந்தால் சேவையக கட்டளை வரியிலிருந்து மீட்டமைக்கவும்."
 
@@ -4110,15 +4130,15 @@ msgstr "இந்த MFA சாதனத்தின் இரகசியத்
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "இந்த MFA சாதனத்தின் இரகசியத்தைப் படிக்க முடியாததால் அதைச் சரிபார்க்க முடியாது. இந்தக் கணக்கிற்கான MFA ஐ மீட்டமைக்க மற்றொரு நிர்வாகியிடம் கேட்கவும்."
 
-#: kb/views/services.py:2467
+#: kb/views/services.py:2468
 msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
 msgstr "இந்த SharePoint அல்லது OneDrive இணைப்பு, உள்நுழையாமல் நேரடியாக இயக்கக்கூடிய வீடியோவை வழங்கவில்லை. உள்நுழையாமல் பார்க்கக்கூடிய நேரடி வீடியோ இணைப்பைப் பயன்படுத்தவும்."
 
-#: kb/views/services.py:2472
+#: kb/views/services.py:2473
 msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
 msgstr "இந்த SharePoint அல்லது OneDrive வீடியோவை உள்நுழையாமல் அணுக முடியாது. அதன் பகிர்வு அனுமதிகளைச் சரிபார்த்து, உள்நுழையாமல் பார்க்கக்கூடிய இணைப்பைப் பயன்படுத்தவும்."
 
-#: kb/views/services.py:2462
+#: kb/views/services.py:2463
 msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
 msgstr "இந்த SharePoint அல்லது OneDrive வீடியோவுக்கு வெளிப்புற உள்நுழைவு தேவைப்படுவதால் அதை உட்பொதிக்க முடியாது. உள்நுழையாமல் பார்க்கக்கூடிய வீடியோ இணைப்பைப் பயன்படுத்தவும்."
 
@@ -4130,11 +4150,11 @@ msgstr "இந்தச் செயலை மாற்ற முடியாத
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "இந்தக் கட்டுரைக்கு நிலுவையிலுள்ள புதுப்பிப்பும் உள்ளது; இருப்பினும் இது வெளியிடப்பட்ட கட்டுரையாகவே கருதப்படுகிறது."
 
-#: kb/views/services.py:1330
+#: kb/views/services.py:1331
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "இந்த கட்டுரையில் %(count)s படங்கள் உள்ளன, ஆனால் அதிகபட்சமாக %(limit)s படங்களே அனுமதிக்கப்படுகின்றன. சேமிப்பதற்கு முன் சில படங்களை அகற்றவும்."
 
-#: kb/views/services.py:1329
+#: kb/views/services.py:1330
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "இந்த கட்டுரை %(limit)s படங்களுக்கான பதிவேற்ற வரம்பை எட்டியுள்ளது."
 
@@ -4162,11 +4182,11 @@ msgstr "இந்த படம் ஏற்கனவே இந்த வரை�
 msgid "This image is not removable from this editing session."
 msgstr "இந்தத் திருத்த அமர்விலிருந்து இந்தப் படத்தை அகற்ற முடியாது."
 
-#: kb/admin.py:847
+#: kb/admin.py:849
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "Django குழு அனுமதிகள், நேரடி பயனர் அனுமதிகள் மற்றும் சூப்பர் பயனர் நிலையை இணைத்த பின் கிடைக்கும் இறுதி முடிவை இந்த வரி காட்டுகிறது."
 
-#: kb/admin.py:840
+#: kb/admin.py:842
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "இது நேரடி பயனர் அனுமதியை மட்டுமே அகற்றும். பயனரின் குழு அதே அனுமதியை இன்னும் வழங்கினால், செயல்பாட்டு அனுமதி தொடரும்."
 
@@ -4198,7 +4218,7 @@ msgstr "பிடிக்கவில்லை"
 msgid "Thumbs up"
 msgstr "பிடித்தது"
 
-#: kb/admin.py:2355 kb/admin.py:758
+#: kb/admin.py:2357 kb/admin.py:760
 msgid "Timestamps"
 msgstr "நேர முத்திரைகள்"
 
@@ -4214,7 +4234,7 @@ msgstr "வழிசெலுத்தலை மாற்று"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "OpenKB AI கேள்விகள் அதிகமாக உள்ளன. மீண்டும் முயற்சிப்பதற்கு முன் காத்திருக்கவும்."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:555
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "தோல்வியடைந்த உள்நுழைவு முயற்சிகள் அதிகமாக உள்ளன. %(duration)s இல் மீண்டும் முயற்சிக்கவும்."
 
@@ -4222,7 +4242,7 @@ msgstr "தோல்வியடைந்த உள்நுழைவு மு�
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "அதிகமான படப் பதிவேற்ற முயற்சிகள் செய்யப்பட்டுள்ளன. சிறிது நேரம் காத்திருந்து மீண்டும் முயற்சிக்கவும்."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:790
+#: kb/views/auth.py:416 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/mfa.py:460 kb/views/mfa.py:501 kb/views/mfa.py:645 kb/views/services.py:791
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "தவறான MFA குறியீடுகள் அதிகமாக உள்ளன. %(duration)s இல் மீண்டும் முயற்சிக்கவும்."
 
@@ -4286,7 +4306,7 @@ msgstr "அனைத்து தேர்வையும் நீக்கு"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "பயனர் முக்கிய விக்கி தளத்தை அணுகுவதைத் தடுக்க இதன் குறியை நீக்கவும்."
 
-#: kb/admin.py:839
+#: kb/admin.py:841
 msgid "Unticking a checkbox"
 msgstr "தேர்வுப் பெட்டியின் குறியை நீக்குதல்"
 
@@ -4330,7 +4350,7 @@ msgstr "புதுப்பிப்பு நிலை"
 msgid "Update submitted at"
 msgstr "புதுப்பிப்பு சமர்ப்பிக்கப்பட்ட நேரம்"
 
-#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:249
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:250
 msgid "Updated at"
 msgstr "புதுப்பிக்கப்பட்ட நேரம்"
 
@@ -4362,7 +4382,7 @@ msgstr "பதிவேற்றியவர்"
 msgid "Uploader account type snapshot"
 msgstr "பதிவேற்றுபவர் கணக்கு வகை பதிவு நகல்"
 
-#: kb/admin.py:2906
+#: kb/admin.py:2937
 msgid "Uploader display"
 msgstr "பதிவேற்றுபவர் காட்சி பெயர்"
 
@@ -4374,23 +4394,23 @@ msgstr "பதிவேற்றுபவர் மின்னஞ்சல் �
 msgid "Uploader username snapshot"
 msgstr "பதிவேற்றுபவர் பயனர்பெயர் பதிவு நகல்"
 
-#: kb/admin.py:736
+#: kb/admin.py:738
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "குழுக்களை பயனரின் நிலையான பொது-கட்டுரை பங்காகப் பயன்படுத்தவும். இந்த குறிப்பிட்ட பயனருக்கு அவரது குழுவுக்கு வெளியே கூடுதல் பொது-கட்டுரை அனுமதிகள் தேவைப்படும்போது மட்டுமே இந்தப் பெட்டிகளைத் தேர்வு செய்யவும். முடக்கப்பட்ட பயனர் குழு இந்த நேரடி அனுமதி கூடுதல்களை மீறுகிறது."
 
-#: kb/admin.py:1056
+#: kb/admin.py:1058
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "இந்தப் பங்கிலிருந்து பயனர்களைச் சேர்க்க அல்லது அகற்ற கீழுள்ள குழு உறுப்பினர் தேர்வியைப் பயன்படுத்தவும். ஒருமுறை மட்டும் தேவைப்படும் விதிவிலக்குகளுக்கு, குறிப்பிட்ட பயனரைத் திருத்தி நேரடி அறிவு களஞ்சிய அனுமதி தேர்வுப் பெட்டிகளைத் தேர்வு செய்யவும். புதிய நிர்வாகமல்லாத பயனர்கள் கணக்கு உருவாக்கப்படும்போது தானாகவே சாதாரண பயனர் குழுவில் சேர்க்கப்படுவார்கள்."
 
-#: kb/admin.py:2693
+#: kb/admin.py:2712
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "படிப்படியான கடவுச்சொல்/MFA பூட்டல்களை கட்டுப்படுத்த கீழுள்ள உட்பொதி வரிசைகளைப் பயன்படுத்தவும். கால அளவுகளை விநாடிகளில் உள்ளிடவும்; நிர்வாகப் பக்கம் வாசிக்கத்தக்க நிமிடங்கள்/மணிநேரங்கள்/நாட்கள் மாற்றத்தையும் காட்டும். repeat_count=0 என்பது நிலை முடிவில்லாமல் மீண்டும் செய்யப்படும் என்பதைக் குறிக்கும்; இது வழக்கமாக இறுதி வரிசையில் பயன்படுத்தப்பட வேண்டும்."
 
-#: kb/admin.py:1234
+#: kb/admin.py:1236
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "இந்தக் குழுக்களை முதன்மை அணுகல் மாதிரியாகப் பயன்படுத்தவும். முடக்கப்பட்ட பயனர் எப்போதும் அதிகபட்ச முன்னுரிமை பெறுவார்."
 
-#: kb/admin.py:1294
+#: kb/admin.py:1296
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "தவறான கடவுச்சொல் அல்லது MFA முயற்சிகள் மீண்டும் மீண்டும் நிகழ்வதால் பயனர் தற்காலிகமாகத் தடுக்கப்பட்டால் இதைப் பயன்படுத்தவும். இந்தப் பயனருக்கான கடவுச்சொல் மற்றும் MFA பூட்டல் எண்ணிக்கைகளை மட்டுமே இது அழிக்கும்."
 
@@ -4398,11 +4418,11 @@ msgstr "தவறான கடவுச்சொல் அல்லது MFA �
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "பூட்டு நீக்கக் கோரிக்கை சட்டபூர்வமானது என்பதை உறுதிப்படுத்திய பின் மட்டுமே இதைப் பயன்படுத்தவும்."
 
-#: kb/admin.py:991
+#: kb/admin.py:993
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "இந்தக் குழுவிலிருந்து பயனர்களைச் சேர்க்க அல்லது அகற்ற தேடக்கூடிய இடது/வலது பட்டியலைப் பயன்படுத்தவும். வலப்புறத்தில் உள்ள பயனர்கள் இந்தக் குழுவின் உறுப்பினர்கள். இடப்புறத்தில் உள்ள பயனர்கள் கிடைக்கக்கூடிய பயனர்கள்."
 
-#: kb/admin.py:1284
+#: kb/admin.py:1286
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "பயனரின் அங்கீகரிப்பு செயலி அமைப்பை மீட்டமைக்க இந்த பகுதியைப் பயன்படுத்தவும். மீட்டமைப்பு புதிய தனிப்பட்ட அங்கீகரிப்பு ரகசியத்தை உருவாக்கி, அடுத்த உள்நுழைவில் பயனர் புதிய QR குறியீட்டை ஸ்கேன் செய்ய கட்டாயப்படுத்தும்."
 
@@ -4418,19 +4438,19 @@ msgstr "பயனர் MFA சாதனம்"
 msgid "User MFA devices"
 msgstr "பயனர் MFA சாதனங்கள்"
 
-#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:1998
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2000
 msgid "User agent"
 msgstr "பயனர் முகவர்"
 
-#: kb/admin.py:1427 kb/admin.py:1475
+#: kb/admin.py:1429 kb/admin.py:1477
 msgid "User does not exist."
 msgstr "பயனர் இல்லை."
 
-#: kb/admin.py:241 kb/models.py:1191
+#: kb/admin.py:241 kb/models.py:1189
 msgid "User session timeout (hours)"
 msgstr "பயனர் அமர்வு நேரக்கெடு (மணி நேரம்)"
 
-#: kb/admin.py:2835
+#: kb/admin.py:2855
 msgid "User session timeout readable"
 msgstr "படிக்கக்கூடிய பயனர் அமர்வு நேரக்கெடு"
 
@@ -4442,15 +4462,15 @@ msgstr "பயனர் பெயர்"
 msgid "Username changes are managed by administrators."
 msgstr "பயனர்பெயர் மாற்றங்கள் நிர்வாகிகளால் நிர்வகிக்கப்படுகின்றன."
 
-#: kb/admin.py:1075
+#: kb/admin.py:1077
 msgid "Users"
 msgstr "பயனர்கள்"
 
-#: kb/admin.py:902 kb/admin.py:972
+#: kb/admin.py:904 kb/admin.py:974
 msgid "Users in this group"
 msgstr "இந்தக் குழுவில் உள்ள பயனர்கள்"
 
-#: website/templates/mfa_setup.html:64 website/templates/mfa_verify.html:50
+#: website/templates/mfa_setup.html:67 website/templates/mfa_verify.html:51
 msgid "Verify"
 msgstr "சரிபார்க்கவும்"
 
@@ -4494,7 +4514,7 @@ msgstr "தெரிவுநிலை"
 msgid "Visibility can be changed only before the article is published."
 msgstr "கட்டுரை வெளியிடப்படுவதற்கு முன் மட்டுமே தெரிவுநிலையை மாற்ற முடியும்."
 
-#: kb/admin.py:215 kb/admin.py:2569
+#: kb/admin.py:215 kb/admin.py:2571
 msgid "Vote"
 msgstr "வாக்கு"
 
@@ -4506,11 +4526,11 @@ msgstr "எச்சரிக்கைகள் / பிழைகள்"
 msgid "Was this article helpful?"
 msgstr "இந்த கட்டுரை உதவியாக இருந்ததா?"
 
-#: kb/views/mfa.py:353
+#: kb/views/mfa.py:478
 msgid "Welcome back, %(name)s."
 msgstr "மீண்டும் வரவேற்கிறோம், %(name)s."
 
-#: kb/views/mfa.py:359
+#: kb/views/mfa.py:484
 msgid "Welcome back."
 msgstr "மீண்டும் வரவேற்கிறோம்."
 
@@ -4570,11 +4590,11 @@ msgstr "கட்டுரைகளைச் சேர்க்க உங்க�
 msgid "You do not have permission to add internal articles."
 msgstr "உள் கட்டுரைகளைச் சேர்க்க உங்களுக்கு அனுமதி இல்லை."
 
-#: kb/admin.py:2363
+#: kb/admin.py:2365
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "Django நிர்வாகத்திலிருந்து கட்டுரைகளை அங்கீகரிக்க உங்களுக்கு அனுமதி இல்லை."
 
-#: kb/admin.py:1580
+#: kb/admin.py:1582
 msgid "You do not have permission to assign Disabled User."
 msgstr "முடக்கப்பட்ட பயனரை ஒதுக்க உங்களுக்கு அனுமதி இல்லை."
 
@@ -4586,15 +4606,15 @@ msgstr "கட்டுரைகளை நிர்வகிக்க உங்�
 msgid "You do not have permission to manage internal articles."
 msgstr "உள் கட்டுரைகளை நிர்வகிக்க உங்களுக்கு அனுமதி இல்லை."
 
-#: kb/admin.py:1623
+#: kb/admin.py:1625
 msgid "You do not have permission to modify users."
 msgstr "பயனர்களை மாற்ற உங்களுக்கு அனுமதி இல்லை."
 
-#: kb/admin.py:491
+#: kb/admin.py:493
 msgid "You do not have permission to perform this admin reset."
 msgstr "இந்த நிர்வாக மீட்டமைப்பைச் செய்ய உங்களுக்கு அனுமதி இல்லை."
 
-#: kb/admin.py:2397
+#: kb/admin.py:2399
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "Django நிர்வாகத்திலிருந்து கட்டுரைகளை நிராகரிக்க உங்களுக்கு அனுமதி இல்லை."
 
@@ -4626,7 +4646,7 @@ msgstr "மாற்றங்கள் பயன்படுத்தப்ப�
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "மாற்றங்கள் பயன்படுத்தப்படுவதற்கு முன் உறுதிப்படுத்துமாறு கேட்கப்படும். தேர்ந்தெடுக்கப்பட்ட கட்டுரைகள் உடனடியாக நிரந்தரமாக நீக்கப்படும்."
 
-#: kb/views/mfa.py:594
+#: kb/views/mfa.py:727
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "உங்கள் MFA மீட்டமைக்கப்பட்டது. அறிவு களஞ்சியத்தைத் தொடர்ந்து பயன்படுத்த அங்கீகரிப்பு செயலி அமைப்பை இப்போது முடிக்கவும்."
 
@@ -4638,7 +4658,7 @@ msgstr "உங்கள் கணக்கு தற்போது முடக
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "செயலற்ற நிலையால் உங்கள் நிர்வாக அமர்வு காலாவதியானது. நிர்வாகத் தளத்திற்குள் மீண்டும் நுழைய MFA ஐ மீண்டும் சரிபார்க்கவும்."
 
-#: kb/admin.py:1617
+#: kb/admin.py:1619
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "உங்கள் சொந்தக் கணக்கிற்கு முடக்கப்பட்ட பயனர் பங்கு ஒதுக்கப்பட்டது. அடுத்த கோரிக்கையில் நீங்கள் கணக்கு முடக்கப்பட்ட பக்கத்திற்குத் திருப்பிவிடப்படுவீர்கள்."
 
@@ -4646,7 +4666,7 @@ msgstr "உங்கள் சொந்தக் கணக்கிற்கு 
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "உங்கள் அமர்வு காலாவதியாகிவிட்டது. படத்தைப் பதிவேற்றுவதற்கு முன் மீண்டும் உள்நுழையவும்."
 
-#: kb/middleware.py:271
+#: kb/middleware.py:272
 msgid "Your session has expired. Please sign in again."
 msgstr "உங்கள் அமர்வு காலாவதியாகிவிட்டது. மீண்டும் உள்நுழையவும்."
 
@@ -4670,7 +4690,7 @@ msgstr "நிர்வாகப் பகுதி"
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
 msgstr "மேலும் குறிப்பிடப்பட்ட அனைத்து பதிவேற்ற கோப்புகளும். இறக்குமதிக்குப் பிறகு தரவுத்தளமும் OpenKB கோப்புகளும் ஒத்திசைவில் இருக்க நிலுவை புதுப்பிப்பு தரவும் சேர்க்கப்பட்டுள்ளது."
 
-#: kb/models.py:1070
+#: kb/models.py:1068
 msgid "anonymous"
 msgstr "பெயரில்லா"
 
@@ -4690,7 +4710,7 @@ msgstr "கட்டுரை/புதுப்பிப்பு"
 msgid "confirmed"
 msgstr "உறுதிப்படுத்தப்பட்டது"
 
-#: kb/models.py:669
+#: kb/models.py:666
 msgid "deleted-user"
 msgstr "நீக்கப்பட்ட-பயனர்"
 
@@ -4698,11 +4718,11 @@ msgstr "நீக்கப்பட்ட-பயனர்"
 msgid "denied"
 msgstr "மறுக்கப்பட்டது"
 
-#: kb/admin.py:2738
+#: kb/admin.py:2758
 msgid "disabled"
 msgstr "முடக்கப்பட்டது"
 
-#: kb/admin.py:2738
+#: kb/admin.py:2758
 msgid "enabled"
 msgstr "இயக்கப்பட்டது"
 
@@ -4710,7 +4730,7 @@ msgstr "இயக்கப்பட்டது"
 msgid "failed"
 msgstr "தோல்வியடைந்தது"
 
-#: kb/models.py:1326
+#: kb/models.py:1335
 msgid "forever"
 msgstr "என்றென்றும்"
 
@@ -4770,11 +4790,11 @@ msgstr "திருப்பிவிடப்பட்டது"
 msgid "removed %(items)s"
 msgstr "%(items)s அகற்றப்பட்டது"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2757
 msgid "repeat %(count)s time(s)"
 msgstr "%(count)s முறை மீண்டும் செய்யவும்"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2757
 msgid "repeat forever"
 msgstr "என்றென்றும் மீண்டும் செய்யவும்"
 
@@ -4810,14 +4830,14 @@ msgstr "வெற்றிகரமானது"
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "எந்த கட்டுரை அல்லது wiki Markdown கோப்பாலும் இனி குறிப்பிடப்படாதவை."
 
-#: kb/models.py:1129
+#: kb/models.py:1127
 msgid "unknown admin"
 msgstr "தெரியாத நிர்வாகி"
 
-#: kb/models.py:878
+#: kb/models.py:876
 msgid "unknown user"
 msgstr "தெரியாத பயனர்"
 
-#: kb/admin.py:903
+#: kb/admin.py:905
 msgid "users"
 msgstr "பயனர்கள்"

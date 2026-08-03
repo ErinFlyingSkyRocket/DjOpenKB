@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: kb/admin.py:1902
+#: kb/admin.py:1904
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "%(count)d MFA cihazı kurulum bekliyor olarak işaretlendi."
 
@@ -26,13 +26,13 @@ msgstr "%(count)s makale"
 msgid "%(count)s articles total."
 msgstr "Toplam %(count)s makale."
 
-#: kb/admin.py:306
+#: kb/admin.py:308
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s gün"
 msgstr[1] "%(count)s gün"
 
-#: kb/admin.py:310
+#: kb/admin.py:312
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s saat"
@@ -42,7 +42,7 @@ msgstr[1] "%(count)s saat"
 msgid "%(count)s matching articles found."
 msgstr "%(count)s eşleşen makale bulundu."
 
-#: kb/admin.py:314 kb/admin.py:317
+#: kb/admin.py:316 kb/admin.py:319
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s dakika"
@@ -52,7 +52,7 @@ msgstr[1] "%(count)s dakika"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "Makale başlığı ve anahtar kelimeler eşleştirilerek %(count)s sonuç bulundu."
 
-#: kb/admin.py:302 kb/admin.py:318 kb/admin.py:331
+#: kb/admin.py:304 kb/admin.py:320 kb/admin.py:333
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s saniye"
@@ -62,15 +62,15 @@ msgstr[1] "%(count)s saniye"
 msgid "%(count)s total"
 msgstr "Toplam %(count)s"
 
-#: kb/admin.py:2846
+#: kb/admin.py:2877
 msgid "%(days)s day(s)"
 msgstr "%(days)s gün"
 
-#: kb/models.py:879
+#: kb/models.py:877
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s, %(uploader)s tarafından yüklendi"
 
-#: kb/admin.py:2833
+#: kb/admin.py:2853
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s saat"
 
@@ -98,7 +98,7 @@ msgstr "%(prefix)s: %(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1085
+#: kb/admin.py:1087
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, +%(extra)d daha"
 
@@ -110,7 +110,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "toplam %(size)s KB"
 
-#: kb/admin.py:1102
+#: kb/admin.py:1104
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, +%(extra)d daha"
 
@@ -132,7 +132,7 @@ msgstr ", +%(count)d daha"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: \"%(query)s\" İÇİN ARAMA SONUÇLARI :::"
 
-#: kb/admin.py:1842
+#: kb/admin.py:1844
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "Sıfırlama yeni bir özel kimlik doğrulayıcı anahtarı oluşturur ve kurulumu yeniden zorunlu kılar."
 
@@ -140,11 +140,11 @@ msgstr "Sıfırlama yeni bir özel kimlik doğrulayıcı anahtarı oluşturur ve
 msgid "Access denied"
 msgstr "Erişim reddedildi"
 
-#: kb/admin.py:1351 kb/admin.py:1765
+#: kb/admin.py:1353 kb/admin.py:1767
 msgid "Account Status"
 msgstr "Hesap Durumu"
 
-#: kb/admin.py:108 kb/admin.py:1832
+#: kb/admin.py:108 kb/admin.py:1834
 msgid "Account Type"
 msgstr "Hesap türü"
 
@@ -156,7 +156,7 @@ msgstr "Hesap şu anda devre dışı"
 msgid "Account disabled"
 msgstr "Hesap devre dışı"
 
-#: kb/admin.py:1183
+#: kb/admin.py:1185
 msgid "Account status"
 msgstr "Hesap durumu"
 
@@ -168,7 +168,7 @@ msgstr "Hesap özeti"
 msgid "Account type"
 msgstr "Hesap türü"
 
-#: kb/admin.py:2203
+#: kb/admin.py:2205
 msgid "Action"
 msgstr "İşlem"
 
@@ -180,11 +180,11 @@ msgstr "İşlemler"
 msgid "Active Directory user"
 msgstr "Active Directory kullanıcısı"
 
-#: kb/admin.py:102 kb/models.py:1059
+#: kb/admin.py:102 kb/models.py:1057
 msgid "Activity log"
 msgstr "Etkinlik günlüğü"
 
-#: kb/admin.py:102 kb/models.py:1060
+#: kb/admin.py:102 kb/models.py:1058
 msgid "Activity logs"
 msgstr "Etkinlik günlükleri"
 
@@ -192,51 +192,51 @@ msgstr "Etkinlik günlükleri"
 msgid "Add Article"
 msgstr "Makale Ekle"
 
-#: kb/admin.py:1222
+#: kb/admin.py:1224
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "Eklenti rolü. Kendi iç makalelerini oluşturabilir/düzenleyebilir ve herkese açık/genel makaleleri görüntüleyebilir."
 
-#: kb/admin.py:1224
+#: kb/admin.py:1226
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "Eklenti rolü. İç makaleleri oluşturabilir/yönetebilir/silebilir ve herkese açık/genel makaleleri görüntüleyebilir."
 
-#: kb/admin.py:1223
+#: kb/admin.py:1225
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "Eklenti rolü. Bekleyen iç makaleleri/güncellemeleri inceleyebilir ve herkese açık/genel makaleleri görüntüleyebilir."
 
-#: kb/admin.py:819
+#: kb/admin.py:821
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "Eklenti rolü. Herkese açık/genel makaleleri görüntüleyebilir ve bekleyen iç makaleleri ile güncellemeleri onaylayabilir/reddedebilir."
 
-#: kb/admin.py:815
+#: kb/admin.py:817
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "Eklenti rolü. Herkese açık/genel makaleleri görüntüleyebilir ve kendi iç makalelerini oluşturabilir/düzenleyebilir."
 
-#: kb/admin.py:811
+#: kb/admin.py:813
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "Eklenti rolü. Herkese açık/genel makaleleri ve iç makaleleri görüntüleyebilir; ancak iç makale oluşturamaz veya onaylayamaz."
 
-#: kb/admin.py:1221
+#: kb/admin.py:1223
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "Eklenti rolü. Herkese açık/genel makaleleri ve iç makaleleri görüntüleyebilir."
 
-#: kb/admin.py:823
+#: kb/admin.py:825
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "Eklenti rolü. Herkese açık/genel makaleleri görüntüleyebilir, iç makaleleri oluşturabilir/yönetebilir/silebilir ve bekleyen iç makaleleri inceleyebilir."
 
-#: kb/models.py:32 kb/models.py:638 kb/models.py:686 website/templates/_navbar.html:55
+#: kb/models.py:32 kb/models.py:635 kb/models.py:683 website/templates/_navbar.html:55
 msgid "Admin"
 msgstr "Yönetici"
 
-#: kb/admin.py:2817
+#: kb/admin.py:2837
 msgid "Admin IP restriction status"
 msgstr "Admin IP kısıtlama durumu"
 
-#: kb/admin.py:247 kb/models.py:1242
+#: kb/admin.py:248 kb/models.py:1251
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "Yönetici MFA boşta kalma zaman aşımı (saniye)"
 
-#: kb/admin.py:2824
+#: kb/admin.py:2844
 msgid "Admin MFA idle timeout readable"
 msgstr "Yönetici MFA boşta kalma zaman aşımının okunabilir biçimi"
 
@@ -244,11 +244,11 @@ msgstr "Yönetici MFA boşta kalma zaman aşımının okunabilir biçimi"
 msgid "Admin MFA verification"
 msgstr "Yönetici MFA doğrulaması"
 
-#: kb/admin.py:1225 kb/admin.py:826 kb/permissions.py:62
+#: kb/admin.py:1227 kb/admin.py:828 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "Yönetici Kullanıcılar"
 
-#: kb/admin.py:1708
+#: kb/admin.py:1710
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "Yönetici Kullanıcılar rolü, seçilen %(count)d kullanıcıya atandı."
 
@@ -256,35 +256,35 @@ msgstr "Yönetici Kullanıcılar rolü, seçilen %(count)d kullanıcıya atandı
 msgid "Admin access requires an active MFA-protected account."
 msgstr "Yönetici erişimi için MFA ile korunan etkin bir hesap gerekir."
 
-#: kb/models.py:1087
+#: kb/models.py:1085
 msgid "Admin action/request"
 msgstr "Yönetici işlemi/isteği"
 
-#: kb/admin.py:103 kb/models.py:1119
+#: kb/admin.py:103 kb/models.py:1117
 msgid "Admin activity log"
 msgstr "Yönetici etkinlik günlüğü"
 
-#: kb/admin.py:103 kb/models.py:1120
+#: kb/admin.py:103 kb/models.py:1118
 msgid "Admin activity logs"
 msgstr "Yönetici etkinlik günlükleri"
 
-#: kb/admin.py:245 kb/models.py:1224
+#: kb/admin.py:246 kb/models.py:1233
 msgid "Admin allowed IP ranges"
 msgstr "Yönetici için izin verilen IP aralıkları"
 
-#: kb/admin.py:243 kb/models.py:1207
+#: kb/admin.py:244 kb/models.py:1216
 msgid "Admin log rows per page"
 msgstr "Sayfa başına yönetici günlüğü satırı"
 
-#: kb/models.py:1085
+#: kb/models.py:1083
 msgid "Admin object changed"
 msgstr "Yönetici nesnesi değiştirildi"
 
-#: kb/models.py:1084
+#: kb/models.py:1082
 msgid "Admin object created"
 msgstr "Yönetici nesnesi oluşturuldu"
 
-#: kb/models.py:1086
+#: kb/models.py:1084
 msgid "Admin object deleted"
 msgstr "Yönetici nesnesi silindi"
 
@@ -300,15 +300,15 @@ msgstr "%(target)s için yönetici isteği reddedildi"
 msgid "Admin request failed for %(target)s"
 msgstr "%(target)s için yönetici isteği başarısız oldu"
 
-#: kb/admin.py:2200
+#: kb/admin.py:2202
 msgid "Admin request failed or denied for %(target)s"
 msgstr "%(target)s için yönetici isteği başarısız oldu veya reddedildi"
 
-#: kb/admin.py:2201 kb/admin_audit.py:175
+#: kb/admin.py:2203 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "%(target)s için yönetici isteği"
 
-#: kb/models.py:990
+#: kb/models.py:988
 msgid "Admin tool action"
 msgstr "Yönetici aracı eylemi"
 
@@ -332,15 +332,15 @@ msgstr "Yönetici kullanıcı adı"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "Yalnızca yönetici aracı. Dışa aktarımlar, makale Markdown içeriğini ve şurada başvurulan dosyaları içerir:"
 
-#: kb/admin.py:262 kb/models.py:50
+#: kb/admin.py:263 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "Personel durumu etkin olduğunda Yönetici/LDAP yönetici hesapları Django yönetimine erişebilir."
 
-#: kb/admin.py:874
+#: kb/admin.py:876
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "Kaydettikten sonra gerekirse kullanıcıyı yeniden açın ve nihai erişim düzeyini doğrulamak için 'Etkili izinler'i kontrol edin."
 
-#: kb/models.py:455
+#: kb/models.py:452
 msgid "After this time, the queued article can be permanently deleted by the scheduled cleanup."
 msgstr "Bu sürenin sonunda kuyruktaki makale zamanlanmış temizlik tarafından kalıcı olarak silinebilir."
 
@@ -352,23 +352,23 @@ msgstr "İzin verilen tüm makaleler"
 msgid "All statuses"
 msgstr "Tüm durumlar"
 
-#: kb/admin.py:2792
+#: kb/admin.py:2812
 msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
 msgstr "İzin listesi devre dışı — tüm IPv4 ve IPv6 adresleri Admin kimlik doğrulama/MFA kontrollerine ulaşabilir."
 
-#: kb/admin.py:2807
+#: kb/admin.py:2827
 msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
 msgstr "İzin listesi etkin — %(count)s IP/CIDR aralığına izin veriliyor:"
 
-#: kb/admin.py:2802
+#: kb/admin.py:2822
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "İzin listesi etkin, ancak geçerli bir IP/CIDR aralığı yapılandırılmamış. En az bir geçerli aralık kaydedilene kadar Admin erişimi reddedilir."
 
-#: kb/views/services.py:249
+#: kb/views/services.py:250
 msgid "An article with the title ‘%(title)s’ already exists. Please use a different title."
 msgstr "‘%(title)s’ başlıklı bir makale zaten var. Lütfen farklı bir başlık kullanın."
 
-#: kb/models.py:500
+#: kb/models.py:497
 msgid "An article with this title already exists. Please use a different title."
 msgstr "Bu başlığa sahip bir makale zaten var. Lütfen farklı bir başlık kullanın."
 
@@ -376,7 +376,7 @@ msgstr "Bu başlığa sahip bir makale zaten var. Lütfen farklı bir başlık k
 msgid "Apply"
 msgstr "Uygula"
 
-#: kb/admin.py:2327
+#: kb/admin.py:2329
 msgid "Approval / review"
 msgstr "Onay / inceleme"
 
@@ -384,7 +384,7 @@ msgstr "Onay / inceleme"
 msgid "Approve / Publish"
 msgstr "Onayla / Yayınla"
 
-#: kb/admin.py:2360
+#: kb/admin.py:2362
 msgid "Approve selected pending articles"
 msgstr "Seçili bekleyen makaleleri onayla"
 
@@ -392,7 +392,7 @@ msgstr "Seçili bekleyen makaleleri onayla"
 msgid "Approve update"
 msgstr "Güncellemeyi onayla"
 
-#: kb/admin.py:2383
+#: kb/admin.py:2385
 msgid "Approved article %(title)s from Django Admin"
 msgstr "%(title)s makalesi Django Yönetici panelinden onaylandı"
 
@@ -428,31 +428,31 @@ msgstr "Dosyayı silmek istediğinizden emin misiniz?"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Son yayımlanan sürüme geri dönmek istediğinizden emin misiniz? Yayımlanmamış tüm güncelleme değişiklikleri kalıcı olarak kaldırılacaktır."
 
-#: kb/admin.py:161 kb/admin.py:2075 kb/admin.py:213 kb/admin.py:2324 kb/views/services_search.py:112 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2077 kb/admin.py:213 kb/admin.py:2326 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "Makale"
 
-#: kb/admin.py:1219 kb/admin.py:797 kb/permissions.py:56
+#: kb/admin.py:1221 kb/admin.py:799 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "Makale Onaylayıcısı"
 
-#: kb/admin.py:1688
+#: kb/admin.py:1690
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "Makale Onaylayıcısı rolü, seçilen %(count)d kullanıcıya atandı."
 
-#: kb/admin.py:1220 kb/admin.py:804 kb/permissions.py:57
+#: kb/admin.py:1222 kb/admin.py:806 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "Makale Yöneticisi"
 
-#: kb/admin.py:1698
+#: kb/admin.py:1700
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "Makale Yöneticisi rolü, seçilen %(count)d kullanıcıya atandı."
 
-#: kb/admin.py:1218 kb/admin.py:790 kb/permissions.py:55
+#: kb/admin.py:1220 kb/admin.py:792 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "Makale Yazarı"
 
-#: kb/admin.py:1678
+#: kb/admin.py:1680
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "Makale Yazarı rolü, seçilen %(count)d kullanıcıya atandı."
 
@@ -464,7 +464,7 @@ msgstr "Makale ve güncelleme incelemeleri"
 msgid "Article approved and published."
 msgstr "Makale onaylandı ve yayınlandı."
 
-#: kb/models.py:942
+#: kb/models.py:940
 msgid "Article approved/published"
 msgstr "Makale onaylandı/yayımlandı"
 
@@ -472,7 +472,7 @@ msgstr "Makale onaylandı/yayımlandı"
 msgid "Article approver. Can view articles, review pending public articles/updates, edit content while articles/updates remain pending, keep them pending after review edits, and approve or reject them; cannot create, delete, or edit already-published articles by default. Regular User is not required."
 msgstr "Makale onaylayıcısı. Makaleleri görüntüleyebilir, bekleyen herkese açık makaleleri/güncellemeleri inceleyebilir, makaleler/güncellemeler beklemedeyken içeriği düzenleyebilir, inceleme düzenlemelerinden sonra bunları beklemede tutabilir ve onaylayabilir veya reddedebilir; varsayılan olarak yeni makale oluşturamaz, makale silemez veya yayımlanmış makaleleri düzenleyemez. Normal Kullanıcı gerekli değildir."
 
-#: kb/models.py:937
+#: kb/models.py:935
 msgid "Article auto-deleted from queue"
 msgstr "Makale kuyruktan otomatik olarak silindi"
 
@@ -488,11 +488,11 @@ msgstr "Makale gövdesi (Markdown)"
 msgid "Article contributor. Can view articles, create articles, save drafts, submit for approval, manage their own article drafts/updates, and delete their own articles. Published article deletion requires MFA confirmation. Regular User is not required."
 msgstr "Makale katkı sağlayıcısı. Makaleleri görüntüleyebilir, makale oluşturabilir, taslak kaydedebilir, onay için gönderebilir, kendi makale taslaklarını/güncellemelerini yönetebilir ve kendi makalelerini silebilir. Yayınlanmış makaleyi silmek için MFA onayı gerekir. Normal Kullanıcı gerekli değildir."
 
-#: kb/models.py:931
+#: kb/models.py:929
 msgid "Article created"
 msgstr "Makale oluşturuldu"
 
-#: kb/models.py:933
+#: kb/models.py:931
 msgid "Article deleted"
 msgstr "Makale silindi"
 
@@ -504,27 +504,27 @@ msgstr "Makale silme işlemi MFA sonrasında onaylandı."
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Makale silme işlemi onaylandı: %(title)s."
 
-#: kb/admin.py:2671 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2674 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Makale silme kuyruğu"
 
-#: kb/admin.py:237 kb/models.py:1148
+#: kb/admin.py:237 kb/models.py:1146
 msgid "Article deletion queue retention (days)"
 msgstr "Makale silme kuyruğu saklama süresi (gün)"
 
-#: kb/models.py:939
+#: kb/models.py:937
 msgid "Article deletion rejected"
 msgstr "Makale silme işlemi reddedildi"
 
-#: kb/models.py:755
+#: kb/models.py:753
 msgid "Article deletion request"
 msgstr "Makale silme isteği"
 
-#: kb/models.py:938
+#: kb/models.py:936
 msgid "Article deletion requested"
 msgstr "Makale silme işlemi istendi"
 
-#: kb/models.py:756
+#: kb/models.py:754
 msgid "Article deletion requests"
 msgstr "Makale silme istekleri"
 
@@ -532,7 +532,7 @@ msgstr "Makale silme istekleri"
 msgid "Article details"
 msgstr "Makale ayrıntıları"
 
-#: kb/admin.py:2651
+#: kb/admin.py:2654
 msgid "Article display and upload limits"
 msgstr "Makale görüntüleme ve yükleme sınırları"
 
@@ -540,35 +540,35 @@ msgstr "Makale görüntüleme ve yükleme sınırları"
 msgid "Article image"
 msgstr "Makale görseli"
 
-#: kb/models.py:984
+#: kb/models.py:982
 msgid "Article image deleted"
 msgstr "Makale resmi silindi"
 
-#: kb/admin.py:238 kb/models.py:1156
+#: kb/admin.py:238 kb/models.py:1154
 msgid "Article image upload limit"
 msgstr "Makale görseli yükleme sınırı"
 
-#: kb/admin.py:101 kb/models.py:869
+#: kb/admin.py:101 kb/models.py:867
 msgid "Article image upload log"
 msgstr "Makale resmi yükleme günlüğü"
 
-#: kb/models.py:907
+#: kb/models.py:905
 msgid "Article image upload log records are append-only and cannot be edited."
 msgstr "Makale görseli yükleme günlüğü kayıtları yalnızca eklenebilir; düzenlenemez."
 
-#: kb/models.py:913
+#: kb/models.py:911
 msgid "Article image upload log records cannot be manually deleted."
 msgstr "Makale görseli yükleme günlüğü kayıtları elle silinemez."
 
-#: kb/admin.py:101 kb/models.py:870
+#: kb/admin.py:101 kb/models.py:868
 msgid "Article image upload logs"
 msgstr "Makale resmi yükleme günlükleri"
 
-#: kb/models.py:983
+#: kb/models.py:981
 msgid "Article image uploaded"
 msgstr "Makale resmi yüklendi"
 
-#: kb/views/services.py:1327
+#: kb/views/services.py:1328
 msgid "Article image uploads are currently disabled by the administrator."
 msgstr "Makale görseli yüklemeleri şu anda yönetici tarafından devre dışı bırakıldı."
 
@@ -584,11 +584,11 @@ msgstr "Makale yöneticisi. Herkese açık makaleleri görüntüleyebilir, herke
 msgid "Article marked as pending failed."
 msgstr "Makale onay başarısız olarak işaretlendi."
 
-#: kb/models.py:943
+#: kb/models.py:941
 msgid "Article marked pending failed"
 msgstr "Makale bekleme başarısız olarak işaretlendi"
 
-#: kb/admin.py:2099
+#: kb/admin.py:2101
 msgid "Article owner"
 msgstr "Makale sahibi"
 
@@ -596,7 +596,7 @@ msgstr "Makale sahibi"
 msgid "Article owner account type"
 msgstr "Makale sahibi hesap türü"
 
-#: kb/models.py:1048
+#: kb/models.py:1046
 msgid "Article owner account type snapshot"
 msgstr "Makale sahibi hesap türü anlık görüntüsü"
 
@@ -604,7 +604,7 @@ msgstr "Makale sahibi hesap türü anlık görüntüsü"
 msgid "Article owner email"
 msgstr "Makale sahibi e-posta adresi"
 
-#: kb/models.py:1042
+#: kb/models.py:1040
 msgid "Article owner email snapshot"
 msgstr "Makale sahibi e-posta adresi anlık görüntüsü"
 
@@ -612,23 +612,23 @@ msgstr "Makale sahibi e-posta adresi anlık görüntüsü"
 msgid "Article owner name"
 msgstr "Makale sahibi adı"
 
-#: kb/models.py:1038
+#: kb/models.py:1036
 msgid "Article owner name snapshot"
 msgstr "Makale sahibi adı anlık görüntüsü"
 
-#: kb/models.py:970
+#: kb/models.py:968
 msgid "Article owner notification failed"
 msgstr "Makale sahibi bildirimi başarısız oldu"
 
-#: kb/models.py:962
+#: kb/models.py:960
 msgid "Article owner notification queued"
 msgstr "Makale sahibi bildirimi kuyruğa alındı"
 
-#: kb/models.py:966
+#: kb/models.py:964
 msgid "Article owner notification sent"
 msgstr "Makale sahibi bildirimi gönderildi"
 
-#: kb/models.py:974
+#: kb/models.py:972
 msgid "Article owner notification skipped"
 msgstr "Makale sahibi bildirimi atlandı"
 
@@ -636,7 +636,7 @@ msgstr "Makale sahibi bildirimi atlandı"
 msgid "Article owner user ID"
 msgstr "Makale sahibi kullanıcı kimliği"
 
-#: kb/models.py:1026
+#: kb/models.py:1024
 msgid "Article owner user ID snapshot"
 msgstr "Makale sahibi kullanıcı kimliği anlık görüntüsü"
 
@@ -644,7 +644,7 @@ msgstr "Makale sahibi kullanıcı kimliği anlık görüntüsü"
 msgid "Article owner username"
 msgstr "Makale sahibi kullanıcı adı"
 
-#: kb/models.py:1033
+#: kb/models.py:1031
 msgid "Article owner username snapshot"
 msgstr "Makale sahibi kullanıcı adı anlık görüntüsü"
 
@@ -652,7 +652,7 @@ msgstr "Makale sahibi kullanıcı adı anlık görüntüsü"
 msgid "Article pagination"
 msgstr "Makale sayfalama"
 
-#: kb/models.py:936
+#: kb/models.py:934
 msgid "Article permanently deleted"
 msgstr "Makale kalıcı olarak silindi"
 
@@ -664,31 +664,31 @@ msgstr "Makale kalıcı olarak silindi: %(title)s."
 msgid "Article published successfully."
 msgstr "Makale başarıyla yayımlandı."
 
-#: kb/models.py:934
+#: kb/models.py:932
 msgid "Article queued for deletion"
 msgstr "Makale silme için kuyruğa alındı"
 
-#: kb/models.py:935
+#: kb/models.py:933
 msgid "Article restored from deletion queue"
 msgstr "Makale silme kuyruğundan geri yüklendi"
 
-#: kb/models.py:954
+#: kb/models.py:952
 msgid "Article review notification failed"
 msgstr "Makale inceleme bildirimi başarısız oldu"
 
-#: kb/models.py:946
+#: kb/models.py:944
 msgid "Article review notification queued"
 msgstr "Makale inceleme bildirimi kuyruğa alındı"
 
-#: kb/models.py:950
+#: kb/models.py:948
 msgid "Article review notification sent"
 msgstr "Makale inceleme bildirimi gönderildi"
 
-#: kb/models.py:958
+#: kb/models.py:956
 msgid "Article review notification skipped"
 msgstr "Makale inceleme bildirimi atlandı"
 
-#: kb/admin.py:2344
+#: kb/admin.py:2346
 msgid "Article statistics"
 msgstr "Makale istatistikleri"
 
@@ -696,7 +696,7 @@ msgstr "Makale istatistikleri"
 msgid "Article status"
 msgstr "Makale durumu"
 
-#: kb/models.py:940
+#: kb/models.py:938
 msgid "Article status changed"
 msgstr "Makale durumu değiştirildi"
 
@@ -704,7 +704,7 @@ msgstr "Makale durumu değiştirildi"
 msgid "Article submitted for admin approval."
 msgstr "Makale yönetici onayına gönderildi."
 
-#: kb/models.py:941
+#: kb/models.py:939
 msgid "Article submitted for approval"
 msgstr "Makale onaya gönderildi"
 
@@ -732,7 +732,7 @@ msgstr "Makale güncellemesi beklemede başarısız olarak işaretlendi. Mevcut 
 msgid "Article update submitted for admin approval. The published version is still visible until the update is approved."
 msgstr "Makale güncellemesi yönetici onayı için gönderildi. Güncelleme onaylanana kadar yayımlanmış sürüm görünür kalır."
 
-#: kb/models.py:932
+#: kb/models.py:930
 msgid "Article updated"
 msgstr "Makale güncellendi"
 
@@ -740,11 +740,11 @@ msgstr "Makale güncellendi"
 msgid "Article updated successfully."
 msgstr "Makale başarıyla güncellendi."
 
-#: kb/admin.py:239 kb/models.py:1165
+#: kb/admin.py:239 kb/models.py:1163
 msgid "Article video maximum width (px)"
 msgstr "Makale videosu azami genişliği (px)"
 
-#: kb/models.py:978
+#: kb/models.py:976
 msgid "Article viewed"
 msgstr "Makale görüntülendi"
 
@@ -752,31 +752,31 @@ msgstr "Makale görüntülendi"
 msgid "Article visibility"
 msgstr "Makale görünürlüğü"
 
-#: kb/admin.py:99 kb/models.py:806
+#: kb/admin.py:99 kb/models.py:804
 msgid "Article vote"
 msgstr "Makale oyu"
 
-#: kb/models.py:981
+#: kb/models.py:979
 msgid "Article vote changed"
 msgstr "Makale oyu değiştirildi"
 
-#: kb/models.py:980
+#: kb/models.py:978
 msgid "Article vote down"
 msgstr "Makaleye olumsuz oy"
 
-#: kb/models.py:982
+#: kb/models.py:980
 msgid "Article vote removed"
 msgstr "Makale oyu kaldırıldı"
 
-#: kb/models.py:979
+#: kb/models.py:977
 msgid "Article vote up"
 msgstr "Makaleye olumlu oy"
 
-#: kb/admin.py:99 kb/models.py:807
+#: kb/admin.py:99 kb/models.py:805
 msgid "Article votes"
 msgstr "Makale oyları"
 
-#: kb/admin.py:272 kb/models.py:1200
+#: kb/admin.py:274 kb/models.py:1209
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Bu kadar günden eski makale/oy/görsel/yönetici aracı/yönetici sitesi etkinlik günlükleri temizlik komutuyla silinebilir. Genel ve yönetici etkinlik günlüklerini süresiz saklamak için 0 kullanın."
 
@@ -784,7 +784,7 @@ msgstr "Bu kadar günden eski makale/oy/görsel/yönetici aracı/yönetici sites
 msgid "Articles"
 msgstr "Makaleler"
 
-#: kb/models.py:1174
+#: kb/models.py:1172
 msgid "Articles per page"
 msgstr "Sayfa başına makale"
 
@@ -816,7 +816,7 @@ msgstr "Seçilen makaleleri şuna ata"
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "%(count)s sahipsiz makale %(user)s kullanıcısına atandı."
 
-#: kb/admin.py:1601
+#: kb/admin.py:1603
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "%(username)s kullanıcısına Devre Dışı Kullanıcı rolü atandı"
 
@@ -848,11 +848,11 @@ msgstr "Denetim günlüğü kayıtları yalnızca eklenebilir; düzenlenemez."
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "Denetim günlüğü kayıtları elle silinemez. Yalnızca saklama süresi temizliği ile kaldırılırlar."
 
-#: kb/admin.py:271 kb/models.py:1192
-msgid "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
-msgstr "Kimliği doğrulanmış ve MFA bekleyen oturumlar, oturum açıldıktan sonra bu saat sayısı sonunda sona erer. Varsayılan 8 saattir. İzin verilen aralık: 1 ila 168 saat (7 gün)."
+#: kb/admin.py:272 kb/models.py:1190
+msgid "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+msgstr "Kimliği doğrulanmış oturumlar, oturum açıldıktan sonra bu saat sayısı dolduğunda sona erer. MFA işlemi bekleyen oturumlar bu süreyi aşamaz, ancak genellikle ayrı MFA oturum açma tamamlama zaman aşımına göre daha erken sona erer. Varsayılan 8 saattir. İzin verilen aralık: 1 ile 168 saat (7 gün)."
 
-#: kb/admin.py:1405
+#: kb/admin.py:1407
 msgid "Authentication Lockout Reset"
 msgstr "Kimlik Doğrulama Kilidini Sıfırla"
 
@@ -860,7 +860,7 @@ msgstr "Kimlik Doğrulama Kilidini Sıfırla"
 msgid "Authentication activity log"
 msgstr "Kimlik doğrulama etkinlik günlüğü"
 
-#: kb/admin.py:240 kb/models.py:1182
+#: kb/admin.py:240 kb/models.py:1180
 msgid "Authentication activity log retention (days)"
 msgstr "Kimlik doğrulama etkinlik günlüğü saklama süresi (gün)"
 
@@ -868,27 +868,27 @@ msgstr "Kimlik doğrulama etkinlik günlüğü saklama süresi (gün)"
 msgid "Authentication activity logs"
 msgstr "Kimlik doğrulama etkinlik günlükleri"
 
-#: kb/admin.py:2678
+#: kb/admin.py:2681
 msgid "Authentication and session settings"
 msgstr "Kimlik doğrulama ve oturum ayarları"
 
-#: kb/admin.py:1291
+#: kb/admin.py:1293
 msgid "Authentication lockout"
 msgstr "Kimlik doğrulama kilidi"
 
-#: kb/admin.py:246 kb/models.py:1233
+#: kb/admin.py:247 kb/models.py:1242
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "Kimlik doğrulama kilidi yükseltme belleği (saniye)"
 
-#: kb/admin.py:2687
+#: kb/admin.py:2706
 msgid "Authentication lockout policy"
 msgstr "Kimlik doğrulama kilidi ilkesi"
 
-#: kb/admin.py:97 kb/models.py:1322
+#: kb/admin.py:97 kb/models.py:1331
 msgid "Authentication lockout policy stage"
 msgstr "Kimlik doğrulama kilidi ilkesi aşaması"
 
-#: kb/admin.py:2751 kb/admin.py:97 kb/models.py:1323
+#: kb/admin.py:2771 kb/admin.py:97 kb/models.py:1332
 msgid "Authentication lockout policy stages"
 msgstr "Kimlik doğrulama kilidi ilkesi aşamaları"
 
@@ -900,11 +900,11 @@ msgstr "Kimlik doğrulama kilidi yönetici tarafından sıfırlandı"
 msgid "Authentication lockout triggered"
 msgstr "Kimlik doğrulama kilidi tetiklendi"
 
-#: kb/admin.py:1178
+#: kb/admin.py:1180
 msgid "Authentication source"
 msgstr "Kimlik doğrulama kaynağı"
 
-#: kb/admin.py:270 kb/models.py:1183
+#: kb/admin.py:271 kb/models.py:1181
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Bu kadar günden eski kimlik doğrulama/MFA izleme günlükleri temizleme komutuyla silinebilir. Kimlik doğrulama etkinlik günlüklerini süresiz saklamak için 0 kullanın."
 
@@ -916,11 +916,11 @@ msgstr "Kimlik doğrulayıcı MFA/OTP kodu"
 msgid "Authenticator code"
 msgstr "Kimlik doğrulayıcı kodu"
 
-#: kb/admin.py:118 kb/admin.py:1824
+#: kb/admin.py:118 kb/admin.py:1826
 msgid "Authenticator key"
 msgstr "Kimlik doğrulayıcı anahtarı"
 
-#: kb/views/mfa.py:239
+#: kb/views/mfa.py:350
 msgid "Authenticator setup completed successfully."
 msgstr "Kimlik doğrulayıcı kurulumu başarıyla tamamlandı."
 
@@ -940,7 +940,7 @@ msgstr "Yazar e-posta anlık görüntüsü"
 msgid "Author name snapshot"
 msgstr "Yazar adı anlık görüntüsü"
 
-#: kb/admin.py:2347
+#: kb/admin.py:2349
 msgid "Author snapshot"
 msgstr "Yazar anlık görüntüsü"
 
@@ -948,7 +948,7 @@ msgstr "Yazar anlık görüntüsü"
 msgid "Author username snapshot"
 msgstr "Yazar kullanıcı adı anlık görüntüsü"
 
-#: website/templates/_page_back_button.html:7 website/templates/articles.html:208 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:71 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:57
+#: website/templates/_page_back_button.html:7 website/templates/articles.html:208 website/templates/error.html:29 website/templates/mfa_setup.html:28 website/templates/mfa_setup.html:74 website/templates/mfa_verify.html:28 website/templates/mfa_verify.html:58
 msgid "Back"
 msgstr "Geri"
 
@@ -968,15 +968,15 @@ msgstr "Profile geri dön"
 msgid "Bad request"
 msgstr "Geçersiz istek"
 
-#: kb/admin.py:255 kb/models.py:1307
+#: kb/admin.py:256 kb/models.py:1316
 msgid "Block duration (seconds)"
 msgstr "Engelleme süresi (saniye)"
 
-#: kb/models.py:1341
+#: kb/models.py:1350
 msgid "Block duration must be at least 60 seconds."
 msgstr "Engelleme süresi en az 60 saniye olmalıdır."
 
-#: kb/admin.py:2593
+#: kb/admin.py:2595
 msgid "Block duration readable"
 msgstr "Engelleme süresinin okunabilir biçimi"
 
@@ -988,7 +988,7 @@ msgstr "Alt makale sayfalama"
 msgid "Bulk Import / Export Articles"
 msgstr "Makaleleri toplu içe aktar / dışa aktar"
 
-#: kb/models.py:987
+#: kb/models.py:985
 msgid "Bulk article import"
 msgstr "Toplu makale içe aktarma"
 
@@ -1004,11 +1004,11 @@ msgstr "İç makale ekleyebilir/onay için gönderebilir"
 msgid "Can add/submit public articles for approval"
 msgstr "Herkese açık makale ekleyebilir/onay için gönderebilir"
 
-#: kb/admin.py:666
+#: kb/admin.py:668
 msgid "Can approve/manage internal articles"
 msgstr "İç makaleleri onaylayabilir/yönetebilir"
 
-#: kb/admin.py:639
+#: kb/admin.py:641
 msgid "Can approve/manage pending articles"
 msgstr "Bekleyen makaleleri onaylayabilir/yönetebilir"
 
@@ -1020,35 +1020,35 @@ msgstr "Bekleyen iç makale incelemelerini onaylayabilir/yönetebilir"
 msgid "Can approve/manage pending public article reviews"
 msgstr "Bekleyen herkese açık makale incelemelerini onaylayabilir/yönetebilir"
 
-#: kb/admin.py:1218
+#: kb/admin.py:1220
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "Makale taslakları oluşturabilir, makaleleri onay için gönderebilir ve kendi makalelerini düzenleyip yeniden gönderebilir. Makaleleri onaylayamaz veya reddedemez. Görüntüleyici erişimi içerdiğinden Normal Kullanıcı gerekli değildir."
 
-#: kb/admin.py:791
+#: kb/admin.py:793
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "Makale taslakları oluşturabilir, yeni makaleleri onay için gönderebilir ve kendi makalelerini düzenleyip yeniden gönderebilir. Makaleleri onaylayamaz veya reddedemez."
 
-#: kb/admin.py:630
+#: kb/admin.py:632
 msgid "Can create articles"
 msgstr "Makale oluşturabilir"
 
-#: kb/admin.py:805
+#: kb/admin.py:807
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "Makale oluşturabilir, makaleleri düzenleyip yönetebilir, bekleyen makaleleri/güncellemeleri inceleyebilir, gönderimleri onaylayabilir/reddedebilir ve makaleleri silebilir."
 
-#: kb/admin.py:1220
+#: kb/admin.py:1222
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "Makale oluşturabilir, makaleleri düzenleyip yönetebilir, bekleyen makaleleri/güncellemeleri inceleyebilir, gönderimleri onaylayabilir/reddedebilir ve makaleleri silebilir. Görüntüleyici erişimi içerdiğinden Normal Kullanıcı gerekli değildir."
 
-#: kb/admin.py:661
+#: kb/admin.py:663
 msgid "Can create internal articles"
 msgstr "İç makaleler oluşturabilir"
 
-#: kb/admin.py:648
+#: kb/admin.py:650
 msgid "Can delete articles"
 msgstr "Makale silebilir"
 
-#: kb/admin.py:671 kb/permissions.py:36
+#: kb/admin.py:673 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "İç makaleleri silebilir"
 
@@ -1056,15 +1056,15 @@ msgstr "İç makaleleri silebilir"
 msgid "Can delete public articles"
 msgstr "Herkese açık makaleleri silebilir"
 
-#: kb/admin.py:798
+#: kb/admin.py:800
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "Bekleyen makaleleri/güncellemeleri inceleyebilir, bekleyen inceleme sırasında içeriği düzenleyebilir ve bunları onaylayabilir veya reddedebilir. Varsayılan olarak daha önce yayımlanmış makaleleri düzenleyemez veya makaleleri silemez. Makale Onaylayıcıları varsayılan olarak yeni makale ekleyemez veya makale silemez."
 
-#: kb/admin.py:1219
+#: kb/admin.py:1221
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "Bekleyen makaleleri/güncellemeleri inceleyebilir, bekleyen inceleme sırasında içeriği düzenleyebilir ve bunları onaylayabilir veya reddedebilir. Varsayılan olarak daha önce yayımlanmış makaleleri düzenleyemez veya makaleleri silemez. Varsayılan olarak makale ekleyemez veya makale silemez. Görüntüleyici erişimi içerdiğinden Normal Kullanıcı gerekli değildir."
 
-#: kb/admin.py:787
+#: kb/admin.py:789
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "Oturum açabilir, yayımlanmış makaleleri görüntüleyip arayabilir, normal makale sayfalarını kullanabilir ve oylamanın etkin olduğu yerlerde oy verebilir."
 
@@ -1072,11 +1072,11 @@ msgstr "Oturum açabilir, yayımlanmış makaleleri görüntüleyip arayabilir, 
 msgid "Can use Knowledge Repository admin tools"
 msgstr "Bilgi Deposu yönetici araçlarını kullanabilir"
 
-#: kb/admin.py:620
+#: kb/admin.py:622
 msgid "Can view articles"
 msgstr "Makaleleri görüntüleyebilir"
 
-#: kb/admin.py:656 kb/permissions.py:33
+#: kb/admin.py:658 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "İç makaleleri görüntüleyebilir"
 
@@ -1084,7 +1084,7 @@ msgstr "İç makaleleri görüntüleyebilir"
 msgid "Can view published public articles"
 msgstr "Yayımlanmış herkese açık makaleleri görüntüleyebilir"
 
-#: kb/admin.py:1217
+#: kb/admin.py:1219
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Yayımlanmış makaleleri görüntüleyebilir/arayabilir ve oy verebilir. Bu, yedek görüntüleyici rolüdür ve yalnızca kullanıcının başka bir standart Bilgi Deposu rolü olmadığında otomatik eklenir."
 
@@ -1100,15 +1100,15 @@ msgstr "Değişiklik iletisi"
 msgid "Change password"
 msgstr "Şifreyi değiştir"
 
-#: kb/admin.py:386
+#: kb/admin.py:388
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "%(target_label)s %(target)s değiştirildi: %(changes)s"
 
-#: kb/admin.py:2192 kb/admin_audit.py:153
+#: kb/admin.py:2194 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "%(target_label)s değiştirildi: %(target)s"
 
-#: kb/admin.py:2187
+#: kb/admin.py:2189
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "%(target_label)s değiştirildi: %(target)s — %(changes)s"
 
@@ -1116,11 +1116,11 @@ msgstr "%(target_label)s değiştirildi: %(target)s — %(changes)s"
 msgid "Checking..."
 msgstr "Kontrol ediliyor..."
 
-#: kb/admin.py:862
+#: kb/admin.py:864
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Önce bir grup seçin; ardından doğrudan onay kutularını yalnızca istisnalar için kullanın. Çoğu kullanıcı için yalnızca grup yeterli olmalıdır."
 
-#: kb/admin.py:569
+#: kb/admin.py:571
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "Bu profilin yerel kullanıcı/yönetici mi yoksa LDAP kullanıcısı/yöneticisi mi olduğunu seçin. Yönetici hesap türleri Yönetici Kullanıcılar rolünü ekler ve Django süper kullanıcısı olur. Kullanıcı/LDAP kullanıcısına geri dönmek Yönetici Kullanıcıları kaldırır ve personel/süper kullanıcı durumunu temizler. AD hesabı silinmiş ancak makaleleri korunması gereken sahipsiz bir LDAP profilini yerel profile dönüştürmek için bunu kullanın."
 
@@ -1144,7 +1144,7 @@ msgstr "Sohbeti temizle"
 msgid "Clear search"
 msgstr "Aramayı temizle"
 
-#: kb/admin.py:1399
+#: kb/admin.py:1401
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "Bu kullanıcı için geçici engellemeleri ve aşamalı kilitleme geçmişini temizler. İsteğin meşru olduğunu doğruladıktan sonra kullanın."
 
@@ -1156,19 +1156,19 @@ msgstr "Geçerli başlıkta ve makale gövdesinde mevcut anahtar kelimeleri tara
 msgid "Close"
 msgstr "Kapat"
 
-#: kb/middleware.py:540
+#: kb/middleware.py:541
 msgid "Complete MFA before accessing the Django admin site."
 msgstr "Django yönetim sitesine erişmeden önce MFA’yı tamamlayın."
 
-#: kb/middleware.py:474
+#: kb/middleware.py:475
 msgid "Complete MFA before continuing. You are not fully signed in until MFA is completed."
 msgstr "Devam etmeden önce MFA’yı tamamlayın. MFA tamamlanana kadar tam olarak oturum açmış sayılmazsınız."
 
-#: kb/middleware.py:501
+#: kb/middleware.py:502
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "Devam etmeden önce MFA'yı tamamlayın. MFA tamamlanana kadar Bilgi Deposuna erişemezsiniz."
 
-#: kb/admin.py:1367 kb/mfa.py:135
+#: kb/admin.py:1369 kb/mfa.py:243
 msgid "Configured"
 msgstr "Yapılandırıldı"
 
@@ -1188,7 +1188,7 @@ msgstr "Sahipsiz makale işlemini onayla"
 msgid "Confirm password"
 msgstr "Şifreyi onayla"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:459
+#: kb/views/auth.py:508 kb/views/mfa.py:592
 msgid "Confirm password is incorrect."
 msgstr "Onay şifresi yanlış."
 
@@ -1208,23 +1208,27 @@ msgstr "Onaylanma zamanı"
 msgid "Content type"
 msgstr "İçerik türü"
 
-#: kb/admin.py:2680
-msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and user session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours and can be set from 1 to 168 hours."
-msgstr "Kimlik doğrulama/MFA günlüklerini, genel etkinlik günlüklerini, yönetici günlüğü görüntü satırlarını ve kullanıcı oturum ömrünü kontrol eder. Varsayılan günlük saklama süresi 30 gündür. Yönetici günlük tabloları varsayılan olarak sayfa başına 200 satır gösterir. Oturumlar varsayılan olarak 8 saattir ve 1 ile 168 saat arasında ayarlanabilir."
+#: kb/admin.py:2689
+msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and the signed-in session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
+msgstr "Kimlik doğrulama/MFA günlüklerini, genel etkinlik günlüklerini, yönetici günlüğünde sayfa başına gösterilen satır sayısını ve oturum açılmış oturumun süresini denetler. Varsayılan günlük saklama süresi 30 gündür. Yönetici günlüğü tabloları varsayılan olarak sayfa başına 200 satır gösterir. Oturumların varsayılan süresi 8 saattir."
 
-#: kb/admin.py:2673
+#: kb/admin.py:2676
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "Yayınlanmış silinmiş makalelerin, zamanlanmış kalıcı silmeden önce Profilim → Yönetici araçları → Silme kuyruğu bölümünde ne kadar süre geri yüklenebilir kalacağını denetler. Varsayılan 7 gündür. MFA onayından sonra hemen kalıcı silme için 0 olarak ayarlayın."
 
-#: kb/admin.py:2657
+#: kb/admin.py:2660
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "Sayfa başına/ana sayfadaki her sütunda kaç makale gösterileceğini, her makalenin kaç yapıştırılmış/yüklenmiş görsel içerebileceğini ve makale videolarının azami görüntüleme genişliğini kontrol eder. Sayfa başına makale sayısının varsayılan değeri 10'dur. Görsel yükleme sınırının varsayılan değeri 50'dir; makale görseli yüklemeyi devre dışı bırakmak için 0 olarak ayarlayın. Makale videosu genişliğinin varsayılan değeri 720 px'tir ve daha küçük ekranlarda duyarlı kalır."
 
-#: kb/admin.py:2666
+#: kb/admin.py:2700
+msgid "Controls the fixed window that starts immediately after username/password verification succeeds. The user must finish MFA before this countdown reaches zero or sign in with username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "Kullanıcı adı ve parola doğrulaması başarıyla tamamlandıktan hemen sonra başlayan sabit süre penceresini denetler. Kullanıcı, geri sayım sıfıra ulaşmadan MFA işlemini tamamlamalıdır; aksi hâlde kullanıcı adı ve parolayla yeniden oturum açmalıdır. Varsayılan 60 saniyedir. İzin verilen aralık: 30 ile 900 saniye (15 dakika)."
+
+#: kb/admin.py:2669
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "Profilim → Yönetici araçları → Sahipsiz yükleme dosyalarını temizle için kullanılan minimum yaşı kontrol eder. Dosyaları hemen göstermek için 0 kullanın."
 
-#: kb/admin.py:263 kb/models.py:56
+#: kb/admin.py:264 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "Parolanın Bilgi Deposunda yerel olarak mı yoksa Active Directory tarafından harici olarak mı yönetildiğini denetler."
 
@@ -1240,11 +1244,11 @@ msgstr "Oluşturuldu"
 msgid "Created %(target)s"
 msgstr "%(target)s oluşturuldu"
 
-#: kb/admin.py:418
+#: kb/admin.py:420
 msgid "Created %(target_label)s %(target)s"
 msgstr "%(target_label)s %(target)s oluşturuldu"
 
-#: kb/admin.py:2184 kb/admin_audit.py:150
+#: kb/admin.py:2186 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "%(target_label)s oluşturuldu: %(target)s"
 
@@ -1260,15 +1264,15 @@ msgstr "Geçerli MFA durumu"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "Makale Taslak veya Bekleme başarısız durumundayken makale sahibine gösterilen geçerli yönetici geri bildirimi."
 
-#: kb/admin.py:2435 kb/models.py:371
+#: kb/admin.py:2437 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "Geçerli reddedilme yorumları"
 
-#: kb/admin.py:1088
+#: kb/admin.py:1090
 msgid "Current users"
 msgstr "Mevcut kullanıcılar"
 
-#: kb/admin.py:1068
+#: kb/admin.py:1070
 msgid "Custom Django group"
 msgstr "Özel Django grubu"
 
@@ -1280,31 +1284,31 @@ msgstr "Tarih"
 msgid "Date and time when this article was approved for public display."
 msgstr "Bu makalenin herkese açık gösterim için onaylandığı tarih ve saat."
 
-#: kb/admin.py:1233
+#: kb/admin.py:1235
 msgid "Default Knowledge Repository groups:"
 msgstr "Varsayılan Bilgi Deposu grupları:"
 
-#: kb/admin.py:1016
+#: kb/admin.py:1018
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "Varsayılan Bilgi Deposu rol grupları silinemez."
 
-#: kb/admin.py:1027
+#: kb/admin.py:1029
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "Varsayılan Bilgi Deposu rol grupları silinemez. %(count)d korumalı grup atlandı."
 
-#: kb/admin.py:1054
+#: kb/admin.py:1056
 msgid "Default permissions:"
 msgstr "Varsayılan izinler:"
 
-#: kb/admin.py:2772
+#: kb/admin.py:2792
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "Varsayılan aşama 1: 10 yanlış deneme 5 dakika boyunca engellenir, 2 kez tekrarlanır."
 
-#: kb/admin.py:2773
+#: kb/admin.py:2793
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "Varsayılan aşama 2: 5 yanlış deneme 15 dakika boyunca engellenir, 2 kez tekrarlanır."
 
-#: kb/admin.py:2774
+#: kb/admin.py:2794
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "Varsayılan aşama 3: 3 yanlış deneme 1 saat boyunca engellenir; başarılı oturum açmaya veya yönetici sıfırlamasına kadar tekrarlanır."
 
@@ -1332,7 +1336,7 @@ msgstr "Seçili gereksiz dosyaları sil"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "Seçili gereksiz yükleme dosyaları silinsin mi? Bu işlem geri alınamaz."
 
-#: kb/admin.py:473
+#: kb/admin.py:475
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "%(count)d %(target_label)s silindi: %(preview)s"
 
@@ -1340,15 +1344,15 @@ msgstr "%(count)d %(target_label)s silindi: %(preview)s"
 msgid "Deleted %(target)s"
 msgstr "%(target)s silindi"
 
-#: kb/admin.py:454
+#: kb/admin.py:456
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "%(target_label)s %(target)s silindi"
 
-#: kb/admin.py:2194 kb/admin_audit.py:160
+#: kb/admin.py:2196 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "%(target_label)s silindi: %(target)s"
 
-#: kb/admin.py:2073
+#: kb/admin.py:2075
 msgid "Deleted article"
 msgstr "Silinen makale"
 
@@ -1364,11 +1368,11 @@ msgstr "Silinme zamanı"
 msgid "Deleted by"
 msgstr "Silen"
 
-#: kb/models.py:825
+#: kb/models.py:823
 msgid "Deleted by admin stray-file cleanup"
 msgstr "Yönetici gereksiz dosya temizliği ile silindi"
 
-#: kb/models.py:826
+#: kb/models.py:824
 msgid "Deleted by automatic stray-file cleanup"
 msgstr "Otomatik gereksiz dosya temizliği ile silindi"
 
@@ -1388,11 +1392,11 @@ msgstr "Makale sayfasından silindi."
 msgid "Deleted from orphan article cleanup."
 msgstr "Sahipsiz makale temizliğinden silindi."
 
-#: kb/models.py:662
+#: kb/models.py:659
 msgid "Deleted user"
 msgstr "Silinmiş kullanıcı"
 
-#: kb/models.py:713
+#: kb/models.py:711
 msgid "Deletion approved"
 msgstr "Silme onaylandı"
 
@@ -1404,7 +1408,7 @@ msgstr "Silme kuyruğu"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "Silme kuyruğu saklama süresi 0 gün olarak ayarlandı. Yeni yayınlanmış makale silmeleri, onaydan sonra hemen kalıcı olarak silinir. Burada gösterilen mevcut kuyruktaki makaleler kalıcı silmeye hazırdır."
 
-#: kb/admin.py:2848
+#: kb/admin.py:2879
 msgid "Deletion queue retention readable"
 msgstr "Silme kuyruğu saklama süresinin okunabilir biçimi"
 
@@ -1412,31 +1416,31 @@ msgstr "Silme kuyruğu saklama süresinin okunabilir biçimi"
 msgid "Deletion queued"
 msgstr "Silme için kuyruğa alındı"
 
-#: kb/admin.py:203 kb/models.py:440
+#: kb/admin.py:203 kb/models.py:437
 msgid "Deletion queued at"
 msgstr "Silme kuyruğuna alınma zamanı"
 
-#: kb/admin.py:204 kb/models.py:448
+#: kb/admin.py:204 kb/models.py:445
 msgid "Deletion queued by"
 msgstr "Silme kuyruğuna alan kişi"
 
-#: kb/admin.py:208 kb/models.py:472
+#: kb/admin.py:208 kb/models.py:469
 msgid "Deletion reason"
 msgstr "Silme nedeni"
 
-#: kb/models.py:714
+#: kb/models.py:712
 msgid "Deletion rejected"
 msgstr "Silme reddedildi"
 
-#: kb/admin.py:206 kb/models.py:460
+#: kb/admin.py:206 kb/models.py:457
 msgid "Deletion restored at"
 msgstr "Silmenin geri alındığı zaman"
 
-#: kb/admin.py:207 kb/models.py:468
+#: kb/admin.py:207 kb/models.py:465
 msgid "Deletion restored by"
 msgstr "Silmeyi geri alan kişi"
 
-#: kb/admin.py:2247
+#: kb/admin.py:2249
 msgid "Denied"
 msgstr "Reddedildi"
 
@@ -1444,51 +1448,51 @@ msgstr "Reddedildi"
 msgid "Details"
 msgstr "Ayrıntılar"
 
-#: kb/admin.py:1193
+#: kb/admin.py:1195
 msgid "Direct Knowledge Repository permissions"
 msgstr "Doğrudan Bilgi Deposu izinleri"
 
-#: kb/admin.py:640
+#: kb/admin.py:642
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "Doğrudan kullanıcı izni. Bekleyen makale incelemesi, bekleyen güncelleme incelemesi, onaylama/reddetme işlemleri ve inceleme aşamasında makale düzenleme gibi makale onay iş akışlarına erişim sağlar. Başka bir izin/grup bunları vermedikçe, otomatik olarak yeni makale oluşturma, makale silme veya tam Django Yönetici erişimi sağlamaz."
 
-#: kb/admin.py:631
+#: kb/admin.py:633
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "Doğrudan kullanıcı izni. Kullanıcının makale taslakları oluşturmasına, yeni makaleleri onay için göndermesine ve kendi makalelerini veya bekleyen güncellemelerini düzenleyip yeniden göndermesine izin verir. Diğer kullanıcıların makalelerini onaylama/reddetme veya Django yönetici araçlarını kullanma izni vermez."
 
-#: kb/admin.py:621
+#: kb/admin.py:623
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "Doğrudan kullanıcı izni. Kullanıcının oturum açtıktan sonra ana vikiyi açmasına ve yayımlanmış makaleleri okumasına izin verir. Makale oluşturma, makale onaylama veya yönetici araçlarını kullanma izni vermez. İşaretin kaldırılması doğrudan kullanıcı izni olmadığı anlamına gelir; kullanıcı yine de bu izni grubundan alabilir. Devre Dışı Kullanıcı grubu doğrudan izin eklentilerini geçersiz kılar."
 
-#: kb/admin.py:662
+#: kb/admin.py:664
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "Doğrudan kullanıcı izni. Bu kullanıcının iç/özel makaleler oluşturmasına ve göndermesine izin verir."
 
-#: kb/admin.py:649
+#: kb/admin.py:651
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "Doğrudan kullanıcı izni. Bu kullanıcının makaleleri silmesine izin verir. Standart Makale Yöneticisi ve Yönetici Kullanıcılar grupları bunu zaten verdiğinden dikkatli kullanın."
 
-#: kb/admin.py:672
+#: kb/admin.py:674
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "Doğrudan kullanıcı izni. Bu kullanıcının iç/özel makaleleri silmesine izin verir."
 
-#: kb/admin.py:657
+#: kb/admin.py:659
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "Doğrudan kullanıcı izni. Bu kullanıcının iç/özel yayımlanmış makaleleri açmasına ve okumasına izin verir."
 
-#: kb/admin.py:667
+#: kb/admin.py:669
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "Doğrudan kullanıcı izni. Bu kullanıcının bekleyen iç/özel makaleleri incelemesine ve yönetmesine izin verir."
 
-#: kb/admin.py:832
+#: kb/admin.py:834
 msgid "Direct user permissions"
 msgstr "Doğrudan kullanıcı izinleri"
 
-#: kb/admin.py:1216 kb/admin.py:1338 kb/admin.py:779 kb/permissions.py:53
+#: kb/admin.py:1218 kb/admin.py:1340 kb/admin.py:781 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "Devre Dışı Kullanıcı"
 
-#: kb/admin.py:1611
+#: kb/admin.py:1613
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "Devre Dışı Kullanıcı rolü, seçilen %(count)d kullanıcıya atandı."
 
@@ -1496,19 +1500,19 @@ msgstr "Devre Dışı Kullanıcı rolü, seçilen %(count)d kullanıcıya atand�
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "Devre dışı hesap rolü. Kullanıcı hesabı denetim/geçmiş amaçlarıyla Django'da kalır; ancak bir yönetici kullanıcıyı başka bir role taşıyana kadar kullanıcı oturum açmayı tamamlayamaz veya vikiye erişemez."
 
-#: kb/admin.py:274 kb/models.py:1216
+#: kb/admin.py:276 kb/models.py:1225
 msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
 msgstr "Varsayılan olarak devre dışıdır. Devre dışıyken Django Admin, normal kimlik doğrulama ve Admin MFA koşulları geçerli olmak üzere herhangi bir IPv4 veya IPv6 adresinden erişilebilir. Etkinleştirildiğinde yalnızca yapılandırılmış IP/CIDR aralıklarına izin verilir."
 
-#: kb/admin.py:2566
+#: kb/admin.py:2568
 msgid "Dislike"
 msgstr "Beğenme"
 
-#: kb/admin.py:2450 website/templates/articles.html:277
+#: kb/admin.py:2452 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "Beğenmeme"
 
-#: kb/views/services.py:2476
+#: kb/views/services.py:2477
 msgid "DjOpenKB could not verify that this SharePoint or OneDrive video is accessible without signing in. Check its sharing permissions and try again."
 msgstr "DjOpenKB, bu SharePoint veya OneDrive videosuna oturum açmadan erişilebildiğini doğrulayamadı. Paylaşım izinlerini kontrol edip tekrar deneyin."
 
@@ -1516,7 +1520,7 @@ msgstr "DjOpenKB, bu SharePoint veya OneDrive videosuna oturum açmadan erişile
 msgid "Django Admin MFA lockout triggered"
 msgstr "Django Admin MFA kilitlemesi tetiklendi"
 
-#: kb/admin.py:1967 kb/admin.py:1973
+#: kb/admin.py:1969 kb/admin.py:1975
 msgid "Django Admin MFA verification"
 msgstr "Django Admin MFA doğrulaması"
 
@@ -1528,7 +1532,7 @@ msgstr "Django Admin MFA doğrulaması başarısız"
 msgid "Django Admin MFA verification success"
 msgstr "Django Admin MFA doğrulaması başarılı"
 
-#: kb/admin.py:2706
+#: kb/admin.py:2725
 msgid "Django Admin access restrictions"
 msgstr "Django Yönetici erişim kısıtlamaları"
 
@@ -1536,19 +1540,19 @@ msgstr "Django Yönetici erişim kısıtlamaları"
 msgid "Django admin action flag"
 msgstr "Django yönetici işlem işareti"
 
-#: kb/views/services.py:3081
+#: kb/views/services.py:3113
 msgid "Domain Admin"
 msgstr "Etki Alanı Yöneticisi"
 
-#: kb/views/services.py:3079
+#: kb/views/services.py:3111
 msgid "Domain User"
 msgstr "Etki Alanı Kullanıcısı"
 
-#: kb/admin.py:1200
+#: kb/admin.py:1202
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "Etki alanı parolası Active Directory tarafından yönetilir ve Django yönetiminden değiştirilemez."
 
-#: kb/admin.py:1306
+#: kb/admin.py:1308
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "Etki alanı kullanıcı parolaları Active Directory tarafından yönetilir."
 
@@ -1568,7 +1572,7 @@ msgstr "Taslak başarıyla kaydedildi."
 msgid "Due"
 msgstr "Süresi dolmuş"
 
-#: kb/admin.py:2701
+#: kb/admin.py:2720
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Her kullanıcının ilk kabul edilen sorusu sabit bir 24 saatlik pencere başlatır. Mevcut kısa süreli ani istek sınırı ayrı olarak etkin kalır."
 
@@ -1604,11 +1608,11 @@ msgstr "Yönetici onayı bekleyen düzenlenmiş anahtar kelimeler."
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Yönetici onayı bekleyen düzenlenmiş başlık. Yayınlanmış başlık onaya kadar değişmeden kalır."
 
-#: kb/admin.py:846 kb/admin.py:893
+#: kb/admin.py:848 kb/admin.py:895
 msgid "Effective permissions"
 msgstr "Etkili izinler"
 
-#: kb/admin.py:886
+#: kb/admin.py:888
 msgid "Effective role groups"
 msgstr "Etkili rol grupları"
 
@@ -1620,19 +1624,19 @@ msgstr "E-posta"
 msgid "Email updated successfully."
 msgstr "E-posta başarıyla güncellendi."
 
-#: kb/admin.py:244 kb/models.py:1215
+#: kb/admin.py:245 kb/models.py:1224
 msgid "Enable Admin IP allowlist"
 msgstr "Admin IP izin listesini etkinleştir"
 
-#: kb/admin.py:257 kb/models.py:1317 website/templates/profile.html:195
+#: kb/admin.py:258 kb/models.py:1326 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "Etkin"
 
-#: kb/admin.py:1821
+#: kb/admin.py:1823
 msgid "Encrypted and hidden"
 msgstr "Şifrelenmiş ve gizli"
 
-#: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:47
+#: website/templates/mfa_setup.html:61 website/templates/mfa_verify.html:45
 msgid "Enter MFA/OTP code"
 msgstr "MFA/OTP kodunu girin"
 
@@ -1648,7 +1652,7 @@ msgstr "Etkin bir yerel veya AD kullanıcı adı/e-posta girin, makaleleri işar
 msgid "Enter an image size between 1 and 1200 pixels."
 msgstr "1 ile 1200 piksel arasında bir görsel boyutu girin."
 
-#: kb/admin.py:2640
+#: kb/admin.py:2642
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
 msgstr "Admin IP izin listesini etkinleştirmeden önce en az bir geçerli IPv4/IPv6 adresi veya CIDR aralığı girin."
 
@@ -1664,7 +1668,7 @@ msgstr "Bu silmeyi onaylamak için MFA/OTP kodunuzu girin."
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "Django yönetici sitesine erişmek için kimlik doğrulayıcı kodunuzu tekrar girin."
 
-#: kb/admin.py:2788
+#: kb/admin.py:2808
 msgid "Escalation memory readable"
 msgstr "Yükseltme belleğinin okunabilir biçimi"
 
@@ -1700,15 +1704,15 @@ msgstr "Makaleleri zip olarak dışa aktar"
 msgid "Export split package"
 msgstr "Bölünmüş paketi dışa aktar"
 
-#: kb/admin.py:2253
+#: kb/admin.py:2255
 msgid "Failed"
 msgstr "Başarısız"
 
-#: kb/admin.py:254 kb/models.py:1302
+#: kb/admin.py:255 kb/models.py:1311
 msgid "Failed attempts before block"
 msgstr "Engellemeden önceki başarısız deneme sayısı"
 
-#: kb/models.py:1339
+#: kb/models.py:1348
 msgid "Failed attempts must be at least 1."
 msgstr "Başarısız deneme sayısı en az 1 olmalıdır."
 
@@ -1736,7 +1740,7 @@ msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Djang
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "%(minutes)s dakikadan daha yeni dosyalar yok sayılır. Bu değeri Django Admin → Site settings bölümünden değiştirin. Gereksiz yüklemeleri hemen göstermek için 0 dakika kullanın."
 
-#: kb/admin.py:266 kb/models.py:1140
+#: kb/admin.py:267 kb/models.py:1138
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "Bu dakikadan daha yeni dosyalar sahipsiz yükleme temizleme aracı tarafından yok sayılır. Kullanıcılar makale taslağı hazırlarken resimlerin silinmesini önlemek için varsayılan değer 1440 dakikadır (24 saat). Sahipsiz yüklemeleri hemen algılamak/silmek için 0 olarak ayarlayın."
 
@@ -1760,11 +1764,11 @@ msgstr "Şurada kullanılmayan dosyaları bulur:"
 msgid "First"
 msgstr "İlk"
 
-#: kb/admin.py:827
+#: kb/admin.py:829
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "Tam Django Yönetici süper kullanıcı erişimi. Yönetici Kullanıcıların Django Yönetici paneline girmeden önce ek yönetici MFA doğrulamasını tamamlaması gerekir."
 
-#: kb/admin.py:1225
+#: kb/admin.py:1227
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "Tam Django Yönetici süper kullanıcı erişimi. Django Yönetici paneline girmeden önce ek Yönetici MFA adımı gerekir."
 
@@ -1772,7 +1776,7 @@ msgstr "Tam Django Yönetici süper kullanıcı erişimi. Django Yönetici panel
 msgid "General"
 msgstr "Genel"
 
-#: kb/admin.py:242 kb/models.py:1199
+#: kb/admin.py:243 kb/models.py:1208
 msgid "General activity log retention (days)"
 msgstr "Genel etkinlik günlüğü saklama süresi (gün)"
 
@@ -1796,19 +1800,19 @@ msgstr "Sahibi olduğunuz genel makaleler."
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "En yaygın sorular için anında yanıt alın ve 3 karakteri profesyonel gibi kullanmayı öğrenin."
 
-#: kb/admin.py:988
+#: kb/admin.py:990
 msgid "Group members"
 msgstr "Grup üyeleri"
 
-#: kb/admin.py:773
+#: kb/admin.py:775
 msgid "Group permissions"
 msgstr "Grup izinleri"
 
-#: kb/admin.py:1070
+#: kb/admin.py:1072
 msgid "Group type"
 msgstr "Grup türü"
 
-#: kb/views/services.py:3076
+#: kb/views/services.py:3108
 msgid "Guest"
 msgstr "Konuk"
 
@@ -1820,7 +1824,7 @@ msgstr "Yükseklik"
 msgid "Hello! I’m OpenKB AI. Ask me a question about the knowledge base, or ask me to recommend published articles."
 msgstr "Merhaba! Ben OpenKB AI. Bilgi bankası hakkında bir soru sorun veya yayımlanmış makaleler önermemi isteyin."
 
-#: kb/models.py:786 kb/models.py:810
+#: kb/models.py:784 kb/models.py:808
 msgid "Helpful"
 msgstr "Faydalı"
 
@@ -1828,19 +1832,19 @@ msgstr "Faydalı"
 msgid "Hi, I am OpenKB AI."
 msgstr "Merhaba, ben OpenKB AI."
 
-#: kb/admin.py:1216
+#: kb/admin.py:1218
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "En yüksek öncelik. Bilgi Deposu erişimini engeller ve Yönetici Kullanıcılar, personel/süper kullanıcı durumu ile doğrudan rol izinlerini temizler."
 
-#: kb/admin.py:780
+#: kb/admin.py:782
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "En yüksek öncelik. Kullanıcı hesap devre dışı sayfasına yönlendirilir ve Bilgi Deposuna erişemez. Ayrıca Yönetici Kullanıcıları, personel/süper kullanıcı durumunu ve doğrudan Bilgi Deposu izin eklentilerini temizler."
 
-#: kb/models.py:1096
+#: kb/models.py:1094
 msgid "Historical admin user snapshot only. This relation intentionally does not enforce a database constraint because admin audit logs must remain immutable when users are deleted."
 msgstr "Yalnızca geçmiş yönetici kullanıcısı anlık görüntüsüdür. Yönetici denetim günlükleri kullanıcılar silindiğinde değiştirilemez kalmak zorunda olduğundan bu ilişki kasıtlı olarak veritabanı kısıtlaması uygulamaz."
 
-#: kb/models.py:858
+#: kb/models.py:856
 msgid "Historical deleter ID snapshot only. Image deletion activity is appended into ActivityLog rather than editing this upload log row."
 msgstr "Yalnızca geçmiş silen kişi kimliği anlık görüntüsüdür. Görsel silme etkinliği bu yükleme günlüğü satırı düzenlenmek yerine ActivityLog'a eklenir."
 
@@ -1848,15 +1852,15 @@ msgstr "Yalnızca geçmiş silen kişi kimliği anlık görüntüsüdür. Görse
 msgid "Historical review feedback entries from previous rejection/resubmission rounds."
 msgstr "Önceki reddetme/yeniden gönderme turlarından geçmiş inceleme geri bildirimi kayıtları."
 
-#: kb/models.py:838
+#: kb/models.py:836
 msgid "Historical uploader ID snapshot only. The username/email snapshot fields keep the log readable after the user account is changed or deleted."
 msgstr "Yalnızca geçmiş yükleyen kişi kimliği anlık görüntüsüdür. Kullanıcı adı/e-posta anlık görüntüsü alanları, kullanıcı hesabı değiştirildikten veya silindikten sonra günlüğün okunabilir kalmasını sağlar."
 
-#: kb/models.py:1027
+#: kb/models.py:1025
 msgid "Historical user ID of the account that owned the article when this log was created."
 msgstr "Bu günlük oluşturulduğunda makalenin sahibi olan hesabın geçmiş kullanıcı kimliği."
 
-#: kb/models.py:274 kb/models.py:999
+#: kb/models.py:274 kb/models.py:997
 msgid "Historical user ID snapshot only. This relation intentionally does not enforce a database constraint because audit logs must remain immutable when users are deleted."
 msgstr "Yalnızca geçmiş kullanıcı kimliği anlık görüntüsüdür. Denetim günlükleri kullanıcılar silindiğinde değiştirilemez kalmak zorunda olduğundan bu ilişki kasıtlı olarak veritabanı kısıtlaması uygulamaz."
 
@@ -1864,31 +1868,31 @@ msgstr "Yalnızca geçmiş kullanıcı kimliği anlık görüntüsüdür. Deneti
 msgid "How can we help?"
 msgstr "Nasıl yardımcı olabiliriz?"
 
-#: kb/models.py:1243
+#: kb/models.py:1252
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "Bir yöneticinin ek yönetici MFA kontrolünü tamamladıktan sonra Django Yönetici panelinde ne kadar süre etkinlik yapmadan kalabileceği. Varsayılan 600 saniyedir (10 dakika). Kod tarafından zorunlu kılınan minimum 60 saniye, maksimum ise 86400 saniyedir."
 
-#: kb/admin.py:267 kb/models.py:1149
+#: kb/admin.py:268 kb/models.py:1147
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "Silinmiş yayınlanmış makalelerin, kalıcı silmeden önce Profilim → Yönetici araçları → Silme kuyruğu bölümünde ne kadar süre geri yüklenebilir kalacağı. Varsayılan 7 gündür. MFA onayından sonra yayınlanmış makaleleri hemen kalıcı olarak silmek için 0 olarak ayarlayın."
 
-#: kb/admin.py:276
+#: kb/admin.py:278
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "Başarılı bir oturum açma olmadan başarısız oturum açma/MFA yükseltme geçmişinin ne kadar süre hatırlanacağı. Başarılı doğrulama bunu hemen temizler. Varsayılan 604800 saniyedir (7 gün)."
 
-#: kb/models.py:1234
+#: kb/models.py:1243
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "Kullanıcı hiçbir zaman başarıyla oturum açmazsa, başarısız oturum açma/MFA kilit geçmişinin ne kadar süre hatırlanacağı. Başarılı parola/MFA doğrulaması ilgili kilit geçmişini hemen sıfırlar. Varsayılan 604800 saniyedir (7 gün)."
 
-#: kb/admin.py:280 kb/models.py:1308
+#: kb/admin.py:282 kb/models.py:1317
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "Bu aşama tetiklendikten sonra oturum açma/MFA kontrolünün ne kadar süre engelleneceği."
 
-#: kb/admin.py:281 kb/models.py:1313
+#: kb/admin.py:283 kb/models.py:1322
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "Sonraki aşamaya geçmeden önce bu aşamanın kaç kilitlemede kullanılacağı. Son aşamada sonsuza kadar tekrar etmek için 0 kullanın."
 
-#: kb/admin.py:861
+#: kb/admin.py:863
 msgid "How to use these permissions:"
 msgstr "Bu izinler nasıl kullanılır:"
 
@@ -1926,7 +1930,7 @@ msgstr "manifest.json eksikse içe aktarıcı ZIP içindeki tüm Markdown dosyal
 msgid "Image assets"
 msgstr "Resim varlıkları"
 
-#: kb/views/services.py:1242
+#: kb/views/services.py:1243
 msgid "Image dimensions are too large. Please upload a smaller image."
 msgstr "Görsel boyutları çok büyük. Lütfen daha küçük bir görsel yükleyin."
 
@@ -1938,7 +1942,7 @@ msgstr "Görselin görüntüleme boyutu özgün duyarlı boyutuna sıfırlandı.
 msgid "Image display size updated."
 msgstr "Görselin görüntüleme boyutu güncellendi."
 
-#: kb/views/services.py:1221 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
+#: kb/views/services.py:1222 website/templates/suggest.html:1015 website/templates/suggest.html:920 website/templates/suggest_edit.html:1141 website/templates/suggest_edit.html:1242
 msgid "Image is too large. Maximum allowed size is 2 MB."
 msgstr "Görsel çok büyük. İzin verilen en büyük boyut 2 MB'dir."
 
@@ -1982,7 +1986,7 @@ msgstr "Bu taslağa yüklenen resimler burada görünür. Resmi makaleden kaldı
 msgid "Immediate"
 msgstr "Hemen"
 
-#: kb/admin.py:2845
+#: kb/admin.py:2876
 msgid "Immediate permanent deletion"
 msgstr "Hemen kalıcı silme"
 
@@ -2054,7 +2058,7 @@ msgstr "İçe aktarılan makaleler, içe aktarmayı yapan yönetici hesabına at
 msgid "Imported articles will be owned by"
 msgstr "İçe aktarılan makalelerin sahibi"
 
-#: kb/admin.py:1335 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1337 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "Pasif"
 
@@ -2066,15 +2070,15 @@ msgstr "Video bağlantısı ekle"
 msgid "Internal"
 msgstr "İç"
 
-#: kb/admin.py:1223 kb/admin.py:818 kb/permissions.py:60
+#: kb/admin.py:1225 kb/admin.py:820 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "İç Makale Onaylayıcısı"
 
-#: kb/admin.py:1224 kb/admin.py:822 kb/permissions.py:61
+#: kb/admin.py:1226 kb/admin.py:824 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "İç Makale Yöneticisi"
 
-#: kb/admin.py:1222 kb/admin.py:814 kb/permissions.py:59
+#: kb/admin.py:1224 kb/admin.py:816 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "İç Makale Yazarı"
 
@@ -2086,7 +2090,7 @@ msgstr "İç Makaleler"
 msgid "Internal Knowledge Repository"
 msgstr "İç Bilgi Deposu"
 
-#: kb/admin.py:1221 kb/admin.py:810 kb/permissions.py:58
+#: kb/admin.py:1223 kb/admin.py:812 kb/permissions.py:58
 msgid "Internal User"
 msgstr "İç Kullanıcı"
 
@@ -2094,7 +2098,7 @@ msgstr "İç Kullanıcı"
 msgid "Internal approver add-on. Can view public/internal articles, edit content while internal articles/updates remain pending, keep them pending after review edits, and approve or reject internal pending articles/updates. Cannot delete or edit already-published internal articles by default."
 msgstr "İç onaylayıcı eklentisi. Herkese açık/iç makaleleri görüntüleyebilir, iç makaleler/güncellemeler beklemedeyken içeriği düzenleyebilir, inceleme düzenlemelerinden sonra bunları beklemede tutabilir ve bekleyen iç makaleleri/güncellemeleri onaylayabilir veya reddedebilir. Varsayılan olarak yayımlanmış iç makaleleri silemez veya düzenleyemez."
 
-#: kb/models.py:325 kb/views/services.py:451 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
+#: kb/models.py:325 kb/views/services.py:452 website/templates/suggest.html:216 website/templates/suggest_edit.html:308
 msgid "Internal article"
 msgstr "İç makale"
 
@@ -2102,7 +2106,7 @@ msgstr "İç makale"
 msgid "Internal article pages"
 msgstr "İç makale sayfaları"
 
-#: kb/admin.py:743
+#: kb/admin.py:745
 msgid "Internal article permissions"
 msgstr "İç makale izinleri"
 
@@ -2122,7 +2126,7 @@ msgstr "Sahibi olduğunuz iç makaleler."
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "İç yönetici eklentisi. Herkese açık/iç makaleleri görüntüleyebilir, iç gönderimleri oluşturabilir, düzenleyip yönetebilir, inceleyebilir, onaylayabilir/reddedebilir ve kapsamındaki iç makaleleri silebilir. Yayınlanmış iç makaleyi silmek için MFA onayı gerekir."
 
-#: kb/admin.py:751
+#: kb/admin.py:753
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "İç roller eklenti izinleridir. İç kullanıcı yine de genel/herkese açık makaleleri görüntüleyebilir. Mümkün olduğunda İç Kullanıcı / İç Makale Yazarı / İç Makale Onaylayıcısı / İç Makale Yöneticisi gruplarını kullanın; bu doğrudan kutuları yalnızca istisnalar için işaretleyin."
 
@@ -2134,7 +2138,7 @@ msgstr "İç görüntüleyici eklentisi. Herkese açık makaleleri ve iç makale
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "İç yazar eklentisi. Herkese açık/iç makaleleri görüntüleyebilir, kendi iç makale taslaklarını/gönderimlerini oluşturabilir veya sürdürebilir ve kendi iç makalelerini silebilir. Yayınlanmış iç makaleyi silmek için MFA onayı gerekir."
 
-#: kb/admin.py:2621
+#: kb/admin.py:2623
 msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
 msgstr "Geçersiz IPv4/IPv6 adresi veya CIDR aralığı: %(value)s"
 
@@ -2142,7 +2146,7 @@ msgstr "Geçersiz IPv4/IPv6 adresi veya CIDR aralığı: %(value)s"
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Hesap bilgileri geçersiz. Lütfen kullanıcı adı ve parolayı kontrol edin."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:266 kb/views/mfa.py:388
+#: kb/admin_security.py:317 kb/views/mfa.py:377 kb/views/mfa.py:513
 msgid "Invalid authenticator code. Please try again."
 msgstr "Kimlik doğrulayıcı kodu geçersiz. Lütfen tekrar deneyin."
 
@@ -2194,11 +2198,11 @@ msgstr "Anahtar kelimeler"
 msgid "Keywords: %(keywords)s"
 msgstr "Anahtar kelimeler: %(keywords)s"
 
-#: kb/admin.py:1361
+#: kb/admin.py:1363
 msgid "Knowledge Repository Permissions"
 msgstr "Bilgi Deposu İzinleri"
 
-#: kb/admin.py:1356
+#: kb/admin.py:1358
 msgid "Knowledge Repository Roles"
 msgstr "Bilgi Deposu Rolleri"
 
@@ -2206,15 +2210,15 @@ msgstr "Bilgi Deposu Rolleri"
 msgid "Knowledge Repository administrator. Can create/publish articles directly and is synchronised to Django staff/superuser access for full Django Admin management."
 msgstr "Bilgi Deposu yöneticisi. Makaleleri doğrudan oluşturabilir/yayımlayabilir ve tam Django Yönetici yönetimi için Django personel/süper kullanıcı erişimiyle eşitlenir."
 
-#: kb/views/services.py:1777
+#: kb/views/services.py:1778
 msgid "Knowledge Repository article."
 msgstr "Bilgi Deposu makalesi."
 
-#: kb/admin.py:1067
+#: kb/admin.py:1069
 msgid "Knowledge Repository role"
 msgstr "Bilgi Deposu rolü"
 
-#: kb/admin.py:1052
+#: kb/admin.py:1054
 msgid "Knowledge Repository role group"
 msgstr "Bilgi Deposu rol grubu"
 
@@ -2222,11 +2226,11 @@ msgstr "Bilgi Deposu rol grubu"
 msgid "Knowledge Repository role guide"
 msgstr "Bilgi Deposu rol rehberi"
 
-#: kb/admin.py:1063
+#: kb/admin.py:1065
 msgid "Knowledge Repository role information"
 msgstr "Bilgi Deposu rol bilgileri"
 
-#: kb/admin.py:725
+#: kb/admin.py:727
 msgid "Knowledge Repository role permissions"
 msgstr "Bilgi Deposu rol izinleri"
 
@@ -2234,15 +2238,15 @@ msgstr "Bilgi Deposu rol izinleri"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "LDAP hesap türleri kimlik doğrulama kaynağı olarak Active Directory kullanmalıdır."
 
-#: kb/admin.py:594
+#: kb/admin.py:596
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "LDAP hesap türleri kaynak olarak Active Directory kullanıcısını kullanmalıdır. Active Directory kullanıcısıyla LDAP kullanıcısı/LDAP yöneticisi seçin veya Yerel kullanıcıyla Kullanıcı/Yönetici seçin."
 
-#: kb/admin.py:1344 kb/models.py:35
+#: kb/admin.py:1346 kb/models.py:35
 msgid "LDAP admin"
 msgstr "LDAP yöneticisi"
 
-#: kb/admin.py:1348 kb/models.py:34
+#: kb/admin.py:1350 kb/models.py:34
 msgid "LDAP user"
 msgstr "LDAP kullanıcısı"
 
@@ -2278,7 +2282,7 @@ msgstr "Son doğrulama"
 msgid "Last verified at"
 msgstr "Son doğrulama zamanı"
 
-#: kb/admin.py:264
+#: kb/admin.py:265
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "Eski uyumluluk alanı. Kullanıcının oturum açıp açamayacağını denetlemek için kullanıcı hesabındaki yerleşik Etkin onay kutusunu kullanın."
 
@@ -2286,11 +2290,11 @@ msgstr "Eski uyumluluk alanı. Kullanıcının oturum açıp açamayacağını d
 msgid "Legacy main-site access"
 msgstr "Eski ana site erişimi"
 
-#: kb/admin.py:2564
+#: kb/admin.py:2566
 msgid "Like"
 msgstr "Beğen"
 
-#: kb/admin.py:2445 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2447 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Beğeniler"
 
@@ -2298,11 +2302,11 @@ msgstr "Beğeniler"
 msgid "Loading dimensions..."
 msgstr "Boyutlar yükleniyor..."
 
-#: kb/views/services.py:3085
+#: kb/views/services.py:3117
 msgid "Local Admin"
 msgstr "Yerel Yönetici"
 
-#: kb/views/services.py:3083
+#: kb/views/services.py:3115
 msgid "Local User"
 msgstr "Yerel Kullanıcı"
 
@@ -2318,7 +2322,7 @@ msgstr "Yerel hesapla oturum aç"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "Yerel hesap türleri kimlik doğrulama kaynağı olarak Yerel kullanıcıyı kullanmalıdır."
 
-#: kb/admin.py:602
+#: kb/admin.py:604
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "Yerel hesap türleri kaynak olarak Yerel kullanıcıyı kullanmalıdır. Yerel kullanıcıyla Kullanıcı/Yönetici seçin veya Active Directory kullanıcısıyla LDAP kullanıcısı/LDAP yöneticisi seçin."
 
@@ -2326,11 +2330,11 @@ msgstr "Yerel hesap türleri kaynak olarak Yerel kullanıcıyı kullanmalıdır.
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "Yerel hesaplar, parola ile oturum açtıktan sonra kimlik doğrulayıcı doğrulaması gerektirir."
 
-#: kb/admin.py:1346
+#: kb/admin.py:1348
 msgid "Local admin"
 msgstr "Yerel yönetici"
 
-#: kb/admin.py:1349 kb/models.py:38 kb/views/services.py:3135
+#: kb/admin.py:1351 kb/models.py:38 kb/views/services.py:3167
 msgid "Local user"
 msgstr "Yerel kullanıcı"
 
@@ -2338,11 +2342,11 @@ msgstr "Yerel kullanıcı"
 msgid "Local username or email"
 msgstr "Yerel kullanıcı adı veya e-posta"
 
-#: kb/admin.py:1992
+#: kb/admin.py:1994
 msgid "Lockout duration"
 msgstr "Kilitleme süresi"
 
-#: kb/admin.py:1977
+#: kb/admin.py:1979
 msgid "Lockout scope"
 msgstr "Kilitleme kapsamı"
 
@@ -2366,7 +2370,7 @@ msgstr "Katkıda bulunmak için giriş yapın"
 msgid "Logout"
 msgstr "Çıkış"
 
-#: kb/admin.py:278 kb/models.py:1298
+#: kb/admin.py:280 kb/models.py:1307
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "Önce düşük sayılar çalışır. Daha sonra aşama ekleyebilmek için 10, 20, 30 vb. kullanın."
 
@@ -2374,13 +2378,25 @@ msgstr "Önce düşük sayılar çalışır. Daha sonra aşama ekleyebilmek içi
 msgid "MFA QR code"
 msgstr "MFA QR kodu"
 
-#: kb/admin.py:1389 kb/admin.py:1845
+#: kb/admin.py:1391 kb/admin.py:1847
 msgid "MFA Reset"
 msgstr "MFA sıfırlama"
 
-#: kb/admin.py:1373
+#: kb/admin.py:1375
 msgid "MFA Status"
 msgstr "MFA durumu"
+
+#: kb/admin.py:2695
+msgid "MFA login completion timeout"
+msgstr "MFA oturum açma tamamlama zaman aşımı"
+
+#: kb/admin.py:242 kb/models.py:1199
+msgid "MFA login completion timeout (seconds)"
+msgstr "MFA oturum açma tamamlama zaman aşımı (saniye)"
+
+#: kb/admin.py:2866
+msgid "MFA login timeout readable"
+msgstr "MFA oturum açma zaman aşımı (okunabilir)"
 
 #: kb/models.py:260
 msgid "MFA reset by admin"
@@ -2390,15 +2406,15 @@ msgstr "MFA yönetici tarafından sıfırlandı"
 msgid "MFA reset by user"
 msgstr "MFA kullanıcı tarafından sıfırlandı"
 
-#: kb/admin.py:1870
+#: kb/admin.py:1872
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "Seçili %(count)d cihaz için MFA sıfırlandı. Kullanıcılar bir sonraki oturum açışlarında yeni bir kimlik doğrulayıcı ayarlamalıdır."
 
-#: kb/admin.py:1541
+#: kb/admin.py:1543
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "Seçili %(count)d kullanıcı için MFA sıfırlandı. Bir sonraki oturum açışlarında yeni bir kimlik doğrulayıcı ayarlamalıdırlar."
 
-#: kb/views/mfa.py:558
+#: kb/views/mfa.py:691
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Bilgi Deposu hesabınız için MFA sıfırlama kullanılabilir."
 
@@ -2414,13 +2430,17 @@ msgstr "Devam etmek için MFA kurulumu gereklidir."
 msgid "MFA setup success"
 msgstr "MFA kurulumu başarılı"
 
-#: kb/views/mfa.py:168
+#: kb/views/mfa.py:274
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "MFA ile oturum açma iptal edildi. Lütfen yeniden oturum açın."
 
-#: kb/admin.py:1972 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1974 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "MFA doğrulaması"
+
+#: kb/views/mfa.py:221
+msgid "MFA verification timed out. Please enter your username and password again."
+msgstr "MFA doğrulama süresi doldu. Kullanıcı adınızı ve parolanızı yeniden girin."
 
 #: kb/models.py:256
 msgid "MFA verify failure"
@@ -2430,15 +2450,15 @@ msgstr "MFA doğrulaması başarısız"
 msgid "MFA verify success"
 msgstr "MFA doğrulaması başarılı"
 
-#: kb/admin.py:1501
+#: kb/admin.py:1503
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "%(username)s için MFA sıfırlandı. Kullanıcı bir sonraki oturum açışında yeni bir kimlik doğrulayıcı ayarlamalıdır."
 
-#: website/templates/mfa_setup.html:60 website/templates/mfa_verify.html:46 website/templates/suggest_delete.html:46
+#: website/templates/mfa_setup.html:60 website/templates/mfa_verify.html:44 website/templates/suggest_delete.html:46
 msgid "MFA/OTP code"
 msgstr "MFA/OTP kodu"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:537 kb/views/services.py:818
+#: kb/views/auth.py:440 kb/views/mfa.py:670 kb/views/services.py:819
 msgid "MFA/OTP code is incorrect."
 msgstr "MFA/OTP kodu yanlış."
 
@@ -2450,7 +2470,7 @@ msgstr "Ana site kullanıcı profili"
 msgid "Main Site User Profiles"
 msgstr "Ana site kullanıcı profilleri"
 
-#: kb/admin.py:714
+#: kb/admin.py:716
 msgid "Main site profile"
 msgstr "Ana site profili"
 
@@ -2486,23 +2506,23 @@ msgstr "Kimlik doğrulayıcı uygulaması tarafından yönetilir"
 msgid "Manual setup key"
 msgstr "Manuel kurulum anahtarı"
 
-#: kb/admin.py:1875
+#: kb/admin.py:1877
 msgid "Mark selected MFA devices as setup pending"
 msgstr "Seçili MFA cihazlarını kurulum bekliyor olarak işaretle"
 
-#: kb/admin.py:2394
+#: kb/admin.py:2396
 msgid "Mark selected articles as pending failed"
 msgstr "Seçili makaleleri bekleme başarısız olarak işaretle"
 
-#: kb/admin.py:1895
+#: kb/admin.py:1897
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "%(username)s kullanıcısı için MFA kurulumu beklemede olarak işaretlendi"
 
-#: kb/admin.py:2417
+#: kb/admin.py:2419
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "%(title)s makalesi Django Yönetici panelinden bekleme başarısız olarak işaretlendi"
 
-#: kb/admin.py:2405 kb/admin.py:2479
+#: kb/admin.py:2407 kb/admin.py:2481
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Yönetici tarafından bekleme başarısız olarak işaretlendi. Lütfen bu makaleyi gözden geçirip onay için yeniden gönderin."
 
@@ -2510,17 +2530,21 @@ msgstr "Yönetici tarafından bekleme başarısız olarak işaretlendi. Lütfen 
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Makale başına en fazla %(limit)s görsel."
 
-#: kb/admin.py:277 kb/models.py:1253
+#: kb/admin.py:279 kb/models.py:1262
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "Sabit 24 saatlik bir pencerede kullanıcı başına kabul edilen Ask OpenKB AI sorularının azami sayısı. İlk kabul edilen soru pencereyi başlatır; sonraki sorular pencereyi uzatmaz. Varsayılan: 20."
 
-#: kb/admin.py:269 kb/models.py:1166
+#: kb/admin.py:270 kb/models.py:1164
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "Makalelerdeki video oynatıcıların piksel cinsinden azami görüntüleme genişliği. Videolar duyarlı kalır ve daha küçük ekranlarda 16:9 en-boy oranını korur. Varsayılan değer 720 px'tir. İzin verilen aralık: 160 ile 1920 px."
 
-#: kb/admin.py:268 kb/models.py:1157
+#: kb/admin.py:269 kb/models.py:1155
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "Makale başına izin verilen yapıştırılmış veya yüklenmiş görsellerin azami sayısı; taslak, beklemede, yayımlanmış ve güncelleme bekleyen sürümler dahildir. Varsayılan 50’dir. Makale görseli yüklemelerini devre dışı bırakmak için 0 olarak ayarlayın."
+
+#: kb/admin.py:273 kb/models.py:1200
+msgid "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "Kullanıcı adı ve parola adımı başarıyla tamamlandıktan sonra MFA işlemini bitirmek için izin verilen azami süre. Geri sayım sıfıra ulaştığında bekleyen oturum açma temizlenir ve kullanıcı, kullanıcı adı ile parolasını yeniden girmelidir. Varsayılan 60 saniyedir. İzin verilen aralık: 30 ile 900 saniye (15 dakika)."
 
 #: website/templates/admin_bulk_articles.html:87
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -2554,11 +2578,11 @@ msgstr "En çok beğenilen makale sayfaları"
 msgid "Most recent article pages"
 msgstr "En yeni makale sayfaları"
 
-#: kb/admin.py:1281 website/templates/profile.html:190
+#: kb/admin.py:1283 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "Çok faktörlü kimlik doğrulama"
 
-#: kb/admin.py:576
+#: kb/admin.py:578
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "Hesap Türü ile eşleşmelidir. Yerel Kullanıcı/Yerel Yönetici Yerel kullanıcıyı kullanır. LDAP kullanıcısı/LDAP yöneticisi Active Directory kullanıcısını kullanır. Bir LDAP hesabını yerel hesaba dönüştürmek için Hesap Türünü Kullanıcı veya Yönetici, Kaynağı ise Yerel kullanıcı olarak ayarlayın; ardından yerel bir parola belirleyin."
 
@@ -2618,7 +2642,7 @@ msgstr "NextLabs AD e-postası veya kullanıcı adı"
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs BT Bilgi Deposu"
 
-#: kb/admin.py:2714
+#: kb/admin.py:2733
 msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
 msgstr "Nginx artık statik bir Admin IP izin listesi tutmaz. Varsayılan olarak tüm IPv4 ve IPv6 adresleri Django Admin erişim kontrollerine ulaşabilir. Erişimi kısıtlamak için izin verilen IP/CIDR aralıklarını girin ve izin listesini etkinleştirin. /admin/login/ 404 ile gizli kalır ve Admin MFA hâlâ gereklidir."
 
@@ -2626,7 +2650,7 @@ msgstr "Nginx artık statik bir Admin IP izin listesi tutmaz. Varsayılan olarak
 msgid "No"
 msgstr "Hayır"
 
-#: kb/admin.py:1043 kb/admin.py:1094 kb/permissions.py:400
+#: kb/admin.py:1045 kb/admin.py:1096 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "Bilgi Deposu rol izni yok"
 
@@ -2714,7 +2738,7 @@ msgstr "Aramanızla eşleşen bekleyen makale incelemesi yok."
 msgid "No pending update"
 msgstr "Bekleyen güncelleme yok"
 
-#: kb/admin.py:1098
+#: kb/admin.py:1100
 msgid "No permissions"
 msgstr "İzin yok"
 
@@ -2746,7 +2770,7 @@ msgstr "Silinmek üzere hiçbir gereksiz yükleme dosyası seçilmedi."
 msgid "No stray uploaded files found."
 msgstr "Kullanılmayan yükleme dosyası bulunamadı."
 
-#: kb/admin.py:1080
+#: kb/admin.py:1082
 msgid "No users"
 msgstr "Kullanıcı yok"
 
@@ -2754,27 +2778,27 @@ msgstr "Kullanıcı yok"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "İçerik çok büyükse normal dışa aktarma otomatik olarak bölünmüş pakete dönüşür. Bölünmüş paketlerde parts/ klasörü altında içe aktarılabilir parça ZIP dosyaları bulunur; paketi çıkarın ve her parça ZIP dosyasını sırayla içe aktarın."
 
-#: kb/admin.py:1822
+#: kb/admin.py:1824
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "Şifrelenmemiş. Bu kullanıcının MFA cihazını sıfırlayın ve kullanıcıdan MFA kurulumunu yeniden yapmasını isteyin."
 
-#: kb/admin.py:2249
+#: kb/admin.py:2251
 msgid "Not found"
 msgstr "Bulunamadı"
 
-#: kb/models.py:787 kb/models.py:810
+#: kb/models.py:785 kb/models.py:808
 msgid "Not helpful"
 msgstr "Faydalı değil"
 
-#: kb/mfa.py:131
+#: kb/mfa.py:239
 msgid "Not required"
 msgstr "Gerekli değil"
 
-#: kb/admin.py:1819
+#: kb/admin.py:1821
 msgid "Not set"
 msgstr "Ayarlanmadı"
 
-#: kb/mfa.py:133
+#: kb/mfa.py:241
 msgid "Not set up"
 msgstr "Kurulmadı"
 
@@ -2782,27 +2806,23 @@ msgstr "Kurulmadı"
 msgid "Notes"
 msgstr "Notlar"
 
-#: kb/models.py:1175
+#: kb/models.py:1173
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "Arama/sonuçlarda ve Trend Konular, En Çok Beğenilenler ve En Yeni Makaleler gibi her ana sayfa makale sütununda sayfa başına gösterilen yayımlanmış makale sayısı. Önerilen aralık 5 ila 100'dür. Varsayılan 10'dur."
 
-#: kb/admin.py:273 kb/models.py:1208
+#: kb/admin.py:275 kb/models.py:1217
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Django Admin günlük tablolarında sayfa başına gösterilecek satır sayısı. Önerilen aralık: 50–500. Varsayılan 200’dür."
 
-#: kb/models.py:422
-msgid "Number of unique session views for this article."
-msgstr "Bu makale için benzersiz oturum görüntüleme sayısı."
-
-#: kb/admin.py:279 kb/models.py:1303
+#: kb/admin.py:281 kb/models.py:1312
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "Bu aşama kullanıcıyı engellemeden önce gereken yanlış parola/MFA denemesi sayısı."
 
-#: kb/admin.py:2243
+#: kb/admin.py:2245
 msgid "OK"
 msgstr "Tamam"
 
-#: kb/admin.py:2233
+#: kb/admin.py:2235
 msgid "Object ID %(object_id)s"
 msgstr "Nesne kimliği %(object_id)s"
 
@@ -2818,7 +2838,7 @@ msgstr "Eski parola yanlış."
 msgid "Only .zip import files are allowed."
 msgstr "Yalnızca .zip içe aktarma dosyalarına izin verilir."
 
-#: kb/views/services.py:1218 kb/views/services.py:1239 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
+#: kb/views/services.py:1219 kb/views/services.py:1240 website/templates/suggest.html:1007 website/templates/suggest.html:1076 website/templates/suggest.html:1101 website/templates/suggest_edit.html:1234 website/templates/suggest_edit.html:1303 website/templates/suggest_edit.html:1331
 msgid "Only PNG, JPG, GIF, or WEBP images are allowed."
 msgstr "Yalnızca PNG, JPG, GIF veya WEBP görsellerine izin verilir."
 
@@ -2846,19 +2866,19 @@ msgstr "OpenKB AI geçici olarak kullanılamıyor. Lütfen daha sonra yeniden de
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI düşünüyor..."
 
-#: kb/admin.py:248 kb/models.py:1252
+#: kb/admin.py:249 kb/models.py:1261
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "24 saatte OpenKB AI istemleri"
 
-#: kb/models.py:985
+#: kb/models.py:983
 msgid "OpenKB AI question"
 msgstr "OpenKB AI sorusu"
 
-#: kb/models.py:986
+#: kb/models.py:984
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI hız sınırına takıldı"
 
-#: kb/admin.py:2699
+#: kb/admin.py:2718
 msgid "OpenKB AI rate limits"
 msgstr "OpenKB AI hız sınırları"
 
@@ -2870,11 +2890,11 @@ msgstr "OpenKB AI yanıt vermek için çok uzun süre aldı. Lütfen daha sonra 
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "OpenKB veri klasörü bulunamadı. settings.py içindeki OPENKB_DATA_DIR ayarını kontrol edin."
 
-#: kb/admin.py:2341
+#: kb/admin.py:2343
 msgid "OpenKB files"
 msgstr "OpenKB dosyaları"
 
-#: kb/admin.py:275 kb/models.py:1225
+#: kb/admin.py:277 kb/models.py:1234
 msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
 msgstr "Virgül, boşluk veya yeni satırla ayrılmış isteğe bağlı IPv4/IPv6 adresleri veya CIDR aralıkları. Örnekler: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. İzin listesi devre dışıyken boş bırakın."
 
@@ -2886,15 +2906,15 @@ msgstr "Özgün ad"
 msgid "Original size"
 msgstr "Özgün boyut"
 
-#: kb/models.py:434
+#: kb/models.py:431
 msgid "Original workflow status saved so the article can be restored from the deletion queue."
 msgstr "Makalenin silme kuyruğundan geri yüklenebilmesi için özgün iş akışı durumu kaydedildi."
 
-#: kb/models.py:976
+#: kb/models.py:974
 msgid "Orphan article assigned"
 msgstr "Sahipsiz makale atandı"
 
-#: kb/models.py:977
+#: kb/models.py:975
 msgid "Orphan article deleted"
 msgstr "Sahipsiz makale silindi"
 
@@ -2930,7 +2950,7 @@ msgstr "%(page)s / %(total)s. sayfa"
 msgid "Page not found"
 msgstr "Sayfa bulunamadı"
 
-#: kb/admin.py:1202 kb/admin.py:1971 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1204 kb/admin.py:1973 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Parola"
 
@@ -2950,31 +2970,31 @@ msgstr "Parola ile oturum açma başarısız"
 msgid "Password login success"
 msgstr "Parola ile oturum açma başarılı"
 
-#: kb/views/services.py:3173
+#: kb/views/services.py:3205
 msgid "Password must be at least 12 characters long."
 msgstr "Parola en az 12 karakter uzunluğunda olmalıdır."
 
-#: kb/views/services.py:3177
+#: kb/views/services.py:3209
 msgid "Password must include at least 1 lowercase letter."
 msgstr "Parola en az 1 küçük harf içermelidir."
 
-#: kb/views/services.py:3179
+#: kb/views/services.py:3211
 msgid "Password must include at least 1 number."
 msgstr "Parola en az 1 sayı içermelidir."
 
-#: kb/views/services.py:3181
+#: kb/views/services.py:3213
 msgid "Password must include at least 1 special character."
 msgstr "Parola en az 1 özel karakter içermelidir."
 
-#: kb/views/services.py:3175
+#: kb/views/services.py:3207
 msgid "Password must include at least 1 uppercase letter."
 msgstr "Parola en az 1 büyük harf içermelidir."
 
-#: kb/views/services.py:3190
+#: kb/views/services.py:3222
 msgid "Password must not contain the name part of your email address."
 msgstr "Parola, e-posta adresinizin ad bölümünü içermemelidir."
 
-#: kb/views/services.py:3188
+#: kb/views/services.py:3220
 msgid "Password must not contain your username."
 msgstr "Parola kullanıcı adınızı içermemelidir."
 
@@ -2990,15 +3010,15 @@ msgstr "Parola şirket parolanızla eşitlenir."
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Parolanız şirket parolanızla eşitlenir. Lütfen parolanızı şirket parola sistemi üzerinden değiştirin."
 
-#: kb/admin.py:1794
+#: kb/admin.py:1796
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "Seçilen %(count)d profil için parola/MFA kilit sayaçları sıfırlandı."
 
-#: kb/admin.py:1573
+#: kb/admin.py:1575
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "Seçilen %(count)d kullanıcı için parola/MFA kilit sayaçları sıfırlandı."
 
-#: kb/admin.py:1457
+#: kb/admin.py:1459
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "%(username)s için parola/MFA kilit sayaçları sıfırlandı."
 
@@ -3018,7 +3038,7 @@ msgstr "Bir YouTube veya Vimeo bağlantısı yapıştırın. Doğrudan video dos
 msgid "Pasted images"
 msgstr "Yapıştırılan resimler"
 
-#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2105 kb/admin.py:2262
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2107 kb/admin.py:2264
 msgid "Path"
 msgstr "Yol"
 
@@ -3038,7 +3058,7 @@ msgstr "Onay bekliyor"
 msgid "Pending article pages"
 msgstr "Bekleyen makale sayfaları"
 
-#: kb/models.py:712
+#: kb/models.py:710
 msgid "Pending deletion approval"
 msgstr "Bekleyen silme onayı"
 
@@ -3070,7 +3090,7 @@ msgstr "Bekleyen güncelleme - görsel varlıkları"
 msgid "Pending update keywords"
 msgstr "Bekleyen güncelleme - anahtar kelimeler"
 
-#: kb/admin.py:2330
+#: kb/admin.py:2332
 msgid "Pending update review"
 msgstr "Bekleyen güncelleme - inceleme"
 
@@ -3090,7 +3110,7 @@ msgstr "Bekleyen güncellemeler yalnızca beklemede tutulabilir, Yayınlandı ol
 msgid "Permalink"
 msgstr "Kalıcı bağlantı"
 
-#: kb/admin.py:205 kb/models.py:454 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
+#: kb/admin.py:205 kb/models.py:451 website/templates/admin_deletion_queue.html:125 website/templates/admin_deletion_queue_confirm.html:39
 msgid "Permanent deletion after"
 msgstr "Kalıcı silme zamanı"
 
@@ -3110,11 +3130,11 @@ msgstr "%(count)s sahipsiz makale kalıcı olarak silindi."
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "%(count)s kuyruktaki makale kalıcı olarak silindi."
 
-#: kb/admin.py:879
+#: kb/admin.py:881
 msgid "Permission guide"
 msgstr "İzin rehberi"
 
-#: kb/admin.py:1105
+#: kb/admin.py:1107
 msgid "Permissions"
 msgstr "İzinler"
 
@@ -3146,7 +3166,7 @@ msgstr "Bir arama değeri girin."
 msgid "Please enter a username or email to assign the selected articles to."
 msgstr "Seçilen makaleleri atamak için kullanıcı adı veya e-posta girin."
 
-#: website/templates/mfa_verify.html:39
+#: website/templates/_mfa_login_timeout.html:11
 msgid "Please enter your MFA/OTP code to continue."
 msgstr "Devam etmek için MFA/OTP kodunuzu girin."
 
@@ -3154,11 +3174,11 @@ msgstr "Devam etmek için MFA/OTP kodunuzu girin."
 msgid "Please select at least one orphan article first."
 msgstr "Önce en az bir sahipsiz makale seçin."
 
-#: kb/views/mfa.py:184
+#: kb/views/mfa.py:295
 msgid "Please sign in before setting up MFA."
 msgstr "MFA kurmadan önce oturum açın."
 
-#: kb/views/mfa.py:283
+#: kb/views/mfa.py:400
 msgid "Please sign in before verifying MFA."
 msgstr "MFA doğrulamadan önce oturum açın."
 
@@ -3190,7 +3210,7 @@ msgstr "Lütfen kısa bir süre bekleyip yeniden deneyin."
 msgid "Please wait briefly before trying again."
 msgstr "Yeniden denemeden önce lütfen kısa bir süre bekleyin."
 
-#: kb/admin.py:2781
+#: kb/admin.py:2801
 msgid "Policy guide"
 msgstr "İlke rehberi"
 
@@ -3202,11 +3222,11 @@ msgstr "Destekleyen"
 msgid "Powered by openKB"
 msgstr "openKB tarafından desteklenir"
 
-#: kb/admin.py:111 kb/admin.py:1188
+#: kb/admin.py:111 kb/admin.py:1190
 msgid "Preferred language"
 msgstr "Tercih edilen dil"
 
-#: kb/admin.py:265 kb/models.py:66
+#: kb/admin.py:266 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "Ana wiki kullanıcı arayüzü için tercih edilen dil."
 
@@ -3230,23 +3250,23 @@ msgstr "Önceki sahip"
 msgid "Previous status"
 msgstr "Önceki durum"
 
-#: kb/admin.py:202 kb/models.py:433
+#: kb/admin.py:202 kb/models.py:430
 msgid "Previous status before deletion queue"
 msgstr "Silme kuyruğundan önceki önceki durum"
 
-#: kb/admin.py:1173
+#: kb/admin.py:1175
 msgid "Profile account type"
 msgstr "Profil hesap türü"
 
-#: kb/models.py:988
+#: kb/models.py:986
 msgid "Profile email updated"
 msgstr "Profil e-posta adresi güncellendi"
 
-#: kb/models.py:989
+#: kb/models.py:987
 msgid "Profile password changed"
 msgstr "Profil parolası değiştirildi"
 
-#: kb/models.py:324 kb/views/services.py:452
+#: kb/models.py:324 kb/views/services.py:453
 msgid "Public article"
 msgstr "Herkese açık makale"
 
@@ -3306,7 +3326,7 @@ msgstr "Sahipsiz makale temizliğinden kuyruğa alındı."
 msgid "Ran admin action '%(action)s'"
 msgstr "'%(action)s' yönetici işlemi çalıştırıldı"
 
-#: kb/admin.py:2198
+#: kb/admin.py:2200
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "'%(action)s' yönetici işlemi %(target)s üzerinde çalıştırıldı"
 
@@ -3330,7 +3350,7 @@ msgstr "Zamanlanmış kalıcı silme için hazır"
 msgid "Recommended articles"
 msgstr "Önerilen makaleler"
 
-#: kb/admin.py:2245
+#: kb/admin.py:2247
 msgid "Redirect"
 msgstr "Yönlendir"
 
@@ -3346,7 +3366,7 @@ msgstr "Yenile"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "Sayfayı yenileyip yeniden deneyin. Sorun devam ederse yeniden oturum açın."
 
-#: kb/admin.py:1217 kb/admin.py:786 kb/permissions.py:54
+#: kb/admin.py:1219 kb/admin.py:788 kb/permissions.py:54
 msgid "Regular User"
 msgstr "Normal Kullanıcı"
 
@@ -3354,7 +3374,7 @@ msgstr "Normal Kullanıcı"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "Normal Kullanıcı, yedek herkese açık görüntüleyici rolüdür. İç roller, herkese açık makale görüntülemeyi de içeren eklenti rolleridir. Özel birleşimler için doğrudan kullanıcı izinleri yine de işaretlenebilir. Django, grup izinlerini ve doğrudan kullanıcı izinlerini birlikte değerlendirir."
 
-#: kb/admin.py:1668
+#: kb/admin.py:1670
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Normal Kullanıcı rolü, seçilen %(count)d kullanıcıya atandı."
 
@@ -3378,11 +3398,11 @@ msgstr "Görseli makaleden kaldır"
 msgid "Remove search history item"
 msgstr "Arama geçmişi öğesini kaldır"
 
-#: kb/models.py:824
+#: kb/models.py:822
 msgid "Removed by uploader from editor"
 msgstr "Yükleyen tarafından düzenleyiciden kaldırıldı"
 
-#: kb/admin.py:256 kb/models.py:1312
+#: kb/admin.py:257 kb/models.py:1321
 msgid "Repeat count"
 msgstr "Tekrar sayısı"
 
@@ -3406,19 +3426,19 @@ msgstr "İstek zaman aşımına uğradı"
 msgid "Request too large"
 msgstr "İstek çok büyük"
 
-#: kb/admin.py:1382 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1384 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "MFA'yı sıfırla"
 
-#: kb/admin.py:1511
+#: kb/admin.py:1513
 msgid "Reset MFA for %(username)s"
 msgstr "%(username)s için MFA sıfırla"
 
-#: kb/admin.py:1518
+#: kb/admin.py:1520
 msgid "Reset MFA for selected users"
 msgstr "Seçili kullanıcılar için MFA’yı sıfırla"
 
-#: kb/admin.py:1495 kb/admin.py:1534 kb/admin.py:1863
+#: kb/admin.py:1497 kb/admin.py:1536 kb/admin.py:1865
 msgid "Reset MFA for user %(username)s"
 msgstr "%(username)s kullanıcısı için MFA'yı sıfırla"
 
@@ -3434,31 +3454,31 @@ msgstr "Sıfırlanma zamanı"
 msgid "Reset lockout now"
 msgstr "Kilidi şimdi sıfırla"
 
-#: kb/admin.py:1398
+#: kb/admin.py:1400
 msgid "Reset password/MFA lockout"
 msgstr "Parola/MFA kilidini sıfırla"
 
-#: kb/admin.py:1465
+#: kb/admin.py:1467
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "%(username)s için parola/MFA kilidini sıfırla"
 
-#: kb/admin.py:1767
+#: kb/admin.py:1769
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "Seçilen profiller için parola/MFA kilidini sıfırla"
 
-#: kb/admin.py:1546
+#: kb/admin.py:1548
 msgid "Reset password/MFA lockout for selected users"
 msgstr "Seçilen kullanıcılar için parola/MFA kilidini sıfırla"
 
-#: kb/admin.py:1451 kb/admin.py:1566 kb/admin.py:1787
+#: kb/admin.py:1453 kb/admin.py:1568 kb/admin.py:1789
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "%(username)s kullanıcısı için parola/MFA kilidini sıfırla"
 
-#: kb/admin.py:1847
+#: kb/admin.py:1849
 msgid "Reset selected MFA devices"
 msgstr "Seçili MFA cihazlarını sıfırla"
 
-#: kb/admin.py:1841
+#: kb/admin.py:1843
 msgid "Reset this user's MFA"
 msgstr "Bu kullanıcının MFA’sını sıfırla"
 
@@ -3466,7 +3486,7 @@ msgstr "Bu kullanıcının MFA’sını sıfırla"
 msgid "Reset to original"
 msgstr "Özgün boyuta sıfırla"
 
-#: kb/admin.py:1383
+#: kb/admin.py:1385
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Bu kullanıcının kimlik doğrulayıcısını sıfırlar ve yeni bir QR kurulumu gerektirir. Yeni kimlik doğrulayıcı anahtarı özeldir ve yöneticilere gösterilmez."
 
@@ -3530,7 +3550,7 @@ msgstr "Genel ve iç gönderimleri tek sayfadan inceleyin. Kuyruklar arasında g
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "Onay bekleyen genel makaleleri ve herkese açık bekleyen güncellemeleri inceleyin."
 
-#: kb/admin.py:189 kb/admin.py:2440
+#: kb/admin.py:189 kb/admin.py:2442
 msgid "Review history"
 msgstr "İnceleme geçmişi"
 
@@ -3662,11 +3682,11 @@ msgstr "Tümünü seç"
 msgid "Select all stray files"
 msgstr "Tüm gereksiz dosyaları seç"
 
-#: kb/admin.py:904
+#: kb/admin.py:906
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "Bu gruba ait olması gereken kullanıcıları seçin. Kullanıcıları aramak için soldaki filtre kutusunu kullanın, seçilen kullanıcıları sağa taşıyın ve ardından kaydedin. Bir kullanıcıyı sağdan kaldırmak yalnızca bu grup üyeliğini kaldırır."
 
-#: kb/admin.py:2251 kb/views/errors.py:65
+#: kb/admin.py:2253 kb/views/errors.py:65
 msgid "Server error"
 msgstr "Sunucu hatası"
 
@@ -3674,31 +3694,31 @@ msgstr "Sunucu hatası"
 msgid "Service unavailable"
 msgstr "Hizmet kullanılamıyor"
 
-#: kb/admin.py:1644
+#: kb/admin.py:1646
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "%(username)s kullanıcısının rolünü %(role)s (%(status)s) olarak ayarla"
 
-#: kb/admin.py:1701
+#: kb/admin.py:1703
 msgid "Set selected users as Admin Users"
 msgstr "Seçilen kullanıcıları Yönetici Kullanıcılar olarak ayarla"
 
-#: kb/admin.py:1681
+#: kb/admin.py:1683
 msgid "Set selected users as Article Approver"
 msgstr "Seçilen kullanıcıları Makale Onaylayıcısı olarak ayarla"
 
-#: kb/admin.py:1691
+#: kb/admin.py:1693
 msgid "Set selected users as Article Manager"
 msgstr "Seçilen kullanıcıları Makale Yöneticisi olarak ayarla"
 
-#: kb/admin.py:1671
+#: kb/admin.py:1673
 msgid "Set selected users as Article Writer"
 msgstr "Seçilen kullanıcıları Makale Yazarı olarak ayarla"
 
-#: kb/admin.py:1577
+#: kb/admin.py:1579
 msgid "Set selected users as Disabled User"
 msgstr "Seçilen kullanıcıları Devre Dışı Kullanıcı olarak ayarla"
 
-#: kb/admin.py:1661
+#: kb/admin.py:1663
 msgid "Set selected users as Regular User"
 msgstr "Seçilen kullanıcıları Normal Kullanıcı olarak ayarla"
 
@@ -3706,7 +3726,7 @@ msgstr "Seçilen kullanıcıları Normal Kullanıcı olarak ayarla"
 msgid "Set size"
 msgstr "Boyutu ayarla"
 
-#: kb/admin.py:774
+#: kb/admin.py:776
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Kullanıcının normal rolünü Gruplar bölümünden ayarlayın. Özel rol dışı gruplar daha sonra bildirimler gibi amaçlar için kullanılabilir."
 
@@ -3718,11 +3738,11 @@ msgstr "MFA'yı ayarla"
 msgid "Set up MFA before accessing the admin site."
 msgstr "Yönetici sitesine erişmeden önce MFA'yı kurun."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:478
+#: kb/views/auth.py:392 kb/views/mfa.py:611
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Hassas hesap ayrıntılarını değiştirmeden önce MFA kurun."
 
-#: kb/views/services.py:765
+#: kb/views/services.py:766
 msgid "Set up MFA before deleting a published article."
 msgstr "Yayınlanmış bir makaleyi silmeden önce MFA'yı kurun."
 
@@ -3730,7 +3750,7 @@ msgstr "Yayınlanmış bir makaleyi silmeden önce MFA'yı kurun."
 msgid "Set up authenticator"
 msgstr "Kimlik doğrulayıcıyı kur"
 
-#: kb/admin.py:1369 kb/mfa.py:136
+#: kb/admin.py:1371 kb/mfa.py:244
 msgid "Setup pending"
 msgstr "Kurulum beklemede"
 
@@ -3786,11 +3806,11 @@ msgstr "Yerel Bilgi Deposu hesabınızla oturum açın."
 msgid "Sign out and go to sign in"
 msgstr "Oturumu kapat ve oturum açma sayfasına git"
 
-#: kb/admin.py:100 kb/admin.py:252 kb/models.py:1262
+#: kb/admin.py:100 kb/admin.py:253 kb/models.py:1271
 msgid "Site setting"
 msgstr "Site ayarı"
 
-#: kb/admin.py:100 kb/models.py:1263 kb/models.py:1266
+#: kb/admin.py:100 kb/models.py:1272 kb/models.py:1275
 msgid "Site settings"
 msgstr "Site ayarları"
 
@@ -3798,7 +3818,7 @@ msgstr "Site ayarları"
 msgid "Size"
 msgstr "Boyut"
 
-#: kb/admin.py:2911
+#: kb/admin.py:2942
 msgid "Size (KB)"
 msgstr "Boyut (KB)"
 
@@ -3822,7 +3842,7 @@ msgstr "İçe aktarma ZIP dosyasındaki yinelenen başlık atlandı: %(title)s"
 msgid "Skipped invalid path: %(filename)s"
 msgstr "Geçersiz yol atlandı: %(filename)s"
 
-#: kb/models.py:1015
+#: kb/models.py:1013
 msgid "Snapshot fields keep the audit trail after an article is deleted. This relation intentionally does not enforce a database constraint because audit logs are append-only."
 msgstr "Anlık görüntü alanları, bir makale silindikten sonra denetim izini korur. Denetim günlükleri yalnızca eklenebilir olduğundan bu ilişki kasıtlı olarak veritabanı kısıtlaması uygulamaz."
 
@@ -3862,15 +3882,15 @@ msgstr "Kaynak"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "Bölünmüş dışa aktarma paketi içe aktarılabilir herhangi bir parça zip dosyası içermiyordu."
 
-#: kb/models.py:1327
+#: kb/models.py:1336
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "Aşama %(order)s: %(failures)s başarısızlık -> %(block)s saniye, %(repeat)s kez tekrarla"
 
-#: kb/admin.py:2740
+#: kb/admin.py:2760
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "Aşama %(order)s: %(failures)s başarısızlık -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:253 kb/models.py:1297
+#: kb/admin.py:254 kb/models.py:1306
 msgid "Stage order"
 msgstr "Aşama sırası"
 
@@ -3878,7 +3898,7 @@ msgstr "Aşama sırası"
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Eşleşen mevcut anahtar kelimeleri görmek için başlığı veya makale gövdesini yazmaya başlayın."
 
-#: kb/admin.py:185 kb/admin.py:2256 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
+#: kb/admin.py:185 kb/admin.py:2258 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "Durum"
 
@@ -3886,11 +3906,11 @@ msgstr "Durum"
 msgid "Status code"
 msgstr "Durum kodu"
 
-#: kb/admin.py:2664
+#: kb/admin.py:2667
 msgid "Stray upload cleanup"
 msgstr "Sahipsiz yüklemeleri temizleme"
 
-#: kb/admin.py:236 kb/models.py:1139
+#: kb/admin.py:236 kb/models.py:1137
 msgid "Stray upload cleanup minimum age (minutes)"
 msgstr "Sahipsiz yükleme temizliği minimum yaşı (dakika)"
 
@@ -3918,7 +3938,7 @@ msgstr "Gönderen"
 msgid "Success"
 msgstr "Başarılı"
 
-#: kb/admin.py:2775
+#: kb/admin.py:2795
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "Başarılı parola doğrulaması parola kilit geçmişini sıfırlar. Başarılı MFA doğrulaması MFA kilit geçmişini sıfırlar. Yöneticiler, Kullanıcı yönetici sayfasından bir kullanıcının sayaçlarını sıfırlayabilir."
 
@@ -3926,11 +3946,11 @@ msgstr "Başarılı parola doğrulaması parola kilit geçmişini sıfırlar. Ba
 msgid "Suggest article"
 msgstr "Makale öner"
 
-#: kb/admin.py:98 kb/models.py:479
+#: kb/admin.py:98 kb/models.py:476
 msgid "Suggested Article"
 msgstr "Önerilen makale"
 
-#: kb/admin.py:98 kb/models.py:480
+#: kb/admin.py:98 kb/models.py:477
 msgid "Suggested Articles"
 msgstr "Önerilen makaleler"
 
@@ -3946,7 +3966,7 @@ msgstr "Önerilen anahtar kelimeler"
 msgid "Supported zip format"
 msgstr "Desteklenen zip biçimi"
 
-#: kb/admin.py:2236
+#: kb/admin.py:2238
 msgid "Target"
 msgstr "Hedef"
 
@@ -3954,7 +3974,7 @@ msgstr "Hedef"
 msgid "Target app"
 msgstr "Hedef uygulama"
 
-#: kb/admin.py:144 kb/admin.py:2213
+#: kb/admin.py:144 kb/admin.py:2215
 msgid "Target model"
 msgstr "Hedef model"
 
@@ -3970,7 +3990,7 @@ msgstr "Hedef nesne kimliği"
 msgid "Thank you. Your vote has been saved."
 msgstr "Teşekkürler. Oyunuz kaydedildi."
 
-#: kb/admin.py:1240
+#: kb/admin.py:1242
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "Etkin onay kutusu hesabın oturum açıp açamayacağını denetler. Normal Kullanıcı yalnızca yedek görüntüleyici rolüdür ve Yazar, Onaylayıcı, Yönetici veya yükseltilmiş iç roller atandığında otomatik olarak kaldırılır. İç Kullanıcı bir eklenti görüntüleyici rolüdür ve Normal Kullanıcı ile birleştirilebilir. Özel rol dışı gruplar daha sonra bildirimler veya bölüm gruplaması için kullanılmaya devam edebilir."
 
@@ -3990,7 +4010,7 @@ msgstr "Uygulamanın yanıt vermesi çok uzun sürdü."
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "Makaleler güvenli şekilde atanamadı. Hiçbir atama uygulanmadı. Lütfen günlükleri kontrol edip tekrar deneyin."
 
-#: kb/admin.py:833
+#: kb/admin.py:835
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Aşağıdaki onay kutuları yalnızca makale erişimi için kullanıcıya özel istisnalardır. Bir kullanıcının yeni bir grup oluşturmadan grubundan biraz daha fazla makale erişimine ihtiyacı olduğunda yararlıdır. Django Yönetici erişimi yalnızca Yönetici Kullanıcılar grubu/süper kullanıcı durumu aracılığıyla verilir."
 
@@ -4050,7 +4070,7 @@ msgstr "İstek doğrulanamadı."
 msgid "The reset is recorded in the authentication activity log."
 msgstr "Sıfırlama, kimlik doğrulama etkinlik günlüğüne kaydedilir."
 
-#: kb/admin.py:2768
+#: kb/admin.py:2788
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "Aynı aşamalı ilke parola ile oturum açma hataları ve MFA kodu hataları için kullanılır; ancak parola ve MFA sayaçları kullanıcı başına ayrı izlenir."
 
@@ -4086,7 +4106,7 @@ msgstr "Sunucu isteğinizi tamamlayamadı."
 msgid "The submitted file or request is larger than the permitted limit."
 msgstr "Gönderilen dosya veya istek izin verilen sınırdan daha büyük."
 
-#: kb/views/services.py:1230
+#: kb/views/services.py:1231
 msgid "The uploaded file is not a valid image."
 msgstr "Yüklenen dosya geçerli bir görsel değil."
 
@@ -4102,7 +4122,7 @@ msgstr "Makale veya güncelleme Reddedildi olarak işaretlendiğinde bu yorumlar
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Bu dosyalar kullanılmıyor gibi görünüyor. Yükleyen bilgilerini kontrol edin ve yalnızca artık gerekli olmayan dosyaları silin."
 
-#: kb/views/mfa.py:307 kb/views/mfa.py:484
+#: kb/views/mfa.py:424 kb/views/mfa.py:617
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Gizli anahtarı okunamadığından bu MFA cihazı doğrulanamıyor. Bir yöneticiden MFA'nızı sıfırlamasını isteyin veya yöneticilerin erişimi kilitliyse sunucu komut satırından sıfırlayın."
 
@@ -4110,15 +4130,15 @@ msgstr "Gizli anahtarı okunamadığından bu MFA cihazı doğrulanamıyor. Bir 
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Gizli anahtarı okunamadığından bu MFA cihazı doğrulanamıyor. Başka bir yöneticiden bu hesap için MFA'yı sıfırlamasını isteyin."
 
-#: kb/views/services.py:2467
+#: kb/views/services.py:2468
 msgid "This SharePoint or OneDrive link does not provide a directly playable video anonymously. Use a direct video link that can be viewed without signing in."
 msgstr "Bu SharePoint veya OneDrive bağlantısı, oturum açmadan doğrudan oynatılabilen bir video sağlamıyor. Oturum açmadan görüntülenebilen doğrudan bir video bağlantısı kullanın."
 
-#: kb/views/services.py:2472
+#: kb/views/services.py:2473
 msgid "This SharePoint or OneDrive video cannot be accessed anonymously. Check its sharing permissions and use a link that can be viewed without signing in."
 msgstr "Bu SharePoint veya OneDrive videosuna oturum açmadan erişilemiyor. Paylaşım izinlerini kontrol edin ve oturum açmadan görüntülenebilen bir bağlantı kullanın."
 
-#: kb/views/services.py:2462
+#: kb/views/services.py:2463
 msgid "This SharePoint or OneDrive video requires external sign-in and cannot be embedded. Use a video link that can be viewed without signing in."
 msgstr "Bu SharePoint veya OneDrive videosu harici oturum açma gerektiriyor ve gömülemiyor. Oturum açmadan görüntülenebilen bir video bağlantısı kullanın."
 
@@ -4130,11 +4150,11 @@ msgstr "Bu işlem geri alınamaz."
 msgid "This article also has a pending update, but it is still treated as a published article."
 msgstr "Bu makalenin bekleyen bir güncellemesi de var; ancak yine de yayımlanmış makale olarak değerlendirilir."
 
-#: kb/views/services.py:1330
+#: kb/views/services.py:1331
 msgid "This article has %(count)s image(s), but the maximum allowed is %(limit)s image(s). Please remove some images before saving."
 msgstr "Bu makalede %(count)s görsel var, ancak izin verilen azami sayı %(limit)s. Kaydetmeden önce bazı görselleri kaldırın."
 
-#: kb/views/services.py:1329
+#: kb/views/services.py:1330
 msgid "This article has reached the image upload limit of %(limit)s image(s)."
 msgstr "Bu makale %(limit)s görsel yükleme sınırına ulaştı."
 
@@ -4162,11 +4182,11 @@ msgstr "Bu görsel zaten bu taslağa yüklendi. Önce X önizleme düğmesini ku
 msgid "This image is not removable from this editing session."
 msgstr "Bu görsel bu düzenleme oturumundan kaldırılamaz."
 
-#: kb/admin.py:847
+#: kb/admin.py:849
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "Bu satır, Django grup izinlerini, doğrudan kullanıcı izinlerini ve süper kullanıcı durumunu birleştirdikten sonraki nihai sonucu gösterir."
 
-#: kb/admin.py:840
+#: kb/admin.py:842
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "Bu işlem yalnızca doğrudan kullanıcı iznini kaldırır. Kullanıcının grubu aynı izni hâlâ veriyorsa etkili izin etkin kalır."
 
@@ -4198,7 +4218,7 @@ msgstr "Beğenme"
 msgid "Thumbs up"
 msgstr "Beğen"
 
-#: kb/admin.py:2355 kb/admin.py:758
+#: kb/admin.py:2357 kb/admin.py:760
 msgid "Timestamps"
 msgstr "Zaman damgaları"
 
@@ -4214,7 +4234,7 @@ msgstr "Gezinmeyi aç/kapat"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Çok fazla OpenKB AI sorusu. Lütfen yeniden denemeden önce bekleyin."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:422
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:555
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonra yeniden deneyin."
 
@@ -4222,7 +4242,7 @@ msgstr "Çok fazla başarısız oturum açma denemesi. Lütfen %(duration)s sonr
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Çok fazla görsel yükleme denemesi yapıldı. Bir süre bekleyip tekrar deneyin."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:223 kb/views/mfa.py:254 kb/views/mfa.py:335 kb/views/mfa.py:376 kb/views/mfa.py:512 kb/views/services.py:790
+#: kb/views/auth.py:416 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/mfa.py:460 kb/views/mfa.py:501 kb/views/mfa.py:645 kb/views/services.py:791
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Çok fazla yanlış MFA kodu. Lütfen %(duration)s sonra yeniden deneyin."
 
@@ -4286,7 +4306,7 @@ msgstr "Tüm seçimleri kaldır"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "Kullanıcının ana wiki sitesine erişimini engellemek için bu işareti kaldırın."
 
-#: kb/admin.py:839
+#: kb/admin.py:841
 msgid "Unticking a checkbox"
 msgstr "Onay kutusunun işaretini kaldırma"
 
@@ -4330,7 +4350,7 @@ msgstr "Güncelleme durumu"
 msgid "Update submitted at"
 msgstr "Güncelleme gönderilme zamanı"
 
-#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:249
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:250
 msgid "Updated at"
 msgstr "Güncellenme zamanı"
 
@@ -4362,7 +4382,7 @@ msgstr "Yükleyen"
 msgid "Uploader account type snapshot"
 msgstr "Yükleyen hesap türü anlık görüntüsü"
 
-#: kb/admin.py:2906
+#: kb/admin.py:2937
 msgid "Uploader display"
 msgstr "Yükleyen görünen adı"
 
@@ -4374,23 +4394,23 @@ msgstr "Yükleyen e-posta anlık görüntüsü"
 msgid "Uploader username snapshot"
 msgstr "Yükleyen kullanıcı adı anlık görüntüsü"
 
-#: kb/admin.py:736
+#: kb/admin.py:738
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "Grupları kullanıcının standart herkese açık makale rolü olarak kullanın. Bu kutuları yalnızca bu kullanıcının grubu dışında ek herkese açık makale izinlerine ihtiyacı olduğunda işaretleyin. Devre Dışı Kullanıcı grubu bu doğrudan izin eklentilerini geçersiz kılar."
 
-#: kb/admin.py:1056
+#: kb/admin.py:1058
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "Kullanıcıları bu role eklemek veya bu rolden kaldırmak için aşağıdaki Grup üyeleri seçicisini kullanın. Tek seferlik istisnalar için belirli kullanıcıyı düzenleyin ve bunun yerine doğrudan Bilgi Deposu izin onay kutularını işaretleyin. Yeni yönetici olmayan kullanıcılar, hesapları oluşturulduğunda otomatik olarak Normal Kullanıcıya eklenir."
 
-#: kb/admin.py:2693
+#: kb/admin.py:2712
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "Aşamalı parola/MFA kilitlerini denetlemek için aşağıdaki satır içi satırları kullanın. Süreleri saniye olarak girin; yönetici sayfası ayrıca dakika/saat/gün dönüşümünü okunabilir biçimde gösterir. repeat_count=0, aşamanın sonsuza kadar tekrar ettiği anlamına gelir ve normalde son satırda kullanılmalıdır."
 
-#: kb/admin.py:1234
+#: kb/admin.py:1236
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "Bu grupları ana erişim modeli olarak kullanın. Devre Dışı Kullanıcı her zaman en yüksek önceliğe sahiptir."
 
-#: kb/admin.py:1294
+#: kb/admin.py:1296
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "Kullanıcı tekrarlanan yanlış parola veya MFA denemeleri nedeniyle geçici olarak engellendiyse bunu kullanın. Yalnızca bu kullanıcı için parola ve MFA kilit sayaçlarını temizler."
 
@@ -4398,11 +4418,11 @@ msgstr "Kullanıcı tekrarlanan yanlış parola veya MFA denemeleri nedeniyle ge
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "Bunu yalnızca kilit açma isteğinin meşru olduğunu doğruladıktan sonra kullanın."
 
-#: kb/admin.py:991
+#: kb/admin.py:993
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "Kullanıcıları bu gruba eklemek veya bu gruptan kaldırmak için bu aranabilir sol/sağ listeyi kullanın. Sağdaki kullanıcılar bu grubun üyesidir. Soldaki kullanıcılar kullanılabilir kullanıcılardır."
 
-#: kb/admin.py:1284
+#: kb/admin.py:1286
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "Bu bölümü kullanıcının kimlik doğrulayıcı kurulumunu sıfırlamak için kullanın. Sıfırlama yeni bir özel kimlik doğrulayıcı sırrı oluşturur ve kullanıcının bir sonraki girişte yeni bir QR kodu taramasını zorunlu kılar."
 
@@ -4418,19 +4438,19 @@ msgstr "Kullanıcı MFA cihazı"
 msgid "User MFA devices"
 msgstr "Kullanıcı MFA cihazları"
 
-#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:1998
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2000
 msgid "User agent"
 msgstr "Kullanıcı aracısı"
 
-#: kb/admin.py:1427 kb/admin.py:1475
+#: kb/admin.py:1429 kb/admin.py:1477
 msgid "User does not exist."
 msgstr "Kullanıcı mevcut değil."
 
-#: kb/admin.py:241 kb/models.py:1191
+#: kb/admin.py:241 kb/models.py:1189
 msgid "User session timeout (hours)"
 msgstr "Kullanıcı oturumu zaman aşımı (saat)"
 
-#: kb/admin.py:2835
+#: kb/admin.py:2855
 msgid "User session timeout readable"
 msgstr "Kullanıcı oturumu zaman aşımı okunabilir"
 
@@ -4442,15 +4462,15 @@ msgstr "Kullanıcı adı"
 msgid "Username changes are managed by administrators."
 msgstr "Kullanıcı adı değişiklikleri yöneticiler tarafından yönetilir."
 
-#: kb/admin.py:1075
+#: kb/admin.py:1077
 msgid "Users"
 msgstr "Kullanıcılar"
 
-#: kb/admin.py:902 kb/admin.py:972
+#: kb/admin.py:904 kb/admin.py:974
 msgid "Users in this group"
 msgstr "Bu gruptaki kullanıcılar"
 
-#: website/templates/mfa_setup.html:64 website/templates/mfa_verify.html:50
+#: website/templates/mfa_setup.html:67 website/templates/mfa_verify.html:51
 msgid "Verify"
 msgstr "Doğrula"
 
@@ -4494,7 +4514,7 @@ msgstr "Görünürlük"
 msgid "Visibility can be changed only before the article is published."
 msgstr "Görünürlük yalnızca makale yayımlanmadan önce değiştirilebilir."
 
-#: kb/admin.py:215 kb/admin.py:2569
+#: kb/admin.py:215 kb/admin.py:2571
 msgid "Vote"
 msgstr "Oy ver"
 
@@ -4506,11 +4526,11 @@ msgstr "Uyarılar / hatalar"
 msgid "Was this article helpful?"
 msgstr "Bu makale faydalı oldu mu?"
 
-#: kb/views/mfa.py:353
+#: kb/views/mfa.py:478
 msgid "Welcome back, %(name)s."
 msgstr "Tekrar hoş geldiniz, %(name)s."
 
-#: kb/views/mfa.py:359
+#: kb/views/mfa.py:484
 msgid "Welcome back."
 msgstr "Tekrar hoş geldiniz."
 
@@ -4570,11 +4590,11 @@ msgstr "Makale ekleme izniniz yok."
 msgid "You do not have permission to add internal articles."
 msgstr "İç makale ekleme izniniz yok."
 
-#: kb/admin.py:2363
+#: kb/admin.py:2365
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "Django Yönetici panelinden makale onaylama izniniz yok."
 
-#: kb/admin.py:1580
+#: kb/admin.py:1582
 msgid "You do not have permission to assign Disabled User."
 msgstr "Devre Dışı Kullanıcı atama izniniz yok."
 
@@ -4586,15 +4606,15 @@ msgstr "Makale yönetme izniniz yok."
 msgid "You do not have permission to manage internal articles."
 msgstr "İç makaleleri yönetme izniniz yok."
 
-#: kb/admin.py:1623
+#: kb/admin.py:1625
 msgid "You do not have permission to modify users."
 msgstr "Kullanıcıları değiştirme izniniz yok."
 
-#: kb/admin.py:491
+#: kb/admin.py:493
 msgid "You do not have permission to perform this admin reset."
 msgstr "Bu yönetici sıfırlamasını gerçekleştirme izniniz yok."
 
-#: kb/admin.py:2397
+#: kb/admin.py:2399
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "Django Yönetici panelinden makale reddetme izniniz yok."
 
@@ -4626,7 +4646,7 @@ msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Yayınlanmış 
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Değişiklikler uygulanmadan önce onaylamanız istenir. Seçilen makaleler hemen kalıcı olarak silinir."
 
-#: kb/views/mfa.py:594
+#: kb/views/mfa.py:727
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA'nız sıfırlandı. Bilgi Deposunu kullanmaya devam etmek için şimdi kimlik doğrulayıcı kurulumunu tamamlayın."
 
@@ -4638,7 +4658,7 @@ msgstr "Hesabınız şu anda devre dışı ve Bilgi Deposuna erişemez. Bunun be
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "Yönetici oturumunuz hareketsizlik nedeniyle sona erdi. Yönetici sitesine yeniden girmek için MFA'yı tekrar doğrulayın."
 
-#: kb/admin.py:1617
+#: kb/admin.py:1619
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Kendi hesabınıza Devre Dışı Kullanıcı rolü atandı. Sonraki istekte hesap devre dışı sayfasına yönlendirileceksiniz."
 
@@ -4646,7 +4666,7 @@ msgstr "Kendi hesabınıza Devre Dışı Kullanıcı rolü atandı. Sonraki iste
 msgid "Your session has expired. Please sign in again before uploading the image."
 msgstr "Oturumunuzun süresi doldu. Görseli yüklemeden önce lütfen tekrar oturum açın."
 
-#: kb/middleware.py:271
+#: kb/middleware.py:272
 msgid "Your session has expired. Please sign in again."
 msgstr "Oturumunuzun süresi doldu. Lütfen tekrar oturum açın."
 
@@ -4670,7 +4690,7 @@ msgstr "yönetici alanı"
 msgid "and all referenced uploaded files. Pending update data is included so the database and OpenKB files remain in sync after import."
 msgstr "ve başvurulan tüm yüklenmiş dosyalar. İçe aktarmadan sonra veritabanı ile OpenKB dosyalarının senkron kalması için bekleyen güncelleme verileri dahil edilir."
 
-#: kb/models.py:1070
+#: kb/models.py:1068
 msgid "anonymous"
 msgstr "anonim"
 
@@ -4690,7 +4710,7 @@ msgstr "makale/güncelleme"
 msgid "confirmed"
 msgstr "onaylandı"
 
-#: kb/models.py:669
+#: kb/models.py:666
 msgid "deleted-user"
 msgstr "silinmiş-kullanıcı"
 
@@ -4698,11 +4718,11 @@ msgstr "silinmiş-kullanıcı"
 msgid "denied"
 msgstr "reddedildi"
 
-#: kb/admin.py:2738
+#: kb/admin.py:2758
 msgid "disabled"
 msgstr "devre dışı"
 
-#: kb/admin.py:2738
+#: kb/admin.py:2758
 msgid "enabled"
 msgstr "etkin"
 
@@ -4710,7 +4730,7 @@ msgstr "etkin"
 msgid "failed"
 msgstr "başarısız"
 
-#: kb/models.py:1326
+#: kb/models.py:1335
 msgid "forever"
 msgstr "sonsuza kadar"
 
@@ -4770,11 +4790,11 @@ msgstr "yönlendirildi"
 msgid "removed %(items)s"
 msgstr "%(items)s kaldırıldı"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2757
 msgid "repeat %(count)s time(s)"
 msgstr "%(count)s kez tekrarla"
 
-#: kb/admin.py:2737
+#: kb/admin.py:2757
 msgid "repeat forever"
 msgstr "sonsuz tekrarla"
 
@@ -4810,14 +4830,14 @@ msgstr "başarılı"
 msgid "that are no longer referenced by any article or wiki Markdown file."
 msgstr "artık hiçbir makale veya wiki Markdown dosyası tarafından başvurulmayan."
 
-#: kb/models.py:1129
+#: kb/models.py:1127
 msgid "unknown admin"
 msgstr "bilinmeyen yönetici"
 
-#: kb/models.py:878
+#: kb/models.py:876
 msgid "unknown user"
 msgstr "bilinmeyen kullanıcı"
 
-#: kb/admin.py:903
+#: kb/admin.py:905
 msgid "users"
 msgstr "kullanıcılar"
