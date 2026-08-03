@@ -1,3 +1,28 @@
+"""Delete expired general and Admin activity-log records.
+
+Run a safe preview from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py cleanup_activity_logs --dry-run
+
+Run the cleanup using the retention configured in Django Admin:
+    sudo docker compose exec web \
+      python manage.py cleanup_activity_logs
+
+Override the retention for one run:
+    sudo docker compose exec web \
+      python manage.py cleanup_activity_logs --days 30
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py cleanup_activity_logs --help
+
+Purpose:
+    Removes ActivityLog and AdminActivityLog rows older than the configured
+    retention period. Use --dry-run first when running this command manually.
+    A retention value of 0 keeps all logs and performs no deletion.
+"""
+
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand

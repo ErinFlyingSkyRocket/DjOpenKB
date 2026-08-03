@@ -1,4 +1,19 @@
-"""Send one operator-selected SMTP relay test message without exposing secrets."""
+"""Send one operator-selected SMTP relay test message without exposing secrets.
+
+Run from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py test_smtp_relay <recipient@example.com>
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py test_smtp_relay --help
+
+Purpose and warning:
+    Sends one real test email through DjOpenKB's configured SMTP relay. The
+    recipient must use a domain allowed by SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS.
+    This command does not print SMTP credentials or detailed secret values.
+"""
 
 from __future__ import annotations
 

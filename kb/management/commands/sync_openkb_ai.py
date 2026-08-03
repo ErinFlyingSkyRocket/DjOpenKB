@@ -1,3 +1,26 @@
+"""Rebuild the public and/or internal OpenKB AI runtime indexes.
+
+Rebuild both indexes from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py sync_openkb_ai --scope all
+
+Rebuild only one scope:
+    sudo docker compose exec web \
+      python manage.py sync_openkb_ai --scope public
+    sudo docker compose exec web \
+      python manage.py sync_openkb_ai --scope internal
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py sync_openkb_ai --help
+
+Purpose:
+    Regenerates OpenKB summaries and indexes from currently published article
+    Markdown. The internal scope includes both public and internal published
+    content, while the public scope must contain public content only.
+"""
+
 from django.core.management.base import BaseCommand, CommandError
 
 from kb.models import SuggestedArticle

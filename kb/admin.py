@@ -239,6 +239,7 @@ def _apply_admin_translation_labels():
             "article_video_max_width_px": "Article video maximum width (px)",
             "auth_activity_log_retention_days": "Authentication activity log retention (days)",
             "session_timeout_hours": "User session timeout (hours)",
+            "mfa_login_timeout_seconds": "MFA login completion timeout (seconds)",
             "activity_log_retention_days": "General activity log retention (days)",
             "admin_log_rows_per_page": "Admin log rows per page",
             "admin_ip_allowlist_enabled": "Enable Admin IP allowlist",
@@ -268,7 +269,8 @@ def _apply_admin_translation_labels():
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "article_video_max_width_px"): "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
-        (SiteSetting, "session_timeout_hours"): "Authenticated and pending-MFA sessions expire after this many hours from sign-in. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
+        (SiteSetting, "session_timeout_hours"): "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
+        (SiteSetting, "mfa_login_timeout_seconds"): "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_ip_allowlist_enabled"): "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed.",
@@ -2676,12 +2678,20 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
             ),
         }),
         (_("Authentication and session settings"), {
-            "fields": ("auth_activity_log_retention_days", "activity_log_retention_days", "admin_log_rows_per_page", "session_timeout_hours", "session_timeout_display"),
+            "fields": (
+                "auth_activity_log_retention_days",
+                "activity_log_retention_days",
+                "admin_log_rows_per_page",
+                "session_timeout_hours",
+                "session_timeout_display",
+                "mfa_login_timeout_seconds",
+                "mfa_login_timeout_display",
+            ),
             "description": _(
                 "Controls authentication/MFA logs, general activity logs, admin log display rows, "
-                "and user session lifetime. Default log retention is 30 days. "
-                "Admin log tables show 200 rows per page by default. "
-                "Sessions default to 8 hours and can be set from 1 to 168 hours."
+                "the signed-in session lifetime, and the time allowed to finish MFA after password verification. "
+                "Default log retention is 30 days. Admin log tables show 200 rows per page by default. "
+                "Sessions default to 8 hours. The MFA login countdown defaults to 60 seconds."
             ),
         }),
         (_("Authentication lockout policy"), {
@@ -2725,6 +2735,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         "auth_lockout_strike_ttl_display",
         "admin_mfa_idle_timeout_display",
         "session_timeout_display",
+        "mfa_login_timeout_display",
         "article_deletion_queue_retention_display",
     )
     inlines = (AuthLockoutPolicyStageInline,)
@@ -2833,6 +2844,17 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         return _("%(hours)s hour(s)") % {"hours": hours}
 
     session_timeout_display.short_description = _("User session timeout readable")
+
+    def mfa_login_timeout_display(self, obj):
+        if not obj:
+            return "-"
+        try:
+            seconds = min(max(int(obj.mfa_login_timeout_seconds), 30), 900)
+        except (TypeError, ValueError):
+            seconds = 60
+        return format_admin_duration_with_seconds(seconds)
+
+    mfa_login_timeout_display.short_description = _("MFA login timeout readable")
 
     def article_deletion_queue_retention_display(self, obj):
         if not obj:

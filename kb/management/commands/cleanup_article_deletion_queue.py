@@ -1,3 +1,28 @@
+"""Permanently purge articles whose deletion-queue recovery period has expired.
+
+Run a safe preview from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py cleanup_article_deletion_queue --dry-run
+
+Run interactively using the Django Admin retention setting:
+    sudo docker compose exec web \
+      python manage.py cleanup_article_deletion_queue
+
+Run non-interactively for the Docker scheduler:
+    sudo docker compose exec web \
+      python manage.py cleanup_article_deletion_queue --noinput
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py cleanup_article_deletion_queue --help
+
+Purpose and warning:
+    Permanently deletes queued articles that are past their recovery deadline.
+    This action removes the article and its related runtime data and cannot be
+    undone through the deletion queue. Use --dry-run before manual cleanup.
+"""
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 

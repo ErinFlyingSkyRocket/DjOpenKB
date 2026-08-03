@@ -1,3 +1,22 @@
+"""Repair known PostgreSQL schema drift after migration consolidation.
+
+Run manually from the Ubuntu server host only when troubleshooting known drift:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py repair_kb_schema --noinput
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py repair_kb_schema --help
+
+Purpose and warning:
+    Adds only the safe, explicitly supported columns handled in this command and
+    preserves existing data. DjOpenKB also invokes it during normal startup.
+    This command is not a replacement for `python manage.py migrate`. Take a
+    database backup before manual schema work and do not extend this file with
+    unreviewed SQL repairs.
+"""
+
 from django.core.management.base import BaseCommand
 from django.db import connection
 

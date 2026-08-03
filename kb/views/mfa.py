@@ -27,13 +27,16 @@ from ..mfa import (
     clear_pending_mfa_login,
     complete_pending_mfa_login,
     get_or_create_mfa_device,
+    get_mfa_login_timeout_seconds,
     reset_mfa_device_for_user,
     get_pending_mfa_user,
     get_totp_issuer,
     mfa_device_secret_is_readable,
     mfa_is_verified,
     mark_mfa_verified,
+    pending_mfa_login_has_expired,
     pending_mfa_next_url,
+    pending_mfa_seconds_remaining,
     start_disabled_account_session,
     user_requires_mfa,
     verify_totp_code,
@@ -140,6 +143,58 @@ def _finish_mfa(request, user):
     return _safe_next_url(request)
 
 
+def _mfa_timeout_context(request):
+    """Return countdown values derived from the fixed server-side deadline."""
+    remaining = pending_mfa_seconds_remaining(request)
+    return {
+        "mfa_login_timeout_active": remaining is not None,
+        "mfa_login_timeout_seconds": get_mfa_login_timeout_seconds(),
+        "mfa_login_timeout_remaining_seconds": remaining,
+    }
+
+
+def _expire_pending_mfa_login(request, *, user=None, source="server_deadline"):
+    """Clear a password-authenticated pending login after its MFA deadline."""
+    user = user or get_pending_mfa_user(request)
+    if user:
+        log_auth_event(
+            request,
+            event_type="mfa_verify_failure",
+            success=False,
+            user=user,
+            username=user.get_username(),
+            details={
+                "reason": "pending_mfa_timeout",
+                "source": source,
+                "timeout_seconds": get_mfa_login_timeout_seconds(),
+            },
+        )
+
+    clear_mfa_verified(request)
+    clear_pending_mfa_login(request)
+    request.session.flush()
+    messages.warning(
+        request,
+        _("MFA verification timed out. Please enter your username and password again."),
+    )
+
+    response = redirect("root_login")
+    try:
+        from kb.middleware import set_strict_no_cache_headers
+    except Exception:
+        set_strict_no_cache_headers = None
+    if set_strict_no_cache_headers:
+        response = set_strict_no_cache_headers(response)
+    response["Clear-Site-Data"] = '"cache"'
+    return response
+
+
+def _enforce_pending_mfa_timeout(request):
+    if pending_mfa_login_has_expired(request):
+        return _expire_pending_mfa_login(request)
+    return None
+
+
 @require_POST
 def cancel_mfa_login(request):
     """Cancel a password-authenticated pending-MFA login and return to login.
@@ -149,6 +204,14 @@ def cancel_mfa_login(request):
     session state and sends the browser back to the login entry page.
     """
     pending_user = get_pending_mfa_user(request)
+    timed_out = (request.POST.get("reason") or "").strip().lower() == "timeout"
+
+    if pending_user and timed_out:
+        return _expire_pending_mfa_login(
+            request,
+            user=pending_user,
+            source="countdown",
+        )
 
     if pending_user:
         try:
@@ -179,6 +242,10 @@ def cancel_mfa_login(request):
 
 
 def mfa_setup(request):
+    timeout_response = _enforce_pending_mfa_timeout(request)
+    if timeout_response is not None:
+        return timeout_response
+
     user = _mfa_subject_user(request)
     if not user:
         messages.warning(request, _("Please sign in before setting up MFA."))
@@ -273,11 +340,16 @@ def mfa_setup(request):
             "manual_secret": secret,
             "next": _safe_next_url(request),
             "mfa_user": user,
+            **_mfa_timeout_context(request),
         },
     )
 
 
 def mfa_verify(request):
+    timeout_response = _enforce_pending_mfa_timeout(request)
+    if timeout_response is not None:
+        return timeout_response
+
     user = _mfa_subject_user(request)
     if not user:
         messages.warning(request, _("Please sign in before verifying MFA."))
@@ -309,7 +381,15 @@ def mfa_verify(request):
                 "Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
             ),
         )
-        return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
+        return render(
+            request,
+            "mfa_verify.html",
+            {
+                "next": _safe_next_url(request),
+                "mfa_user": user,
+                **_mfa_timeout_context(request),
+            },
+        )
 
     if request.method == "POST":
         locked, retry_after, identifier = get_auth_lockout_status(
@@ -387,7 +467,15 @@ def mfa_verify(request):
             )
             messages.error(request, _("Invalid authenticator code. Please try again."))
 
-    return render(request, "mfa_verify.html", {"next": _safe_next_url(request), "mfa_user": user})
+    return render(
+        request,
+        "mfa_verify.html",
+        {
+            "next": _safe_next_url(request),
+            "mfa_user": user,
+            **_mfa_timeout_context(request),
+        },
+    )
 
 
 def _verify_mfa_reset_password(request, user):

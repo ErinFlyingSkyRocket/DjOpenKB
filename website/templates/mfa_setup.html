@@ -39,6 +39,8 @@
                     {% trans "MFA setup is required to continue." %}
                 </div>
 
+                {% include "_mfa_login_timeout.html" %}
+
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
                 {% endfor %}

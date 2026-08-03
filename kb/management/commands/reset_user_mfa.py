@@ -1,3 +1,24 @@
+"""Reset one user's MFA device and invalidate the user's active sessions.
+
+Run interactively from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py reset_user_mfa alice
+
+Confirm non-interactively:
+    sudo docker compose exec web \
+      python manage.py reset_user_mfa alice --yes
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py reset_user_mfa --help
+
+Purpose and warning:
+    Removes the selected user's current MFA enrolment and clears active sessions.
+    The user must sign in again and enrol a new authenticator. This does not
+    reset the user's local or Active Directory password.
+"""
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q

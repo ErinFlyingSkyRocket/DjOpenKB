@@ -1,3 +1,28 @@
+"""Find and remove uploaded image files that are no longer referenced by articles.
+
+Run a safe preview from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py cleanup_stray_upload_files --dry-run
+
+Run interactively using the minimum age configured in Django Admin:
+    sudo docker compose exec web \
+      python manage.py cleanup_stray_upload_files
+
+Run non-interactively for the Docker scheduler:
+    sudo docker compose exec web \
+      python manage.py cleanup_stray_upload_files --noinput
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py cleanup_stray_upload_files --help
+
+Purpose and warning:
+    Deletes files under the OpenKB uploads directory when they are not linked
+    to an article and are older than the configured safety period. Use
+    --dry-run first because deleted files cannot be restored by this command.
+"""
+
 import logging
 from pathlib import Path
 
