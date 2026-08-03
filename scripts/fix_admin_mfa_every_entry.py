@@ -16,6 +16,8 @@ When to use it:
     already enforce a fresh Admin MFA challenge on each new Admin entry.
 
 The script is safe to run again after the patch has already been applied.
+Modern project versions with per-attempt Admin MFA challenge IDs are detected
+and left unchanged.
 """
 from pathlib import Path
 
@@ -85,6 +87,15 @@ def ensure_navbar_admin_link() -> None:
 def ensure_admin_security_logic() -> None:
     path = "kb/admin_security.py"
     text = read(path)
+
+    # Current versions use a per-attempt challenge ID, a fixed deadline, and a
+    # canonical refresh-safe URL. Never apply the older text replacement over
+    # that newer implementation.
+    if (
+        "ADMIN_MFA_CHALLENGE_ID_KEY" in text
+        and "start_new_admin_mfa_challenge" in text
+    ):
+        return
 
     # 1) Fresh entry flag: /admin/mfa/verify/?fresh=1 clears old admin MFA token
     if 'force_fresh = (request.GET.get("fresh") == "1")' not in text:

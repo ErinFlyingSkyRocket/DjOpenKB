@@ -687,7 +687,10 @@ class ForceLoginAndAdminGuardMiddleware:
                     if not admin_mfa_is_verified(request, user):
                         from urllib.parse import urlencode
 
-                        return redirect(f"{admin_mfa_path}?{urlencode({'next': request.get_full_path()})}")
+                        return redirect(
+                            f"{admin_mfa_path}?"
+                            f"{urlencode({'next': request.get_full_path(), 'fresh': '1'})}"
+                        )
             return self.get_response(request)
 
         # Anonymous users should not be able to enumerate application URLs.

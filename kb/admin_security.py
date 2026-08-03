@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -38,6 +39,7 @@ ADMIN_MFA_LAST_ACTIVITY_AT_KEY = "knowledge_repo_admin_mfa_last_activity_at"
 ADMIN_MFA_CHALLENGE_STARTED_AT_KEY = "knowledge_repo_admin_mfa_challenge_started_at"
 ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY = "knowledge_repo_admin_mfa_challenge_expires_at"
 ADMIN_MFA_CHALLENGE_EXPIRED_KEY = "knowledge_repo_admin_mfa_challenge_expired"
+ADMIN_MFA_CHALLENGE_ID_KEY = "knowledge_repo_admin_mfa_challenge_id"
 ADMIN_MFA_FORCE_PARAM = "fresh"
 
 ADMIN_MFA_VERIFICATION_TIMEOUT_DEFAULT_SECONDS = 60
@@ -140,11 +142,36 @@ def _admin_mfa_challenge_ts(request, key: str) -> int | None:
         return None
 
 
-def ensure_admin_mfa_challenge_deadline(request) -> int:
-    """Create a fixed Admin MFA deadline and return its expiry timestamp.
+def admin_mfa_challenge_id(request) -> str | None:
+    value = request.session.get(ADMIN_MFA_CHALLENGE_ID_KEY)
+    if not isinstance(value, str) or not value:
+        return None
+    return value
 
-    Refreshing the verification page does not extend the active challenge. A
-    new deadline starts only after the old challenge expires or is cleared.
+
+def start_new_admin_mfa_challenge(request) -> tuple[str, int]:
+    """Replace any pending Admin MFA attempt with one fixed new challenge.
+
+    Only the Admin step-up challenge is rotated. The normal authenticated
+    Django session and the independent rate-limit history are left intact.
+    """
+    clear_admin_mfa_challenge(request)
+    started_at = _now_ts()
+    expires_at = started_at + get_admin_mfa_verification_timeout_seconds()
+    challenge_id = secrets.token_urlsafe(32)
+    request.session[ADMIN_MFA_CHALLENGE_ID_KEY] = challenge_id
+    request.session[ADMIN_MFA_CHALLENGE_STARTED_AT_KEY] = started_at
+    request.session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY] = expires_at
+    request.session.modified = True
+    return challenge_id, expires_at
+
+
+def ensure_admin_mfa_challenge_deadline(request) -> int:
+    """Ensure one fixed Admin MFA challenge exists and return its expiry.
+
+    Refreshing the canonical verification page preserves the existing
+    challenge and deadline. A new protected Admin entry uses
+    ``start_new_admin_mfa_challenge`` before redirecting to that page.
     """
     started_at = _admin_mfa_challenge_ts(
         request,
@@ -156,11 +183,13 @@ def ensure_admin_mfa_challenge_deadline(request) -> int:
     )
 
     if started_at is None or expires_at is None or expires_at <= started_at:
-        started_at = _now_ts()
-        expires_at = started_at + get_admin_mfa_verification_timeout_seconds()
-        request.session[ADMIN_MFA_CHALLENGE_STARTED_AT_KEY] = started_at
-        request.session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY] = expires_at
-        request.session.pop(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, None)
+        _challenge_id, expires_at = start_new_admin_mfa_challenge(request)
+        return expires_at
+
+    # Backward-compatible recovery for a pending challenge created before the
+    # per-attempt identifier was introduced. Do not extend its deadline.
+    if admin_mfa_challenge_id(request) is None:
+        request.session[ADMIN_MFA_CHALLENGE_ID_KEY] = secrets.token_urlsafe(32)
         request.session.modified = True
 
     return expires_at
@@ -187,6 +216,7 @@ def admin_mfa_challenge_is_expired_state(request) -> bool:
 
 def clear_admin_mfa_challenge(request) -> None:
     for key in (
+        ADMIN_MFA_CHALLENGE_ID_KEY,
         ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRED_KEY,
@@ -208,6 +238,7 @@ def clear_admin_mfa_session(request) -> None:
         ADMIN_MFA_USER_ID_KEY,
         ADMIN_MFA_VERIFIED_AT_KEY,
         ADMIN_MFA_LAST_ACTIVITY_AT_KEY,
+        ADMIN_MFA_CHALLENGE_ID_KEY,
         ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRED_KEY,
@@ -262,8 +293,25 @@ def _safe_next_url(request):
     return fallback
 
 
-def _redirect_with_next(target_name: str, next_url: str):
-    return redirect(f"{reverse(target_name)}?{urlencode({'next': next_url})}")
+def _redirect_with_next(target_name: str, next_url: str, *, fresh: bool = False):
+    params = {"next": next_url}
+    if fresh:
+        params[ADMIN_MFA_FORCE_PARAM] = "1"
+    return redirect(f"{reverse(target_name)}?{urlencode(params)}")
+
+
+def _canonical_admin_mfa_verify_url(next_url: str) -> str:
+    return f"{reverse('admin_mfa_verify')}?{urlencode({'next': next_url})}"
+
+
+def admin_mfa_challenge_matches(request, submitted_challenge_id: str) -> bool:
+    current_challenge_id = admin_mfa_challenge_id(request)
+    submitted_challenge_id = (submitted_challenge_id or "").strip()
+    return bool(
+        current_challenge_id
+        and submitted_challenge_id
+        and secrets.compare_digest(current_challenge_id, submitted_challenge_id)
+    )
 
 
 def _is_admin_user(user) -> bool:
@@ -319,6 +367,7 @@ def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
             "admin_mfa_timeout_active": remaining is not None,
             "admin_mfa_timeout_remaining_seconds": remaining,
             "admin_mfa_timeout_expired": admin_mfa_challenge_is_expired_state(request),
+            "admin_mfa_challenge_id": admin_mfa_challenge_id(request) or "",
             **rate_limit_context,
         },
     )
@@ -363,22 +412,14 @@ def admin_mfa_verify(request):
 
     next_url = _safe_next_url(request)
 
-    # A fresh challenge is used when entering Django Admin from the normal
-    # Knowledge Repository navbar. This makes the Admin link always ask for
-    # MFA again, even if an old admin-MFA flag is still present in the
-    # browser session. Direct /admin/ requests can still reuse a valid
-    # step-up token until the idle timeout or leaving-admin cleanup clears it.
-    if (
-        request.method == "GET"
-        and request.GET.get(ADMIN_MFA_FORCE_PARAM) == "1"
-        and (
-            admin_mfa_is_verified(request, user)
-            or admin_mfa_challenge_is_expired_state(request)
-        )
-    ):
-        # A navbar Admin entry invalidates an existing verified grant. Refreshing
-        # an unverified challenge URL does not reset its countdown.
+    # Every new entry through a protected Admin route or the navbar rotates the
+    # Admin step-up attempt. Redirect immediately to a canonical URL without the
+    # ``fresh`` flag so refreshing the verification page cannot roll the timer.
+    if request.method == "GET" and request.GET.get(ADMIN_MFA_FORCE_PARAM) == "1":
         clear_admin_mfa_session(request)
+        start_new_admin_mfa_challenge(request)
+        response = redirect(_canonical_admin_mfa_verify_url(next_url))
+        return set_strict_no_cache_headers(response)
 
     if not user_requires_mfa(user):
         _discard_pending_messages(request)
@@ -417,6 +458,17 @@ def admin_mfa_verify(request):
 
     action = (request.POST.get("action") or "").strip().lower()
 
+    if not admin_mfa_challenge_is_expired_state(request):
+        ensure_admin_mfa_challenge_deadline(request)
+
+    # A submitted form is valid only for the latest challenge stored in the
+    # session. Old browser tabs cannot verify, expire, or restart a newer one.
+    if request.method == "POST" and not admin_mfa_challenge_matches(
+        request,
+        request.POST.get("challenge_id"),
+    ):
+        return _render_admin_mfa_verify(request, next_url)
+
     if action == "restart":
         # Restart is accepted only after an actual expiry and after any active
         # admin-MFA cooldown ends. A crafted POST cannot bypass either control.
@@ -435,8 +487,7 @@ def admin_mfa_verify(request):
                 ],
             )
         if admin_mfa_challenge_is_expired_state(request):
-            clear_admin_mfa_challenge(request)
-            ensure_admin_mfa_challenge_deadline(request)
+            start_new_admin_mfa_challenge(request)
         return _render_admin_mfa_verify(request, next_url)
 
     if admin_mfa_challenge_is_expired_state(request):
@@ -449,8 +500,6 @@ def admin_mfa_verify(request):
                 )
             ],
         )
-
-    ensure_admin_mfa_challenge_deadline(request)
 
     if action == "timeout":
         # The server-side deadline is authoritative. Ignore an early crafted
@@ -587,6 +636,7 @@ class AdminMFASessionMiddleware:
             return
         if (
             request.session.get(ADMIN_MFA_VERIFIED_KEY)
+            or request.session.get(ADMIN_MFA_CHALLENGE_ID_KEY)
             or request.session.get(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY)
             or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY)
             or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY)
@@ -616,7 +666,7 @@ class AdminMFASessionMiddleware:
         # Only Django Admin itself sends the user back to the normal site after
         # inactivity, preserving the existing admin-site timeout behaviour.
         if not self._is_django_admin_path(path):
-            response = _redirect_with_next("admin_mfa_verify", request.get_full_path())
+            response = _redirect_with_next("admin_mfa_verify", request.get_full_path(), fresh=True)
             return set_strict_no_cache_headers(response)
 
         messages.warning(
@@ -647,7 +697,7 @@ class AdminMFASessionMiddleware:
             return self.get_response(request)
 
         if not admin_mfa_is_verified(request, user):
-            response = _redirect_with_next("admin_mfa_verify", request.get_full_path())
+            response = _redirect_with_next("admin_mfa_verify", request.get_full_path(), fresh=True)
             return set_strict_no_cache_headers(response)
 
         now = _now_ts()

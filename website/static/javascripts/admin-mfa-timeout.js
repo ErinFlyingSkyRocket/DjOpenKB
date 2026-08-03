@@ -22,6 +22,7 @@
     );
     var timeoutUrl = container.getAttribute("data-timeout-url") || "";
     var nextUrl = container.getAttribute("data-next-url") || "";
+    var challengeId = container.getAttribute("data-challenge-id") || "";
 
     if (!isFinite(initialSeconds) || initialSeconds < 0) {
         return;
@@ -55,7 +56,7 @@
 
         if (!timeoutUrl || !csrfToken) {
             // A reload still reaches Django, which independently checks the
-            // expired server-side deadline and starts a fresh window.
+            // expired server-side deadline and refuses to extend the window.
             window.location.reload();
             return;
         }
@@ -76,6 +77,14 @@
         actionField.name = "action";
         actionField.value = "timeout";
         timeoutForm.appendChild(actionField);
+
+        if (challengeId) {
+            var challengeField = document.createElement("input");
+            challengeField.type = "hidden";
+            challengeField.name = "challenge_id";
+            challengeField.value = challengeId;
+            timeoutForm.appendChild(challengeField);
+        }
 
         if (nextUrl) {
             var nextField = document.createElement("input");
