@@ -62,6 +62,24 @@ class MFALoginTimeoutTests(TestCase):
             original_started_at,
         )
 
+    def test_authenticated_unverified_session_is_converted_and_shows_countdown(self):
+        self.client.force_login(self.user)
+        session = self.client.session
+        session.pop(PRE_MFA_USER_ID_SESSION_KEY, None)
+        session.pop(PRE_MFA_BACKEND_SESSION_KEY, None)
+        session.pop(PRE_MFA_NEXT_SESSION_KEY, None)
+        session.pop(PRE_MFA_STARTED_AT_SESSION_KEY, None)
+        session.save()
+
+        response = self.client.get(reverse("mfa_verify"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="mfa-login-countdown"')
+        session = self.client.session
+        self.assertNotIn("_auth_user_id", session)
+        self.assertEqual(session.get(PRE_MFA_USER_ID_SESSION_KEY), str(self.user.pk))
+        self.assertTrue(session.get(PRE_MFA_STARTED_AT_SESSION_KEY))
+
     def test_expired_mfa_page_clears_pending_login_and_requires_password_again(self):
         self._set_pending_login(seconds_ago=61)
 

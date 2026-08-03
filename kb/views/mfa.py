@@ -143,6 +143,42 @@ def _finish_mfa(request, user):
     return _safe_next_url(request)
 
 
+def _ensure_pending_mfa_login_for_timeout(request):
+    """Ensure an MFA page always has a password-to-MFA deadline.
+
+    The normal login flow already creates a pending-MFA session. This fallback
+    handles older/stale authenticated sessions that reached the MFA page without
+    the pending session keys, which would otherwise hide the countdown and leave
+    no one-minute server-side deadline to enforce.
+    """
+    pending_user = get_pending_mfa_user(request)
+    if pending_user:
+        return pending_user
+
+    user = getattr(request, "user", None)
+    if (
+        not user
+        or not user.is_authenticated
+        or not user_requires_mfa(user)
+        or mfa_is_verified(request)
+    ):
+        return None
+
+    backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
+    next_url = _safe_next_url(request)
+
+    # Replace the premature authenticated session with the normal pending-MFA
+    # state. Django will create the real login session only after TOTP succeeds.
+    logout(request)
+    begin_pending_mfa_login(
+        request,
+        user,
+        next_url=next_url,
+        backend=backend,
+    )
+    return user
+
+
 def _mfa_timeout_context(request):
     """Return countdown values derived from the fixed server-side deadline."""
     remaining = pending_mfa_seconds_remaining(request)
@@ -242,6 +278,7 @@ def cancel_mfa_login(request):
 
 
 def mfa_setup(request):
+    _ensure_pending_mfa_login_for_timeout(request)
     timeout_response = _enforce_pending_mfa_timeout(request)
     if timeout_response is not None:
         return timeout_response
@@ -346,6 +383,7 @@ def mfa_setup(request):
 
 
 def mfa_verify(request):
+    _ensure_pending_mfa_login_for_timeout(request)
     timeout_response = _enforce_pending_mfa_timeout(request)
     if timeout_response is not None:
         return timeout_response
