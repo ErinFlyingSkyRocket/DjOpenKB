@@ -1,13 +1,33 @@
 <#
 .SYNOPSIS
-  Safely creates first-time DjOpenKB bootstrap secrets.
+  Safely creates or updates the temporary DjOpenKB Vault bootstrap file.
 
 .DESCRIPTION
-  Generated values are written only when the matching value is blank or still
-  an obvious placeholder. Existing real values are preserved by default.
+  Creates vault/bootstrap/djopenkb.env from the example when needed and fills
+  generated values only when their current entries are blank or obvious
+  placeholders. Existing real values are preserved by default. LDAP and SMTP
+  identities/passwords remain manual values.
 
-  This is intentional: DJANGO_FIELD_ENCRYPTION_KEY and POSTGRES_PASSWORD must
-  not be silently changed on an existing deployment.
+.EXAMPLE
+  cd C:\path\to\DjOpenKB
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File vault\bootstrap\generate-secrets.ps1
+
+.EXAMPLE
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File vault\bootstrap\generate-secrets.ps1 `
+    -OutputFile C:\secure\djopenkb.env
+
+.EXAMPLE
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File vault\bootstrap\generate-secrets.ps1 `
+    -RotateGeneratedSecrets
+
+.NOTES
+  Review the generated file, fill the required manual LDAP/SMTP values, protect
+  it, and copy it to /opt/DjOpenKB/vault/bootstrap/djopenkb.env on the Linux
+  server. Seed Vault with "sudo docker compose up --build -d", verify the
+  application, then delete the temporary plaintext bootstrap file.
+
+  Do not use -RotateGeneratedSecrets on an existing deployment unless a planned
+  migration covers PostgreSQL credentials and field-encrypted application data.
 #>
 [CmdletBinding()]
 param(
@@ -130,12 +150,16 @@ if ($CreatedNewFile) {
     "GEMINI_API_KEY=",
     "OPENAI_API_KEY=",
     "ANTHROPIC_API_KEY=",
+    "",
+    "# Protected LDAP bind identity and password.",
+    "LDAP_BIND_DN=",
     "LDAP_BIND_PASSWORD=",
     "LDAP_PLACEHOLDER_PASSWORD=replace-with-placeholder-password-or-leave-random",
     "",
-    "# Direct SMTP review-notification service account.",
+    "# Protected SMTP review-notification identity, password, and sender address.",
     "SMTP_RELAY_USERNAME=",
     "SMTP_RELAY_PASSWORD=",
+    "SMTP_FROM_EMAIL=",
     "# Set true only for a controlled transition using LDAP_BIND_PASSWORD.",
     "SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false"
 ) | ForEach-Object { $_ } | Set-Content -LiteralPath $OutputFile -Encoding Ascii
@@ -192,34 +216,32 @@ foreach ($Line in $Lines) {
     }
 }
 
-$AddedSmtpKeys = New-Object System.Collections.Generic.List[string]
+$AddedProtectedKeys = New-Object System.Collections.Generic.List[string]
 if ($LooksLikeFullBootstrap) {
-    $MissingSmtpKeys = @(
+    $MissingProtectedKeys = @(
+        "LDAP_BIND_DN",
+        "LDAP_BIND_PASSWORD",
         "SMTP_RELAY_USERNAME",
         "SMTP_RELAY_PASSWORD",
+        "SMTP_FROM_EMAIL",
         "SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD"
     ) | Where-Object { -not $ExistingKeys.ContainsKey($_) }
 
-    if ($MissingSmtpKeys.Count -gt 0) {
+    if ($MissingProtectedKeys.Count -gt 0) {
         if ($OutputLines.Count -gt 0 -and $OutputLines[$OutputLines.Count - 1].Trim() -ne "") {
             $OutputLines.Add("")
         }
-        $OutputLines.Add("# Direct SMTP review-notification service account. Fill these only when SMTP notifications are enabled.")
+        $OutputLines.Add("# Protected service-account identities and credentials. Fill only the services you enable.")
 
-        foreach ($Key in $MissingSmtpKeys) {
-            switch ($Key) {
-                "SMTP_RELAY_USERNAME" {
-                    $OutputLines.Add("SMTP_RELAY_USERNAME=")
-                }
-                "SMTP_RELAY_PASSWORD" {
-                    $OutputLines.Add("SMTP_RELAY_PASSWORD=")
-                }
-                "SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD" {
-                    $OutputLines.Add("# Set true only for a controlled transition using LDAP_BIND_PASSWORD; false is recommended.")
-                    $OutputLines.Add("SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false")
-                }
+        foreach ($Key in $MissingProtectedKeys) {
+            if ($Key -eq "SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD") {
+                $OutputLines.Add("# Set true only for a controlled transition using LDAP_BIND_PASSWORD; false is recommended.")
+                $OutputLines.Add("SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false")
             }
-            $AddedSmtpKeys.Add($Key)
+            else {
+                $OutputLines.Add("$Key=")
+            }
+            $AddedProtectedKeys.Add($Key)
         }
     }
 }
@@ -233,14 +255,15 @@ if ($UpdatedKeys.Count -gt 0) {
 else {
     Write-Host "Generated: none (existing non-placeholder secrets were preserved)"
 }
-if ($AddedSmtpKeys.Count -gt 0) {
-    Write-Host "Added direct-SMTP placeholders: $($AddedSmtpKeys -join ', ')"
+if ($AddedProtectedKeys.Count -gt 0) {
+    Write-Host "Added protected service-account placeholders: $($AddedProtectedKeys -join ', ')"
 }
 elseif (-not $LooksLikeFullBootstrap -and -not $CreatedNewFile) {
     Write-Host "Detected an update-only bootstrap file; no unrelated settings were appended."
 }
 
-Write-Host "Manual values preserved/not generated: AI API keys, LDAP_BIND_PASSWORD, SMTP_RELAY_USERNAME, SMTP_RELAY_PASSWORD"
+Write-Host "Manual values preserved/not generated: AI API keys, LDAP_BIND_DN, LDAP_BIND_PASSWORD, SMTP_RELAY_USERNAME, SMTP_RELAY_PASSWORD, SMTP_FROM_EMAIL"
+Write-Host "DJANGO_SECRET_KEY and DJANGO_FIELD_ENCRYPTION_KEY are generated by separate random calls for fresh deployments."
 Write-Host ""
 Write-Host "Review the file before using it. Do not commit, upload, or submit it."
 if ($RotateGeneratedSecrets) {

@@ -1,4 +1,28 @@
 #!/bin/sh
+# INTERNAL ONE-SHOT VAULT INITIALISATION SCRIPT — do not run it directly.
+#
+# What it does:
+#   Waits for Vault, performs first-time initialisation/unsealing when required,
+#   enables KV v2, safely seeds or updates secret/djopenkb from the temporary
+#   vault/bootstrap/djopenkb.env file, writes the app policy, and creates the
+#   read-only app token used by Django, Celery, and the scheduler.
+#
+# Normal server usage:
+#   cd /opt/DjOpenKB
+#   sudo docker compose up --build -d
+#
+# View the one-shot service result:
+#   cd /opt/DjOpenKB
+#   sudo docker compose logs --no-log-prefix vault-init
+#
+# First deployment/secret update only:
+#   1. Prepare vault/bootstrap/djopenkb.env and protect it with chmod 600.
+#   2. Run the normal Docker Compose command above.
+#   3. Verify Vault and the application, then delete the temporary file.
+#
+# Never use "docker compose down -v" for a normal update because it can remove
+# the persistent Vault and PostgreSQL volumes.
+
 set -eu
 
 export VAULT_ADDR="${VAULT_ADDR:-http://vault:8200}"
@@ -76,10 +100,12 @@ if [ -f "$BOOTSTRAP_FILE" ]; then
   EXISTING_GEMINI_API_KEY="$(existing_secret GEMINI_API_KEY)"
   EXISTING_OPENAI_API_KEY="$(existing_secret OPENAI_API_KEY)"
   EXISTING_ANTHROPIC_API_KEY="$(existing_secret ANTHROPIC_API_KEY)"
+  EXISTING_LDAP_BIND_DN="$(existing_secret LDAP_BIND_DN)"
   EXISTING_LDAP_BIND_PASSWORD="$(existing_secret LDAP_BIND_PASSWORD)"
   EXISTING_LDAP_PLACEHOLDER_PASSWORD="$(existing_secret LDAP_PLACEHOLDER_PASSWORD)"
   EXISTING_SMTP_RELAY_USERNAME="$(existing_secret SMTP_RELAY_USERNAME)"
   EXISTING_SMTP_RELAY_PASSWORD="$(existing_secret SMTP_RELAY_PASSWORD)"
+  EXISTING_SMTP_FROM_EMAIL="$(existing_secret SMTP_FROM_EMAIL)"
 
   # shellcheck disable=SC1090
   . "$BOOTSTRAP_FILE"
@@ -91,9 +117,11 @@ if [ -f "$BOOTSTRAP_FILE" ]; then
   GEMINI_API_KEY="${GEMINI_API_KEY:-$EXISTING_GEMINI_API_KEY}"
   OPENAI_API_KEY="${OPENAI_API_KEY:-$EXISTING_OPENAI_API_KEY}"
   ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-$EXISTING_ANTHROPIC_API_KEY}"
+  LDAP_BIND_DN="${LDAP_BIND_DN:-$EXISTING_LDAP_BIND_DN}"
   LDAP_BIND_PASSWORD="${LDAP_BIND_PASSWORD:-$EXISTING_LDAP_BIND_PASSWORD}"
   LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-$EXISTING_LDAP_PLACEHOLDER_PASSWORD}"
   SMTP_RELAY_USERNAME="${SMTP_RELAY_USERNAME:-$EXISTING_SMTP_RELAY_USERNAME}"
+  SMTP_FROM_EMAIL="${SMTP_FROM_EMAIL:-$EXISTING_SMTP_FROM_EMAIL}"
 
   # A temporary bootstrap file can safely request the SMTP password to be copied
   # from the already stored LDAP bind secret. This avoids writing a reused
@@ -124,10 +152,12 @@ if [ -f "$BOOTSTRAP_FILE" ]; then
     GEMINI_API_KEY="${GEMINI_API_KEY:-}" \
     OPENAI_API_KEY="${OPENAI_API_KEY:-}" \
     ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}" \
+    LDAP_BIND_DN="${LDAP_BIND_DN:-}" \
     LDAP_BIND_PASSWORD="${LDAP_BIND_PASSWORD:-}" \
     LDAP_PLACEHOLDER_PASSWORD="${LDAP_PLACEHOLDER_PASSWORD:-}" \
     SMTP_RELAY_USERNAME="${SMTP_RELAY_USERNAME:-}" \
-    SMTP_RELAY_PASSWORD="${SMTP_RELAY_PASSWORD:-}" >/dev/null
+    SMTP_RELAY_PASSWORD="${SMTP_RELAY_PASSWORD:-}" \
+    SMTP_FROM_EMAIL="${SMTP_FROM_EMAIL:-}" >/dev/null
   log "Secret seeded. You may now remove vault/bootstrap/djopenkb.env."
 elif ! vault kv get secret/djopenkb >/dev/null 2>&1; then
   log "ERROR: secret/djopenkb does not exist and $BOOTSTRAP_FILE was not provided." >&2

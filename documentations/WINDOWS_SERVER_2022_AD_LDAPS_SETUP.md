@@ -307,7 +307,7 @@ LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPri
 
 # Every valid AD user returned by this search can sign in.
 
-LDAP_BIND_DN=svc_djopenkb@openkb.local
+# LDAP_BIND_DN is stored in Vault with LDAP_BIND_PASSWORD.
 LDAP_EXTRA_HOSTNAME=WIN-VVCA4BIOSK7.openkb.local
 LDAP_EXTRA_SHORT_HOSTNAME=WIN-VVCA4BIOSK7
 LDAP_DC_IP=<DOMAIN_CONTROLLER_IP>
@@ -316,6 +316,14 @@ LDAP_DC_IP=<DOMAIN_CONTROLLER_IP>
 If the organisation has a public email domain that differs from the AD UPN suffix, include both in `LDAP_ALLOWED_EMAIL_DOMAINS` and in the search filter. Users may still be told to log in with their short username, while Django checks the actual AD UPN/mail values internally.
 
 Confirm that `LDAP_USER_SEARCH_BASE` and `LDAP_USER_FILTER` match the intended AD scope. A valid AD account returned by this search can sign in. Keep the LDAP bind account low-privilege and read-only; it is used only to locate and verify users.
+
+Store the bind identity and password in `vault/bootstrap/djopenkb.env`, not in `.env`:
+
+```env
+LDAP_BIND_DN=svc_djopenkb@openkb.local
+LDAP_BIND_PASSWORD=<STRONG_SERVICE_ACCOUNT_PASSWORD>
+```
+
 ## 9. Test from Docker
 
 Start DjOpenKB:

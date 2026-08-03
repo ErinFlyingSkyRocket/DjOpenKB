@@ -121,7 +121,11 @@ LDAP_ALLOWED_EMAIL_DOMAINS=<ALLOWED_DOMAINS>
 LDAP_USER_SEARCH_BASE=<LDAP_USER_SEARCH_BASE>
 LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(mail=%(user)s))
 
-LDAP_BIND_DN=<LDAP_BIND_ACCOUNT>
+# Optional LDAP distinguished-name cache duration in seconds.
+# The default is 3600. Use a lower value only during active LDAP testing.
+LDAP_CACHE_TIMEOUT=3600
+
+# LDAP_BIND_DN is stored in Vault with LDAP_BIND_PASSWORD.
 ```
 
 Example search-base conversion:
@@ -135,13 +139,14 @@ Every valid Active Directory user returned by `LDAP_USER_SEARCH_BASE` and `LDAP_
 
 ---
 
-## 4. Store the LDAP Bind Password in Vault
+## 4. Store the LDAP Bind Identity and Password in Vault
 
-Do not place the LDAP bind password in `.env`.
+Do not place the LDAP bind account name or password in `.env`.
 
-For a first-time deployment, add only the required secret to the Vault bootstrap file before the initial Vault setup:
+For a first-time deployment, add both protected values to the Vault bootstrap file before the initial Vault setup:
 
 ```env
+LDAP_BIND_DN=<LDAP_BIND_ACCOUNT_UPN_OR_DN>
 LDAP_BIND_PASSWORD=<LDAP_BIND_PASSWORD>
 ```
 
@@ -276,10 +281,62 @@ If the deployment network does not provide the required DNS record, configure th
 Check:
 
 ```text
-- LDAP_BIND_DN is correct;
+- Vault contains the correct `LDAP_BIND_DN`;
 - the Vault LDAP bind password is current;
 - LDAP_USER_SEARCH_BASE matches the production AD structure; and
 - LDAP_USER_FILTER returns the intended users.
 ```
 
 Do not require a separate AD access group unless the organisation intentionally adds that restriction to the search base or filter.
+
+### One login format works but another format fails
+
+A user may occasionally be found successfully in Active Directory while one login alias fails. For example:
+
+```text
+alice@<AD_DOMAIN> works
+alice fails
+```
+
+This can occur when `django-auth-ldap` has retained a stale distinguished-name (DN) lookup for one alias in the shared Redis cache. The short username, email address, and UPN can have separate LDAP DN cache entries. A code/configuration change, AD username or UPN change, OU move, or LDAP search-filter change can therefore leave only one format affected.
+
+This is an application LDAP-cache issue. It does not normally require:
+
+```text
+- resetting the user's AD password;
+- clearing an Exchange/email-server cache;
+- restarting the Domain Controller;
+- deleting the Redis volume; or
+- rebuilding the entire DjOpenKB stack.
+```
+
+First confirm the account is found and test the supplied AD password:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose exec -it web \
+  python manage.py test_ldap_auth alice --auth
+```
+
+If the account is found but authentication through one alias remains inconsistent, clear only that user's LDAP DN cache:
+
+```bash
+cd /opt/DjOpenKB
+chmod +x scripts/clear_ldap_dn_cache.sh
+./scripts/clear_ldap_dn_cache.sh alice
+```
+
+The script also checks the linked Django email address, so a normal short-username command clears the relevant short-name and email/UPN DN-cache entries when they exist. Extra aliases can be supplied explicitly:
+
+```bash
+./scripts/clear_ldap_dn_cache.sh \
+  alice \
+  alice@<AD_DOMAIN>
+```
+
+Retry the AD login immediately afterward. No container restart or rebuild is required.
+
+Do not run `redis-cli FLUSHALL`, delete the Redis volume, or clear the entire Django cache for this issue. Redis also supports sessions, rate limits, lockout handling, Celery, and other application functions.
+
+For stable production use, retain the normal cache timeout. During active LDAP development or directory migration testing, `LDAP_CACHE_TIMEOUT` may be temporarily lowered in `.env`, followed by recreation of the Django application services. Restore the normal value after testing.
+
