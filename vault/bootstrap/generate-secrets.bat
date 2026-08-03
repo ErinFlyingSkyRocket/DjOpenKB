@@ -3,6 +3,11 @@ setlocal EnableExtensions DisableDelayedExpansion
 
 set "SCRIPT=%~dp0generate-secrets.ps1"
 
+echo DjOpenKB bootstrap secret generator
+echo - Generates separate Django signing and field-encryption values for fresh deployments
+echo - Preserves existing non-placeholder values unless rotation is explicitly requested
+echo.
+
 if not exist "%SCRIPT%" (
     echo ERROR: Could not find "%SCRIPT%".
     endlocal & exit /b 1

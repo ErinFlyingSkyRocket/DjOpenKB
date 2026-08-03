@@ -453,7 +453,9 @@ SMTP_RELAY_TIMEOUT_SECONDS = int_config("SMTP_RELAY_TIMEOUT_SECONDS", 10, minimu
 SMTP_RELAY_CA_CERT_FILE = config_value("SMTP_RELAY_CA_CERT_FILE", "").strip()
 SMTP_RELAY_USERNAME = secret_value("SMTP_RELAY_USERNAME", "").strip()
 SMTP_RELAY_PASSWORD = secret_value("SMTP_RELAY_PASSWORD", "")
-SMTP_FROM_EMAIL = config_value("SMTP_FROM_EMAIL", "").strip()
+# The sender address can identify the SMTP service account, so keep it in
+# Vault with the SMTP username and password rather than the runtime .env file.
+SMTP_FROM_EMAIL = secret_value("SMTP_FROM_EMAIL", "").strip()
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS = tuple(
     dict.fromkeys(
         domain.strip().casefold()
@@ -730,7 +732,9 @@ if LDAP_ENABLED:
     # Use a low-privilege AD service account for searching users.
     # Example:
     #   CN=svc_djopenkb,OU=Service Accounts,DC=openkb,DC=local
-    AUTH_LDAP_BIND_DN = config_value("LDAP_BIND_DN", "")
+    # Keep the low-privilege bind identity in Vault with its password so the
+    # service-account name is not exposed through .env or Compose expansion.
+    AUTH_LDAP_BIND_DN = secret_value("LDAP_BIND_DN", "").strip()
     AUTH_LDAP_BIND_PASSWORD = secret_value("LDAP_BIND_PASSWORD", "")
 
     LDAP_USER_SEARCH_BASE = config_value("LDAP_USER_SEARCH_BASE", "").strip()

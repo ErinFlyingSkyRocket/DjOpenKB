@@ -2,8 +2,14 @@
 
 Use these scripts to create a **first-time** `vault/bootstrap/djopenkb.env` file safely.
 
+DjOpenKB uses **one temporary Vault bootstrap file only**. Keep the service-account
+usernames and passwords together in `vault/bootstrap/djopenkb.env`, seed or update
+Vault, verify the affected services, and then delete that plaintext file. Do not
+maintain a second service-identity `.env` file.
+
 The generator creates only these application-generated values when their current
-values are blank or still obvious placeholders:
+values are blank or still obvious placeholders. The Django signing key and field-
+encryption key use separate random-generation calls for fresh deployments:
 
 ```env
 DJANGO_SECRET_KEY=...
@@ -20,11 +26,16 @@ AI_API_KEY=
 GEMINI_API_KEY=
 OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
+LDAP_BIND_DN=
 LDAP_BIND_PASSWORD=
 SMTP_RELAY_USERNAME=
 SMTP_RELAY_PASSWORD=
+SMTP_FROM_EMAIL=
 SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false
 ```
+
+`LDAP_BIND_DN`, `SMTP_RELAY_USERNAME`, and `SMTP_FROM_EMAIL` are treated as
+protected service-account identity values and belong in Vault rather than `.env`.
 
 `SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false` is the recommended setting.
 Set it to `true` only for a controlled temporary transition where SMTP must use

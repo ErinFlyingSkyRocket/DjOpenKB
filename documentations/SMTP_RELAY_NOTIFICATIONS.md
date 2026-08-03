@@ -119,7 +119,7 @@ SMTP_RELAY_USE_SSL=false
 SMTP_RELAY_TIMEOUT_SECONDS=10
 
 SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
-SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
+# SMTP_FROM_EMAIL is stored in Vault with the SMTP account.
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=<ALLOWED_RECIPIENT_DOMAIN>
 SITE_BASE_URL=https://<INTERNAL_SERVER_IP>
 EMAIL_SUBJECT_PREFIX=[Knowledge Repository]
@@ -135,13 +135,14 @@ Keep `EMAIL_NOTIFICATIONS_ENABLED=false` until the SMTP credentials and certific
 
 ## 5. Store SMTP Credentials in Vault
 
-Do not place the SMTP username or password in `.env`.
+Do not place the SMTP username, password, or sender address in `.env`.
 
 For a fresh deployment, add them to `vault/bootstrap/djopenkb.env` before the initial Vault seed:
 
 ```env
 SMTP_RELAY_USERNAME=<SMTP_SERVICE_ACCOUNT>
 SMTP_RELAY_PASSWORD=<SMTP_SERVICE_ACCOUNT_PASSWORD>
+SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
 ```
 
 For an existing deployment, the temporary bootstrap file can contain only the SMTP values being added or changed. Existing unrelated Vault values are preserved by the Vault initialization script.
@@ -216,7 +217,7 @@ Check that:
 
 ### SMTP authentication fails
 
-Check the Vault-stored `SMTP_RELAY_USERNAME` and `SMTP_RELAY_PASSWORD` and confirm the account is permitted to send as `SMTP_FROM_EMAIL`.
+Check the Vault-stored `SMTP_RELAY_USERNAME`, `SMTP_RELAY_PASSWORD`, and `SMTP_FROM_EMAIL`, and confirm that Exchange permits the account to send using that address.
 
 ### Recipient is rejected by DjOpenKB
 

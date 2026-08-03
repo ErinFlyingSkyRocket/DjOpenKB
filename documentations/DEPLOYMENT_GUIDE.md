@@ -326,8 +326,7 @@ SMTP_RELAY_TIMEOUT_SECONDS=10
 # Public trust certificate only. Do not use a PFX/P12, private key, or password.
 SMTP_RELAY_CA_CERT_FILE=/etc/ssl/certs/djopenkb-ldap/exchange-smtp.crt
 
-# The address Exchange permits the SMTP mailbox to send as.
-SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
+# SMTP_FROM_EMAIL is stored in Vault with the SMTP service-account values.
 SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS=<ALLOWED_RECIPIENT_DOMAIN>
 SITE_BASE_URL=https://<INTERNAL_SERVER_IP>
 EMAIL_SUBJECT_PREFIX=[Knowledge Repository]
@@ -447,6 +446,7 @@ DJANGO_FIELD_ENCRYPTION_KEY=<generated-by-script>
 POSTGRES_PASSWORD=<generated-by-script>
 
 AI_API_KEY=<your-google-ai-api-key>
+LDAP_BIND_DN=<LDAP_BIND_ACCOUNT_UPN_OR_DN>
 LDAP_BIND_PASSWORD=<service-account-password>
 LDAP_PLACEHOLDER_PASSWORD=<generated-by-script>
 
@@ -454,6 +454,7 @@ LDAP_PLACEHOLDER_PASSWORD=<generated-by-script>
 # bind account unless the same account is deliberately used for both services.
 SMTP_RELAY_USERNAME=<SMTP_MAILBOX_UPN>
 SMTP_RELAY_PASSWORD=<SMTP_MAILBOX_PASSWORD>
+SMTP_FROM_EMAIL=<SMTP_SENDER_EMAIL>
 SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false
 ```
 
@@ -472,7 +473,7 @@ Important rules:
 - The bootstrap file uses `KEY=value` format with no spaces around `=`.
 - For any manually entered password that contains shell-special characters, use single quotes, for example `LDAP_BIND_PASSWORD='Example!Password$123'` or `SMTP_RELAY_PASSWORD='Example!Password$123'`.
 - `SMTP_RELAY_PASSWORD_USE_LDAP_BIND_PASSWORD=false` is the normal setting when Exchange uses a separate SMTP mailbox. Set it to `true` only when the SMTP sender intentionally uses the exact same password as `LDAP_BIND_PASSWORD`.
-- The SMTP username and password are Vault secrets. Do not add either one to `.env`.
+- The LDAP bind identity/password and SMTP username/password/sender address are Vault-protected values. Do not add them to `.env`.
 
 After Vault has seeded successfully, remove `vault/bootstrap/djopenkb.env` from any source package or exported backup copy. Retain it only in a protected administrator location if local policy permits.
 
@@ -527,8 +528,8 @@ LDAP_ALLOWED_EMAIL_DOMAINS=ad.example.com,example.com
 LDAP_USER_SEARCH_BASE=DC=ad,DC=example,DC=com
 LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(userPrincipalName=%(user)s@ad.example.com)(mail=%(user)s)(mail=%(user)s@ad.example.com)(mail=%(user)s@example.com)(userPrincipalName=%(user)s@example.com))
 
-# Low-privilege service account used only to bind and search.
-LDAP_BIND_DN=svc_djopenkb@ad.example.com
+# LDAP_BIND_DN is stored in Vault with LDAP_BIND_PASSWORD.
+# Example protected value: svc_djopenkb@ad.example.com
 
 # Set these to the actual DC values so Docker can resolve the FQDN even where
 # internal DNS is not available inside containers.

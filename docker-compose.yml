@@ -214,7 +214,6 @@ services:
       # Optional public PEM/CRT trust certificate for an internal Exchange relay.
       # It is mounted read-only from ./ldap-certs; do not put a PFX or private key here.
       SMTP_RELAY_CA_CERT_FILE: "${SMTP_RELAY_CA_CERT_FILE:-}"
-      SMTP_FROM_EMAIL: "${SMTP_FROM_EMAIL:-}"
       SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS: "${SMTP_RELAY_ALLOWED_RECIPIENT_DOMAINS:-}"
       SITE_BASE_URL: "${SITE_BASE_URL:-}"
       EMAIL_SUBJECT_PREFIX: "${EMAIL_SUBJECT_PREFIX:-[Knowledge Repository]}"
@@ -240,7 +239,6 @@ services:
       LDAP_ALLOWED_EMAIL_DOMAINS: "${LDAP_ALLOWED_EMAIL_DOMAINS:-}"
       LDAP_USER_SEARCH_BASE: "${LDAP_USER_SEARCH_BASE:-}"
       LDAP_USER_FILTER: "${LDAP_USER_FILTER:-(|(userPrincipalName=%(user)s)(sAMAccountName=%(user)s)(mail=%(user)s))}"
-      LDAP_BIND_DN: "${LDAP_BIND_DN:-}"
       VAULT_ENABLED: "true"
       VAULT_ADDR: http://vault:8200
       VAULT_TOKEN_FILE: /run/vault-keys/djopenkb-app-token.txt

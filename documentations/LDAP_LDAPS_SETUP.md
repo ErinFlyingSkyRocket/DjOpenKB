@@ -121,7 +121,7 @@ LDAP_ALLOWED_EMAIL_DOMAINS=<ALLOWED_DOMAINS>
 LDAP_USER_SEARCH_BASE=<LDAP_USER_SEARCH_BASE>
 LDAP_USER_FILTER=(|(sAMAccountName=%(user)s)(userPrincipalName=%(user)s)(mail=%(user)s))
 
-LDAP_BIND_DN=<LDAP_BIND_ACCOUNT>
+# LDAP_BIND_DN is stored in Vault with LDAP_BIND_PASSWORD.
 ```
 
 Example search-base conversion:
@@ -135,13 +135,14 @@ Every valid Active Directory user returned by `LDAP_USER_SEARCH_BASE` and `LDAP_
 
 ---
 
-## 4. Store the LDAP Bind Password in Vault
+## 4. Store the LDAP Bind Identity and Password in Vault
 
-Do not place the LDAP bind password in `.env`.
+Do not place the LDAP bind account name or password in `.env`.
 
-For a first-time deployment, add only the required secret to the Vault bootstrap file before the initial Vault setup:
+For a first-time deployment, add both protected values to the Vault bootstrap file before the initial Vault setup:
 
 ```env
+LDAP_BIND_DN=<LDAP_BIND_ACCOUNT_UPN_OR_DN>
 LDAP_BIND_PASSWORD=<LDAP_BIND_PASSWORD>
 ```
 
@@ -276,7 +277,7 @@ If the deployment network does not provide the required DNS record, configure th
 Check:
 
 ```text
-- LDAP_BIND_DN is correct;
+- Vault contains the correct `LDAP_BIND_DN`;
 - the Vault LDAP bind password is current;
 - LDAP_USER_SEARCH_BASE matches the production AD structure; and
 - LDAP_USER_FILTER returns the intended users.
