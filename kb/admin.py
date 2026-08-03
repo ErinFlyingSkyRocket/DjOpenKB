@@ -240,6 +240,7 @@ def _apply_admin_translation_labels():
             "auth_activity_log_retention_days": "Authentication activity log retention (days)",
             "session_timeout_hours": "User session timeout (hours)",
             "mfa_login_timeout_seconds": "MFA login completion timeout (seconds)",
+            "admin_mfa_verification_timeout_seconds": "Admin MFA verification timeout (seconds)",
             "activity_log_retention_days": "General activity log retention (days)",
             "admin_log_rows_per_page": "Admin log rows per page",
             "admin_ip_allowlist_enabled": "Enable Admin IP allowlist",
@@ -271,6 +272,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
         (SiteSetting, "session_timeout_hours"): "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
         (SiteSetting, "mfa_login_timeout_seconds"): "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
+        (SiteSetting, "admin_mfa_verification_timeout_seconds"): "Maximum time allowed to complete the separate MFA check before entering Django Admin. When the countdown reaches zero, the administrator stays signed in and must start a new verification window before trying again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_ip_allowlist_enabled"): "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed.",
@@ -2692,15 +2694,21 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
             ),
         }),
-        (_("MFA login completion timeout"), {
+        (_("MFA verification completion timeouts"), {
             "fields": (
-                "mfa_login_timeout_seconds",
-                "mfa_login_timeout_display",
+                (
+                    "mfa_login_timeout_seconds",
+                    "admin_mfa_verification_timeout_seconds",
+                ),
+                (
+                    "mfa_login_timeout_display",
+                    "admin_mfa_verification_timeout_display",
+                ),
             ),
             "description": _(
-                "Controls the fixed window that starts immediately after username/password verification succeeds. "
-                "The user must finish MFA before this countdown reaches zero or sign in with username and password again. "
-                "Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+                "The main login MFA timeout starts after username/password verification and requires the user to sign in again when it expires. "
+                "The separate Admin MFA timeout starts when an administrator opens the Admin verification page; expiry keeps the administrator signed in and requires a new verification window before another code can be entered. "
+                "Both default to 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
             ),
         }),
         (_("Authentication lockout policy"), {
@@ -2745,6 +2753,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         "admin_mfa_idle_timeout_display",
         "session_timeout_display",
         "mfa_login_timeout_display",
+        "admin_mfa_verification_timeout_display",
         "article_deletion_queue_retention_display",
     )
     inlines = (AuthLockoutPolicyStageInline,)
@@ -2864,6 +2873,22 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
         return format_admin_duration_with_seconds(seconds)
 
     mfa_login_timeout_display.short_description = _("MFA login timeout readable")
+
+    def admin_mfa_verification_timeout_display(self, obj):
+        if not obj:
+            return "-"
+        try:
+            seconds = min(
+                max(int(obj.admin_mfa_verification_timeout_seconds), 30),
+                900,
+            )
+        except (TypeError, ValueError):
+            seconds = 60
+        return format_admin_duration_with_seconds(seconds)
+
+    admin_mfa_verification_timeout_display.short_description = _(
+        "Admin MFA verification timeout readable"
+    )
 
     def article_deletion_queue_retention_display(self, obj):
         if not obj:

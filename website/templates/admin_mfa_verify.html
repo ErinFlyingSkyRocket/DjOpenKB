@@ -85,6 +85,15 @@
             color: #7c2d12;
             border: 1px solid #fed7aa;
         }
+        .admin-mfa-countdown {
+            margin: 12px 0 0;
+            text-align: center;
+            color: #4b5563;
+        }
+        .admin-mfa-countdown strong {
+            white-space: nowrap;
+            color: #1f2937;
+        }
     </style>
     <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
 </head>
@@ -101,15 +110,43 @@
             </ul>
         {% endif %}
 
-        <form method="post" novalidate>
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ next }}">
-            <label for="id_code">{% trans "Authenticator code" %}</label>
-            <input id="id_code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" required autofocus>
-            <button type="submit">{% trans "Verify and continue to admin" %}</button>
-        </form>
+        {% if admin_mfa_timeout_expired %}
+            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <input type="hidden" name="action" value="restart">
+                <button type="submit">{% trans "Start new verification window" %}</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <label for="id_code">{% trans "Authenticator code" %}</label>
+                <input id="id_code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" required autofocus>
+
+                {% if admin_mfa_timeout_active %}
+                    <p
+                        id="admin-mfa-countdown"
+                        class="admin-mfa-countdown"
+                        role="status"
+                        aria-live="polite"
+                        data-remaining-seconds="{{ admin_mfa_timeout_remaining_seconds }}"
+                        data-timeout-url="{% url 'admin_mfa_verify' %}"
+                        data-next-url="{{ next }}"
+                    >
+                        {% trans "Please enter your admin MFA code to continue." %}
+                        <strong id="admin-mfa-countdown-value">{{ admin_mfa_timeout_remaining_seconds }}s</strong>
+                    </p>
+                {% endif %}
+
+                <button type="submit">{% trans "Verify and continue to admin" %}</button>
+            </form>
+        {% endif %}
 
         <a class="secondary-link" href="{% url 'home' %}">{% trans "Back to Knowledge Repository" %}</a>
     </main>
+    {% if admin_mfa_timeout_active %}
+        <script src="{% static 'javascripts/admin-mfa-timeout.js' %}?v=20260803-1" defer></script>
+    {% endif %}
 </body>
 </html>

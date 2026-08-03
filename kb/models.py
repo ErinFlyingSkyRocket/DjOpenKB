@@ -1203,6 +1203,16 @@ class SiteSetting(models.Model):
             "Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
         ),
     )
+    admin_mfa_verification_timeout_seconds = models.PositiveIntegerField(
+        default=60,
+        validators=[MinValueValidator(30), MaxValueValidator(900)],
+        verbose_name=_("Admin MFA verification timeout (seconds)"),
+        help_text=_(
+            "Maximum time allowed to complete the separate MFA check before entering Django Admin. "
+            "When the countdown reaches zero, the administrator stays signed in and must start a new verification window before trying again. "
+            "Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+        ),
+    )
     activity_log_retention_days = models.PositiveIntegerField(
         default=30,
         verbose_name=_("General activity log retention (days)"),

@@ -185,8 +185,7 @@ def _mfa_timeout_context(request):
     if remaining is None:
         remaining_display = ""
     else:
-        minutes, seconds = divmod(max(0, int(remaining)), 60)
-        remaining_display = f"{minutes:02d}:{seconds:02d}"
+        remaining_display = f"{max(0, int(remaining))}s"
 
     return {
         "mfa_login_timeout_active": remaining is not None,

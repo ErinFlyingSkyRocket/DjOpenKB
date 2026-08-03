@@ -58,7 +58,7 @@ class MFALoginTimeoutTests(TestCase):
         self.assertNotContains(first_response, 'id="mfa-timeout-form"')
         self.assertContains(first_response, 'data-cancel-url="')
         first_remaining = first_response.context["mfa_login_timeout_remaining_seconds"]
-        expected_display = f"{first_remaining // 60:02d}:{first_remaining % 60:02d}"
+        expected_display = f"{first_remaining}s"
         self.assertEqual(
             first_response.context["mfa_login_timeout_remaining_display"],
             expected_display,

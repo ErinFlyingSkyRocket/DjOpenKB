@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: kb/admin.py:1904
+#: kb/admin.py:1906
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "ทำเครื่องหมายอุปกรณ์ MFA %(count)d รายการว่ารอการตั้งค่าแล้ว"
 
@@ -26,12 +26,12 @@ msgstr "บทความ %(count)s รายการ"
 msgid "%(count)s articles total."
 msgstr "บทความทั้งหมด %(count)s รายการ"
 
-#: kb/admin.py:308
+#: kb/admin.py:310
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s วัน"
 
-#: kb/admin.py:312
+#: kb/admin.py:314
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s ชั่วโมง"
@@ -40,7 +40,7 @@ msgstr[0] "%(count)s ชั่วโมง"
 msgid "%(count)s matching articles found."
 msgstr "พบบทความที่ตรงกัน %(count)s รายการ"
 
-#: kb/admin.py:316 kb/admin.py:319
+#: kb/admin.py:318 kb/admin.py:321
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s นาที"
@@ -49,7 +49,7 @@ msgstr[0] "%(count)s นาที"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "พบผลลัพธ์ %(count)s รายการจากการจับคู่ชื่อบทความและคำสำคัญ"
 
-#: kb/admin.py:304 kb/admin.py:320 kb/admin.py:333
+#: kb/admin.py:306 kb/admin.py:322 kb/admin.py:335
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s วินาที"
@@ -58,7 +58,7 @@ msgstr[0] "%(count)s วินาที"
 msgid "%(count)s total"
 msgstr "ทั้งหมด %(count)s รายการ"
 
-#: kb/admin.py:2877
+#: kb/admin.py:2902
 msgid "%(days)s day(s)"
 msgstr "%(days)s วัน"
 
@@ -66,7 +66,7 @@ msgstr "%(days)s วัน"
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s อัปโหลดโดย %(uploader)s"
 
-#: kb/admin.py:2853
+#: kb/admin.py:2862
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s ชั่วโมง"
 
@@ -94,7 +94,7 @@ msgstr "%(prefix)s สำหรับ %(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1087
+#: kb/admin.py:1089
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, เพิ่มเติมอีก +%(extra)d รายการ"
 
@@ -106,7 +106,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "รวม %(size)s KB"
 
-#: kb/admin.py:1104
+#: kb/admin.py:1106
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, เพิ่มเติมอีก +%(extra)d รายการ"
 
@@ -127,7 +127,7 @@ msgstr ", เพิ่มเติมอีก +%(count)d"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: ผลการค้นหาสำหรับ \"%(query)s\" :::"
 
-#: kb/admin.py:1844
+#: kb/admin.py:1846
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "การรีเซ็ตจะสร้างคีย์แอปยืนยันตัวตนส่วนตัวใหม่และบังคับให้ตั้งค่าอีกครั้ง"
 
@@ -135,11 +135,11 @@ msgstr "การรีเซ็ตจะสร้างคีย์แอปย
 msgid "Access denied"
 msgstr "ปฏิเสธการเข้าถึง"
 
-#: kb/admin.py:1353 kb/admin.py:1767
+#: kb/admin.py:1355 kb/admin.py:1769
 msgid "Account Status"
 msgstr "สถานะบัญชี"
 
-#: kb/admin.py:108 kb/admin.py:1834
+#: kb/admin.py:108 kb/admin.py:1836
 msgid "Account Type"
 msgstr "ประเภทบัญชี"
 
@@ -151,7 +151,7 @@ msgstr "บัญชีถูกปิดใช้งานอยู่ในข
 msgid "Account disabled"
 msgstr "บัญชีถูกปิดใช้งาน"
 
-#: kb/admin.py:1185
+#: kb/admin.py:1187
 msgid "Account status"
 msgstr "สถานะบัญชี"
 
@@ -163,7 +163,7 @@ msgstr "สรุปบัญชี"
 msgid "Account type"
 msgstr "ประเภทบัญชี"
 
-#: kb/admin.py:2205
+#: kb/admin.py:2207
 msgid "Action"
 msgstr "การดำเนินการ"
 
@@ -187,35 +187,35 @@ msgstr "บันทึกกิจกรรม"
 msgid "Add Article"
 msgstr "เพิ่มบทความ"
 
-#: kb/admin.py:1224
+#: kb/admin.py:1226
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "บทบาทเสริม สามารถสร้าง/แก้ไขบทความภายในของตนเอง และดูบทความสาธารณะ/ทั่วไปได้"
 
-#: kb/admin.py:1226
+#: kb/admin.py:1228
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "บทบาทเสริม สามารถสร้าง/จัดการ/ลบบทความภายใน และดูบทความสาธารณะ/ทั่วไปได้"
 
-#: kb/admin.py:1225
+#: kb/admin.py:1227
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "บทบาทเสริม สามารถตรวจทานบทความ/การอัปเดตภายในที่รออนุมัติ และดูบทความสาธารณะ/ทั่วไปได้"
 
-#: kb/admin.py:821
+#: kb/admin.py:823
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "บทบาทเสริม สามารถดูบทความสาธารณะ/ทั่วไป และอนุมัติ/ปฏิเสธบทความและการอัปเดตภายในที่รออนุมัติได้"
 
-#: kb/admin.py:817
+#: kb/admin.py:819
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "บทบาทเสริม สามารถดูบทความสาธารณะ/ทั่วไป และสร้าง/แก้ไขบทความภายในของตนเองได้"
 
-#: kb/admin.py:813
+#: kb/admin.py:815
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "บทบาทเสริม สามารถดูบทความสาธารณะ/ทั่วไปและบทความภายใน แต่ไม่สามารถสร้างหรืออนุมัติบทความภายในได้"
 
-#: kb/admin.py:1223
+#: kb/admin.py:1225
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "บทบาทเสริม สามารถดูบทความสาธารณะ/ทั่วไป รวมถึงบทความภายในได้"
 
-#: kb/admin.py:825
+#: kb/admin.py:827
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "บทบาทเสริม สามารถดูบทความสาธารณะ/ทั่วไป สร้าง/จัดการ/ลบบทความภายใน และตรวจทานบทความภายในที่รออนุมัติได้"
 
@@ -223,31 +223,43 @@ msgstr "บทบาทเสริม สามารถดูบทควา�
 msgid "Admin"
 msgstr "ผู้ดูแลระบบ"
 
-#: kb/admin.py:2837
+#: kb/admin.py:2846
 msgid "Admin IP restriction status"
 msgstr "สถานะการจำกัด IP ของผู้ดูแล"
 
-#: kb/admin.py:248 kb/models.py:1251
+#: kb/admin.py:249 kb/models.py:1261
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "หมดเวลาเมื่อไม่มีการใช้งาน MFA สำหรับผู้ดูแลระบบ (วินาที)"
 
-#: kb/admin.py:2844
+#: kb/admin.py:2853
 msgid "Admin MFA idle timeout readable"
 msgstr "รูปแบบอ่านง่ายของเวลาหมดอายุ MFA สำหรับผู้ดูแลระบบ"
 
-#: website/templates/admin_mfa_verify.html:7 website/templates/admin_mfa_verify.html:93
+#: website/templates/admin_mfa_verify.html:102 website/templates/admin_mfa_verify.html:7
 msgid "Admin MFA verification"
 msgstr "การยืนยัน MFA สำหรับผู้ดูแลระบบ"
 
-#: kb/admin.py:1227 kb/admin.py:828 kb/permissions.py:62
+#: kb/admin_security.py:333 kb/admin_security.py:418
+msgid "Admin MFA verification timed out. Start a new verification window to try again."
+msgstr "หมดเวลาการยืนยัน MFA สำหรับผู้ดูแลระบบแล้ว โปรดเริ่มช่วงเวลาการยืนยันใหม่เพื่อลองอีกครั้ง"
+
+#: kb/admin.py:243 kb/models.py:1209
+msgid "Admin MFA verification timeout (seconds)"
+msgstr "ระยะหมดเวลาการยืนยัน MFA สำหรับผู้ดูแลระบบ (วินาที)"
+
+#: kb/admin.py:2889
+msgid "Admin MFA verification timeout readable"
+msgstr "ระยะหมดเวลาการยืนยัน MFA สำหรับผู้ดูแลระบบในรูปแบบที่อ่านง่าย"
+
+#: kb/admin.py:1229 kb/admin.py:830 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "ผู้ใช้ผู้ดูแลระบบ"
 
-#: kb/admin.py:1710
+#: kb/admin.py:1712
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "กำหนดบทบาทผู้ใช้ผู้ดูแลระบบให้ผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
-#: kb/admin_security.py:219
+#: kb/admin_security.py:370
 msgid "Admin access requires an active MFA-protected account."
 msgstr "การเข้าถึงส่วนผู้ดูแลระบบต้องใช้บัญชีที่เปิดใช้และป้องกันด้วย MFA"
 
@@ -263,11 +275,11 @@ msgstr "บันทึกกิจกรรมของผู้ดูแลร
 msgid "Admin activity logs"
 msgstr "บันทึกกิจกรรมของผู้ดูแลระบบ"
 
-#: kb/admin.py:246 kb/models.py:1233
+#: kb/admin.py:247 kb/models.py:1243
 msgid "Admin allowed IP ranges"
 msgstr "ช่วง IP ที่อนุญาตสำหรับผู้ดูแลระบบ"
 
-#: kb/admin.py:244 kb/models.py:1216
+#: kb/admin.py:245 kb/models.py:1226
 msgid "Admin log rows per page"
 msgstr "จำนวนแถวบันทึกผู้ดูแลระบบต่อหน้า"
 
@@ -295,11 +307,11 @@ msgstr "คำขอของผู้ดูแลระบบสำหรับ
 msgid "Admin request failed for %(target)s"
 msgstr "คำขอของผู้ดูแลระบบสำหรับ %(target)s ล้มเหลว"
 
-#: kb/admin.py:2202
+#: kb/admin.py:2204
 msgid "Admin request failed or denied for %(target)s"
 msgstr "คำขอของผู้ดูแลระบบสำหรับ %(target)s ล้มเหลวหรือถูกปฏิเสธ"
 
-#: kb/admin.py:2203 kb/admin_audit.py:175
+#: kb/admin.py:2205 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "คำขอของผู้ดูแลระบบสำหรับ %(target)s"
 
@@ -327,11 +339,11 @@ msgstr "ชื่อผู้ใช้ผู้ดูแลระบบ"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "เครื่องมือสำหรับผู้ดูแลระบบเท่านั้น การส่งออกมี Markdown ของบทความและไฟล์ที่อ้างอิงภายใต้"
 
-#: kb/admin.py:263 kb/models.py:50
+#: kb/admin.py:264 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "บัญชีผู้ดูแลระบบ/ผู้ดูแลระบบ LDAP สามารถเข้าถึง Django admin ได้เมื่อเปิดใช้งานสถานะ staff"
 
-#: kb/admin.py:876
+#: kb/admin.py:878
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "หลังบันทึก ให้เปิดผู้ใช้นี้อีกครั้งหากจำเป็น และตรวจสอบ 'สิทธิ์ที่มีผล' เพื่อยืนยันระดับการเข้าถึงสุดท้าย"
 
@@ -347,15 +359,15 @@ msgstr "บทความทั้งหมดที่อนุญาต"
 msgid "All statuses"
 msgstr "ทุกสถานะ"
 
-#: kb/admin.py:2812
+#: kb/admin.py:2821
 msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
 msgstr "ปิดรายการอนุญาต — ที่อยู่ IPv4 และ IPv6 ทั้งหมดสามารถเข้าถึงขั้นตอนตรวจสอบการยืนยันตัวตน/MFA ของผู้ดูแลได้"
 
-#: kb/admin.py:2827
+#: kb/admin.py:2836
 msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
 msgstr "เปิดรายการอนุญาต — อนุญาตช่วง IP/CIDR จำนวน %(count)s รายการ:"
 
-#: kb/admin.py:2822
+#: kb/admin.py:2831
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "เปิดรายการอนุญาตแล้ว แต่ยังไม่มีช่วง IP/CIDR ที่ถูกต้อง การเข้าถึงผู้ดูแลจะถูกปฏิเสธจนกว่าจะบันทึกอย่างน้อยหนึ่งช่วงที่ถูกต้อง"
 
@@ -371,7 +383,7 @@ msgstr "มีบทความชื่อนี้อยู่แล้ว �
 msgid "Apply"
 msgstr "ใช้"
 
-#: kb/admin.py:2329
+#: kb/admin.py:2331
 msgid "Approval / review"
 msgstr "อนุมัติ / ตรวจทาน"
 
@@ -379,7 +391,7 @@ msgstr "อนุมัติ / ตรวจทาน"
 msgid "Approve / Publish"
 msgstr "อนุมัติ / เผยแพร่"
 
-#: kb/admin.py:2362
+#: kb/admin.py:2364
 msgid "Approve selected pending articles"
 msgstr "อนุมัติบทความที่รอดำเนินการที่เลือก"
 
@@ -387,7 +399,7 @@ msgstr "อนุมัติบทความที่รอดำเนิน
 msgid "Approve update"
 msgstr "อนุมัติการอัปเดต"
 
-#: kb/admin.py:2385
+#: kb/admin.py:2387
 msgid "Approved article %(title)s from Django Admin"
 msgstr "อนุมัติบทความ %(title)s จาก Django Admin แล้ว"
 
@@ -423,31 +435,31 @@ msgstr "คุณแน่ใจหรือไม่ว่าต้องกา
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "คุณแน่ใจหรือไม่ว่าต้องการย้อนกลับเป็นเวอร์ชันที่เผยแพร่ล่าสุด การเปลี่ยนแปลงที่ยังไม่ได้เผยแพร่ทั้งหมดจะถูกลบอย่างถาวร"
 
-#: kb/admin.py:161 kb/admin.py:2077 kb/admin.py:213 kb/admin.py:2326 kb/views/services_search.py:112 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2079 kb/admin.py:213 kb/admin.py:2328 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "บทความ"
 
-#: kb/admin.py:1221 kb/admin.py:799 kb/permissions.py:56
+#: kb/admin.py:1223 kb/admin.py:801 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "ผู้อนุมัติบทความ"
 
-#: kb/admin.py:1690
+#: kb/admin.py:1692
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "กำหนดบทบาทผู้อนุมัติบทความให้ผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
-#: kb/admin.py:1222 kb/admin.py:806 kb/permissions.py:57
+#: kb/admin.py:1224 kb/admin.py:808 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "ผู้จัดการบทความ"
 
-#: kb/admin.py:1700
+#: kb/admin.py:1702
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "กำหนดบทบาทผู้จัดการบทความให้ผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
-#: kb/admin.py:1220 kb/admin.py:792 kb/permissions.py:55
+#: kb/admin.py:1222 kb/admin.py:794 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "ผู้เขียนบทความ"
 
-#: kb/admin.py:1680
+#: kb/admin.py:1682
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "กำหนดบทบาทผู้เขียนบทความให้ผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
@@ -499,7 +511,7 @@ msgstr "ยืนยันการลบบทความหลังการ
 msgid "Article deletion confirmed: %(title)s."
 msgstr "ยืนยันการลบบทความแล้ว: %(title)s"
 
-#: kb/admin.py:2674 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2676 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "คิวการลบบทความ"
 
@@ -527,7 +539,7 @@ msgstr "คำขอลบบทความ"
 msgid "Article details"
 msgstr "รายละเอียดบทความ"
 
-#: kb/admin.py:2654
+#: kb/admin.py:2656
 msgid "Article display and upload limits"
 msgstr "ขีดจำกัดการแสดงผลและการอัปโหลดบทความ"
 
@@ -583,7 +595,7 @@ msgstr "ทำเครื่องหมายบทความว่าอน
 msgid "Article marked pending failed"
 msgstr "ทำเครื่องหมายบทความว่ารอดำเนินการล้มเหลวแล้ว"
 
-#: kb/admin.py:2101
+#: kb/admin.py:2103
 msgid "Article owner"
 msgstr "เจ้าของบทความ"
 
@@ -683,7 +695,7 @@ msgstr "ส่งการแจ้งเตือนการตรวจทา
 msgid "Article review notification skipped"
 msgstr "ข้ามการแจ้งเตือนการตรวจทานบทความแล้ว"
 
-#: kb/admin.py:2346
+#: kb/admin.py:2348
 msgid "Article statistics"
 msgstr "สถิติบทความ"
 
@@ -771,7 +783,7 @@ msgstr "โหวตเห็นด้วยบทความ"
 msgid "Article votes"
 msgstr "การโหวตบทความ"
 
-#: kb/admin.py:274 kb/models.py:1209
+#: kb/admin.py:276 kb/models.py:1219
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "บันทึกกิจกรรมบทความ/การโหวต/รูปภาพ/เครื่องมือผู้ดูแลระบบ/ไซต์ผู้ดูแลระบบที่เก่ากว่าจำนวนวันดังกล่าวสามารถลบได้ด้วยคำสั่งล้างข้อมูล ใช้ 0 เพื่อเก็บบันทึกกิจกรรมทั่วไปและของผู้ดูแลระบบไว้ไม่จำกัดเวลา"
 
@@ -811,7 +823,7 @@ msgstr "มอบหมายบทความที่เลือกให้
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "มอบหมายบทความกำพร้า %(count)s รายการให้ %(user)s แล้ว"
 
-#: kb/admin.py:1603
+#: kb/admin.py:1605
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "กำหนดบทบาทผู้ใช้ที่ปิดใช้งานให้ %(username)s แล้ว"
 
@@ -843,11 +855,11 @@ msgstr "ระเบียนบันทึกตรวจสอบเป็น
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "ไม่สามารถลบระเบียนบันทึกตรวจสอบด้วยตนเองได้ โดยจะถูกลบด้วยการล้างข้อมูลตามระยะเวลาเก็บเท่านั้น"
 
-#: kb/admin.py:272 kb/models.py:1190
+#: kb/admin.py:273 kb/models.py:1190
 msgid "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
 msgstr "เซสชันที่ยืนยันตัวตนแล้วจะหมดอายุหลังจากเข้าสู่ระบบตามจำนวนชั่วโมงนี้ เซสชันที่รอการดำเนินการ MFA ให้เสร็จสิ้นต้องไม่เกินระยะเวลานี้ แต่โดยปกติจะหมดอายุก่อนตามค่าหมดเวลาสำหรับการดำเนินการเข้าสู่ระบบด้วย MFA ให้เสร็จสิ้นที่กำหนดแยกต่างหาก ค่าเริ่มต้นคือ 8 ชั่วโมง ช่วงที่อนุญาต: 1 ถึง 168 ชั่วโมง (7 วัน)"
 
-#: kb/admin.py:1407
+#: kb/admin.py:1409
 msgid "Authentication Lockout Reset"
 msgstr "รีเซ็ตการล็อกการยืนยันตัวตน"
 
@@ -863,27 +875,27 @@ msgstr "ระยะเวลาเก็บบันทึกกิจกรร
 msgid "Authentication activity logs"
 msgstr "บันทึกกิจกรรมการยืนยันตัวตน"
 
-#: kb/admin.py:2681
+#: kb/admin.py:2683
 msgid "Authentication and session settings"
 msgstr "การตั้งค่าการยืนยันตัวตนและเซสชัน"
 
-#: kb/admin.py:1293
+#: kb/admin.py:1295
 msgid "Authentication lockout"
 msgstr "การล็อกการยืนยันตัวตน"
 
-#: kb/admin.py:247 kb/models.py:1242
+#: kb/admin.py:248 kb/models.py:1252
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "หน่วยความจำการยกระดับการล็อกการยืนยันตัวตน (วินาที)"
 
-#: kb/admin.py:2706
+#: kb/admin.py:2714
 msgid "Authentication lockout policy"
 msgstr "นโยบายการล็อกการยืนยันตัวตน"
 
-#: kb/admin.py:97 kb/models.py:1331
+#: kb/admin.py:97 kb/models.py:1341
 msgid "Authentication lockout policy stage"
 msgstr "ขั้นของนโยบายการล็อกการยืนยันตัวตน"
 
-#: kb/admin.py:2771 kb/admin.py:97 kb/models.py:1332
+#: kb/admin.py:2780 kb/admin.py:97 kb/models.py:1342
 msgid "Authentication lockout policy stages"
 msgstr "ขั้นของนโยบายการล็อกการยืนยันตัวตน"
 
@@ -895,11 +907,11 @@ msgstr "ผู้ดูแลระบบรีเซ็ตการล็อก
 msgid "Authentication lockout triggered"
 msgstr "มีการเปิดใช้การล็อกการยืนยันตัวตน"
 
-#: kb/admin.py:1180
+#: kb/admin.py:1182
 msgid "Authentication source"
 msgstr "แหล่งที่มาของการยืนยันตัวตน"
 
-#: kb/admin.py:271 kb/models.py:1181
+#: kb/admin.py:272 kb/models.py:1181
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "บันทึกการตรวจสอบการยืนยันตัวตน/MFA ที่เก่ากว่าจำนวนวันนี้สามารถลบได้ด้วยคำสั่งล้างข้อมูล ใช้ 0 เพื่อเก็บบันทึกกิจกรรมการยืนยันตัวตนไว้ไม่จำกัดเวลา"
 
@@ -907,15 +919,15 @@ msgstr "บันทึกการตรวจสอบการยืนยั
 msgid "Authenticator MFA/OTP code"
 msgstr "รหัส MFA/OTP จากแอปยืนยันตัวตน"
 
-#: website/templates/admin_mfa_verify.html:107
+#: website/templates/admin_mfa_verify.html:124
 msgid "Authenticator code"
 msgstr "รหัสจากแอปยืนยันตัวตน"
 
-#: kb/admin.py:118 kb/admin.py:1826
+#: kb/admin.py:118 kb/admin.py:1828
 msgid "Authenticator key"
 msgstr "คีย์แอปยืนยันตัวตน"
 
-#: kb/views/mfa.py:350
+#: kb/views/mfa.py:349
 msgid "Authenticator setup completed successfully."
 msgstr "ตั้งค่าแอปยืนยันตัวตนสำเร็จแล้ว"
 
@@ -935,7 +947,7 @@ msgstr "ข้อมูลอีเมลผู้เขียนที่บั
 msgid "Author name snapshot"
 msgstr "ข้อมูลชื่อผู้เขียนที่บันทึกไว้"
 
-#: kb/admin.py:2349
+#: kb/admin.py:2351
 msgid "Author snapshot"
 msgstr "ข้อมูลผู้เขียนที่บันทึกไว้"
 
@@ -947,7 +959,7 @@ msgstr "ข้อมูลชื่อผู้ใช้ผู้เขียน
 msgid "Back"
 msgstr "ย้อนกลับ"
 
-#: website/templates/admin_mfa_verify.html:112
+#: website/templates/admin_mfa_verify.html:146
 msgid "Back to Knowledge Repository"
 msgstr "กลับไปยังคลังความรู้"
 
@@ -963,15 +975,15 @@ msgstr "กลับไปที่โปรไฟล์"
 msgid "Bad request"
 msgstr "คำขอไม่ถูกต้อง"
 
-#: kb/admin.py:256 kb/models.py:1316
+#: kb/admin.py:257 kb/models.py:1326
 msgid "Block duration (seconds)"
 msgstr "ระยะเวลาบล็อก (วินาที)"
 
-#: kb/models.py:1350
+#: kb/models.py:1360
 msgid "Block duration must be at least 60 seconds."
 msgstr "ระยะเวลาบล็อกต้องไม่น้อยกว่า 60 วินาที"
 
-#: kb/admin.py:2595
+#: kb/admin.py:2597
 msgid "Block duration readable"
 msgstr "รูปแบบอ่านง่ายของระยะเวลาบล็อก"
 
@@ -999,11 +1011,11 @@ msgstr "สามารถเพิ่ม/ส่งบทความภาย�
 msgid "Can add/submit public articles for approval"
 msgstr "สามารถเพิ่ม/ส่งบทความสาธารณะเพื่อขออนุมัติได้"
 
-#: kb/admin.py:668
+#: kb/admin.py:670
 msgid "Can approve/manage internal articles"
 msgstr "สามารถอนุมัติ/จัดการบทความภายในได้"
 
-#: kb/admin.py:641
+#: kb/admin.py:643
 msgid "Can approve/manage pending articles"
 msgstr "สามารถอนุมัติ/จัดการบทความที่รออนุมัติได้"
 
@@ -1015,35 +1027,35 @@ msgstr "สามารถอนุมัติ/จัดการการต�
 msgid "Can approve/manage pending public article reviews"
 msgstr "สามารถอนุมัติ/จัดการการตรวจทานบทความสาธารณะที่รออนุมัติได้"
 
-#: kb/admin.py:1220
+#: kb/admin.py:1222
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "สามารถสร้างฉบับร่างบทความ ส่งบทความเพื่อขออนุมัติ และแก้ไข/ส่งบทความของตนเองใหม่ได้ ไม่สามารถอนุมัติหรือปฏิเสธบทความได้ รวมสิทธิ์ผู้ดู จึงไม่จำเป็นต้องมีบทบาทผู้ใช้ทั่วไป"
 
-#: kb/admin.py:793
+#: kb/admin.py:795
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "สามารถสร้างฉบับร่างบทความ ส่งบทความใหม่เพื่อขออนุมัติ และแก้ไข/ส่งบทความของตนเองใหม่ได้ ไม่สามารถอนุมัติหรือปฏิเสธบทความได้"
 
-#: kb/admin.py:632
+#: kb/admin.py:634
 msgid "Can create articles"
 msgstr "สามารถสร้างบทความได้"
 
-#: kb/admin.py:807
+#: kb/admin.py:809
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "สามารถสร้างบทความ แก้ไข/จัดการบทความ ตรวจทานบทความ/การอัปเดตที่รออนุมัติ อนุมัติ/ปฏิเสธการส่ง และลบบทความได้"
 
-#: kb/admin.py:1222
+#: kb/admin.py:1224
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "สามารถสร้างบทความ แก้ไข/จัดการบทความ ตรวจทานบทความ/การอัปเดตที่รออนุมัติ อนุมัติ/ปฏิเสธการส่ง และลบบทความได้ รวมสิทธิ์ผู้ดู จึงไม่จำเป็นต้องมีบทบาทผู้ใช้ทั่วไป"
 
-#: kb/admin.py:663
+#: kb/admin.py:665
 msgid "Can create internal articles"
 msgstr "สามารถสร้างบทความภายในได้"
 
-#: kb/admin.py:650
+#: kb/admin.py:652
 msgid "Can delete articles"
 msgstr "สามารถลบบทความได้"
 
-#: kb/admin.py:673 kb/permissions.py:36
+#: kb/admin.py:675 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "สามารถลบบทความภายในได้"
 
@@ -1051,15 +1063,15 @@ msgstr "สามารถลบบทความภายในได้"
 msgid "Can delete public articles"
 msgstr "สามารถลบบทความสาธารณะได้"
 
-#: kb/admin.py:800
+#: kb/admin.py:802
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "สามารถตรวจทานบทความ/การอัปเดตที่รออนุมัติ แก้ไขเนื้อหาระหว่างการตรวจทาน และอนุมัติหรือปฏิเสธได้ โดยค่าเริ่มต้นไม่สามารถแก้ไขบทความที่เผยแพร่แล้วหรือลบบทความได้ ผู้อนุมัติบทความไม่สามารถเพิ่มบทความใหม่หรือลบบทความได้ตามค่าเริ่มต้น"
 
-#: kb/admin.py:1221
+#: kb/admin.py:1223
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "สามารถตรวจทานบทความ/การอัปเดตที่รออนุมัติ แก้ไขเนื้อหาระหว่างการตรวจทาน และอนุมัติหรือปฏิเสธได้ โดยค่าเริ่มต้นไม่สามารถแก้ไขบทความที่เผยแพร่แล้วหรือลบบทความได้ ไม่สามารถเพิ่มหรือลบบทความได้ตามค่าเริ่มต้น รวมสิทธิ์ผู้ดู จึงไม่จำเป็นต้องมีบทบาทผู้ใช้ทั่วไป"
 
-#: kb/admin.py:789
+#: kb/admin.py:791
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "สามารถลงชื่อเข้าใช้ ดู/ค้นหาบทความที่เผยแพร่ ใช้หน้าบทความตามปกติ และโหวตในที่ที่เปิดใช้การโหวตได้"
 
@@ -1067,11 +1079,11 @@ msgstr "สามารถลงชื่อเข้าใช้ ดู/ค้�
 msgid "Can use Knowledge Repository admin tools"
 msgstr "สามารถใช้เครื่องมือผู้ดูแลระบบของคลังความรู้ได้"
 
-#: kb/admin.py:622
+#: kb/admin.py:624
 msgid "Can view articles"
 msgstr "สามารถดูบทความได้"
 
-#: kb/admin.py:658 kb/permissions.py:33
+#: kb/admin.py:660 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "สามารถดูบทความภายในได้"
 
@@ -1079,7 +1091,7 @@ msgstr "สามารถดูบทความภายในได้"
 msgid "Can view published public articles"
 msgstr "สามารถดูบทความสาธารณะที่เผยแพร่แล้วได้"
 
-#: kb/admin.py:1219
+#: kb/admin.py:1221
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "สามารถดู/ค้นหาบทความที่เผยแพร่และโหวตได้ นี่คือบทบาทผู้ดูสำรองและจะถูกเพิ่มโดยอัตโนมัติเฉพาะเมื่อผู้ใช้ไม่มีบทบาทมาตรฐานอื่นของคลังความรู้"
 
@@ -1095,15 +1107,15 @@ msgstr "ข้อความการเปลี่ยนแปลง"
 msgid "Change password"
 msgstr "เปลี่ยนรหัสผ่าน"
 
-#: kb/admin.py:388
+#: kb/admin.py:390
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "เปลี่ยน %(target_label)s %(target)s: %(changes)s"
 
-#: kb/admin.py:2194 kb/admin_audit.py:153
+#: kb/admin.py:2196 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "เปลี่ยน %(target_label)s: %(target)s"
 
-#: kb/admin.py:2189
+#: kb/admin.py:2191
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "เปลี่ยน %(target_label)s: %(target)s — %(changes)s"
 
@@ -1111,11 +1123,11 @@ msgstr "เปลี่ยน %(target_label)s: %(target)s — %(changes)s"
 msgid "Checking..."
 msgstr "กำลังตรวจสอบ..."
 
-#: kb/admin.py:864
+#: kb/admin.py:866
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "เลือกกลุ่มก่อน แล้วใช้ช่องทำเครื่องหมายแบบกำหนดโดยตรงสำหรับข้อยกเว้นเท่านั้น สำหรับผู้ใช้ส่วนใหญ่ กลุ่มเพียงอย่างเดียวก็เพียงพอ"
 
-#: kb/admin.py:571
+#: kb/admin.py:573
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "เลือกว่าข้อมูลส่วนตัวนี้เป็นผู้ใช้/ผู้ดูแลระบบในเครื่อง หรือผู้ใช้/ผู้ดูแลระบบ LDAP ประเภทบัญชีผู้ดูแลระบบจะเพิ่มบทบาทผู้ใช้ผู้ดูแลระบบและทำให้เป็น Django superuser การเปลี่ยนกลับเป็นผู้ใช้/ผู้ใช้ LDAP จะลบผู้ใช้ผู้ดูแลระบบและล้างสถานะ staff/superuser ใช้สิ่งนี้เพื่อแปลงโปรไฟล์ LDAP ที่ถูกละทิ้งเป็นโปรไฟล์ในเครื่องเมื่อบัญชี AD ถูกลบแต่ยังต้องเก็บบทความไว้"
 
@@ -1139,7 +1151,7 @@ msgstr "ล้างแชต"
 msgid "Clear search"
 msgstr "ล้างการค้นหา"
 
-#: kb/admin.py:1401
+#: kb/admin.py:1403
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "ล้างการบล็อกชั่วคราวและประวัติการล็อกแบบเพิ่มระดับสำหรับผู้ใช้นี้ ใช้หลังจากตรวจสอบแล้วว่าคำขอถูกต้อง"
 
@@ -1163,7 +1175,7 @@ msgstr "กรุณาทำ MFA ให้เสร็จก่อนดำเ�
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "ทำ MFA ให้เสร็จก่อนดำเนินการต่อ คุณไม่สามารถเข้าถึงคลังความรู้ได้จนกว่าจะทำ MFA เสร็จ"
 
-#: kb/admin.py:1369 kb/mfa.py:243
+#: kb/admin.py:1371 kb/mfa.py:243
 msgid "Configured"
 msgstr "กำหนดค่าแล้ว"
 
@@ -1183,7 +1195,7 @@ msgstr "ยืนยันการดำเนินการกับบทค
 msgid "Confirm password"
 msgstr "ยืนยันรหัสผ่าน"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:592
+#: kb/views/auth.py:508 kb/views/mfa.py:591
 msgid "Confirm password is incorrect."
 msgstr "รหัสผ่านยืนยันไม่ถูกต้อง"
 
@@ -1203,27 +1215,23 @@ msgstr "ยืนยันเมื่อ"
 msgid "Content type"
 msgstr "ประเภทเนื้อหา"
 
-#: kb/admin.py:2689
+#: kb/admin.py:2691
 msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and the signed-in session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
 msgstr "ควบคุมบันทึกการยืนยันตัวตน/MFA บันทึกกิจกรรมทั่วไป จำนวนแถวที่แสดงในบันทึกผู้ดูแลระบบ และอายุของเซสชันหลังเข้าสู่ระบบ ระยะเวลาเก็บบันทึกเริ่มต้นคือ 30 วัน ตารางบันทึกผู้ดูแลระบบแสดง 200 แถวต่อหน้าโดยค่าเริ่มต้น เซสชันมีค่าเริ่มต้น 8 ชั่วโมง"
 
-#: kb/admin.py:2676
+#: kb/admin.py:2678
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "ควบคุมระยะเวลาที่บทความเผยแพร่ที่ลบไปแล้วยังกู้คืนได้ใน โปรไฟล์ของฉัน → เครื่องมือผู้ดูแลระบบ → คิวการลบ ก่อนการลบถาวรตามกำหนดเวลา ค่าเริ่มต้นคือ 7 วัน ตั้งค่าเป็น 0 เพื่อลบถาวรทันทีหลังการยืนยัน MFA"
 
-#: kb/admin.py:2660
+#: kb/admin.py:2662
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "ควบคุมจำนวนบทความที่แสดงต่อหน้า/ในแต่ละคอลัมน์ของหน้าแรก จำนวนรูปภาพที่วาง/อัปโหลดได้ในแต่ละบทความ และความกว้างสูงสุดในการแสดงผลของวิดีโอในบทความ ค่าเริ่มต้นของจำนวนบทความต่อหน้าคือ 10 ขีดจำกัดการอัปโหลดรูปภาพเริ่มต้นคือ 50; ตั้งค่าเป็น 0 เพื่อปิดใช้งานการอัปโหลดรูปภาพในบทความ ความกว้างเริ่มต้นของวิดีโอในบทความคือ 720 px และจะยังคงปรับตามขนาดหน้าจอที่เล็กกว่า"
 
-#: kb/admin.py:2700
-msgid "Controls the fixed window that starts immediately after username/password verification succeeds. The user must finish MFA before this countdown reaches zero or sign in with username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
-msgstr "ควบคุมช่วงเวลาคงที่ซึ่งเริ่มทันทีหลังจากยืนยันชื่อผู้ใช้และรหัสผ่านสำเร็จ ผู้ใช้ต้องดำเนินการ MFA ให้เสร็จก่อนการนับถอยหลังถึงศูนย์ มิฉะนั้นต้องเข้าสู่ระบบอีกครั้งด้วยชื่อผู้ใช้และรหัสผ่าน ค่าเริ่มต้นคือ 60 วินาที ช่วงที่อนุญาต: 30 ถึง 900 วินาที (15 นาที)"
-
-#: kb/admin.py:2669
+#: kb/admin.py:2671
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "ควบคุมอายุขั้นต่ำที่ใช้โดย โปรไฟล์ของฉัน → เครื่องมือผู้ดูแลระบบ → ล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน ใช้ 0 เพื่อแสดงไฟล์ทันที"
 
-#: kb/admin.py:264 kb/models.py:56
+#: kb/admin.py:265 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "ควบคุมว่ารหัสผ่านจะได้รับการจัดการภายในคลังความรู้หรือภายนอกโดย Active Directory"
 
@@ -1239,11 +1247,11 @@ msgstr "สร้างแล้ว"
 msgid "Created %(target)s"
 msgstr "สร้าง %(target)s แล้ว"
 
-#: kb/admin.py:420
+#: kb/admin.py:422
 msgid "Created %(target_label)s %(target)s"
 msgstr "สร้าง %(target_label)s %(target)s แล้ว"
 
-#: kb/admin.py:2186 kb/admin_audit.py:150
+#: kb/admin.py:2188 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "สร้าง %(target_label)s: %(target)s แล้ว"
 
@@ -1259,15 +1267,15 @@ msgstr "สถานะ MFA ปัจจุบัน"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "ข้อเสนอแนะปัจจุบันจากผู้ดูแลระบบที่แสดงให้เจ้าของบทความเห็นเมื่อบทความอยู่ในสถานะฉบับร่างหรือรออนุมัติไม่สำเร็จ"
 
-#: kb/admin.py:2437 kb/models.py:371
+#: kb/admin.py:2439 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "ความคิดเห็นการตรวจไม่ผ่านปัจจุบัน"
 
-#: kb/admin.py:1090
+#: kb/admin.py:1092
 msgid "Current users"
 msgstr "ผู้ใช้ปัจจุบัน"
 
-#: kb/admin.py:1070
+#: kb/admin.py:1072
 msgid "Custom Django group"
 msgstr "กลุ่ม Django แบบกำหนดเอง"
 
@@ -1279,31 +1287,31 @@ msgstr "วันที่"
 msgid "Date and time when this article was approved for public display."
 msgstr "วันที่และเวลาที่บทความนี้ได้รับอนุมัติเพื่อแสดงแบบสาธารณะ"
 
-#: kb/admin.py:1235
+#: kb/admin.py:1237
 msgid "Default Knowledge Repository groups:"
 msgstr "กลุ่มเริ่มต้นของคลังความรู้:"
 
-#: kb/admin.py:1018
+#: kb/admin.py:1020
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "ไม่สามารถลบกลุ่มบทบาทเริ่มต้นของคลังความรู้ได้"
 
-#: kb/admin.py:1029
+#: kb/admin.py:1031
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "ไม่สามารถลบกลุ่มบทบาทเริ่มต้นของคลังความรู้ได้ ข้ามกลุ่มที่ได้รับการป้องกัน %(count)d กลุ่ม"
 
-#: kb/admin.py:1056
+#: kb/admin.py:1058
 msgid "Default permissions:"
 msgstr "สิทธิ์เริ่มต้น:"
 
-#: kb/admin.py:2792
+#: kb/admin.py:2801
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "ขั้นเริ่มต้น 1: บล็อก 5 นาทีหลังพยายามผิด 10 ครั้ง ทำซ้ำ 2 ครั้ง"
 
-#: kb/admin.py:2793
+#: kb/admin.py:2802
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "ขั้นเริ่มต้น 2: บล็อก 15 นาทีหลังพยายามผิด 5 ครั้ง ทำซ้ำ 2 ครั้ง"
 
-#: kb/admin.py:2794
+#: kb/admin.py:2803
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "ขั้นเริ่มต้น 3: บล็อก 1 ชั่วโมงหลังพยายามผิด 3 ครั้ง และทำซ้ำจนกว่าจะลงชื่อเข้าใช้สำเร็จหรือผู้ดูแลระบบรีเซ็ต"
 
@@ -1331,7 +1339,7 @@ msgstr "ลบไฟล์ค้างที่เลือก"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "ลบไฟล์อัปโหลดค้างที่เลือกหรือไม่? ไม่สามารถย้อนกลับได้"
 
-#: kb/admin.py:475
+#: kb/admin.py:477
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "ลบ %(target_label)s %(count)d รายการแล้ว: %(preview)s"
 
@@ -1339,15 +1347,15 @@ msgstr "ลบ %(target_label)s %(count)d รายการแล้ว: %(prev
 msgid "Deleted %(target)s"
 msgstr "ลบ %(target)s แล้ว"
 
-#: kb/admin.py:456
+#: kb/admin.py:458
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "ลบ %(target_label)s %(target)s แล้ว"
 
-#: kb/admin.py:2196 kb/admin_audit.py:160
+#: kb/admin.py:2198 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "ลบ %(target_label)s: %(target)s แล้ว"
 
-#: kb/admin.py:2075
+#: kb/admin.py:2077
 msgid "Deleted article"
 msgstr "บทความที่ลบแล้ว"
 
@@ -1403,7 +1411,7 @@ msgstr "คิวการลบ"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "การเก็บคิวการลบถูกตั้งค่าเป็น 0 วัน การลบบทความที่เผยแพร่ใหม่จะถูกลบถาวรทันทีหลังยืนยัน บทความที่อยู่ในคิวและแสดงที่นี่พร้อมสำหรับการลบถาวร"
 
-#: kb/admin.py:2879
+#: kb/admin.py:2904
 msgid "Deletion queue retention readable"
 msgstr "รูปแบบอ่านง่ายของระยะเวลาเก็บคิวการลบ"
 
@@ -1435,7 +1443,7 @@ msgstr "กู้คืนการลบเมื่อ"
 msgid "Deletion restored by"
 msgstr "กู้คืนการลบโดย"
 
-#: kb/admin.py:2249
+#: kb/admin.py:2251
 msgid "Denied"
 msgstr "ปฏิเสธแล้ว"
 
@@ -1443,51 +1451,51 @@ msgstr "ปฏิเสธแล้ว"
 msgid "Details"
 msgstr "รายละเอียด"
 
-#: kb/admin.py:1195
+#: kb/admin.py:1197
 msgid "Direct Knowledge Repository permissions"
 msgstr "สิทธิ์โดยตรงของคลังความรู้"
 
-#: kb/admin.py:642
+#: kb/admin.py:644
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้เข้าถึงเวิร์กโฟลว์การอนุมัติบทความ เช่น การตรวจทานบทความที่รออนุมัติ การตรวจทานการอัปเดตที่รออนุมัติ การอนุมัติ/ปฏิเสธ และการแก้ไขบทความระหว่างขั้นตอนตรวจทาน ไม่ได้อนุญาตให้สร้างบทความใหม่ ลบบทความ หรือเข้าถึง Django Admin เต็มรูปแบบโดยอัตโนมัติ เว้นแต่จะได้รับจากสิทธิ์/กลุ่มอื่น"
 
-#: kb/admin.py:633
+#: kb/admin.py:635
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้สร้างฉบับร่างบทความ ส่งบทความใหม่เพื่อขออนุมัติ และแก้ไข/ส่งบทความของตนเองหรือการอัปเดตที่รออนุมัติใหม่ได้ ไม่อนุญาตให้อนุมัติ/ปฏิเสธบทความของผู้ใช้อื่น หรือใช้เครื่องมือ Django Admin"
 
-#: kb/admin.py:623
+#: kb/admin.py:625
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้เปิดวิกิหลักและอ่านบทความที่เผยแพร่หลังลงชื่อเข้าใช้ ไม่อนุญาตให้สร้างบทความ อนุมัติบทความ หรือใช้เครื่องมือผู้ดูแลระบบ การไม่ติ๊กหมายถึงไม่มีสิทธิ์โดยตรง ผู้ใช้อาจยังได้รับสิทธิ์นี้จากกลุ่ม กลุ่มผู้ใช้ที่ปิดใช้งานจะมีผลเหนือสิทธิ์เสริมโดยตรง"
 
-#: kb/admin.py:664
+#: kb/admin.py:666
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้นี้สร้างและส่งบทความภายใน/ส่วนตัว"
 
-#: kb/admin.py:651
+#: kb/admin.py:653
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้นี้ลบบทความ ใช้อย่างจำกัด เพราะกลุ่มผู้จัดการบทความและผู้ใช้ผู้ดูแลระบบมาตรฐานให้สิทธิ์นี้อยู่แล้ว"
 
-#: kb/admin.py:674
+#: kb/admin.py:676
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้นี้ลบบทความภายใน/ส่วนตัว"
 
-#: kb/admin.py:659
+#: kb/admin.py:661
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้นี้เปิดและอ่านบทความภายใน/ส่วนตัวที่เผยแพร่แล้ว"
 
-#: kb/admin.py:669
+#: kb/admin.py:671
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "สิทธิ์ผู้ใช้โดยตรง อนุญาตให้ผู้ใช้นี้ตรวจทานและจัดการบทความภายใน/ส่วนตัวที่รออนุมัติ"
 
-#: kb/admin.py:834
+#: kb/admin.py:836
 msgid "Direct user permissions"
 msgstr "สิทธิ์ผู้ใช้โดยตรง"
 
-#: kb/admin.py:1218 kb/admin.py:1340 kb/admin.py:781 kb/permissions.py:53
+#: kb/admin.py:1220 kb/admin.py:1342 kb/admin.py:783 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "ผู้ใช้ที่ปิดใช้งาน"
 
-#: kb/admin.py:1613
+#: kb/admin.py:1615
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "กำหนดบทบาทผู้ใช้ที่ปิดใช้งานให้ผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
@@ -1495,15 +1503,15 @@ msgstr "กำหนดบทบาทผู้ใช้ที่ปิดใช
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "บทบาทบัญชีที่ปิดใช้งาน บัญชีผู้ใช้ยังคงอยู่ใน Django เพื่อวัตถุประสงค์ด้านการตรวจสอบ/ประวัติ แต่ไม่สามารถลงชื่อเข้าใช้หรือเข้าถึงวิกิได้จนกว่าผู้ดูแลระบบจะย้ายผู้ใช้ไปยังบทบาทอื่น"
 
-#: kb/admin.py:276 kb/models.py:1225
+#: kb/admin.py:278 kb/models.py:1235
 msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
 msgstr "ปิดใช้งานโดยค่าเริ่มต้น เมื่อปิดใช้งาน Django Admin สามารถเข้าถึงได้จากที่อยู่ IPv4 หรือ IPv6 ใดก็ได้ โดยยังต้องผ่านการยืนยันตัวตนปกติและ MFA ของผู้ดูแล เมื่อเปิดใช้ จะอนุญาตเฉพาะช่วง IP/CIDR ที่กำหนดไว้เท่านั้น"
 
-#: kb/admin.py:2568
+#: kb/admin.py:2570
 msgid "Dislike"
 msgstr "ไม่ชอบ"
 
-#: kb/admin.py:2452 website/templates/articles.html:277
+#: kb/admin.py:2454 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "ไม่ชอบ"
 
@@ -1515,7 +1523,7 @@ msgstr "DjOpenKB ไม่สามารถตรวจสอบได้ว่
 msgid "Django Admin MFA lockout triggered"
 msgstr "มีการทริกเกอร์การล็อก MFA ของผู้ดูแล Django"
 
-#: kb/admin.py:1969 kb/admin.py:1975
+#: kb/admin.py:1971 kb/admin.py:1977
 msgid "Django Admin MFA verification"
 msgstr "การยืนยัน MFA ของผู้ดูแล Django"
 
@@ -1527,7 +1535,7 @@ msgstr "การยืนยัน MFA ของผู้ดูแล Django �
 msgid "Django Admin MFA verification success"
 msgstr "การยืนยัน MFA ของผู้ดูแล Django สำเร็จ"
 
-#: kb/admin.py:2725
+#: kb/admin.py:2733
 msgid "Django Admin access restrictions"
 msgstr "ข้อจำกัดการเข้าถึง Django Admin"
 
@@ -1543,11 +1551,11 @@ msgstr "ผู้ดูแลระบบโดเมน"
 msgid "Domain User"
 msgstr "ผู้ใช้โดเมน"
 
-#: kb/admin.py:1202
+#: kb/admin.py:1204
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "รหัสผ่านโดเมนถูกจัดการใน Active Directory และไม่สามารถเปลี่ยนจาก Django admin ได้"
 
-#: kb/admin.py:1308
+#: kb/admin.py:1310
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "รหัสผ่านผู้ใช้โดเมนถูกจัดการใน Active Directory"
 
@@ -1567,7 +1575,7 @@ msgstr "บันทึกฉบับร่างเรียบร้อยแ
 msgid "Due"
 msgstr "ครบกำหนด"
 
-#: kb/admin.py:2720
+#: kb/admin.py:2728
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "คำถามแรกที่ยอมรับของผู้ใช้แต่ละรายจะเริ่มช่วงเวลา 24 ชั่วโมงแบบคงที่ ขีดจำกัดการส่งคำถามถี่ในระยะสั้นที่มีอยู่ยังคงทำงานแยกต่างหาก"
 
@@ -1603,11 +1611,11 @@ msgstr "คำสำคัญที่แก้ไขแล้วกำลัง
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "ชื่อเรื่องที่แก้ไขแล้วกำลังรอการอนุมัติจากผู้ดูแลระบบ ชื่อเรื่องที่เผยแพร่จะไม่เปลี่ยนแปลงจนกว่าจะได้รับอนุมัติ"
 
-#: kb/admin.py:848 kb/admin.py:895
+#: kb/admin.py:850 kb/admin.py:897
 msgid "Effective permissions"
 msgstr "สิทธิ์ที่มีผล"
 
-#: kb/admin.py:888
+#: kb/admin.py:890
 msgid "Effective role groups"
 msgstr "กลุ่มบทบาทที่มีผล"
 
@@ -1619,15 +1627,15 @@ msgstr "อีเมล"
 msgid "Email updated successfully."
 msgstr "อัปเดตอีเมลสำเร็จ"
 
-#: kb/admin.py:245 kb/models.py:1224
+#: kb/admin.py:246 kb/models.py:1234
 msgid "Enable Admin IP allowlist"
 msgstr "เปิดใช้รายการ IP ที่อนุญาตสำหรับผู้ดูแล"
 
-#: kb/admin.py:258 kb/models.py:1326 website/templates/profile.html:195
+#: kb/admin.py:259 kb/models.py:1336 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "เปิดใช้งาน"
 
-#: kb/admin.py:1823
+#: kb/admin.py:1825
 msgid "Encrypted and hidden"
 msgstr "เข้ารหัสและซ่อนไว้"
 
@@ -1647,7 +1655,7 @@ msgstr "ป้อนชื่อผู้ใช้หรืออีเมล lo
 msgid "Enter an image size between 1 and 1200 pixels."
 msgstr "ป้อนขนาดรูปภาพระหว่าง 1 ถึง 1200 พิกเซล"
 
-#: kb/admin.py:2642
+#: kb/admin.py:2644
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
 msgstr "กรอกที่อยู่ IPv4/IPv6 หรือช่วง CIDR ที่ถูกต้องอย่างน้อยหนึ่งรายการก่อนเปิดใช้รายการ IP ที่อนุญาตสำหรับผู้ดูแล"
 
@@ -1659,11 +1667,11 @@ msgstr "กรอกรหัส 6 หลักของคุณ"
 msgid "Enter your MFA/OTP code to confirm this deletion."
 msgstr "กรอกรหัส MFA/OTP เพื่อยืนยันการลบนี้"
 
-#: website/templates/admin_mfa_verify.html:94
+#: website/templates/admin_mfa_verify.html:103
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "กรอกรหัสจากแอปยืนยันตัวตนอีกครั้งเพื่อเข้าถึงไซต์ Django admin"
 
-#: kb/admin.py:2808
+#: kb/admin.py:2817
 msgid "Escalation memory readable"
 msgstr "รูปแบบอ่านง่ายของหน่วยความจำการยกระดับ"
 
@@ -1699,15 +1707,15 @@ msgstr "zip ส่งออกบทความ"
 msgid "Export split package"
 msgstr "ส่งออกแพ็กเกจแบบแบ่งส่วน"
 
-#: kb/admin.py:2255
+#: kb/admin.py:2257
 msgid "Failed"
 msgstr "ล้มเหลว"
 
-#: kb/admin.py:255 kb/models.py:1311
+#: kb/admin.py:256 kb/models.py:1321
 msgid "Failed attempts before block"
 msgstr "จำนวนครั้งที่ล้มเหลวก่อนบล็อก"
 
-#: kb/models.py:1348
+#: kb/models.py:1358
 msgid "Failed attempts must be at least 1."
 msgstr "จำนวนครั้งที่ล้มเหลวต้องไม่น้อยกว่า 1"
 
@@ -1735,7 +1743,7 @@ msgstr "ไฟล์ที่ใหม่กว่า %(minutes)s นาที�
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "ไฟล์ที่ใหม่กว่า %(minutes)s นาทีจะถูกละเว้น เปลี่ยนค่านี้ได้ที่ Django Admin → Site settings ใช้ 0 นาทีเพื่อแสดงอัปโหลดค้างทันที"
 
-#: kb/admin.py:267 kb/models.py:1138
+#: kb/admin.py:268 kb/models.py:1138
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "ไฟล์ที่ใหม่กว่าจำนวนนี้เป็นนาทีจะถูกละเว้นโดยเครื่องมือล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน ค่าเริ่มต้นคือ 1440 นาที (24 ชั่วโมง) เพื่อหลีกเลี่ยงการลบรูปภาพขณะที่ผู้ใช้กำลังร่างบทความ ตั้งค่าเป็น 0 เพื่อตรวจหา/ลบไฟล์อัปโหลดที่ไม่ได้ใช้งานทันที"
 
@@ -1759,11 +1767,11 @@ msgstr "ค้นหาไฟล์ที่ไม่ได้ใช้ใน"
 msgid "First"
 msgstr "หน้าแรก"
 
-#: kb/admin.py:829
+#: kb/admin.py:831
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "สิทธิ์ superuser ของ Django Admin เต็มรูปแบบ ผู้ใช้ผู้ดูแลระบบต้องผ่านการยืนยัน MFA ของผู้ดูแลระบบเพิ่มเติมก่อนเข้าสู่ Django Admin"
 
-#: kb/admin.py:1227
+#: kb/admin.py:1229
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "สิทธิ์ superuser ของ Django Admin เต็มรูปแบบ ต้องผ่านขั้นตอน MFA สำหรับผู้ดูแลระบบเพิ่มเติมก่อนเข้าสู่ Django Admin"
 
@@ -1771,7 +1779,7 @@ msgstr "สิทธิ์ superuser ของ Django Admin เต็มรู�
 msgid "General"
 msgstr "ทั่วไป"
 
-#: kb/admin.py:243 kb/models.py:1208
+#: kb/admin.py:244 kb/models.py:1218
 msgid "General activity log retention (days)"
 msgstr "ระยะเวลาเก็บบันทึกกิจกรรมทั่วไป (วัน)"
 
@@ -1795,15 +1803,15 @@ msgstr "บทความทั่วไปที่คุณเป็นเจ
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "รับคำตอบทันทีสำหรับคำถามที่พบบ่อยที่สุด และเรียนรู้วิธีใช้ 3 ตัวอักษรอย่างมืออาชีพ"
 
-#: kb/admin.py:990
+#: kb/admin.py:992
 msgid "Group members"
 msgstr "สมาชิกกลุ่ม"
 
-#: kb/admin.py:775
+#: kb/admin.py:777
 msgid "Group permissions"
 msgstr "สิทธิ์ของกลุ่ม"
 
-#: kb/admin.py:1072
+#: kb/admin.py:1074
 msgid "Group type"
 msgstr "ประเภทกลุ่ม"
 
@@ -1827,11 +1835,11 @@ msgstr "มีประโยชน์"
 msgid "Hi, I am OpenKB AI."
 msgstr "สวัสดี ฉันคือ OpenKB AI"
 
-#: kb/admin.py:1218
+#: kb/admin.py:1220
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "มีลำดับความสำคัญสูงสุด ปิดกั้นการเข้าถึงคลังความรู้ และล้างบทบาทผู้ใช้ผู้ดูแลระบบ สถานะ staff/superuser และสิทธิ์บทบาทโดยตรง"
 
-#: kb/admin.py:782
+#: kb/admin.py:784
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "มีลำดับความสำคัญสูงสุด ผู้ใช้จะถูกเปลี่ยนเส้นทางไปยังหน้าบัญชีที่ปิดใช้งานและไม่สามารถเข้าถึงคลังความรู้ได้ นอกจากนี้ยังล้างผู้ใช้ผู้ดูแลระบบ สถานะ staff/superuser และสิทธิ์เสริมโดยตรงของคลังความรู้"
 
@@ -1863,31 +1871,31 @@ msgstr "สแนปช็อต ID ผู้ใช้ในอดีตเท�
 msgid "How can we help?"
 msgstr "เราจะช่วยได้อย่างไร?"
 
-#: kb/models.py:1252
+#: kb/models.py:1262
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "ระยะเวลาที่ผู้ดูแลระบบอาจไม่มีการใช้งานภายใน Django Admin หลังผ่านการตรวจสอบ MFA สำหรับผู้ดูแลระบบเพิ่มเติม ค่าเริ่มต้นคือ 600 วินาที (10 นาที) โค้ดบังคับขั้นต่ำ 60 วินาที และสูงสุด 86400 วินาที"
 
-#: kb/admin.py:268 kb/models.py:1147
+#: kb/admin.py:269 kb/models.py:1147
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "ระยะเวลาที่บทความเผยแพร่ที่ถูกลบยังคงกู้คืนได้ใน โปรไฟล์ของฉัน → เครื่องมือผู้ดูแลระบบ → คิวการลบ ก่อนลบถาวร ค่าเริ่มต้นคือ 7 วัน ตั้งค่าเป็น 0 เพื่อลบบทความเผยแพร่ถาวรทันทีหลังการยืนยัน MFA"
 
-#: kb/admin.py:278
+#: kb/admin.py:280
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "ระยะเวลาที่ระบบจดจำประวัติการยกระดับจากการลงชื่อเข้าใช้/MFA ที่ล้มเหลวโดยไม่มีการลงชื่อเข้าใช้สำเร็จ การยืนยันที่สำเร็จจะล้างทันที ค่าเริ่มต้นคือ 604800 วินาที (7 วัน)"
 
-#: kb/models.py:1243
+#: kb/models.py:1253
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "ระยะเวลาที่ระบบจดจำประวัติการล็อกการลงชื่อเข้าใช้/MFA ที่ล้มเหลว หากผู้ใช้ไม่เคยลงชื่อเข้าใช้สำเร็จ การยืนยันรหัสผ่าน/MFA ที่สำเร็จจะรีเซ็ตประวัติการล็อกที่เกี่ยวข้องทันที ค่าเริ่มต้นคือ 604800 วินาที (7 วัน)"
 
-#: kb/admin.py:282 kb/models.py:1317
+#: kb/admin.py:284 kb/models.py:1327
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "ระยะเวลาที่การตรวจสอบการลงชื่อเข้าใช้/MFA ถูกบล็อกหลังจากขั้นนี้ทำงาน"
 
-#: kb/admin.py:283 kb/models.py:1322
+#: kb/admin.py:285 kb/models.py:1332
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "จำนวนการล็อกที่ควรใช้ขั้นนี้ก่อนย้ายไปขั้นถัดไป ใช้ 0 ในขั้นสุดท้ายเพื่อทำซ้ำตลอดไป"
 
-#: kb/admin.py:863
+#: kb/admin.py:865
 msgid "How to use these permissions:"
 msgstr "วิธีใช้สิทธิ์เหล่านี้:"
 
@@ -1980,7 +1988,7 @@ msgstr "รูปภาพที่อัปโหลดในฉบับร่
 msgid "Immediate"
 msgstr "ทันที"
 
-#: kb/admin.py:2876
+#: kb/admin.py:2901
 msgid "Immediate permanent deletion"
 msgstr "การลบถาวรทันที"
 
@@ -2052,7 +2060,7 @@ msgstr "บทความที่นำเข้าจะถูกกำหน
 msgid "Imported articles will be owned by"
 msgstr "บทความที่นำเข้าจะเป็นของ"
 
-#: kb/admin.py:1337 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1339 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "ไม่ใช้งาน"
 
@@ -2064,15 +2072,15 @@ msgstr "แทรกลิงก์วิดีโอ"
 msgid "Internal"
 msgstr "ภายใน"
 
-#: kb/admin.py:1225 kb/admin.py:820 kb/permissions.py:60
+#: kb/admin.py:1227 kb/admin.py:822 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "ผู้อนุมัติบทความภายใน"
 
-#: kb/admin.py:1226 kb/admin.py:824 kb/permissions.py:61
+#: kb/admin.py:1228 kb/admin.py:826 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "ผู้จัดการบทความภายใน"
 
-#: kb/admin.py:1224 kb/admin.py:816 kb/permissions.py:59
+#: kb/admin.py:1226 kb/admin.py:818 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "ผู้เขียนบทความภายใน"
 
@@ -2084,7 +2092,7 @@ msgstr "บทความภายใน"
 msgid "Internal Knowledge Repository"
 msgstr "คลังความรู้ภายใน"
 
-#: kb/admin.py:1223 kb/admin.py:812 kb/permissions.py:58
+#: kb/admin.py:1225 kb/admin.py:814 kb/permissions.py:58
 msgid "Internal User"
 msgstr "ผู้ใช้ภายใน"
 
@@ -2100,7 +2108,7 @@ msgstr "บทความภายใน"
 msgid "Internal article pages"
 msgstr "หน้าบทความภายใน"
 
-#: kb/admin.py:745
+#: kb/admin.py:747
 msgid "Internal article permissions"
 msgstr "สิทธิ์บทความภายใน"
 
@@ -2120,7 +2128,7 @@ msgstr "บทความภายในที่คุณเป็นเจ้
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "บทบาทเสริมผู้จัดการภายใน สามารถดูบทความสาธารณะ/ภายใน สร้าง แก้ไข/จัดการ ตรวจทาน อนุมัติ/ปฏิเสธการส่งภายใน และลบบทความภายในตามขอบเขตได้ การลบบทความภายในที่เผยแพร่แล้วต้องยืนยันด้วย MFA"
 
-#: kb/admin.py:753
+#: kb/admin.py:755
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "บทบาทภายในเป็นสิทธิ์เสริม ผู้ใช้ภายในยังดูบทความทั่วไป/สาธารณะได้ ใช้กลุ่ม ผู้ใช้ภายใน / ผู้เขียนบทความภายใน / ผู้อนุมัติบทความภายใน / ผู้จัดการบทความภายใน ทุกครั้งที่เป็นไปได้ และติ๊กช่องโดยตรงเหล่านี้เฉพาะกรณียกเว้น"
 
@@ -2132,7 +2140,7 @@ msgstr "บทบาทเสริมผู้ดูภายใน สาม�
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "บทบาทเสริมผู้เขียนภายใน สามารถดูบทความสาธารณะ/ภายใน สร้างหรือดูแลฉบับร่าง/การส่งบทความภายในของตนเอง และลบบทความภายในของตนเองได้ การลบบทความภายในที่เผยแพร่แล้วต้องยืนยันด้วย MFA"
 
-#: kb/admin.py:2623
+#: kb/admin.py:2625
 msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
 msgstr "ที่อยู่ IPv4/IPv6 หรือช่วง CIDR ไม่ถูกต้อง: %(value)s"
 
@@ -2140,7 +2148,7 @@ msgstr "ที่อยู่ IPv4/IPv6 หรือช่วง CIDR ไม่�
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "ข้อมูลบัญชีไม่ถูกต้อง โปรดตรวจสอบชื่อผู้ใช้และรหัสผ่าน"
 
-#: kb/admin_security.py:317 kb/views/mfa.py:377 kb/views/mfa.py:513
+#: kb/admin_security.py:511 kb/views/mfa.py:376 kb/views/mfa.py:512
 msgid "Invalid authenticator code. Please try again."
 msgstr "รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองอีกครั้ง"
 
@@ -2192,11 +2200,11 @@ msgstr "คำสำคัญ"
 msgid "Keywords: %(keywords)s"
 msgstr "คำสำคัญ: %(keywords)s"
 
-#: kb/admin.py:1363
+#: kb/admin.py:1365
 msgid "Knowledge Repository Permissions"
 msgstr "สิทธิ์ของคลังความรู้"
 
-#: kb/admin.py:1358
+#: kb/admin.py:1360
 msgid "Knowledge Repository Roles"
 msgstr "บทบาทของคลังความรู้"
 
@@ -2208,11 +2216,11 @@ msgstr "ผู้ดูแลระบบคลังความรู้ ส�
 msgid "Knowledge Repository article."
 msgstr "บทความคลังความรู้"
 
-#: kb/admin.py:1069
+#: kb/admin.py:1071
 msgid "Knowledge Repository role"
 msgstr "บทบาทคลังความรู้"
 
-#: kb/admin.py:1054
+#: kb/admin.py:1056
 msgid "Knowledge Repository role group"
 msgstr "กลุ่มบทบาทคลังความรู้"
 
@@ -2220,11 +2228,11 @@ msgstr "กลุ่มบทบาทคลังความรู้"
 msgid "Knowledge Repository role guide"
 msgstr "คู่มือบทบาทคลังความรู้"
 
-#: kb/admin.py:1065
+#: kb/admin.py:1067
 msgid "Knowledge Repository role information"
 msgstr "ข้อมูลบทบาทคลังความรู้"
 
-#: kb/admin.py:727
+#: kb/admin.py:729
 msgid "Knowledge Repository role permissions"
 msgstr "สิทธิ์บทบาทคลังความรู้"
 
@@ -2232,15 +2240,15 @@ msgstr "สิทธิ์บทบาทคลังความรู้"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "ประเภทบัญชี LDAP ต้องใช้ Active Directory เป็นแหล่งการยืนยันตัวตน"
 
-#: kb/admin.py:596
+#: kb/admin.py:598
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "ประเภทบัญชี LDAP ต้องใช้ผู้ใช้ Active Directory เป็นแหล่งข้อมูล เลือกผู้ใช้ LDAP/ผู้ดูแล LDAP พร้อมผู้ใช้ Active Directory หรือเลือกผู้ใช้/ผู้ดูแลระบบพร้อมผู้ใช้ local"
 
-#: kb/admin.py:1346 kb/models.py:35
+#: kb/admin.py:1348 kb/models.py:35
 msgid "LDAP admin"
 msgstr "ผู้ดูแล LDAP"
 
-#: kb/admin.py:1350 kb/models.py:34
+#: kb/admin.py:1352 kb/models.py:34
 msgid "LDAP user"
 msgstr "ผู้ใช้ LDAP"
 
@@ -2276,7 +2284,7 @@ msgstr "ยืนยันล่าสุด"
 msgid "Last verified at"
 msgstr "ตรวจสอบล่าสุดเมื่อ"
 
-#: kb/admin.py:265
+#: kb/admin.py:266
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "ฟิลด์สำหรับความเข้ากันได้กับระบบเดิม ใช้ช่องทำเครื่องหมายใช้งานอยู่ในบัญชีผู้ใช้เพื่อควบคุมว่าผู้ใช้จะลงชื่อเข้าใช้ได้หรือไม่"
 
@@ -2284,11 +2292,11 @@ msgstr "ฟิลด์สำหรับความเข้ากันได
 msgid "Legacy main-site access"
 msgstr "การเข้าถึงไซต์หลักแบบเดิม"
 
-#: kb/admin.py:2566
+#: kb/admin.py:2568
 msgid "Like"
 msgstr "ชอบ"
 
-#: kb/admin.py:2447 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2449 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "ชอบ"
 
@@ -2316,7 +2324,7 @@ msgstr "ลงชื่อเข้าใช้ด้วยบัญชี local
 msgid "Local account types must use Local user as the authentication source."
 msgstr "ประเภทบัญชี local ต้องใช้ผู้ใช้ local เป็นแหล่งการยืนยันตัวตน"
 
-#: kb/admin.py:604
+#: kb/admin.py:606
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "ประเภทบัญชี local ต้องใช้ผู้ใช้ local เป็นแหล่งข้อมูล เลือกผู้ใช้/ผู้ดูแลระบบพร้อมผู้ใช้ local หรือเลือกผู้ใช้ LDAP/ผู้ดูแล LDAP พร้อมผู้ใช้ Active Directory"
 
@@ -2324,11 +2332,11 @@ msgstr "ประเภทบัญชี local ต้องใช้ผู้�
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "บัญชี local ต้องยืนยันผ่านแอปยืนยันตัวตนหลังลงชื่อเข้าใช้ด้วยรหัสผ่าน"
 
-#: kb/admin.py:1348
+#: kb/admin.py:1350
 msgid "Local admin"
 msgstr "ผู้ดูแลระบบ local"
 
-#: kb/admin.py:1351 kb/models.py:38 kb/views/services.py:3167
+#: kb/admin.py:1353 kb/models.py:38 kb/views/services.py:3167
 msgid "Local user"
 msgstr "ผู้ใช้ local"
 
@@ -2336,11 +2344,11 @@ msgstr "ผู้ใช้ local"
 msgid "Local username or email"
 msgstr "ชื่อผู้ใช้หรืออีเมล local"
 
-#: kb/admin.py:1994
+#: kb/admin.py:1996
 msgid "Lockout duration"
 msgstr "ระยะเวลาการล็อก"
 
-#: kb/admin.py:1979
+#: kb/admin.py:1981
 msgid "Lockout scope"
 msgstr "ขอบเขตการล็อก"
 
@@ -2364,7 +2372,7 @@ msgstr "เข้าสู่ระบบเพื่อมีส่วนร่
 msgid "Logout"
 msgstr "ออกจากระบบ"
 
-#: kb/admin.py:280 kb/models.py:1307
+#: kb/admin.py:282 kb/models.py:1317
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "ตัวเลขที่ต่ำกว่าจะทำงานก่อน ใช้ 10, 20, 30 เป็นต้น เพื่อให้สามารถแทรกขั้นในภายหลังได้"
 
@@ -2372,23 +2380,19 @@ msgstr "ตัวเลขที่ต่ำกว่าจะทำงานก
 msgid "MFA QR code"
 msgstr "รหัส QR ของ MFA"
 
-#: kb/admin.py:1391 kb/admin.py:1847
+#: kb/admin.py:1393 kb/admin.py:1849
 msgid "MFA Reset"
 msgstr "รีเซ็ต MFA"
 
-#: kb/admin.py:1375
+#: kb/admin.py:1377
 msgid "MFA Status"
 msgstr "สถานะ MFA"
-
-#: kb/admin.py:2695
-msgid "MFA login completion timeout"
-msgstr "หมดเวลาสำหรับการดำเนินการเข้าสู่ระบบด้วย MFA ให้เสร็จสิ้น"
 
 #: kb/admin.py:242 kb/models.py:1199
 msgid "MFA login completion timeout (seconds)"
 msgstr "หมดเวลาสำหรับการดำเนินการเข้าสู่ระบบด้วย MFA ให้เสร็จสิ้น (วินาที)"
 
-#: kb/admin.py:2866
+#: kb/admin.py:2875
 msgid "MFA login timeout readable"
 msgstr "หมดเวลาการเข้าสู่ระบบด้วย MFA แบบอ่านง่าย"
 
@@ -2400,15 +2404,15 @@ msgstr "MFA ถูกรีเซ็ตโดยผู้ดูแลระบ�
 msgid "MFA reset by user"
 msgstr "MFA ถูกรีเซ็ตโดยผู้ใช้"
 
-#: kb/admin.py:1872
+#: kb/admin.py:1874
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "รีเซ็ต MFA สำหรับอุปกรณ์ที่เลือก %(count)d รายการแล้ว ผู้ใช้ต้องตั้งค่าแอปยืนยันตัวตนใหม่เมื่อเข้าสู่ระบบครั้งถัดไป"
 
-#: kb/admin.py:1543
+#: kb/admin.py:1545
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "รีเซ็ต MFA สำหรับผู้ใช้ที่เลือก %(count)d รายการแล้ว พวกเขาต้องตั้งค่าแอปยืนยันตัวตนใหม่เมื่อเข้าสู่ระบบครั้งถัดไป"
 
-#: kb/views/mfa.py:691
+#: kb/views/mfa.py:690
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "มีการรีเซ็ต MFA สำหรับบัญชีคลังความรู้ของคุณ"
 
@@ -2424,15 +2428,19 @@ msgstr "จำเป็นต้องตั้งค่า MFA เพื่อ�
 msgid "MFA setup success"
 msgstr "ตั้งค่า MFA สำเร็จ"
 
-#: kb/views/mfa.py:274
+#: kb/views/mfa.py:273
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "ยกเลิกการลงชื่อเข้าใช้ MFA แล้ว โปรดลงชื่อเข้าใช้อีกครั้ง"
 
-#: kb/admin.py:1974 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1976 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "การยืนยัน MFA"
 
-#: kb/views/mfa.py:221
+#: kb/admin.py:2697
+msgid "MFA verification completion timeouts"
+msgstr "ระยะหมดเวลาสำหรับการยืนยัน MFA ให้เสร็จสิ้น"
+
+#: kb/views/mfa.py:220
 msgid "MFA verification timed out. Please enter your username and password again."
 msgstr "หมดเวลาการยืนยัน MFA โปรดกรอกชื่อผู้ใช้และรหัสผ่านอีกครั้ง"
 
@@ -2444,7 +2452,7 @@ msgstr "ยืนยัน MFA ล้มเหลว"
 msgid "MFA verify success"
 msgstr "ยืนยัน MFA สำเร็จ"
 
-#: kb/admin.py:1503
+#: kb/admin.py:1505
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "รีเซ็ต MFA สำหรับ %(username)s แล้ว ผู้ใช้ต้องตั้งค่าแอปยืนยันตัวตนใหม่เมื่อเข้าสู่ระบบครั้งถัดไป"
 
@@ -2452,7 +2460,7 @@ msgstr "รีเซ็ต MFA สำหรับ %(username)s แล้ว ผ�
 msgid "MFA/OTP code"
 msgstr "รหัส MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:670 kb/views/services.py:819
+#: kb/views/auth.py:440 kb/views/mfa.py:669 kb/views/services.py:819
 msgid "MFA/OTP code is incorrect."
 msgstr "รหัส MFA/OTP ไม่ถูกต้อง"
 
@@ -2464,7 +2472,7 @@ msgstr "โปรไฟล์ผู้ใช้ของไซต์หลัก
 msgid "Main Site User Profiles"
 msgstr "โปรไฟล์ผู้ใช้ของไซต์หลัก"
 
-#: kb/admin.py:716
+#: kb/admin.py:718
 msgid "Main site profile"
 msgstr "โปรไฟล์ไซต์หลัก"
 
@@ -2500,23 +2508,23 @@ msgstr "จัดการโดยแอปยืนยันตัวตน"
 msgid "Manual setup key"
 msgstr "คีย์ตั้งค่าด้วยตนเอง"
 
-#: kb/admin.py:1877
+#: kb/admin.py:1879
 msgid "Mark selected MFA devices as setup pending"
 msgstr "ทำเครื่องหมายอุปกรณ์ MFA ที่เลือกว่ารอการตั้งค่า"
 
-#: kb/admin.py:2396
+#: kb/admin.py:2398
 msgid "Mark selected articles as pending failed"
 msgstr "ทำเครื่องหมายบทความที่เลือกว่ารอดำเนินการล้มเหลว"
 
-#: kb/admin.py:1897
+#: kb/admin.py:1899
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "ทำเครื่องหมายการตั้งค่า MFA ของผู้ใช้ %(username)s ว่ารอดำเนินการแล้ว"
 
-#: kb/admin.py:2419
+#: kb/admin.py:2421
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "ทำเครื่องหมายบทความ %(title)s ว่ารออนุมัติไม่สำเร็จจาก Django Admin แล้ว"
 
-#: kb/admin.py:2407 kb/admin.py:2481
+#: kb/admin.py:2409 kb/admin.py:2483
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "ผู้ดูแลระบบทำเครื่องหมายว่ารอดำเนินการล้มเหลว โปรดตรวจทานบทความนี้และส่งอีกครั้งเพื่อขออนุมัติ"
 
@@ -2524,21 +2532,25 @@ msgstr "ผู้ดูแลระบบทำเครื่องหมาย
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "สูงสุด %(limit)s รูปต่อบทความ"
 
-#: kb/admin.py:279 kb/models.py:1262
+#: kb/admin.py:281 kb/models.py:1272
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "จำนวนคำถาม Ask OpenKB AI ที่ยอมรับได้สูงสุดต่อผู้ใช้ภายในช่วงเวลา 24 ชั่วโมงแบบคงที่ คำถามแรกที่ยอมรับจะเริ่มช่วงเวลา และคำถามถัดไปจะไม่ขยายช่วงเวลาดังกล่าว ค่าเริ่มต้น: 20"
 
-#: kb/admin.py:270 kb/models.py:1164
+#: kb/admin.py:271 kb/models.py:1164
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "ความกว้างสูงสุดในการแสดงผลของโปรแกรมเล่นวิดีโอในบทความ หน่วยเป็นพิกเซล วิดีโอจะปรับตามขนาดหน้าจอและคงอัตราส่วน 16:9 บนหน้าจอที่เล็กกว่า ค่าเริ่มต้นคือ 720 px ช่วงที่อนุญาต: 160 ถึง 1920 px"
 
-#: kb/admin.py:269 kb/models.py:1155
+#: kb/admin.py:270 kb/models.py:1155
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "จำนวนสูงสุดของรูปภาพที่วางหรืออัปโหลดได้ต่อบทความ รวมถึงเวอร์ชันร่าง รออนุมัติ เผยแพร่แล้ว และรออัปเดต ค่าเริ่มต้นคือ 50 ตั้งค่าเป็น 0 เพื่อปิดใช้งานการอัปโหลดรูปภาพบทความ"
 
-#: kb/admin.py:273 kb/models.py:1200
+#: kb/admin.py:274 kb/models.py:1200
 msgid "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
 msgstr "เวลาสูงสุดที่อนุญาตให้ดำเนินการ MFA ให้เสร็จหลังจากขั้นตอนชื่อผู้ใช้และรหัสผ่านสำเร็จ เมื่อการนับถอยหลังถึงศูนย์ การเข้าสู่ระบบที่ค้างอยู่จะถูกล้าง และผู้ใช้ต้องกรอกชื่อผู้ใช้และรหัสผ่านอีกครั้ง ค่าเริ่มต้นคือ 60 วินาที ช่วงที่อนุญาต: 30 ถึง 900 วินาที (15 นาที)"
+
+#: kb/admin.py:275 kb/models.py:1210
+msgid "Maximum time allowed to complete the separate MFA check before entering Django Admin. When the countdown reaches zero, the administrator stays signed in and must start a new verification window before trying again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "เวลาสูงสุดที่อนุญาตให้ดำเนินการตรวจสอบ MFA แยกต่างหากให้เสร็จก่อนเข้าสู่หน้าผู้ดูแลระบบ Django เมื่อการนับถอยหลังถึงศูนย์ ผู้ดูแลระบบจะยังคงอยู่ในสถานะเข้าสู่ระบบและต้องเริ่มช่วงเวลาการยืนยันใหม่ก่อนลองอีกครั้ง ค่าเริ่มต้นคือ 60 วินาที ช่วงที่อนุญาต: 30 ถึง 900 วินาที (15 นาที)"
 
 #: website/templates/admin_bulk_articles.html:87
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -2572,11 +2584,11 @@ msgstr "หน้าบทความที่ถูกใจมากที่
 msgid "Most recent article pages"
 msgstr "หน้าบทความล่าสุด"
 
-#: kb/admin.py:1283 website/templates/profile.html:190
+#: kb/admin.py:1285 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "การยืนยันตัวตนหลายปัจจัย"
 
-#: kb/admin.py:578
+#: kb/admin.py:580
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "ต้องตรงกับประเภทบัญชี ผู้ใช้ local/ผู้ดูแลระบบ local ใช้ผู้ใช้ local ผู้ใช้ LDAP/ผู้ดูแล LDAP ใช้ผู้ใช้ Active Directory หากต้องการแปลงบัญชี LDAP เป็นบัญชี local ให้ตั้งค่าประเภทบัญชีเป็นผู้ใช้หรือผู้ดูแลระบบ และแหล่งข้อมูลเป็นผู้ใช้ local จากนั้นตั้งรหัสผ่าน local"
 
@@ -2636,7 +2648,7 @@ msgstr "อีเมลหรือชื่อผู้ใช้ NextLabs AD"
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs คลังความรู้ด้านไอที"
 
-#: kb/admin.py:2733
+#: kb/admin.py:2741
 msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
 msgstr "Nginx จะไม่เก็บรายการ IP ผู้ดูแลแบบคงที่อีกต่อไป โดยค่าเริ่มต้น ที่อยู่ IPv4 และ IPv6 ทั้งหมดสามารถเข้าถึงขั้นตอนตรวจสอบการเข้าถึง Django Admin ได้ หากต้องการจำกัดการเข้าถึง ให้ระบุช่วง IP/CIDR ที่อนุญาตและเปิดใช้รายการดังกล่าว /admin/login/ ยังคงถูกซ่อนด้วย 404 และยังต้องใช้ MFA ของผู้ดูแล"
 
@@ -2644,7 +2656,7 @@ msgstr "Nginx จะไม่เก็บรายการ IP ผู้ดู�
 msgid "No"
 msgstr "ไม่"
 
-#: kb/admin.py:1045 kb/admin.py:1096 kb/permissions.py:400
+#: kb/admin.py:1047 kb/admin.py:1098 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "ไม่มีสิทธิ์บทบาทคลังความรู้"
 
@@ -2732,7 +2744,7 @@ msgstr "ไม่มีการตรวจทานบทความที่
 msgid "No pending update"
 msgstr "ไม่มีการอัปเดตที่รอดำเนินการ"
 
-#: kb/admin.py:1100
+#: kb/admin.py:1102
 msgid "No permissions"
 msgstr "ไม่มีสิทธิ์"
 
@@ -2764,7 +2776,7 @@ msgstr "ไม่มีไฟล์อัปโหลดที่ไม่ใช
 msgid "No stray uploaded files found."
 msgstr "ไม่พบไฟล์อัปโหลดที่ไม่ได้ใช้"
 
-#: kb/admin.py:1082
+#: kb/admin.py:1084
 msgid "No users"
 msgstr "ไม่มีผู้ใช้"
 
@@ -2772,11 +2784,11 @@ msgstr "ไม่มีผู้ใช้"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "การส่งออกปกติจะกลายเป็นแพ็กเกจแบบแบ่งส่วนโดยอัตโนมัติหากเนื้อหามีขนาดใหญ่เกินไป แพ็กเกจแบบแบ่งส่วนมี zip ส่วนย่อยที่นำเข้าได้ในโฟลเดอร์ parts/ ให้แตกแพ็กเกจและนำเข้า zip แต่ละส่วนตามลำดับ"
 
-#: kb/admin.py:1824
+#: kb/admin.py:1826
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "ไม่ได้เข้ารหัส รีเซ็ตอุปกรณ์ MFA ของผู้ใช้นี้และขอให้ผู้ใช้ตั้งค่า MFA ใหม่อีกครั้ง"
 
-#: kb/admin.py:2251
+#: kb/admin.py:2253
 msgid "Not found"
 msgstr "ไม่พบ"
 
@@ -2788,7 +2800,7 @@ msgstr "ไม่มีประโยชน์"
 msgid "Not required"
 msgstr "ไม่จำเป็น"
 
-#: kb/admin.py:1821
+#: kb/admin.py:1823
 msgid "Not set"
 msgstr "ไม่ได้ตั้งค่า"
 
@@ -2804,19 +2816,19 @@ msgstr "หมายเหตุ"
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "จำนวนบทความที่เผยแพร่ที่แสดงต่อหน้าในหน้าค้นหา/ผลลัพธ์ และในแต่ละคอลัมน์บทความของหน้าหลัก เช่น หัวข้อที่กำลังนิยม ถูกใจมากที่สุด และบทความล่าสุด ช่วงที่แนะนำ: 5 ถึง 100 ค่าเริ่มต้นคือ 10"
 
-#: kb/admin.py:275 kb/models.py:1217
+#: kb/admin.py:277 kb/models.py:1227
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "จำนวนแถวที่จะแสดงต่อหน้าในตารางบันทึก Django Admin ช่วงที่แนะนำ: 50 ถึง 500 ค่าเริ่มต้นคือ 200"
 
-#: kb/admin.py:281 kb/models.py:1312
+#: kb/admin.py:283 kb/models.py:1322
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "จำนวนครั้งที่ใส่รหัสผ่าน/MFA ผิดที่ต้องเกิดก่อนขั้นนี้จะบล็อกผู้ใช้"
 
-#: kb/admin.py:2245
+#: kb/admin.py:2247
 msgid "OK"
 msgstr "ตกลง"
 
-#: kb/admin.py:2235
+#: kb/admin.py:2237
 msgid "Object ID %(object_id)s"
 msgstr "ID วัตถุ %(object_id)s"
 
@@ -2860,7 +2872,7 @@ msgstr "OpenKB AI ไม่พร้อมใช้งานชั่วคร�
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI กำลังคิด..."
 
-#: kb/admin.py:249 kb/models.py:1261
+#: kb/admin.py:250 kb/models.py:1271
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "จำนวนพรอมต์ OpenKB AI ต่อ 24 ชั่วโมง"
 
@@ -2872,7 +2884,7 @@ msgstr "คำถาม OpenKB AI"
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI ถูกจำกัดอัตราการใช้งาน"
 
-#: kb/admin.py:2718
+#: kb/admin.py:2726
 msgid "OpenKB AI rate limits"
 msgstr "ขีดจำกัดอัตราของ OpenKB AI"
 
@@ -2884,11 +2896,11 @@ msgstr "OpenKB AI ใช้เวลาตอบนานเกินไป โ�
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "ไม่พบโฟลเดอร์ข้อมูล OpenKB ตรวจสอบ OPENKB_DATA_DIR ใน settings.py"
 
-#: kb/admin.py:2343
+#: kb/admin.py:2345
 msgid "OpenKB files"
 msgstr "ไฟล์ OpenKB"
 
-#: kb/admin.py:277 kb/models.py:1234
+#: kb/admin.py:279 kb/models.py:1244
 msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
 msgstr "ระบุที่อยู่ IPv4/IPv6 หรือช่วง CIDR แบบไม่บังคับ โดยคั่นด้วยจุลภาค ช่องว่าง หรือขึ้นบรรทัดใหม่ ตัวอย่าง: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32 เว้นว่างไว้เมื่อปิดรายการอนุญาต"
 
@@ -2944,7 +2956,7 @@ msgstr "หน้า %(page)s จาก %(total)s"
 msgid "Page not found"
 msgstr "ไม่พบหน้า"
 
-#: kb/admin.py:1204 kb/admin.py:1973 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1206 kb/admin.py:1975 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "รหัสผ่าน"
 
@@ -3004,15 +3016,15 @@ msgstr "รหัสผ่านซิงค์กับรหัสผ่าน
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "รหัสผ่านซิงโครไนซ์กับรหัสผ่านบริษัทของคุณ โปรดเปลี่ยนผ่านระบบรหัสผ่านของบริษัท"
 
-#: kb/admin.py:1796
+#: kb/admin.py:1798
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "รีเซ็ตตัวนับการล็อกรหัสผ่าน/MFA สำหรับโปรไฟล์ที่เลือก %(count)d รายการแล้ว"
 
-#: kb/admin.py:1575
+#: kb/admin.py:1577
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "รีเซ็ตตัวนับการล็อกรหัสผ่าน/MFA สำหรับผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
-#: kb/admin.py:1459
+#: kb/admin.py:1461
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "รีเซ็ตตัวนับการล็อกรหัสผ่าน/MFA สำหรับ %(username)s แล้ว"
 
@@ -3032,7 +3044,7 @@ msgstr "วางลิงก์ YouTube หรือ Vimeo ไม่รอง�
 msgid "Pasted images"
 msgstr "รูปภาพที่วาง"
 
-#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2107 kb/admin.py:2264
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2109 kb/admin.py:2266
 msgid "Path"
 msgstr "เส้นทาง"
 
@@ -3084,7 +3096,7 @@ msgstr "การอัปเดตที่รอดำเนินการ - 
 msgid "Pending update keywords"
 msgstr "การอัปเดตที่รอดำเนินการ - คำสำคัญ"
 
-#: kb/admin.py:2332
+#: kb/admin.py:2334
 msgid "Pending update review"
 msgstr "การอัปเดตที่รอดำเนินการ - การตรวจสอบ"
 
@@ -3124,11 +3136,11 @@ msgstr "ลบบทความกำพร้า %(count)s รายการ�
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "ลบบทความในคิว %(count)s รายการอย่างถาวรแล้ว"
 
-#: kb/admin.py:881
+#: kb/admin.py:883
 msgid "Permission guide"
 msgstr "คู่มือสิทธิ์"
 
-#: kb/admin.py:1107
+#: kb/admin.py:1109
 msgid "Permissions"
 msgstr "สิทธิ์"
 
@@ -3164,15 +3176,19 @@ msgstr "โปรดป้อนชื่อผู้ใช้หรืออี
 msgid "Please enter your MFA/OTP code to continue."
 msgstr "โปรดกรอกรหัส MFA/OTP เพื่อดำเนินการต่อ"
 
+#: website/templates/admin_mfa_verify.html:137
+msgid "Please enter your admin MFA code to continue."
+msgstr "โปรดป้อนรหัส MFA สำหรับผู้ดูแลระบบเพื่อดำเนินการต่อ"
+
 #: kb/views/admin.py:441
 msgid "Please select at least one orphan article first."
 msgstr "โปรดเลือกบทความกำพร้าอย่างน้อยหนึ่งรายการก่อน"
 
-#: kb/views/mfa.py:295
+#: kb/views/mfa.py:294
 msgid "Please sign in before setting up MFA."
 msgstr "โปรดลงชื่อเข้าใช้ก่อนตั้งค่า MFA"
 
-#: kb/views/mfa.py:400
+#: kb/views/mfa.py:399
 msgid "Please sign in before verifying MFA."
 msgstr "โปรดลงชื่อเข้าใช้ก่อนยืนยัน MFA"
 
@@ -3204,7 +3220,7 @@ msgstr "โปรดรอสักครู่แล้วลองอีกค
 msgid "Please wait briefly before trying again."
 msgstr "โปรดรอสักครู่ก่อนลองอีกครั้ง"
 
-#: kb/admin.py:2801
+#: kb/admin.py:2810
 msgid "Policy guide"
 msgstr "คู่มือนโยบาย"
 
@@ -3216,11 +3232,11 @@ msgstr "ขับเคลื่อนโดย"
 msgid "Powered by openKB"
 msgstr "ขับเคลื่อนโดย openKB"
 
-#: kb/admin.py:111 kb/admin.py:1190
+#: kb/admin.py:111 kb/admin.py:1192
 msgid "Preferred language"
 msgstr "ภาษาที่ต้องการ"
 
-#: kb/admin.py:266 kb/models.py:66
+#: kb/admin.py:267 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "ภาษาที่ต้องการสำหรับส่วนติดต่อผู้ใช้วิกิหลัก"
 
@@ -3248,7 +3264,7 @@ msgstr "สถานะก่อนหน้า"
 msgid "Previous status before deletion queue"
 msgstr "สถานะก่อนหน้าก่อนเข้าคิวการลบ"
 
-#: kb/admin.py:1175
+#: kb/admin.py:1177
 msgid "Profile account type"
 msgstr "ประเภทบัญชีของโปรไฟล์"
 
@@ -3320,7 +3336,7 @@ msgstr "เข้าคิวจากการล้างบทความก
 msgid "Ran admin action '%(action)s'"
 msgstr "เรียกใช้การดำเนินการผู้ดูแลระบบ '%(action)s' แล้ว"
 
-#: kb/admin.py:2200
+#: kb/admin.py:2202
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "เรียกใช้การดำเนินการผู้ดูแลระบบ '%(action)s' กับ %(target)s แล้ว"
 
@@ -3344,7 +3360,7 @@ msgstr "พร้อมสำหรับการลบถาวรตามก
 msgid "Recommended articles"
 msgstr "บทความแนะนำ"
 
-#: kb/admin.py:2247
+#: kb/admin.py:2249
 msgid "Redirect"
 msgstr "เปลี่ยนเส้นทาง"
 
@@ -3360,7 +3376,7 @@ msgstr "รีเฟรช"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "รีเฟรชหน้าแล้วลองอีกครั้ง หากปัญหายังคงเกิดขึ้น ให้ลงชื่อเข้าใช้อีกครั้ง"
 
-#: kb/admin.py:1219 kb/admin.py:788 kb/permissions.py:54
+#: kb/admin.py:1221 kb/admin.py:790 kb/permissions.py:54
 msgid "Regular User"
 msgstr "ผู้ใช้ทั่วไป"
 
@@ -3368,7 +3384,7 @@ msgstr "ผู้ใช้ทั่วไป"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "ผู้ใช้ทั่วไปคือบทบาทผู้ดูบทความสาธารณะสำรอง บทบาทภายในเป็นบทบาทเสริมที่รวมสิทธิ์ดูบทความสาธารณะด้วย ยังสามารถติ๊กสิทธิ์ผู้ใช้โดยตรงเพื่อชุดสิทธิ์แบบกำหนดเองได้ Django จะประเมินสิทธิ์ของกลุ่มและสิทธิ์ผู้ใช้โดยตรงร่วมกัน"
 
-#: kb/admin.py:1670
+#: kb/admin.py:1672
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "กำหนดบทบาทผู้ใช้ทั่วไปให้ผู้ใช้ที่เลือก %(count)d รายแล้ว"
 
@@ -3396,7 +3412,7 @@ msgstr "ลบรายการออกจากประวัติการ
 msgid "Removed by uploader from editor"
 msgstr "ถูกลบออกจากตัวแก้ไขโดยผู้อัปโหลด"
 
-#: kb/admin.py:257 kb/models.py:1321
+#: kb/admin.py:258 kb/models.py:1331
 msgid "Repeat count"
 msgstr "จำนวนครั้งที่ทำซ้ำ"
 
@@ -3420,19 +3436,19 @@ msgstr "คำขอหมดเวลา"
 msgid "Request too large"
 msgstr "คำขอมีขนาดใหญ่เกินไป"
 
-#: kb/admin.py:1384 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1386 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "รีเซ็ต MFA"
 
-#: kb/admin.py:1513
+#: kb/admin.py:1515
 msgid "Reset MFA for %(username)s"
 msgstr "รีเซ็ต MFA สำหรับ %(username)s"
 
-#: kb/admin.py:1520
+#: kb/admin.py:1522
 msgid "Reset MFA for selected users"
 msgstr "รีเซ็ต MFA สำหรับผู้ใช้ที่เลือก"
 
-#: kb/admin.py:1497 kb/admin.py:1536 kb/admin.py:1865
+#: kb/admin.py:1499 kb/admin.py:1538 kb/admin.py:1867
 msgid "Reset MFA for user %(username)s"
 msgstr "รีเซ็ต MFA สำหรับผู้ใช้ %(username)s"
 
@@ -3448,31 +3464,31 @@ msgstr "รีเซ็ตเมื่อ"
 msgid "Reset lockout now"
 msgstr "รีเซ็ตการล็อกตอนนี้"
 
-#: kb/admin.py:1400
+#: kb/admin.py:1402
 msgid "Reset password/MFA lockout"
 msgstr "รีเซ็ตการล็อกรหัสผ่าน/MFA"
 
-#: kb/admin.py:1467
+#: kb/admin.py:1469
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "รีเซ็ตการล็อกรหัสผ่าน/MFA สำหรับ %(username)s"
 
-#: kb/admin.py:1769
+#: kb/admin.py:1771
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "รีเซ็ตการล็อกรหัสผ่าน/MFA สำหรับโปรไฟล์ที่เลือก"
 
-#: kb/admin.py:1548
+#: kb/admin.py:1550
 msgid "Reset password/MFA lockout for selected users"
 msgstr "รีเซ็ตการล็อกรหัสผ่าน/MFA สำหรับผู้ใช้ที่เลือก"
 
-#: kb/admin.py:1453 kb/admin.py:1568 kb/admin.py:1789
+#: kb/admin.py:1455 kb/admin.py:1570 kb/admin.py:1791
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "รีเซ็ตการล็อกรหัสผ่าน/MFA สำหรับผู้ใช้ %(username)s"
 
-#: kb/admin.py:1849
+#: kb/admin.py:1851
 msgid "Reset selected MFA devices"
 msgstr "รีเซ็ตอุปกรณ์ MFA ที่เลือก"
 
-#: kb/admin.py:1843
+#: kb/admin.py:1845
 msgid "Reset this user's MFA"
 msgstr "รีเซ็ต MFA ของผู้ใช้นี้"
 
@@ -3480,7 +3496,7 @@ msgstr "รีเซ็ต MFA ของผู้ใช้นี้"
 msgid "Reset to original"
 msgstr "รีเซ็ตเป็นขนาดดั้งเดิม"
 
-#: kb/admin.py:1385
+#: kb/admin.py:1387
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "รีเซ็ตแอปยืนยันตัวตนของผู้ใช้นี้และต้องตั้งค่า QR ใหม่ คีย์แอปยืนยันตัวตนใหม่เป็นข้อมูลส่วนตัวและจะไม่แสดงให้ผู้ดูแลระบบเห็น"
 
@@ -3544,7 +3560,7 @@ msgstr "ตรวจทานการส่งทั่วไปและภา
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "ตรวจทานบทความทั่วไปและการอัปเดตสาธารณะที่รออนุมัติ"
 
-#: kb/admin.py:189 kb/admin.py:2442
+#: kb/admin.py:189 kb/admin.py:2444
 msgid "Review history"
 msgstr "ประวัติการตรวจทาน"
 
@@ -3676,11 +3692,11 @@ msgstr "เลือกทั้งหมด"
 msgid "Select all stray files"
 msgstr "เลือกไฟล์ค้างทั้งหมด"
 
-#: kb/admin.py:906
+#: kb/admin.py:908
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "เลือกผู้ใช้ที่ควรอยู่ในกลุ่มนี้ ใช้ช่องตัวกรองด้านซ้ายเพื่อค้นหาผู้ใช้ ย้ายผู้ใช้ที่เลือกไปด้านขวา แล้วบันทึก การนำผู้ใช้ออกจากด้านขวาจะลบเฉพาะการเป็นสมาชิกของกลุ่มนี้"
 
-#: kb/admin.py:2253 kb/views/errors.py:65
+#: kb/admin.py:2255 kb/views/errors.py:65
 msgid "Server error"
 msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์"
 
@@ -3688,31 +3704,31 @@ msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์
 msgid "Service unavailable"
 msgstr "บริการไม่พร้อมใช้งาน"
 
-#: kb/admin.py:1646
+#: kb/admin.py:1648
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "ตั้งค่าบทบาทของผู้ใช้ %(username)s เป็น %(role)s (%(status)s)"
 
-#: kb/admin.py:1703
+#: kb/admin.py:1705
 msgid "Set selected users as Admin Users"
 msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู้ใช้ผู้ดูแลระบบ"
 
-#: kb/admin.py:1683
+#: kb/admin.py:1685
 msgid "Set selected users as Article Approver"
 msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู้อนุมัติบทความ"
 
-#: kb/admin.py:1693
+#: kb/admin.py:1695
 msgid "Set selected users as Article Manager"
 msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู้จัดการบทความ"
 
-#: kb/admin.py:1673
+#: kb/admin.py:1675
 msgid "Set selected users as Article Writer"
 msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู้เขียนบทความ"
 
-#: kb/admin.py:1579
+#: kb/admin.py:1581
 msgid "Set selected users as Disabled User"
 msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู้ใช้ที่ปิดใช้งาน"
 
-#: kb/admin.py:1663
+#: kb/admin.py:1665
 msgid "Set selected users as Regular User"
 msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู้ใช้ทั่วไป"
 
@@ -3720,7 +3736,7 @@ msgstr "ตั้งผู้ใช้ที่เลือกเป็นผู
 msgid "Set size"
 msgstr "กำหนดขนาด"
 
-#: kb/admin.py:776
+#: kb/admin.py:778
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "ตั้งค่าบทบาทปกติของผู้ใช้จากส่วนกลุ่ม กลุ่มแบบกำหนดเองที่ไม่ใช่บทบาทอาจใช้ภายหลังสำหรับสิ่งต่าง ๆ เช่น การแจ้งเตือน"
 
@@ -3728,11 +3744,11 @@ msgstr "ตั้งค่าบทบาทปกติของผู้ใช
 msgid "Set up MFA"
 msgstr "ตั้งค่า MFA"
 
-#: kb/admin_security.py:225
+#: kb/admin_security.py:376
 msgid "Set up MFA before accessing the admin site."
 msgstr "ตั้งค่า MFA ก่อนเข้าถึงไซต์ผู้ดูแลระบบ"
 
-#: kb/views/auth.py:392 kb/views/mfa.py:611
+#: kb/views/auth.py:392 kb/views/mfa.py:610
 msgid "Set up MFA before changing sensitive account details."
 msgstr "ตั้งค่า MFA ก่อนเปลี่ยนรายละเอียดบัญชีที่สำคัญ"
 
@@ -3744,7 +3760,7 @@ msgstr "ตั้งค่า MFA ก่อนลบบทความที่�
 msgid "Set up authenticator"
 msgstr "ตั้งค่าแอปยืนยันตัวตน"
 
-#: kb/admin.py:1371 kb/mfa.py:244
+#: kb/admin.py:1373 kb/mfa.py:244
 msgid "Setup pending"
 msgstr "รอการตั้งค่า"
 
@@ -3800,11 +3816,11 @@ msgstr "ลงชื่อเข้าใช้ด้วยบัญชีคล
 msgid "Sign out and go to sign in"
 msgstr "ออกจากระบบและไปยังหน้าลงชื่อเข้าใช้"
 
-#: kb/admin.py:100 kb/admin.py:253 kb/models.py:1271
+#: kb/admin.py:100 kb/admin.py:254 kb/models.py:1281
 msgid "Site setting"
 msgstr "การตั้งค่าไซต์"
 
-#: kb/admin.py:100 kb/models.py:1272 kb/models.py:1275
+#: kb/admin.py:100 kb/models.py:1282 kb/models.py:1285
 msgid "Site settings"
 msgstr "การตั้งค่าไซต์"
 
@@ -3812,7 +3828,7 @@ msgstr "การตั้งค่าไซต์"
 msgid "Size"
 msgstr "ขนาด"
 
-#: kb/admin.py:2942
+#: kb/admin.py:2967
 msgid "Size (KB)"
 msgstr "ขนาด (KB)"
 
@@ -3876,23 +3892,27 @@ msgstr "แหล่งที่มา"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "แพ็กเกจส่งออกแบบแยกส่วนไม่มีไฟล์ zip ส่วนที่นำเข้าได้"
 
-#: kb/models.py:1336
+#: kb/models.py:1346
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "ขั้น %(order)s: ล้มเหลว %(failures)s ครั้ง -> %(block)s วินาที, ทำซ้ำ %(repeat)s"
 
-#: kb/admin.py:2760
+#: kb/admin.py:2769
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "ขั้น %(order)s: ล้มเหลว %(failures)s ครั้ง -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:254 kb/models.py:1306
+#: kb/admin.py:255 kb/models.py:1316
 msgid "Stage order"
 msgstr "ลำดับขั้น"
+
+#: website/templates/admin_mfa_verify.html:118
+msgid "Start new verification window"
+msgstr "เริ่มช่วงเวลาการยืนยันใหม่"
 
 #: website/templates/_keyword_suggestions.html:215
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "เริ่มพิมพ์ชื่อเรื่องหรือเนื้อหาบทความเพื่อดูคำสำคัญที่มีอยู่ซึ่งตรงกัน"
 
-#: kb/admin.py:185 kb/admin.py:2258 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
+#: kb/admin.py:185 kb/admin.py:2260 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "สถานะ"
 
@@ -3900,7 +3920,7 @@ msgstr "สถานะ"
 msgid "Status code"
 msgstr "รหัสสถานะ"
 
-#: kb/admin.py:2667
+#: kb/admin.py:2669
 msgid "Stray upload cleanup"
 msgstr "ล้างไฟล์อัปโหลดที่ไม่ได้ใช้งาน"
 
@@ -3932,7 +3952,7 @@ msgstr "ส่งโดย"
 msgid "Success"
 msgstr "สำเร็จ"
 
-#: kb/admin.py:2795
+#: kb/admin.py:2804
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "การยืนยันรหัสผ่านสำเร็จจะรีเซ็ตประวัติการล็อกรหัสผ่าน การยืนยัน MFA สำเร็จจะรีเซ็ตประวัติการล็อก MFA ผู้ดูแลระบบสามารถรีเซ็ตตัวนับของผู้ใช้จากหน้าผู้ดูแลระบบผู้ใช้"
 
@@ -3960,7 +3980,7 @@ msgstr "คำสำคัญที่แนะนำ"
 msgid "Supported zip format"
 msgstr "รูปแบบ zip ที่รองรับ"
 
-#: kb/admin.py:2238
+#: kb/admin.py:2240
 msgid "Target"
 msgstr "เป้าหมาย"
 
@@ -3968,7 +3988,7 @@ msgstr "เป้าหมาย"
 msgid "Target app"
 msgstr "แอปเป้าหมาย"
 
-#: kb/admin.py:144 kb/admin.py:2215
+#: kb/admin.py:144 kb/admin.py:2217
 msgid "Target model"
 msgstr "โมเดลเป้าหมาย"
 
@@ -3984,7 +4004,7 @@ msgstr "ID วัตถุเป้าหมาย"
 msgid "Thank you. Your vote has been saved."
 msgstr "ขอบคุณ บันทึกการโหวตของคุณแล้ว"
 
-#: kb/admin.py:1242
+#: kb/admin.py:1244
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "ช่องทำเครื่องหมายใช้งานอยู่ควบคุมว่าบัญชีจะลงชื่อเข้าใช้ได้หรือไม่ ผู้ใช้ทั่วไปเป็นเพียงบทบาทผู้ดูสำรอง และจะถูกลบออกโดยอัตโนมัติเมื่อกำหนดบทบาทผู้เขียน ผู้อนุมัติ ผู้จัดการ หรือบทบาทภายในระดับสูง ผู้ใช้ภายในเป็นบทบาทผู้ดูเสริมและสามารถรวมกับผู้ใช้ทั่วไปได้ กลุ่มแบบกำหนดเองที่ไม่ใช่บทบาทยังใช้ภายหลังสำหรับการแจ้งเตือนหรือการจัดกลุ่มตามแผนกได้"
 
@@ -4004,7 +4024,7 @@ msgstr "แอปพลิเคชันใช้เวลาตอบสนอ
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "ไม่สามารถมอบหมายบทความได้อย่างปลอดภัย ไม่มีการมอบหมายถูกใช้ โปรดตรวจสอบบันทึกและลองอีกครั้ง"
 
-#: kb/admin.py:835
+#: kb/admin.py:837
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "ช่องทำเครื่องหมายด้านล่างเป็นข้อยกเว้นพิเศษต่อผู้ใช้สำหรับการเข้าถึงบทความเท่านั้น มีประโยชน์เมื่อผู้ใช้คนหนึ่งต้องการสิทธิ์บทความมากกว่ากลุ่มของตนเล็กน้อย โดยไม่ต้องสร้างกลุ่มใหม่ การเข้าถึง Django Admin จะได้รับผ่านกลุ่มผู้ใช้ผู้ดูแลระบบ/สถานะ superuser เท่านั้น"
 
@@ -4044,6 +4064,10 @@ msgstr "ฐานความรู้ไม่มีข้อมูลที่
 msgid "The link may be invalid, expired, or you may not have access to this page."
 msgstr "ลิงก์อาจไม่ถูกต้อง หมดอายุ หรือคุณอาจไม่มีสิทธิ์เข้าถึงหน้านี้"
 
+#: kb/admin.py:2708
+msgid "The main login MFA timeout starts after username/password verification and requires the user to sign in again when it expires. The separate Admin MFA timeout starts when an administrator opens the Admin verification page; expiry keeps the administrator signed in and requires a new verification window before another code can be entered. Both default to 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "ระยะหมดเวลา MFA สำหรับการเข้าสู่ระบบหลักจะเริ่มหลังจากยืนยันชื่อผู้ใช้และรหัสผ่าน และเมื่อหมดเวลาผู้ใช้จะต้องเข้าสู่ระบบอีกครั้ง ระยะหมดเวลา MFA สำหรับผู้ดูแลระบบที่แยกต่างหากจะเริ่มเมื่อผู้ดูแลระบบเปิดหน้าการยืนยันของผู้ดูแลระบบ เมื่อหมดเวลา ผู้ดูแลระบบจะยังคงอยู่ในสถานะเข้าสู่ระบบและต้องเริ่มช่วงเวลาการยืนยันใหม่ก่อนป้อนรหัสอื่น ทั้งสองค่ามีค่าเริ่มต้น 60 วินาที ช่วงที่อนุญาต: 30 ถึง 900 วินาที (15 นาที)"
+
 #: website/templates/admin/kb/reset_mfa_confirm.html:22
 msgid "The next login will require authenticator setup before access is granted."
 msgstr "การเข้าสู่ระบบครั้งถัดไปจะต้องตั้งค่าแอปยืนยันตัวตนก่อนจึงจะได้รับสิทธิ์เข้าถึง"
@@ -4064,7 +4088,7 @@ msgstr "ไม่สามารถยืนยันคำขอได้"
 msgid "The reset is recorded in the authentication activity log."
 msgstr "การรีเซ็ตถูกบันทึกในบันทึกกิจกรรมการยืนยันตัวตน"
 
-#: kb/admin.py:2788
+#: kb/admin.py:2797
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "ใช้นโยบายเพิ่มระดับเดียวกันสำหรับความล้มเหลวในการลงชื่อเข้าใช้ด้วยรหัสผ่านและความล้มเหลวของรหัส MFA แต่ระบบติดตามตัวนับรหัสผ่านและ MFA แยกกันสำหรับผู้ใช้แต่ละราย"
 
@@ -4116,11 +4140,11 @@ msgstr "ความคิดเห็นเหล่านี้จะแสด
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "ไฟล์เหล่านี้ดูเหมือนไม่ได้ใช้งาน ตรวจสอบรายละเอียดผู้อัปโหลด แล้วลบเฉพาะไฟล์ที่ไม่จำเป็นแล้ว"
 
-#: kb/views/mfa.py:424 kb/views/mfa.py:617
+#: kb/views/mfa.py:423 kb/views/mfa.py:616
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "ไม่สามารถยืนยันอุปกรณ์ MFA นี้ได้เนื่องจากไม่สามารถอ่านข้อมูลลับได้ โปรดขอให้ผู้ดูแลระบบรีเซ็ต MFA ของคุณ หรือรีเซ็ตจากบรรทัดคำสั่งบนเซิร์ฟเวอร์หากผู้ดูแลระบบถูกล็อก"
 
-#: kb/admin_security.py:245
+#: kb/admin_security.py:396
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "ไม่สามารถยืนยันอุปกรณ์ MFA นี้ได้เนื่องจากไม่สามารถอ่านข้อมูลลับได้ โปรดขอให้ผู้ดูแลระบบคนอื่นรีเซ็ต MFA สำหรับบัญชีนี้"
 
@@ -4176,11 +4200,11 @@ msgstr "รูปภาพนี้ถูกอัปโหลดในร่า
 msgid "This image is not removable from this editing session."
 msgstr "ไม่สามารถลบรูปภาพนี้ออกจากเซสชันการแก้ไขนี้ได้"
 
-#: kb/admin.py:849
+#: kb/admin.py:851
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "บรรทัดนี้แสดงผลลัพธ์สุดท้ายหลังจาก Django รวมสิทธิ์กลุ่ม สิทธิ์ผู้ใช้โดยตรง และสถานะ superuser แล้ว"
 
-#: kb/admin.py:842
+#: kb/admin.py:844
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "การดำเนินการนี้ลบเฉพาะสิทธิ์ผู้ใช้โดยตรง หากกลุ่มของผู้ใช้ยังให้สิทธิ์เดียวกัน สิทธิ์ที่มีผลจะยังคงใช้งานอยู่"
 
@@ -4212,7 +4236,7 @@ msgstr "ไม่ถูกใจ"
 msgid "Thumbs up"
 msgstr "ถูกใจ"
 
-#: kb/admin.py:2357 kb/admin.py:760
+#: kb/admin.py:2359 kb/admin.py:762
 msgid "Timestamps"
 msgstr "เวลา"
 
@@ -4228,7 +4252,7 @@ msgstr "สลับการนำทาง"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "มีคำถาม OpenKB AI มากเกินไป โปรดรอก่อนลองอีกครั้ง"
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:555
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:554
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "มีความพยายามลงชื่อเข้าใช้ที่ล้มเหลวมากเกินไป โปรดลองอีกครั้งใน %(duration)s"
 
@@ -4236,11 +4260,11 @@ msgstr "มีความพยายามลงชื่อเข้าใช
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "มีการพยายามอัปโหลดรูปภาพมากเกินไป โปรดรอสักครู่แล้วลองอีกครั้ง"
 
-#: kb/views/auth.py:416 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/mfa.py:460 kb/views/mfa.py:501 kb/views/mfa.py:645 kb/views/services.py:791
+#: kb/views/auth.py:416 kb/views/mfa.py:333 kb/views/mfa.py:364 kb/views/mfa.py:459 kb/views/mfa.py:500 kb/views/mfa.py:644 kb/views/services.py:791
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "มีการกรอกรหัส MFA ไม่ถูกต้องมากเกินไป โปรดลองอีกครั้งใน %(duration)s"
 
-#: kb/admin_security.py:275 kb/admin_security.py:305
+#: kb/admin_security.py:469 kb/admin_security.py:499
 msgid "Too many incorrect admin MFA codes. Please try again in %(duration)s."
 msgstr "มีการกรอกรหัส MFA ของผู้ดูแลระบบไม่ถูกต้องมากเกินไป โปรดลองอีกครั้งใน %(duration)s"
 
@@ -4300,7 +4324,7 @@ msgstr "ยกเลิกเลือกทั้งหมด"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "ยกเลิกการเลือกตัวเลือกนี้เพื่อบล็อกผู้ใช้ไม่ให้เข้าถึงเว็บไซต์วิกิหลัก"
 
-#: kb/admin.py:841
+#: kb/admin.py:843
 msgid "Unticking a checkbox"
 msgstr "การเอาเครื่องหมายถูกออกจากช่องทำเครื่องหมาย"
 
@@ -4344,7 +4368,7 @@ msgstr "สถานะการอัปเดต"
 msgid "Update submitted at"
 msgstr "ส่งการอัปเดตเมื่อ"
 
-#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:250
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:251
 msgid "Updated at"
 msgstr "อัปเดตเมื่อ"
 
@@ -4376,7 +4400,7 @@ msgstr "อัปโหลดโดย"
 msgid "Uploader account type snapshot"
 msgstr "ข้อมูลประเภทบัญชีผู้อัปโหลดที่บันทึกไว้"
 
-#: kb/admin.py:2937
+#: kb/admin.py:2962
 msgid "Uploader display"
 msgstr "ชื่อที่แสดงของผู้อัปโหลด"
 
@@ -4388,23 +4412,23 @@ msgstr "ข้อมูลอีเมลผู้อัปโหลดที่
 msgid "Uploader username snapshot"
 msgstr "ข้อมูลชื่อผู้ใช้อัปโหลดที่บันทึกไว้"
 
-#: kb/admin.py:738
+#: kb/admin.py:740
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "ใช้กลุ่มเป็นบทบาทบทความสาธารณะมาตรฐานของผู้ใช้ ติ๊กช่องเหล่านี้เฉพาะเมื่อผู้ใช้รายนี้ต้องการสิทธิ์บทความสาธารณะเพิ่มเติมนอกเหนือจากกลุ่ม กลุ่มผู้ใช้ที่ปิดใช้งานมีผลเหนือสิทธิ์เสริมโดยตรงเหล่านี้"
 
-#: kb/admin.py:1058
+#: kb/admin.py:1060
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "ใช้ตัวเลือกสมาชิกกลุ่มด้านล่างเพื่อเพิ่มหรือลบผู้ใช้ออกจากบทบาทนี้ สำหรับข้อยกเว้นครั้งเดียว ให้แก้ไขผู้ใช้เฉพาะและติ๊กช่องสิทธิ์คลังความรู้โดยตรงแทน ผู้ใช้ใหม่ที่ไม่ใช่ผู้ดูแลระบบจะถูกเพิ่มไปยังผู้ใช้ทั่วไปโดยอัตโนมัติเมื่อสร้างบัญชี"
 
-#: kb/admin.py:2712
+#: kb/admin.py:2720
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "ใช้แถวแบบอินไลน์ด้านล่างเพื่อควบคุมการล็อกรหัสผ่าน/MFA แบบเพิ่มระดับ ใส่ระยะเวลาเป็นวินาที หน้าผู้ดูแลระบบจะแสดงการแปลงเป็นนาที/ชั่วโมง/วันที่อ่านง่ายด้วย repeat_count=0 หมายถึงขั้นนั้นทำซ้ำตลอดไป ซึ่งโดยปกติควรใช้กับแถวสุดท้าย"
 
-#: kb/admin.py:1236
+#: kb/admin.py:1238
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "ใช้กลุ่มเหล่านี้เป็นรูปแบบการเข้าถึงหลัก ผู้ใช้ที่ปิดใช้งานจะมีลำดับความสำคัญสูงสุดเสมอ"
 
-#: kb/admin.py:1296
+#: kb/admin.py:1298
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "ใช้เมื่อนี้ผู้ใช้ถูกบล็อกชั่วคราวเพราะกรอกรหัสผ่านหรือ MFA ผิดซ้ำ ๆ การดำเนินการนี้ล้างตัวนับการล็อกรหัสผ่านและ MFA สำหรับผู้ใช้นี้เท่านั้น"
 
@@ -4412,11 +4436,11 @@ msgstr "ใช้เมื่อนี้ผู้ใช้ถูกบล็อ
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "ใช้หลังจากตรวจสอบแล้วว่าคำขอปลดล็อกถูกต้องเท่านั้น"
 
-#: kb/admin.py:993
+#: kb/admin.py:995
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "ใช้รายการซ้าย/ขวาที่ค้นหาได้เพื่อเพิ่มหรือลบผู้ใช้ออกจากกลุ่มนี้ ผู้ใช้ทางขวาเป็นสมาชิกของกลุ่มนี้ ผู้ใช้ทางซ้ายคือผู้ใช้ที่พร้อมใช้งาน"
 
-#: kb/admin.py:1286
+#: kb/admin.py:1288
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "ใช้ส่วนนี้เพื่อรีเซ็ตการตั้งค่าแอปยืนยันตัวตนของผู้ใช้ การรีเซ็ตจะสร้างรหัสลับแอปยืนยันตัวตนส่วนตัวใหม่และบังคับให้ผู้ใช้สแกน QR code ใหม่ในการเข้าสู่ระบบครั้งถัดไป"
 
@@ -4432,11 +4456,11 @@ msgstr "อุปกรณ์ MFA ของผู้ใช้"
 msgid "User MFA devices"
 msgstr "อุปกรณ์ MFA ของผู้ใช้"
 
-#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2000
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2002
 msgid "User agent"
 msgstr "ตัวแทนผู้ใช้"
 
-#: kb/admin.py:1429 kb/admin.py:1477
+#: kb/admin.py:1431 kb/admin.py:1479
 msgid "User does not exist."
 msgstr "ไม่มีผู้ใช้นี้"
 
@@ -4444,7 +4468,7 @@ msgstr "ไม่มีผู้ใช้นี้"
 msgid "User session timeout (hours)"
 msgstr "หมดเวลาเซสชันผู้ใช้ (ชั่วโมง)"
 
-#: kb/admin.py:2855
+#: kb/admin.py:2864
 msgid "User session timeout readable"
 msgstr "หมดเวลาเซสชันผู้ใช้แบบอ่านง่าย"
 
@@ -4456,11 +4480,11 @@ msgstr "ชื่อผู้ใช้"
 msgid "Username changes are managed by administrators."
 msgstr "การเปลี่ยนชื่อผู้ใช้ถูกจัดการโดยผู้ดูแลระบบ"
 
-#: kb/admin.py:1077
+#: kb/admin.py:1079
 msgid "Users"
 msgstr "ผู้ใช้"
 
-#: kb/admin.py:904 kb/admin.py:974
+#: kb/admin.py:906 kb/admin.py:976
 msgid "Users in this group"
 msgstr "ผู้ใช้ในกลุ่มนี้"
 
@@ -4468,7 +4492,7 @@ msgstr "ผู้ใช้ในกลุ่มนี้"
 msgid "Verify"
 msgstr "ยืนยัน"
 
-#: website/templates/admin_mfa_verify.html:109
+#: website/templates/admin_mfa_verify.html:142
 msgid "Verify and continue to admin"
 msgstr "ยืนยันและไปต่อยังส่วนผู้ดูแลระบบ"
 
@@ -4508,7 +4532,7 @@ msgstr "การมองเห็น"
 msgid "Visibility can be changed only before the article is published."
 msgstr "สามารถเปลี่ยนการมองเห็นได้ก่อนเผยแพร่บทความเท่านั้น"
 
-#: kb/admin.py:215 kb/admin.py:2571
+#: kb/admin.py:215 kb/admin.py:2573
 msgid "Vote"
 msgstr "โหวต"
 
@@ -4520,11 +4544,11 @@ msgstr "คำเตือน / ข้อผิดพลาด"
 msgid "Was this article helpful?"
 msgstr "บทความนี้มีประโยชน์หรือไม่?"
 
-#: kb/views/mfa.py:478
+#: kb/views/mfa.py:477
 msgid "Welcome back, %(name)s."
 msgstr "ยินดีต้อนรับกลับมา %(name)s"
 
-#: kb/views/mfa.py:484
+#: kb/views/mfa.py:483
 msgid "Welcome back."
 msgstr "ยินดีต้อนรับกลับมา"
 
@@ -4584,11 +4608,11 @@ msgstr "คุณไม่มีสิทธิ์เพิ่มบทควา
 msgid "You do not have permission to add internal articles."
 msgstr "คุณไม่มีสิทธิ์เพิ่มบทความภายใน"
 
-#: kb/admin.py:2365
+#: kb/admin.py:2367
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "คุณไม่มีสิทธิ์อนุมัติบทความจาก Django Admin"
 
-#: kb/admin.py:1582
+#: kb/admin.py:1584
 msgid "You do not have permission to assign Disabled User."
 msgstr "คุณไม่มีสิทธิ์กำหนดผู้ใช้ที่ปิดใช้งาน"
 
@@ -4600,15 +4624,15 @@ msgstr "คุณไม่มีสิทธิ์จัดการบทคว
 msgid "You do not have permission to manage internal articles."
 msgstr "คุณไม่มีสิทธิ์จัดการบทความภายใน"
 
-#: kb/admin.py:1625
+#: kb/admin.py:1627
 msgid "You do not have permission to modify users."
 msgstr "คุณไม่มีสิทธิ์แก้ไขผู้ใช้"
 
-#: kb/admin.py:493
+#: kb/admin.py:495
 msgid "You do not have permission to perform this admin reset."
 msgstr "คุณไม่มีสิทธิ์ดำเนินการรีเซ็ตของผู้ดูแลระบบนี้"
 
-#: kb/admin.py:2399
+#: kb/admin.py:2401
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "คุณไม่มีสิทธิ์ปฏิเสธบทความจาก Django Admin"
 
@@ -4640,7 +4664,7 @@ msgstr "ระบบจะขอให้คุณยืนยันก่อน
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "ระบบจะขอให้คุณยืนยันก่อนใช้การเปลี่ยนแปลง บทความที่เลือกจะถูกลบถาวรทันที"
 
-#: kb/views/mfa.py:727
+#: kb/views/mfa.py:726
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA ของคุณถูกรีเซ็ตแล้ว ตั้งค่าแอปยืนยันตัวตนตอนนี้เพื่อใช้คลังความรู้ต่อ"
 
@@ -4648,11 +4672,11 @@ msgstr "MFA ของคุณถูกรีเซ็ตแล้ว ตั้�
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "ขณะนี้บัญชีของคุณถูกปิดใช้งานและไม่สามารถเข้าถึงคลังความรู้ได้ โปรดติดต่อผู้ดูแลระบบหากคุณคิดว่าเป็นความผิดพลาด"
 
-#: kb/admin_security.py:394
+#: kb/admin_security.py:595
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "เซสชันผู้ดูแลระบบของคุณหมดอายุเนื่องจากไม่มีการใช้งาน โปรดยืนยัน MFA อีกครั้งเพื่อกลับเข้าสู่ไซต์ผู้ดูแลระบบ"
 
-#: kb/admin.py:1619
+#: kb/admin.py:1621
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "บัญชีของคุณเองได้รับบทบาทผู้ใช้ที่ปิดใช้งาน ในคำขอถัดไป คุณจะถูกเปลี่ยนเส้นทางไปยังหน้าบัญชีที่ปิดใช้งาน"
 
@@ -4712,11 +4736,11 @@ msgstr "ผู้ใช้-ที่ถูกลบ"
 msgid "denied"
 msgstr "ปฏิเสธแล้ว"
 
-#: kb/admin.py:2758
+#: kb/admin.py:2767
 msgid "disabled"
 msgstr "ปิดใช้งานแล้ว"
 
-#: kb/admin.py:2758
+#: kb/admin.py:2767
 msgid "enabled"
 msgstr "เปิดใช้งานแล้ว"
 
@@ -4724,7 +4748,7 @@ msgstr "เปิดใช้งานแล้ว"
 msgid "failed"
 msgstr "ล้มเหลว"
 
-#: kb/models.py:1335
+#: kb/models.py:1345
 msgid "forever"
 msgstr "ตลอดไป"
 
@@ -4784,11 +4808,11 @@ msgstr "เปลี่ยนเส้นทางแล้ว"
 msgid "removed %(items)s"
 msgstr "นำ %(items)s ออกแล้ว"
 
-#: kb/admin.py:2757
+#: kb/admin.py:2766
 msgid "repeat %(count)s time(s)"
 msgstr "ทำซ้ำ %(count)s ครั้ง"
 
-#: kb/admin.py:2757
+#: kb/admin.py:2766
 msgid "repeat forever"
 msgstr "ทำซ้ำตลอดไป"
 
@@ -4832,6 +4856,6 @@ msgstr "ผู้ดูแลระบบที่ไม่ทราบ"
 msgid "unknown user"
 msgstr "ผู้ใช้ไม่ทราบชื่อ"
 
-#: kb/admin.py:905
+#: kb/admin.py:907
 msgid "users"
 msgstr "ผู้ใช้"

@@ -46,6 +46,7 @@ class Command(BaseCommand):
         self._repair_suggested_article()
         self._repair_site_setting()
         self._repair_mfa_login_timeout_setting()
+        self._repair_admin_mfa_verification_timeout_setting()
         self._repair_admin_ip_allowlist_setting()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
 
@@ -222,6 +223,40 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 "Added kb_sitesetting.mfa_login_timeout_seconds with the secure 60-second default. "
+                "The setting is now editable in Django Admin under Site settings."
+            )
+        )
+
+    def _repair_admin_mfa_verification_timeout_setting(self):
+        """Restore the separate Admin MFA verification timeout column."""
+        table_name = "kb_sitesetting"
+        column_name = "admin_mfa_verification_timeout_seconds"
+
+        if not self._table_exists(table_name):
+            return
+
+        if self._column_exists(table_name, column_name):
+            self.stdout.write(
+                "No kb_sitesetting Admin MFA verification timeout schema drift found."
+            )
+            return
+
+        with connection.cursor() as cursor:
+            self.stdout.write(f"Adding missing column: {table_name}.{column_name}")
+            cursor.execute(
+                """
+                ALTER TABLE kb_sitesetting
+                ADD COLUMN admin_mfa_verification_timeout_seconds integer NOT NULL DEFAULT 60
+                CHECK (
+                    admin_mfa_verification_timeout_seconds >= 30
+                    AND admin_mfa_verification_timeout_seconds <= 900
+                )
+                """
+            )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Added kb_sitesetting.admin_mfa_verification_timeout_seconds with the secure 60-second default. "
                 "The setting is now editable in Django Admin under Site settings."
             )
         )

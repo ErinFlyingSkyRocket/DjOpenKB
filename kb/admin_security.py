@@ -34,7 +34,14 @@ ADMIN_MFA_VERIFIED_KEY = "knowledge_repo_admin_mfa_verified"
 ADMIN_MFA_USER_ID_KEY = "knowledge_repo_admin_mfa_user_id"
 ADMIN_MFA_VERIFIED_AT_KEY = "knowledge_repo_admin_mfa_verified_at"
 ADMIN_MFA_LAST_ACTIVITY_AT_KEY = "knowledge_repo_admin_mfa_last_activity_at"
+ADMIN_MFA_CHALLENGE_STARTED_AT_KEY = "knowledge_repo_admin_mfa_challenge_started_at"
+ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY = "knowledge_repo_admin_mfa_challenge_expires_at"
+ADMIN_MFA_CHALLENGE_EXPIRED_KEY = "knowledge_repo_admin_mfa_challenge_expired"
 ADMIN_MFA_FORCE_PARAM = "fresh"
+
+ADMIN_MFA_VERIFICATION_TIMEOUT_DEFAULT_SECONDS = 60
+ADMIN_MFA_VERIFICATION_TIMEOUT_MIN_SECONDS = 30
+ADMIN_MFA_VERIFICATION_TIMEOUT_MAX_SECONDS = 900
 
 # These routes are superuser-only maintenance operations outside Django's
 # /admin/ URL space. Keep this list explicit: article-manager review pages
@@ -94,18 +101,122 @@ def get_admin_mfa_idle_timeout_seconds() -> int:
     return max(60, min(value, 86400))
 
 
+def get_admin_mfa_verification_timeout_seconds() -> int:
+    """Return the separate deadline for completing Admin step-up MFA.
+
+    This setting is independent from the normal login MFA completion timeout.
+    The database-backed Site setting is primary; the fallback keeps startup and
+    migration commands safe before the settings table is available.
+    """
+    value = getattr(
+        settings,
+        "ADMIN_MFA_VERIFICATION_TIMEOUT_SECONDS",
+        ADMIN_MFA_VERIFICATION_TIMEOUT_DEFAULT_SECONDS,
+    )
+
+    try:
+        from .models import SiteSetting
+
+        value = SiteSetting.load().admin_mfa_verification_timeout_seconds
+    except Exception:
+        pass
+
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        value = ADMIN_MFA_VERIFICATION_TIMEOUT_DEFAULT_SECONDS
+
+    return max(
+        ADMIN_MFA_VERIFICATION_TIMEOUT_MIN_SECONDS,
+        min(value, ADMIN_MFA_VERIFICATION_TIMEOUT_MAX_SECONDS),
+    )
+
+
+def _admin_mfa_challenge_ts(request, key: str) -> int | None:
+    try:
+        return int(request.session.get(key))
+    except (TypeError, ValueError):
+        return None
+
+
+def ensure_admin_mfa_challenge_deadline(request) -> int:
+    """Create a fixed Admin MFA deadline and return its expiry timestamp.
+
+    Refreshing the verification page does not extend the active challenge. A
+    new deadline starts only after the old challenge expires or is cleared.
+    """
+    started_at = _admin_mfa_challenge_ts(
+        request,
+        ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
+    )
+    expires_at = _admin_mfa_challenge_ts(
+        request,
+        ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
+    )
+
+    if started_at is None or expires_at is None or expires_at <= started_at:
+        started_at = _now_ts()
+        expires_at = started_at + get_admin_mfa_verification_timeout_seconds()
+        request.session[ADMIN_MFA_CHALLENGE_STARTED_AT_KEY] = started_at
+        request.session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY] = expires_at
+        request.session.pop(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, None)
+        request.session.modified = True
+
+    return expires_at
+
+
+def admin_mfa_seconds_remaining(request) -> int | None:
+    expires_at = _admin_mfa_challenge_ts(
+        request,
+        ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
+    )
+    if expires_at is None:
+        return None
+    return max(0, expires_at - _now_ts())
+
+
+def admin_mfa_challenge_has_expired(request) -> bool:
+    remaining = admin_mfa_seconds_remaining(request)
+    return remaining is not None and remaining <= 0
+
+
+def admin_mfa_challenge_is_expired_state(request) -> bool:
+    return bool(request.session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY))
+
+
+def clear_admin_mfa_challenge(request) -> None:
+    for key in (
+        ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
+        ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
+        ADMIN_MFA_CHALLENGE_EXPIRED_KEY,
+    ):
+        request.session.pop(key, None)
+    request.session.modified = True
+
+
+def mark_admin_mfa_challenge_expired(request) -> None:
+    request.session.pop(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, None)
+    request.session.pop(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, None)
+    request.session[ADMIN_MFA_CHALLENGE_EXPIRED_KEY] = True
+    request.session.modified = True
+
+
 def clear_admin_mfa_session(request) -> None:
     for key in (
         ADMIN_MFA_VERIFIED_KEY,
         ADMIN_MFA_USER_ID_KEY,
         ADMIN_MFA_VERIFIED_AT_KEY,
         ADMIN_MFA_LAST_ACTIVITY_AT_KEY,
+        ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
+        ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
+        ADMIN_MFA_CHALLENGE_EXPIRED_KEY,
     ):
         request.session.pop(key, None)
     request.session.modified = True
 
 
 def mark_admin_mfa_verified(request, user) -> None:
+    clear_admin_mfa_challenge(request)
     now = _now_ts()
     request.session[ADMIN_MFA_VERIFIED_KEY] = True
     request.session[ADMIN_MFA_USER_ID_KEY] = str(user.pk)
@@ -184,15 +295,46 @@ def _discard_pending_messages(request) -> None:
 
 def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
     _discard_pending_messages(request)
+    remaining = admin_mfa_seconds_remaining(request)
     response = render(
         request,
         "admin_mfa_verify.html",
         {
             "next": next_url,
             "admin_mfa_messages": admin_mfa_messages or [],
+            "admin_mfa_timeout_active": remaining is not None,
+            "admin_mfa_timeout_remaining_seconds": remaining,
+            "admin_mfa_timeout_expired": admin_mfa_challenge_is_expired_state(request),
         },
     )
     return set_strict_no_cache_headers(response)
+
+
+def _expire_admin_mfa_challenge(request, user, next_url: str, *, source: str):
+    """Log expiry, keep the normal login, and pause until an explicit retry."""
+    log_auth_event(
+        request,
+        event_type="admin_mfa_verify_failure",
+        success=False,
+        user=user,
+        username=user.get_username(),
+        details={
+            "reason": "admin_mfa_timeout",
+            "source": source,
+            "timeout_seconds": get_admin_mfa_verification_timeout_seconds(),
+            "admin_step_up": True,
+        },
+    )
+    mark_admin_mfa_challenge_expired(request)
+    return _render_admin_mfa_verify(
+        request,
+        next_url,
+        [
+            _(
+                "Admin MFA verification timed out. Start a new verification window to try again."
+            )
+        ],
+    )
 
 
 def admin_mfa_verify(request):
@@ -211,7 +353,16 @@ def admin_mfa_verify(request):
     # MFA again, even if an old admin-MFA flag is still present in the
     # browser session. Direct /admin/ requests can still reuse a valid
     # step-up token until the idle timeout or leaving-admin cleanup clears it.
-    if request.method == "GET" and request.GET.get(ADMIN_MFA_FORCE_PARAM) == "1":
+    if (
+        request.method == "GET"
+        and request.GET.get(ADMIN_MFA_FORCE_PARAM) == "1"
+        and (
+            admin_mfa_is_verified(request, user)
+            or admin_mfa_challenge_is_expired_state(request)
+        )
+    ):
+        # A navbar Admin entry invalidates an existing verified grant. Refreshing
+        # an unverified challenge URL does not reset its countdown.
         clear_admin_mfa_session(request)
 
     if not user_requires_mfa(user):
@@ -247,6 +398,49 @@ def admin_mfa_verify(request):
                     "Ask another administrator to reset MFA for this account."
                 )
             ],
+        )
+
+    action = (request.POST.get("action") or "").strip().lower()
+
+    if action == "restart":
+        # Restart is accepted only after an actual expiry. A crafted early POST
+        # cannot extend an active fixed deadline.
+        if admin_mfa_challenge_is_expired_state(request):
+            clear_admin_mfa_challenge(request)
+            ensure_admin_mfa_challenge_deadline(request)
+        return _render_admin_mfa_verify(request, next_url)
+
+    if admin_mfa_challenge_is_expired_state(request):
+        return _render_admin_mfa_verify(
+            request,
+            next_url,
+            [
+                _(
+                    "Admin MFA verification timed out. Start a new verification window to try again."
+                )
+            ],
+        )
+
+    ensure_admin_mfa_challenge_deadline(request)
+
+    if action == "timeout":
+        # The server-side deadline is authoritative. Ignore an early crafted
+        # timeout POST so it cannot be used to extend the fixed challenge.
+        if admin_mfa_challenge_has_expired(request):
+            return _expire_admin_mfa_challenge(
+                request,
+                user,
+                next_url,
+                source="countdown",
+            )
+        return _render_admin_mfa_verify(request, next_url)
+
+    if admin_mfa_challenge_has_expired(request):
+        return _expire_admin_mfa_challenge(
+            request,
+            user,
+            next_url,
+            source="server_deadline",
         )
 
     admin_mfa_messages = []
@@ -353,14 +547,21 @@ class AdminMFASessionMiddleware:
         return path in {"/favicon.ico", "/robots.txt"}
 
     def _clear_admin_mfa_when_leaving_admin(self, request, path: str) -> None:
-        # The admin step-up token is valid only while the user stays in Django
-        # Admin or one of the explicit superuser maintenance routes above. When
-        # the user returns to the normal Knowledge Repository, clear it so a
-        # later sensitive action requires a fresh MFA code. Ignore static/media
-        # assets because Django Admin loads those while the user stays in scope.
+        # The verified grant and any unfinished challenge are valid only while
+        # the user remains in the Admin step-up flow. Keep challenge state on
+        # the verification route itself so page refreshes cannot reset the fixed
+        # countdown. Ignore static/media assets loaded by the Admin pages.
         if self._is_static_or_safe_asset(path):
             return
-        if request.session.get(ADMIN_MFA_VERIFIED_KEY):
+        verify_path = self._reverse_or_none("admin_mfa_verify")
+        if verify_path and (path == verify_path or path.startswith(verify_path + "/")):
+            return
+        if (
+            request.session.get(ADMIN_MFA_VERIFIED_KEY)
+            or request.session.get(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY)
+            or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY)
+            or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY)
+        ):
             clear_admin_mfa_session(request)
 
     def _is_exempt_admin_path(self, path: str) -> bool:

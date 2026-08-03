@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: kb/admin.py:1904
+#: kb/admin.py:1906
 msgid "%(count)d MFA device(s) marked as setup pending."
 msgstr "Đã đánh dấu %(count)d thiết bị MFA là đang chờ thiết lập."
 
@@ -26,12 +26,12 @@ msgstr "%(count)s bài viết"
 msgid "%(count)s articles total."
 msgstr "Tổng cộng %(count)s bài viết."
 
-#: kb/admin.py:308
+#: kb/admin.py:310
 msgid "%(count)s day"
 msgid_plural "%(count)s days"
 msgstr[0] "%(count)s ngày"
 
-#: kb/admin.py:312
+#: kb/admin.py:314
 msgid "%(count)s hour"
 msgid_plural "%(count)s hours"
 msgstr[0] "%(count)s giờ"
@@ -40,7 +40,7 @@ msgstr[0] "%(count)s giờ"
 msgid "%(count)s matching articles found."
 msgstr "Tìm thấy %(count)s bài viết khớp."
 
-#: kb/admin.py:316 kb/admin.py:319
+#: kb/admin.py:318 kb/admin.py:321
 msgid "%(count)s minute"
 msgid_plural "%(count)s minutes"
 msgstr[0] "%(count)s phút"
@@ -49,7 +49,7 @@ msgstr[0] "%(count)s phút"
 msgid "%(count)s result(s) found by matching article title and keywords."
 msgstr "Tìm thấy %(count)s kết quả khớp với tiêu đề bài viết và từ khóa."
 
-#: kb/admin.py:304 kb/admin.py:320 kb/admin.py:333
+#: kb/admin.py:306 kb/admin.py:322 kb/admin.py:335
 msgid "%(count)s second"
 msgid_plural "%(count)s seconds"
 msgstr[0] "%(count)s giây"
@@ -58,7 +58,7 @@ msgstr[0] "%(count)s giây"
 msgid "%(count)s total"
 msgstr "Tổng cộng %(count)s"
 
-#: kb/admin.py:2877
+#: kb/admin.py:2902
 msgid "%(days)s day(s)"
 msgstr "%(days)s ngày"
 
@@ -66,7 +66,7 @@ msgstr "%(days)s ngày"
 msgid "%(filename)s uploaded by %(uploader)s"
 msgstr "%(filename)s do %(uploader)s tải lên"
 
-#: kb/admin.py:2853
+#: kb/admin.py:2862
 msgid "%(hours)s hour(s)"
 msgstr "%(hours)s giờ"
 
@@ -94,7 +94,7 @@ msgstr "%(prefix)s trên %(target)s"
 msgid "%(prefix)s — %(change_message)s"
 msgstr "%(prefix)s — %(change_message)s"
 
-#: kb/admin.py:1087
+#: kb/admin.py:1089
 msgid "%(preview)s, +%(extra)d more"
 msgstr "%(preview)s, thêm %(extra)d mục"
 
@@ -106,7 +106,7 @@ msgstr "%(role)s: %(description)s"
 msgid "%(size)s KB total"
 msgstr "tổng %(size)s KB"
 
-#: kb/admin.py:1104
+#: kb/admin.py:1106
 msgid "%(text)s, +%(extra)d more"
 msgstr "%(text)s, thêm %(extra)d mục"
 
@@ -127,7 +127,7 @@ msgstr ", thêm %(count)d mục"
 msgid "::: SEARCH RESULTS FOR \"%(query)s\" :::"
 msgstr "::: KẾT QUẢ TÌM KIẾM CHO \"%(query)s\" :::"
 
-#: kb/admin.py:1844
+#: kb/admin.py:1846
 msgid "A reset generates a fresh private authenticator key and forces setup again."
 msgstr "Việc đặt lại sẽ tạo khóa ứng dụng xác thực riêng tư mới và buộc thiết lập lại."
 
@@ -135,11 +135,11 @@ msgstr "Việc đặt lại sẽ tạo khóa ứng dụng xác thực riêng tư
 msgid "Access denied"
 msgstr "Truy cập bị từ chối"
 
-#: kb/admin.py:1353 kb/admin.py:1767
+#: kb/admin.py:1355 kb/admin.py:1769
 msgid "Account Status"
 msgstr "Trạng thái tài khoản"
 
-#: kb/admin.py:108 kb/admin.py:1834
+#: kb/admin.py:108 kb/admin.py:1836
 msgid "Account Type"
 msgstr "Loại tài khoản"
 
@@ -151,7 +151,7 @@ msgstr "Tài khoản hiện đang bị vô hiệu hóa"
 msgid "Account disabled"
 msgstr "Tài khoản bị vô hiệu hóa"
 
-#: kb/admin.py:1185
+#: kb/admin.py:1187
 msgid "Account status"
 msgstr "Trạng thái tài khoản"
 
@@ -163,7 +163,7 @@ msgstr "Tóm tắt tài khoản"
 msgid "Account type"
 msgstr "Loại tài khoản"
 
-#: kb/admin.py:2205
+#: kb/admin.py:2207
 msgid "Action"
 msgstr "Thao tác"
 
@@ -187,35 +187,35 @@ msgstr "Nhật ký hoạt động"
 msgid "Add Article"
 msgstr "Thêm bài viết"
 
-#: kb/admin.py:1224
+#: kb/admin.py:1226
 msgid "Add-on role. Can create/edit own internal articles and view public/general articles."
 msgstr "Vai trò bổ sung. Có thể tạo/chỉnh sửa các bài viết nội bộ của riêng mình và xem các bài viết công khai/chung."
 
-#: kb/admin.py:1226
+#: kb/admin.py:1228
 msgid "Add-on role. Can create/manage/delete internal articles and view public/general articles."
 msgstr "Vai trò bổ sung. Có thể tạo/quản lý/xóa bài viết nội bộ và xem các bài viết công khai/chung."
 
-#: kb/admin.py:1225
+#: kb/admin.py:1227
 msgid "Add-on role. Can review internal pending articles/updates and view public/general articles."
 msgstr "Vai trò bổ sung. Có thể xem xét các bài viết/bản cập nhật nội bộ đang chờ và xem các bài viết công khai/chung."
 
-#: kb/admin.py:821
+#: kb/admin.py:823
 msgid "Add-on role. Can view public/general articles and approve/reject internal pending articles and updates."
 msgstr "Vai trò bổ sung. Có thể xem các bài viết công khai/chung và phê duyệt/từ chối các bài viết, bản cập nhật nội bộ đang chờ."
 
-#: kb/admin.py:817
+#: kb/admin.py:819
 msgid "Add-on role. Can view public/general articles and create/edit their own internal articles."
 msgstr "Vai trò bổ sung. Có thể xem các bài viết công khai/chung và tạo/chỉnh sửa các bài viết nội bộ của riêng mình."
 
-#: kb/admin.py:813
+#: kb/admin.py:815
 msgid "Add-on role. Can view public/general articles and internal articles, but cannot create or approve internal articles."
 msgstr "Vai trò bổ sung. Có thể xem các bài viết công khai/chung và bài viết nội bộ nhưng không thể tạo hoặc phê duyệt bài viết nội bộ."
 
-#: kb/admin.py:1223
+#: kb/admin.py:1225
 msgid "Add-on role. Can view public/general articles plus internal articles."
 msgstr "Vai trò bổ sung. Có thể xem các bài viết công khai/chung và bài viết nội bộ."
 
-#: kb/admin.py:825
+#: kb/admin.py:827
 msgid "Add-on role. Can view public/general articles, create/manage/delete internal articles, and review internal pending articles."
 msgstr "Vai trò bổ sung. Có thể xem các bài viết công khai/chung, tạo/quản lý/xóa bài viết nội bộ và xem xét các bài viết nội bộ đang chờ."
 
@@ -223,31 +223,43 @@ msgstr "Vai trò bổ sung. Có thể xem các bài viết công khai/chung, t�
 msgid "Admin"
 msgstr "Quản trị viên"
 
-#: kb/admin.py:2837
+#: kb/admin.py:2846
 msgid "Admin IP restriction status"
 msgstr "Trạng thái hạn chế IP của Admin"
 
-#: kb/admin.py:248 kb/models.py:1251
+#: kb/admin.py:249 kb/models.py:1261
 msgid "Admin MFA idle timeout (seconds)"
 msgstr "Thời gian chờ MFA của khu vực quản trị (giây)"
 
-#: kb/admin.py:2844
+#: kb/admin.py:2853
 msgid "Admin MFA idle timeout readable"
 msgstr "Thời gian chờ MFA của khu vực quản trị ở dạng dễ đọc"
 
-#: website/templates/admin_mfa_verify.html:7 website/templates/admin_mfa_verify.html:93
+#: website/templates/admin_mfa_verify.html:102 website/templates/admin_mfa_verify.html:7
 msgid "Admin MFA verification"
 msgstr "Xác minh MFA của khu vực quản trị"
 
-#: kb/admin.py:1227 kb/admin.py:828 kb/permissions.py:62
+#: kb/admin_security.py:333 kb/admin_security.py:418
+msgid "Admin MFA verification timed out. Start a new verification window to try again."
+msgstr "Đã hết thời gian xác minh MFA quản trị viên. Hãy bắt đầu một khoảng thời gian xác minh mới để thử lại."
+
+#: kb/admin.py:243 kb/models.py:1209
+msgid "Admin MFA verification timeout (seconds)"
+msgstr "Thời gian chờ xác minh MFA quản trị viên (giây)"
+
+#: kb/admin.py:2889
+msgid "Admin MFA verification timeout readable"
+msgstr "Thời gian chờ xác minh MFA quản trị viên ở dạng dễ đọc"
+
+#: kb/admin.py:1229 kb/admin.py:830 kb/permissions.py:62
 msgid "Admin Users"
 msgstr "Người dùng quản trị"
 
-#: kb/admin.py:1710
+#: kb/admin.py:1712
 msgid "Admin Users role assigned to %(count)d selected user(s)."
 msgstr "Đã gán vai trò Người dùng quản trị cho %(count)d người dùng được chọn."
 
-#: kb/admin_security.py:219
+#: kb/admin_security.py:370
 msgid "Admin access requires an active MFA-protected account."
 msgstr "Quyền truy cập quản trị yêu cầu tài khoản đang hoạt động được bảo vệ bằng MFA."
 
@@ -263,11 +275,11 @@ msgstr "Nhật ký hoạt động quản trị"
 msgid "Admin activity logs"
 msgstr "Nhật ký hoạt động quản trị"
 
-#: kb/admin.py:246 kb/models.py:1233
+#: kb/admin.py:247 kb/models.py:1243
 msgid "Admin allowed IP ranges"
 msgstr "Phạm vi IP được phép cho quản trị"
 
-#: kb/admin.py:244 kb/models.py:1216
+#: kb/admin.py:245 kb/models.py:1226
 msgid "Admin log rows per page"
 msgstr "Số dòng nhật ký quản trị mỗi trang"
 
@@ -295,11 +307,11 @@ msgstr "Yêu cầu quản trị đối với %(target)s bị từ chối"
 msgid "Admin request failed for %(target)s"
 msgstr "Yêu cầu quản trị đối với %(target)s không thành công"
 
-#: kb/admin.py:2202
+#: kb/admin.py:2204
 msgid "Admin request failed or denied for %(target)s"
 msgstr "Yêu cầu quản trị đối với %(target)s không thành công hoặc bị từ chối"
 
-#: kb/admin.py:2203 kb/admin_audit.py:175
+#: kb/admin.py:2205 kb/admin_audit.py:175
 msgid "Admin request for %(target)s"
 msgstr "Yêu cầu quản trị đối với %(target)s"
 
@@ -327,11 +339,11 @@ msgstr "Tên người dùng quản trị"
 msgid "Admin-only tool. Exports include article Markdown plus referenced files under"
 msgstr "Công cụ chỉ dành cho quản trị viên. Bản xuất bao gồm Markdown bài viết và các tệp được tham chiếu trong"
 
-#: kb/admin.py:263 kb/models.py:50
+#: kb/admin.py:264 kb/models.py:50
 msgid "Admin/LDAP admin accounts can access Django admin when staff status is enabled."
 msgstr "Tài khoản quản trị/LDAP admin có thể truy cập trang quản trị Django khi trạng thái nhân viên được bật."
 
-#: kb/admin.py:876
+#: kb/admin.py:878
 msgid "After saving, re-open the user if needed and check 'Effective permissions' to confirm the final access level."
 msgstr "Sau khi lưu, hãy mở lại người dùng nếu cần và kiểm tra \"Quyền có hiệu lực\" để xác nhận cấp độ truy cập cuối cùng."
 
@@ -347,15 +359,15 @@ msgstr "Tất cả bài viết được phép"
 msgid "All statuses"
 msgstr "Tất cả trạng thái"
 
-#: kb/admin.py:2812
+#: kb/admin.py:2821
 msgid "Allowlist disabled — all IPv4 and IPv6 addresses may reach the Admin authentication/MFA checks."
 msgstr "Danh sách cho phép đang tắt — mọi địa chỉ IPv4 và IPv6 đều có thể đi đến bước kiểm tra xác thực/MFA của Admin."
 
-#: kb/admin.py:2827
+#: kb/admin.py:2836
 msgid "Allowlist enabled — %(count)s IP/CIDR range(s) allowed:"
 msgstr "Danh sách cho phép đang bật — %(count)s dải IP/CIDR được phép:"
 
-#: kb/admin.py:2822
+#: kb/admin.py:2831
 msgid "Allowlist enabled, but no valid IP/CIDR ranges are configured. Admin access is denied until at least one valid range is saved."
 msgstr "Danh sách cho phép đang bật nhưng chưa có dải IP/CIDR hợp lệ nào được cấu hình. Quyền truy cập Admin bị từ chối cho đến khi lưu ít nhất một dải hợp lệ."
 
@@ -371,7 +383,7 @@ msgstr "Bài viết có tiêu đề này đã tồn tại. Vui lòng dùng tiêu
 msgid "Apply"
 msgstr "Áp dụng"
 
-#: kb/admin.py:2329
+#: kb/admin.py:2331
 msgid "Approval / review"
 msgstr "Phê duyệt / xem xét"
 
@@ -379,7 +391,7 @@ msgstr "Phê duyệt / xem xét"
 msgid "Approve / Publish"
 msgstr "Phê duyệt / Xuất bản"
 
-#: kb/admin.py:2362
+#: kb/admin.py:2364
 msgid "Approve selected pending articles"
 msgstr "Phê duyệt các bài viết đang chờ đã chọn"
 
@@ -387,7 +399,7 @@ msgstr "Phê duyệt các bài viết đang chờ đã chọn"
 msgid "Approve update"
 msgstr "Phê duyệt cập nhật"
 
-#: kb/admin.py:2385
+#: kb/admin.py:2387
 msgid "Approved article %(title)s from Django Admin"
 msgstr "Đã phê duyệt bài viết %(title)s từ Quản trị Django"
 
@@ -423,31 +435,31 @@ msgstr "Bạn có chắc muốn xóa tệp này không?"
 msgid "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed."
 msgstr "Bạn có chắc muốn khôi phục về phiên bản đã xuất bản gần nhất không? Mọi thay đổi cập nhật chưa được xuất bản sẽ bị xóa vĩnh viễn."
 
-#: kb/admin.py:161 kb/admin.py:2077 kb/admin.py:213 kb/admin.py:2326 kb/views/services_search.py:112 website/templates/_navbar.html:35
+#: kb/admin.py:161 kb/admin.py:2079 kb/admin.py:213 kb/admin.py:2328 kb/views/services_search.py:112 website/templates/_navbar.html:35
 msgid "Article"
 msgstr "Bài viết"
 
-#: kb/admin.py:1221 kb/admin.py:799 kb/permissions.py:56
+#: kb/admin.py:1223 kb/admin.py:801 kb/permissions.py:56
 msgid "Article Approver"
 msgstr "Người phê duyệt bài viết"
 
-#: kb/admin.py:1690
+#: kb/admin.py:1692
 msgid "Article Approver role assigned to %(count)d selected user(s)."
 msgstr "Đã gán vai trò Người phê duyệt bài viết cho %(count)d người dùng được chọn."
 
-#: kb/admin.py:1222 kb/admin.py:806 kb/permissions.py:57
+#: kb/admin.py:1224 kb/admin.py:808 kb/permissions.py:57
 msgid "Article Manager"
 msgstr "Quản lý bài viết"
 
-#: kb/admin.py:1700
+#: kb/admin.py:1702
 msgid "Article Manager role assigned to %(count)d selected user(s)."
 msgstr "Đã gán vai trò Quản lý bài viết cho %(count)d người dùng được chọn."
 
-#: kb/admin.py:1220 kb/admin.py:792 kb/permissions.py:55
+#: kb/admin.py:1222 kb/admin.py:794 kb/permissions.py:55
 msgid "Article Writer"
 msgstr "Người viết bài"
 
-#: kb/admin.py:1680
+#: kb/admin.py:1682
 msgid "Article Writer role assigned to %(count)d selected user(s)."
 msgstr "Đã gán vai trò Người viết bài cho %(count)d người dùng được chọn."
 
@@ -499,7 +511,7 @@ msgstr "Đã xác nhận xóa bài viết sau MFA."
 msgid "Article deletion confirmed: %(title)s."
 msgstr "Đã xác nhận xóa bài viết: %(title)s."
 
-#: kb/admin.py:2674 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
+#: kb/admin.py:2676 website/templates/admin_deletion_queue.html:41 website/templates/admin_deletion_queue.html:6 website/templates/profile.html:329
 msgid "Article deletion queue"
 msgstr "Hàng đợi xóa bài viết"
 
@@ -527,7 +539,7 @@ msgstr "Yêu cầu xóa bài viết"
 msgid "Article details"
 msgstr "Chi tiết bài viết"
 
-#: kb/admin.py:2654
+#: kb/admin.py:2656
 msgid "Article display and upload limits"
 msgstr "Giới hạn hiển thị và tải lên bài viết"
 
@@ -583,7 +595,7 @@ msgstr "Bài viết đã được đánh dấu là duyệt thất bại."
 msgid "Article marked pending failed"
 msgstr "Bài viết đã được đánh dấu là chờ duyệt không đạt"
 
-#: kb/admin.py:2101
+#: kb/admin.py:2103
 msgid "Article owner"
 msgstr "Chủ sở hữu bài viết"
 
@@ -683,7 +695,7 @@ msgstr "Thông báo xét duyệt bài viết đã gửi"
 msgid "Article review notification skipped"
 msgstr "Thông báo xét duyệt bài viết đã bỏ qua"
 
-#: kb/admin.py:2346
+#: kb/admin.py:2348
 msgid "Article statistics"
 msgstr "Thống kê bài viết"
 
@@ -771,7 +783,7 @@ msgstr "Bình chọn thích bài viết"
 msgid "Article votes"
 msgstr "Bình chọn bài viết"
 
-#: kb/admin.py:274 kb/models.py:1209
+#: kb/admin.py:276 kb/models.py:1219
 msgid "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely."
 msgstr "Nhật ký hoạt động của bài viết/bình chọn/ảnh/công cụ quản trị/trang quản trị cũ hơn số ngày này có thể bị xóa bằng lệnh dọn dẹp. Dùng 0 để giữ nhật ký hoạt động chung và quản trị vô thời hạn."
 
@@ -811,7 +823,7 @@ msgstr "Gán bài viết đã chọn cho"
 msgid "Assigned %(count)s orphan article(s) to %(user)s."
 msgstr "Đã gán %(count)s bài viết mồ côi cho %(user)s."
 
-#: kb/admin.py:1603
+#: kb/admin.py:1605
 msgid "Assigned Disabled User role to %(username)s"
 msgstr "Đã gán vai trò Người dùng bị vô hiệu hóa cho %(username)s"
 
@@ -843,11 +855,11 @@ msgstr "Bản ghi nhật ký kiểm toán chỉ được thêm mới và không 
 msgid "Audit log records cannot be manually deleted. They are removed only by retention cleanup."
 msgstr "Không thể xóa thủ công các bản ghi nhật ký kiểm toán. Chúng chỉ được xóa bằng tác vụ dọn dẹp theo thời hạn lưu giữ."
 
-#: kb/admin.py:272 kb/models.py:1190
+#: kb/admin.py:273 kb/models.py:1190
 msgid "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
 msgstr "Các phiên đã xác thực sẽ hết hạn sau số giờ này tính từ lúc đăng nhập. Các phiên đang chờ hoàn tất MFA không thể vượt quá thời lượng này, nhưng thường sẽ hết hạn sớm hơn theo thời gian chờ hoàn tất đăng nhập MFA riêng. Mặc định là 8 giờ. Phạm vi cho phép: từ 1 đến 168 giờ (7 ngày)."
 
-#: kb/admin.py:1407
+#: kb/admin.py:1409
 msgid "Authentication Lockout Reset"
 msgstr "Đặt lại khóa xác thực"
 
@@ -863,27 +875,27 @@ msgstr "Thời gian lưu nhật ký hoạt động xác thực (ngày)"
 msgid "Authentication activity logs"
 msgstr "Nhật ký hoạt động xác thực"
 
-#: kb/admin.py:2681
+#: kb/admin.py:2683
 msgid "Authentication and session settings"
 msgstr "Cài đặt xác thực và phiên"
 
-#: kb/admin.py:1293
+#: kb/admin.py:1295
 msgid "Authentication lockout"
 msgstr "Khóa xác thực"
 
-#: kb/admin.py:247 kb/models.py:1242
+#: kb/admin.py:248 kb/models.py:1252
 msgid "Authentication lockout escalation memory (seconds)"
 msgstr "Thời gian ghi nhớ mức tăng khóa xác thực (giây)"
 
-#: kb/admin.py:2706
+#: kb/admin.py:2714
 msgid "Authentication lockout policy"
 msgstr "Chính sách khóa xác thực"
 
-#: kb/admin.py:97 kb/models.py:1331
+#: kb/admin.py:97 kb/models.py:1341
 msgid "Authentication lockout policy stage"
 msgstr "Giai đoạn chính sách khóa xác thực"
 
-#: kb/admin.py:2771 kb/admin.py:97 kb/models.py:1332
+#: kb/admin.py:2780 kb/admin.py:97 kb/models.py:1342
 msgid "Authentication lockout policy stages"
 msgstr "Các giai đoạn chính sách khóa xác thực"
 
@@ -895,11 +907,11 @@ msgstr "Khóa xác thực được quản trị viên đặt lại"
 msgid "Authentication lockout triggered"
 msgstr "Đã kích hoạt khóa xác thực"
 
-#: kb/admin.py:1180
+#: kb/admin.py:1182
 msgid "Authentication source"
 msgstr "Nguồn xác thực"
 
-#: kb/admin.py:271 kb/models.py:1181
+#: kb/admin.py:272 kb/models.py:1181
 msgid "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely."
 msgstr "Nhật ký giám sát xác thực/MFA cũ hơn số ngày này có thể bị xóa bằng lệnh dọn dẹp. Dùng 0 để giữ nhật ký hoạt động xác thực vô thời hạn."
 
@@ -907,15 +919,15 @@ msgstr "Nhật ký giám sát xác thực/MFA cũ hơn số ngày này có thể
 msgid "Authenticator MFA/OTP code"
 msgstr "Mã MFA/OTP từ ứng dụng xác thực"
 
-#: website/templates/admin_mfa_verify.html:107
+#: website/templates/admin_mfa_verify.html:124
 msgid "Authenticator code"
 msgstr "Mã ứng dụng xác thực"
 
-#: kb/admin.py:118 kb/admin.py:1826
+#: kb/admin.py:118 kb/admin.py:1828
 msgid "Authenticator key"
 msgstr "Khóa ứng dụng xác thực"
 
-#: kb/views/mfa.py:350
+#: kb/views/mfa.py:349
 msgid "Authenticator setup completed successfully."
 msgstr "Thiết lập ứng dụng xác thực đã hoàn tất thành công."
 
@@ -935,7 +947,7 @@ msgstr "Bản ghi nhanh email tác giả"
 msgid "Author name snapshot"
 msgstr "Bản ghi nhanh tên tác giả"
 
-#: kb/admin.py:2349
+#: kb/admin.py:2351
 msgid "Author snapshot"
 msgstr "Bản ghi nhanh tác giả"
 
@@ -947,7 +959,7 @@ msgstr "Bản ghi nhanh tên người dùng của tác giả"
 msgid "Back"
 msgstr "Quay lại"
 
-#: website/templates/admin_mfa_verify.html:112
+#: website/templates/admin_mfa_verify.html:146
 msgid "Back to Knowledge Repository"
 msgstr "Quay lại Kho tri thức"
 
@@ -963,15 +975,15 @@ msgstr "Quay lại hồ sơ"
 msgid "Bad request"
 msgstr "Yêu cầu không hợp lệ"
 
-#: kb/admin.py:256 kb/models.py:1316
+#: kb/admin.py:257 kb/models.py:1326
 msgid "Block duration (seconds)"
 msgstr "Thời gian chặn (giây)"
 
-#: kb/models.py:1350
+#: kb/models.py:1360
 msgid "Block duration must be at least 60 seconds."
 msgstr "Thời gian chặn phải ít nhất 60 giây."
 
-#: kb/admin.py:2595
+#: kb/admin.py:2597
 msgid "Block duration readable"
 msgstr "Thời gian chặn ở dạng dễ đọc"
 
@@ -999,11 +1011,11 @@ msgstr "Có thể thêm/gửi bài viết nội bộ để phê duyệt"
 msgid "Can add/submit public articles for approval"
 msgstr "Có thể thêm/gửi bài viết công khai để phê duyệt"
 
-#: kb/admin.py:668
+#: kb/admin.py:670
 msgid "Can approve/manage internal articles"
 msgstr "Có thể phê duyệt/quản lý bài viết nội bộ"
 
-#: kb/admin.py:641
+#: kb/admin.py:643
 msgid "Can approve/manage pending articles"
 msgstr "Có thể phê duyệt/quản lý bài viết đang chờ"
 
@@ -1015,35 +1027,35 @@ msgstr "Có thể phê duyệt/quản lý các lượt xem xét bài viết nộ
 msgid "Can approve/manage pending public article reviews"
 msgstr "Có thể phê duyệt/quản lý các lượt xem xét bài viết công khai đang chờ"
 
-#: kb/admin.py:1220
+#: kb/admin.py:1222
 msgid "Can create article drafts, submit articles for approval, and edit/resubmit their own articles. Cannot approve or reject articles. Includes viewer access, so Regular User is not required."
 msgstr "Có thể tạo bản nháp bài viết, gửi bài viết để phê duyệt và chỉnh sửa/gửi lại bài viết của chính mình. Không thể phê duyệt hoặc từ chối bài viết. Bao gồm quyền xem, vì vậy không cần vai trò Người dùng thông thường."
 
-#: kb/admin.py:793
+#: kb/admin.py:795
 msgid "Can create article drafts, submit new articles for approval, and edit/resubmit their own articles. They cannot approve or reject articles."
 msgstr "Có thể tạo bản nháp bài viết, gửi bài viết mới để phê duyệt và chỉnh sửa/gửi lại bài viết của chính mình. Không thể phê duyệt hoặc từ chối bài viết."
 
-#: kb/admin.py:632
+#: kb/admin.py:634
 msgid "Can create articles"
 msgstr "Có thể tạo bài viết"
 
-#: kb/admin.py:807
+#: kb/admin.py:809
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles."
 msgstr "Có thể tạo bài viết, chỉnh sửa/quản lý bài viết, xem xét các bài viết/bản cập nhật đang chờ, phê duyệt/từ chối nội dung gửi và xóa bài viết."
 
-#: kb/admin.py:1222
+#: kb/admin.py:1224
 msgid "Can create articles, edit/manage articles, review pending articles/updates, approve/reject submissions, and delete articles. Includes viewer access, so Regular User is not required."
 msgstr "Có thể tạo bài viết, chỉnh sửa/quản lý bài viết, xem xét các bài viết/bản cập nhật đang chờ, phê duyệt/từ chối nội dung gửi và xóa bài viết. Bao gồm quyền xem, vì vậy không cần vai trò Người dùng thông thường."
 
-#: kb/admin.py:663
+#: kb/admin.py:665
 msgid "Can create internal articles"
 msgstr "Có thể tạo bài viết nội bộ"
 
-#: kb/admin.py:650
+#: kb/admin.py:652
 msgid "Can delete articles"
 msgstr "Có thể xóa bài viết"
 
-#: kb/admin.py:673 kb/permissions.py:36
+#: kb/admin.py:675 kb/permissions.py:36
 msgid "Can delete internal articles"
 msgstr "Có thể xóa bài viết nội bộ"
 
@@ -1051,15 +1063,15 @@ msgstr "Có thể xóa bài viết nội bộ"
 msgid "Can delete public articles"
 msgstr "Có thể xóa bài viết công khai"
 
-#: kb/admin.py:800
+#: kb/admin.py:802
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Article Approvers cannot add new articles or delete articles by default."
 msgstr "Có thể xem xét các bài viết/bản cập nhật đang chờ, chỉnh sửa nội dung trong quá trình xem xét và phê duyệt hoặc từ chối chúng. Theo mặc định, không thể chỉnh sửa bài viết đã xuất bản hoặc xóa bài viết. Người phê duyệt bài viết cũng không thể thêm bài viết mới hoặc xóa bài viết theo mặc định."
 
-#: kb/admin.py:1221
+#: kb/admin.py:1223
 msgid "Can review pending articles/updates, edit content during pending review, and approve or reject them. Cannot edit already-published articles or delete articles by default. Cannot add or delete articles by default. Includes viewer access, so Regular User is not required."
 msgstr "Có thể xem xét các bài viết/bản cập nhật đang chờ, chỉnh sửa nội dung trong quá trình xem xét và phê duyệt hoặc từ chối chúng. Theo mặc định, không thể chỉnh sửa bài viết đã xuất bản hoặc xóa bài viết. Cũng không thể thêm hoặc xóa bài viết theo mặc định. Bao gồm quyền xem, vì vậy không cần vai trò Người dùng thông thường."
 
-#: kb/admin.py:789
+#: kb/admin.py:791
 msgid "Can sign in, view/search published articles, use normal article pages, and vote where voting is enabled."
 msgstr "Có thể đăng nhập, xem/tìm kiếm bài viết đã xuất bản, sử dụng các trang bài viết thông thường và bình chọn khi bình chọn được bật."
 
@@ -1067,11 +1079,11 @@ msgstr "Có thể đăng nhập, xem/tìm kiếm bài viết đã xuất bản, 
 msgid "Can use Knowledge Repository admin tools"
 msgstr "Có thể sử dụng công cụ quản trị Kho tri thức"
 
-#: kb/admin.py:622
+#: kb/admin.py:624
 msgid "Can view articles"
 msgstr "Có thể xem bài viết"
 
-#: kb/admin.py:658 kb/permissions.py:33
+#: kb/admin.py:660 kb/permissions.py:33
 msgid "Can view internal articles"
 msgstr "Có thể xem bài viết nội bộ"
 
@@ -1079,7 +1091,7 @@ msgstr "Có thể xem bài viết nội bộ"
 msgid "Can view published public articles"
 msgstr "Có thể xem bài viết công khai đã xuất bản"
 
-#: kb/admin.py:1219
+#: kb/admin.py:1221
 msgid "Can view/search published articles and vote. This is the fallback viewer role and is only auto-added when the user has no other standard Knowledge Repository role."
 msgstr "Có thể xem/tìm kiếm bài viết đã xuất bản và bình chọn. Đây là vai trò xem dự phòng và chỉ tự động được thêm khi người dùng không có vai trò Kho tri thức tiêu chuẩn nào khác."
 
@@ -1095,15 +1107,15 @@ msgstr "Thông báo thay đổi"
 msgid "Change password"
 msgstr "Đổi mật khẩu"
 
-#: kb/admin.py:388
+#: kb/admin.py:390
 msgid "Changed %(target_label)s %(target)s: %(changes)s"
 msgstr "Đã thay đổi %(target_label)s %(target)s: %(changes)s"
 
-#: kb/admin.py:2194 kb/admin_audit.py:153
+#: kb/admin.py:2196 kb/admin_audit.py:153
 msgid "Changed %(target_label)s: %(target)s"
 msgstr "Đã thay đổi %(target_label)s: %(target)s"
 
-#: kb/admin.py:2189
+#: kb/admin.py:2191
 msgid "Changed %(target_label)s: %(target)s — %(changes)s"
 msgstr "Đã thay đổi %(target_label)s: %(target)s — %(changes)s"
 
@@ -1111,11 +1123,11 @@ msgstr "Đã thay đổi %(target_label)s: %(target)s — %(changes)s"
 msgid "Checking..."
 msgstr "Đang kiểm tra..."
 
-#: kb/admin.py:864
+#: kb/admin.py:866
 msgid "Choose a group first, then use direct checkboxes only for exceptions. For most users, the group alone should be enough."
 msgstr "Trước tiên hãy chọn một nhóm, sau đó chỉ dùng các ô chọn quyền trực tiếp cho các trường hợp ngoại lệ. Với đa số người dùng, chỉ nhóm là đủ."
 
-#: kb/admin.py:571
+#: kb/admin.py:573
 msgid "Choose whether this profile is a local user/admin or an LDAP user/admin. Admin account types add the Admin Users role and become Django superusers. Changing back to User/LDAP user removes Admin Users and clears staff/superuser status. Use this to convert an abandoned LDAP profile to a local profile when the AD account is deleted but articles must be retained."
 msgstr "Chọn hồ sơ này là người dùng/quản trị viên cục bộ hay người dùng/quản trị viên LDAP. Loại tài khoản quản trị thêm vai trò Người dùng quản trị và trở thành siêu người dùng Django. Việc đổi lại thành Người dùng/Người dùng LDAP sẽ xóa vai trò Người dùng quản trị và trạng thái nhân viên/siêu người dùng. Dùng tùy chọn này để chuyển hồ sơ LDAP bị bỏ rơi thành hồ sơ cục bộ khi tài khoản AD bị xóa nhưng cần giữ lại bài viết."
 
@@ -1139,7 +1151,7 @@ msgstr "Xóa cuộc trò chuyện"
 msgid "Clear search"
 msgstr "Xóa tìm kiếm"
 
-#: kb/admin.py:1401
+#: kb/admin.py:1403
 msgid "Clears temporary blocks and progressive lockout history for this user. Use this after verifying the request is legitimate."
 msgstr "Xóa các lần chặn tạm thời và lịch sử khóa tăng dần của người dùng này. Hãy sử dụng sau khi xác minh yêu cầu là hợp lệ."
 
@@ -1163,7 +1175,7 @@ msgstr "Hoàn tất MFA trước khi tiếp tục. Bạn chưa đăng nhập ho�
 msgid "Complete MFA before continuing. You cannot access Knowledge Repository until MFA is completed."
 msgstr "Hoàn tất MFA trước khi tiếp tục. Bạn không thể truy cập Kho tri thức cho đến khi hoàn tất MFA."
 
-#: kb/admin.py:1369 kb/mfa.py:243
+#: kb/admin.py:1371 kb/mfa.py:243
 msgid "Configured"
 msgstr "Đã cấu hình"
 
@@ -1183,7 +1195,7 @@ msgstr "Xác nhận thao tác bài viết mồ côi"
 msgid "Confirm password"
 msgstr "Xác nhận mật khẩu"
 
-#: kb/views/auth.py:508 kb/views/mfa.py:592
+#: kb/views/auth.py:508 kb/views/mfa.py:591
 msgid "Confirm password is incorrect."
 msgstr "Mật khẩu xác nhận không đúng."
 
@@ -1203,27 +1215,23 @@ msgstr "Được xác nhận lúc"
 msgid "Content type"
 msgstr "Loại nội dung"
 
-#: kb/admin.py:2689
+#: kb/admin.py:2691
 msgid "Controls authentication/MFA logs, general activity logs, admin log display rows, and the signed-in session lifetime. Default log retention is 30 days. Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
 msgstr "Kiểm soát nhật ký xác thực/MFA, nhật ký hoạt động chung, số hàng hiển thị trong nhật ký quản trị và thời lượng của phiên đã đăng nhập. Thời gian lưu nhật ký mặc định là 30 ngày. Bảng nhật ký quản trị mặc định hiển thị 200 hàng mỗi trang. Phiên mặc định kéo dài 8 giờ."
 
-#: kb/admin.py:2676
+#: kb/admin.py:2678
 msgid "Controls how long deleted published articles stay recoverable in My Profile → Admin tools → Deletion queue before scheduled permanent deletion. Default is 7 days. Set to 0 for immediate permanent deletion after MFA confirmation."
 msgstr "Kiểm soát thời gian các bài viết đã xuất bản bị xóa vẫn có thể khôi phục trong Hồ sơ của tôi → Công cụ quản trị → Hàng đợi xóa trước khi bị xóa vĩnh viễn theo lịch. Mặc định là 7 ngày. Đặt 0 để xóa vĩnh viễn ngay sau khi xác nhận MFA."
 
-#: kb/admin.py:2660
+#: kb/admin.py:2662
 msgid "Controls how many articles are shown per page/on each homepage column, how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. Article video width defaults to 720 px and remains responsive on smaller screens."
 msgstr "Kiểm soát số bài viết hiển thị trên mỗi trang/trong mỗi cột của trang chủ, số hình ảnh được dán/tải lên mà mỗi bài viết có thể chứa và chiều rộng hiển thị tối đa của video trong bài viết. Số bài viết mặc định trên mỗi trang là 10. Giới hạn tải ảnh lên mặc định là 50; đặt thành 0 để tắt tải ảnh lên cho bài viết. Chiều rộng video bài viết mặc định là 720 px và vẫn đáp ứng linh hoạt trên màn hình nhỏ hơn."
 
-#: kb/admin.py:2700
-msgid "Controls the fixed window that starts immediately after username/password verification succeeds. The user must finish MFA before this countdown reaches zero or sign in with username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
-msgstr "Kiểm soát khoảng thời gian cố định bắt đầu ngay sau khi xác minh tên người dùng và mật khẩu thành công. Người dùng phải hoàn tất MFA trước khi bộ đếm ngược về 0, nếu không phải đăng nhập lại bằng tên người dùng và mật khẩu. Mặc định là 60 giây. Phạm vi cho phép: từ 30 đến 900 giây (15 phút)."
-
-#: kb/admin.py:2669
+#: kb/admin.py:2671
 msgid "Controls the minimum age used by My Profile → Admin tools → Clean stray upload files. Use 0 to show files immediately."
 msgstr "Kiểm soát tuổi tối thiểu được dùng bởi Hồ sơ của tôi → Công cụ quản trị → Dọn dẹp tệp tải lên không dùng đến. Dùng 0 để hiển thị tệp ngay lập tức."
 
-#: kb/admin.py:264 kb/models.py:56
+#: kb/admin.py:265 kb/models.py:56
 msgid "Controls whether the password is managed locally in Knowledge Repository or externally by Active Directory."
 msgstr "Kiểm soát việc mật khẩu được quản lý cục bộ trong Kho tri thức hay bên ngoài bởi Active Directory."
 
@@ -1239,11 +1247,11 @@ msgstr "Đã tạo"
 msgid "Created %(target)s"
 msgstr "Đã tạo %(target)s"
 
-#: kb/admin.py:420
+#: kb/admin.py:422
 msgid "Created %(target_label)s %(target)s"
 msgstr "Đã tạo %(target_label)s %(target)s"
 
-#: kb/admin.py:2186 kb/admin_audit.py:150
+#: kb/admin.py:2188 kb/admin_audit.py:150
 msgid "Created %(target_label)s: %(target)s"
 msgstr "Đã tạo %(target_label)s: %(target)s"
 
@@ -1259,15 +1267,15 @@ msgstr "Trạng thái MFA hiện tại"
 msgid "Current admin feedback shown to the article owner while the article is in Draft or Pending failed status."
 msgstr "Phản hồi hiện tại của quản trị viên hiển thị cho chủ sở hữu bài viết khi bài viết ở trạng thái Bản nháp hoặc Chờ phê duyệt không thành công."
 
-#: kb/admin.py:2437 kb/models.py:371
+#: kb/admin.py:2439 kb/models.py:371
 msgid "Current pending failed comments"
 msgstr "Nhận xét từ chối hiện tại"
 
-#: kb/admin.py:1090
+#: kb/admin.py:1092
 msgid "Current users"
 msgstr "Người dùng hiện tại"
 
-#: kb/admin.py:1070
+#: kb/admin.py:1072
 msgid "Custom Django group"
 msgstr "Nhóm Django tùy chỉnh"
 
@@ -1279,31 +1287,31 @@ msgstr "Ngày"
 msgid "Date and time when this article was approved for public display."
 msgstr "Ngày và giờ bài viết này được phê duyệt để hiển thị công khai."
 
-#: kb/admin.py:1235
+#: kb/admin.py:1237
 msgid "Default Knowledge Repository groups:"
 msgstr "Các nhóm Kho tri thức mặc định:"
 
-#: kb/admin.py:1018
+#: kb/admin.py:1020
 msgid "Default Knowledge Repository role groups cannot be deleted."
 msgstr "Không thể xóa các nhóm vai trò Kho tri thức mặc định."
 
-#: kb/admin.py:1029
+#: kb/admin.py:1031
 msgid "Default Knowledge Repository role groups cannot be deleted. %(count)d protected group(s) were skipped."
 msgstr "Không thể xóa các nhóm vai trò Kho tri thức mặc định. Đã bỏ qua %(count)d nhóm được bảo vệ."
 
-#: kb/admin.py:1056
+#: kb/admin.py:1058
 msgid "Default permissions:"
 msgstr "Quyền mặc định:"
 
-#: kb/admin.py:2792
+#: kb/admin.py:2801
 msgid "Default stage 1: 10 wrong attempts block for 5 minutes, repeated 2 times."
 msgstr "Giai đoạn mặc định 1: 10 lần thử sai sẽ bị chặn trong 5 phút, lặp lại 2 lần."
 
-#: kb/admin.py:2793
+#: kb/admin.py:2802
 msgid "Default stage 2: 5 wrong attempts block for 15 minutes, repeated 2 times."
 msgstr "Giai đoạn mặc định 2: 5 lần thử sai sẽ bị chặn trong 15 phút, lặp lại 2 lần."
 
-#: kb/admin.py:2794
+#: kb/admin.py:2803
 msgid "Default stage 3: 3 wrong attempts block for 1 hour repeatedly until successful login or admin reset."
 msgstr "Giai đoạn mặc định 3: 3 lần thử sai sẽ bị chặn trong 1 giờ, lặp lại cho đến khi đăng nhập thành công hoặc được quản trị viên đặt lại."
 
@@ -1331,7 +1339,7 @@ msgstr "Xóa các tệp thừa đã chọn"
 msgid "Delete the selected stray upload files? This cannot be undone."
 msgstr "Xóa các tệp tải lên thừa đã chọn? Thao tác này không thể hoàn tác."
 
-#: kb/admin.py:475
+#: kb/admin.py:477
 msgid "Deleted %(count)d %(target_label)s: %(preview)s"
 msgstr "Đã xóa %(count)d %(target_label)s: %(preview)s"
 
@@ -1339,15 +1347,15 @@ msgstr "Đã xóa %(count)d %(target_label)s: %(preview)s"
 msgid "Deleted %(target)s"
 msgstr "Đã xóa %(target)s"
 
-#: kb/admin.py:456
+#: kb/admin.py:458
 msgid "Deleted %(target_label)s %(target)s"
 msgstr "Đã xóa %(target_label)s %(target)s"
 
-#: kb/admin.py:2196 kb/admin_audit.py:160
+#: kb/admin.py:2198 kb/admin_audit.py:160
 msgid "Deleted %(target_label)s: %(target)s"
 msgstr "Đã xóa %(target_label)s: %(target)s"
 
-#: kb/admin.py:2075
+#: kb/admin.py:2077
 msgid "Deleted article"
 msgstr "Đã xóa bài viết"
 
@@ -1403,7 +1411,7 @@ msgstr "Hàng đợi xóa"
 msgid "Deletion queue retention is set to 0 days. New published article deletions are permanently deleted immediately after confirmation. Existing queued articles shown here are ready for permanent deletion."
 msgstr "Thời hạn lưu giữ hàng đợi xóa được đặt là 0 ngày. Các lần xóa bài viết đã xuất bản mới sẽ bị xóa vĩnh viễn ngay sau khi xác nhận. Các bài viết hiện có trong hàng đợi hiển thị ở đây đã sẵn sàng để xóa vĩnh viễn."
 
-#: kb/admin.py:2879
+#: kb/admin.py:2904
 msgid "Deletion queue retention readable"
 msgstr "Thời hạn lưu giữ hàng đợi xóa ở dạng dễ đọc"
 
@@ -1435,7 +1443,7 @@ msgstr "Khôi phục xóa lúc"
 msgid "Deletion restored by"
 msgstr "Khôi phục xóa bởi"
 
-#: kb/admin.py:2249
+#: kb/admin.py:2251
 msgid "Denied"
 msgstr "Bị từ chối"
 
@@ -1443,51 +1451,51 @@ msgstr "Bị từ chối"
 msgid "Details"
 msgstr "Chi tiết"
 
-#: kb/admin.py:1195
+#: kb/admin.py:1197
 msgid "Direct Knowledge Repository permissions"
 msgstr "Quyền trực tiếp của Kho tri thức"
 
-#: kb/admin.py:642
+#: kb/admin.py:644
 msgid "Direct user permission. Allows access to article approval workflows such as pending article review, pending update review, approve/reject actions, and review-stage article editing. It does not automatically allow creating new articles, deleting articles, or full Django admin access unless another permission/group grants those."
 msgstr "Quyền người dùng trực tiếp. Cho phép truy cập quy trình phê duyệt bài viết như xem xét bài viết đang chờ, xem xét bản cập nhật đang chờ, thao tác phê duyệt/từ chối và chỉnh sửa bài viết trong giai đoạn xem xét. Quyền này không tự động cho phép tạo bài viết mới, xóa bài viết hoặc truy cập toàn bộ Quản trị Django trừ khi được cấp bởi quyền/nhóm khác."
 
-#: kb/admin.py:633
+#: kb/admin.py:635
 msgid "Direct user permission. Allows the user to create article drafts, submit new articles for approval, and edit/resubmit their own articles or pending updates. It does not allow approving/rejecting other users' articles or using Django admin tools."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng tạo bản nháp bài viết, gửi bài viết mới để phê duyệt và chỉnh sửa/gửi lại bài viết hoặc bản cập nhật đang chờ của chính mình. Quyền này không cho phép phê duyệt/từ chối bài viết của người dùng khác hoặc sử dụng công cụ quản trị Django."
 
-#: kb/admin.py:623
+#: kb/admin.py:625
 msgid "Direct user permission. Allows the user to open the main wiki and read published articles after login. It does not allow creating articles, approving articles, or using admin tools. Unticked means no direct user grant; the user may still receive this permission from their group. The Disabled User group overrides direct permission add-ons."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng mở wiki chính và đọc bài viết đã xuất bản sau khi đăng nhập. Quyền này không cho phép tạo bài viết, phê duyệt bài viết hoặc sử dụng công cụ quản trị. Bỏ chọn nghĩa là không được cấp trực tiếp; người dùng vẫn có thể nhận quyền này từ nhóm của họ. Nhóm Người dùng bị vô hiệu hóa sẽ ghi đè các quyền trực tiếp bổ sung."
 
-#: kb/admin.py:664
+#: kb/admin.py:666
 msgid "Direct user permission. Allows this user to create and submit internal/private articles."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng này tạo và gửi bài viết nội bộ/riêng tư."
 
-#: kb/admin.py:651
+#: kb/admin.py:653
 msgid "Direct user permission. Allows this user to delete articles. Use sparingly; the standard Article Manager and Admin Users groups already grant this."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng này xóa bài viết. Hãy dùng hạn chế; các nhóm Quản lý bài viết và Người dùng quản trị tiêu chuẩn đã cấp quyền này."
 
-#: kb/admin.py:674
+#: kb/admin.py:676
 msgid "Direct user permission. Allows this user to delete internal/private articles."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng này xóa bài viết nội bộ/riêng tư."
 
-#: kb/admin.py:659
+#: kb/admin.py:661
 msgid "Direct user permission. Allows this user to open and read internal/private published articles."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng này mở và đọc bài viết nội bộ/riêng tư đã xuất bản."
 
-#: kb/admin.py:669
+#: kb/admin.py:671
 msgid "Direct user permission. Allows this user to review and manage pending internal/private articles."
 msgstr "Quyền người dùng trực tiếp. Cho phép người dùng này xem xét và quản lý bài viết nội bộ/riêng tư đang chờ."
 
-#: kb/admin.py:834
+#: kb/admin.py:836
 msgid "Direct user permissions"
 msgstr "Quyền người dùng trực tiếp"
 
-#: kb/admin.py:1218 kb/admin.py:1340 kb/admin.py:781 kb/permissions.py:53
+#: kb/admin.py:1220 kb/admin.py:1342 kb/admin.py:783 kb/permissions.py:53
 msgid "Disabled User"
 msgstr "Người dùng bị vô hiệu hóa"
 
-#: kb/admin.py:1613
+#: kb/admin.py:1615
 msgid "Disabled User role assigned to %(count)d selected user(s)."
 msgstr "Đã gán vai trò Người dùng bị vô hiệu hóa cho %(count)d người dùng được chọn."
 
@@ -1495,15 +1503,15 @@ msgstr "Đã gán vai trò Người dùng bị vô hiệu hóa cho %(count)d ng�
 msgid "Disabled account role. The user account remains in Django for audit/history purposes, but cannot complete login or access the wiki until an admin moves the user to another role."
 msgstr "Vai trò tài khoản bị vô hiệu hóa. Tài khoản người dùng vẫn được giữ trong Django cho mục đích kiểm toán/lịch sử, nhưng không thể hoàn tất đăng nhập hoặc truy cập wiki cho đến khi quản trị viên chuyển người dùng sang vai trò khác."
 
-#: kb/admin.py:276 kb/models.py:1225
+#: kb/admin.py:278 kb/models.py:1235
 msgid "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed."
 msgstr "Mặc định bị tắt. Khi tắt, Django Admin có thể được truy cập từ bất kỳ địa chỉ IPv4 hoặc IPv6 nào, nhưng vẫn phải đáp ứng xác thực thông thường và MFA của Admin. Khi bật, chỉ các dải IP/CIDR đã cấu hình mới được phép."
 
-#: kb/admin.py:2568
+#: kb/admin.py:2570
 msgid "Dislike"
 msgstr "Không thích"
 
-#: kb/admin.py:2452 website/templates/articles.html:277
+#: kb/admin.py:2454 website/templates/articles.html:277
 msgid "Dislikes"
 msgstr "Không thích"
 
@@ -1515,7 +1523,7 @@ msgstr "DjOpenKB không thể xác minh rằng video SharePoint hoặc OneDrive 
 msgid "Django Admin MFA lockout triggered"
 msgstr "Đã kích hoạt khóa MFA của quản trị Django"
 
-#: kb/admin.py:1969 kb/admin.py:1975
+#: kb/admin.py:1971 kb/admin.py:1977
 msgid "Django Admin MFA verification"
 msgstr "Xác minh MFA của quản trị Django"
 
@@ -1527,7 +1535,7 @@ msgstr "Xác minh MFA của quản trị Django thất bại"
 msgid "Django Admin MFA verification success"
 msgstr "Xác minh MFA của quản trị Django thành công"
 
-#: kb/admin.py:2725
+#: kb/admin.py:2733
 msgid "Django Admin access restrictions"
 msgstr "Hạn chế truy cập Quản trị Django"
 
@@ -1543,11 +1551,11 @@ msgstr "Quản trị viên miền"
 msgid "Domain User"
 msgstr "Người dùng miền"
 
-#: kb/admin.py:1202
+#: kb/admin.py:1204
 msgid "Domain password is managed in Active Directory and cannot be changed from Django admin."
 msgstr "Mật khẩu miền được quản lý trong Active Directory và không thể thay đổi từ trang quản trị Django."
 
-#: kb/admin.py:1308
+#: kb/admin.py:1310
 msgid "Domain user passwords are managed in Active Directory."
 msgstr "Mật khẩu người dùng miền được quản lý trong Active Directory."
 
@@ -1567,7 +1575,7 @@ msgstr "Đã lưu bản nháp thành công."
 msgid "Due"
 msgstr "Đến hạn"
 
-#: kb/admin.py:2720
+#: kb/admin.py:2728
 msgid "Each user's first accepted question starts a fixed 24-hour window. The existing short-term burst limit remains active separately."
 msgstr "Câu hỏi được chấp nhận đầu tiên của mỗi người dùng bắt đầu một khoảng thời gian cố định 24 giờ. Giới hạn gửi nhanh trong thời gian ngắn hiện có vẫn được áp dụng riêng."
 
@@ -1603,11 +1611,11 @@ msgstr "Từ khóa đã chỉnh sửa đang chờ quản trị viên phê duyệ
 msgid "Edited title waiting for admin approval. The published title remains unchanged until approval."
 msgstr "Tiêu đề đã chỉnh sửa đang chờ quản trị viên phê duyệt. Tiêu đề đã xuất bản vẫn không thay đổi cho đến khi được phê duyệt."
 
-#: kb/admin.py:848 kb/admin.py:895
+#: kb/admin.py:850 kb/admin.py:897
 msgid "Effective permissions"
 msgstr "Quyền có hiệu lực"
 
-#: kb/admin.py:888
+#: kb/admin.py:890
 msgid "Effective role groups"
 msgstr "Nhóm vai trò có hiệu lực"
 
@@ -1619,15 +1627,15 @@ msgstr "Địa chỉ email"
 msgid "Email updated successfully."
 msgstr "Email đã được cập nhật thành công."
 
-#: kb/admin.py:245 kb/models.py:1224
+#: kb/admin.py:246 kb/models.py:1234
 msgid "Enable Admin IP allowlist"
 msgstr "Bật danh sách IP được phép cho Admin"
 
-#: kb/admin.py:258 kb/models.py:1326 website/templates/profile.html:195
+#: kb/admin.py:259 kb/models.py:1336 website/templates/profile.html:195
 msgid "Enabled"
 msgstr "Đã bật"
 
-#: kb/admin.py:1823
+#: kb/admin.py:1825
 msgid "Encrypted and hidden"
 msgstr "Đã mã hóa và ẩn"
 
@@ -1647,7 +1655,7 @@ msgstr "Nhập tên người dùng/email local hoặc AD đang hoạt động, c
 msgid "Enter an image size between 1 and 1200 pixels."
 msgstr "Nhập kích thước ảnh từ 1 đến 1200 pixel."
 
-#: kb/admin.py:2642
+#: kb/admin.py:2644
 msgid "Enter at least one valid IPv4/IPv6 address or CIDR range before enabling the Admin IP allowlist."
 msgstr "Nhập ít nhất một địa chỉ IPv4/IPv6 hoặc dải CIDR hợp lệ trước khi bật danh sách IP được phép cho Admin."
 
@@ -1659,11 +1667,11 @@ msgstr "Nhập mã 6 chữ số của bạn"
 msgid "Enter your MFA/OTP code to confirm this deletion."
 msgstr "Nhập mã MFA/OTP để xác nhận việc xóa này."
 
-#: website/templates/admin_mfa_verify.html:94
+#: website/templates/admin_mfa_verify.html:103
 msgid "Enter your authenticator code again to access the Django admin site."
 msgstr "Nhập lại mã ứng dụng xác thực để truy cập trang quản trị Django."
 
-#: kb/admin.py:2808
+#: kb/admin.py:2817
 msgid "Escalation memory readable"
 msgstr "Thời gian ghi nhớ mức tăng ở dạng dễ đọc"
 
@@ -1699,15 +1707,15 @@ msgstr "Zip xuất bài viết"
 msgid "Export split package"
 msgstr "Xuất gói chia phần"
 
-#: kb/admin.py:2255
+#: kb/admin.py:2257
 msgid "Failed"
 msgstr "Không thành công"
 
-#: kb/admin.py:255 kb/models.py:1311
+#: kb/admin.py:256 kb/models.py:1321
 msgid "Failed attempts before block"
 msgstr "Số lần thử sai trước khi chặn"
 
-#: kb/models.py:1348
+#: kb/models.py:1358
 msgid "Failed attempts must be at least 1."
 msgstr "Số lần thử sai phải ít nhất là 1."
 
@@ -1735,7 +1743,7 @@ msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi 
 msgid "Files newer than %(minutes)s minutes are ignored. Change this value in Django Admin → Site settings. Use 0 minutes to show stray uploads immediately."
 msgstr "Các tệp mới hơn %(minutes)s phút sẽ bị bỏ qua. Thay đổi giá trị này trong Django Admin → Cài đặt trang. Dùng 0 phút để hiển thị ngay các tệp tải lên thừa."
 
-#: kb/admin.py:267 kb/models.py:1138
+#: kb/admin.py:268 kb/models.py:1138
 msgid "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately."
 msgstr "Các tệp mới hơn số phút này sẽ bị công cụ dọn dẹp tệp tải lên không dùng đến bỏ qua. Mặc định là 1440 phút (24 giờ) để tránh xóa ảnh khi người dùng đang soạn thảo bài viết. Đặt thành 0 để phát hiện/xóa tệp tải lên không dùng đến ngay lập tức."
 
@@ -1759,11 +1767,11 @@ msgstr "Tìm các tệp không dùng trong"
 msgid "First"
 msgstr "Đầu tiên"
 
-#: kb/admin.py:829
+#: kb/admin.py:831
 msgid "Full Django Admin superuser access. Admin Users require the extra admin MFA verification before entering Django Admin."
 msgstr "Toàn quyền siêu người dùng Quản trị Django. Người dùng quản trị phải thực hiện xác minh MFA quản trị bổ sung trước khi vào Quản trị Django."
 
-#: kb/admin.py:1227
+#: kb/admin.py:1229
 msgid "Full Django Admin superuser access. Requires the extra Admin MFA step before entering Django Admin."
 msgstr "Toàn quyền siêu người dùng Quản trị Django. Yêu cầu bước MFA quản trị bổ sung trước khi vào Quản trị Django."
 
@@ -1771,7 +1779,7 @@ msgstr "Toàn quyền siêu người dùng Quản trị Django. Yêu cầu bư�
 msgid "General"
 msgstr "Chung"
 
-#: kb/admin.py:243 kb/models.py:1208
+#: kb/admin.py:244 kb/models.py:1218
 msgid "General activity log retention (days)"
 msgstr "Thời gian lưu nhật ký hoạt động chung (ngày)"
 
@@ -1795,15 +1803,15 @@ msgstr "Các bài viết chung do bạn sở hữu."
 msgid "Get instant answers for the most common questions and learn how to use 3 characters like a pro."
 msgstr "Nhận câu trả lời tức thì cho các câu hỏi phổ biến nhất và học cách dùng 3 ký tự như chuyên gia."
 
-#: kb/admin.py:990
+#: kb/admin.py:992
 msgid "Group members"
 msgstr "Thành viên nhóm"
 
-#: kb/admin.py:775
+#: kb/admin.py:777
 msgid "Group permissions"
 msgstr "Quyền của nhóm"
 
-#: kb/admin.py:1072
+#: kb/admin.py:1074
 msgid "Group type"
 msgstr "Loại nhóm"
 
@@ -1827,11 +1835,11 @@ msgstr "Hữu ích"
 msgid "Hi, I am OpenKB AI."
 msgstr "Xin chào, tôi là OpenKB AI."
 
-#: kb/admin.py:1218
+#: kb/admin.py:1220
 msgid "Highest precedence. Blocks Knowledge Repository access and clears Admin Users, staff/superuser status, and direct role permissions."
 msgstr "Ưu tiên cao nhất. Chặn truy cập Kho tri thức và xóa vai trò Người dùng quản trị, trạng thái nhân viên/siêu người dùng và các quyền vai trò trực tiếp."
 
-#: kb/admin.py:782
+#: kb/admin.py:784
 msgid "Highest precedence. The user is redirected to the account-disabled page and cannot access Knowledge Repository. It also clears Admin Users, staff/superuser status, and direct Knowledge Repository permission add-ons."
 msgstr "Ưu tiên cao nhất. Người dùng được chuyển đến trang tài khoản bị vô hiệu hóa và không thể truy cập Kho tri thức. Thao tác này cũng xóa vai trò Người dùng quản trị, trạng thái nhân viên/siêu người dùng và các quyền bổ sung trực tiếp của Kho tri thức."
 
@@ -1863,31 +1871,31 @@ msgstr "Chỉ là bản chụp ID người dùng trong lịch sử. Quan hệ n�
 msgid "How can we help?"
 msgstr "Chúng tôi có thể giúp gì?"
 
-#: kb/models.py:1252
+#: kb/models.py:1262
 msgid "How long an administrator may stay inactive inside Django Admin after completing the extra admin MFA check. Default is 600 seconds (10 minutes). Minimum enforced by code is 60 seconds; maximum enforced by code is 86400 seconds."
 msgstr "Thời gian quản trị viên có thể không hoạt động trong Quản trị Django sau khi hoàn tất kiểm tra MFA quản trị bổ sung. Mặc định là 600 giây (10 phút). Mã nguồn áp dụng tối thiểu 60 giây và tối đa 86400 giây."
 
-#: kb/admin.py:268 kb/models.py:1147
+#: kb/admin.py:269 kb/models.py:1147
 msgid "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation."
 msgstr "Thời gian các bài viết đã xuất bản bị xóa vẫn có thể khôi phục trong Hồ sơ của tôi → Công cụ quản trị → Hàng đợi xóa trước khi bị xóa vĩnh viễn. Mặc định là 7 ngày. Đặt 0 để xóa vĩnh viễn bài viết đã xuất bản ngay sau khi xác nhận MFA."
 
-#: kb/admin.py:278
+#: kb/admin.py:280
 msgid "How long failed-login/MFA escalation history is remembered without a successful login. Successful verification clears it immediately. Default is 604800 seconds (7 days)."
 msgstr "Thời gian lịch sử tăng dần của lỗi đăng nhập/MFA được ghi nhớ khi không có lần đăng nhập thành công. Xác minh thành công sẽ xóa ngay lịch sử này. Mặc định là 604800 giây (7 ngày)."
 
-#: kb/models.py:1243
+#: kb/models.py:1253
 msgid "How long failed-login/MFA lockout history is remembered if the user never signs in successfully. Successful password/MFA verification resets the relevant lockout history immediately. Default is 604800 seconds (7 days)."
 msgstr "Thời gian lịch sử khóa do lỗi đăng nhập/MFA được ghi nhớ nếu người dùng không bao giờ đăng nhập thành công. Xác minh mật khẩu/MFA thành công sẽ đặt lại ngay lịch sử khóa liên quan. Mặc định là 604800 giây (7 ngày)."
 
-#: kb/admin.py:282 kb/models.py:1317
+#: kb/admin.py:284 kb/models.py:1327
 msgid "How long the login/MFA check is blocked after this stage triggers."
 msgstr "Thời gian kiểm tra đăng nhập/MFA bị chặn sau khi giai đoạn này được kích hoạt."
 
-#: kb/admin.py:283 kb/models.py:1322
+#: kb/admin.py:285 kb/models.py:1332
 msgid "How many lockouts should use this stage before moving to the next stage. Use 0 on the final stage to repeat forever."
 msgstr "Số lần khóa sử dụng giai đoạn này trước khi chuyển sang giai đoạn tiếp theo. Dùng 0 ở giai đoạn cuối để lặp vô hạn."
 
-#: kb/admin.py:863
+#: kb/admin.py:865
 msgid "How to use these permissions:"
 msgstr "Cách sử dụng các quyền này:"
 
@@ -1980,7 +1988,7 @@ msgstr "Hình ảnh được tải lên trong bản nháp này xuất hiện ở
 msgid "Immediate"
 msgstr "Ngay lập tức"
 
-#: kb/admin.py:2876
+#: kb/admin.py:2901
 msgid "Immediate permanent deletion"
 msgstr "Xóa vĩnh viễn ngay lập tức"
 
@@ -2052,7 +2060,7 @@ msgstr "Các bài viết đã nhập được gán cho tài khoản quản trị
 msgid "Imported articles will be owned by"
 msgstr "Các bài viết đã nhập sẽ thuộc sở hữu của"
 
-#: kb/admin.py:1337 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
+#: kb/admin.py:1339 website/templates/admin_orphan_articles.html:305 website/templates/admin_orphan_articles_confirm.html:59
 msgid "Inactive"
 msgstr "Không hoạt động"
 
@@ -2064,15 +2072,15 @@ msgstr "Chèn liên kết video"
 msgid "Internal"
 msgstr "Nội bộ"
 
-#: kb/admin.py:1225 kb/admin.py:820 kb/permissions.py:60
+#: kb/admin.py:1227 kb/admin.py:822 kb/permissions.py:60
 msgid "Internal Article Approver"
 msgstr "Người phê duyệt bài viết nội bộ"
 
-#: kb/admin.py:1226 kb/admin.py:824 kb/permissions.py:61
+#: kb/admin.py:1228 kb/admin.py:826 kb/permissions.py:61
 msgid "Internal Article Manager"
 msgstr "Quản lý bài viết nội bộ"
 
-#: kb/admin.py:1224 kb/admin.py:816 kb/permissions.py:59
+#: kb/admin.py:1226 kb/admin.py:818 kb/permissions.py:59
 msgid "Internal Article Writer"
 msgstr "Người viết bài nội bộ"
 
@@ -2084,7 +2092,7 @@ msgstr "Bài viết nội bộ"
 msgid "Internal Knowledge Repository"
 msgstr "Kho tri thức nội bộ"
 
-#: kb/admin.py:1223 kb/admin.py:812 kb/permissions.py:58
+#: kb/admin.py:1225 kb/admin.py:814 kb/permissions.py:58
 msgid "Internal User"
 msgstr "Người dùng nội bộ"
 
@@ -2100,7 +2108,7 @@ msgstr "Bài viết nội bộ"
 msgid "Internal article pages"
 msgstr "Trang bài viết nội bộ"
 
-#: kb/admin.py:745
+#: kb/admin.py:747
 msgid "Internal article permissions"
 msgstr "Quyền bài viết nội bộ"
 
@@ -2120,7 +2128,7 @@ msgstr "Các bài viết nội bộ do bạn sở hữu."
 msgid "Internal manager add-on. Can view public/internal articles, create, edit/manage, review, approve/reject internal submissions, and delete internal articles in scope. Published internal article deletion requires MFA confirmation."
 msgstr "Vai trò bổ sung Quản lý nội bộ. Có thể xem bài viết công khai/nội bộ, tạo, chỉnh sửa/quản lý, xem xét, phê duyệt/từ chối nội dung nội bộ gửi, và xóa bài viết nội bộ trong phạm vi phụ trách. Việc xóa bài viết nội bộ đã xuất bản cần xác nhận MFA."
 
-#: kb/admin.py:753
+#: kb/admin.py:755
 msgid "Internal roles are add-on permissions. An internal user can still view general/public articles. Use the Internal User / Internal Article Writer / Internal Article Approver / Internal Article Manager groups whenever possible; tick these direct boxes only for exceptions."
 msgstr "Vai trò nội bộ là các quyền bổ sung. Người dùng nội bộ vẫn có thể xem bài viết chung/công khai. Hãy dùng nhóm Người dùng nội bộ / Người viết bài nội bộ / Người phê duyệt bài viết nội bộ / Quản lý bài viết nội bộ bất cứ khi nào có thể; chỉ chọn các ô quyền trực tiếp này cho trường hợp ngoại lệ."
 
@@ -2132,7 +2140,7 @@ msgstr "Vai trò bổ sung Người xem nội bộ. Có thể xem bài viết c�
 msgid "Internal writer add-on. Can view public/internal articles, create or maintain their own internal article drafts/submissions, and delete their own internal articles. Published internal article deletion requires MFA confirmation."
 msgstr "Vai trò bổ sung Người viết nội bộ. Có thể xem bài viết công khai/nội bộ, tạo hoặc duy trì các bản nháp/nội dung gửi bài viết nội bộ của riêng mình và xóa các bài viết nội bộ của riêng mình. Việc xóa bài viết nội bộ đã xuất bản cần xác nhận MFA."
 
-#: kb/admin.py:2623
+#: kb/admin.py:2625
 msgid "Invalid IPv4/IPv6 address or CIDR range: %(value)s"
 msgstr "Địa chỉ IPv4/IPv6 hoặc dải CIDR không hợp lệ: %(value)s"
 
@@ -2140,7 +2148,7 @@ msgstr "Địa chỉ IPv4/IPv6 hoặc dải CIDR không hợp lệ: %(value)s"
 msgid "Invalid account credentials. Please check your username and password."
 msgstr "Thông tin tài khoản không hợp lệ. Vui lòng kiểm tra tên người dùng và mật khẩu."
 
-#: kb/admin_security.py:317 kb/views/mfa.py:377 kb/views/mfa.py:513
+#: kb/admin_security.py:511 kb/views/mfa.py:376 kb/views/mfa.py:512
 msgid "Invalid authenticator code. Please try again."
 msgstr "Mã xác thực không hợp lệ. Vui lòng thử lại."
 
@@ -2192,11 +2200,11 @@ msgstr "Từ khóa"
 msgid "Keywords: %(keywords)s"
 msgstr "Từ khóa: %(keywords)s"
 
-#: kb/admin.py:1363
+#: kb/admin.py:1365
 msgid "Knowledge Repository Permissions"
 msgstr "Quyền Kho tri thức"
 
-#: kb/admin.py:1358
+#: kb/admin.py:1360
 msgid "Knowledge Repository Roles"
 msgstr "Vai trò Kho tri thức"
 
@@ -2208,11 +2216,11 @@ msgstr "Quản trị viên Kho tri thức. Có thể tạo/xuất bản bài vi�
 msgid "Knowledge Repository article."
 msgstr "Bài viết Kho tri thức."
 
-#: kb/admin.py:1069
+#: kb/admin.py:1071
 msgid "Knowledge Repository role"
 msgstr "Vai trò Kho tri thức"
 
-#: kb/admin.py:1054
+#: kb/admin.py:1056
 msgid "Knowledge Repository role group"
 msgstr "Nhóm vai trò Kho tri thức"
 
@@ -2220,11 +2228,11 @@ msgstr "Nhóm vai trò Kho tri thức"
 msgid "Knowledge Repository role guide"
 msgstr "Hướng dẫn vai trò Kho tri thức"
 
-#: kb/admin.py:1065
+#: kb/admin.py:1067
 msgid "Knowledge Repository role information"
 msgstr "Thông tin vai trò Kho tri thức"
 
-#: kb/admin.py:727
+#: kb/admin.py:729
 msgid "Knowledge Repository role permissions"
 msgstr "Quyền vai trò Kho tri thức"
 
@@ -2232,15 +2240,15 @@ msgstr "Quyền vai trò Kho tri thức"
 msgid "LDAP account types must use Active Directory as the authentication source."
 msgstr "Loại tài khoản LDAP phải dùng Active Directory làm nguồn xác thực."
 
-#: kb/admin.py:596
+#: kb/admin.py:598
 msgid "LDAP account types must use Active Directory user as the source. Choose LDAP user/LDAP admin with Active Directory user, or choose User/Admin with Local user."
 msgstr "Loại tài khoản LDAP phải dùng Người dùng Active Directory làm nguồn. Chọn Người dùng LDAP/Quản trị LDAP với Người dùng Active Directory hoặc chọn Người dùng/Quản trị với Người dùng cục bộ."
 
-#: kb/admin.py:1346 kb/models.py:35
+#: kb/admin.py:1348 kb/models.py:35
 msgid "LDAP admin"
 msgstr "Quản trị viên LDAP"
 
-#: kb/admin.py:1350 kb/models.py:34
+#: kb/admin.py:1352 kb/models.py:34
 msgid "LDAP user"
 msgstr "Người dùng LDAP"
 
@@ -2276,7 +2284,7 @@ msgstr "Xác minh lần cuối"
 msgid "Last verified at"
 msgstr "Xác minh lần cuối lúc"
 
-#: kb/admin.py:265
+#: kb/admin.py:266
 msgid "Legacy compatibility field. Use the built-in Active checkbox on the user account to control whether the user can sign in."
 msgstr "Trường tương thích cũ. Dùng ô chọn Hoạt động tích hợp sẵn trên tài khoản người dùng để kiểm soát việc người dùng có thể đăng nhập hay không."
 
@@ -2284,11 +2292,11 @@ msgstr "Trường tương thích cũ. Dùng ô chọn Hoạt động tích hợp
 msgid "Legacy main-site access"
 msgstr "Quyền truy cập trang chính cũ"
 
-#: kb/admin.py:2566
+#: kb/admin.py:2568
 msgid "Like"
 msgstr "Thích"
 
-#: kb/admin.py:2447 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
+#: kb/admin.py:2449 website/templates/articles.html:275 website/templates/index.html:221 website/templates/index.html:295 website/templates/index.html:366 website/templates/index.html:413 website/templates/index.html:463
 msgid "Likes"
 msgstr "Thích"
 
@@ -2316,7 +2324,7 @@ msgstr "Đăng nhập tài khoản cục bộ"
 msgid "Local account types must use Local user as the authentication source."
 msgstr "Loại tài khoản cục bộ phải dùng Người dùng cục bộ làm nguồn xác thực."
 
-#: kb/admin.py:604
+#: kb/admin.py:606
 msgid "Local account types must use Local user as the source. Choose User/Admin with Local user, or choose LDAP user/LDAP admin with Active Directory user."
 msgstr "Loại tài khoản cục bộ phải dùng Người dùng cục bộ làm nguồn. Chọn Người dùng/Quản trị với Người dùng cục bộ hoặc chọn Người dùng LDAP/Quản trị LDAP với Người dùng Active Directory."
 
@@ -2324,11 +2332,11 @@ msgstr "Loại tài khoản cục bộ phải dùng Người dùng cục bộ l�
 msgid "Local accounts require authenticator verification after password sign-in."
 msgstr "Tài khoản local yêu cầu xác minh bằng ứng dụng xác thực sau khi đăng nhập bằng mật khẩu."
 
-#: kb/admin.py:1348
+#: kb/admin.py:1350
 msgid "Local admin"
 msgstr "Quản trị viên cục bộ"
 
-#: kb/admin.py:1351 kb/models.py:38 kb/views/services.py:3167
+#: kb/admin.py:1353 kb/models.py:38 kb/views/services.py:3167
 msgid "Local user"
 msgstr "Người dùng local"
 
@@ -2336,11 +2344,11 @@ msgstr "Người dùng local"
 msgid "Local username or email"
 msgstr "Tên người dùng hoặc email cục bộ"
 
-#: kb/admin.py:1994
+#: kb/admin.py:1996
 msgid "Lockout duration"
 msgstr "Thời lượng khóa"
 
-#: kb/admin.py:1979
+#: kb/admin.py:1981
 msgid "Lockout scope"
 msgstr "Phạm vi khóa"
 
@@ -2364,7 +2372,7 @@ msgstr "Đăng nhập để đóng góp"
 msgid "Logout"
 msgstr "Đăng xuất"
 
-#: kb/admin.py:280 kb/models.py:1307
+#: kb/admin.py:282 kb/models.py:1317
 msgid "Lower numbers run first. Use 10, 20, 30, etc. so you can insert stages later."
 msgstr "Số nhỏ hơn chạy trước. Dùng 10, 20, 30, v.v. để có thể chèn thêm giai đoạn sau này."
 
@@ -2372,23 +2380,19 @@ msgstr "Số nhỏ hơn chạy trước. Dùng 10, 20, 30, v.v. để có thể 
 msgid "MFA QR code"
 msgstr "Mã QR MFA"
 
-#: kb/admin.py:1391 kb/admin.py:1847
+#: kb/admin.py:1393 kb/admin.py:1849
 msgid "MFA Reset"
 msgstr "Đặt lại MFA"
 
-#: kb/admin.py:1375
+#: kb/admin.py:1377
 msgid "MFA Status"
 msgstr "Trạng thái MFA"
-
-#: kb/admin.py:2695
-msgid "MFA login completion timeout"
-msgstr "Thời gian chờ hoàn tất đăng nhập MFA"
 
 #: kb/admin.py:242 kb/models.py:1199
 msgid "MFA login completion timeout (seconds)"
 msgstr "Thời gian chờ hoàn tất đăng nhập MFA (giây)"
 
-#: kb/admin.py:2866
+#: kb/admin.py:2875
 msgid "MFA login timeout readable"
 msgstr "Thời gian chờ đăng nhập MFA dạng dễ đọc"
 
@@ -2400,15 +2404,15 @@ msgstr "MFA được đặt lại bởi quản trị viên"
 msgid "MFA reset by user"
 msgstr "MFA được đặt lại bởi người dùng"
 
-#: kb/admin.py:1872
+#: kb/admin.py:1874
 msgid "MFA reset for %(count)d selected device(s). Users must set up a new authenticator at next sign-in."
 msgstr "Đã đặt lại MFA cho %(count)d thiết bị đã chọn. Người dùng phải thiết lập ứng dụng xác thực mới ở lần đăng nhập tiếp theo."
 
-#: kb/admin.py:1543
+#: kb/admin.py:1545
 msgid "MFA reset for %(count)d selected user(s). They must set up a new authenticator at next sign-in."
 msgstr "Đã đặt lại MFA cho %(count)d người dùng đã chọn. Họ phải thiết lập ứng dụng xác thực mới ở lần đăng nhập tiếp theo."
 
-#: kb/views/mfa.py:691
+#: kb/views/mfa.py:690
 msgid "MFA reset is available for your Knowledge Repository account."
 msgstr "Bạn có thể đặt lại MFA cho tài khoản Kho tri thức của mình."
 
@@ -2424,15 +2428,19 @@ msgstr "Cần thiết lập MFA để tiếp tục."
 msgid "MFA setup success"
 msgstr "Thiết lập MFA thành công"
 
-#: kb/views/mfa.py:274
+#: kb/views/mfa.py:273
 msgid "MFA sign-in was cancelled. Please sign in again."
 msgstr "Đăng nhập MFA đã bị hủy. Vui lòng đăng nhập lại."
 
-#: kb/admin.py:1974 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
+#: kb/admin.py:1976 website/templates/mfa_verify.html:38 website/templates/mfa_verify.html:5
 msgid "MFA verification"
 msgstr "Xác minh MFA"
 
-#: kb/views/mfa.py:221
+#: kb/admin.py:2697
+msgid "MFA verification completion timeouts"
+msgstr "Thời gian chờ hoàn tất xác minh MFA"
+
+#: kb/views/mfa.py:220
 msgid "MFA verification timed out. Please enter your username and password again."
 msgstr "Đã hết thời gian xác minh MFA. Vui lòng nhập lại tên người dùng và mật khẩu."
 
@@ -2444,7 +2452,7 @@ msgstr "Xác minh MFA thất bại"
 msgid "MFA verify success"
 msgstr "Xác minh MFA thành công"
 
-#: kb/admin.py:1503
+#: kb/admin.py:1505
 msgid "MFA was reset for %(username)s. The user must set up a new authenticator at next sign-in."
 msgstr "MFA của %(username)s đã được đặt lại. Người dùng phải thiết lập ứng dụng xác thực mới ở lần đăng nhập tiếp theo."
 
@@ -2452,7 +2460,7 @@ msgstr "MFA của %(username)s đã được đặt lại. Người dùng phải
 msgid "MFA/OTP code"
 msgstr "Mã MFA/OTP"
 
-#: kb/views/auth.py:440 kb/views/mfa.py:670 kb/views/services.py:819
+#: kb/views/auth.py:440 kb/views/mfa.py:669 kb/views/services.py:819
 msgid "MFA/OTP code is incorrect."
 msgstr "Mã MFA/OTP không đúng."
 
@@ -2464,7 +2472,7 @@ msgstr "Hồ sơ người dùng trang chính"
 msgid "Main Site User Profiles"
 msgstr "Hồ sơ người dùng trang chính"
 
-#: kb/admin.py:716
+#: kb/admin.py:718
 msgid "Main site profile"
 msgstr "Hồ sơ trang chính"
 
@@ -2500,23 +2508,23 @@ msgstr "Được quản lý bởi ứng dụng xác thực"
 msgid "Manual setup key"
 msgstr "Khóa thiết lập thủ công"
 
-#: kb/admin.py:1877
+#: kb/admin.py:1879
 msgid "Mark selected MFA devices as setup pending"
 msgstr "Đánh dấu các thiết bị MFA đã chọn là đang chờ thiết lập"
 
-#: kb/admin.py:2396
+#: kb/admin.py:2398
 msgid "Mark selected articles as pending failed"
 msgstr "Đánh dấu các bài viết đã chọn là chờ duyệt không đạt"
 
-#: kb/admin.py:1897
+#: kb/admin.py:1899
 msgid "Marked MFA setup pending for user %(username)s"
 msgstr "Đã đánh dấu thiết lập MFA đang chờ cho người dùng %(username)s"
 
-#: kb/admin.py:2419
+#: kb/admin.py:2421
 msgid "Marked article %(title)s as pending failed from Django Admin"
 msgstr "Đã đánh dấu bài viết %(title)s là chờ phê duyệt không thành công từ Quản trị Django"
 
-#: kb/admin.py:2407 kb/admin.py:2481
+#: kb/admin.py:2409 kb/admin.py:2483
 msgid "Marked as pending failed by admin. Please review this article and resubmit it for approval."
 msgstr "Đã được quản trị viên đánh dấu là chờ duyệt không đạt. Vui lòng xem lại bài viết này và gửi lại để phê duyệt."
 
@@ -2524,21 +2532,25 @@ msgstr "Đã được quản trị viên đánh dấu là chờ duyệt không �
 msgid "Maximum %(limit)s image(s) per article."
 msgstr "Tối đa %(limit)s hình ảnh cho mỗi bài viết."
 
-#: kb/admin.py:279 kb/models.py:1262
+#: kb/admin.py:281 kb/models.py:1272
 msgid "Maximum accepted Ask OpenKB AI questions per user in a fixed 24-hour window. The first accepted question starts the window and later questions do not extend it. Default: 20."
 msgstr "Số lượng tối đa câu hỏi Ask OpenKB AI được chấp nhận cho mỗi người dùng trong một khoảng thời gian cố định 24 giờ. Câu hỏi được chấp nhận đầu tiên bắt đầu khoảng thời gian này và các câu hỏi sau không gia hạn nó. Mặc định: 20."
 
-#: kb/admin.py:270 kb/models.py:1164
+#: kb/admin.py:271 kb/models.py:1164
 msgid "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px."
 msgstr "Chiều rộng hiển thị tối đa của trình phát video trong bài viết, tính bằng pixel. Video vẫn đáp ứng linh hoạt và giữ tỷ lệ 16:9 trên màn hình nhỏ hơn. Mặc định là 720 px. Phạm vi cho phép: từ 160 đến 1920 px."
 
-#: kb/admin.py:269 kb/models.py:1155
+#: kb/admin.py:270 kb/models.py:1155
 msgid "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
 msgstr "Số lượng hình ảnh tối đa được phép dán hoặc tải lên cho mỗi bài viết, bao gồm các phiên bản nháp, đang chờ duyệt, đã xuất bản và đang chờ cập nhật. Mặc định là 50. Đặt thành 0 để tắt tải lên hình ảnh bài viết."
 
-#: kb/admin.py:273 kb/models.py:1200
+#: kb/admin.py:274 kb/models.py:1200
 msgid "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
 msgstr "Thời gian tối đa được phép để hoàn tất MFA sau khi bước tên người dùng và mật khẩu thành công. Khi bộ đếm ngược về 0, trạng thái đăng nhập đang chờ sẽ bị xóa và người dùng phải nhập lại tên người dùng cùng mật khẩu. Mặc định là 60 giây. Phạm vi cho phép: từ 30 đến 900 giây (15 phút)."
+
+#: kb/admin.py:275 kb/models.py:1210
+msgid "Maximum time allowed to complete the separate MFA check before entering Django Admin. When the countdown reaches zero, the administrator stays signed in and must start a new verification window before trying again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "Thời gian tối đa được phép để hoàn tất bước kiểm tra MFA riêng trước khi vào trang quản trị Django. Khi bộ đếm ngược về 0, quản trị viên vẫn đăng nhập và phải bắt đầu một khoảng thời gian xác minh mới trước khi thử lại. Mặc định là 60 giây. Phạm vi cho phép: 30 đến 900 giây (15 phút)."
 
 #: website/templates/admin_bulk_articles.html:87
 msgid "Maximum upload size: 100 MB per zip. Maximum uncompressed size: 200 MB. For split exports, extract the split package first, then import each part zip in order."
@@ -2572,11 +2584,11 @@ msgstr "Trang bài viết được thích nhiều nhất"
 msgid "Most recent article pages"
 msgstr "Trang bài viết mới nhất"
 
-#: kb/admin.py:1283 website/templates/profile.html:190
+#: kb/admin.py:1285 website/templates/profile.html:190
 msgid "Multi-factor authentication"
 msgstr "Xác thực đa yếu tố"
 
-#: kb/admin.py:578
+#: kb/admin.py:580
 msgid "Must match Account Type. Local User/Local Admin use Local user. LDAP user/LDAP admin use Active Directory user. To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
 msgstr "Phải khớp với Loại tài khoản. Người dùng cục bộ/Quản trị viên cục bộ dùng Người dùng cục bộ. Người dùng LDAP/Quản trị LDAP dùng Người dùng Active Directory. Để chuyển tài khoản LDAP thành tài khoản cục bộ, hãy đặt Loại tài khoản là Người dùng hoặc Quản trị viên và Nguồn là Người dùng cục bộ, sau đó đặt mật khẩu cục bộ."
 
@@ -2636,7 +2648,7 @@ msgstr "Email hoặc tên người dùng NextLabs AD"
 msgid "NextLabs IT Knowledge Repository"
 msgstr "NextLabs Kho tri thức CNTT"
 
-#: kb/admin.py:2733
+#: kb/admin.py:2741
 msgid "Nginx no longer maintains a static Admin IP allowlist. By default, all IPv4 and IPv6 addresses can reach Django's Admin access checks. To restrict access, enter the allowed IP/CIDR ranges and enable the allowlist. Direct /admin/login/ remains hidden with 404, and Admin MFA is still required."
 msgstr "Nginx không còn duy trì danh sách IP Admin tĩnh. Theo mặc định, mọi địa chỉ IPv4 và IPv6 đều có thể đi đến bước kiểm tra quyền truy cập Django Admin. Để hạn chế truy cập, hãy nhập các dải IP/CIDR được phép và bật danh sách. /admin/login/ vẫn bị ẩn bằng 404 và MFA của Admin vẫn bắt buộc."
 
@@ -2644,7 +2656,7 @@ msgstr "Nginx không còn duy trì danh sách IP Admin tĩnh. Theo mặc định
 msgid "No"
 msgstr "Không"
 
-#: kb/admin.py:1045 kb/admin.py:1096 kb/permissions.py:400
+#: kb/admin.py:1047 kb/admin.py:1098 kb/permissions.py:400
 msgid "No Knowledge Repository role permissions"
 msgstr "Không có quyền vai trò Kho tri thức"
 
@@ -2732,7 +2744,7 @@ msgstr "Không có đánh giá bài viết đang chờ nào khớp với tìm ki
 msgid "No pending update"
 msgstr "Không có cập nhật đang chờ"
 
-#: kb/admin.py:1100
+#: kb/admin.py:1102
 msgid "No permissions"
 msgstr "Không có quyền"
 
@@ -2764,7 +2776,7 @@ msgstr "Không có tệp tải lên dư thừa nào được chọn để xóa."
 msgid "No stray uploaded files found."
 msgstr "Không tìm thấy tệp tải lên không dùng."
 
-#: kb/admin.py:1082
+#: kb/admin.py:1084
 msgid "No users"
 msgstr "Không có người dùng"
 
@@ -2772,11 +2784,11 @@ msgstr "Không có người dùng"
 msgid "Normal export automatically becomes a split package if the content is too large. Split packages contain importable part zips under the parts/ folder; extract the package and import each part zip in order."
 msgstr "Bản xuất thông thường sẽ tự động trở thành gói chia nhỏ nếu nội dung quá lớn. Gói chia nhỏ chứa các zip phần có thể nhập trong thư mục parts/; hãy giải nén gói và nhập từng zip phần theo thứ tự."
 
-#: kb/admin.py:1824
+#: kb/admin.py:1826
 msgid "Not encrypted. Reset this user MFA device and ask the user to set up MFA again."
 msgstr "Chưa được mã hóa. Hãy đặt lại thiết bị MFA của người dùng này và yêu cầu người dùng thiết lập MFA lại."
 
-#: kb/admin.py:2251
+#: kb/admin.py:2253
 msgid "Not found"
 msgstr "Không tìm thấy"
 
@@ -2788,7 +2800,7 @@ msgstr "Không hữu ích"
 msgid "Not required"
 msgstr "Không bắt buộc"
 
-#: kb/admin.py:1821
+#: kb/admin.py:1823
 msgid "Not set"
 msgstr "Chưa đặt"
 
@@ -2804,19 +2816,19 @@ msgstr "Ghi chú"
 msgid "Number of published articles shown per page in search/results and in each homepage article column such as Trending Topics, Most Liked, and Most Recent Articles. Recommended range: 5 to 100. Default is 10."
 msgstr "Số bài viết đã xuất bản hiển thị trên mỗi trang trong tìm kiếm/kết quả và trong từng cột bài viết trên trang chủ như Chủ đề thịnh hành, Được thích nhiều nhất và Bài viết mới nhất. Phạm vi đề xuất: 5 đến 100. Mặc định là 10."
 
-#: kb/admin.py:275 kb/models.py:1217
+#: kb/admin.py:277 kb/models.py:1227
 msgid "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200."
 msgstr "Số dòng hiển thị mỗi trang trong bảng nhật ký Django Admin. Khoảng khuyến nghị: 50 đến 500. Mặc định là 200."
 
-#: kb/admin.py:281 kb/models.py:1312
+#: kb/admin.py:283 kb/models.py:1322
 msgid "Number of wrong password/MFA attempts required before this stage blocks the user."
 msgstr "Số lần thử mật khẩu/MFA sai cần thiết trước khi giai đoạn này chặn người dùng."
 
-#: kb/admin.py:2245
+#: kb/admin.py:2247
 msgid "OK"
 msgstr "OK"
 
-#: kb/admin.py:2235
+#: kb/admin.py:2237
 msgid "Object ID %(object_id)s"
 msgstr "ID đối tượng %(object_id)s"
 
@@ -2860,7 +2872,7 @@ msgstr "OpenKB AI tạm thời không khả dụng. Vui lòng thử lại sau ho
 msgid "OpenKB AI is thinking..."
 msgstr "OpenKB AI đang suy nghĩ..."
 
-#: kb/admin.py:249 kb/models.py:1261
+#: kb/admin.py:250 kb/models.py:1271
 msgid "OpenKB AI prompts per 24 hours"
 msgstr "Số lời nhắc OpenKB AI mỗi 24 giờ"
 
@@ -2872,7 +2884,7 @@ msgstr "Câu hỏi OpenKB AI"
 msgid "OpenKB AI rate limited"
 msgstr "OpenKB AI bị giới hạn tốc độ"
 
-#: kb/admin.py:2718
+#: kb/admin.py:2726
 msgid "OpenKB AI rate limits"
 msgstr "Giới hạn tốc độ OpenKB AI"
 
@@ -2884,11 +2896,11 @@ msgstr "OpenKB AI mất quá lâu để phản hồi. Vui lòng thử lại sau 
 msgid "OpenKB data folder not found. Check OPENKB_DATA_DIR in settings.py."
 msgstr "Không tìm thấy thư mục dữ liệu OpenKB. Hãy kiểm tra OPENKB_DATA_DIR trong settings.py."
 
-#: kb/admin.py:2343
+#: kb/admin.py:2345
 msgid "OpenKB files"
 msgstr "Tệp OpenKB"
 
-#: kb/admin.py:277 kb/models.py:1234
+#: kb/admin.py:279 kb/models.py:1244
 msgid "Optional comma, space, or newline separated IPv4/IPv6 addresses or CIDR ranges. Examples: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Leave blank while the allowlist is disabled."
 msgstr "Địa chỉ IPv4/IPv6 hoặc dải CIDR tùy chọn, phân tách bằng dấu phẩy, khoảng trắng hoặc dòng mới. Ví dụ: 192.0.2.50, 10.0.0.0/24, 2001:db8::/32. Để trống khi danh sách cho phép đang tắt."
 
@@ -2944,7 +2956,7 @@ msgstr "Trang %(page)s trong %(total)s"
 msgid "Page not found"
 msgstr "Không tìm thấy trang"
 
-#: kb/admin.py:1204 kb/admin.py:1973 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
+#: kb/admin.py:1206 kb/admin.py:1975 website/templates/login.html:92 website/templates/login.html:93 website/templates/profile.html:216
 msgid "Password"
 msgstr "Mật khẩu"
 
@@ -3004,15 +3016,15 @@ msgstr "Mật khẩu đồng bộ với mật khẩu công ty của bạn."
 msgid "Password syncs with your company password. Please change it through the company password system."
 msgstr "Mật khẩu đồng bộ với mật khẩu công ty của bạn. Vui lòng thay đổi qua hệ thống mật khẩu của công ty."
 
-#: kb/admin.py:1796
+#: kb/admin.py:1798
 msgid "Password/MFA lockout counters reset for %(count)d selected profile(s)."
 msgstr "Đã đặt lại bộ đếm khóa mật khẩu/MFA cho %(count)d hồ sơ được chọn."
 
-#: kb/admin.py:1575
+#: kb/admin.py:1577
 msgid "Password/MFA lockout counters reset for %(count)d selected user(s)."
 msgstr "Đã đặt lại bộ đếm khóa mật khẩu/MFA cho %(count)d người dùng được chọn."
 
-#: kb/admin.py:1459
+#: kb/admin.py:1461
 msgid "Password/MFA lockout counters were reset for %(username)s."
 msgstr "Đã đặt lại bộ đếm khóa mật khẩu/MFA cho %(username)s."
 
@@ -3032,7 +3044,7 @@ msgstr "Dán liên kết YouTube hoặc Vimeo. Không hỗ trợ tệp video tr�
 msgid "Pasted images"
 msgstr "Hình ảnh đã dán"
 
-#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2107 kb/admin.py:2264
+#: kb/admin.py:134 kb/admin.py:150 kb/admin.py:171 kb/admin.py:2109 kb/admin.py:2266
 msgid "Path"
 msgstr "Đường dẫn"
 
@@ -3084,7 +3096,7 @@ msgstr "Cập nhật đang chờ - tài nguyên hình ảnh"
 msgid "Pending update keywords"
 msgstr "Cập nhật đang chờ - từ khóa"
 
-#: kb/admin.py:2332
+#: kb/admin.py:2334
 msgid "Pending update review"
 msgstr "Cập nhật đang chờ - duyệt"
 
@@ -3124,11 +3136,11 @@ msgstr "Đã xóa vĩnh viễn %(count)s bài viết mồ côi."
 msgid "Permanently deleted %(count)s queued article(s)."
 msgstr "Đã xóa vĩnh viễn %(count)s bài viết trong hàng đợi."
 
-#: kb/admin.py:881
+#: kb/admin.py:883
 msgid "Permission guide"
 msgstr "Hướng dẫn quyền"
 
-#: kb/admin.py:1107
+#: kb/admin.py:1109
 msgid "Permissions"
 msgstr "Quyền"
 
@@ -3164,15 +3176,19 @@ msgstr "Vui lòng nhập tên người dùng hoặc email để gán các bài v
 msgid "Please enter your MFA/OTP code to continue."
 msgstr "Vui lòng nhập mã MFA/OTP để tiếp tục."
 
+#: website/templates/admin_mfa_verify.html:137
+msgid "Please enter your admin MFA code to continue."
+msgstr "Vui lòng nhập mã MFA quản trị viên để tiếp tục."
+
 #: kb/views/admin.py:441
 msgid "Please select at least one orphan article first."
 msgstr "Vui lòng chọn ít nhất một bài viết mồ côi trước."
 
-#: kb/views/mfa.py:295
+#: kb/views/mfa.py:294
 msgid "Please sign in before setting up MFA."
 msgstr "Vui lòng đăng nhập trước khi thiết lập MFA."
 
-#: kb/views/mfa.py:400
+#: kb/views/mfa.py:399
 msgid "Please sign in before verifying MFA."
 msgstr "Vui lòng đăng nhập trước khi xác minh MFA."
 
@@ -3204,7 +3220,7 @@ msgstr "Vui lòng chờ một lát rồi thử lại."
 msgid "Please wait briefly before trying again."
 msgstr "Vui lòng chờ một lát trước khi thử lại."
 
-#: kb/admin.py:2801
+#: kb/admin.py:2810
 msgid "Policy guide"
 msgstr "Hướng dẫn chính sách"
 
@@ -3216,11 +3232,11 @@ msgstr "Được cung cấp bởi"
 msgid "Powered by openKB"
 msgstr "Được cung cấp bởi openKB"
 
-#: kb/admin.py:111 kb/admin.py:1190
+#: kb/admin.py:111 kb/admin.py:1192
 msgid "Preferred language"
 msgstr "Ngôn ngữ ưu tiên"
 
-#: kb/admin.py:266 kb/models.py:66
+#: kb/admin.py:267 kb/models.py:66
 msgid "Preferred language for the main wiki user interface."
 msgstr "Ngôn ngữ ưu tiên cho giao diện người dùng wiki chính."
 
@@ -3248,7 +3264,7 @@ msgstr "Trạng thái trước đó"
 msgid "Previous status before deletion queue"
 msgstr "Trạng thái trước đó trước khi vào hàng đợi xóa"
 
-#: kb/admin.py:1175
+#: kb/admin.py:1177
 msgid "Profile account type"
 msgstr "Loại tài khoản hồ sơ"
 
@@ -3320,7 +3336,7 @@ msgstr "Đưa vào hàng đợi từ quy trình dọn dẹp bài viết mồ cô
 msgid "Ran admin action '%(action)s'"
 msgstr "Đã chạy thao tác quản trị '%(action)s'"
 
-#: kb/admin.py:2200
+#: kb/admin.py:2202
 msgid "Ran admin action '%(action)s' on %(target)s"
 msgstr "Đã chạy thao tác quản trị '%(action)s' trên %(target)s"
 
@@ -3344,7 +3360,7 @@ msgstr "Sẵn sàng để xóa vĩnh viễn theo lịch"
 msgid "Recommended articles"
 msgstr "Bài viết được đề xuất"
 
-#: kb/admin.py:2247
+#: kb/admin.py:2249
 msgid "Redirect"
 msgstr "Chuyển hướng"
 
@@ -3360,7 +3376,7 @@ msgstr "Làm mới"
 msgid "Refresh the page and try again. If the issue continues, sign in again."
 msgstr "Làm mới trang và thử lại. Nếu sự cố vẫn tiếp diễn, hãy đăng nhập lại."
 
-#: kb/admin.py:1219 kb/admin.py:788 kb/permissions.py:54
+#: kb/admin.py:1221 kb/admin.py:790 kb/permissions.py:54
 msgid "Regular User"
 msgstr "Người dùng thông thường"
 
@@ -3368,7 +3384,7 @@ msgstr "Người dùng thông thường"
 msgid "Regular User is the fallback public viewer role. Internal roles are add-on roles that also include public article viewing. Direct user permissions can still be ticked for custom combinations. Django evaluates group permissions and direct user permissions together."
 msgstr "Người dùng thông thường là vai trò xem bài viết công khai dự phòng. Vai trò nội bộ là quyền bổ sung cũng bao gồm quyền xem bài viết công khai. Các quyền người dùng trực tiếp vẫn có thể được chọn cho tổ hợp tùy chỉnh. Django đánh giá cùng lúc quyền nhóm và quyền người dùng trực tiếp."
 
-#: kb/admin.py:1670
+#: kb/admin.py:1672
 msgid "Regular User role assigned to %(count)d selected user(s)."
 msgstr "Đã gán vai trò Người dùng thông thường cho %(count)d người dùng được chọn."
 
@@ -3396,7 +3412,7 @@ msgstr "Xóa mục khỏi lịch sử tìm kiếm"
 msgid "Removed by uploader from editor"
 msgstr "Được người tải lên xóa khỏi trình chỉnh sửa"
 
-#: kb/admin.py:257 kb/models.py:1321
+#: kb/admin.py:258 kb/models.py:1331
 msgid "Repeat count"
 msgstr "Số lần lặp"
 
@@ -3420,19 +3436,19 @@ msgstr "Yêu cầu đã hết thời gian chờ"
 msgid "Request too large"
 msgstr "Yêu cầu quá lớn"
 
-#: kb/admin.py:1384 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
+#: kb/admin.py:1386 website/templates/profile.html:207 website/templates/profile.html:353 website/templates/profile.html:370
 msgid "Reset MFA"
 msgstr "Đặt lại MFA"
 
-#: kb/admin.py:1513
+#: kb/admin.py:1515
 msgid "Reset MFA for %(username)s"
 msgstr "Đặt lại MFA cho %(username)s"
 
-#: kb/admin.py:1520
+#: kb/admin.py:1522
 msgid "Reset MFA for selected users"
 msgstr "Đặt lại MFA cho người dùng đã chọn"
 
-#: kb/admin.py:1497 kb/admin.py:1536 kb/admin.py:1865
+#: kb/admin.py:1499 kb/admin.py:1538 kb/admin.py:1867
 msgid "Reset MFA for user %(username)s"
 msgstr "Đặt lại MFA cho người dùng %(username)s"
 
@@ -3448,31 +3464,31 @@ msgstr "Đặt lại lúc"
 msgid "Reset lockout now"
 msgstr "Đặt lại khóa ngay"
 
-#: kb/admin.py:1400
+#: kb/admin.py:1402
 msgid "Reset password/MFA lockout"
 msgstr "Đặt lại khóa mật khẩu/MFA"
 
-#: kb/admin.py:1467
+#: kb/admin.py:1469
 msgid "Reset password/MFA lockout for %(username)s"
 msgstr "Đặt lại khóa mật khẩu/MFA cho %(username)s"
 
-#: kb/admin.py:1769
+#: kb/admin.py:1771
 msgid "Reset password/MFA lockout for selected profiles"
 msgstr "Đặt lại khóa mật khẩu/MFA cho các hồ sơ được chọn"
 
-#: kb/admin.py:1548
+#: kb/admin.py:1550
 msgid "Reset password/MFA lockout for selected users"
 msgstr "Đặt lại khóa mật khẩu/MFA cho người dùng được chọn"
 
-#: kb/admin.py:1453 kb/admin.py:1568 kb/admin.py:1789
+#: kb/admin.py:1455 kb/admin.py:1570 kb/admin.py:1791
 msgid "Reset password/MFA lockout for user %(username)s"
 msgstr "Đặt lại khóa mật khẩu/MFA cho người dùng %(username)s"
 
-#: kb/admin.py:1849
+#: kb/admin.py:1851
 msgid "Reset selected MFA devices"
 msgstr "Đặt lại các thiết bị MFA đã chọn"
 
-#: kb/admin.py:1843
+#: kb/admin.py:1845
 msgid "Reset this user's MFA"
 msgstr "Đặt lại MFA của người dùng này"
 
@@ -3480,7 +3496,7 @@ msgstr "Đặt lại MFA của người dùng này"
 msgid "Reset to original"
 msgstr "Đặt lại về kích thước gốc"
 
-#: kb/admin.py:1385
+#: kb/admin.py:1387
 msgid "Resets this user's authenticator and requires a fresh QR setup. The new authenticator key is private and is not displayed to admins."
 msgstr "Đặt lại ứng dụng xác thực của người dùng này và yêu cầu thiết lập QR mới. Khóa ứng dụng xác thực mới là riêng tư và không hiển thị cho quản trị viên."
 
@@ -3544,7 +3560,7 @@ msgstr "Xem xét nội dung gửi chung và nội bộ trên một trang. Dùng 
 msgid "Review general articles and public pending updates waiting for approval."
 msgstr "Xem xét bài viết chung và bản cập nhật công khai đang chờ phê duyệt."
 
-#: kb/admin.py:189 kb/admin.py:2442
+#: kb/admin.py:189 kb/admin.py:2444
 msgid "Review history"
 msgstr "Lịch sử xét duyệt"
 
@@ -3676,11 +3692,11 @@ msgstr "Chọn tất cả"
 msgid "Select all stray files"
 msgstr "Chọn tất cả tệp thừa"
 
-#: kb/admin.py:906
+#: kb/admin.py:908
 msgid "Select the users who should belong to this group. Use the filter box on the left to search users, move selected users to the right, then save. Removing a user from the right removes only this group membership."
 msgstr "Chọn người dùng nên thuộc nhóm này. Dùng ô lọc bên trái để tìm người dùng, chuyển người dùng đã chọn sang bên phải, rồi lưu. Việc xóa người dùng khỏi bên phải chỉ xóa tư cách thành viên của nhóm này."
 
-#: kb/admin.py:2253 kb/views/errors.py:65
+#: kb/admin.py:2255 kb/views/errors.py:65
 msgid "Server error"
 msgstr "Lỗi máy chủ"
 
@@ -3688,31 +3704,31 @@ msgstr "Lỗi máy chủ"
 msgid "Service unavailable"
 msgstr "Dịch vụ không khả dụng"
 
-#: kb/admin.py:1646
+#: kb/admin.py:1648
 msgid "Set role for user %(username)s to %(role)s (%(status)s)"
 msgstr "Đặt vai trò của người dùng %(username)s thành %(role)s (%(status)s)"
 
-#: kb/admin.py:1703
+#: kb/admin.py:1705
 msgid "Set selected users as Admin Users"
 msgstr "Đặt người dùng đã chọn thành Người dùng quản trị"
 
-#: kb/admin.py:1683
+#: kb/admin.py:1685
 msgid "Set selected users as Article Approver"
 msgstr "Đặt người dùng đã chọn thành Người phê duyệt bài viết"
 
-#: kb/admin.py:1693
+#: kb/admin.py:1695
 msgid "Set selected users as Article Manager"
 msgstr "Đặt người dùng đã chọn thành Quản lý bài viết"
 
-#: kb/admin.py:1673
+#: kb/admin.py:1675
 msgid "Set selected users as Article Writer"
 msgstr "Đặt người dùng đã chọn thành Người viết bài"
 
-#: kb/admin.py:1579
+#: kb/admin.py:1581
 msgid "Set selected users as Disabled User"
 msgstr "Đặt người dùng đã chọn thành Người dùng bị vô hiệu hóa"
 
-#: kb/admin.py:1663
+#: kb/admin.py:1665
 msgid "Set selected users as Regular User"
 msgstr "Đặt người dùng đã chọn thành Người dùng thông thường"
 
@@ -3720,7 +3736,7 @@ msgstr "Đặt người dùng đã chọn thành Người dùng thông thường
 msgid "Set size"
 msgstr "Đặt kích thước"
 
-#: kb/admin.py:776
+#: kb/admin.py:778
 msgid "Set the user's normal role from the Groups section. Custom non-role groups may be used later for things like notifications."
 msgstr "Đặt vai trò thông thường của người dùng trong phần Nhóm. Có thể dùng các nhóm tùy chỉnh không phải vai trò về sau cho những việc như thông báo."
 
@@ -3728,11 +3744,11 @@ msgstr "Đặt vai trò thông thường của người dùng trong phần Nhóm
 msgid "Set up MFA"
 msgstr "Thiết lập MFA"
 
-#: kb/admin_security.py:225
+#: kb/admin_security.py:376
 msgid "Set up MFA before accessing the admin site."
 msgstr "Thiết lập MFA trước khi truy cập trang quản trị."
 
-#: kb/views/auth.py:392 kb/views/mfa.py:611
+#: kb/views/auth.py:392 kb/views/mfa.py:610
 msgid "Set up MFA before changing sensitive account details."
 msgstr "Thiết lập MFA trước khi thay đổi chi tiết tài khoản nhạy cảm."
 
@@ -3744,7 +3760,7 @@ msgstr "Thiết lập MFA trước khi xóa bài viết đã xuất bản."
 msgid "Set up authenticator"
 msgstr "Thiết lập ứng dụng xác thực"
 
-#: kb/admin.py:1371 kb/mfa.py:244
+#: kb/admin.py:1373 kb/mfa.py:244
 msgid "Setup pending"
 msgstr "Đang chờ thiết lập"
 
@@ -3800,11 +3816,11 @@ msgstr "Đăng nhập bằng tài khoản Kho tri thức cục bộ của bạn.
 msgid "Sign out and go to sign in"
 msgstr "Đăng xuất và chuyển đến trang đăng nhập"
 
-#: kb/admin.py:100 kb/admin.py:253 kb/models.py:1271
+#: kb/admin.py:100 kb/admin.py:254 kb/models.py:1281
 msgid "Site setting"
 msgstr "Cài đặt trang"
 
-#: kb/admin.py:100 kb/models.py:1272 kb/models.py:1275
+#: kb/admin.py:100 kb/models.py:1282 kb/models.py:1285
 msgid "Site settings"
 msgstr "Cài đặt trang"
 
@@ -3812,7 +3828,7 @@ msgstr "Cài đặt trang"
 msgid "Size"
 msgstr "Kích thước"
 
-#: kb/admin.py:2942
+#: kb/admin.py:2967
 msgid "Size (KB)"
 msgstr "Kích thước (KB)"
 
@@ -3876,23 +3892,27 @@ msgstr "Nguồn"
 msgid "Split export package did not contain any importable part zip files."
 msgstr "Gói xuất đã tách không chứa tệp zip phần nào có thể nhập."
 
-#: kb/models.py:1336
+#: kb/models.py:1346
 msgid "Stage %(order)s: %(failures)s failures -> %(block)s seconds, repeat %(repeat)s"
 msgstr "Giai đoạn %(order)s: %(failures)s lỗi -> %(block)s giây, lặp %(repeat)s"
 
-#: kb/admin.py:2760
+#: kb/admin.py:2769
 msgid "Stage %(order)s: %(failures)s failures -> %(duration)s, %(repeat)s, %(enabled)s"
 msgstr "Giai đoạn %(order)s: %(failures)s lỗi -> %(duration)s, %(repeat)s, %(enabled)s"
 
-#: kb/admin.py:254 kb/models.py:1306
+#: kb/admin.py:255 kb/models.py:1316
 msgid "Stage order"
 msgstr "Thứ tự giai đoạn"
+
+#: website/templates/admin_mfa_verify.html:118
+msgid "Start new verification window"
+msgstr "Bắt đầu khoảng thời gian xác minh mới"
 
 #: website/templates/_keyword_suggestions.html:215
 msgid "Start typing the title or article body to see matching existing keywords."
 msgstr "Bắt đầu nhập tiêu đề hoặc nội dung bài viết để xem các từ khóa hiện có khớp."
 
-#: kb/admin.py:185 kb/admin.py:2258 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
+#: kb/admin.py:185 kb/admin.py:2260 website/templates/admin_orphan_articles.html:288 website/templates/admin_orphan_articles_confirm.html:48 website/templates/edit_my_suggestions.html:156 website/templates/edit_my_suggestions.html:230 website/templates/suggest_edit.html:261
 msgid "Status"
 msgstr "Trạng thái"
 
@@ -3900,7 +3920,7 @@ msgstr "Trạng thái"
 msgid "Status code"
 msgstr "Mã trạng thái"
 
-#: kb/admin.py:2667
+#: kb/admin.py:2669
 msgid "Stray upload cleanup"
 msgstr "Dọn dẹp tệp tải lên không dùng đến"
 
@@ -3932,7 +3952,7 @@ msgstr "Gửi bởi"
 msgid "Success"
 msgstr "Thành công"
 
-#: kb/admin.py:2795
+#: kb/admin.py:2804
 msgid "Successful password verification resets password lockout history. Successful MFA verification resets MFA lockout history. Admins can reset a user's counters from the User admin page."
 msgstr "Xác minh mật khẩu thành công sẽ đặt lại lịch sử khóa mật khẩu. Xác minh MFA thành công sẽ đặt lại lịch sử khóa MFA. Quản trị viên có thể đặt lại bộ đếm của người dùng từ trang quản trị Người dùng."
 
@@ -3960,7 +3980,7 @@ msgstr "Từ khóa được gợi ý"
 msgid "Supported zip format"
 msgstr "Định dạng zip được hỗ trợ"
 
-#: kb/admin.py:2238
+#: kb/admin.py:2240
 msgid "Target"
 msgstr "Mục tiêu"
 
@@ -3968,7 +3988,7 @@ msgstr "Mục tiêu"
 msgid "Target app"
 msgstr "Ứng dụng đích"
 
-#: kb/admin.py:144 kb/admin.py:2215
+#: kb/admin.py:144 kb/admin.py:2217
 msgid "Target model"
 msgstr "Mô hình đích"
 
@@ -3984,7 +4004,7 @@ msgstr "ID đối tượng đích"
 msgid "Thank you. Your vote has been saved."
 msgstr "Cảm ơn. Bình chọn của bạn đã được lưu."
 
-#: kb/admin.py:1242
+#: kb/admin.py:1244
 msgid "The Active checkbox controls whether the account can sign in at all. Regular User is the fallback viewer role only and is removed automatically when Writer, Approver, Manager, or elevated internal roles are assigned. Internal User is an add-on viewer role and can be combined with Regular User. Custom non-role groups can still be used later for notifications or department grouping."
 msgstr "Ô chọn Hoạt động kiểm soát việc tài khoản có thể đăng nhập hay không. Người dùng thông thường chỉ là vai trò xem dự phòng và tự động bị gỡ khi gán Người viết, Người phê duyệt, Quản lý hoặc vai trò nội bộ nâng cao. Người dùng nội bộ là vai trò xem bổ sung và có thể kết hợp với Người dùng thông thường. Các nhóm tùy chỉnh không phải vai trò vẫn có thể dùng về sau cho thông báo hoặc phân nhóm theo phòng ban."
 
@@ -4004,7 +4024,7 @@ msgstr "Ứng dụng mất quá nhiều thời gian để phản hồi."
 msgid "The articles could not be assigned safely. No assignment was applied. Please check the logs and try again."
 msgstr "Không thể gán bài viết một cách an toàn. Không có gán nào được áp dụng. Vui lòng kiểm tra log và thử lại."
 
-#: kb/admin.py:835
+#: kb/admin.py:837
 msgid "The checkboxes below are special per-user exceptions for article access only. They are useful when one user needs slightly more article access than their group, without creating a new group. Django Admin access is granted only through the Admin Users group/superuser status."
 msgstr "Các ô chọn bên dưới là ngoại lệ đặc biệt theo từng người dùng, chỉ dành cho quyền truy cập bài viết. Chúng hữu ích khi một người dùng cần nhiều quyền bài viết hơn một chút so với nhóm của họ mà không cần tạo nhóm mới. Quyền truy cập Quản trị Django chỉ được cấp thông qua nhóm Người dùng quản trị/trạng thái siêu người dùng."
 
@@ -4044,6 +4064,10 @@ msgstr "Cơ sở tri thức không có thông tin khớp với chủ đề đó.
 msgid "The link may be invalid, expired, or you may not have access to this page."
 msgstr "Liên kết có thể không hợp lệ, đã hết hạn hoặc bạn không có quyền truy cập trang này."
 
+#: kb/admin.py:2708
+msgid "The main login MFA timeout starts after username/password verification and requires the user to sign in again when it expires. The separate Admin MFA timeout starts when an administrator opens the Admin verification page; expiry keeps the administrator signed in and requires a new verification window before another code can be entered. Both default to 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
+msgstr "Thời gian chờ MFA của lần đăng nhập chính bắt đầu sau khi xác minh tên người dùng và mật khẩu, đồng thời yêu cầu người dùng đăng nhập lại khi hết hạn. Thời gian chờ MFA quản trị viên riêng bắt đầu khi quản trị viên mở trang xác minh quản trị; khi hết hạn, quản trị viên vẫn đăng nhập và phải bắt đầu một khoảng thời gian xác minh mới trước khi có thể nhập mã khác. Cả hai mặc định là 60 giây. Phạm vi cho phép: 30 đến 900 giây (15 phút)."
+
 #: website/templates/admin/kb/reset_mfa_confirm.html:22
 msgid "The next login will require authenticator setup before access is granted."
 msgstr "Lần đăng nhập tiếp theo sẽ yêu cầu thiết lập ứng dụng xác thực trước khi được cấp quyền truy cập."
@@ -4064,7 +4088,7 @@ msgstr "Không thể xác minh yêu cầu."
 msgid "The reset is recorded in the authentication activity log."
 msgstr "Việc đặt lại được ghi vào nhật ký hoạt động xác thực."
 
-#: kb/admin.py:2788
+#: kb/admin.py:2797
 msgid "The same progressive policy is used for password-login failures and MFA-code failures, but password and MFA counters are tracked separately per user."
 msgstr "Cùng một chính sách tăng dần được dùng cho lỗi đăng nhập bằng mật khẩu và lỗi mã MFA, nhưng bộ đếm mật khẩu và MFA được theo dõi riêng cho từng người dùng."
 
@@ -4116,11 +4140,11 @@ msgstr "Các nhận xét này được hiển thị cho chủ sở hữu bài vi
 msgid "These files appear unused. Check the uploader details, then delete only the files that are no longer needed."
 msgstr "Các tệp này có vẻ không được sử dụng. Kiểm tra thông tin người tải lên, rồi chỉ xóa những tệp không còn cần thiết."
 
-#: kb/views/mfa.py:424 kb/views/mfa.py:617
+#: kb/views/mfa.py:423 kb/views/mfa.py:616
 msgid "This MFA device cannot be verified because its secret could not be read. Ask an admin to reset your MFA, or reset it from the server command line if admins are locked out."
 msgstr "Không thể xác minh thiết bị MFA này vì không thể đọc bí mật của thiết bị. Hãy yêu cầu quản trị viên đặt lại MFA hoặc đặt lại từ dòng lệnh máy chủ nếu quản trị viên bị khóa."
 
-#: kb/admin_security.py:245
+#: kb/admin_security.py:396
 msgid "This MFA device cannot be verified because its secret could not be read. Ask another administrator to reset MFA for this account."
 msgstr "Không thể xác minh thiết bị MFA này vì không thể đọc bí mật của thiết bị. Hãy yêu cầu một quản trị viên khác đặt lại MFA cho tài khoản này."
 
@@ -4176,11 +4200,11 @@ msgstr "Hình ảnh này đã được tải lên trong bản nháp này. Hãy d
 msgid "This image is not removable from this editing session."
 msgstr "Không thể xóa ảnh này khỏi phiên chỉnh sửa hiện tại."
 
-#: kb/admin.py:849
+#: kb/admin.py:851
 msgid "This line shows the final result after Django combines group permissions, direct user permissions, and superuser status."
 msgstr "Dòng này hiển thị kết quả cuối cùng sau khi Django kết hợp quyền nhóm, quyền người dùng trực tiếp và trạng thái siêu người dùng."
 
-#: kb/admin.py:842
+#: kb/admin.py:844
 msgid "This removes only the direct user permission. If the user's group still grants the same permission, the effective permission will remain active."
 msgstr "Thao tác này chỉ xóa quyền người dùng trực tiếp. Nếu nhóm của người dùng vẫn cấp cùng quyền đó thì quyền có hiệu lực vẫn hoạt động."
 
@@ -4212,7 +4236,7 @@ msgstr "Không thích"
 msgid "Thumbs up"
 msgstr "Thích"
 
-#: kb/admin.py:2357 kb/admin.py:760
+#: kb/admin.py:2359 kb/admin.py:762
 msgid "Timestamps"
 msgstr "Mốc thời gian"
 
@@ -4228,7 +4252,7 @@ msgstr "Bật/tắt điều hướng"
 msgid "Too many OpenKB AI questions. Please wait before trying again."
 msgstr "Có quá nhiều câu hỏi cho OpenKB AI. Vui lòng chờ trước khi thử lại."
 
-#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:555
+#: kb/views/auth.py:171 kb/views/auth.py:210 kb/views/mfa.py:554
 msgid "Too many failed sign-in attempts. Please try again in %(duration)s."
 msgstr "Có quá nhiều lần đăng nhập không thành công. Vui lòng thử lại sau %(duration)s."
 
@@ -4236,11 +4260,11 @@ msgstr "Có quá nhiều lần đăng nhập không thành công. Vui lòng th�
 msgid "Too many image upload attempts. Please wait a moment and try again."
 msgstr "Có quá nhiều lần thử tải ảnh lên. Vui lòng đợi một chút rồi thử lại."
 
-#: kb/views/auth.py:416 kb/views/mfa.py:334 kb/views/mfa.py:365 kb/views/mfa.py:460 kb/views/mfa.py:501 kb/views/mfa.py:645 kb/views/services.py:791
+#: kb/views/auth.py:416 kb/views/mfa.py:333 kb/views/mfa.py:364 kb/views/mfa.py:459 kb/views/mfa.py:500 kb/views/mfa.py:644 kb/views/services.py:791
 msgid "Too many incorrect MFA codes. Please try again in %(duration)s."
 msgstr "Có quá nhiều mã MFA không chính xác. Vui lòng thử lại sau %(duration)s."
 
-#: kb/admin_security.py:275 kb/admin_security.py:305
+#: kb/admin_security.py:469 kb/admin_security.py:499
 msgid "Too many incorrect admin MFA codes. Please try again in %(duration)s."
 msgstr "Có quá nhiều mã MFA quản trị không chính xác. Vui lòng thử lại sau %(duration)s."
 
@@ -4300,7 +4324,7 @@ msgstr "Bỏ chọn tất cả"
 msgid "Untick this to block the user from accessing the main wiki site."
 msgstr "Bỏ chọn mục này để chặn người dùng truy cập trang wiki chính."
 
-#: kb/admin.py:841
+#: kb/admin.py:843
 msgid "Unticking a checkbox"
 msgstr "Bỏ chọn ô chọn"
 
@@ -4344,7 +4368,7 @@ msgstr "Trạng thái cập nhật"
 msgid "Update submitted at"
 msgstr "Bản cập nhật được gửi lúc"
 
-#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:250
+#: kb/admin.py:114 kb/admin.py:210 kb/admin.py:217 kb/admin.py:251
 msgid "Updated at"
 msgstr "Cập nhật lúc"
 
@@ -4376,7 +4400,7 @@ msgstr "Tải lên bởi"
 msgid "Uploader account type snapshot"
 msgstr "Bản ghi nhanh loại tài khoản người tải lên"
 
-#: kb/admin.py:2937
+#: kb/admin.py:2962
 msgid "Uploader display"
 msgstr "Tên hiển thị của người tải lên"
 
@@ -4388,23 +4412,23 @@ msgstr "Bản ghi nhanh email người tải lên"
 msgid "Uploader username snapshot"
 msgstr "Bản ghi nhanh tên người dùng của người tải lên"
 
-#: kb/admin.py:738
+#: kb/admin.py:740
 msgid "Use Groups as the user's standard public-article role. Tick these boxes only when this specific user needs extra public-article permissions outside their group. The Disabled User group overrides these direct permission add-ons."
 msgstr "Dùng Nhóm làm vai trò bài viết công khai tiêu chuẩn của người dùng. Chỉ chọn các ô này khi người dùng cụ thể cần thêm quyền bài viết công khai ngoài nhóm của họ. Nhóm Người dùng bị vô hiệu hóa sẽ ghi đè các quyền trực tiếp bổ sung này."
 
-#: kb/admin.py:1058
+#: kb/admin.py:1060
 msgid "Use the Group members selector below to add or remove users from this role. For one-off exceptions, edit the specific user and tick the direct Knowledge Repository permission checkboxes instead. New non-admin users are automatically placed into Regular User when their account is created."
 msgstr "Dùng bộ chọn Thành viên nhóm bên dưới để thêm hoặc xóa người dùng khỏi vai trò này. Với trường hợp ngoại lệ một lần, hãy chỉnh sửa người dùng cụ thể và chọn các ô quyền trực tiếp của Kho tri thức. Người dùng mới không phải quản trị viên được tự động đưa vào Người dùng thông thường khi tạo tài khoản."
 
-#: kb/admin.py:2712
+#: kb/admin.py:2720
 msgid "Use the inline rows below to control progressive password/MFA lockouts. Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
 msgstr "Dùng các hàng nội tuyến bên dưới để kiểm soát khóa mật khẩu/MFA tăng dần. Nhập thời lượng bằng giây; trang quản trị cũng hiển thị cách chuyển đổi dễ đọc sang phút/giờ/ngày. repeat_count=0 nghĩa là giai đoạn lặp vô hạn, thường nên dùng cho hàng cuối."
 
-#: kb/admin.py:1236
+#: kb/admin.py:1238
 msgid "Use these groups as the main access model. Disabled User always takes highest precedence."
 msgstr "Dùng các nhóm này làm mô hình truy cập chính. Người dùng bị vô hiệu hóa luôn có ưu tiên cao nhất."
 
-#: kb/admin.py:1296
+#: kb/admin.py:1298
 msgid "Use this if the user is temporarily blocked because of repeated wrong password or MFA attempts. It clears password and MFA lockout counters for this user only."
 msgstr "Dùng tùy chọn này nếu người dùng bị chặn tạm thời do nhập sai mật khẩu hoặc MFA nhiều lần. Thao tác này chỉ xóa bộ đếm khóa mật khẩu và MFA của người dùng này."
 
@@ -4412,11 +4436,11 @@ msgstr "Dùng tùy chọn này nếu người dùng bị chặn tạm thời do 
 msgid "Use this only after verifying the unlock request is legitimate."
 msgstr "Chỉ dùng sau khi đã xác minh yêu cầu mở khóa là hợp lệ."
 
-#: kb/admin.py:993
+#: kb/admin.py:995
 msgid "Use this searchable left/right list to add or remove users from this group. Users on the right are members of this group. Users on the left are available users."
 msgstr "Dùng danh sách có thể tìm kiếm trái/phải này để thêm hoặc xóa người dùng khỏi nhóm. Người dùng bên phải là thành viên của nhóm này. Người dùng bên trái là người dùng có thể chọn."
 
-#: kb/admin.py:1286
+#: kb/admin.py:1288
 msgid "Use this section to reset a user's authenticator setup. A reset generates a new private authenticator secret and forces the user to scan a new QR code at next sign-in."
 msgstr "Dùng phần này để đặt lại thiết lập ứng dụng xác thực của người dùng. Việc đặt lại sẽ tạo mã bí mật xác thực riêng tư mới và buộc người dùng quét mã QR mới ở lần đăng nhập tiếp theo."
 
@@ -4432,11 +4456,11 @@ msgstr "Thiết bị MFA của người dùng"
 msgid "User MFA devices"
 msgstr "Thiết bị MFA của người dùng"
 
-#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2000
+#: kb/admin.py:133 kb/admin.py:149 kb/admin.py:170 kb/admin.py:2002
 msgid "User agent"
 msgstr "Tác nhân người dùng"
 
-#: kb/admin.py:1429 kb/admin.py:1477
+#: kb/admin.py:1431 kb/admin.py:1479
 msgid "User does not exist."
 msgstr "Người dùng không tồn tại."
 
@@ -4444,7 +4468,7 @@ msgstr "Người dùng không tồn tại."
 msgid "User session timeout (hours)"
 msgstr "Thời gian chờ phiên người dùng (giờ)"
 
-#: kb/admin.py:2855
+#: kb/admin.py:2864
 msgid "User session timeout readable"
 msgstr "Thời gian chờ phiên người dùng dạng dễ đọc"
 
@@ -4456,11 +4480,11 @@ msgstr "Tên người dùng"
 msgid "Username changes are managed by administrators."
 msgstr "Thay đổi tên người dùng do quản trị viên quản lý."
 
-#: kb/admin.py:1077
+#: kb/admin.py:1079
 msgid "Users"
 msgstr "Người dùng"
 
-#: kb/admin.py:904 kb/admin.py:974
+#: kb/admin.py:906 kb/admin.py:976
 msgid "Users in this group"
 msgstr "Người dùng trong nhóm này"
 
@@ -4468,7 +4492,7 @@ msgstr "Người dùng trong nhóm này"
 msgid "Verify"
 msgstr "Xác minh"
 
-#: website/templates/admin_mfa_verify.html:109
+#: website/templates/admin_mfa_verify.html:142
 msgid "Verify and continue to admin"
 msgstr "Xác minh và tiếp tục đến quản trị"
 
@@ -4508,7 +4532,7 @@ msgstr "Khả năng hiển thị"
 msgid "Visibility can be changed only before the article is published."
 msgstr "Chỉ có thể thay đổi khả năng hiển thị trước khi bài viết được xuất bản."
 
-#: kb/admin.py:215 kb/admin.py:2571
+#: kb/admin.py:215 kb/admin.py:2573
 msgid "Vote"
 msgstr "Bình chọn"
 
@@ -4520,11 +4544,11 @@ msgstr "Cảnh báo / lỗi"
 msgid "Was this article helpful?"
 msgstr "Bài viết này có hữu ích không?"
 
-#: kb/views/mfa.py:478
+#: kb/views/mfa.py:477
 msgid "Welcome back, %(name)s."
 msgstr "Chào mừng bạn trở lại, %(name)s."
 
-#: kb/views/mfa.py:484
+#: kb/views/mfa.py:483
 msgid "Welcome back."
 msgstr "Chào mừng bạn trở lại."
 
@@ -4584,11 +4608,11 @@ msgstr "Bạn không có quyền thêm bài viết."
 msgid "You do not have permission to add internal articles."
 msgstr "Bạn không có quyền thêm bài viết nội bộ."
 
-#: kb/admin.py:2365
+#: kb/admin.py:2367
 msgid "You do not have permission to approve articles from Django Admin."
 msgstr "Bạn không có quyền phê duyệt bài viết từ Quản trị Django."
 
-#: kb/admin.py:1582
+#: kb/admin.py:1584
 msgid "You do not have permission to assign Disabled User."
 msgstr "Bạn không có quyền gán Người dùng bị vô hiệu hóa."
 
@@ -4600,15 +4624,15 @@ msgstr "Bạn không có quyền quản lý bài viết."
 msgid "You do not have permission to manage internal articles."
 msgstr "Bạn không có quyền quản lý bài viết nội bộ."
 
-#: kb/admin.py:1625
+#: kb/admin.py:1627
 msgid "You do not have permission to modify users."
 msgstr "Bạn không có quyền chỉnh sửa người dùng."
 
-#: kb/admin.py:493
+#: kb/admin.py:495
 msgid "You do not have permission to perform this admin reset."
 msgstr "Bạn không có quyền thực hiện thao tác đặt lại quản trị này."
 
-#: kb/admin.py:2399
+#: kb/admin.py:2401
 msgid "You do not have permission to reject articles from Django Admin."
 msgstr "Bạn không có quyền từ chối bài viết từ Quản trị Django."
 
@@ -4640,7 +4664,7 @@ msgstr "Bạn sẽ được yêu cầu xác nhận trước khi áp dụng thay 
 msgid "You will be asked to confirm before changes are applied. Selected articles will be permanently deleted immediately."
 msgstr "Bạn sẽ được yêu cầu xác nhận trước khi áp dụng thay đổi. Các bài viết được chọn sẽ bị xóa vĩnh viễn ngay lập tức."
 
-#: kb/views/mfa.py:727
+#: kb/views/mfa.py:726
 msgid "Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."
 msgstr "MFA của bạn đã được đặt lại. Hãy hoàn tất thiết lập trình xác thực ngay để tiếp tục sử dụng Kho tri thức."
 
@@ -4648,11 +4672,11 @@ msgstr "MFA của bạn đã được đặt lại. Hãy hoàn tất thiết l�
 msgid "Your account is currently disabled and cannot access Knowledge Repository. Please contact an administrator if you believe this is unexpected."
 msgstr "Tài khoản của bạn hiện bị vô hiệu hóa và không thể truy cập Kho tri thức. Vui lòng liên hệ quản trị viên nếu bạn cho rằng điều này không mong đợi."
 
-#: kb/admin_security.py:394
+#: kb/admin_security.py:595
 msgid "Your admin session expired after inactivity. Verify MFA again to re-enter the admin site."
 msgstr "Phiên quản trị của bạn đã hết hạn do không hoạt động. Hãy xác minh MFA lại để vào lại trang quản trị."
 
-#: kb/admin.py:1619
+#: kb/admin.py:1621
 msgid "Your own account was assigned to Disabled User. On the next request, you will be redirected to the account disabled page."
 msgstr "Tài khoản của chính bạn đã được gán vai trò Người dùng bị vô hiệu hóa. Trong yêu cầu tiếp theo, bạn sẽ được chuyển đến trang tài khoản bị vô hiệu hóa."
 
@@ -4712,11 +4736,11 @@ msgstr "người-dùng-đã-xóa"
 msgid "denied"
 msgstr "bị từ chối"
 
-#: kb/admin.py:2758
+#: kb/admin.py:2767
 msgid "disabled"
 msgstr "bị vô hiệu hóa"
 
-#: kb/admin.py:2758
+#: kb/admin.py:2767
 msgid "enabled"
 msgstr "được bật"
 
@@ -4724,7 +4748,7 @@ msgstr "được bật"
 msgid "failed"
 msgstr "không thành công"
 
-#: kb/models.py:1335
+#: kb/models.py:1345
 msgid "forever"
 msgstr "vô hạn"
 
@@ -4784,11 +4808,11 @@ msgstr "đã chuyển hướng"
 msgid "removed %(items)s"
 msgstr "đã xóa %(items)s"
 
-#: kb/admin.py:2757
+#: kb/admin.py:2766
 msgid "repeat %(count)s time(s)"
 msgstr "lặp %(count)s lần"
 
-#: kb/admin.py:2757
+#: kb/admin.py:2766
 msgid "repeat forever"
 msgstr "lặp vô hạn"
 
@@ -4832,6 +4856,6 @@ msgstr "quản trị viên không xác định"
 msgid "unknown user"
 msgstr "người dùng không xác định"
 
-#: kb/admin.py:905
+#: kb/admin.py:907
 msgid "users"
 msgstr "người dùng"
