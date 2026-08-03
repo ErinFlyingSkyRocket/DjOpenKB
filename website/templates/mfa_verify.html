@@ -36,10 +36,6 @@
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
             <h2 class="form-signin-heading mfa-heading-spacing">{% trans "MFA verification" %}</h2>
-            <p class="text-muted mfa-description-spacing">{% trans "Please enter your MFA/OTP code to continue." %}</p>
-
-            {% include "_mfa_login_timeout.html" %}
-
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
             {% endfor %}
@@ -48,6 +44,9 @@
                 <label class="sr-only" for="id_code">{% trans "MFA/OTP code" %}</label>
                 <input id="id_code" name="code" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required autofocus>
             </div>
+
+            {% include "_mfa_login_timeout.html" %}
+
             <button class="btn btn-lg btn-primary btn-block" type="submit">
                 <i class="fa fa-lock"></i> {% trans "Verify" %}
             </button>

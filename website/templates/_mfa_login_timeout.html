@@ -1,22 +1,16 @@
 {% load static i18n %}
 {% if mfa_login_timeout_active %}
-<div
+<p
     id="mfa-login-countdown"
-    class="alert alert-info text-center"
+    class="help-block text-center"
     role="status"
     aria-live="polite"
     data-remaining-seconds="{{ mfa_login_timeout_remaining_seconds }}"
+    data-cancel-url="{% url 'mfa_cancel' %}"
 >
-    <i class="fa fa-clock-o" aria-hidden="true"></i>
-    {% trans "Complete MFA within" %}
-    <strong id="mfa-login-countdown-value">{{ mfa_login_timeout_remaining_display }}</strong>.
-    {% trans "When the timer reaches zero, you must enter your username and password again." %}
-</div>
+    {% trans "Please enter your MFA/OTP code to continue." %}
+    <strong id="mfa-login-countdown-value">{{ mfa_login_timeout_remaining_seconds }}s</strong>
+</p>
 
-<form id="mfa-timeout-form" method="post" action="{% url 'mfa_cancel' %}" class="hidden" aria-hidden="true">
-    {% csrf_token %}
-    <input type="hidden" name="reason" value="timeout">
-</form>
-
-<script src="{% static 'javascripts/mfa-login-timeout.js' %}?v=20260803" defer></script>
+<script src="{% static 'javascripts/mfa-login-timeout.js' %}?v=20260803-3" defer></script>
 {% endif %}

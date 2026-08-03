@@ -55,14 +55,22 @@ class MFALoginTimeoutTests(TestCase):
         self.assertEqual(first_response.status_code, 200)
         self.assertEqual(second_response.status_code, 200)
         self.assertContains(first_response, 'id="mfa-login-countdown"')
-        self.assertContains(first_response, 'id="mfa-timeout-form"')
+        self.assertNotContains(first_response, 'id="mfa-timeout-form"')
+        self.assertContains(first_response, 'data-cancel-url="')
         first_remaining = first_response.context["mfa_login_timeout_remaining_seconds"]
-        expected_display = f"{first_remaining // 60:02d}:{first_remaining % 60:02d}"
-        self.assertEqual(
-            first_response.context["mfa_login_timeout_remaining_display"],
-            expected_display,
-        )
+        expected_display = f"{first_remaining}s"
         self.assertContains(first_response, f">{expected_display}</strong>")
+        self.assertNotContains(first_response, f">00:{first_remaining:02d}</strong>")
+
+        rendered = first_response.content.decode("utf-8")
+        code_position = rendered.index('id="id_code"')
+        countdown_position = rendered.index('id="mfa-login-countdown"')
+        verify_position = rendered.index(
+            'class="btn btn-lg btn-primary btn-block"',
+            countdown_position,
+        )
+        self.assertLess(code_position, countdown_position)
+        self.assertLess(countdown_position, verify_position)
 
         second_remaining = second_response.context["mfa_login_timeout_remaining_seconds"]
         self.assertGreater(first_remaining, 0)
@@ -173,3 +181,6 @@ class MFALoginTimeoutTests(TestCase):
             "mfa_login_timeout_seconds",
             model_admin.readonly_fields,
         )
+        self.assertNotIn("mfa_login_timeout_seconds", model_admin.list_display)
+        self.assertNotIn("session_timeout_hours", model_admin.list_display)
+        self.assertEqual(model_admin.list_display, ("__str__", "updated_at"))
