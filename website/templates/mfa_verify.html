@@ -24,6 +24,7 @@
             <div class="col-xs-12 col-md-10 col-md-offset-1">
                 <form method="post" action="{% url 'mfa_cancel' %}" class="csp-inline-form">
                     {% csrf_token %}
+                    <input type="hidden" name="challenge_id" value="{{ mfa_login_challenge_id }}">
                     <button class="btn btn-default" type="submit">
                         <i class="fa fa-arrow-left"></i> {% trans "Back" %}
                     </button>
@@ -34,6 +35,7 @@
     <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 mfa-verify-wrap">
         <form class="form-signin" method="post" action="{% url 'mfa_verify' %}" data-auth-lockout-scope>
             {% csrf_token %}
+            <input type="hidden" name="challenge_id" value="{{ mfa_login_challenge_id }}">
             <input type="hidden" name="next" value="{{ next }}">
             <h2 class="form-signin-heading mfa-heading-spacing">{% trans "MFA verification" %}</h2>
             {% for message in messages %}
@@ -56,6 +58,7 @@
 
         <form method="post" action="{% url 'mfa_cancel' %}" class="mfa-cancel-form">
             {% csrf_token %}
+            <input type="hidden" name="challenge_id" value="{{ mfa_login_challenge_id }}">
             <button class="btn btn-default btn-block" type="submit">
                 <i class="fa fa-arrow-left"></i> {% trans "Back" %}
             </button>

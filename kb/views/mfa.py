@@ -35,9 +35,12 @@ from ..mfa import (
     mfa_device_secret_is_readable,
     mfa_is_verified,
     mark_mfa_verified,
+    pending_mfa_challenge_matches,
+    ensure_pending_mfa_challenge_id,
     pending_mfa_login_has_expired,
     pending_mfa_next_url,
     pending_mfa_seconds_remaining,
+    pending_mfa_target_name,
     start_disabled_account_session,
     user_requires_mfa,
     verify_totp_code,
@@ -210,6 +213,7 @@ def _mfa_timeout_context(request):
         "mfa_login_timeout_seconds": get_mfa_login_timeout_seconds(),
         "mfa_login_timeout_remaining_seconds": remaining,
         "mfa_login_timeout_remaining_display": remaining_display,
+        "mfa_login_challenge_id": ensure_pending_mfa_challenge_id(request) or "",
     }
 
 
@@ -266,6 +270,14 @@ def cancel_mfa_login(request):
     pending_user = get_pending_mfa_user(request)
     timed_out = (request.POST.get("reason") or "").strip().lower() == "timeout"
 
+    if pending_user and not pending_mfa_challenge_matches(
+        request,
+        request.POST.get("challenge_id"),
+    ):
+        # An old browser tab must not cancel or expire a newer password/MFA
+        # attempt in the same browser session. Return to the current challenge.
+        return redirect(pending_mfa_target_name(request) or "mfa_verify")
+
     if pending_user and timed_out:
         return _expire_pending_mfa_login(
             request,
@@ -321,6 +333,12 @@ def mfa_setup(request):
         return redirect("mfa_verify")
 
     clear_mfa_verified(request)
+
+    if request.method == "POST" and not pending_mfa_challenge_matches(
+        request,
+        request.POST.get("challenge_id"),
+    ):
+        return redirect("mfa_setup")
 
     secret = device.get_secret()
     totp = pyotp.TOTP(secret)
@@ -427,6 +445,12 @@ def mfa_verify(request):
 
     if request.user.is_authenticated and request.user.pk == user.pk and mfa_is_verified(request):
         return redirect(_safe_next_url(request))
+
+    if request.method == "POST" and not pending_mfa_challenge_matches(
+        request,
+        request.POST.get("challenge_id"),
+    ):
+        return redirect("mfa_verify")
 
     if not mfa_device_secret_is_readable(device):
         log_auth_event(

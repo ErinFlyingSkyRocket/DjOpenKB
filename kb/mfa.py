@@ -1,4 +1,5 @@
 import math
+import secrets
 
 import pyotp
 from django.conf import settings
@@ -21,6 +22,7 @@ PRE_MFA_BACKEND_SESSION_KEY = "djopenkb_pre_mfa_backend"
 PRE_MFA_NEXT_SESSION_KEY = "djopenkb_pre_mfa_next"
 PRE_MFA_STARTED_AT_SESSION_KEY = "djopenkb_pre_mfa_started_at"
 PRE_MFA_EXPIRES_AT_SESSION_KEY = "djopenkb_pre_mfa_expires_at"
+PRE_MFA_CHALLENGE_ID_SESSION_KEY = "djopenkb_pre_mfa_challenge_id"
 
 MFA_LOGIN_TIMEOUT_DEFAULT_SECONDS = 60
 MFA_LOGIN_TIMEOUT_MIN_SECONDS = 30
@@ -38,14 +40,14 @@ def get_totp_issuer():
 def get_totp_valid_window():
     """Return the allowed TOTP drift window, clamped to a safe range.
 
-    Each window is 30 seconds. A value of 2 accepts the current code plus
-    codes one or two windows before/after the current server time. This helps
-    with small host/phone clock drift, but it should not replace proper NTP.
+    Each window is 30 seconds. A value of 1 accepts the current code plus
+    one window before/after the current server time. This helps with small
+    host/phone clock drift, but it should not replace proper NTP.
     """
     try:
-        return max(0, min(int(getattr(settings, "MFA_TOTP_VALID_WINDOW", 2)), 3))
+        return max(0, min(int(getattr(settings, "MFA_TOTP_VALID_WINDOW", 1)), 3))
     except (TypeError, ValueError):
-        return 2
+        return 1
 
 
 def get_mfa_login_timeout_seconds():
@@ -351,16 +353,20 @@ def clear_pending_mfa_login(request):
     request.session.pop(PRE_MFA_NEXT_SESSION_KEY, None)
     request.session.pop(PRE_MFA_STARTED_AT_SESSION_KEY, None)
     request.session.pop(PRE_MFA_EXPIRES_AT_SESSION_KEY, None)
+    request.session.pop(PRE_MFA_CHALLENGE_ID_SESSION_KEY, None)
     request.session.modified = True
 
 
 def begin_pending_mfa_login(request, user, next_url=None, backend=None):
-    """Store a password-authenticated but MFA-incomplete login.
+    """Store one fresh password-authenticated, MFA-incomplete challenge.
 
     The real Django authenticated session is created only after TOTP
-    setup/verification succeeds.
+    setup/verification succeeds. Starting a newer password-authenticated login
+    replaces the older pending challenge so stale browser tabs cannot submit,
+    cancel, or expire the latest attempt.
     """
     clear_mfa_verified(request)
+    clear_pending_mfa_login(request)
     started_at = timezone.now()
     expires_at = started_at + timezone.timedelta(
         seconds=get_mfa_login_timeout_seconds()
@@ -371,6 +377,7 @@ def begin_pending_mfa_login(request, user, next_url=None, backend=None):
     request.session[PRE_MFA_NEXT_SESSION_KEY] = next_url or reverse("home")
     request.session[PRE_MFA_STARTED_AT_SESSION_KEY] = started_at.isoformat()
     request.session[PRE_MFA_EXPIRES_AT_SESSION_KEY] = expires_at.isoformat()
+    request.session[PRE_MFA_CHALLENGE_ID_SESSION_KEY] = secrets.token_urlsafe(32)
     request.session.modified = True
 
 
@@ -449,6 +456,32 @@ def start_disabled_account_session(request, user):
 
     request.session["djopenkb_disabled_account_session"] = True
     request.session.modified = True
+
+
+def pending_mfa_challenge_id(request):
+    value = request.session.get(PRE_MFA_CHALLENGE_ID_SESSION_KEY)
+    return value if isinstance(value, str) and value else None
+
+
+def ensure_pending_mfa_challenge_id(request):
+    """Return the current challenge ID without changing its fixed deadline."""
+    if not request.session.get(PRE_MFA_USER_ID_SESSION_KEY):
+        return None
+
+    challenge_id = pending_mfa_challenge_id(request)
+    if challenge_id is None:
+        # Backwards compatibility for a pending session created before this
+        # update. The timer remains unchanged; only the missing ID is added.
+        challenge_id = secrets.token_urlsafe(32)
+        request.session[PRE_MFA_CHALLENGE_ID_SESSION_KEY] = challenge_id
+        request.session.modified = True
+    return challenge_id
+
+
+def pending_mfa_challenge_matches(request, submitted_challenge_id):
+    current = ensure_pending_mfa_challenge_id(request)
+    submitted = (submitted_challenge_id or "").strip()
+    return bool(current and submitted and secrets.compare_digest(current, submitted))
 
 
 def verify_totp_code(device, code):

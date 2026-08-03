@@ -17,6 +17,7 @@
 
     var initialSeconds = parseInt(container.getAttribute("data-remaining-seconds") || "0", 10);
     var cancelUrl = container.getAttribute("data-cancel-url") || "";
+    var challengeId = container.getAttribute("data-challenge-id") || "";
 
     if (!isFinite(initialSeconds) || initialSeconds < 0) {
         return;
@@ -75,6 +76,12 @@
         reasonField.name = "reason";
         reasonField.value = "timeout";
         timeoutForm.appendChild(reasonField);
+
+        var challengeField = document.createElement("input");
+        challengeField.type = "hidden";
+        challengeField.name = "challenge_id";
+        challengeField.value = challengeId;
+        timeoutForm.appendChild(challengeField);
 
         document.body.appendChild(timeoutForm);
         timeoutForm.submit();

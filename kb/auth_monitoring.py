@@ -56,13 +56,42 @@ def _safe_cache_piece(value):
     return hashlib.sha256(value.encode("utf-8", errors="ignore")).hexdigest()[:32]
 
 
-def _find_user_for_username(username):
-    """Best-effort local user lookup for per-user lockout.
+def _requested_login_mode(request):
+    if request is None:
+        return ""
+    try:
+        return (request.POST.get("login_mode") or "").strip().lower()
+    except Exception:
+        return ""
 
-    Password authentication may fail before Django gives us a user object. This
-    lookup lets existing local/previously-created AD users be locked by user ID,
-    while unknown usernames fall back to username+IP without revealing whether
-    the account exists.
+
+def _normalized_lockout_username(request, username):
+    """Normalize equivalent AD login forms into one lockout identity."""
+    normalized = _normalize_username(username)
+    if not normalized:
+        return ""
+
+    if _requested_login_mode(request) in {"", "ad", "ldap"}:
+        try:
+            from .backends import canonical_django_username_for_ldap
+
+            canonical = canonical_django_username_for_ldap(username)
+            if canonical:
+                return _normalize_username(canonical)
+        except Exception:
+            logger.exception("Unable to canonicalize LDAP username for authentication lockout")
+
+    return normalized
+
+
+def _find_user_for_username(username, request=None):
+    """Best-effort user lookup for per-account password lockout.
+
+    Equivalent LDAP inputs such as ``DOMAIN\\alice``, ``alice@domain`` and
+    ``alice`` are mapped to the same previously-created AD user. Local login
+    mode keeps exact username/email semantics. This prevents changing the AD
+    input format from creating separate failure buckets while avoiding an AD
+    attempt locking an unrelated local account with the same username.
     """
     normalized = _normalize_username(username)
     if not normalized:
@@ -70,6 +99,18 @@ def _find_user_for_username(username):
 
     User = get_user_model()
     try:
+        if _requested_login_mode(request) in {"", "ad", "ldap"}:
+            canonical = _normalized_lockout_username(request, username)
+            candidate = (
+                User.objects.filter(username__iexact=canonical)
+                .select_related("kb_profile")
+                .first()
+            )
+            profile = getattr(candidate, "kb_profile", None) if candidate else None
+            if candidate and profile and getattr(profile, "is_ldap_type", False):
+                return candidate
+            return None
+
         return (
             User.objects.filter(Q(username__iexact=normalized) | Q(email__iexact=normalized))
             .only("id", "username", "email")
@@ -93,11 +134,11 @@ def get_auth_lockout_identifier(request=None, username="", user=None, purpose="p
     if user and getattr(user, "pk", None):
         return f"{purpose}:user:{user.pk}"
 
-    found_user = _find_user_for_username(username)
+    found_user = _find_user_for_username(username, request=request)
     if found_user and getattr(found_user, "pk", None):
         return f"{purpose}:user:{found_user.pk}"
 
-    normalized = _normalize_username(username) or "blank"
+    normalized = _normalized_lockout_username(request, username) or "blank"
     return f"{purpose}:username_ip:{_safe_cache_piece(normalized)}:{_safe_cache_piece(ip)}"
 
 

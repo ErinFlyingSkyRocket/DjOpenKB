@@ -7,10 +7,11 @@
     aria-live="polite"
     data-remaining-seconds="{{ mfa_login_timeout_remaining_seconds }}"
     data-cancel-url="{% url 'mfa_cancel' %}"
+    data-challenge-id="{{ mfa_login_challenge_id }}"
 >
     {% trans "Please enter your MFA/OTP code to continue." %}
     <strong id="mfa-login-countdown-value">{{ mfa_login_timeout_remaining_seconds }}s</strong>
 </p>
 
-<script src="{% static 'javascripts/mfa-login-timeout.js' %}?v=20260803-3" defer></script>
+<script src="{% static 'javascripts/mfa-login-timeout.js' %}?v=20260803-4" defer></script>
 {% endif %}
