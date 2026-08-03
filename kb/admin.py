@@ -2649,6 +2649,12 @@ class SiteSettingAdminForm(forms.ModelForm):
 @admin.register(SiteSetting)
 class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
     form = SiteSettingAdminForm
+    list_display = (
+        "__str__",
+        "mfa_login_timeout_seconds",
+        "session_timeout_hours",
+        "updated_at",
+    )
     fieldsets = (
         (_("Article display and upload limits"), {
             "fields": (
@@ -2684,14 +2690,22 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "admin_log_rows_per_page",
                 "session_timeout_hours",
                 "session_timeout_display",
+            ),
+            "description": _(
+                "Controls authentication/MFA logs, general activity logs, admin log display rows, "
+                "and the signed-in session lifetime. Default log retention is 30 days. "
+                "Admin log tables show 200 rows per page by default. Sessions default to 8 hours."
+            ),
+        }),
+        (_("MFA login completion timeout"), {
+            "fields": (
                 "mfa_login_timeout_seconds",
                 "mfa_login_timeout_display",
             ),
             "description": _(
-                "Controls authentication/MFA logs, general activity logs, admin log display rows, "
-                "the signed-in session lifetime, and the time allowed to finish MFA after password verification. "
-                "Default log retention is 30 days. Admin log tables show 200 rows per page by default. "
-                "Sessions default to 8 hours. The MFA login countdown defaults to 60 seconds."
+                "Controls the fixed window that starts immediately after username/password verification succeeds. "
+                "The user must finish MFA before this countdown reaches zero or sign in with username and password again. "
+                "Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
             ),
         }),
         (_("Authentication lockout policy"), {

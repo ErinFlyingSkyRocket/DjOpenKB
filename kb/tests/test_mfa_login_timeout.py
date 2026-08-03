@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -7,6 +8,7 @@ from django.utils import timezone
 
 from kb.mfa import (
     PRE_MFA_BACKEND_SESSION_KEY,
+    PRE_MFA_EXPIRES_AT_SESSION_KEY,
     PRE_MFA_NEXT_SESSION_KEY,
     PRE_MFA_STARTED_AT_SESSION_KEY,
     PRE_MFA_USER_ID_SESSION_KEY,
@@ -36,8 +38,10 @@ class MFALoginTimeoutTests(TestCase):
         session[PRE_MFA_USER_ID_SESSION_KEY] = str(self.user.pk)
         session[PRE_MFA_BACKEND_SESSION_KEY] = "kb.backends.EmailOrUsernameModelBackend"
         session[PRE_MFA_NEXT_SESSION_KEY] = reverse("home")
-        session[PRE_MFA_STARTED_AT_SESSION_KEY] = (
-            timezone.now() - timedelta(seconds=seconds_ago)
+        started_at = timezone.now() - timedelta(seconds=seconds_ago)
+        session[PRE_MFA_STARTED_AT_SESSION_KEY] = started_at.isoformat()
+        session[PRE_MFA_EXPIRES_AT_SESSION_KEY] = (
+            started_at + timedelta(seconds=60)
         ).isoformat()
         session.save()
 
@@ -52,8 +56,14 @@ class MFALoginTimeoutTests(TestCase):
         self.assertEqual(second_response.status_code, 200)
         self.assertContains(first_response, 'id="mfa-login-countdown"')
         self.assertContains(first_response, 'id="mfa-timeout-form"')
-
         first_remaining = first_response.context["mfa_login_timeout_remaining_seconds"]
+        expected_display = f"{first_remaining // 60:02d}:{first_remaining % 60:02d}"
+        self.assertEqual(
+            first_response.context["mfa_login_timeout_remaining_display"],
+            expected_display,
+        )
+        self.assertContains(first_response, f">{expected_display}</strong>")
+
         second_remaining = second_response.context["mfa_login_timeout_remaining_seconds"]
         self.assertGreater(first_remaining, 0)
         self.assertLessEqual(second_remaining, first_remaining)
@@ -69,6 +79,7 @@ class MFALoginTimeoutTests(TestCase):
         session.pop(PRE_MFA_BACKEND_SESSION_KEY, None)
         session.pop(PRE_MFA_NEXT_SESSION_KEY, None)
         session.pop(PRE_MFA_STARTED_AT_SESSION_KEY, None)
+        session.pop(PRE_MFA_EXPIRES_AT_SESSION_KEY, None)
         session.save()
 
         response = self.client.get(reverse("mfa_verify"))
@@ -79,6 +90,7 @@ class MFALoginTimeoutTests(TestCase):
         self.assertNotIn("_auth_user_id", session)
         self.assertEqual(session.get(PRE_MFA_USER_ID_SESSION_KEY), str(self.user.pk))
         self.assertTrue(session.get(PRE_MFA_STARTED_AT_SESSION_KEY))
+        self.assertTrue(session.get(PRE_MFA_EXPIRES_AT_SESSION_KEY))
 
     def test_expired_mfa_page_clears_pending_login_and_requires_password_again(self):
         self._set_pending_login(seconds_ago=61)
@@ -91,6 +103,7 @@ class MFALoginTimeoutTests(TestCase):
         self.assertNotIn(PRE_MFA_BACKEND_SESSION_KEY, session)
         self.assertNotIn(PRE_MFA_NEXT_SESSION_KEY, session)
         self.assertNotIn(PRE_MFA_STARTED_AT_SESSION_KEY, session)
+        self.assertNotIn(PRE_MFA_EXPIRES_AT_SESSION_KEY, session)
 
     def test_expired_mfa_post_cannot_complete_login(self):
         self._set_pending_login(seconds_ago=61)
@@ -107,3 +120,56 @@ class MFALoginTimeoutTests(TestCase):
 
         self.assertRedirects(response, reverse("root_login"), fetch_redirect_response=False)
         self.assertNotIn(PRE_MFA_USER_ID_SESSION_KEY, self.client.session)
+
+    def test_password_login_creates_fixed_deadline_and_renders_countdown(self):
+        response = self.client.post(
+            reverse("root_login"),
+            {
+                "username": self.user.username,
+                "password": "Safe-test-password-123!",
+                "login_mode": "local",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("mfa_verify"),
+            fetch_redirect_response=False,
+        )
+        session = self.client.session
+        self.assertTrue(session.get(PRE_MFA_STARTED_AT_SESSION_KEY))
+        self.assertTrue(session.get(PRE_MFA_EXPIRES_AT_SESSION_KEY))
+
+        verify_response = self.client.get(reverse("mfa_verify"))
+        self.assertEqual(verify_response.status_code, 200)
+        self.assertContains(verify_response, 'id="mfa-login-countdown"')
+        self.assertContains(verify_response, 'data-remaining-seconds="')
+
+    def test_site_setting_change_does_not_extend_active_pending_login(self):
+        self._set_pending_login(seconds_ago=61)
+        setting = SiteSetting.load()
+        setting.mfa_login_timeout_seconds = 900
+        setting.save(update_fields=["mfa_login_timeout_seconds"])
+
+        response = self.client.get(reverse("mfa_verify"))
+
+        self.assertRedirects(
+            response,
+            reverse("root_login"),
+            fetch_redirect_response=False,
+        )
+        self.assertNotIn(PRE_MFA_USER_ID_SESSION_KEY, self.client.session)
+
+    def test_site_setting_admin_exposes_mfa_timeout_control(self):
+        model_admin = admin.site._registry[SiteSetting]
+        field_names = {
+            field_name
+            for _title, options in model_admin.fieldsets
+            for field_name in options.get("fields", ())
+        }
+
+        self.assertIn("mfa_login_timeout_seconds", field_names)
+        self.assertNotIn(
+            "mfa_login_timeout_seconds",
+            model_admin.readonly_fields,
+        )

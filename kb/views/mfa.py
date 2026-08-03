@@ -182,10 +182,17 @@ def _ensure_pending_mfa_login_for_timeout(request):
 def _mfa_timeout_context(request):
     """Return countdown values derived from the fixed server-side deadline."""
     remaining = pending_mfa_seconds_remaining(request)
+    if remaining is None:
+        remaining_display = ""
+    else:
+        minutes, seconds = divmod(max(0, int(remaining)), 60)
+        remaining_display = f"{minutes:02d}:{seconds:02d}"
+
     return {
         "mfa_login_timeout_active": remaining is not None,
         "mfa_login_timeout_seconds": get_mfa_login_timeout_seconds(),
         "mfa_login_timeout_remaining_seconds": remaining,
+        "mfa_login_timeout_remaining_display": remaining_display,
     }
 
 

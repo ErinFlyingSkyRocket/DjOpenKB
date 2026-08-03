@@ -9,7 +9,7 @@
 >
     <i class="fa fa-clock-o" aria-hidden="true"></i>
     {% trans "Complete MFA within" %}
-    <strong id="mfa-login-countdown-value">--:--</strong>.
+    <strong id="mfa-login-countdown-value">{{ mfa_login_timeout_remaining_display }}</strong>.
     {% trans "When the timer reaches zero, you must enter your username and password again." %}
 </div>
 
@@ -18,5 +18,5 @@
     <input type="hidden" name="reason" value="timeout">
 </form>
 
-<script src="{% static 'javascripts/mfa-login-timeout.js' %}" defer></script>
+<script src="{% static 'javascripts/mfa-login-timeout.js' %}?v=20260803" defer></script>
 {% endif %}

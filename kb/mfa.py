@@ -20,6 +20,7 @@ PRE_MFA_USER_ID_SESSION_KEY = "djopenkb_pre_mfa_user_id"
 PRE_MFA_BACKEND_SESSION_KEY = "djopenkb_pre_mfa_backend"
 PRE_MFA_NEXT_SESSION_KEY = "djopenkb_pre_mfa_next"
 PRE_MFA_STARTED_AT_SESSION_KEY = "djopenkb_pre_mfa_started_at"
+PRE_MFA_EXPIRES_AT_SESSION_KEY = "djopenkb_pre_mfa_expires_at"
 
 MFA_LOGIN_TIMEOUT_DEFAULT_SECONDS = 60
 MFA_LOGIN_TIMEOUT_MIN_SECONDS = 30
@@ -68,42 +69,77 @@ def get_mfa_login_timeout_seconds():
     return min(max(value, MFA_LOGIN_TIMEOUT_MIN_SECONDS), MFA_LOGIN_TIMEOUT_MAX_SECONDS)
 
 
-def _pending_mfa_started_at(request):
-    raw_value = request.session.get(PRE_MFA_STARTED_AT_SESSION_KEY)
+def _pending_mfa_session_datetime(request, key):
+    raw_value = request.session.get(key)
     if not raw_value:
         return None
 
-    started_at = parse_datetime(str(raw_value))
-    if started_at is None:
+    parsed_value = parse_datetime(str(raw_value))
+    if parsed_value is None:
         return None
-    if timezone.is_naive(started_at):
-        started_at = timezone.make_aware(started_at, timezone.get_current_timezone())
-    return started_at
+    if timezone.is_naive(parsed_value):
+        parsed_value = timezone.make_aware(
+            parsed_value,
+            timezone.get_current_timezone(),
+        )
+    return parsed_value
 
 
-def ensure_pending_mfa_started_at(request):
-    """Create the fixed MFA deadline start time once per password login."""
+def _pending_mfa_started_at(request):
+    return _pending_mfa_session_datetime(request, PRE_MFA_STARTED_AT_SESSION_KEY)
+
+
+def _pending_mfa_expires_at(request):
+    return _pending_mfa_session_datetime(request, PRE_MFA_EXPIRES_AT_SESSION_KEY)
+
+
+def ensure_pending_mfa_deadline(request):
+    """Return the fixed password-to-MFA deadline for the pending login.
+
+    New logins store both timestamps when the password succeeds. The fallback
+    also upgrades an older pending session that has only the start timestamp.
+    Once stored, changing Site settings cannot extend that active login window.
+    """
     if not request.session.get(PRE_MFA_USER_ID_SESSION_KEY):
         return None
+
+    deadline_changed = False
 
     started_at = _pending_mfa_started_at(request)
     if started_at is None:
         started_at = timezone.now()
         request.session[PRE_MFA_STARTED_AT_SESSION_KEY] = started_at.isoformat()
+        deadline_changed = True
+
+    expires_at = _pending_mfa_expires_at(request)
+    if expires_at is None or expires_at <= started_at:
+        expires_at = started_at + timezone.timedelta(
+            seconds=get_mfa_login_timeout_seconds()
+        )
+        request.session[PRE_MFA_EXPIRES_AT_SESSION_KEY] = expires_at.isoformat()
+        deadline_changed = True
+
+    if deadline_changed:
         request.session.modified = True
-    return started_at
+    return expires_at
+
+
+def ensure_pending_mfa_started_at(request):
+    """Backwards-compatible helper that ensures the fixed deadline exists."""
+    expires_at = ensure_pending_mfa_deadline(request)
+    if expires_at is None:
+        return None
+    return _pending_mfa_started_at(request)
 
 
 def pending_mfa_seconds_remaining(request):
     """Return whole seconds left to finish MFA, or None outside pending MFA."""
-    started_at = ensure_pending_mfa_started_at(request)
-    if started_at is None:
+    expires_at = ensure_pending_mfa_deadline(request)
+    if expires_at is None:
         return None
 
-    timeout_seconds = get_mfa_login_timeout_seconds()
-    expires_at = started_at + timezone.timedelta(seconds=timeout_seconds)
     remaining = math.ceil((expires_at - timezone.now()).total_seconds())
-    return min(timeout_seconds, max(0, remaining))
+    return max(0, remaining)
 
 
 def pending_mfa_login_has_expired(request):
@@ -305,6 +341,7 @@ def clear_pending_mfa_login(request):
     request.session.pop(PRE_MFA_BACKEND_SESSION_KEY, None)
     request.session.pop(PRE_MFA_NEXT_SESSION_KEY, None)
     request.session.pop(PRE_MFA_STARTED_AT_SESSION_KEY, None)
+    request.session.pop(PRE_MFA_EXPIRES_AT_SESSION_KEY, None)
     request.session.modified = True
 
 
@@ -315,10 +352,16 @@ def begin_pending_mfa_login(request, user, next_url=None, backend=None):
     setup/verification succeeds.
     """
     clear_mfa_verified(request)
+    started_at = timezone.now()
+    expires_at = started_at + timezone.timedelta(
+        seconds=get_mfa_login_timeout_seconds()
+    )
+
     request.session[PRE_MFA_USER_ID_SESSION_KEY] = str(user.pk)
     request.session[PRE_MFA_BACKEND_SESSION_KEY] = backend or get_mfa_completion_backend(user)
     request.session[PRE_MFA_NEXT_SESSION_KEY] = next_url or reverse("home")
-    request.session[PRE_MFA_STARTED_AT_SESSION_KEY] = timezone.now().isoformat()
+    request.session[PRE_MFA_STARTED_AT_SESSION_KEY] = started_at.isoformat()
+    request.session[PRE_MFA_EXPIRES_AT_SESSION_KEY] = expires_at.isoformat()
     request.session.modified = True
 
 

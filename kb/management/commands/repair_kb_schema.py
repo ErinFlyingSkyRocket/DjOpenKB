@@ -45,6 +45,7 @@ class Command(BaseCommand):
 
         self._repair_suggested_article()
         self._repair_site_setting()
+        self._repair_mfa_login_timeout_setting()
         self._repair_admin_ip_allowlist_setting()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
 
@@ -185,6 +186,45 @@ class Command(BaseCommand):
                 return
 
         self.stdout.write("No kb_sitesetting schema drift found.")
+
+    def _repair_mfa_login_timeout_setting(self):
+        """Restore the configurable MFA deadline column after schema drift.
+
+        Older databases may have migration history from a consolidated build
+        while missing this later SiteSetting column. Normal migrations remain
+        the primary path; this repair is an idempotent production safeguard.
+        """
+        table_name = "kb_sitesetting"
+        column_name = "mfa_login_timeout_seconds"
+
+        if not self._table_exists(table_name):
+            return
+
+        if self._column_exists(table_name, column_name):
+            self.stdout.write(
+                "No kb_sitesetting MFA login timeout schema drift found."
+            )
+            return
+
+        with connection.cursor() as cursor:
+            self.stdout.write(f"Adding missing column: {table_name}.{column_name}")
+            cursor.execute(
+                """
+                ALTER TABLE kb_sitesetting
+                ADD COLUMN mfa_login_timeout_seconds integer NOT NULL DEFAULT 60
+                CHECK (
+                    mfa_login_timeout_seconds >= 30
+                    AND mfa_login_timeout_seconds <= 900
+                )
+                """
+            )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Added kb_sitesetting.mfa_login_timeout_seconds with the secure 60-second default. "
+                "The setting is now editable in Django Admin under Site settings."
+            )
+        )
 
     def _repair_admin_ip_allowlist_setting(self):
         table_name = "kb_sitesetting"
