@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
-"""Patch Admin MFA idle timeout defaults from 30 minutes to 10 minutes.
+"""Apply the historical 10-minute Django Admin MFA timeout patch.
 
-Run from the project root after extracting this patch package:
+What this script does:
+    Performs targeted, idempotent source-code replacements and ensures the
+    related migration file exists. It does not start Docker by itself.
+
+Run on the DjOpenKB server:
+    cd /opt/DjOpenKB
     python3 scripts/apply_admin_mfa_10min_default_patch.py
+    sudo docker compose up -d --build
+    sudo docker compose exec web python manage.py migrate
 
-The script only performs targeted text replacements and is safe to run more than once.
+When to use it:
+    Only when applying this older patch to a project version that has not
+    already received the 10-minute Admin MFA timeout update.
+
+The script is safe to run more than once; already-applied replacements are
+left unchanged.
 """
 
 from __future__ import annotations

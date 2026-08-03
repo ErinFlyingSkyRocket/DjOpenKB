@@ -1,16 +1,26 @@
 @echo off
 setlocal EnableExtensions DisableDelayedExpansion
 
-REM Generate a self-signed development TLS certificate for DjOpenKB Nginx.
+REM ---------------------------------------------------------------------------
+REM DjOpenKB development TLS certificate helper (Windows)
+REM ---------------------------------------------------------------------------
+REM What it does:
+REM   Calls generate-localhost-cert.ps1 to create localhost.crt and localhost.key.
 REM
-REM Optional arguments:
-REM   1. Browser-facing server IPv4 address.
-REM   2. Certificate lifetime in days. Default: 365.
-REM
-REM Examples:
+REM Run from a Windows copy of the project:
+REM   cd C:\path\to\DjOpenKB
 REM   nginx\certs\generate-localhost-cert.bat
-REM   nginx\certs\generate-localhost-cert.bat <INTERNAL_SERVER_IP>
-REM   nginx\certs\generate-localhost-cert.bat <INTERNAL_SERVER_IP> 825
+REM
+REM Optional server IPv4 address and certificate lifetime in days:
+REM   nginx\certs\generate-localhost-cert.bat <server-ip-address>
+REM   nginx\certs\generate-localhost-cert.bat <server-ip-address> 825
+REM
+REM After copying the generated files to /opt/DjOpenKB/nginx/certs on Linux:
+REM   cd /opt/DjOpenKB
+REM   sudo docker compose restart nginx
+REM
+REM Internal development only; use a properly issued certificate for production.
+REM ---------------------------------------------------------------------------
 
 set "SCRIPT=%~dp0generate-localhost-cert.ps1"
 

@@ -371,7 +371,51 @@ If the allowlist is already disabled and the stored IP/CIDR list is already empt
 
 ---
 
-## 7. Quick update reference
+## 7. Clear a stale LDAP DN cache entry for one AD user
+
+Use this targeted maintenance action when one Active Directory login alias works but another alias for the same user fails, for example:
+
+```text
+alice@<AD_DOMAIN> works
+alice fails
+```
+
+The most common cause is a stale `django-auth-ldap` distinguished-name lookup retained in Redis for one username format. This can appear after an AD username, UPN, email, or OU change; an LDAP search-base/filter change; or a deployment that changed LDAP normalisation while Redis retained earlier cache entries.
+
+Do not clear all Redis data. Clear only the affected user's LDAP DN cache:
+
+```bash
+cd /opt/DjOpenKB
+chmod +x scripts/clear_ldap_dn_cache.sh
+./scripts/clear_ldap_dn_cache.sh alice
+```
+
+The script:
+
+- clears only `django-auth-ldap` DN-cache keys associated with the supplied username and linked email/UPN;
+- leaves sessions, MFA state, application lockouts, rate limits, Celery data, and AI jobs unchanged; and
+- does not require a container restart or Docker rebuild.
+
+Provide extra aliases only when the Django user record does not yet contain the expected email/UPN:
+
+```bash
+./scripts/clear_ldap_dn_cache.sh \
+  alice \
+  alice@<AD_DOMAIN>
+```
+
+Then retry the normal AD login. To verify the account lookup and password independently:
+
+```bash
+sudo docker compose exec -it web \
+  python manage.py test_ldap_auth alice --auth
+```
+
+Do not reset the user's email-server cache or AD password unless the diagnostic specifically shows that Active Directory rejected the password. Do not use `redis-cli FLUSHALL`, remove the Redis volume, or run `docker compose down -v` for an account-specific DN-cache issue.
+
+---
+
+## 8. Quick update reference
 
 | Change | Normal action |
 |---|---|
@@ -382,6 +426,7 @@ If the allowlist is already disabled and the stored IP/CIDR list is already empt
 | Nginx configuration | Recreate/restart the stack; rebuild only if another image-based change also requires it |
 | Documentation only | No application rebuild is required unless the documentation is served from the deployed application image |
 | Accidental Admin IP allowlist lockout | From the server, run `sudo docker compose exec web python manage.py reset_admin_ip_allowlist`, configure a new allowlist in Site settings, then re-enable the allowlist |
+| One AD login alias works but another fails | Run `./scripts/clear_ldap_dn_cache.sh alice`, then retry the AD login; no rebuild is required |
 
 After any application update, confirm:
 

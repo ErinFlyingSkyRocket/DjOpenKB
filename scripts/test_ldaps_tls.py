@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
-"""Test LDAPS DNS + TLS handshake from inside the Django container.
+"""Test LDAPS DNS resolution and TLS validation from the Django container.
 
-This does not need the LDAP bind password. It only checks that the container can
-resolve the Domain Controller hostname, connect to port 636, and validate the
-certificate using the mounted AD CA certificate.
+What this script does:
+    Resolves the configured Domain Controller hostname, connects to the LDAPS
+    port, and validates the server certificate with the mounted AD CA file. It
+    does not use or display the LDAP bind password and does not test a user
+    login.
+
+Recommended server command (through the wrapper script):
+    cd /opt/DjOpenKB
+    sudo docker compose exec -T web sh /app/scripts/test_ldaps.sh
+
+Equivalent direct command inside the web container:
+    cd /opt/DjOpenKB
+    sudo docker compose exec -T web python /app/scripts/test_ldaps_tls.py
+
+No container restart or rebuild is required for this diagnostic.
 """
 import os
 import socket

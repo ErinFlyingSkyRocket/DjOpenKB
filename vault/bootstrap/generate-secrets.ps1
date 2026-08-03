@@ -1,13 +1,33 @@
 <#
 .SYNOPSIS
-  Safely creates first-time DjOpenKB bootstrap secrets.
+  Safely creates or updates the temporary DjOpenKB Vault bootstrap file.
 
 .DESCRIPTION
-  Generated values are written only when the matching value is blank or still
-  an obvious placeholder. Existing real values are preserved by default.
+  Creates vault/bootstrap/djopenkb.env from the example when needed and fills
+  generated values only when their current entries are blank or obvious
+  placeholders. Existing real values are preserved by default. LDAP and SMTP
+  identities/passwords remain manual values.
 
-  This is intentional: DJANGO_FIELD_ENCRYPTION_KEY and POSTGRES_PASSWORD must
-  not be silently changed on an existing deployment.
+.EXAMPLE
+  cd C:\path\to\DjOpenKB
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File vault\bootstrap\generate-secrets.ps1
+
+.EXAMPLE
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File vault\bootstrap\generate-secrets.ps1 `
+    -OutputFile C:\secure\djopenkb.env
+
+.EXAMPLE
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File vault\bootstrap\generate-secrets.ps1 `
+    -RotateGeneratedSecrets
+
+.NOTES
+  Review the generated file, fill the required manual LDAP/SMTP values, protect
+  it, and copy it to /opt/DjOpenKB/vault/bootstrap/djopenkb.env on the Linux
+  server. Seed Vault with "sudo docker compose up --build -d", verify the
+  application, then delete the temporary plaintext bootstrap file.
+
+  Do not use -RotateGeneratedSecrets on an existing deployment unless a planned
+  migration covers PostgreSQL credentials and field-encrypted application data.
 #>
 [CmdletBinding()]
 param(

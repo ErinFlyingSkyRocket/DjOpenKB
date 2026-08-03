@@ -1,23 +1,24 @@
 #!/usr/bin/env sh
-set -eu
-
 # Generate a self-signed development TLS certificate for DjOpenKB Nginx.
 #
-# Optional arguments:
-#   1. Browser-facing server IPv4 address.
-#   2. Certificate lifetime in days. Default: 365.
+# What it does:
+#   Creates nginx/certs/localhost.crt and nginx/certs/localhost.key with SANs
+#   for localhost, the Nginx service name, and an optional server IPv4 address.
 #
-# Examples:
-#   sh nginx/certs/generate-localhost-cert.sh
-#   sh nginx/certs/generate-localhost-cert.sh <INTERNAL_SERVER_IP>
-#   sh nginx/certs/generate-localhost-cert.sh <INTERNAL_SERVER_IP> 825
+# Run on the DjOpenKB Linux server:
+#   cd /opt/DjOpenKB
+#   chmod +x nginx/certs/generate-localhost-cert.sh
+#   ./nginx/certs/generate-localhost-cert.sh
 #
-# The generated files keep the names used by nginx.conf:
-#   nginx/certs/localhost.crt
-#   nginx/certs/localhost.key
+# Include the browser-facing server IPv4 address and an optional lifetime:
+#   ./nginx/certs/generate-localhost-cert.sh <server-ip-address>
+#   ./nginx/certs/generate-localhost-cert.sh <server-ip-address> 825
 #
-# This certificate is for internal development only. Before public release,
-# replace it with a certificate issued for the final public DNS hostname.
+# Apply a newly generated certificate:
+#   sudo docker compose restart nginx
+#
+# This certificate is for internal development. Replace it with a certificate
+# issued for the final DNS hostname before a public or production rollout.
 
 TARGET_IP="${1:-}"
 DAYS="${2:-365}"

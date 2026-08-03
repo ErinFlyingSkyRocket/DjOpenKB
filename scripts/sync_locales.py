@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 """Synchronise DjOpenKB's project-owned Django locale catalogs.
 
-This utility deliberately scans only this project's Django code and templates;
-it does not rewrite third-party OpenKB or Django package translations. It keeps
-existing translations whose source message has not changed, adds new entries
-with a blank translation, removes obsolete project entries, and compiles fresh
-``django.mo`` files without requiring gettext on the host.
+What this script does:
+    Scans only DjOpenKB's Python code and templates, preserves translations for
+    unchanged source messages, adds new untranslated entries, removes obsolete
+    project entries, validates named placeholders, and compiles fresh
+    ``django.mo`` files without requiring host gettext tools.
 
-Usage:
-    python scripts/sync_locales.py
-    python scripts/sync_locales.py --check
+Check without modifying files:
+    cd /opt/DjOpenKB
+    python3 scripts/sync_locales.py --check
+
+Synchronise and compile all locale catalogs:
+    cd /opt/DjOpenKB
+    python3 scripts/sync_locales.py
+    sudo docker compose up -d --build web
+
+The script does not rewrite third-party OpenKB or Django package translations.
+Review the generated locale changes before committing them.
 """
 
 from __future__ import annotations

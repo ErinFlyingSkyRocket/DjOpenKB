@@ -1,4 +1,28 @@
 #!/bin/sh
+# INTERNAL ONE-SHOT VAULT INITIALISATION SCRIPT — do not run it directly.
+#
+# What it does:
+#   Waits for Vault, performs first-time initialisation/unsealing when required,
+#   enables KV v2, safely seeds or updates secret/djopenkb from the temporary
+#   vault/bootstrap/djopenkb.env file, writes the app policy, and creates the
+#   read-only app token used by Django, Celery, and the scheduler.
+#
+# Normal server usage:
+#   cd /opt/DjOpenKB
+#   sudo docker compose up --build -d
+#
+# View the one-shot service result:
+#   cd /opt/DjOpenKB
+#   sudo docker compose logs --no-log-prefix vault-init
+#
+# First deployment/secret update only:
+#   1. Prepare vault/bootstrap/djopenkb.env and protect it with chmod 600.
+#   2. Run the normal Docker Compose command above.
+#   3. Verify Vault and the application, then delete the temporary file.
+#
+# Never use "docker compose down -v" for a normal update because it can remove
+# the persistent Vault and PostgreSQL volumes.
+
 set -eu
 
 export VAULT_ADDR="${VAULT_ADDR:-http://vault:8200}"

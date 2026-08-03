@@ -1,4 +1,21 @@
 #!/bin/sh
+# INTERNAL CONTAINER ENTRYPOINT — do not run this script directly on the host.
+#
+# What it does:
+#   Reads POSTGRES_PASSWORD from HashiCorp Vault when VAULT_ENABLED=true, waits
+#   for Vault to become readable, exports the password, and then hands control
+#   to the official PostgreSQL Docker entrypoint.
+#
+# Normal server usage:
+#   cd /opt/DjOpenKB
+#   sudo docker compose up --build -d
+#
+# View only this service's startup logs:
+#   cd /opt/DjOpenKB
+#   sudo docker compose logs --since=5m db
+#
+# Docker Compose invokes this file automatically inside the database container.
+
 set -eu
 
 log() { echo "[postgres-vault] $*"; }

@@ -1,11 +1,28 @@
 #!/usr/bin/env sh
-# Safely creates first-time DjOpenKB bootstrap secrets.
+# Generate or safely update the temporary DjOpenKB Vault bootstrap file.
 #
-# Existing real secrets are preserved. Values are generated only when the
-# matching line is blank or still an obvious placeholder.
+# What it does:
+#   Creates vault/bootstrap/djopenkb.env from the example when needed and fills
+#   blank/placeholder generated secrets. Existing real values are preserved.
+#   LDAP and SMTP identities/passwords remain manual values.
 #
-# Optional, explicit rotation (dangerous on a deployed instance):
-#   ROTATE_GENERATED_SECRETS=1 sh vault/bootstrap/generate-secrets.sh
+# Run on the DjOpenKB Linux server:
+#   cd /opt/DjOpenKB
+#   chmod +x vault/bootstrap/generate-secrets.sh
+#   ./vault/bootstrap/generate-secrets.sh
+#   sudo nano vault/bootstrap/djopenkb.env
+#   sudo chmod 600 vault/bootstrap/djopenkb.env
+#
+# Seed/update Vault through the normal deployment flow:
+#   sudo docker compose up --build -d
+#
+# After Vault is verified, remove the temporary plaintext bootstrap file:
+#   sudo rm -f vault/bootstrap/djopenkb.env
+#
+# Dangerous explicit rotation for a fresh or deliberately migrated deployment:
+#   ROTATE_GENERATED_SECRETS=1 ./vault/bootstrap/generate-secrets.sh
+# Never rotate POSTGRES_PASSWORD or DJANGO_FIELD_ENCRYPTION_KEY on an existing
+# deployment without a planned database/encrypted-data migration.
 
 set -eu
 

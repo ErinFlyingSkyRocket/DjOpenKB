@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+  Generates a self-signed development TLS certificate for DjOpenKB Nginx.
+
+.DESCRIPTION
+  Creates nginx/certs/localhost.crt and nginx/certs/localhost.key with SANs for
+  localhost, the Nginx service name, and an optional browser-facing IPv4 address.
+  The certificate is intended for internal development only.
+
+.EXAMPLE
+  cd C:\path\to\DjOpenKB
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File nginx\certs\generate-localhost-cert.ps1
+
+.EXAMPLE
+  cd C:\path\to\DjOpenKB
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File nginx\certs\generate-localhost-cert.ps1 <server-ip-address> 825
+
+.NOTES
+  Parameter 1 is the optional server IPv4 address. Parameter 2 is the optional
+  certificate lifetime in days (default 365). After copying the generated files
+  to the Linux server, run from /opt/DjOpenKB:
+      sudo docker compose restart nginx
+#>
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
@@ -11,23 +34,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# Generate a self-signed development TLS certificate for DjOpenKB Nginx.
-#
-# Optional arguments:
-#   1. Browser-facing server IPv4 address.
-#   2. Certificate lifetime in days. Default: 365.
-#
-# Examples:
-#   powershell -ExecutionPolicy Bypass -File nginx/certs/generate-localhost-cert.ps1
-#   powershell -ExecutionPolicy Bypass -File nginx/certs/generate-localhost-cert.ps1 <INTERNAL_SERVER_IP>
-#   powershell -ExecutionPolicy Bypass -File nginx/certs/generate-localhost-cert.ps1 <INTERNAL_SERVER_IP> 825
-#
-# The generated files keep the names used by nginx.conf:
-#   nginx/certs/localhost.crt
-#   nginx/certs/localhost.key
-#
-# This certificate is for internal development only. Before public release,
-# replace it with a certificate issued for the final public DNS hostname.
+
 
 $ScriptDir = Split-Path -Parent $PSCommandPath
 $CertFile = Join-Path $ScriptDir "localhost.crt"

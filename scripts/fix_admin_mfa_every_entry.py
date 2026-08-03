@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
-"""Idempotently enforce fresh Admin MFA when entering Django Admin.
+"""Apply the historical fresh-MFA-on-every-Admin-entry patch.
 
-Run from the project root. This script patches only small source snippets so it
-can be safely run on top of an already-patched project without overwriting newer
-local changes such as the 10-minute admin idle timeout setting.
+What this script does:
+    Adds the Admin MFA middleware, verification route, navbar link, and the
+    source logic that clears only the Admin step-up token when leaving Admin.
+    It makes targeted, idempotent edits and does not start Docker itself.
+
+Run on the DjOpenKB server:
+    cd /opt/DjOpenKB
+    python3 scripts/fix_admin_mfa_every_entry.py
+    sudo docker compose up -d --build web
+
+When to use it:
+    Only when applying this older patch to a project version that does not
+    already enforce a fresh Admin MFA challenge on each new Admin entry.
+
+The script is safe to run again after the patch has already been applied.
 """
 from pathlib import Path
 

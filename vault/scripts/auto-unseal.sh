@@ -1,4 +1,22 @@
 #!/bin/sh
+# INTERNAL VAULT SERVICE SCRIPT — do not run this file directly on the host.
+#
+# What it does:
+#   Watches the local Vault service, automatically unseals it with the protected
+#   local key file, restores the DjOpenKB read-only app token when needed, and
+#   repeats at the configured interval.
+#
+# Normal server usage:
+#   cd /opt/DjOpenKB
+#   sudo docker compose up --build -d
+#
+# Start/recreate only the automatic-unseal service when troubleshooting:
+#   cd /opt/DjOpenKB
+#   sudo docker compose up -d vault-auto-unseal
+#   sudo docker compose logs --since=5m vault-auto-unseal
+#
+# Docker Compose invokes this script automatically inside its Vault CLI service.
+
 set -eu
 
 export VAULT_ADDR="${VAULT_ADDR:-http://vault:8200}"
@@ -57,10 +75,10 @@ ensure_app_token() {
     vault token create -policy=djopenkb-app -orphan -ttl=87600h -field=token > "$APP_TOKEN_FILE" \
       || vault token create -policy=djopenkb-app -orphan -field=token > "$APP_TOKEN_FILE"
     # The Django, Celery, and scheduler containers run as UID/GID 10001.
-# Keep the token unreadable to unrelated host users, but permit that app group
-# to read the single bind-mounted token file.
-chown 0:10001 "$APP_TOKEN_FILE" || true
-chmod 0440 "$APP_TOKEN_FILE" || true
+    # Keep the token unreadable to unrelated host users, but permit that app group
+    # to read the single bind-mounted token file.
+    chown 0:10001 "$APP_TOKEN_FILE" || true
+    chmod 0440 "$APP_TOKEN_FILE" || true
   fi
 }
 
