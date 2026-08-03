@@ -2649,12 +2649,7 @@ class SiteSettingAdminForm(forms.ModelForm):
 @admin.register(SiteSetting)
 class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
     form = SiteSettingAdminForm
-    list_display = (
-        "__str__",
-        "mfa_login_timeout_seconds",
-        "session_timeout_hours",
-        "updated_at",
-    )
+    list_display = ("__str__",)
     fieldsets = (
         (_("Article display and upload limits"), {
             "fields": (

@@ -58,9 +58,12 @@ class MFALoginTimeoutTests(TestCase):
         self.assertNotContains(first_response, 'id="mfa-timeout-form"')
         self.assertContains(first_response, 'data-cancel-url="')
         first_remaining = first_response.context["mfa_login_timeout_remaining_seconds"]
-        expected_display = f"{first_remaining}s"
+        expected_display = f"{first_remaining // 60:02d}:{first_remaining % 60:02d}"
+        self.assertEqual(
+            first_response.context["mfa_login_timeout_remaining_display"],
+            expected_display,
+        )
         self.assertContains(first_response, f">{expected_display}</strong>")
-        self.assertNotContains(first_response, f">00:{first_remaining:02d}</strong>")
 
         rendered = first_response.content.decode("utf-8")
         code_position = rendered.index('id="id_code"')
@@ -183,4 +186,4 @@ class MFALoginTimeoutTests(TestCase):
         )
         self.assertNotIn("mfa_login_timeout_seconds", model_admin.list_display)
         self.assertNotIn("session_timeout_hours", model_admin.list_display)
-        self.assertEqual(model_admin.list_display, ("__str__", "updated_at"))
+        self.assertEqual(model_admin.list_display, ("__str__",))
