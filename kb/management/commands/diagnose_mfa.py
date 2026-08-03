@@ -1,3 +1,28 @@
+"""Diagnose TOTP MFA status without exposing users' stored MFA secrets.
+
+Check all configured MFA devices from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py diagnose_mfa
+
+Check one user:
+    sudo docker compose exec web \
+      python manage.py diagnose_mfa alice
+
+Optionally verify a current TOTP code:
+    sudo docker compose exec web \
+      python manage.py diagnose_mfa alice --code <six-digit-code>
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py diagnose_mfa --help
+
+Purpose and security note:
+    Reports server time, TOTP validity window, device status, encryption state,
+    and whether the stored secret can be read. It never prints the stored MFA
+    secret. Avoid placing a live TOTP code in shell history on shared systems.
+"""
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q

@@ -1,3 +1,28 @@
+"""Delete expired authentication and MFA activity-log records.
+
+Run a safe preview from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py cleanup_auth_activity_logs --dry-run
+
+Run the cleanup using the retention configured in Django Admin:
+    sudo docker compose exec web \
+      python manage.py cleanup_auth_activity_logs
+
+Override the retention for one run:
+    sudo docker compose exec web \
+      python manage.py cleanup_auth_activity_logs --retention-days 30
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py cleanup_auth_activity_logs --help
+
+Purpose:
+    Removes old authentication, lockout, and MFA activity records. Use
+    --dry-run first when running manually. A retention value of 0 keeps the
+    records indefinitely and skips deletion.
+"""
+
 from django.core.management.base import BaseCommand
 from django.db import connection, transaction
 from django.utils import timezone

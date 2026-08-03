@@ -1,3 +1,21 @@
+"""Emergency recovery command for the dynamic Django Admin IP allowlist.
+
+Run from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py reset_admin_ip_allowlist
+
+Show command help:
+    sudo docker compose exec web \
+      python manage.py reset_admin_ip_allowlist --help
+
+Purpose and security warning:
+    Disables the dynamic Admin IP allowlist and permanently clears all stored IP
+    addresses and CIDR ranges. Use this only when authorised administrators are
+    locked out by an incorrect allowlist. Normal login, superuser permission,
+    and Admin MFA remain required after the reset.
+"""
+
 from django.core.management.base import BaseCommand
 
 from kb.models import SiteSetting

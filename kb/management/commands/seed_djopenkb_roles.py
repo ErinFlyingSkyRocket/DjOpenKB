@@ -1,3 +1,24 @@
+"""Create or update DjOpenKB role groups and their permissions.
+
+Seed the role groups from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py seed_djopenkb_roles
+
+Also assign a default role to users who currently have no DjOpenKB role:
+    sudo docker compose exec web \
+      python manage.py seed_djopenkb_roles --assign-missing-users
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py seed_djopenkb_roles --help
+
+Purpose:
+    Ensures the expected DjOpenKB groups and permissions exist. The optional
+    assignment flag gives staff/superusers the Admin Users role and other users
+    the Regular User role only when they do not already have a DjOpenKB role.
+"""
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 

@@ -240,9 +240,10 @@ class SessionTimeoutMiddleware:
     """Expire authenticated and pending-MFA sessions by admin-defined age.
 
     The timeout is stored in Site settings so admins can configure how long a
-    signed-in session remains valid. The default is 8 hours. MFA is treated as
-    part of login completion, so pending-MFA sessions use the same fixed expiry.
-    The allowed administrator setting range is 1 to 168 hours.
+    signed-in session remains valid. The default is 8 hours. Pending-MFA
+    sessions also keep this fixed upper bound, while the separate MFA login
+    completion timeout normally expires them much sooner. The allowed
+    administrator setting range is 1 to 168 hours.
     """
 
     def __init__(self, get_response):

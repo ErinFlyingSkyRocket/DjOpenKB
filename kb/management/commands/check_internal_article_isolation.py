@@ -1,3 +1,25 @@
+"""Verify that internal articles are isolated from the public OpenKB AI data tree.
+
+Run from the Ubuntu server host:
+    cd /opt/DjOpenKB
+    sudo docker compose exec web \
+      python manage.py check_internal_article_isolation
+
+Rebuild both AI indexes before checking:
+    sudo docker compose exec web \
+      python manage.py check_internal_article_isolation --sync-first
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py check_internal_article_isolation --help
+
+Purpose:
+    Detects internal article files or metadata that have accidentally appeared
+    inside the public OpenKB runtime data/index directories. The default check is
+    read-only. The --sync-first option rebuilds the public and internal indexes
+    before performing the isolation check.
+"""
+
 from pathlib import Path
 
 from django.conf import settings

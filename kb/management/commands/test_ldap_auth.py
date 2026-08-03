@@ -1,3 +1,30 @@
+"""Test LDAP/Active Directory connection, user search, and optional login.
+
+Test the configured service-account bind and search for one user:
+    cd /opt/DjOpenKB
+    sudo docker compose exec -it web \
+      python manage.py test_ldap_auth alice
+
+Also test the user's AD password through Django authentication:
+    sudo docker compose exec -it web \
+      python manage.py test_ldap_auth alice --auth
+
+Prompt for a temporary service-account password without editing Vault:
+    sudo docker compose exec -it web \
+      python manage.py test_ldap_auth alice \
+      --bind-dn 'svc_djopenkb@<AD_DOMAIN>' \
+      --prompt-bind-password
+
+Show all supported options:
+    sudo docker compose exec web \
+      python manage.py test_ldap_auth --help
+
+Purpose and security note:
+    Confirms LDAPS connectivity, service-account bind, search base/filter
+    behaviour, and optional end-user authentication. Passwords are requested by
+    a hidden prompt and must never be placed directly in the command line.
+"""
+
 import getpass
 
 from django.conf import settings

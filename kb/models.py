@@ -1188,8 +1188,19 @@ class SiteSetting(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(168)],
         verbose_name=_("User session timeout (hours)"),
         help_text=_(
-            "Authenticated and pending-MFA sessions expire after this many hours from sign-in. "
+            "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, "
+            "but they normally expire sooner according to the separate MFA login completion timeout. "
             "Default is 8 hours. Allowed range: 1 to 168 hours (7 days)."
+        ),
+    )
+    mfa_login_timeout_seconds = models.PositiveIntegerField(
+        default=60,
+        validators=[MinValueValidator(30), MaxValueValidator(900)],
+        verbose_name=_("MFA login completion timeout (seconds)"),
+        help_text=_(
+            "Maximum time allowed to complete MFA after the username/password step succeeds. "
+            "When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. "
+            "Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
         ),
     )
     activity_log_retention_days = models.PositiveIntegerField(
