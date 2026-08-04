@@ -2700,12 +2700,15 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "articles_per_page",
                 "article_image_upload_limit",
                 "article_video_max_width_px",
+                "article_keyword_limit",
             ),
             "description": _(
                 "Controls how many articles are shown per page/on each homepage column, "
-                "how many pasted/uploaded images each article may contain, and the maximum displayed width of article videos. "
+                "how many pasted/uploaded images each article may contain, the maximum displayed width of article videos, "
+                "and how many keywords each article may contain. "
                 "Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. "
-                "Article video width defaults to 720 px and remains responsive on smaller screens."
+                "Article video width defaults to 720 px and remains responsive on smaller screens. "
+                "The article keyword limit defaults to 20."
             ),
         }),
         (_("Stray upload cleanup"), {

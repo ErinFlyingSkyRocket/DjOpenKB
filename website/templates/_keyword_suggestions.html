@@ -1,5 +1,16 @@
 {% load i18n %}
 <style nonce="{{ csp_nonce }}">
+    .openkb-keyword-limit-summary {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 5px;
+        color: #899aa6;
+        font-size: 12px;
+    }
+    .openkb-keyword-limit-summary.is-over-limit {
+        color: #a94442;
+        font-weight: 600;
+    }
     .openkb-keyword-suggestions {
         margin-top: 10px;
         padding: 10px 12px;
@@ -77,6 +88,7 @@
     }
 </style>
 
+<div class="openkb-keyword-limit-summary" id="openkbKeywordLimitSummary" aria-live="polite"></div>
 <div class="openkb-keyword-suggestions" id="openkbKeywordSuggestions">
     <div class="openkb-keyword-suggestions-header">
         <button type="button" class="btn btn-default btn-xs openkb-keyword-refresh" id="openkbKeywordRefresh">
@@ -100,6 +112,11 @@
     const chipContainer = document.getElementById("openkbKeywordSuggestionChips");
     const refreshButton = document.getElementById("openkbKeywordRefresh");
     const catalogScript = document.getElementById("openkbKeywordSuggestionCatalog");
+    const keywordLimitSummary = document.getElementById("openkbKeywordLimitSummary");
+    const parsedKeywordLimit = parseInt(keywordInput ? keywordInput.dataset.keywordLimit : "20", 10);
+    const keywordLimit = Number.isFinite(parsedKeywordLimit) && parsedKeywordLimit > 0
+        ? parsedKeywordLimit
+        : 20;
 
     if (!keywordInput || !chipContainer || !catalogScript) {
         return;
@@ -168,15 +185,37 @@
         return new Set(keywords);
     }
 
+    function updateKeywordLimitSummary() {
+        if (!keywordLimitSummary) {
+            return;
+        }
+        const count = getCurrentKeywords().size;
+        keywordLimitSummary.textContent = count + " / " + keywordLimit;
+        keywordLimitSummary.classList.toggle("is-over-limit", count > keywordLimit);
+    }
+
+    function showKeywordLimitMessage() {
+        const message = keywordInput.dataset.keywordLimitMessage || ("Maximum " + keywordLimit + " keywords allowed.");
+        if (window.show_notification) {
+            window.show_notification(message, "warning");
+        }
+    }
+
     function addKeyword(keyword) {
         keyword = normaliseKeyword(keyword);
-        if (!keyword || getCurrentKeywords().has(keyword)) {
+        const currentKeywords = getCurrentKeywords();
+        if (!keyword || currentKeywords.has(keyword)) {
+            return;
+        }
+        if (currentKeywords.size >= keywordLimit) {
+            showKeywordLimitMessage();
             return;
         }
 
         if (window.jQuery && window.jQuery.fn && window.jQuery(keywordInput).data("bs.tokenfield")) {
             window.jQuery(keywordInput).tokenfield("createToken", keyword);
             window.jQuery(keywordInput).trigger("change");
+            updateKeywordLimitSummary();
             renderSuggestions();
             return;
         }
@@ -184,6 +223,7 @@
         const current = String(keywordInput.value || "").trim();
         keywordInput.value = current ? current + ", " + keyword : keyword;
         keywordInput.dispatchEvent(new Event("change", { bubbles: true }));
+        updateKeywordLimitSummary();
         renderSuggestions();
     }
 
@@ -268,6 +308,15 @@
             renderSuggestions();
         });
     }
+
+    keywordInput.addEventListener("change", updateKeywordLimitSummary);
+    if (window.jQuery) {
+        window.jQuery(keywordInput).on(
+            "tokenfield:createdtoken tokenfield:removedtoken tokenfield:initialize",
+            updateKeywordLimitSummary
+        );
+    }
+    updateKeywordLimitSummary();
 
     // Do not auto-scan while the user is typing. This avoids unnecessary browser work
     // and keeps suggestions predictable. The Refresh button is the only trigger.

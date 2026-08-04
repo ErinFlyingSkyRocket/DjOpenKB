@@ -21,6 +21,34 @@ def normalize_article_title(title):
     return re.sub(r"\s+", " ", (title or "").strip()).casefold()
 
 
+ARTICLE_KEYWORD_DEFAULT_LIMIT = 20
+ARTICLE_KEYWORD_MIN_LIMIT = 1
+ARTICLE_KEYWORD_MAX_LIMIT = 100
+ARTICLE_KEYWORD_MAX_TOTAL_LENGTH = 500
+
+
+def split_article_keywords(value):
+    """Return trimmed keyword values from comma, semicolon, or newline input."""
+    return [
+        item.strip()
+        for item in re.split(r"[,;\n]+", str(value or ""))
+        if item.strip()
+    ]
+
+
+def normalize_article_keywords(value):
+    """Return a stable comma-separated keyword string without duplicates."""
+    keywords = []
+    seen = set()
+    for keyword in split_article_keywords(value):
+        comparison_value = keyword.casefold()
+        if comparison_value in seen:
+            continue
+        seen.add(comparison_value)
+        keywords.append(keyword)
+    return ", ".join(keywords)
+
+
 class UserProfile(models.Model):
     """Extra main-site account settings for Django's built-in User model.
 
@@ -480,8 +508,22 @@ class SuggestedArticle(models.Model):
         return self.title
 
     def clean(self):
-        """Prevent duplicate article titles across drafts, pending, failed, and published articles."""
+        """Validate article keywords and prevent duplicate article titles."""
         super().clean()
+
+        try:
+            self.keywords = validate_article_keywords(self.keywords)
+        except ValidationError as error:
+            raise ValidationError({"keywords": error.messages}) from error
+
+        try:
+            self.pending_update_keywords = validate_article_keywords(
+                self.pending_update_keywords
+            )
+        except ValidationError as error:
+            raise ValidationError(
+                {"pending_update_keywords": error.messages}
+            ) from error
 
         normalized_title = normalize_article_title(self.title)
         if not normalized_title:
@@ -1167,6 +1209,18 @@ class SiteSetting(models.Model):
             "Default is 720 px. Allowed range: 160 to 1920 px."
         ),
     )
+    article_keyword_limit = models.PositiveIntegerField(
+        default=ARTICLE_KEYWORD_DEFAULT_LIMIT,
+        validators=[
+            MinValueValidator(ARTICLE_KEYWORD_MIN_LIMIT),
+            MaxValueValidator(ARTICLE_KEYWORD_MAX_LIMIT),
+        ],
+        verbose_name=_("Article keyword limit"),
+        help_text=_(
+            "Maximum number of keywords allowed for each article and pending article update. "
+            "Default is 20. Allowed range: 1 to 100."
+        ),
+    )
     articles_per_page = models.PositiveIntegerField(
         default=10,
         verbose_name=_("Articles per page"),
@@ -1326,6 +1380,53 @@ class SiteSetting(models.Model):
     def load(cls):
         obj, _created = cls.objects.get_or_create(pk=1)
         return obj
+
+
+def get_article_keyword_limit():
+    """Return the configured article keyword limit within a safe range."""
+    try:
+        value = int(
+            getattr(
+                SiteSetting.load(),
+                "article_keyword_limit",
+                ARTICLE_KEYWORD_DEFAULT_LIMIT,
+            )
+            or ARTICLE_KEYWORD_DEFAULT_LIMIT
+        )
+    except Exception:
+        return ARTICLE_KEYWORD_DEFAULT_LIMIT
+
+    return min(
+        max(value, ARTICLE_KEYWORD_MIN_LIMIT),
+        ARTICLE_KEYWORD_MAX_LIMIT,
+    )
+
+
+def article_keyword_limit_error_message(keyword_count, limit=None):
+    """Return the user-facing article keyword count validation message."""
+    limit = get_article_keyword_limit() if limit is None else int(limit)
+    return _(
+        "This article has %(count)s keywords, but the maximum allowed is %(limit)s. "
+        "Please remove some keywords before saving."
+    ) % {"count": keyword_count, "limit": limit}
+
+
+def validate_article_keywords(value, limit=None):
+    """Normalise and validate article keywords against count and field limits."""
+    normalized_value = normalize_article_keywords(value)
+    keywords = split_article_keywords(normalized_value)
+    keyword_limit = get_article_keyword_limit() if limit is None else int(limit)
+
+    if len(keywords) > keyword_limit:
+        raise ValidationError(
+            article_keyword_limit_error_message(len(keywords), keyword_limit)
+        )
+    if len(normalized_value) > ARTICLE_KEYWORD_MAX_TOTAL_LENGTH:
+        raise ValidationError(
+            _("Article keywords must not exceed %(limit)s characters in total.")
+            % {"limit": ARTICLE_KEYWORD_MAX_TOTAL_LENGTH}
+        )
+    return normalized_value
 
 
 class AuthLockoutPolicyStage(models.Model):

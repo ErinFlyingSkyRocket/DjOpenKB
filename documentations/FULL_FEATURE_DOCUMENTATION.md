@@ -932,6 +932,7 @@ The singleton **Site settings** record controls the following operational limits
 | Stray upload cleanup minimum age | 1440 minutes | Files newer than the threshold are not treated as stray. `0` allows immediate stray-file cleanup. |
 | Article deletion queue retention | 7 days | Published articles remain recoverable in the admin queue for this many days. `0` makes published deletion immediate after MFA confirmation. |
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
+| Article keyword limit | 20 keywords | Maximum keywords on each article and pending update. Adjustable from 1 to 100. |
 | Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
 | Authentication activity-log retention | 30 days | `0` retains authentication/MFA logs indefinitely. |
 | User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |

@@ -146,6 +146,15 @@ body.show_footer {
     margin-bottom: 0 !important;
 }
 
+.tokenfield.form-control{
+    height: auto;
+    min-height: 45px;
+    padding-top: 10px;
+    padding-bottom: 4px;
+    overflow: visible;
+    white-space: normal;
+}
+
 .tokenfield .token .close{
     color: black;
 }

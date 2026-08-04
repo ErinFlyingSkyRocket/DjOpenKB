@@ -40,7 +40,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, normalize_article_title
+from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, get_article_keyword_limit, normalize_article_title, validate_article_keywords
 from ..mfa import user_requires_mfa, verify_totp_code
 from ..auth_monitoring import (
     build_auth_lockout_ui_context,

@@ -249,7 +249,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label>{% trans "Keywords" %}</label><br/>
-                                <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:'' }}">
+                                <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:'' }}" maxlength="500" data-keyword-limit="{{ article_keyword_limit|default:'20' }}" data-keyword-limit-message="{% blocktrans with limit=article_keyword_limit %}Maximum {{ limit }} keywords allowed.{% endblocktrans %}">
                                 {% include "_keyword_suggestions.html" %}
                             </div>
                         </div>

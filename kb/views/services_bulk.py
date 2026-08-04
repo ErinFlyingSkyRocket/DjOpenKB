@@ -102,7 +102,7 @@ def normalize_import_keywords(value):
     else:
         value = str(value).strip()
     value = re.sub(r"\s+", " ", value)
-    return value[:500]
+    return value
 
 
 def get_import_keyword_value(item, *names):
@@ -616,6 +616,16 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
             duplicate_article = find_duplicate_article_by_title(title)
             if duplicate_article:
                 errors.append(_("Skipped duplicate title already in OpenKB: %(title)s") % {"title": title})
+                continue
+
+            try:
+                keywords = validate_article_keywords(keywords)
+                pending_update_keywords = validate_article_keywords(
+                    pending_update_keywords
+                )
+            except ValidationError as error:
+                message = error.messages[0] if getattr(error, "messages", None) else str(error)
+                errors.append(f"{title}: {message}")
                 continue
 
             filename = make_unique_article_filename(title, item.get("filename") or "")

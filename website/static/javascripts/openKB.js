@@ -416,9 +416,26 @@ $(document).ready(function(){
         }
     }
 
-    // add the token field to the keywords input
+    // Add the token field to the keywords input. Existing values are rendered
+    // first so reducing the configured limit never silently removes saved tags.
+    // After initialisation, new manual/pasted tokens are blocked at the current
+    // Admin-configured limit while server-side validation remains authoritative.
     if($('#frm_kb_keywords').length){
-        $('#frm_kb_keywords').tokenfield();
+        var $keywordField = $('#frm_kb_keywords');
+        var keywordLimit = parseInt($keywordField.attr('data-keyword-limit'), 10);
+        if(!Number.isFinite(keywordLimit) || keywordLimit < 1){
+            keywordLimit = 20;
+        }
+
+        $keywordField.tokenfield();
+        $keywordField.on('tokenfield:createtoken', function(event){
+            var currentTokens = $keywordField.tokenfield('getTokens') || [];
+            if(currentTokens.length >= keywordLimit){
+                event.preventDefault();
+                var message = $keywordField.attr('data-keyword-limit-message') || ('Maximum ' + keywordLimit + ' keywords allowed.');
+                show_notification(message, 'warning');
+            }
+        });
     }
 
     if($('#editor').length){
