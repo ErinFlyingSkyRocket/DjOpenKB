@@ -49,6 +49,36 @@ class SelfServiceMFAResetTests(TestCase):
         self.assertContains(response, 'name="current_password"')
         self.assertContains(response, 'name="mfa_code"')
 
+    def test_ad_managed_profile_hides_local_password_management_ui(self):
+        profile, _created = UserProfile.objects.get_or_create(user=self.user)
+        profile.account_type = UserProfile.AccountType.LDAP_USER
+        profile.auth_source = UserProfile.AuthSource.AD
+        profile.save(update_fields=["account_type", "auth_source", "updated_at"])
+        self.user.set_unusable_password()
+        self.user.save(update_fields=["password"])
+        self.client.logout()
+        self._login_with_mfa(self.client, backend="kb.backends.PlaceholderLDAPBackend")
+
+        response = self.client.get(reverse("profile"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["user_is_ldap_managed"])
+        self.assertFalse(response.context["can_change_local_password"])
+        self.assertNotContains(response, 'data-target="#changePasswordModal"')
+        self.assertNotContains(response, 'id="changePasswordModal"')
+        self.assertNotContains(response, 'name="old_password"')
+        self.assertNotContains(response, "Password syncs with your company password.")
+
+    def test_local_profile_keeps_password_management_ui(self):
+        response = self.client.get(reverse("profile"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["user_is_ldap_managed"])
+        self.assertTrue(response.context["can_change_local_password"])
+        self.assertContains(response, 'data-target="#changePasswordModal"')
+        self.assertContains(response, 'id="changePasswordModal"')
+        self.assertContains(response, 'name="old_password"')
+
     def test_wrong_password_does_not_reset_mfa(self):
         old_secret = self.device.get_secret()
 

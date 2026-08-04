@@ -214,21 +214,16 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 </div>
                             </div>
 
+                            {% if can_change_local_password %}
                             <div class="profile-account-row">
                                 <span class="profile-account-label">{% trans "Password" %}:</span>
                                 <div class="profile-account-actions">
-                                    {% if can_change_local_password %}
-                                        <button class="btn btn-default" type="button" data-toggle="modal" data-target="#changePasswordModal">
-                                            {% trans "Change password" %}
-                                        </button>
-                                    {% else %}
-                                        <button class="btn btn-default" type="button" disabled title="{% trans 'Password syncs with your company password.' %}">
-                                            {% trans "Change password" %}
-                                        </button>
-                                        <span class="profile-readonly-note">{% trans "Password syncs with your company password." %}</span>
-                                    {% endif %}
+                                    <button class="btn btn-default" type="button" data-toggle="modal" data-target="#changePasswordModal">
+                                        {% trans "Change password" %}
+                                    </button>
                                 </div>
                             </div>
+                            {% endif %}
 
                         </div>
                     </div>
@@ -380,6 +375,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     {% endif %}
 
 
+    {% if can_change_local_password %}
     <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -429,6 +425,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             </div>
         </div>
     </div>
+    {% endif %}
 
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">
     <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% endfor %}">
