@@ -36,15 +36,11 @@
         <div class="panel panel-default">
             <div class="panel-heading"><strong>{% trans "Reset MFA" %}</strong></div>
             <div class="panel-body">
-                <div class="alert alert-warning">
-                    {% trans "Your current MFA remains active until a code from the new authenticator is verified." %}
-                </div>
-
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
                 {% endfor %}
 
-                <p class="text-muted">{% trans "Scan the QR code with your authenticator app, then enter the MFA/OTP code." %}</p>
+                <p class="text-muted">{% trans "Scan the QR code with your authenticator app, then enter the new MFA/OTP code to verify." %}</p>
 
                 <div class="text-center mfa-qr-wrap">
                     <img src="{{ qr_code_data_uri }}" alt="{% trans 'MFA QR code' %}" class="mfa-qr-image">

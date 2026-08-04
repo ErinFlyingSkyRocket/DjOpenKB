@@ -350,9 +350,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <h4 class="modal-title" id="resetMfaModalLabel">{% trans "Reset MFA" %}</h4>
                     </div>
                     <div class="modal-body">
-                        <div class="alert alert-warning">
-                            {% trans "After your password and current MFA code are verified, you will scan and confirm a new authenticator. Your current MFA remains active until the new code is confirmed." %}
-                        </div>
                         <div class="form-group">
                             <label>{% trans "Confirm password" %}</label>
                             <input type="password" name="current_password" class="form-control" autocomplete="current-password" required {% if profile_password_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password">

@@ -75,7 +75,6 @@ class SelfServiceMFAResetTests(TestCase):
         self.assertContains(response, 'id="resetMfaModal"')
         self.assertContains(response, 'name="current_password"')
         self.assertContains(response, 'name="mfa_code"')
-        self.assertContains(response, "Your current MFA remains active until the new code is confirmed.")
 
     def test_ad_managed_profile_hides_local_password_management_ui(self):
         profile, _created = UserProfile.objects.get_or_create(user=self.user)
@@ -171,7 +170,8 @@ class SelfServiceMFAResetTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'name="code"')
         self.assertContains(response, 'name="challenge_id"')
-        self.assertContains(response, "Your current MFA remains active")
+        self.assertContains(response, "Scan the QR code with your authenticator app, then enter the new MFA/OTP code to verify.")
+        self.assertNotContains(response, "Your current MFA remains active")
         self.assertTrue(response.context["manual_secret"])
         self.assertNotEqual(response.context["manual_secret"], old_secret)
         self.device.refresh_from_db()
@@ -239,13 +239,15 @@ class SelfServiceMFAResetTests(TestCase):
         old_secret = self.device.get_secret()
         self._begin_reset()
 
-        response = self.client.post(reverse("mfa_reset_cancel"))
+        response = self.client.post(reverse("mfa_reset_cancel"), follow=True)
 
-        self.assertRedirects(response, reverse("profile"), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse("profile"))
         self.device.refresh_from_db()
         self.assertTrue(self.device.confirmed)
         self.assertEqual(self.device.get_secret(), old_secret)
         self.assertNotIn(PENDING_MFA_RESET_SECRET_SESSION_KEY, self.client.session)
+        self.assertNotContains(response, "MFA replacement cancelled")
+        self.assertNotContains(response, "Your current MFA")
 
     def test_expired_staged_replacement_keeps_current_mfa(self):
         old_secret = self.device.get_secret()

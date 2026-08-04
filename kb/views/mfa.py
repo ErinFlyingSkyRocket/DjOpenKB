@@ -804,7 +804,7 @@ def reset_mfa(request):
     if not begin_pending_mfa_reset(request, user, device=device):
         messages.error(
             request,
-            _("Your current MFA device could not be prepared for replacement. Please contact an administrator."),
+            _("MFA reset could not be started. Please try again or contact an administrator."),
         )
         return redirect("profile")
 
@@ -822,10 +822,6 @@ def reset_mfa(request):
         },
     )
 
-    messages.info(
-        request,
-        _("Scan and verify the new authenticator. Your current MFA remains active until the new code is confirmed."),
-    )
     return redirect("mfa_reset_setup")
 
 
@@ -836,10 +832,7 @@ def mfa_reset_setup(request):
     user = request.user
     state = get_pending_mfa_reset(request, user)
     if not state:
-        messages.info(
-            request,
-            _("The MFA replacement setup expired or was cancelled. Your current MFA is still active."),
-        )
+        messages.info(request, _("MFA setup expired. Please start again."))
         return redirect("profile")
 
     device = getattr(user, "kb_mfa_device", None)
@@ -850,10 +843,7 @@ def mfa_reset_setup(request):
         or not pending_mfa_reset_device_matches(request, user, device=device)
     ):
         clear_pending_mfa_reset(request)
-        messages.warning(
-            request,
-            _("Your MFA device changed before setup was completed. Start the replacement again."),
-        )
+        messages.warning(request, _("MFA setup could not be completed. Please start again."))
         return redirect("profile")
 
     if request.method == "POST" and not pending_mfa_reset_challenge_matches(
@@ -901,7 +891,7 @@ def mfa_reset_setup(request):
                     clear_pending_mfa_reset(request)
                     messages.warning(
                         request,
-                        _("Your MFA device changed before setup was completed. Start the replacement again."),
+                        _("MFA setup could not be completed. Please start again."),
                     )
                     return redirect("profile")
 
@@ -950,10 +940,7 @@ def mfa_reset_setup(request):
                     "other_sessions_deleted": other_sessions_deleted,
                 },
             )
-            messages.success(
-                request,
-                _("Your new authenticator was verified and MFA was updated successfully."),
-            )
+            messages.success(request, _("MFA updated successfully."))
             return redirect("profile")
         else:
             lockout = record_auth_failure(request, user=user, purpose="mfa")
@@ -980,10 +967,7 @@ def mfa_reset_setup(request):
 
     state = get_pending_mfa_reset(request, user)
     if not state:
-        messages.info(
-            request,
-            _("The MFA replacement setup expired. Your current MFA is still active."),
-        )
+        messages.info(request, _("MFA setup expired. Please start again."))
         return redirect("profile")
 
     totp = pyotp.TOTP(state["secret"])
@@ -1016,5 +1000,4 @@ def mfa_reset_setup(request):
 @require_POST
 def cancel_mfa_reset(request):
     clear_pending_mfa_reset(request)
-    messages.info(request, _("MFA replacement cancelled. Your current MFA is still active."))
     return redirect("profile")
