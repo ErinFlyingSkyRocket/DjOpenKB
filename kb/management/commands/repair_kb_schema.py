@@ -50,6 +50,7 @@ class Command(BaseCommand):
         self._repair_admin_ip_allowlist_setting()
         self._repair_request_rate_limit_settings()
         self._repair_user_email_unique_index()
+        self._repair_user_username_unique_index()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
 
     def _column_exists(self, table_name, column_name):
@@ -396,5 +397,48 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(
                 "Created the case-insensitive unique index for non-blank User email addresses."
+            )
+        )
+
+    def _repair_user_username_unique_index(self):
+        table_name = "auth_user"
+        index_name = "auth_user_username_ci_unique"
+        if not self._table_exists(table_name) or self._index_exists(index_name):
+            return
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT LOWER(username), COUNT(*)
+                FROM auth_user
+                GROUP BY LOWER(username)
+                HAVING COUNT(*) > 1
+                ORDER BY LOWER(username)
+                LIMIT 20
+                """
+            )
+            duplicates = cursor.fetchall()
+            if duplicates:
+                summary = ", ".join(
+                    f"{username} ({count})" for username, count in duplicates
+                )
+                self.stdout.write(
+                    self.style.ERROR(
+                        "Cannot create the case-insensitive User username unique index because duplicates exist: "
+                        f"{summary}. Rename or merge them in Django Admin, then run migrate/repair again."
+                    )
+                )
+                return
+
+            cursor.execute(
+                """
+                CREATE UNIQUE INDEX IF NOT EXISTS auth_user_username_ci_unique
+                ON auth_user (LOWER(username))
+                """
+            )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Created the case-insensitive unique index for User usernames."
             )
         )

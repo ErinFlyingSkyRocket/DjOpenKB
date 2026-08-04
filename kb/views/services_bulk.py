@@ -467,8 +467,61 @@ def copy_imported_uploads_from_zip(zip_file, upload_member_names):
     return filename_map
 
 
+def imported_payload_image_filenames(item):
+    """Return safe source upload names referenced by one import payload."""
+    referenced = []
+    for text in (
+        item.get("body") or "",
+        item.get("pending_update_body") or "",
+    ):
+        for filename in extract_article_image_filenames(text):
+            safe_name = safe_uploaded_filename(filename)
+            if safe_name and safe_name not in referenced:
+                referenced.append(safe_name)
+
+    for field_name in ("image_assets", "pending_update_image_assets"):
+        for filename in item.get(field_name) or []:
+            safe_name = safe_uploaded_filename(filename)
+            if safe_name and safe_name not in referenced:
+                referenced.append(safe_name)
+
+    return referenced
+
+
+def imported_upload_exists(filename):
+    """Return True when an already-managed upload can satisfy an import link."""
+    safe_name = safe_uploaded_filename(filename)
+    if not safe_name:
+        return False
+    upload_dir = get_openkb_uploads_dir().resolve()
+    file_path = (upload_dir / safe_name).resolve()
+    try:
+        file_path.relative_to(upload_dir)
+    except ValueError:
+        return False
+    return file_path.exists() and file_path.is_file()
+
+
+def cleanup_unreferenced_import_uploads(filename_map, retained_filenames, errors=None):
+    """Remove newly copied import images that no successful article references."""
+    retained = {safe_uploaded_filename(name) for name in retained_filenames or []}
+    retained.discard("")
+
+    for new_filename in sorted(set(filename_map.values()) - retained):
+        if image_is_used_by_other_article(new_filename):
+            continue
+        try:
+            delete_uploaded_image_file(new_filename)
+        except OSError as error:
+            if errors is not None:
+                errors.append(
+                    _("Could not remove an unreferenced imported image: %(filename)s (%(error)s)")
+                    % {"filename": new_filename, "error": error}
+                )
+
+
 def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_complete=False):
-    """Import articles and uploaded files from a Knowledge Repository bulk export zip.
+    """Import articles and only the uploaded images retained by those articles.
 
     All imported articles are assigned to the admin user performing the import.
     Normal single-part export zips and extracted split-export part zips are both
@@ -490,7 +543,11 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
 
     with zipfile.ZipFile(uploaded_zip) as archive:
         members = [item for item in archive.infolist() if not item.is_dir()]
-        safe_names = {safe_zip_member_name(item.filename): item.filename for item in members if safe_zip_member_name(item.filename)}
+        safe_names = {
+            safe_zip_member_name(item.filename): item.filename
+            for item in members
+            if safe_zip_member_name(item.filename)
+        }
 
         # Hard safety limits for admin imports.
         total_uncompressed = sum(item.file_size for item in members)
@@ -505,7 +562,11 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                 raise ValueError(_("Nested split import packages are not allowed."))
 
             part_names = [
-                part.get("filename") for part in sorted(manifest.get("parts", []), key=lambda item: item.get("filename") or "")
+                part.get("filename")
+                for part in sorted(
+                    manifest.get("parts", []),
+                    key=lambda item: item.get("filename") or "",
+                )
                 if part.get("filename") in safe_names
             ]
             if not part_names:
@@ -517,7 +578,10 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                 with archive.open(safe_names[part_name], "r") as part_file:
                     part_bytes = part_file.read(BULK_IMPORT_MAX_UPLOAD_BYTES + 1)
                 if len(part_bytes) > BULK_IMPORT_MAX_UPLOAD_BYTES:
-                    errors.append(_("Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import.") % {"part_name": part_name})
+                    errors.append(
+                        _("Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import.")
+                        % {"part_name": part_name}
+                    )
                     continue
                 part_imported, part_errors = import_articles_from_zip(
                     io.BytesIO(part_bytes),
@@ -530,12 +594,6 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
 
             return imported_count, errors
 
-        upload_members = [
-            original_name for safe_name, original_name in safe_names.items()
-            if safe_name.startswith("uploads/")
-        ]
-        filename_map = copy_imported_uploads_from_zip(archive, upload_members)
-
         article_payloads = []
 
         if manifest and manifest.get("format") == "djopenkb-bulk-export-v1":
@@ -547,6 +605,7 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                     "status": item.get("status") or SuggestedArticle.Status.PUBLISHED,
                     "visibility": normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC),
                     "filename": item.get("filename") or "",
+                    "image_assets": item.get("image_assets") or [],
                     "update_status": item.get("update_status") or SuggestedArticle.UpdateStatus.NONE,
                     "pending_update_title": item.get("pending_update_title") or "",
                     "pending_update_body": item.get("pending_update_body") or "",
@@ -557,7 +616,8 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                 })
         else:
             markdown_names = [
-                original_name for safe_name, original_name in safe_names.items()
+                original_name
+                for safe_name, original_name in safe_names.items()
                 if safe_name.lower().endswith(".md") and not safe_name.startswith("uploads/")
             ]
 
@@ -577,84 +637,141 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                     "status": SuggestedArticle.Status.PUBLISHED,
                     "visibility": SuggestedArticle.Visibility.PUBLIC,
                     "filename": Path(safe_name).name,
+                    "image_assets": extract_article_image_filenames(body),
                 })
 
         if not article_payloads:
             raise ValueError(_("No articles found in the zip. Include manifest.json or Markdown files."))
 
+        # Copy only upload members that are linked by at least one article
+        # payload. Files packaged in the ZIP but not referenced are ignored.
+        referenced_source_uploads = {
+            filename
+            for item in article_payloads
+            for filename in imported_payload_image_filenames(item)
+        }
+        available_upload_members = {
+            safe_uploaded_filename(safe_name): original_name
+            for safe_name, original_name in safe_names.items()
+            if safe_name.startswith("uploads/") and safe_uploaded_filename(safe_name)
+        }
+        upload_members = [
+            member_name
+            for original_name, member_name in available_upload_members.items()
+            if original_name in referenced_source_uploads
+        ]
+        filename_map = copy_imported_uploads_from_zip(archive, upload_members)
+        retained_import_uploads = set()
         seen_import_titles = set()
 
-        for item in article_payloads:
-            title = (item.get("title") or "Imported article").strip()[:200]
-            body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
-            keywords = normalize_import_keywords(item.get("keywords"))
-            status = item.get("status") or SuggestedArticle.Status.PUBLISHED
-            visibility = normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC)
-            update_status = item.get("update_status") or SuggestedArticle.UpdateStatus.NONE
-            pending_update_title = (item.get("pending_update_title") or "").strip()[:200]
-            pending_update_body = rewrite_uploaded_file_references(item.get("pending_update_body") or "", filename_map)
-            pending_update_keywords = normalize_import_keywords(item.get("pending_update_keywords"))
-            review_notes = (item.get("review_notes") or "").strip()
-            review_notes_history = item.get("review_notes_history") or []
-            imported_pending_assets = [
-                filename_map.get(safe_uploaded_filename(filename), safe_uploaded_filename(filename))
-                for filename in (item.get("pending_update_image_assets") or [])
-                if safe_uploaded_filename(filename)
-            ]
+        try:
+            for item in article_payloads:
+                title = (item.get("title") or "Imported article").strip()[:200]
+                source_image_refs = imported_payload_image_filenames(item)
+                missing_image_refs = [
+                    filename
+                    for filename in source_image_refs
+                    if filename not in filename_map
+                    and (
+                        filename in available_upload_members
+                        or not imported_upload_exists(filename)
+                    )
+                ]
+                if missing_image_refs:
+                    errors.append(
+                        _("Skipped %(title)s because linked image files were missing or invalid: %(filenames)s")
+                        % {
+                            "title": title,
+                            "filenames": ", ".join(sorted(missing_image_refs)),
+                        }
+                    )
+                    continue
 
-            if status not in dict(SuggestedArticle.Status.choices):
-                status = SuggestedArticle.Status.PUBLISHED
-            if update_status not in dict(SuggestedArticle.UpdateStatus.choices):
-                update_status = SuggestedArticle.UpdateStatus.NONE
+                body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
+                keywords = normalize_import_keywords(item.get("keywords"))
+                status = item.get("status") or SuggestedArticle.Status.PUBLISHED
+                visibility = normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC)
+                update_status = item.get("update_status") or SuggestedArticle.UpdateStatus.NONE
+                pending_update_title = (item.get("pending_update_title") or "").strip()[:200]
+                pending_update_body = rewrite_uploaded_file_references(item.get("pending_update_body") or "", filename_map)
+                pending_update_keywords = normalize_import_keywords(item.get("pending_update_keywords"))
+                review_notes = (item.get("review_notes") or "").strip()
+                review_notes_history = item.get("review_notes_history") or []
+                imported_pending_assets = [
+                    filename_map.get(safe_uploaded_filename(filename), safe_uploaded_filename(filename))
+                    for filename in (item.get("pending_update_image_assets") or [])
+                    if safe_uploaded_filename(filename)
+                ]
 
-            normalized_title = normalize_article_title(title)
-            if normalized_title in seen_import_titles:
-                errors.append(_("Skipped duplicate title inside import zip: %(title)s") % {"title": title})
-                continue
-            seen_import_titles.add(normalized_title)
+                if status not in dict(SuggestedArticle.Status.choices):
+                    status = SuggestedArticle.Status.PUBLISHED
+                if update_status not in dict(SuggestedArticle.UpdateStatus.choices):
+                    update_status = SuggestedArticle.UpdateStatus.NONE
 
-            duplicate_article = find_duplicate_article_by_title(title)
-            if duplicate_article:
-                errors.append(_("Skipped duplicate title already in OpenKB: %(title)s") % {"title": title})
-                continue
+                normalized_title = normalize_article_title(title)
+                if normalized_title in seen_import_titles:
+                    errors.append(_("Skipped duplicate title inside import zip: %(title)s") % {"title": title})
+                    continue
+                seen_import_titles.add(normalized_title)
 
-            try:
-                keywords = validate_article_keywords(keywords)
-                pending_update_keywords = validate_article_keywords(
-                    pending_update_keywords
-                )
-            except ValidationError as error:
-                message = error.messages[0] if getattr(error, "messages", None) else str(error)
-                errors.append(f"{title}: {message}")
-                continue
+                duplicate_article = find_duplicate_article_by_title(title)
+                if duplicate_article:
+                    errors.append(_("Skipped duplicate title already in OpenKB: %(title)s") % {"title": title})
+                    continue
 
-            filename = make_unique_article_filename(title, item.get("filename") or "")
+                try:
+                    keywords = validate_article_keywords(keywords)
+                    pending_update_keywords = validate_article_keywords(
+                        pending_update_keywords
+                    )
+                except ValidationError as error:
+                    message = error.messages[0] if getattr(error, "messages", None) else str(error)
+                    errors.append(f"{title}: {message}")
+                    continue
 
-            try:
-                article = SuggestedArticle.objects.create(
-                    owner=owner,
-                    title=title,
-                    body=body,
-                    keywords=keywords,
-                    visibility=visibility,
-                    filename=filename,
-                    wiki_path=f"internal/sources/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"sources/{filename}",
-                    raw_path=f"raw/internal/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"raw/{filename}",
-                    status=status,
-                    image_assets=extract_article_image_filenames(body),
-                    update_status=update_status,
-                    pending_update_title=pending_update_title,
-                    pending_update_body=pending_update_body,
-                    pending_update_keywords=pending_update_keywords,
-                    pending_update_image_assets=sorted(set(imported_pending_assets + extract_article_image_filenames(pending_update_body))),
-                    review_notes=review_notes,
-                    review_notes_history=review_notes_history if isinstance(review_notes_history, list) else [],
-                )
-                write_article_files(article)
-                sync_article_image_assets(article, old_assets=[])
-                imported_count += 1
-            except Exception as error:
-                errors.append(f"{title}: {error}")
+                filename = make_unique_article_filename(title, item.get("filename") or "")
+                article = None
+
+                try:
+                    with transaction.atomic():
+                        article = SuggestedArticle.objects.create(
+                            owner=owner,
+                            title=title,
+                            body=body,
+                            keywords=keywords,
+                            visibility=visibility,
+                            filename=filename,
+                            wiki_path=f"internal/sources/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"sources/{filename}",
+                            raw_path=f"raw/internal/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"raw/{filename}",
+                            status=status,
+                            image_assets=extract_article_image_filenames(body),
+                            update_status=update_status,
+                            pending_update_title=pending_update_title,
+                            pending_update_body=pending_update_body,
+                            pending_update_keywords=pending_update_keywords,
+                            pending_update_image_assets=sorted(set(imported_pending_assets + extract_article_image_filenames(pending_update_body))),
+                            review_notes=review_notes,
+                            review_notes_history=review_notes_history if isinstance(review_notes_history, list) else [],
+                        )
+                        write_article_files(article)
+                        sync_article_image_assets(article, old_assets=[])
+
+                    retained_import_uploads.update(article.image_assets or [])
+                    retained_import_uploads.update(article.pending_update_image_assets or [])
+                    imported_count += 1
+                except Exception as error:
+                    if article is not None:
+                        try:
+                            delete_article_files(article)
+                        except Exception:
+                            pass
+                    errors.append(f"{title}: {error}")
+        finally:
+            cleanup_unreferenced_import_uploads(
+                filename_map,
+                retained_import_uploads,
+                errors=errors,
+            )
 
     return imported_count, errors
 

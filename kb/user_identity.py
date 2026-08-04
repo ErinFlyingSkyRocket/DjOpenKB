@@ -62,3 +62,32 @@ def validate_unique_user_email(raw_email, *, user=None, required=False):
         )
 
     return email
+
+
+def validate_unique_username(raw_username, *, user=None):
+    """Validate one username and enforce case-insensitive uniqueness.
+
+    Django's built-in User.username constraint is case-sensitive on PostgreSQL.
+    The matching database index added by migration 0008 makes names such as
+    ``Alice`` and ``alice`` the same account identity across every write path.
+    """
+    username = (raw_username or "").strip()
+    UserModel = get_user_model()
+    username_field = UserModel._meta.get_field("username")
+
+    # Reuse Django's configured username validators and length/blank rules.
+    username = username_field.clean(username, user)
+
+    queryset = UserModel._default_manager.filter(username__iexact=username)
+    if user is not None and getattr(user, "pk", None):
+        queryset = queryset.exclude(pk=user.pk)
+    if queryset.exists():
+        raise ValidationError(
+            username_field.error_messages.get(
+                "unique",
+                "A user with that username already exists.",
+            ),
+            code="unique",
+        )
+
+    return username

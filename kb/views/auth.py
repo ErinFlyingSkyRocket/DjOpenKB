@@ -29,6 +29,7 @@ from ..user_identity import validate_unique_user_email
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError, transaction
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
@@ -669,8 +670,20 @@ def update_profile(request):
             return redirect("profile")
 
         old_email = user.email or ""
-        user.email = email
-        user.save(update_fields=["email"])
+        try:
+            with transaction.atomic():
+                user.email = email
+                user.save(update_fields=["email"])
+        except IntegrityError:
+            # The database-level case-insensitive unique index is authoritative
+            # and closes the race between validation and the final UPDATE.
+            user.email = old_email
+            messages.error(
+                request,
+                _("Please check the submitted information and try again."),
+            )
+            return redirect("profile")
+
         log_activity(
             request,
             ActivityLog.EventType.PROFILE_EMAIL_UPDATED,

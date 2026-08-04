@@ -33,7 +33,7 @@ from .notifications import (
 )
 from .views import delete_article_files, log_activity, write_article_files
 from .views.services import ensure_article_filename
-from .user_identity import validate_unique_user_email
+from .user_identity import validate_unique_user_email, validate_unique_username
 from .permissions import (
     PERM_ADD_ARTICLES,
     PERM_ADD_INTERNAL_ARTICLES,
@@ -1115,7 +1115,13 @@ class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
 
 
 class UniqueEmailUserChangeForm(UserChangeForm):
-    """Apply the global case-insensitive email rule in Django Admin."""
+    """Apply global case-insensitive username/email rules in Django Admin."""
+
+    def clean_username(self):
+        return validate_unique_username(
+            self.cleaned_data.get("username"),
+            user=self.instance,
+        )
 
     def clean_email(self):
         return validate_unique_user_email(
@@ -1126,11 +1132,17 @@ class UniqueEmailUserChangeForm(UserChangeForm):
 
 
 class UniqueEmailUserCreationForm(UserCreationForm):
-    """Prevent new Admin-created users from duplicating an email address."""
+    """Prevent Admin-created users from duplicating usernames or emails."""
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "email")
+
+    def clean_username(self):
+        return validate_unique_username(
+            self.cleaned_data.get("username"),
+            user=self.instance,
+        )
 
     def clean_email(self):
         return validate_unique_user_email(

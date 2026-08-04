@@ -164,8 +164,10 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    # Django stores large multipart uploads in TMPDIR before import validation.
+    # 256 MB safely accommodates one 100 MB ZIP plus processing overhead.
     tmpfs:
-      - /tmp:rw,noexec,nosuid,size=128m
+      - /tmp:rw,noexec,nosuid,size=256m
     depends_on:
       vault-init:
         condition: service_completed_successfully
@@ -357,8 +359,10 @@ services:
     pids_limit: 128
     security_opt:
       - no-new-privileges:true
+    # Bulk imports are streamed upstream, while this larger tmpfs still gives
+    # Nginx safe headroom for temporary request/proxy files.
     tmpfs:
-      - /tmp:rw,noexec,nosuid,size=64m
+      - /tmp:rw,noexec,nosuid,size=256m
     depends_on:
       - web
     ports:
