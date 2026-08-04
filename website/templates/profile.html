@@ -352,18 +352,17 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div class="modal-body">
                         <div class="form-group">
                             <label>{% trans "Confirm password" %}</label>
-                            <input type="password" name="current_password" class="form-control" autocomplete="current-password" required {% if profile_password_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password">
-                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_password_lockout_active lockout_remaining_seconds=profile_password_lockout_remaining_seconds lockout_message_template=profile_password_lockout_message_template lockout_initial_message=profile_password_lockout_initial_message lockout_group='password' only %}
+                            <input type="password" name="current_password" class="form-control" autocomplete="current-password" required {% if profile_verification_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password verification">
                         </div>
                         <div class="form-group">
                             <label>{% trans "Authenticator MFA/OTP code" %}</label>
-                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
-                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_mfa_lockout_active lockout_remaining_seconds=profile_mfa_lockout_remaining_seconds lockout_message_template=profile_mfa_lockout_message_template lockout_initial_message=profile_mfa_lockout_initial_message lockout_group='mfa' only %}
+                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_verification_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa verification">
+                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_verification_lockout_active lockout_remaining_seconds=profile_verification_lockout_remaining_seconds lockout_message_template=profile_verification_lockout_message_template lockout_initial_message=profile_verification_lockout_initial_message lockout_group='verification' only %}
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-warning" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Continue" %}</button>
+                        <button type="submit" class="btn btn-warning" {% if profile_verification_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa verification">{% trans "Continue" %}</button>
                     </div>
                 </form>
             </div>
@@ -385,8 +384,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div class="modal-body">
                         <div class="form-group">
                             <label>{% trans "Old password" %}</label>
-                            <input type="password" name="old_password" class="form-control" required {% if profile_password_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password">
-                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_password_lockout_active lockout_remaining_seconds=profile_password_lockout_remaining_seconds lockout_message_template=profile_password_lockout_message_template lockout_initial_message=profile_password_lockout_initial_message lockout_group='password' only %}
+                            <input type="password" name="old_password" class="form-control" required {% if profile_verification_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password verification">
                         </div>
                         <div class="form-group">
                             <label>{% trans "New password" %}</label>
@@ -410,18 +408,45 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="form-group">
                             <label>{% trans "Authenticator MFA/OTP code" %}</label>
-                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
-                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_mfa_lockout_active lockout_remaining_seconds=profile_mfa_lockout_remaining_seconds lockout_message_template=profile_mfa_lockout_message_template lockout_initial_message=profile_mfa_lockout_initial_message lockout_group='mfa' only %}
+                            <input type="text" name="mfa_code" class="form-control" inputmode="numeric" autocomplete="one-time-code" required {% if profile_verification_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa verification">
+                            {% include "_auth_lockout_countdown.html" with lockout_active=profile_verification_lockout_active lockout_remaining_seconds=profile_verification_lockout_remaining_seconds lockout_message_template=profile_verification_lockout_message_template lockout_initial_message=profile_verification_lockout_initial_message lockout_group='verification' only %}
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-primary" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Update password" %}</button>
+                        <button type="submit" class="btn btn-primary" {% if profile_verification_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa verification">{% trans "Update password" %}</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    {% endif %}
+
+    {% if profile_dialog %}
+    <script nonce="{{ csp_nonce }}">
+        (function () {
+            var dialogId = "";
+            {% if profile_dialog == "reset_mfa" and mfa_enabled %}
+            dialogId = "resetMfaModal";
+            {% elif profile_dialog == "change_password" and can_change_local_password %}
+            dialogId = "changePasswordModal";
+            {% endif %}
+
+            var dialog = dialogId ? document.getElementById(dialogId) : null;
+            if (dialog && window.jQuery) {
+                window.jQuery(dialog).modal("show");
+                if (window.history && window.history.replaceState && typeof URL === "function") {
+                    var cleanUrl = new URL(window.location.href);
+                    cleanUrl.searchParams.delete("dialog");
+                    window.history.replaceState(
+                        {},
+                        document.title,
+                        cleanUrl.pathname + cleanUrl.search + cleanUrl.hash
+                    );
+                }
+            }
+        }());
+    </script>
     {% endif %}
 
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% endfor %}">

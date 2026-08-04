@@ -32,6 +32,32 @@ from django.utils.translation import gettext as _
 from urllib.parse import urlencode
 
 
+PROFILE_DIALOG_RESET_MFA = "reset_mfa"
+PROFILE_DIALOG_CHANGE_PASSWORD = "change_password"
+PROFILE_DIALOGS = {PROFILE_DIALOG_RESET_MFA, PROFILE_DIALOG_CHANGE_PASSWORD}
+
+
+def _profile_dialog_redirect(dialog):
+    if dialog not in PROFILE_DIALOGS:
+        return redirect("profile")
+    return redirect(f"{reverse('profile')}?{urlencode({'dialog': dialog})}")
+
+
+def _profile_verification_failed_message(request):
+    messages.error(
+        request,
+        _("Unable to verify the information provided. Please try again."),
+    )
+
+
+def _profile_verification_lockout_message(request, retry_after):
+    messages.error(
+        request,
+        _("Too many unsuccessful verification attempts. Please try again in %(duration)s.")
+        % {"duration": format_retry_after(retry_after)},
+    )
+
+
 def _disabled_account_login_message(request):
     messages.error(
         request,
@@ -420,7 +446,7 @@ def set_site_language(request):
     return response
 
 
-def _verify_profile_password(request, user, submitted_password, *, source, invalid_message):
+def _verify_profile_password(request, user, submitted_password, *, source):
     """Rate-limit fresh local-password confirmation for sensitive profile actions."""
     locked, retry_after, identifier = get_auth_lockout_status(
         request,
@@ -441,11 +467,7 @@ def _verify_profile_password(request, user, submitted_password, *, source, inval
                 "retry_after_seconds": retry_after,
             },
         )
-        messages.error(
-            request,
-            _("Too many failed sign-in attempts. Please try again in %(duration)s.")
-            % {"duration": format_retry_after(retry_after)},
-        )
+        _profile_verification_lockout_message(request, retry_after)
         return False
 
     if not user.check_password(submitted_password):
@@ -460,10 +482,9 @@ def _verify_profile_password(request, user, submitted_password, *, source, inval
         if lockout.get("locked"):
             details["reason"] = "temporary_lockout_created"
             details["retry_after_seconds"] = lockout.get("retry_after_seconds")
-            messages.error(
+            _profile_verification_lockout_message(
                 request,
-                _("Too many failed sign-in attempts. Please try again in %(duration)s.")
-                % {"duration": format_retry_after(lockout.get("retry_after_seconds"))},
+                lockout.get("retry_after_seconds"),
             )
         log_auth_event(
             request,
@@ -473,7 +494,8 @@ def _verify_profile_password(request, user, submitted_password, *, source, inval
             username=user.get_username(),
             details=details,
         )
-        messages.error(request, invalid_message)
+        if not lockout.get("locked"):
+            _profile_verification_failed_message(request)
         return False
 
     record_auth_success(request, user=user, purpose="password")
@@ -521,11 +543,7 @@ def _verify_profile_mfa_code(request, user):
                 "retry_after_seconds": retry_after,
             },
         )
-        messages.error(
-            request,
-            _("Too many incorrect MFA codes. Please try again in %(duration)s.")
-            % {"duration": format_retry_after(retry_after)},
-        )
+        _profile_verification_lockout_message(request, retry_after)
         return False
 
     if not verify_totp_code(device, code):
@@ -547,7 +565,13 @@ def _verify_profile_mfa_code(request, user):
             username=user.get_username(),
             details=details,
         )
-        messages.error(request, _("MFA/OTP code is incorrect."))
+        if lockout.get("locked"):
+            _profile_verification_lockout_message(
+                request,
+                lockout.get("retry_after_seconds"),
+            )
+        else:
+            _profile_verification_failed_message(request)
         return False
 
     record_auth_success(request, user=user, purpose="mfa")
@@ -565,11 +589,12 @@ def _verify_profile_mfa_code(request, user):
 
 @main_site_login_required
 def profile(request):
-    return render(
-        request,
-        "profile.html",
-        get_profile_account_context(request.user, request=request),
+    context = get_profile_account_context(request.user, request=request)
+    requested_dialog = (request.GET.get("dialog") or "").strip()
+    context["profile_dialog"] = (
+        requested_dialog if requested_dialog in PROFILE_DIALOGS else ""
     )
+    return render(request, "profile.html", context)
 
 
 @main_site_login_required
@@ -623,7 +648,6 @@ def update_profile(request):
                 user,
                 current_password,
                 source="profile_email_update",
-                invalid_message=_("Confirm password is incorrect."),
             ):
                 return redirect("profile")
 
@@ -673,27 +697,26 @@ def change_password(request):
         user,
         old_password,
         source="profile_password_change",
-        invalid_message=_("Old password is incorrect."),
     ):
-        return redirect("profile")
+        return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
 
     if new_password1 != new_password2:
         messages.error(request, _("New password and confirm password do not match."))
-        return redirect("profile")
+        return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
 
     policy_issues = validate_profile_password_policy(new_password1, user)
     if policy_issues:
         messages.error(request, " ".join(policy_issues))
-        return redirect("profile")
+        return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
 
     try:
         validate_password(new_password1, user=user)
     except ValidationError as error:
         messages.error(request, " ".join(error.messages))
-        return redirect("profile")
+        return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
 
     if not _verify_profile_mfa_code(request, user):
-        return redirect("profile")
+        return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
 
     user.set_password(new_password1)
     user.save(update_fields=["password"])

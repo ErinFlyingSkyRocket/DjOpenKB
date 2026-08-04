@@ -57,6 +57,28 @@ from ..mfa import (
 from ..permissions import user_has_disabled_role
 
 
+PROFILE_DIALOG_RESET_MFA = "reset_mfa"
+
+
+def _reset_mfa_dialog_redirect():
+    return redirect(f"{reverse('profile')}?dialog={PROFILE_DIALOG_RESET_MFA}")
+
+
+def _mfa_reset_verification_failed_message(request):
+    messages.error(
+        request,
+        _("Unable to verify the information provided. Please try again."),
+    )
+
+
+def _mfa_reset_verification_lockout_message(request, retry_after):
+    messages.error(
+        request,
+        _("Too many unsuccessful verification attempts. Please try again in %(duration)s.")
+        % {"duration": format_retry_after(retry_after)},
+    )
+
+
 def _deny_disabled_account_after_mfa(request, user, *, source):
     """Stop Disabled User accounts after successful MFA validation."""
     log_auth_event(
@@ -651,11 +673,7 @@ def _verify_mfa_reset_password(request, user):
                 "retry_after_seconds": retry_after,
             },
         )
-        messages.error(
-            request,
-            _("Too many failed sign-in attempts. Please try again in %(duration)s.")
-            % {"duration": format_retry_after(retry_after)},
-        )
+        _mfa_reset_verification_lockout_message(request, retry_after)
         return False
 
     if is_ldap_managed_user(user):
@@ -690,7 +708,13 @@ def _verify_mfa_reset_password(request, user):
             username=user.get_username(),
             details=details,
         )
-        messages.error(request, _("Confirm password is incorrect."))
+        if lockout.get("locked"):
+            _mfa_reset_verification_lockout_message(
+                request,
+                lockout.get("retry_after_seconds"),
+            )
+        else:
+            _mfa_reset_verification_failed_message(request)
         return False
 
     record_auth_success(request, user=user, purpose="password")
@@ -741,11 +765,7 @@ def _verify_mfa_reset_code(request, user):
                 "retry_after_seconds": retry_after,
             },
         )
-        messages.error(
-            request,
-            _("Too many incorrect MFA codes. Please try again in %(duration)s.")
-            % {"duration": format_retry_after(retry_after)},
-        )
+        _mfa_reset_verification_lockout_message(request, retry_after)
         return False
 
     if not verify_totp_code(device, request.POST.get("mfa_code")):
@@ -768,7 +788,13 @@ def _verify_mfa_reset_code(request, user):
             username=user.get_username(),
             details=details,
         )
-        messages.error(request, _("MFA/OTP code is incorrect."))
+        if lockout.get("locked"):
+            _mfa_reset_verification_lockout_message(
+                request,
+                lockout.get("retry_after_seconds"),
+            )
+        else:
+            _mfa_reset_verification_failed_message(request)
         return False
 
     record_auth_success(request, user=user, purpose="mfa")
@@ -796,9 +822,9 @@ def reset_mfa(request):
     # replacement. Reverify both the account password and the currently active
     # authenticator code before generating a staged replacement secret.
     if not _verify_mfa_reset_password(request, user):
-        return redirect("profile")
+        return _reset_mfa_dialog_redirect()
     if not _verify_mfa_reset_code(request, user):
-        return redirect("profile")
+        return _reset_mfa_dialog_redirect()
 
     device = getattr(user, "kb_mfa_device", None)
     if not begin_pending_mfa_reset(request, user, device=device):
@@ -806,7 +832,7 @@ def reset_mfa(request):
             request,
             _("MFA reset could not be started. Please try again or contact an administrator."),
         )
-        return redirect("profile")
+        return _reset_mfa_dialog_redirect()
 
     log_auth_event(
         request,
@@ -874,11 +900,7 @@ def mfa_reset_setup(request):
                     "active_secret_replaced": False,
                 },
             )
-            messages.error(
-                request,
-                _("Too many incorrect MFA codes. Please try again in %(duration)s.")
-                % {"duration": format_retry_after(retry_after)},
-            )
+            _mfa_reset_verification_lockout_message(request, retry_after)
         elif verify_totp_secret(state["secret"], request.POST.get("code")):
             current_session_key = request.session.session_key
             with transaction.atomic():
@@ -963,7 +985,13 @@ def mfa_reset_setup(request):
                 username=user.get_username(),
                 details=details,
             )
-            messages.error(request, _("Invalid authenticator code. Please try again."))
+            if lockout.get("locked"):
+                _mfa_reset_verification_lockout_message(
+                    request,
+                    lockout.get("retry_after_seconds"),
+                )
+            else:
+                _mfa_reset_verification_failed_message(request)
 
     state = get_pending_mfa_reset(request, user)
     if not state:
@@ -989,7 +1017,7 @@ def mfa_reset_setup(request):
             **build_auth_lockout_ui_context(
                 locked=locked,
                 retry_after_seconds=retry_after,
-                message=_("Too many incorrect MFA codes. Please try again in %(duration)s."),
+                message=_("Too many unsuccessful verification attempts. Please try again in %(duration)s."),
                 prefix="mfa_rate_limit",
             ),
         },

@@ -106,12 +106,101 @@ class SelfServiceMFAResetTests(TestCase):
         self.assertContains(response, 'id="changePasswordModal"')
         self.assertContains(response, 'name="old_password"')
 
+    def test_login_page_does_not_expose_ad_wording(self):
+        self.client.logout()
+
+        response = self.client.get(reverse("root_login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Use your NextLabs account to sign in.")
+        self.assertContains(response, "NextLabs email or username")
+        self.assertContains(response, "Sign in with NextLabs")
+        self.assertContains(response, "Back to NextLabs sign-in")
+        self.assertNotContains(response, "NextLabs AD")
+        self.assertNotContains(response, "NEXTLABS\\&lt;username&gt;")
+
+    def test_wrong_old_password_keeps_session_and_reopens_change_password_dialog(self):
+        original_password_hash = self.user.password
+
+        response = self.client.post(
+            reverse("change_password"),
+            {
+                "old_password": "wrong-password",
+                "new_password1": "Different-Strong-Password-456!",
+                "new_password2": "Different-Strong-Password-456!",
+                "mfa_code": self._current_code(),
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            f"{reverse('profile')}?dialog=change_password",
+            fetch_redirect_response=False,
+        )
+        profile_response = self.client.get(response.url)
+        self.assertEqual(profile_response.context["profile_dialog"], "change_password")
+        self.assertContains(
+            profile_response,
+            "Unable to verify the information provided. Please try again.",
+        )
+        self.assertNotContains(profile_response, "Old password is incorrect")
+        self.assertNotContains(profile_response, "MFA/OTP code is incorrect")
+        self.assertContains(profile_response, 'dialogId = "changePasswordModal";')
+        self.assertIn("_auth_user_id", self.client.session)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.password, original_password_hash)
+
+    def test_wrong_change_password_mfa_keeps_session_and_reopens_dialog(self):
+        original_password_hash = self.user.password
+        wrong_code = self._different_code(self.device.get_secret())
+
+        response = self.client.post(
+            reverse("change_password"),
+            {
+                "old_password": self.password,
+                "new_password1": "Different-Strong-Password-456!",
+                "new_password2": "Different-Strong-Password-456!",
+                "mfa_code": wrong_code,
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            f"{reverse('profile')}?dialog=change_password",
+            fetch_redirect_response=False,
+        )
+        profile_response = self.client.get(response.url)
+        self.assertEqual(profile_response.context["profile_dialog"], "change_password")
+        self.assertContains(
+            profile_response,
+            "Unable to verify the information provided. Please try again.",
+        )
+        self.assertNotContains(profile_response, "Old password is incorrect")
+        self.assertNotContains(profile_response, "MFA/OTP code is incorrect")
+        self.assertContains(profile_response, 'dialogId = "changePasswordModal";')
+        self.assertIn("_auth_user_id", self.client.session)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.password, original_password_hash)
+
     def test_wrong_password_does_not_start_or_change_mfa(self):
         old_secret = self.device.get_secret()
 
         response = self._begin_reset(password="wrong-password")
 
-        self.assertRedirects(response, reverse("profile"), fetch_redirect_response=False)
+        self.assertRedirects(
+            response,
+            f"{reverse('profile')}?dialog=reset_mfa",
+            fetch_redirect_response=False,
+        )
+        profile_response = self.client.get(response.url)
+        self.assertEqual(profile_response.context["profile_dialog"], "reset_mfa")
+        self.assertContains(
+            profile_response,
+            "Unable to verify the information provided. Please try again.",
+        )
+        self.assertNotContains(profile_response, "password is incorrect")
+        self.assertNotContains(profile_response, "MFA/OTP code is incorrect")
+        self.assertContains(profile_response, 'dialogId = "resetMfaModal";')
         self.device.refresh_from_db()
         self.assertTrue(self.device.confirmed)
         self.assertEqual(self.device.get_secret(), old_secret)
@@ -123,7 +212,20 @@ class SelfServiceMFAResetTests(TestCase):
 
         response = self._begin_reset(mfa_code=self._different_code(old_secret))
 
-        self.assertRedirects(response, reverse("profile"), fetch_redirect_response=False)
+        self.assertRedirects(
+            response,
+            f"{reverse('profile')}?dialog=reset_mfa",
+            fetch_redirect_response=False,
+        )
+        profile_response = self.client.get(response.url)
+        self.assertEqual(profile_response.context["profile_dialog"], "reset_mfa")
+        self.assertContains(
+            profile_response,
+            "Unable to verify the information provided. Please try again.",
+        )
+        self.assertNotContains(profile_response, "password is incorrect")
+        self.assertNotContains(profile_response, "MFA/OTP code is incorrect")
+        self.assertContains(profile_response, 'dialogId = "resetMfaModal";')
         self.device.refresh_from_db()
         self.assertTrue(self.device.confirmed)
         self.assertEqual(self.device.get_secret(), old_secret)
@@ -192,7 +294,12 @@ class SelfServiceMFAResetTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Invalid authenticator code")
+        self.assertContains(
+            response,
+            "Unable to verify the information provided. Please try again.",
+        )
+        self.assertNotContains(response, "Invalid authenticator code")
+        self.assertNotContains(response, "MFA/OTP code is incorrect")
         self.device.refresh_from_db()
         self.assertTrue(self.device.confirmed)
         self.assertEqual(self.device.get_secret(), old_secret)

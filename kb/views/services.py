@@ -3210,7 +3210,7 @@ def get_profile_account_context(user, request=None):
             locked=password_locked,
             retry_after_seconds=password_retry_after,
             message=_(
-                "Too many failed sign-in attempts. Please try again in %(duration)s."
+                "Too many unsuccessful verification attempts. Please try again in %(duration)s."
             ),
             prefix="profile_password_lockout",
         ),
@@ -3218,9 +3218,17 @@ def get_profile_account_context(user, request=None):
             locked=mfa_locked,
             retry_after_seconds=mfa_retry_after,
             message=_(
-                "Too many incorrect MFA codes. Please try again in %(duration)s."
+                "Too many unsuccessful verification attempts. Please try again in %(duration)s."
             ),
             prefix="profile_mfa_lockout",
+        ),
+        **build_auth_lockout_ui_context(
+            locked=password_locked or mfa_locked,
+            retry_after_seconds=max(password_retry_after, mfa_retry_after),
+            message=_(
+                "Too many unsuccessful verification attempts. Please try again in %(duration)s."
+            ),
+            prefix="profile_verification_lockout",
         ),
     }
 
