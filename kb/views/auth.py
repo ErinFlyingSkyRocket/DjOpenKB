@@ -25,8 +25,10 @@ from ..mfa import (
     verify_totp_code,
 )
 from ..permissions import user_has_disabled_role
-from django.contrib.auth import logout
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.views import LoginView, LogoutView
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
@@ -35,6 +37,37 @@ from urllib.parse import urlencode
 PROFILE_DIALOG_RESET_MFA = "reset_mfa"
 PROFILE_DIALOG_CHANGE_PASSWORD = "change_password"
 PROFILE_DIALOGS = {PROFILE_DIALOG_RESET_MFA, PROFILE_DIALOG_CHANGE_PASSWORD}
+
+
+def _validate_profile_email(user, raw_email):
+    """Validate and return a local user's requested profile email address.
+
+    Django's default User model does not make ``email`` unique. DjOpenKB allows
+    local users to sign in by email, so accepting a case-insensitive duplicate
+    would make that login identifier ambiguous.
+    """
+    email = (raw_email or "").strip()
+    email_field = user._meta.get_field("email")
+    max_length = int(getattr(email_field, "max_length", 254) or 254)
+
+    if not email or len(email) > max_length:
+        raise ValidationError(validate_email.message, code="invalid")
+
+    validate_email(email)
+
+    UserModel = get_user_model()
+    duplicate_exists = (
+        UserModel._default_manager.filter(email__iexact=email)
+        .exclude(pk=user.pk)
+        .exists()
+    )
+    if duplicate_exists:
+        raise ValidationError(
+            _("Please check the submitted information and try again."),
+            code="duplicate",
+        )
+
+    return email
 
 
 def _profile_dialog_redirect(dialog):
@@ -654,8 +687,14 @@ def update_profile(request):
         if not _verify_profile_mfa_code(request, user):
             return redirect("profile")
 
+        try:
+            email = _validate_profile_email(user, request.POST.get("email", ""))
+        except ValidationError as error:
+            message = error.messages[0] if getattr(error, "messages", None) else str(error)
+            messages.error(request, message)
+            return redirect("profile")
+
         old_email = user.email or ""
-        email = request.POST.get("email", "").strip()
         user.email = email
         user.save(update_fields=["email"])
         log_activity(

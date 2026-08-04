@@ -143,7 +143,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <input type="hidden" name="profile_action" value="email">
                                             <div class="form-group">
                                                 <label>{% trans "New email" %}</label>
-                                                <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                                                <input type="email" name="email" class="form-control" value="{{ user.email }}" maxlength="254" autocomplete="email" required>
                                             </div>
                                             {% if can_confirm_profile_changes %}
                                                 <div class="form-group">

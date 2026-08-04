@@ -68,6 +68,15 @@ class ArticleVideoEmbedTests(SimpleTestCase):
         self.assertNotIn("<iframe", rendered)
         self.assertIn(video_url, rendered)
 
+    def test_raw_html_direct_video_is_removed_even_for_a_media_extension(self):
+        rendered = render_safe_markdown(
+            '<video class="article-video" controls preload="metadata" '
+            'src="https://cdn.example.com/training/setup-guide.mp4"></video>'
+        )
+
+        self.assertNotIn("<video", rendered)
+        self.assertNotIn("cdn.example.com/training/setup-guide.mp4", rendered)
+
     def test_direct_http_video_file_is_not_auto_embedded(self):
         video_url = "http://cdn.example.com/training/setup-guide.mp4"
         rendered = render_safe_markdown(video_url)

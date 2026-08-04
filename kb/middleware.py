@@ -1,4 +1,5 @@
 import ipaddress
+import logging
 import re
 import secrets
 
@@ -33,6 +34,9 @@ from .permissions import user_has_disabled_role
 
 
 
+logger = logging.getLogger(__name__)
+
+
 SESSION_STARTED_AT_KEY = "djopenkb_session_started_at"
 
 
@@ -53,8 +57,15 @@ def _configured_admin_networks():
         enabled = bool(site_setting.admin_ip_allowlist_enabled)
         raw_value = site_setting.admin_allowed_cidrs
     except Exception:
-        enabled = bool(SiteSetting._meta.get_field("admin_ip_allowlist_enabled").default)
-        raw_value = SiteSetting._meta.get_field("admin_allowed_cidrs").default
+        # The current allowlist state cannot be trusted when Site settings are
+        # unavailable. Deny Admin access rather than silently falling back to
+        # the model default (disabled/open). Normal repository routes remain
+        # available, and an administrator can repair the database/configuration
+        # before retrying Admin access.
+        logger.exception(
+            "Unable to load the Admin IP allowlist configuration; denying Admin access."
+        )
+        return True, []
 
     if not enabled:
         return False, []
