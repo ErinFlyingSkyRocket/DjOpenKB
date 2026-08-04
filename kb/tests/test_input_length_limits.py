@@ -190,7 +190,7 @@ class AdminInputLimitFormTests(SimpleTestCase):
         )
 
     def test_article_review_notes_widget_has_limit_without_reducing_body_limit(self):
-        with patch("kb.admin.get_article_body_character_limit", return_value=200000):
+        with patch("kb.admin.get_article_body_character_limit", return_value=100000):
             form = SuggestedArticleAdminForm()
 
         self.assertEqual(
@@ -201,10 +201,10 @@ class AdminInputLimitFormTests(SimpleTestCase):
             form.fields["review_notes"].max_length,
             REVIEW_NOTES_MAX_LENGTH,
         )
-        self.assertEqual(form.fields["body"].widget.attrs["maxlength"], 200000)
+        self.assertEqual(form.fields["body"].widget.attrs["maxlength"], 100000)
         self.assertEqual(
             form.fields["pending_update_body"].widget.attrs["maxlength"],
-            200000,
+            100000,
         )
 
     def test_admin_cidr_widget_has_limit(self):

@@ -26,7 +26,7 @@ ARTICLE_KEYWORD_MIN_LIMIT = 1
 ARTICLE_KEYWORD_MAX_LIMIT = 100
 ARTICLE_KEYWORD_MAX_TOTAL_LENGTH = 500
 
-ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT = 200_000
+ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT = 100_000
 ARTICLE_BODY_MIN_CHARACTER_LIMIT = 1_000
 ARTICLE_BODY_MAX_CHARACTER_LIMIT = 2_000_000
 
@@ -1248,7 +1248,7 @@ class SiteSetting(models.Model):
         verbose_name=_("Article body character limit"),
         help_text=_(
             "Maximum number of characters allowed in an article body or pending article update. "
-            "Default is 200000. Allowed range: 1000 to 2000000."
+            "Default is 100000. Allowed range: 1000 to 2000000."
         ),
     )
     articles_per_page = models.PositiveIntegerField(

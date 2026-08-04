@@ -103,7 +103,7 @@ Nginx request-body and rate limits are complemented by Django-side character lim
 | Admin allowed IP/CIDR list | 4,096 |
 | Unknown future text field fallback | 4,096 |
 
-The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `200,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. The full table, response behaviour, implementation references, and maintenance requirements are in `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md`.
+The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `100,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. The full table, response behaviour, implementation references, and maintenance requirements are in `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md`.
 
 Nginx uses a read-only root filesystem. Temporary paths are intentionally under the writable `/tmp` `tmpfs`:
 

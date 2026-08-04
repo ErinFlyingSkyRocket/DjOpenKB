@@ -298,7 +298,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "article_deletion_queue_retention_days"): "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
         (SiteSetting, "article_video_max_width_px"): "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px.",
-        (SiteSetting, "article_body_character_limit"): "Maximum number of characters allowed in an article body or pending article update. Recommended default is 200000. Allowed range: 1000 to 2000000.",
+        (SiteSetting, "article_body_character_limit"): "Maximum number of characters allowed in an article body or pending article update. Recommended default is 100000. Allowed range: 1000 to 2000000.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
         (SiteSetting, "session_timeout_hours"): "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
         (SiteSetting, "mfa_login_timeout_seconds"): "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
@@ -2820,7 +2820,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "how many keywords each article may contain, and the maximum article body length. "
                 "Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. "
                 "Article video width defaults to 720 px and remains responsive on smaller screens. "
-                "The article keyword limit defaults to 20. The article body limit defaults to 200000 characters."
+                "The article keyword limit defaults to 20. The article body limit defaults to 100000 characters."
             ),
         }),
         (_("Stray upload cleanup"), {

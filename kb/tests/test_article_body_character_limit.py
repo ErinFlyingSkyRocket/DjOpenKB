@@ -27,8 +27,8 @@ class ArticleBodyCharacterLimitTests(TestCase):
     def test_configured_limit_is_returned(self):
         self.assertEqual(get_article_body_character_limit(), 1000)
 
-    def test_default_limit_is_two_hundred_thousand(self):
-        self.assertEqual(ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT, 200000)
+    def test_default_limit_is_one_hundred_thousand(self):
+        self.assertEqual(ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT, 100000)
 
     def test_body_at_configured_limit_is_accepted(self):
         body = "a" * 1000

@@ -362,7 +362,7 @@ All user-controlled text values are bounded according to their purpose. The norm
 | Unknown future non-file text field | 4,096 | Safe fallback until a dedicated field-specific limit is added. |
 | Submitted field name | 128 | Prevents oversized query/form parameter names. |
 
-The article Markdown body remains configurable in **Django Admin → Site settings → Article settings**. Its default is `200,000` characters, with an allowed range of `1,000` to `2,000,000`. The OpenKB AI question limit is controlled by `OPENKB_AI_MAX_PROMPT_CHARS`, defaults to `1,000`, and is constrained to `100`–`10,000` characters.
+The article Markdown body remains configurable in **Django Admin → Site settings → Article settings**. Its default is `100,000` characters, with an allowed range of `1,000` to `2,000,000`. The OpenKB AI question limit is controlled by `OPENKB_AI_MAX_PROMPT_CHARS`, defaults to `1,000`, and is constrained to `100`–`10,000` characters.
 
 Oversized normal page submissions return HTTP `400`; JSON endpoints return a structured HTTP `400` response; an excessive overall request body returns HTTP `413`. Rejected content is not written to the warning log. See `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md` for the detailed implementation, multipart exceptions, maintainer checklist, and verification commands.
 
@@ -965,7 +965,7 @@ The singleton **Site settings** record controls the following operational limits
 | Article deletion queue retention | 7 days | Published articles remain recoverable in the admin queue for this many days. `0` makes published deletion immediate after MFA confirmation. |
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
 | Article keyword limit | 20 keywords | Maximum keywords on each article and pending update. Adjustable from 1 to 100. |
-| Article body character limit | 200,000 characters | Maximum Markdown body size for current articles and pending updates. Adjustable from 1,000 to 2,000,000. The editor blocks additional input and the server rejects bypass attempts. |
+| Article body character limit | 100,000 characters | Maximum Markdown body size for current articles and pending updates. Adjustable from 1,000 to 2,000,000. The editor blocks additional input and the server rejects bypass attempts. |
 | Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
 | Authentication activity-log retention | 30 days | `0` retains authentication/MFA logs indefinitely. |
 | User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |
