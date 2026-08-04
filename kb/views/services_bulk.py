@@ -120,6 +120,96 @@ def get_import_keyword_value(item, *names):
 BULK_EXPORT_PART_SIZE_BYTES = 95 * 1024 * 1024
 BULK_IMPORT_MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 BULK_IMPORT_MAX_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
+BULK_IMPORT_MAX_TOTAL_UNCOMPRESSED_BYTES = 500 * 1024 * 1024
+BULK_IMPORT_MAX_TOTAL_MEMBERS = 5000
+BULK_IMPORT_MAX_PART_ARCHIVES = 20
+BULK_IMPORT_MAX_NESTING_DEPTH = 1
+BULK_IMPORT_MAX_MANIFEST_BYTES = 5 * 1024 * 1024
+
+
+def _read_bulk_manifest(archive, manifest_name):
+    if not manifest_name:
+        return None
+    with archive.open(manifest_name, "r") as manifest_file:
+        data = manifest_file.read(BULK_IMPORT_MAX_MANIFEST_BYTES + 1)
+    if len(data) > BULK_IMPORT_MAX_MANIFEST_BYTES:
+        raise ValueError(_("Import manifest is too large. Maximum allowed size is 5 MB."))
+    return json.loads(data.decode("utf-8"))
+
+
+def _preflight_bulk_import_archive(uploaded_zip, *, depth=0, budget=None):
+    """Validate the complete nested ZIP tree before importing any article.
+
+    The budget is shared across an outer split package and all part archives so
+    individually valid parts cannot collectively consume unbounded resources.
+    """
+    if depth > BULK_IMPORT_MAX_NESTING_DEPTH:
+        raise ValueError(_("Nested split import packages are not allowed."))
+
+    if budget is None:
+        budget = {
+            "total_uncompressed": 0,
+            "total_members": 0,
+            "archive_count": 0,
+        }
+
+    with zipfile.ZipFile(uploaded_zip) as archive:
+        members = [item for item in archive.infolist() if not item.is_dir()]
+        archive_uncompressed = sum(max(0, int(item.file_size or 0)) for item in members)
+        if archive_uncompressed > BULK_IMPORT_MAX_UNCOMPRESSED_BYTES:
+            raise ValueError(_("Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."))
+
+        budget["archive_count"] += 1
+        budget["total_members"] += len(members)
+        budget["total_uncompressed"] += archive_uncompressed
+
+        if budget["archive_count"] > BULK_IMPORT_MAX_PART_ARCHIVES + 1:
+            raise ValueError(_("Split import package contains too many part archives. Maximum allowed is 20 parts."))
+        if budget["total_members"] > BULK_IMPORT_MAX_TOTAL_MEMBERS:
+            raise ValueError(_("Import package contains too many files. Maximum allowed across all parts is 5000 files."))
+        if budget["total_uncompressed"] > BULK_IMPORT_MAX_TOTAL_UNCOMPRESSED_BYTES:
+            raise ValueError(_("Import package is too large across all parts. Maximum cumulative uncompressed size is 500 MB."))
+
+        safe_names = {
+            safe_zip_member_name(item.filename): item.filename
+            for item in members
+            if safe_zip_member_name(item.filename)
+        }
+        manifest_name = safe_names.get("manifest.json")
+        manifest = _read_bulk_manifest(archive, manifest_name)
+
+        if manifest and manifest.get("format") == "djopenkb-bulk-export-split-v1":
+            if depth >= BULK_IMPORT_MAX_NESTING_DEPTH:
+                raise ValueError(_("Nested split import packages are not allowed."))
+
+            part_names = [
+                part.get("filename")
+                for part in sorted(
+                    manifest.get("parts", []),
+                    key=lambda item: item.get("filename") or "",
+                )
+                if part.get("filename") in safe_names
+            ]
+            if not part_names:
+                raise ValueError(_("Split export package did not contain any importable part zip files."))
+            if len(part_names) > BULK_IMPORT_MAX_PART_ARCHIVES:
+                raise ValueError(_("Split import package contains too many part archives. Maximum allowed is 20 parts."))
+
+            for part_name in part_names:
+                with archive.open(safe_names[part_name], "r") as part_file:
+                    part_bytes = part_file.read(BULK_IMPORT_MAX_UPLOAD_BYTES + 1)
+                if len(part_bytes) > BULK_IMPORT_MAX_UPLOAD_BYTES:
+                    raise ValueError(
+                        _("Split import part %(part_name)s is larger than 100 MB.")
+                        % {"part_name": part_name}
+                    )
+                _preflight_bulk_import_archive(
+                    io.BytesIO(part_bytes),
+                    depth=depth + 1,
+                    budget=budget,
+                )
+
+    return budget
 
 
 def build_bulk_export_payload(articles=None):
@@ -377,7 +467,7 @@ def copy_imported_uploads_from_zip(zip_file, upload_member_names):
     return filename_map
 
 
-def import_articles_from_zip(uploaded_zip, owner):
+def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_complete=False):
     """Import articles and uploaded files from a Knowledge Repository bulk export zip.
 
     All imported articles are assigned to the admin user performing the import.
@@ -385,6 +475,16 @@ def import_articles_from_zip(uploaded_zip, owner):
     supported. If an outer split package is uploaded, the importer will try to
     import the nested part zips in order.
     """
+    if not _preflight_complete:
+        _preflight_bulk_import_archive(uploaded_zip)
+        try:
+            uploaded_zip.seek(0)
+        except Exception:
+            pass
+
+    if _depth > BULK_IMPORT_MAX_NESTING_DEPTH:
+        raise ValueError(_("Nested split import packages are not allowed."))
+
     imported_count = 0
     errors = []
 
@@ -398,18 +498,20 @@ def import_articles_from_zip(uploaded_zip, owner):
             raise ValueError(_("Import zip is too large after extraction. Maximum allowed uncompressed size is 200 MB."))
 
         manifest_name = safe_names.get("manifest.json")
-        manifest = None
-        if manifest_name:
-            with archive.open(manifest_name, "r") as manifest_file:
-                manifest = json.loads(manifest_file.read().decode("utf-8"))
+        manifest = _read_bulk_manifest(archive, manifest_name)
 
         if manifest and manifest.get("format") == "djopenkb-bulk-export-split-v1":
+            if _depth >= BULK_IMPORT_MAX_NESTING_DEPTH:
+                raise ValueError(_("Nested split import packages are not allowed."))
+
             part_names = [
                 part.get("filename") for part in sorted(manifest.get("parts", []), key=lambda item: item.get("filename") or "")
                 if part.get("filename") in safe_names
             ]
             if not part_names:
                 raise ValueError(_("Split export package did not contain any importable part zip files."))
+            if len(part_names) > BULK_IMPORT_MAX_PART_ARCHIVES:
+                raise ValueError(_("Split import package contains too many part archives. Maximum allowed is 20 parts."))
 
             for part_name in part_names:
                 with archive.open(safe_names[part_name], "r") as part_file:
@@ -417,7 +519,12 @@ def import_articles_from_zip(uploaded_zip, owner):
                 if len(part_bytes) > BULK_IMPORT_MAX_UPLOAD_BYTES:
                     errors.append(_("Skipped %(part_name)s: part is larger than 100 MB. Extract and split it again before import.") % {"part_name": part_name})
                     continue
-                part_imported, part_errors = import_articles_from_zip(io.BytesIO(part_bytes), owner=owner)
+                part_imported, part_errors = import_articles_from_zip(
+                    io.BytesIO(part_bytes),
+                    owner=owner,
+                    _depth=_depth + 1,
+                    _preflight_complete=True,
+                )
                 imported_count += part_imported
                 errors.extend([f"{part_name}: {error}" for error in part_errors])
 

@@ -332,6 +332,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "kb.middleware.ConfigurableRequestRateLimitMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "kb.middleware.NginxErrorPageMiddleware",
     "kb.middleware.DisabledUserLogoutMiddleware",
@@ -753,11 +754,17 @@ if LDAP_ENABLED:
         ),
     )
 
+    # Use the directory's authoritative sAMAccountName for the local Django
+    # username even when the user signs in with a UPN or mail alias. This keeps
+    # one Django account, MFA device, role assignment, and article ownership per
+    # AD identity.
     AUTH_LDAP_USER_ATTR_MAP = {
+        "username": "sAMAccountName",
         "first_name": "givenName",
         "last_name": "sn",
         "email": "mail",
     }
+    AUTH_LDAP_USER_QUERY_FIELD = "username"
 
     # All valid AD users found by AUTH_LDAP_USER_SEARCH may authenticate.
     # The LDAP bind account remains a low-privilege, read-only search account;

@@ -101,14 +101,25 @@ def _find_user_for_username(username, request=None):
     try:
         if _requested_login_mode(request) in {"", "ad", "ldap"}:
             canonical = _normalized_lockout_username(request, username)
-            candidate = (
-                User.objects.filter(username__iexact=canonical)
+            # Prefer the authoritative sAMAccountName stored as username, but
+            # also resolve a directory mail alias to the same existing AD user.
+            # The profile check prevents an LDAP attempt from locking an
+            # unrelated local account that happens to use the same email/name.
+            candidates = (
+                User.objects.filter(
+                    Q(username__iexact=canonical)
+                    | Q(email__iexact=normalized)
+                )
                 .select_related("kb_profile")
-                .first()
+                .order_by("id")[:2]
             )
-            profile = getattr(candidate, "kb_profile", None) if candidate else None
-            if candidate and profile and getattr(profile, "is_ldap_type", False):
-                return candidate
+            ldap_candidates = [
+                candidate
+                for candidate in candidates
+                if getattr(getattr(candidate, "kb_profile", None), "is_ldap_type", False)
+            ]
+            if len(ldap_candidates) == 1:
+                return ldap_candidates[0]
             return None
 
         return (

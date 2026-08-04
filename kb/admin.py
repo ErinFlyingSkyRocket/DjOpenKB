@@ -11,6 +11,7 @@ from django.urls import path, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import GroupAdmin as DefaultGroupAdmin, UserAdmin as DefaultUserAdmin
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils import timezone
 from django.utils.html import format_html, format_html_join
@@ -32,6 +33,7 @@ from .notifications import (
 )
 from .views import delete_article_files, log_activity, write_article_files
 from .views.services import ensure_article_filename
+from .user_identity import validate_unique_user_email
 from .permissions import (
     PERM_ADD_ARTICLES,
     PERM_ADD_INTERNAL_ARTICLES,
@@ -246,6 +248,9 @@ def _apply_admin_translation_labels():
             "admin_ip_allowlist_enabled": "Enable Admin IP allowlist",
             "admin_allowed_cidrs": "Admin allowed IP ranges",
             "auth_lockout_strike_ttl_seconds": "Authentication lockout escalation memory (seconds)",
+            "login_request_limit_per_minute": "Login POST requests per IP per minute",
+            "mfa_request_limit_per_minute": "MFA POST requests per IP per minute",
+            "admin_request_limit_per_minute": "Django Admin POST requests per administrator per minute",
             "admin_mfa_idle_timeout_seconds": "Admin MFA idle timeout (seconds)",
             "openkb_ai_prompt_limit_per_24_hours": "OpenKB AI prompts per 24 hours",
             "updated_at": "Updated at",
@@ -1109,6 +1114,32 @@ class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
     role_permissions.short_description = _("Permissions")
 
 
+class UniqueEmailUserChangeForm(UserChangeForm):
+    """Apply the global case-insensitive email rule in Django Admin."""
+
+    def clean_email(self):
+        return validate_unique_user_email(
+            self.cleaned_data.get("email"),
+            user=self.instance,
+            required=False,
+        )
+
+
+class UniqueEmailUserCreationForm(UserCreationForm):
+    """Prevent new Admin-created users from duplicating an email address."""
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("username", "email")
+
+    def clean_email(self):
+        return validate_unique_user_email(
+            self.cleaned_data.get("email"),
+            user=self.instance,
+            required=False,
+        )
+
+
 try:
     admin.site.unregister(User)
 except admin.sites.NotRegistered:
@@ -1117,6 +1148,17 @@ except admin.sites.NotRegistered:
 
 @admin.register(User)
 class UserAdmin(AdminAuditMixin, DefaultUserAdmin):
+    form = UniqueEmailUserChangeForm
+    add_form = UniqueEmailUserCreationForm
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("username", "email", "password1", "password2"),
+            },
+        ),
+    )
     inlines = (UserProfileInline,)
 
     list_display = (
@@ -2721,6 +2763,18 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "Use the inline rows below to control progressive password/MFA lockouts. "
                 "Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. "
                 "repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
+            ),
+        }),
+        (_("Web request rate limits"), {
+            "fields": (
+                "login_request_limit_per_minute",
+                "mfa_request_limit_per_minute",
+                "admin_request_limit_per_minute",
+            ),
+            "description": _(
+                "These application-side limits use the shared Redis cache and take effect without reloading Nginx. "
+                "Login and MFA limits are per client IP. Ordinary Django Admin changes are limited per signed-in administrator. "
+                "Set a value to 0 to disable that application-side request limit. Progressive account/MFA lockouts remain active separately."
             ),
         }),
         (_("OpenKB AI rate limits"), {

@@ -48,6 +48,8 @@ class Command(BaseCommand):
         self._repair_mfa_login_timeout_setting()
         self._repair_admin_mfa_verification_timeout_setting()
         self._repair_admin_ip_allowlist_setting()
+        self._repair_request_rate_limit_settings()
+        self._repair_user_email_unique_index()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
 
     def _column_exists(self, table_name, column_name):
@@ -75,6 +77,20 @@ class Command(BaseCommand):
                 LIMIT 1
                 """,
                 [table_name],
+            )
+            return cursor.fetchone() is not None
+
+    def _index_exists(self, index_name):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT 1
+                FROM pg_indexes
+                WHERE schemaname = current_schema()
+                  AND indexname = %s
+                LIMIT 1
+                """,
+                [index_name],
             )
             return cursor.fetchone() is not None
 
@@ -304,3 +320,81 @@ class Command(BaseCommand):
             )
         )
 
+    def _repair_request_rate_limit_settings(self):
+        table_name = "kb_sitesetting"
+        if not self._table_exists(table_name):
+            return
+
+        columns = (
+            ("login_request_limit_per_minute", 8, 120),
+            ("mfa_request_limit_per_minute", 10, 120),
+            ("admin_request_limit_per_minute", 120, 600),
+        )
+        repaired = 0
+        with connection.cursor() as cursor:
+            for column_name, default_value, maximum in columns:
+                if self._column_exists(table_name, column_name):
+                    continue
+                self.stdout.write(f"Adding missing column: {table_name}.{column_name}")
+                cursor.execute(
+                    f"""
+                    ALTER TABLE kb_sitesetting
+                    ADD COLUMN {column_name} integer NOT NULL DEFAULT {int(default_value)}
+                    CHECK ({column_name} >= 0 AND {column_name} <= {int(maximum)})
+                    """
+                )
+                repaired += 1
+
+        if repaired:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Added {repaired} configurable request-rate-limit Site setting column(s)."
+                )
+            )
+        else:
+            self.stdout.write("No configurable request-rate-limit schema drift found.")
+
+    def _repair_user_email_unique_index(self):
+        table_name = "auth_user"
+        index_name = "auth_user_email_ci_unique_nonblank"
+        if not self._table_exists(table_name) or self._index_exists(index_name):
+            return
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT LOWER(email), COUNT(*)
+                FROM auth_user
+                WHERE email <> ''
+                GROUP BY LOWER(email)
+                HAVING COUNT(*) > 1
+                ORDER BY LOWER(email)
+                LIMIT 20
+                """
+            )
+            duplicates = cursor.fetchall()
+            if duplicates:
+                summary = ", ".join(
+                    f"{email} ({count})" for email, count in duplicates
+                )
+                self.stdout.write(
+                    self.style.ERROR(
+                        "Cannot create the case-insensitive User email unique index because duplicates exist: "
+                        f"{summary}. Resolve them in Django Admin, then run migrate/repair again."
+                    )
+                )
+                return
+
+            cursor.execute(
+                """
+                CREATE UNIQUE INDEX IF NOT EXISTS auth_user_email_ci_unique_nonblank
+                ON auth_user (LOWER(email))
+                WHERE email <> ''
+                """
+            )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Created the case-insensitive unique index for non-blank User email addresses."
+            )
+        )

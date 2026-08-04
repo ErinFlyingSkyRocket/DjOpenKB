@@ -4,8 +4,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from django.db import IntegrityError, transaction
 
 from .models import UserProfile
+from .user_identity import (
+    authoritative_ldap_email,
+    authoritative_ldap_username,
+    validate_unique_user_email,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -155,6 +161,14 @@ def _notify_ldap_username_conflict(request, username):
             # because the messages framework is unavailable.
             pass
 
+class LDAPIdentityConflict(Exception):
+    """Raised after LDAP bind when the authoritative identity is unsafe."""
+
+
+class LDAPEmailConflict(Exception):
+    """Raised when an LDAP mail value belongs to another Django account."""
+
+
 class NextLabsLDAPBackend(LDAPBackend):
     """Active Directory / LDAP backend.
 
@@ -207,13 +221,83 @@ class NextLabsLDAPBackend(LDAPBackend):
         return domain in allowed_domains
 
     def ldap_to_django_username(self, username):
-        """Map every AD login format to one Django username.
+        """Normalize only the submitted fallback username.
 
-        django-auth-ldap uses this hook when locating/creating the Django User.
-        Without it, signing in as ``alice`` and ``alice@openkb.local`` creates
-        two separate Django accounts.
+        ``AUTH_LDAP_USER_QUERY_FIELD`` and ``sAMAccountName`` remain the
+        authoritative lookup during ``get_or_build_user``. This fallback keeps
+        compatibility with django-auth-ldap's hook while avoiding mixed case.
         """
         return canonical_django_username_for_ldap(username) or super().ldap_to_django_username(username)
+
+    def get_or_build_user(self, username, ldap_user):
+        """Resolve the Django user from AD's authoritative sAMAccountName.
+
+        This prevents a mail alias or UPN local-part from creating a second
+        Django user for the same directory account. Existing AD users may be
+        matched by their unique directory email and renamed to the current
+        sAMAccountName when that rename is conflict-free.
+        """
+        authoritative_username = authoritative_ldap_username(ldap_user)
+        if not authoritative_username:
+            raise LDAPIdentityConflict("LDAP entry has no sAMAccountName")
+
+        UserModel = self.get_user_model()
+        ldap_email = authoritative_ldap_email(ldap_user)
+        existing = UserModel._default_manager.filter(
+            username__iexact=authoritative_username
+        ).first()
+        if existing is not None:
+            if _is_local_account_collision(existing):
+                raise LDAPIdentityConflict(authoritative_username)
+            if ldap_email:
+                try:
+                    validate_unique_user_email(
+                        ldap_email,
+                        user=existing,
+                        required=False,
+                    )
+                except Exception as exc:
+                    raise LDAPEmailConflict(ldap_email) from exc
+            return existing, False
+
+        if ldap_email:
+            email_matches = list(
+                UserModel._default_manager.filter(email__iexact=ldap_email)
+                .select_related("kb_profile")[:2]
+            )
+            if len(email_matches) > 1:
+                raise LDAPEmailConflict(ldap_email)
+            if len(email_matches) == 1:
+                candidate = email_matches[0]
+                if _is_local_account_collision(candidate):
+                    raise LDAPEmailConflict(ldap_email)
+                try:
+                    validate_unique_user_email(
+                        ldap_email,
+                        user=candidate,
+                        required=False,
+                    )
+                except Exception as exc:
+                    raise LDAPEmailConflict(ldap_email) from exc
+                candidate.username = authoritative_username
+                try:
+                    with transaction.atomic():
+                        candidate.save(update_fields=["username"])
+                except IntegrityError as exc:
+                    raise LDAPIdentityConflict(authoritative_username) from exc
+                return candidate, False
+
+            try:
+                validate_unique_user_email(
+                    ldap_email,
+                    user=None,
+                    required=False,
+                )
+            except Exception as exc:
+                raise LDAPEmailConflict(ldap_email) from exc
+
+        user = UserModel(**{UserModel.USERNAME_FIELD: authoritative_username})
+        return user, True
 
     def django_to_ldap_username(self, username):
         """Do not rewrite Django usernames back to UPNs for LDAP search.
@@ -244,7 +328,6 @@ class NextLabsLDAPBackend(LDAPBackend):
             return None
 
         canonical_username = canonical_django_username_for_ldap(ldap_username)
-        local_conflict_username = _find_local_account_collision(canonical_username or ldap_username)
 
         logger.info(
             "LDAP login attempt started. mode=%s input=%r normalized=%r canonical_django=%r",
@@ -261,23 +344,46 @@ class NextLabsLDAPBackend(LDAPBackend):
                 password=password,
                 **kwargs,
             )
+        except LDAPIdentityConflict as exc:
+            conflict_value = str(exc) or canonical_username or ldap_username
+            _notify_ldap_username_conflict(request, conflict_value)
+            logger.warning(
+                "LDAP login blocked after successful bind because the authoritative AD identity conflicts with a local account. "
+                "input=%r normalized=%r conflict=%r",
+                username,
+                ldap_username,
+                conflict_value,
+            )
+            return None
+        except LDAPEmailConflict:
+            if request is not None:
+                try:
+                    messages.warning(
+                        request,
+                        "This domain account email is already assigned to another Knowledge Repository account. "
+                        "Please contact an administrator.",
+                    )
+                except Exception:
+                    pass
+            logger.warning(
+                "LDAP login blocked because the directory email belongs to another Django account. input=%r normalized=%r",
+                username,
+                ldap_username,
+            )
+            return None
+        except IntegrityError:
+            logger.exception(
+                "LDAP login blocked by a database identity/email uniqueness constraint. input=%r normalized=%r",
+                username,
+                ldap_username,
+            )
+            return None
         except Exception:
             logger.exception("LDAP login failed with backend exception. input=%r normalized=%r", username, ldap_username)
             return None
 
         if user is None:
             logger.warning("LDAP login failed: django-auth-ldap returned no user. input=%r normalized=%r", username, ldap_username)
-            return None
-
-        if local_conflict_username and user.get_username().casefold() == local_conflict_username.casefold():
-            _notify_ldap_username_conflict(request, local_conflict_username)
-            logger.warning(
-                "LDAP login blocked after successful LDAP authentication due to local username conflict. "
-                "input=%r normalized=%r django_user=%r",
-                username,
-                ldap_username,
-                user.get_username(),
-            )
             return None
 
         logger.info("LDAP login succeeded for username=%r django_user=%r", ldap_username, user.get_username())
@@ -303,17 +409,36 @@ class NextLabsLDAPBackend(LDAPBackend):
         # In that case, use the validated UPN/domain login as the Django email
         # so the profile page and article metadata still show an address.
         if not (user.email or "").strip():
-            if "@" in ldap_username:
-                user.email = ldap_username.lower()
-                user_update_fields.append("email")
-            else:
-                ad_domain = getattr(settings, "LDAP_AD_DOMAIN", "").strip().lower()
-                if ad_domain:
-                    user.email = f"{ldap_username.lower()}@{ad_domain}"
+            authoritative_username = user.get_username().strip().lower()
+            ad_domain = getattr(settings, "LDAP_AD_DOMAIN", "").strip().lower()
+            fallback_email = (
+                f"{authoritative_username}@{ad_domain}"
+                if authoritative_username and ad_domain
+                else ""
+            )
+            if fallback_email:
+                try:
+                    user.email = validate_unique_user_email(
+                        fallback_email,
+                        user=user,
+                        required=False,
+                    )
                     user_update_fields.append("email")
+                except Exception:
+                    logger.warning(
+                        "LDAP fallback email was not assigned because it is invalid or already in use. username=%r",
+                        authoritative_username,
+                    )
 
         if user_update_fields:
-            user.save(update_fields=sorted(set(user_update_fields)))
+            try:
+                user.save(update_fields=sorted(set(user_update_fields)))
+            except IntegrityError:
+                logger.exception(
+                    "LDAP user update blocked by the global email uniqueness constraint. django_user=%r",
+                    user.get_username(),
+                )
+                return None
 
         if not profile.can_access_main_site:
             return None

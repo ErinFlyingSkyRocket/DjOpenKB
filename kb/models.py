@@ -1256,6 +1256,35 @@ class SiteSetting(models.Model):
         ),
     )
 
+    login_request_limit_per_minute = models.PositiveIntegerField(
+        default=8,
+        validators=[MinValueValidator(0), MaxValueValidator(120)],
+        verbose_name=_("Login POST requests per IP per minute"),
+        help_text=_(
+            "Application-side Redis request limit for username/password submissions from one IP address. "
+            "Default is 8 per minute. Set to 0 to disable this application-side limit. Allowed range: 0 to 120."
+        ),
+    )
+    mfa_request_limit_per_minute = models.PositiveIntegerField(
+        default=10,
+        validators=[MinValueValidator(0), MaxValueValidator(120)],
+        verbose_name=_("MFA POST requests per IP per minute"),
+        help_text=_(
+            "Application-side Redis request limit shared by main-login MFA and Admin MFA submissions from one IP address. "
+            "Default is 10 per minute. Set to 0 to disable this application-side limit. Allowed range: 0 to 120."
+        ),
+    )
+    admin_request_limit_per_minute = models.PositiveIntegerField(
+        default=120,
+        validators=[MinValueValidator(0), MaxValueValidator(600)],
+        verbose_name=_("Django Admin POST requests per administrator per minute"),
+        help_text=_(
+            "Application-side Redis request limit for ordinary Django Admin changes after Admin MFA succeeds. "
+            "The counter is per signed-in administrator, not shared by everyone behind the same office IP. "
+            "Default is 120 per minute. Set to 0 to disable this application-side limit. Allowed range: 0 to 600."
+        ),
+    )
+
     admin_mfa_idle_timeout_seconds = models.PositiveIntegerField(
         default=600,
         verbose_name=_("Admin MFA idle timeout (seconds)"),
@@ -1291,6 +1320,7 @@ class SiteSetting(models.Model):
         # Prompt submissions read this value through a one-minute cache. Clear
         # it immediately after an Admin save so a new limit takes effect at once.
         cache.delete("openkb_ai:quota24h:configured-limit")
+        cache.delete("request_rate_limit:configured-limits")
 
     @classmethod
     def load(cls):

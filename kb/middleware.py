@@ -1,11 +1,14 @@
+import hashlib
 import ipaddress
 import logging
 import re
 import secrets
+import time
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
+from django.core.cache import cache
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.http import Http404
@@ -245,6 +248,167 @@ class NginxErrorPageMiddleware:
         from .views.errors import render_http_error
 
         return render_http_error(request, status_code)
+
+
+REQUEST_RATE_LIMIT_CONFIG_CACHE_KEY = "request_rate_limit:configured-limits"
+REQUEST_RATE_LIMIT_CONFIG_CACHE_SECONDS = 30
+REQUEST_RATE_LIMIT_DEFAULTS = {
+    "login": 8,
+    "mfa": 10,
+    "admin": 120,
+}
+
+
+def _bounded_rate_limit(value, default, maximum):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        value = default
+    return min(max(value, 0), maximum)
+
+
+def _configured_request_rate_limits():
+    """Return Redis-backed application request limits from Site settings."""
+    try:
+        cached = cache.get(REQUEST_RATE_LIMIT_CONFIG_CACHE_KEY)
+        if isinstance(cached, dict):
+            return cached
+    except Exception:
+        cached = None
+
+    try:
+        site_setting = SiteSetting.load()
+        limits = {
+            "login": _bounded_rate_limit(
+                site_setting.login_request_limit_per_minute, 8, 120
+            ),
+            "mfa": _bounded_rate_limit(
+                site_setting.mfa_request_limit_per_minute, 10, 120
+            ),
+            "admin": _bounded_rate_limit(
+                site_setting.admin_request_limit_per_minute, 120, 600
+            ),
+        }
+    except Exception:
+        logger.exception(
+            "Unable to load configurable request-rate limits; using secure defaults."
+        )
+        limits = dict(REQUEST_RATE_LIMIT_DEFAULTS)
+
+    try:
+        cache.set(
+            REQUEST_RATE_LIMIT_CONFIG_CACHE_KEY,
+            limits,
+            REQUEST_RATE_LIMIT_CONFIG_CACHE_SECONDS,
+        )
+    except Exception:
+        pass
+    return limits
+
+
+def _request_rate_limit_scope(request):
+    """Return the configured rate-limit scope for one unsafe request."""
+    if request.method != "POST":
+        return ""
+
+    path = request.path_info or request.path
+    if path in {"/", "/login/"}:
+        return "login"
+
+    if path in {
+        "/mfa/setup/",
+        "/mfa/verify/",
+        "/mfa/reset/",
+        "/mfa/reset/setup/",
+        "/admin/mfa/start/",
+        "/admin/mfa/verify/",
+    }:
+        return "mfa"
+
+    if path in {"/admin", "/admin/"} or path.startswith("/admin/"):
+        if path in {"/admin/login", "/admin/login/", "/admin/logout/"}:
+            return ""
+        return "admin"
+
+    return ""
+
+
+def _request_rate_limit_subject(request, scope):
+    if scope == "admin":
+        user = getattr(request, "user", None)
+        if user is not None and user.is_authenticated and getattr(user, "pk", None):
+            return f"user:{user.pk}"
+
+    client_ip = _request_client_ip(request) or "unknown"
+    return "ip:" + hashlib.sha256(client_ip.encode("utf-8")).hexdigest()[:24]
+
+
+class ConfigurableRequestRateLimitMiddleware:
+    """Apply Site-setting request limits with atomic shared Redis counters.
+
+    Nginx keeps a deliberately higher fixed outer ceiling. These lower limits
+    are editable in Django Admin and take effect without reloading Nginx.
+    Account/password/MFA lockouts remain separate and continue to provide the
+    authoritative per-user progressive blocking policy.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        scope = _request_rate_limit_scope(request)
+        if not scope:
+            return self.get_response(request)
+
+        limits = _configured_request_rate_limits()
+        limit = int(limits.get(scope, 0) or 0)
+        if limit <= 0:
+            return self.get_response(request)
+
+        now = int(time.time())
+        window = now // 60
+        retry_after = max(1, 60 - (now % 60))
+        subject = _request_rate_limit_subject(request, scope)
+        key = f"request_rate_limit:{scope}:{subject}:{window}"
+
+        try:
+            cache.add(key, 0, timeout=70)
+            count = int(cache.incr(key))
+            try:
+                cache.touch(key, timeout=70)
+            except (AttributeError, NotImplementedError):
+                pass
+        except Exception:
+            logger.exception(
+                "Shared request-rate-limit storage is unavailable; rejecting protected POST. scope=%s",
+                scope,
+            )
+            from .views.errors import render_http_error
+
+            response = render_http_error(
+                request,
+                503,
+                error_message=_("The security rate-limit service is temporarily unavailable."),
+                error_help=_("Please wait briefly and try again."),
+            )
+            response["Retry-After"] = "60"
+            return response
+
+        if count > limit:
+            logger.warning(
+                "Configurable request limit exceeded. scope=%s subject=%s count=%s limit=%s",
+                scope,
+                subject,
+                count,
+                limit,
+            )
+            from .views.errors import render_http_error
+
+            response = render_http_error(request, 429)
+            response["Retry-After"] = str(retry_after)
+            return response
+
+        return self.get_response(request)
 
 
 class SessionTimeoutMiddleware:

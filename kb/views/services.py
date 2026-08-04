@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import time
+import warnings
 import uuid
 import zipfile
 from datetime import datetime, timedelta
@@ -1223,10 +1224,14 @@ def validate_article_image_upload(uploaded_file):
 
     try:
         uploaded_file.seek(0)
-        with Image.open(uploaded_file) as image:
-            image.verify()
-            detected_format = (image.format or "").upper()
-            width, height = image.size
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(uploaded_file) as image:
+                image.verify()
+                detected_format = (image.format or "").upper()
+                width, height = image.size
+    except (Image.DecompressionBombError, Image.DecompressionBombWarning):
+        raise ValidationError(_("Image dimensions are too large. Please upload a smaller image."))
     except (UnidentifiedImageError, OSError, ValueError):
         raise ValidationError(_("The uploaded file is not a valid image."))
     finally:

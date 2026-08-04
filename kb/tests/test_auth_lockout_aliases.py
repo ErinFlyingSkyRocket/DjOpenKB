@@ -37,6 +37,19 @@ class LDAPAliasLockoutIdentifierTests(TestCase):
 
         self.assertEqual(identifiers, {f"password:user:{self.user.pk}"})
 
+
+    def test_directory_mail_alias_resolves_to_authoritative_ad_user(self):
+        self.user.email = "john.smith@example.invalid"
+        self.user.save(update_fields=["email"])
+
+        identifier = get_auth_lockout_identifier(
+            request=self._request("john.smith@example.invalid"),
+            username="john.smith@example.invalid",
+            purpose="password",
+        )
+
+        self.assertEqual(identifier, f"password:user:{self.user.pk}")
+
     def test_ad_alias_does_not_map_to_unrelated_local_account(self):
         local_user = get_user_model().objects.create_user(
             username="local-only",

@@ -25,10 +25,10 @@ from ..mfa import (
     verify_totp_code,
 )
 from ..permissions import user_has_disabled_role
+from ..user_identity import validate_unique_user_email
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
@@ -40,34 +40,8 @@ PROFILE_DIALOGS = {PROFILE_DIALOG_RESET_MFA, PROFILE_DIALOG_CHANGE_PASSWORD}
 
 
 def _validate_profile_email(user, raw_email):
-    """Validate and return a local user's requested profile email address.
-
-    Django's default User model does not make ``email`` unique. DjOpenKB allows
-    local users to sign in by email, so accepting a case-insensitive duplicate
-    would make that login identifier ambiguous.
-    """
-    email = (raw_email or "").strip()
-    email_field = user._meta.get_field("email")
-    max_length = int(getattr(email_field, "max_length", 254) or 254)
-
-    if not email or len(email) > max_length:
-        raise ValidationError(validate_email.message, code="invalid")
-
-    validate_email(email)
-
-    UserModel = get_user_model()
-    duplicate_exists = (
-        UserModel._default_manager.filter(email__iexact=email)
-        .exclude(pk=user.pk)
-        .exists()
-    )
-    if duplicate_exists:
-        raise ValidationError(
-            _("Please check the submitted information and try again."),
-            code="duplicate",
-        )
-
-    return email
+    """Validate a required local profile email through the shared identity rule."""
+    return validate_unique_user_email(raw_email, user=user, required=True)
 
 
 def _profile_dialog_redirect(dialog):
