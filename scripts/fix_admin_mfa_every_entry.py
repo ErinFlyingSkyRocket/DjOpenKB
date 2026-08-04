@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Legacy compatibility check for the Admin MFA every-entry update.
+"""Compatibility check for the automatic Admin MFA OTP-entry flow.
 
-Modern DjOpenKB versions start a new Admin MFA challenge only through the
-CSRF-protected ``admin_mfa_start`` POST endpoint. The older ``fresh=1`` GET
-patch is intentionally retired because a GET request must not rotate or clear
-security-sensitive session state.
+Modern DjOpenKB versions send protected Django Admin and administrator-tool
+requests to the Admin MFA verification route. The route creates a fresh,
+fixed-deadline challenge automatically and displays the OTP field without an
+intermediate "start verification" button.
 
-This script no longer rewrites project files. It only confirms that the modern
-flow is present, preventing an accidental rerun from restoring the old GET
-behaviour.
+This script does not rewrite project files. It only checks that the automatic
+flow is present, preventing older maintenance instructions from restoring the
+retired POST-button workflow.
 """
 from pathlib import Path
 
@@ -20,17 +20,30 @@ def contains(path: str, marker: str) -> bool:
     return candidate.exists() and marker in candidate.read_text(encoding="utf-8")
 
 
+def excludes(path: str, marker: str) -> bool:
+    candidate = ROOT / path
+    return candidate.exists() and marker not in candidate.read_text(encoding="utf-8")
+
+
 def main() -> None:
     checks = {
-        "CSRF-protected Admin MFA start view": contains(
+        "automatic Admin MFA challenge entry": contains(
             "kb/admin_security.py",
-            "def start_admin_mfa_verification",
+            "The user sees\n    # the OTP field immediately instead of an intermediate start button.",
         ),
-        "Admin MFA start URL": contains(
-            "djopenkb/urls.py",
-            'name="admin_mfa_start"',
+        "direct navbar Admin link": contains(
+            "website/templates/_navbar.html",
+            "{% url 'admin:index' %}",
         ),
-        "POST-based navbar Admin action": contains(
+        "OTP field on the Admin MFA page": contains(
+            "website/templates/admin_mfa_verify.html",
+            'id="id_code"',
+        ),
+        "retired start button absent": excludes(
+            "website/templates/admin_mfa_verify.html",
+            "Start new verification window",
+        ),
+        "retired navbar start form absent": excludes(
             "website/templates/_navbar.html",
             "{% url 'admin_mfa_start' %}",
         ),
@@ -38,12 +51,12 @@ def main() -> None:
     missing = [label for label, present in checks.items() if not present]
     if missing:
         raise RuntimeError(
-            "The current POST-based Admin MFA update is incomplete: "
+            "The automatic Admin MFA OTP-entry update is incomplete: "
             + ", ".join(missing)
-            + ". Apply the latest incremental project files instead of the retired fresh=1 patch."
+            + ". Apply the latest incremental project files."
         )
 
-    print("Modern POST-based Admin MFA every-entry flow is already installed; no changes made.")
+    print("Automatic Admin MFA OTP-entry flow is installed; no changes made.")
 
 
 if __name__ == "__main__":

@@ -69,7 +69,7 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         return challenge_id, expires_at
 
     def _start_fresh_challenge(self):
-        entry_response = self.client.post(self.start_url, {"next": "/admin/"})
+        entry_response = self.client.get(self.entry_verify_url)
         self.assertRedirects(
             entry_response,
             self.canonical_verify_url,
@@ -79,6 +79,14 @@ class AdminMFAVerificationTimeoutTests(TestCase):
 
     def _current_challenge_id(self):
         return self.client.session[ADMIN_MFA_CHALLENGE_ID_KEY]
+
+    def _assert_challenge_cleared(self):
+        session = self.client.session
+        self.assertNotIn(ADMIN_MFA_CHALLENGE_ID_KEY, session)
+        self.assertNotIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
+        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
+        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, session)
+        self.assertNotIn(ADMIN_MFA_LOCKOUT_DEFERRED_KEY, session)
 
     def test_admin_mfa_start_endpoint_rejects_get_without_rotating_state(self):
         old_id, old_expiry = self._set_challenge(challenge_id="old-challenge")
@@ -90,19 +98,28 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         self.assertEqual(session[ADMIN_MFA_CHALLENGE_ID_KEY], old_id)
         self.assertEqual(session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY], old_expiry)
 
-    def test_get_entry_page_does_not_rotate_security_state(self):
-        old_id, old_expiry = self._set_challenge(challenge_id="old-challenge")
+    def test_entry_redirect_starts_fresh_challenge_without_start_button(self):
+        old_id, _old_expiry = self._set_challenge(challenge_id="old-challenge")
 
         response = self.client.get(self.entry_verify_url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["admin_mfa_entry_required"])
-        self.assertContains(response, f'action="{self.start_url}"')
+        self.assertRedirects(
+            response,
+            self.canonical_verify_url,
+            fetch_redirect_response=False,
+        )
         session = self.client.session
-        self.assertEqual(session[ADMIN_MFA_CHALLENGE_ID_KEY], old_id)
-        self.assertEqual(session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY], old_expiry)
+        self.assertNotEqual(session[ADMIN_MFA_CHALLENGE_ID_KEY], old_id)
+        self.assertIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
+        self.assertIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
 
-    def test_post_start_rotates_challenge_then_redirects_to_canonical_url(self):
+        verify_response = self.client.get(self.canonical_verify_url)
+        self.assertContains(verify_response, 'id="id_code"')
+        self.assertContains(verify_response, 'autofocus')
+        self.assertNotContains(verify_response, "Start new verification window")
+        self.assertNotContains(verify_response, f'action="{self.start_url}"')
+
+    def test_post_start_remains_backward_compatible_and_rotates_challenge(self):
         old_id, _old_expiry = self._set_challenge(challenge_id="old-challenge")
 
         response = self.client.post(self.start_url, {"next": "/admin/"})
@@ -118,11 +135,12 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         self.assertIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
         self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, session)
 
-    def test_admin_mfa_page_shows_seconds_countdown_before_verify_button(self):
+    def test_admin_mfa_page_shows_otp_and_seconds_countdown(self):
         response = self._start_fresh_challenge()
         challenge_id = self._current_challenge_id()
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="id_code"')
         self.assertContains(response, 'id="admin-mfa-countdown"')
         self.assertContains(response, 'data-remaining-seconds="')
         self.assertContains(response, f'data-challenge-id="{challenge_id}"')
@@ -138,7 +156,7 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         rendered = response.content.decode("utf-8")
         code_position = rendered.index('id="id_code"')
         countdown_position = rendered.index('id="admin-mfa-countdown"')
-        button_position = rendered.index('type="submit">', countdown_position)
+        button_position = rendered.index('type="submit"', countdown_position)
         self.assertLess(code_position, countdown_position)
         self.assertLess(countdown_position, button_position)
 
@@ -167,7 +185,12 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         self._start_fresh_challenge()
         first_id = self._current_challenge_id()
 
-        self.client.post(self.start_url, {"next": "/admin/"})
+        response = self.client.get(self.entry_verify_url)
+        self.assertRedirects(
+            response,
+            self.canonical_verify_url,
+            fetch_redirect_response=False,
+        )
         second_id = self._current_challenge_id()
 
         self.assertNotEqual(second_id, first_id)
@@ -179,20 +202,16 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         response = self.client.get(reverse("home"))
 
         self.assertEqual(response.status_code, 200)
-        session = self.client.session
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_ID_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, session)
+        self._assert_challenge_cleared()
 
     def test_active_admin_mfa_lockout_defers_the_short_verification_timer(self):
         with patch(
             "kb.admin_security.get_auth_lockout_status",
             return_value=(True, 300, "admin_mfa:user:test"),
         ):
-            start_response = self.client.post(self.start_url, {"next": "/admin/"})
+            entry_response = self.client.get(self.entry_verify_url)
             self.assertRedirects(
-                start_response,
+                entry_response,
                 self.canonical_verify_url,
                 fetch_redirect_response=False,
             )
@@ -200,6 +219,7 @@ class AdminMFAVerificationTimeoutTests(TestCase):
 
         self.assertTrue(locked_response.context["admin_mfa_rate_limit_active"])
         self.assertFalse(locked_response.context["admin_mfa_timeout_active"])
+        self.assertContains(locked_response, 'id="id_code"')
         session = self.client.session
         self.assertTrue(session.get(ADMIN_MFA_LOCKOUT_DEFERRED_KEY))
         self.assertNotIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
@@ -235,31 +255,17 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         self.assertGreater(remaining, 0)
         self.assertLessEqual(remaining, 45)
 
-    def test_expired_get_keeps_user_signed_in_and_waits_for_retry(self):
-        challenge_id, _expiry = self._set_challenge(started_seconds_ago=61)
+    def test_expired_get_redirects_home_and_clears_pending_challenge(self):
+        self._set_challenge(started_seconds_ago=61)
 
         response = self.client.get(self.canonical_verify_url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            "Admin MFA verification timed out. Start a new verification window to try again.",
-        )
-        self.assertContains(response, "Start new verification window")
-        self.assertContains(
-            response,
-            f'name="challenge_id" value="{challenge_id}"',
-        )
-        self.assertNotContains(response, 'id="admin-mfa-countdown"')
-        session = self.client.session
-        self.assertIn("_auth_user_id", session)
-        self.assertNotIn(ADMIN_MFA_VERIFIED_KEY, session)
-        self.assertTrue(session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY))
-        self.assertEqual(session.get(ADMIN_MFA_CHALLENGE_ID_KEY), challenge_id)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
+        self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
+        self.assertIn("_auth_user_id", self.client.session)
+        self.assertNotIn(ADMIN_MFA_VERIFIED_KEY, self.client.session)
+        self._assert_challenge_cleared()
 
-    def test_expired_post_rejects_valid_code_and_waits_for_retry(self):
+    def test_expired_post_rejects_valid_code_and_redirects_home(self):
         challenge_id, _expiry = self._set_challenge(started_seconds_ago=61)
         valid_code = pyotp.TOTP(self.device.get_secret()).now()
 
@@ -272,15 +278,10 @@ class AdminMFAVerificationTimeoutTests(TestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
         self.assertNotIn(ADMIN_MFA_VERIFIED_KEY, self.client.session)
         self.assertIn("_auth_user_id", self.client.session)
-        self.assertTrue(self.client.session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY))
-        self.assertEqual(
-            self.client.session.get(ADMIN_MFA_CHALLENGE_ID_KEY),
-            challenge_id,
-        )
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, self.client.session)
+        self._assert_challenge_cleared()
 
     def test_early_timeout_post_does_not_extend_active_window(self):
         challenge_id, previous_expiry = self._set_challenge(started_seconds_ago=10)
@@ -304,7 +305,7 @@ class AdminMFAVerificationTimeoutTests(TestCase):
             previous_expiry,
         )
 
-    def test_expired_countdown_timeout_post_waits_for_retry_without_logging_out(self):
+    def test_expired_countdown_post_redirects_home_and_clears_challenge(self):
         challenge_id, _expiry = self._set_challenge(started_seconds_ago=61)
 
         response = self.client.post(
@@ -316,41 +317,35 @@ class AdminMFAVerificationTimeoutTests(TestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse("home"), fetch_redirect_response=False)
+        self.assertIn("_auth_user_id", self.client.session)
+        self.assertNotIn(ADMIN_MFA_VERIFIED_KEY, self.client.session)
+        self._assert_challenge_cleared()
+
+    def test_legacy_expired_state_automatically_opens_a_fresh_otp_window(self):
+        old_id, _expiry = self._set_challenge(challenge_id="legacy-expired")
         session = self.client.session
-        self.assertIn("_auth_user_id", session)
-        self.assertNotIn(ADMIN_MFA_VERIFIED_KEY, session)
-        self.assertTrue(session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY))
-        self.assertEqual(session.get(ADMIN_MFA_CHALLENGE_ID_KEY), challenge_id)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
+        session.pop(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, None)
+        session.pop(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, None)
+        session[ADMIN_MFA_CHALLENGE_EXPIRED_KEY] = True
+        session.save()
 
-    def test_explicit_retry_rotates_to_a_new_fixed_window(self):
-        challenge_id, _expiry = self._set_challenge(started_seconds_ago=61)
-        self.client.get(self.canonical_verify_url)
-
-        response = self.client.post(
-            self.verify_url,
-            {
-                "next": "/admin/",
-                "challenge_id": challenge_id,
-                "action": "restart",
-            },
-        )
+        response = self.client.get(self.canonical_verify_url)
 
         self.assertEqual(response.status_code, 200)
         session = self.client.session
-        self.assertIn("_auth_user_id", session)
+        self.assertNotEqual(session[ADMIN_MFA_CHALLENGE_ID_KEY], old_id)
         self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, session)
-        self.assertNotEqual(session[ADMIN_MFA_CHALLENGE_ID_KEY], challenge_id)
         self.assertIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
         self.assertIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
-        self.assertContains(response, 'id="admin-mfa-countdown"')
+        self.assertContains(response, 'id="id_code"')
+        self.assertNotContains(response, "Start new verification window")
 
     def test_stale_page_cannot_verify_after_a_new_entry_rotates_challenge(self):
         self._start_fresh_challenge()
         stale_challenge_id = self._current_challenge_id()
 
-        self.client.post(self.start_url, {"next": "/admin/"})
+        self.client.get(self.entry_verify_url)
         current_challenge_id = self._current_challenge_id()
         valid_code = pyotp.TOTP(self.device.get_secret()).now()
 
@@ -395,12 +390,9 @@ class AdminMFAVerificationTimeoutTests(TestCase):
         self.assertNotEqual(session.session_key, old_session_key)
         self.assertTrue(session.get(ADMIN_MFA_VERIFIED_KEY))
         self.assertEqual(session.get(ADMIN_MFA_USER_ID_KEY), str(self.user.pk))
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_ID_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, session)
-        self.assertNotIn(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, session)
+        self._assert_challenge_cleared()
 
-    def test_site_setting_admin_places_both_verification_timers_together(self):
+    def test_site_setting_admin_describes_automatic_otp_and_timeout_redirect(self):
         model_admin = admin.site._registry[SiteSetting]
         timeout_fieldset = next(
             options
@@ -420,4 +412,6 @@ class AdminMFAVerificationTimeoutTests(TestCase):
             "admin_mfa_verification_timeout_seconds",
             model_admin.readonly_fields,
         )
+        self.assertIn("OTP field opens automatically", str(timeout_fieldset["description"]))
+        self.assertIn("returns the administrator to the normal site", str(timeout_fieldset["description"]))
         self.assertEqual(model_admin.list_display, ("__str__",))

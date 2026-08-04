@@ -121,7 +121,7 @@ class AuthenticationLockoutCountdownUITests(TestCase):
         self.assertGreaterEqual(rendered.count('disabled aria-disabled="true"'), 2)
         self.assertIn("auth-lockout-countdown.js", rendered)
 
-    def test_admin_mfa_lockout_disables_code_and_restart_actions(self):
+    def test_admin_mfa_lockout_disables_code_and_verify_action(self):
         admin_user = get_user_model().objects.create_superuser(
             username="lockout-ui-admin",
             email="lockout-ui-admin@example.invalid",
@@ -135,11 +135,10 @@ class AuthenticationLockoutCountdownUITests(TestCase):
         client.force_login(admin_user)
         record_auth_failure(user=admin_user, purpose="admin_mfa")
 
-        start_response = client.post(
-            reverse("admin_mfa_start"),
-            {"next": "/admin/"},
+        entry_response = client.get(
+            f"{reverse('admin_mfa_verify')}?next=/admin/&entry=1"
         )
-        self.assertEqual(start_response.status_code, 302)
+        self.assertEqual(entry_response.status_code, 302)
         response = client.get(f"{reverse('admin_mfa_verify')}?next=/admin/")
 
         self.assertEqual(response.status_code, 200)

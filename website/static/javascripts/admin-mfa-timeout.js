@@ -4,7 +4,7 @@
  * Django stores and enforces the authoritative fixed expiry time in the
  * server-side session. This script only updates the visible seconds and sends
  * a normal CSRF-protected timeout POST when the display reaches zero. Django
- * then keeps the administrator signed in and pauses until an explicit retry.
+ * then clears the pending challenge and returns the administrator to the normal site.
  */
 (function () {
     "use strict";

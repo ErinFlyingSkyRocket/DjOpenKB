@@ -120,56 +120,38 @@
             </ul>
         {% endif %}
 
-        {% if admin_mfa_entry_required %}
-            <form method="post" action="{% url 'admin_mfa_start' %}" novalidate data-auth-lockout-scope>
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
-                {% include "_auth_lockout_countdown.html" with lockout_active=admin_mfa_rate_limit_active lockout_remaining_seconds=admin_mfa_rate_limit_remaining_seconds lockout_message_template=admin_mfa_rate_limit_message_template lockout_initial_message=admin_mfa_rate_limit_initial_message lockout_group='admin_mfa' only %}
-                <button type="submit" {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="admin_mfa">{% trans "Start new verification window" %}</button>
-            </form>
-        {% elif admin_mfa_timeout_expired %}
-            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate data-auth-lockout-scope>
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
-                <input type="hidden" name="challenge_id" value="{{ admin_mfa_challenge_id }}">
-                <input type="hidden" name="action" value="restart">
-                {% include "_auth_lockout_countdown.html" with lockout_active=admin_mfa_rate_limit_active lockout_remaining_seconds=admin_mfa_rate_limit_remaining_seconds lockout_message_template=admin_mfa_rate_limit_message_template lockout_initial_message=admin_mfa_rate_limit_initial_message lockout_group='admin_mfa' only %}
-                <button type="submit" {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="admin_mfa">{% trans "Start new verification window" %}</button>
-            </form>
-        {% else %}
-            <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate data-auth-lockout-scope>
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next }}">
-                <input type="hidden" name="challenge_id" value="{{ admin_mfa_challenge_id }}">
-                <label for="id_code">{% trans "Authenticator code" %}</label>
-                <input id="id_code" name="code" maxlength="{{ input_limits.mfa_code }}" type="text" inputmode="numeric" autocomplete="one-time-code" required {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="admin_mfa">
+        <form method="post" action="{% url 'admin_mfa_verify' %}" novalidate data-auth-lockout-scope>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <input type="hidden" name="challenge_id" value="{{ admin_mfa_challenge_id }}">
+            <label for="id_code">{% trans "Authenticator code" %}</label>
+            <input id="id_code" name="code" maxlength="{{ input_limits.mfa_code }}" type="text" inputmode="numeric" autocomplete="one-time-code" required {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="admin_mfa">
 
-                {% include "_auth_lockout_countdown.html" with lockout_active=admin_mfa_rate_limit_active lockout_remaining_seconds=admin_mfa_rate_limit_remaining_seconds lockout_message_template=admin_mfa_rate_limit_message_template lockout_initial_message=admin_mfa_rate_limit_initial_message lockout_group='admin_mfa' only %}
+            {% include "_auth_lockout_countdown.html" with lockout_active=admin_mfa_rate_limit_active lockout_remaining_seconds=admin_mfa_rate_limit_remaining_seconds lockout_message_template=admin_mfa_rate_limit_message_template lockout_initial_message=admin_mfa_rate_limit_initial_message lockout_group='admin_mfa' only %}
 
-                {% if admin_mfa_timeout_active %}
-                    <p
-                        id="admin-mfa-countdown"
-                        class="admin-mfa-countdown"
-                        role="status"
-                        aria-live="polite"
-                        data-remaining-seconds="{{ admin_mfa_timeout_remaining_seconds }}"
-                        data-timeout-url="{% url 'admin_mfa_verify' %}"
-                        data-next-url="{{ next }}"
-                        data-challenge-id="{{ admin_mfa_challenge_id }}"
-                    >
-                        {% trans "Please enter your admin MFA code to continue." %}
-                        <strong id="admin-mfa-countdown-value">{{ admin_mfa_timeout_remaining_seconds }}s</strong>
-                    </p>
-                {% endif %}
+            {% if admin_mfa_timeout_active %}
+                <p
+                    id="admin-mfa-countdown"
+                    class="admin-mfa-countdown"
+                    role="status"
+                    aria-live="polite"
+                    data-remaining-seconds="{{ admin_mfa_timeout_remaining_seconds }}"
+                    data-timeout-url="{% url 'admin_mfa_verify' %}"
+                    data-next-url="{{ next }}"
+                    data-challenge-id="{{ admin_mfa_challenge_id }}"
+                >
+                    {% trans "Please enter your admin MFA code to continue." %}
+                    <strong id="admin-mfa-countdown-value">{{ admin_mfa_timeout_remaining_seconds }}s</strong>
+                </p>
+            {% endif %}
 
-                <button type="submit" {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="admin_mfa">{% trans "Verify and continue to admin" %}</button>
-            </form>
-        {% endif %}
+            <button type="submit" {% if admin_mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="admin_mfa">{% trans "Verify and continue to admin" %}</button>
+        </form>
 
         <a class="secondary-link" href="{% url 'home' %}">{% trans "Back to Knowledge Repository" %}</a>
     </main>
     {% if admin_mfa_timeout_active %}
-        <script src="{% static 'javascripts/admin-mfa-timeout.js' %}?v=20260803-2" defer></script>
+        <script src="{% static 'javascripts/admin-mfa-timeout.js' %}?v=20260804-1" defer></script>
     {% endif %}
     {% if admin_mfa_rate_limit_active %}
         <script src="{% static 'javascripts/auth-lockout-countdown.js' %}?v=20260803-1" defer></script>

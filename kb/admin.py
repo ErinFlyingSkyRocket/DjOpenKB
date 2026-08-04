@@ -302,7 +302,7 @@ def _apply_admin_translation_labels():
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
         (SiteSetting, "session_timeout_hours"): "Authenticated sessions expire after this many hours from sign-in. Pending-MFA sessions cannot exceed this lifetime, but they normally expire sooner according to the separate MFA login completion timeout. Default is 8 hours. Allowed range: 1 to 168 hours (7 days).",
         (SiteSetting, "mfa_login_timeout_seconds"): "Maximum time allowed to complete MFA after the username/password step succeeds. When the countdown reaches zero, the pending login is cleared and the user must enter their username and password again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
-        (SiteSetting, "admin_mfa_verification_timeout_seconds"): "Maximum time allowed to complete the separate MFA check before entering Django Admin. When the countdown reaches zero, the administrator stays signed in and must start a new verification window before trying again. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
+        (SiteSetting, "admin_mfa_verification_timeout_seconds"): "Maximum time allowed to complete the separate MFA check before entering Django Admin. The OTP field opens automatically. When the countdown reaches zero, the pending attempt is cleared and the administrator returns to the normal site. Opening Admin or a protected administrator tool again starts a fresh OTP prompt automatically. Default is 60 seconds. Allowed range: 30 to 900 seconds (15 minutes).",
         (SiteSetting, "activity_log_retention_days"): "Article/vote/image/admin-tool/admin-site activity logs older than this many days can be deleted by the cleanup command. Use 0 to keep general and admin activity logs indefinitely.",
         (SiteSetting, "admin_log_rows_per_page"): "Number of rows to show per page in Django Admin log tables. Recommended range: 50 to 500. Default is 200.",
         (SiteSetting, "admin_ip_allowlist_enabled"): "Disabled by default. When disabled, Django Admin can be reached from any IPv4 or IPv6 address, subject to normal authentication and Admin MFA. When enabled, only the configured IP/CIDR ranges are allowed.",
@@ -2864,7 +2864,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
             ),
             "description": _(
                 "The main login MFA timeout starts after username/password verification and requires the user to sign in again when it expires. "
-                "The separate Admin MFA timeout starts when an administrator opens the Admin verification page; expiry keeps the administrator signed in and requires a new verification window before another code can be entered. "
+                "The separate Admin MFA timeout starts when the OTP field opens automatically; expiry clears the pending attempt and returns the administrator to the normal site. Opening Admin or a protected administrator tool again displays a fresh OTP field immediately. "
                 "Both default to 60 seconds. Allowed range: 30 to 900 seconds (15 minutes)."
             ),
         }),
