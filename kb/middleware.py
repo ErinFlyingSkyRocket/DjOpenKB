@@ -708,7 +708,17 @@ class ForceLoginAndAdminGuardMiddleware:
 class AuthSessionCacheControlMiddleware:
     """Apply no-store headers to login/logout/MFA and authenticated pages."""
 
-    AUTH_PATH_NAMES = ("root_login", "login", "logout", "mfa_setup", "mfa_verify", "mfa_cancel", "reset_mfa")
+    AUTH_PATH_NAMES = (
+        "root_login",
+        "login",
+        "logout",
+        "mfa_setup",
+        "mfa_verify",
+        "mfa_cancel",
+        "reset_mfa",
+        "mfa_reset_setup",
+        "mfa_reset_cancel",
+    )
 
     def __init__(self, get_response):
         self.get_response = get_response

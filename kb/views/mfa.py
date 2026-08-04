@@ -5,11 +5,13 @@ import pyotp
 import qrcode
 from django.contrib import messages
 from django.contrib.auth import authenticate, logout
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_http_methods, require_POST
 
 from .services import is_ldap_managed_user, main_site_login_required
 
@@ -23,20 +25,24 @@ from ..auth_monitoring import (
 )
 from ..mfa import (
     begin_pending_mfa_login,
+    begin_pending_mfa_reset,
     clear_user_auth_sessions,
     clear_mfa_verified,
     clear_pending_mfa_login,
+    clear_pending_mfa_reset,
     complete_pending_mfa_login,
     defer_pending_mfa_deadline_for_lockout,
     get_or_create_mfa_device,
     get_mfa_login_timeout_seconds,
-    reset_mfa_device_for_user,
+    get_pending_mfa_reset,
     get_pending_mfa_user,
     get_totp_issuer,
     mfa_device_secret_is_readable,
     mfa_is_verified,
     mark_mfa_verified,
     pending_mfa_challenge_matches,
+    pending_mfa_reset_challenge_matches,
+    pending_mfa_reset_device_matches,
     ensure_pending_mfa_challenge_id,
     pending_mfa_login_has_expired,
     pending_mfa_next_url,
@@ -46,6 +52,7 @@ from ..mfa import (
     start_disabled_account_session,
     user_requires_mfa,
     verify_totp_code,
+    verify_totp_secret,
 )
 from ..permissions import user_has_disabled_role
 
@@ -69,6 +76,8 @@ def _blocked_next_paths():
         reverse("mfa_setup"),
         reverse("mfa_verify"),
         reverse("reset_mfa"),
+        reverse("mfa_reset_setup"),
+        reverse("mfa_reset_cancel"),
         reverse("login"),
         reverse("logout"),
     }
@@ -783,38 +792,229 @@ def reset_mfa(request):
         messages.info(request, _("MFA reset is available for your Knowledge Repository account."))
         return redirect("profile")
 
-    # A stolen authenticated browser session must not be enough to replace the
-    # user's second factor. Require both the account password and the currently
-    # configured authenticator code immediately before the reset.
+    # A stolen authenticated browser session must not be enough to begin an MFA
+    # replacement. Reverify both the account password and the currently active
+    # authenticator code before generating a staged replacement secret.
     if not _verify_mfa_reset_password(request, user):
         return redirect("profile")
     if not _verify_mfa_reset_code(request, user):
         return redirect("profile")
 
-    next_url = reverse("profile")
-    backend = request.session.get("_auth_user_backend") or getattr(user, "backend", None)
-
-    reset_mfa_device_for_user(user)
-
-    # End the current authenticated session first, then invalidate every other
-    # active/pending MFA session belonging to this account. The current browser
-    # receives only a fresh pending-MFA session for new authenticator setup.
-    logout(request)
-    sessions_deleted = clear_user_auth_sessions(user)
-    begin_pending_mfa_login(request, user, next_url=next_url, backend=backend)
+    device = getattr(user, "kb_mfa_device", None)
+    if not begin_pending_mfa_reset(request, user, device=device):
+        messages.error(
+            request,
+            _("Your current MFA device could not be prepared for replacement. Please contact an administrator."),
+        )
+        return redirect("profile")
 
     log_auth_event(
         request,
-        event_type="mfa_reset_self",
+        event_type="pending_mfa",
         success=True,
         user=user,
         username=user.get_username(),
         details={
+            "source": "mfa_reset_self",
             "password_reverified": True,
-            "mfa_reverified": True,
-            "other_sessions_deleted": sessions_deleted,
+            "current_mfa_reverified": True,
+            "active_secret_replaced": False,
         },
     )
 
-    messages.warning(request, _("Your MFA was reset. Complete authenticator setup now to continue using Knowledge Repository."))
-    return redirect("mfa_setup")
+    messages.info(
+        request,
+        _("Scan and verify the new authenticator. Your current MFA remains active until the new code is confirmed."),
+    )
+    return redirect("mfa_reset_setup")
+
+
+@main_site_login_required
+@require_http_methods(["GET", "POST"])
+def mfa_reset_setup(request):
+    """Confirm a staged replacement before changing the active MFA secret."""
+    user = request.user
+    state = get_pending_mfa_reset(request, user)
+    if not state:
+        messages.info(
+            request,
+            _("The MFA replacement setup expired or was cancelled. Your current MFA is still active."),
+        )
+        return redirect("profile")
+
+    device = getattr(user, "kb_mfa_device", None)
+    if (
+        not device
+        or not device.confirmed
+        or not mfa_device_secret_is_readable(device)
+        or not pending_mfa_reset_device_matches(request, user, device=device)
+    ):
+        clear_pending_mfa_reset(request)
+        messages.warning(
+            request,
+            _("Your MFA device changed before setup was completed. Start the replacement again."),
+        )
+        return redirect("profile")
+
+    if request.method == "POST" and not pending_mfa_reset_challenge_matches(
+        request,
+        user,
+        request.POST.get("challenge_id"),
+    ):
+        return redirect("mfa_reset_setup")
+
+    if request.method == "POST":
+        locked, retry_after, identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="mfa",
+        )
+        if locked:
+            log_auth_event(
+                request,
+                event_type="mfa_setup_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "reason": "temporary_lockout",
+                    "source": "mfa_reset_self_new_device",
+                    "lockout_identifier": identifier,
+                    "retry_after_seconds": retry_after,
+                    "active_secret_replaced": False,
+                },
+            )
+            messages.error(
+                request,
+                _("Too many incorrect MFA codes. Please try again in %(duration)s.")
+                % {"duration": format_retry_after(retry_after)},
+            )
+        elif verify_totp_secret(state["secret"], request.POST.get("code")):
+            current_session_key = request.session.session_key
+            with transaction.atomic():
+                locked_device = type(device).objects.select_for_update().get(pk=device.pk)
+                if not pending_mfa_reset_device_matches(
+                    request,
+                    user,
+                    device=locked_device,
+                ):
+                    clear_pending_mfa_reset(request)
+                    messages.warning(
+                        request,
+                        _("Your MFA device changed before setup was completed. Start the replacement again."),
+                    )
+                    return redirect("profile")
+
+                now = timezone.now()
+                locked_device.set_secret(state["secret"])
+                locked_device.confirmed = True
+                locked_device.confirmed_at = now
+                locked_device.last_verified_at = now
+                locked_device.reset_at = now
+                locked_device.save(
+                    update_fields=[
+                        "secret",
+                        "confirmed",
+                        "confirmed_at",
+                        "last_verified_at",
+                        "reset_at",
+                    ]
+                )
+                other_sessions_deleted = clear_user_auth_sessions(
+                    user,
+                    exclude_session_key=current_session_key,
+                )
+
+            record_auth_success(request, user=user, purpose="mfa")
+            clear_pending_mfa_reset(request)
+            mark_mfa_verified(request, user)
+
+            log_auth_event(
+                request,
+                event_type="mfa_setup_success",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={"source": "mfa_reset_self_new_device"},
+            )
+            log_auth_event(
+                request,
+                event_type="mfa_reset_self",
+                success=True,
+                user=user,
+                username=user.get_username(),
+                details={
+                    "password_reverified": True,
+                    "current_mfa_reverified": True,
+                    "new_mfa_verified": True,
+                    "other_sessions_deleted": other_sessions_deleted,
+                },
+            )
+            messages.success(
+                request,
+                _("Your new authenticator was verified and MFA was updated successfully."),
+            )
+            return redirect("profile")
+        else:
+            lockout = record_auth_failure(request, user=user, purpose="mfa")
+            details = {
+                "reason": "invalid_new_totp",
+                "source": "mfa_reset_self_new_device",
+                "lockout_identifier": lockout.get("identifier"),
+                "failure_count": lockout.get("failure_count"),
+                "failure_limit": lockout.get("failure_limit"),
+                "active_secret_replaced": False,
+            }
+            if lockout.get("locked"):
+                details["reason"] = "temporary_lockout_created"
+                details["retry_after_seconds"] = lockout.get("retry_after_seconds")
+            log_auth_event(
+                request,
+                event_type="mfa_setup_failure",
+                success=False,
+                user=user,
+                username=user.get_username(),
+                details=details,
+            )
+            messages.error(request, _("Invalid authenticator code. Please try again."))
+
+    state = get_pending_mfa_reset(request, user)
+    if not state:
+        messages.info(
+            request,
+            _("The MFA replacement setup expired. Your current MFA is still active."),
+        )
+        return redirect("profile")
+
+    totp = pyotp.TOTP(state["secret"])
+    label = user.email or user.get_username()
+    otpauth_uri = totp.provisioning_uri(name=label, issuer_name=get_totp_issuer())
+    locked, retry_after, _identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="mfa",
+    )
+
+    return render(
+        request,
+        "mfa_reset_setup.html",
+        {
+            "qr_code_data_uri": _qr_data_uri(otpauth_uri),
+            "manual_secret": state["secret"],
+            "mfa_reset_challenge_id": state["challenge_id"],
+            **build_auth_lockout_ui_context(
+                locked=locked,
+                retry_after_seconds=retry_after,
+                message=_("Too many incorrect MFA codes. Please try again in %(duration)s."),
+                prefix="mfa_rate_limit",
+            ),
+        },
+    )
+
+
+@main_site_login_required
+@require_POST
+def cancel_mfa_reset(request):
+    clear_pending_mfa_reset(request)
+    messages.info(request, _("MFA replacement cancelled. Your current MFA is still active."))
+    return redirect("profile")

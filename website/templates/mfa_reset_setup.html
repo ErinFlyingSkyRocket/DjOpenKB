@@ -1,0 +1,87 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <title>{% trans "Reset MFA" %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+    <link rel="icon" href="{% static 'favicon.png' %}" />
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+</head>
+<body class="show_footer">
+<div class="container-fluid">
+    <div class="container-fluid openkb-page-back-wrap">
+        <div class="row">
+            <div class="col-xs-12 col-md-10 col-md-offset-1">
+                <form method="post" action="{% url 'mfa_reset_cancel' %}" class="csp-inline-form">
+                    {% csrf_token %}
+                    <button class="btn btn-default" type="submit">
+                        <i class="fa fa-arrow-left"></i> {% trans "Back" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-offset-4 col-md-4 col-lg-offset-4 col-lg-4 mfa-setup-wrap">
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>{% trans "Reset MFA" %}</strong></div>
+            <div class="panel-body">
+                <div class="alert alert-warning">
+                    {% trans "Your current MFA remains active until a code from the new authenticator is verified." %}
+                </div>
+
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+
+                <p class="text-muted">{% trans "Scan the QR code with your authenticator app, then enter the MFA/OTP code." %}</p>
+
+                <div class="text-center mfa-qr-wrap">
+                    <img src="{{ qr_code_data_uri }}" alt="{% trans 'MFA QR code' %}" class="mfa-qr-image">
+                </div>
+
+                <p class="help-block mfa-secret-value">
+                    {% trans "Manual setup key" %}: <code>{{ manual_secret }}</code>
+                </p>
+
+                <form method="post" action="{% url 'mfa_reset_setup' %}" data-auth-lockout-scope>
+                    {% csrf_token %}
+                    <input type="hidden" name="challenge_id" value="{{ mfa_reset_challenge_id }}">
+                    <div class="form-group">
+                        <label for="id_code">{% trans "MFA/OTP code" %}</label>
+                        <input id="id_code" name="code" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required {% if mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="mfa">
+                    </div>
+
+                    {% include "_auth_lockout_countdown.html" with lockout_active=mfa_rate_limit_active lockout_remaining_seconds=mfa_rate_limit_remaining_seconds lockout_message_template=mfa_rate_limit_message_template lockout_initial_message=mfa_rate_limit_initial_message lockout_group='mfa' only %}
+
+                    <button class="btn btn-primary btn-block" type="submit" {% if mfa_rate_limit_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
+                        <i class="fa fa-check"></i> {% trans "Verify" %}
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'mfa_reset_cancel' %}" class="mfa-cancel-form">
+                    {% csrf_token %}
+                    <button class="btn btn-default btn-block" type="submit">
+                        <i class="fa fa-times"></i> {% trans "Cancel" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "_footer.html" %}
+{% if mfa_rate_limit_active %}
+<script src="{% static 'javascripts/auth-lockout-countdown.js' %}?v=20260803-1" defer></script>
+{% endif %}
+</body>
+</html>

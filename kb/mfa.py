@@ -1,3 +1,4 @@
+import hashlib
 import math
 import secrets
 
@@ -11,6 +12,7 @@ from django.utils.dateparse import parse_datetime
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
 
+from .crypto import decrypt_value, encrypt_value
 from .models import SiteSetting, UserMFADevice
 
 
@@ -24,6 +26,15 @@ PRE_MFA_STARTED_AT_SESSION_KEY = "djopenkb_pre_mfa_started_at"
 PRE_MFA_EXPIRES_AT_SESSION_KEY = "djopenkb_pre_mfa_expires_at"
 PRE_MFA_CHALLENGE_ID_SESSION_KEY = "djopenkb_pre_mfa_challenge_id"
 PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY = "djopenkb_pre_mfa_lockout_deferred"
+
+PENDING_MFA_RESET_USER_ID_SESSION_KEY = "djopenkb_pending_mfa_reset_user_id"
+PENDING_MFA_RESET_SECRET_SESSION_KEY = "djopenkb_pending_mfa_reset_secret"
+PENDING_MFA_RESET_CHALLENGE_ID_SESSION_KEY = "djopenkb_pending_mfa_reset_challenge_id"
+PENDING_MFA_RESET_EXPIRES_AT_SESSION_KEY = "djopenkb_pending_mfa_reset_expires_at"
+PENDING_MFA_RESET_DEVICE_FINGERPRINT_SESSION_KEY = "djopenkb_pending_mfa_reset_device_fingerprint"
+PENDING_MFA_RESET_AUTH_HASH_SESSION_KEY = "djopenkb_pending_mfa_reset_auth_hash"
+
+MFA_RESET_SETUP_TIMEOUT_SECONDS = 10 * 60
 
 MFA_LOGIN_TIMEOUT_DEFAULT_SECONDS = 60
 MFA_LOGIN_TIMEOUT_MIN_SECONDS = 30
@@ -305,8 +316,9 @@ def mfa_status_label(user):
 def reset_mfa_device_for_user(user):
     """Generate a fresh private TOTP secret and require setup again.
 
-    The new secret is not shown to admins. The user must sign in again and scan
-    their own QR code on the MFA setup page.
+    This immediate reset is reserved for administrative recovery. Self-service
+    replacement uses a staged secret and keeps the current confirmed device
+    active until the user verifies the new authenticator code.
     """
     device = get_or_create_mfa_device(user)
     now = timezone.now()
@@ -327,15 +339,134 @@ def reset_mfa_device_for_user(user):
     return device
 
 
-def clear_user_auth_sessions(user):
-    """Delete active sessions for a user after admin/user MFA reset.
+def _mfa_device_secret_fingerprint(device):
+    """Return a non-secret version marker for the currently stored device."""
+    stored_value = str(getattr(device, "secret", "") or "")
+    return hashlib.sha256(stored_value.encode("utf-8")).hexdigest()
 
-    This prevents an already logged-in browser session from continuing after the
-    MFA secret has been replaced.
+
+def clear_pending_mfa_reset(request):
+    """Remove a staged self-service MFA replacement from this session."""
+    changed = False
+    for key in (
+        PENDING_MFA_RESET_USER_ID_SESSION_KEY,
+        PENDING_MFA_RESET_SECRET_SESSION_KEY,
+        PENDING_MFA_RESET_CHALLENGE_ID_SESSION_KEY,
+        PENDING_MFA_RESET_EXPIRES_AT_SESSION_KEY,
+        PENDING_MFA_RESET_DEVICE_FINGERPRINT_SESSION_KEY,
+        PENDING_MFA_RESET_AUTH_HASH_SESSION_KEY,
+    ):
+        if key in request.session:
+            request.session.pop(key, None)
+            changed = True
+    if changed:
+        request.session.modified = True
+
+
+def begin_pending_mfa_reset(request, user, device=None):
+    """Stage a new encrypted TOTP secret without changing the active device."""
+    device = device or getattr(user, "kb_mfa_device", None)
+    if not device or not device.confirmed or not mfa_device_secret_is_readable(device):
+        return None
+
+    clear_pending_mfa_reset(request)
+    raw_secret = pyotp.random_base32()
+    expires_at = timezone.now() + timezone.timedelta(seconds=MFA_RESET_SETUP_TIMEOUT_SECONDS)
+    request.session[PENDING_MFA_RESET_USER_ID_SESSION_KEY] = str(user.pk)
+    request.session[PENDING_MFA_RESET_SECRET_SESSION_KEY] = encrypt_value(raw_secret)
+    request.session[PENDING_MFA_RESET_CHALLENGE_ID_SESSION_KEY] = secrets.token_urlsafe(32)
+    request.session[PENDING_MFA_RESET_EXPIRES_AT_SESSION_KEY] = expires_at.isoformat()
+    request.session[PENDING_MFA_RESET_DEVICE_FINGERPRINT_SESSION_KEY] = _mfa_device_secret_fingerprint(device)
+    request.session[PENDING_MFA_RESET_AUTH_HASH_SESSION_KEY] = user.get_session_auth_hash()
+    request.session.modified = True
+    return raw_secret
+
+
+def get_pending_mfa_reset(request, user=None):
+    """Return the valid staged reset state for this user and session."""
+    user = user or getattr(request, "user", None)
+    if not user or not getattr(user, "is_authenticated", False):
+        clear_pending_mfa_reset(request)
+        return None
+
+    if not constant_time_compare(
+        str(request.session.get(PENDING_MFA_RESET_USER_ID_SESSION_KEY, "")),
+        str(user.pk),
+    ):
+        clear_pending_mfa_reset(request)
+        return None
+
+    stored_auth_hash = str(
+        request.session.get(PENDING_MFA_RESET_AUTH_HASH_SESSION_KEY, "") or ""
+    )
+    if not stored_auth_hash or not constant_time_compare(
+        stored_auth_hash,
+        user.get_session_auth_hash(),
+    ):
+        clear_pending_mfa_reset(request)
+        return None
+
+    expires_at = _pending_mfa_session_datetime(
+        request,
+        PENDING_MFA_RESET_EXPIRES_AT_SESSION_KEY,
+    )
+    if expires_at is None or expires_at <= timezone.now():
+        clear_pending_mfa_reset(request)
+        return None
+
+    secret = decrypt_value(request.session.get(PENDING_MFA_RESET_SECRET_SESSION_KEY, ""))
+    challenge_id = str(request.session.get(PENDING_MFA_RESET_CHALLENGE_ID_SESSION_KEY, "") or "")
+    device_fingerprint = str(
+        request.session.get(PENDING_MFA_RESET_DEVICE_FINGERPRINT_SESSION_KEY, "") or ""
+    )
+    if not secret or not challenge_id or not device_fingerprint:
+        clear_pending_mfa_reset(request)
+        return None
+
+    return {
+        "secret": secret,
+        "challenge_id": challenge_id,
+        "expires_at": expires_at,
+        "device_fingerprint": device_fingerprint,
+    }
+
+
+def pending_mfa_reset_challenge_matches(request, user, submitted_challenge_id):
+    state = get_pending_mfa_reset(request, user)
+    submitted = str(submitted_challenge_id or "").strip()
+    return bool(
+        state
+        and submitted
+        and secrets.compare_digest(state["challenge_id"], submitted)
+    )
+
+
+def pending_mfa_reset_device_matches(request, user, device=None):
+    """Prevent an older staged flow from overwriting a newer MFA device."""
+    state = get_pending_mfa_reset(request, user)
+    device = device or getattr(user, "kb_mfa_device", None)
+    return bool(
+        state
+        and device
+        and secrets.compare_digest(
+            state["device_fingerprint"],
+            _mfa_device_secret_fingerprint(device),
+        )
+    )
+
+
+def clear_user_auth_sessions(user, *, exclude_session_key=None):
+    """Delete active sessions for a user after an MFA secret replacement.
+
+    The self-service flow may preserve the initiating session after it has
+    verified both the old and new factors. Administrative resets omit the
+    exclusion and continue invalidating every active or pending session.
     """
     deleted = 0
     user_id = str(user.pk)
     for session in Session.objects.filter(expire_date__gte=timezone.now()):
+        if exclude_session_key and session.session_key == exclude_session_key:
+            continue
         data = session.get_decoded()
         if (
             str(data.get("_auth_user_id")) == user_id
@@ -551,14 +682,16 @@ def pending_mfa_challenge_matches(request, submitted_challenge_id):
     return bool(current and submitted and secrets.compare_digest(current, submitted))
 
 
-def verify_totp_code(device, code):
+def verify_totp_secret(secret, code):
     code = (code or "").strip().replace(" ", "")
-    if not code or not device:
-        return False
-
-    secret = device.get_secret()
-    if not secret:
+    if not code or not secret:
         return False
 
     totp = pyotp.TOTP(secret)
     return bool(totp.verify(code, valid_window=get_totp_valid_window()))
+
+
+def verify_totp_code(device, code):
+    if not device:
+        return False
+    return verify_totp_secret(device.get_secret(), code)

@@ -219,13 +219,23 @@ The MFA secret is tied to the individual Django user through the `UserMFADevice`
 
 ### 5.3 MFA Reset
 
-MFA can be reset by the user or by an administrator. When MFA is reset:
+MFA can be replaced by the user or reset by an administrator. The two workflows intentionally behave differently.
 
-- A new random TOTP secret is generated.
-- The previous authenticator code becomes invalid.
+For a self-service replacement from the profile page:
+
+- The user must re-enter the account password and a valid code from the currently active authenticator.
+- A new TOTP secret is staged in the initiating session and displayed as a QR code/manual setup key.
+- The existing MFA secret remains active while the user scans and verifies the new authenticator.
+- Cancelling, abandoning, timing out, or entering an incorrect new code does not change the active MFA device.
+- The database MFA secret is replaced only after a valid code from the new authenticator is confirmed.
+- After confirmation, other active or pending sessions for the account are invalidated while the initiating verified session remains signed in.
+
+For administrator or server-command recovery resets:
+
+- A new random TOTP secret is generated immediately and the device is marked as setup pending.
 - Existing sessions for the user are cleared.
-- The user must scan a new QR code and complete MFA setup again.
-- The new secret is not shown to administrators as a reusable plaintext value.
+- The user must sign in and complete authenticator setup again.
+- The new secret is never shown to administrators as a reusable plaintext value.
 
 ### 5.4 Sensitive Profile Changes Require MFA
 

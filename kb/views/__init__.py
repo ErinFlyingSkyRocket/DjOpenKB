@@ -40,7 +40,14 @@ from .admin import (
     manage_article_deletion_queue,
 )
 from .ai import ask_openkb_ai, openkb_ai_job_status, cancel_openkb_ai_job
-from .mfa import mfa_setup, mfa_verify, reset_mfa, cancel_mfa_login
+from .mfa import (
+    cancel_mfa_login,
+    cancel_mfa_reset,
+    mfa_reset_setup,
+    mfa_setup,
+    mfa_verify,
+    reset_mfa,
+)
 
 __all__ = [
     "OpenKBLoginView",
@@ -83,6 +90,8 @@ __all__ = [
     "mfa_setup",
     "mfa_verify",
     "reset_mfa",
+    "mfa_reset_setup",
+    "cancel_mfa_reset",
     "cancel_mfa_login",
     "delete_article_files",
     "find_stray_uploaded_files",

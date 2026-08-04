@@ -351,7 +351,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-warning">
-                            {% trans "Resetting MFA will immediately require you to set up a new authenticator code before continuing. Continue?" %}
+                            {% trans "After your password and current MFA code are verified, you will scan and confirm a new authenticator. Your current MFA remains active until the new code is confirmed." %}
                         </div>
                         <div class="form-group">
                             <label>{% trans "Confirm password" %}</label>
@@ -366,7 +366,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                        <button type="submit" class="btn btn-warning" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Reset MFA" %}</button>
+                        <button type="submit" class="btn btn-warning" {% if profile_password_lockout_active or profile_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="password mfa">{% trans "Continue" %}</button>
                     </div>
                 </form>
             </div>
