@@ -52,7 +52,13 @@
                         </li>
                     {% endif %}
                     {% if user|can_use_admin_tools %}
-                        <li><a href="{% url 'admin_mfa_verify' %}?next=/admin/&fresh=1">{% trans "Admin" %}</a></li>
+                        <li>
+                            <form method="post" action="{% url 'admin_mfa_start' %}" class="navbar-admin-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="/admin/">
+                                <button type="submit" class="navbar-admin-button">{% trans "Admin" %}</button>
+                            </form>
+                        </li>
                     {% endif %}
                     {% include "_language_selector.html" %}
                     <li class="dropdown">

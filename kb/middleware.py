@@ -670,9 +670,11 @@ class ForceLoginAndAdminGuardMiddleware:
 
                 requires_admin_step_up = is_admin_step_up_path(path)
                 admin_mfa_path = reverse("admin_mfa_verify")
+                admin_mfa_start_path = reverse("admin_mfa_start")
             except NoReverseMatch:
                 requires_admin_step_up = self._is_admin_path(path)
                 admin_mfa_path = None
+                admin_mfa_start_path = None
 
             if requires_admin_step_up:
                 if not getattr(user, "is_superuser", False):
@@ -683,13 +685,18 @@ class ForceLoginAndAdminGuardMiddleware:
                 # Defence-in-depth: every protected route must have a valid
                 # short-lived admin MFA grant. The verify URL itself is exempt
                 # so the user can complete the challenge.
-                if admin_mfa_path and path != admin_mfa_path and not path.startswith(admin_mfa_path + "/"):
+                admin_mfa_exempt_paths = {
+                    candidate
+                    for candidate in (admin_mfa_path, admin_mfa_start_path)
+                    if candidate
+                }
+                if path not in admin_mfa_exempt_paths:
                     if not admin_mfa_is_verified(request, user):
                         from urllib.parse import urlencode
 
                         return redirect(
                             f"{admin_mfa_path}?"
-                            f"{urlencode({'next': request.get_full_path(), 'fresh': '1'})}"
+                            f"{urlencode({'next': request.get_full_path(), 'entry': '1'})}"
                         )
             return self.get_response(request)
 

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from kb.views.auth import OpenKBLoginView, OpenKBLogoutView, account_disabled, root_entry
-from kb.admin_security import admin_mfa_verify
+from kb.admin_security import admin_mfa_verify, start_admin_mfa_verification
 from kb.views.security import robots_txt
 
 
@@ -33,6 +33,7 @@ urlpatterns = [
     # Admins must complete an extra MFA step before Django Admin.
     # This route must appear before admin.site.urls so /admin/mfa/verify/
     # is handled by our step-up view instead of Django Admin.
+    path("admin/mfa/start/", start_admin_mfa_verification, name="admin_mfa_start"),
     path("admin/mfa/verify/", admin_mfa_verify, name="admin_mfa_verify"),
     path("admin/", admin.site.urls),
     path("login/", OpenKBLoginView.as_view(), name="login"),

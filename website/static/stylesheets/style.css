@@ -299,6 +299,28 @@ body.show_footer {
 .notify-message-close:hover{ opacity: 1; }
 
 /* Shared DjOpenKB navbar actions */
+.navbar-admin-form {
+    display: block;
+    margin: 0;
+}
+
+.navbar-admin-button {
+    display: block;
+    background: transparent;
+    border: 0;
+    padding: 15px;
+    line-height: 20px;
+    color: #777;
+    font-weight: 400;
+}
+
+.navbar-admin-button:hover,
+.navbar-admin-button:focus {
+    color: #333;
+    background-color: transparent;
+    outline: none;
+}
+
 .navbar-logout-form {
     display: block;
     margin: 0;

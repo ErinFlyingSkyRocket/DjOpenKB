@@ -42,7 +42,7 @@ class AdminStepUpRouteTests(TestCase):
         parsed = urlsplit(response.url)
         self.assertEqual(parsed.path, reverse("admin_mfa_verify"))
         self.assertEqual(parse_qs(parsed.query).get("next"), [path])
-        self.assertEqual(parse_qs(parsed.query).get("fresh"), ["1"])
+        self.assertEqual(parse_qs(parsed.query).get("entry"), ["1"])
 
     def test_force_guard_also_blocks_custom_admin_tool_without_step_up_mfa(self):
         path = reverse("export_articles_zip")
@@ -52,7 +52,7 @@ class AdminStepUpRouteTests(TestCase):
         parsed = urlsplit(response.url)
         self.assertEqual(parsed.path, reverse("admin_mfa_verify"))
         self.assertEqual(parse_qs(parsed.query).get("next"), [path])
-        self.assertEqual(parse_qs(parsed.query).get("fresh"), ["1"])
+        self.assertEqual(parse_qs(parsed.query).get("entry"), ["1"])
 
 
 @override_settings(ALLOWED_HOSTS=["testserver", "localhost", "127.0.0.1"])

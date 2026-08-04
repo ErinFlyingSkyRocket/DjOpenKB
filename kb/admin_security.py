@@ -13,6 +13,7 @@ from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from .auth_monitoring import (
     build_auth_lockout_ui_context,
@@ -40,7 +41,8 @@ ADMIN_MFA_CHALLENGE_STARTED_AT_KEY = "knowledge_repo_admin_mfa_challenge_started
 ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY = "knowledge_repo_admin_mfa_challenge_expires_at"
 ADMIN_MFA_CHALLENGE_EXPIRED_KEY = "knowledge_repo_admin_mfa_challenge_expired"
 ADMIN_MFA_CHALLENGE_ID_KEY = "knowledge_repo_admin_mfa_challenge_id"
-ADMIN_MFA_FORCE_PARAM = "fresh"
+ADMIN_MFA_LOCKOUT_DEFERRED_KEY = "knowledge_repo_admin_mfa_lockout_deferred"
+ADMIN_MFA_ENTRY_PARAM = "entry"
 
 ADMIN_MFA_VERIFICATION_TIMEOUT_DEFAULT_SECONDS = 60
 ADMIN_MFA_VERIFICATION_TIMEOUT_MIN_SECONDS = 30
@@ -149,30 +151,58 @@ def admin_mfa_challenge_id(request) -> str | None:
     return value
 
 
-def start_new_admin_mfa_challenge(request) -> tuple[str, int]:
-    """Replace any pending Admin MFA attempt with one fixed new challenge.
+def admin_mfa_deadline_is_deferred(request) -> bool:
+    return bool(request.session.get(ADMIN_MFA_LOCKOUT_DEFERRED_KEY))
 
-    Only the Admin step-up challenge is rotated. The normal authenticated
-    Django session and the independent rate-limit history are left intact.
+
+def start_new_admin_mfa_challenge(request, *, defer_deadline: bool = False) -> tuple[str, int | None]:
+    """Replace any pending Admin MFA attempt with one new challenge.
+
+    The challenge identifier is always rotated. Its short verification deadline
+    starts immediately unless a longer Admin-MFA cooldown is already active.
     """
     clear_admin_mfa_challenge(request)
-    started_at = _now_ts()
-    expires_at = started_at + get_admin_mfa_verification_timeout_seconds()
     challenge_id = secrets.token_urlsafe(32)
     request.session[ADMIN_MFA_CHALLENGE_ID_KEY] = challenge_id
-    request.session[ADMIN_MFA_CHALLENGE_STARTED_AT_KEY] = started_at
-    request.session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY] = expires_at
+
+    expires_at = None
+    if defer_deadline:
+        request.session[ADMIN_MFA_LOCKOUT_DEFERRED_KEY] = True
+    else:
+        started_at = _now_ts()
+        expires_at = started_at + get_admin_mfa_verification_timeout_seconds()
+        request.session[ADMIN_MFA_CHALLENGE_STARTED_AT_KEY] = started_at
+        request.session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY] = expires_at
     request.session.modified = True
     return challenge_id, expires_at
 
 
-def ensure_admin_mfa_challenge_deadline(request) -> int:
-    """Ensure one fixed Admin MFA challenge exists and return its expiry.
+def defer_admin_mfa_deadline_for_lockout(request) -> None:
+    """Pause the short Admin verification window during a longer cooldown."""
+    if admin_mfa_challenge_id(request) is None:
+        return
 
-    Refreshing the canonical verification page preserves the existing
-    challenge and deadline. A new protected Admin entry uses
-    ``start_new_admin_mfa_challenge`` before redirecting to that page.
-    """
+    already_deferred = admin_mfa_deadline_is_deferred(request)
+    had_deadline = bool(
+        request.session.get(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY)
+        or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY)
+    )
+    request.session.pop(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, None)
+    request.session.pop(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, None)
+    request.session.pop(ADMIN_MFA_CHALLENGE_EXPIRED_KEY, None)
+    if not already_deferred or had_deadline:
+        request.session[ADMIN_MFA_CHALLENGE_ID_KEY] = secrets.token_urlsafe(32)
+    request.session[ADMIN_MFA_LOCKOUT_DEFERRED_KEY] = True
+    request.session.modified = True
+
+
+def ensure_admin_mfa_challenge_deadline(request) -> int | None:
+    """Ensure an existing challenge has one fixed deadline and return it."""
+    if admin_mfa_challenge_id(request) is None:
+        return None
+    if admin_mfa_deadline_is_deferred(request):
+        return None
+
     started_at = _admin_mfa_challenge_ts(
         request,
         ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
@@ -183,16 +213,22 @@ def ensure_admin_mfa_challenge_deadline(request) -> int:
     )
 
     if started_at is None or expires_at is None or expires_at <= started_at:
-        _challenge_id, expires_at = start_new_admin_mfa_challenge(request)
-        return expires_at
-
-    # Backward-compatible recovery for a pending challenge created before the
-    # per-attempt identifier was introduced. Do not extend its deadline.
-    if admin_mfa_challenge_id(request) is None:
-        request.session[ADMIN_MFA_CHALLENGE_ID_KEY] = secrets.token_urlsafe(32)
+        started_at = _now_ts()
+        expires_at = started_at + get_admin_mfa_verification_timeout_seconds()
+        request.session[ADMIN_MFA_CHALLENGE_STARTED_AT_KEY] = started_at
+        request.session[ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY] = expires_at
         request.session.modified = True
-
     return expires_at
+
+
+def resume_admin_mfa_deadline_after_lockout(request) -> int | None:
+    """Start a fresh fixed Admin MFA window after the cooldown ends."""
+    if admin_mfa_challenge_id(request) is None:
+        return None
+    if admin_mfa_deadline_is_deferred(request):
+        request.session.pop(ADMIN_MFA_LOCKOUT_DEFERRED_KEY, None)
+        request.session.modified = True
+    return ensure_admin_mfa_challenge_deadline(request)
 
 
 def admin_mfa_seconds_remaining(request) -> int | None:
@@ -220,6 +256,7 @@ def clear_admin_mfa_challenge(request) -> None:
         ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRED_KEY,
+        ADMIN_MFA_LOCKOUT_DEFERRED_KEY,
     ):
         request.session.pop(key, None)
     request.session.modified = True
@@ -228,6 +265,7 @@ def clear_admin_mfa_challenge(request) -> None:
 def mark_admin_mfa_challenge_expired(request) -> None:
     request.session.pop(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY, None)
     request.session.pop(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY, None)
+    request.session.pop(ADMIN_MFA_LOCKOUT_DEFERRED_KEY, None)
     request.session[ADMIN_MFA_CHALLENGE_EXPIRED_KEY] = True
     request.session.modified = True
 
@@ -242,6 +280,7 @@ def clear_admin_mfa_session(request) -> None:
         ADMIN_MFA_CHALLENGE_STARTED_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY,
         ADMIN_MFA_CHALLENGE_EXPIRED_KEY,
+        ADMIN_MFA_LOCKOUT_DEFERRED_KEY,
     ):
         request.session.pop(key, None)
     request.session.modified = True
@@ -274,6 +313,7 @@ def _safe_next_url(request):
         (request.GET.get("next") or "").strip(),
     ]
     blocked = {
+        reverse("admin_mfa_start"),
         reverse("admin_mfa_verify"),
         reverse("login"),
         reverse("logout"),
@@ -293,10 +333,10 @@ def _safe_next_url(request):
     return fallback
 
 
-def _redirect_with_next(target_name: str, next_url: str, *, fresh: bool = False):
+def _redirect_with_next(target_name: str, next_url: str, *, entry: bool = False):
     params = {"next": next_url}
-    if fresh:
-        params[ADMIN_MFA_FORCE_PARAM] = "1"
+    if entry:
+        params[ADMIN_MFA_ENTRY_PARAM] = "1"
     return redirect(f"{reverse(target_name)}?{urlencode(params)}")
 
 
@@ -342,14 +382,39 @@ def _discard_pending_messages(request) -> None:
         pass
 
 
-def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
-    _discard_pending_messages(request)
-    remaining = admin_mfa_seconds_remaining(request)
-    locked, retry_after, _identifier = get_auth_lockout_status(
+def _prepare_admin_mfa_timing(request, user):
+    """Make the longer Admin-MFA cooldown authoritative over its short timer."""
+    locked, retry_after, identifier = get_auth_lockout_status(
         request,
-        user=getattr(request, "user", None),
+        user=user,
         purpose="admin_mfa",
     )
+    if admin_mfa_challenge_id(request) is not None:
+        if locked:
+            defer_admin_mfa_deadline_for_lockout(request)
+        elif not admin_mfa_challenge_is_expired_state(request):
+            resume_admin_mfa_deadline_after_lockout(request)
+    return locked, retry_after, identifier
+
+
+def _render_admin_mfa_verify(
+    request,
+    next_url: str,
+    admin_mfa_messages=None,
+    *,
+    entry_required: bool = False,
+):
+    _discard_pending_messages(request)
+    user = getattr(request, "user", None)
+    if entry_required:
+        locked, retry_after, _identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="admin_mfa",
+        )
+    else:
+        locked, retry_after, _identifier = _prepare_admin_mfa_timing(request, user)
+    remaining = None if entry_required else admin_mfa_seconds_remaining(request)
     rate_limit_context = build_auth_lockout_ui_context(
         locked=locked,
         retry_after_seconds=retry_after,
@@ -364,9 +429,12 @@ def _render_admin_mfa_verify(request, next_url: str, admin_mfa_messages=None):
         {
             "next": next_url,
             "admin_mfa_messages": admin_mfa_messages or [],
+            "admin_mfa_entry_required": entry_required,
             "admin_mfa_timeout_active": remaining is not None,
             "admin_mfa_timeout_remaining_seconds": remaining,
-            "admin_mfa_timeout_expired": admin_mfa_challenge_is_expired_state(request),
+            "admin_mfa_timeout_expired": (
+                False if entry_required else admin_mfa_challenge_is_expired_state(request)
+            ),
             "admin_mfa_challenge_id": admin_mfa_challenge_id(request) or "",
             **rate_limit_context,
         },
@@ -401,25 +469,39 @@ def _expire_admin_mfa_challenge(request, user, next_url: str, *, source: str):
     )
 
 
+@require_POST
+def start_admin_mfa_verification(request):
+    """Start a fresh Admin MFA challenge through a CSRF-protected request."""
+    user = getattr(request, "user", None)
+    if not _is_admin_user(user):
+        raise Http404()
+
+    next_url = _safe_next_url(request)
+    if not user_requires_mfa(user):
+        _discard_pending_messages(request)
+        messages.error(request, _("Admin access requires an active MFA-protected account."))
+        return redirect("home")
+
+    # Starting a new step-up attempt invalidates any older grant or pending
+    # challenge, but keeps the normal authenticated Knowledge Repository session.
+    clear_admin_mfa_session(request)
+    locked, _retry_after, _identifier = get_auth_lockout_status(
+        request,
+        user=user,
+        purpose="admin_mfa",
+    )
+    start_new_admin_mfa_challenge(request, defer_deadline=locked)
+    response = redirect(_canonical_admin_mfa_verify_url(next_url))
+    return set_strict_no_cache_headers(response)
+
+
 def admin_mfa_verify(request):
     """Require a fresh TOTP check before entering Django Admin."""
     user = getattr(request, "user", None)
     if not _is_admin_user(user):
-        # Do not expose the admin MFA form to non-admin users.
-        # ForceLoginAndAdminGuard normally handles this first; keep this
-        # fallback for direct calls or unusual middleware ordering.
         raise Http404()
 
     next_url = _safe_next_url(request)
-
-    # Every new entry through a protected Admin route or the navbar rotates the
-    # Admin step-up attempt. Redirect immediately to a canonical URL without the
-    # ``fresh`` flag so refreshing the verification page cannot roll the timer.
-    if request.method == "GET" and request.GET.get(ADMIN_MFA_FORCE_PARAM) == "1":
-        clear_admin_mfa_session(request)
-        start_new_admin_mfa_challenge(request)
-        response = redirect(_canonical_admin_mfa_verify_url(next_url))
-        return set_strict_no_cache_headers(response)
 
     if not user_requires_mfa(user):
         _discard_pending_messages(request)
@@ -430,11 +512,23 @@ def admin_mfa_verify(request):
     if not device.confirmed:
         _discard_pending_messages(request)
         messages.warning(request, _("Set up MFA before accessing the admin site."))
-        return _redirect_with_next("mfa_setup", reverse("admin_mfa_verify") + "?" + urlencode({"next": next_url}))
+        return _redirect_with_next(
+            "mfa_setup",
+            reverse("admin_mfa_verify") + "?" + urlencode({"next": next_url}),
+        )
 
     if admin_mfa_is_verified(request, user):
         _discard_pending_messages(request)
         return redirect(next_url)
+
+    # A protected GET may only ask the user to start a challenge. It must not
+    # rotate session security state. The actual replacement happens through the
+    # CSRF-protected start_admin_mfa_verification POST endpoint.
+    if request.method == "GET" and request.GET.get(ADMIN_MFA_ENTRY_PARAM) == "1":
+        return _render_admin_mfa_verify(request, next_url, entry_required=True)
+
+    if admin_mfa_challenge_id(request) is None:
+        return _render_admin_mfa_verify(request, next_url, entry_required=True)
 
     if not mfa_device_secret_is_readable(device):
         log_auth_event(
@@ -456,13 +550,11 @@ def admin_mfa_verify(request):
             ],
         )
 
+    # Pause or resume the short deadline before checking expiry. Therefore a
+    # multi-minute lockout can never expire underneath the 60-second window.
+    locked, retry_after, lockout_identifier = _prepare_admin_mfa_timing(request, user)
     action = (request.POST.get("action") or "").strip().lower()
 
-    if not admin_mfa_challenge_is_expired_state(request):
-        ensure_admin_mfa_challenge_deadline(request)
-
-    # A submitted form is valid only for the latest challenge stored in the
-    # session. Old browser tabs cannot verify, expire, or restart a newer one.
     if request.method == "POST" and not admin_mfa_challenge_matches(
         request,
         request.POST.get("challenge_id"),
@@ -470,13 +562,6 @@ def admin_mfa_verify(request):
         return _render_admin_mfa_verify(request, next_url)
 
     if action == "restart":
-        # Restart is accepted only after an actual expiry and after any active
-        # admin-MFA cooldown ends. A crafted POST cannot bypass either control.
-        locked, retry_after, _identifier = get_auth_lockout_status(
-            request,
-            user=user,
-            purpose="admin_mfa",
-        )
         if locked:
             return _render_admin_mfa_verify(
                 request,
@@ -502,8 +587,6 @@ def admin_mfa_verify(request):
         )
 
     if action == "timeout":
-        # The server-side deadline is authoritative. Ignore an early crafted
-        # timeout POST so it cannot be used to extend the fixed challenge.
         if admin_mfa_challenge_has_expired(request):
             return _expire_admin_mfa_challenge(
                 request,
@@ -524,12 +607,8 @@ def admin_mfa_verify(request):
     admin_mfa_messages = []
 
     if request.method == "POST":
-        locked, retry_after, identifier = get_auth_lockout_status(
-            request,
-            user=user,
-            purpose="admin_mfa",
-        )
         if locked:
+            defer_admin_mfa_deadline_for_lockout(request)
             log_auth_event(
                 request,
                 event_type="admin_mfa_verify_failure",
@@ -538,7 +617,7 @@ def admin_mfa_verify(request):
                 username=user.get_username(),
                 details={
                     "reason": "temporary_lockout",
-                    "lockout_identifier": identifier,
+                    "lockout_identifier": lockout_identifier,
                     "retry_after_seconds": retry_after,
                     "admin_step_up": True,
                 },
@@ -550,6 +629,11 @@ def admin_mfa_verify(request):
         elif verify_totp_code(device, request.POST.get("code")):
             record_auth_success(request, user=user, purpose="admin_mfa")
             device.mark_verified()
+
+            # Rotate the authenticated session identifier before adding the
+            # privileged Admin grant. Existing session data is preserved while
+            # the old session key can no longer inherit the elevation.
+            request.session.cycle_key()
             mark_admin_mfa_verified(request, user)
             log_auth_event(
                 request,
@@ -557,7 +641,7 @@ def admin_mfa_verify(request):
                 success=True,
                 user=user,
                 username=user.get_username(),
-                details={"admin_step_up": True},
+                details={"admin_step_up": True, "session_key_rotated": True},
             )
             _discard_pending_messages(request)
             return redirect(next_url)
@@ -571,6 +655,7 @@ def admin_mfa_verify(request):
                 "admin_step_up": True,
             }
             if lockout.get("locked"):
+                defer_admin_mfa_deadline_for_lockout(request)
                 details["reason"] = "temporary_lockout_created"
                 details["retry_after_seconds"] = lockout.get("retry_after_seconds")
                 admin_mfa_messages.append(
@@ -589,7 +674,6 @@ def admin_mfa_verify(request):
             admin_mfa_messages.append(_("Invalid authenticator code. Please try again."))
 
     return _render_admin_mfa_verify(request, next_url, admin_mfa_messages)
-
 
 class AdminMFASessionMiddleware:
     """Require step-up MFA before Django Admin and sensitive admin tools.
@@ -632,7 +716,10 @@ class AdminMFASessionMiddleware:
         if self._is_static_or_safe_asset(path):
             return
         verify_path = self._reverse_or_none("admin_mfa_verify")
+        start_path = self._reverse_or_none("admin_mfa_start")
         if verify_path and (path == verify_path or path.startswith(verify_path + "/")):
+            return
+        if start_path and path == start_path:
             return
         if (
             request.session.get(ADMIN_MFA_VERIFIED_KEY)
@@ -640,13 +727,16 @@ class AdminMFASessionMiddleware:
             or request.session.get(ADMIN_MFA_CHALLENGE_STARTED_AT_KEY)
             or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRES_AT_KEY)
             or request.session.get(ADMIN_MFA_CHALLENGE_EXPIRED_KEY)
+            or request.session.get(ADMIN_MFA_LOCKOUT_DEFERRED_KEY)
         ):
             clear_admin_mfa_session(request)
 
     def _is_exempt_admin_path(self, path: str) -> bool:
         verify_path = self._reverse_or_none("admin_mfa_verify")
+        start_path = self._reverse_or_none("admin_mfa_start")
         exempt_paths = {
             verify_path,
+            start_path,
             "/admin/logout/",
             "/admin/jsi18n/",
         }
@@ -666,7 +756,7 @@ class AdminMFASessionMiddleware:
         # Only Django Admin itself sends the user back to the normal site after
         # inactivity, preserving the existing admin-site timeout behaviour.
         if not self._is_django_admin_path(path):
-            response = _redirect_with_next("admin_mfa_verify", request.get_full_path(), fresh=True)
+            response = _redirect_with_next("admin_mfa_verify", request.get_full_path(), entry=True)
             return set_strict_no_cache_headers(response)
 
         messages.warning(
@@ -697,7 +787,7 @@ class AdminMFASessionMiddleware:
             return self.get_response(request)
 
         if not admin_mfa_is_verified(request, user):
-            response = _redirect_with_next("admin_mfa_verify", request.get_full_path(), fresh=True)
+            response = _redirect_with_next("admin_mfa_verify", request.get_full_path(), entry=True)
             return set_strict_no_cache_headers(response)
 
         now = _now_ts()

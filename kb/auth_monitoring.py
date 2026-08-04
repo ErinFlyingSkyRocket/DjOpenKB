@@ -319,17 +319,69 @@ def get_browser_auth_lockout_identifier(request=None, purpose="password"):
     return f"{purpose}:browser:{_safe_cache_piece(token)}"
 
 
+def _cache_int(key, default=0):
+    """Return one cache value as an integer and discard malformed data."""
+    try:
+        return int(cache.get(key) or default)
+    except (TypeError, ValueError):
+        cache.delete(key)
+        return int(default)
+
+
+def _touch_cache_key(key, timeout):
+    """Refresh one counter TTL on supported Django cache backends."""
+    try:
+        cache.touch(key, timeout=timeout)
+    except (AttributeError, NotImplementedError):
+        value = cache.get(key)
+        if value is not None:
+            cache.set(key, value, timeout)
+
+
+def _atomic_cache_increment(key, timeout):
+    """Atomically increment a shared cache integer and refresh its TTL.
+
+    Production uses Django's Redis cache backend, where ``add`` and ``incr``
+    are atomic across all Gunicorn processes. The short retry handles a key
+    expiring between the initialization and increment operations.
+    """
+    timeout = max(1, int(timeout))
+    for _attempt in range(2):
+        cache.add(key, 0, timeout)
+        try:
+            value = int(cache.incr(key))
+            _touch_cache_key(key, timeout)
+            return value
+        except (ValueError, TypeError):
+            cache.delete(key)
+
+    # Corrupt or repeatedly expiring cache data should not break login. This
+    # fallback safely records the current request as the first failure.
+    cache.set(key, 1, timeout)
+    return 1
+
+
 def _get_lockout_status_for_identifier(identifier):
     if not identifier:
         return False, 0
 
     keys = _lockout_keys(identifier)
     blocked_until = cache.get(keys["block"])
-    if blocked_until:
-        now = int(time.time())
-        retry_after = max(1, int(blocked_until) - now)
-        return True, retry_after
-    return False, 0
+    if blocked_until is None:
+        return False, 0
+
+    try:
+        blocked_until = int(blocked_until)
+    except (TypeError, ValueError):
+        cache.delete(keys["block"])
+        return False, 0
+
+    now = int(time.time())
+    if blocked_until <= now:
+        cache.delete(keys["block"])
+        return False, 0
+
+    return True, max(1, blocked_until - now)
 
 
 def get_auth_lockout_status(request=None, username="", user=None, purpose="password"):
@@ -362,17 +414,19 @@ def _empty_lockout_result(identifier=""):
 
 
 def _record_lockout_failure(identifier):
-    """Update one lockout bucket without creating audit or email events."""
+    """Atomically update one lockout bucket without audit/email side effects.
+
+    Redis ``add``/``incr`` operations prevent lost increments when several
+    Gunicorn workers receive failures for the same identifier concurrently.
+    The block key is also created with ``add`` so only one worker can advance
+    the progressive lockout stage and trigger its audit/email notification.
+    """
     if not identifier:
         return _empty_lockout_result(identifier)
 
     locked, retry_after = _get_lockout_status_for_identifier(identifier)
     keys = _lockout_keys(identifier)
-    strikes_so_far = cache.get(keys["strikes"]) or 0
-    try:
-        strikes_so_far = int(strikes_so_far)
-    except (TypeError, ValueError):
-        strikes_so_far = 0
+    strikes_so_far = _cache_int(keys["strikes"], 0)
 
     stage = _stage_for_strike_count(strikes_so_far)
     failure_limit = _positive_int(stage.get("failure_limit"), 10, minimum=1)
@@ -384,7 +438,7 @@ def _record_lockout_failure(identifier):
             "lockout_created": False,
             "retry_after_seconds": retry_after,
             "identifier": identifier,
-            "failure_count": cache.get(keys["failures"]) or failure_limit,
+            "failure_count": _cache_int(keys["failures"], failure_limit),
             "failure_limit": failure_limit,
             "block_seconds": retry_after,
             "policy_stage": stage,
@@ -392,35 +446,73 @@ def _record_lockout_failure(identifier):
             "strikes_now": strikes_so_far,
         }
 
-    failures = cache.get(keys["failures"]) or 0
-    try:
-        failures = int(failures) + 1
-    except (TypeError, ValueError):
-        failures = 1
-    cache.set(keys["failures"], failures, counter_ttl_seconds)
+    failures = _atomic_cache_increment(keys["failures"], counter_ttl_seconds)
+
+    # Another worker may have crossed the threshold after our initial status
+    # check but before this increment. In that case the active block takes
+    # precedence and this request must not seed the next progressive stage.
+    concurrent_locked, concurrent_retry_after = _get_lockout_status_for_identifier(identifier)
+    if concurrent_locked:
+        cache.delete(keys["failures"])
+        return {
+            "locked": True,
+            "lockout_created": False,
+            "retry_after_seconds": concurrent_retry_after,
+            "identifier": identifier,
+            "failure_count": failures,
+            "failure_limit": failure_limit,
+            "block_seconds": concurrent_retry_after,
+            "policy_stage": stage,
+            "strikes_so_far": strikes_so_far,
+            "strikes_now": _cache_int(keys["strikes"], strikes_so_far),
+        }
 
     block_seconds = 0
     lockout_created = False
     strikes_now = strikes_so_far
+
     if failures >= failure_limit:
         block_seconds = _positive_int(stage.get("block_seconds"), 300, minimum=60)
         blocked_until = int(time.time()) + block_seconds
-        strikes_now = strikes_so_far + 1
-        cache.set(keys["strikes"], strikes_now, _get_strike_ttl_seconds(stage))
-        cache.set(keys["block"], blocked_until, block_seconds)
-        cache.delete(keys["failures"])
-        locked = True
-        retry_after = block_seconds
-        lockout_created = True
+
+        # Exactly one worker wins this transition. All other workers observe
+        # the same block and do not duplicate the strike, audit log, or email.
+        lockout_created = bool(cache.add(keys["block"], blocked_until, block_seconds))
+        if lockout_created:
+            strikes_now = _atomic_cache_increment(
+                keys["strikes"],
+                _get_strike_ttl_seconds(stage),
+            )
+            cache.delete(keys["failures"])
+            locked = True
+            retry_after = block_seconds
+        else:
+            locked, retry_after = _get_lockout_status_for_identifier(identifier)
+            if locked:
+                cache.delete(keys["failures"])
+                strikes_now = _cache_int(keys["strikes"], strikes_so_far)
+            else:
+                # Extremely narrow expiry/corruption race: retry the one-winner
+                # block creation once without falling back to read/modify/write.
+                blocked_until = int(time.time()) + block_seconds
+                lockout_created = bool(cache.add(keys["block"], blocked_until, block_seconds))
+                if lockout_created:
+                    strikes_now = _atomic_cache_increment(
+                        keys["strikes"],
+                        _get_strike_ttl_seconds(stage),
+                    )
+                    cache.delete(keys["failures"])
+                    locked = True
+                    retry_after = block_seconds
 
     return {
         "locked": bool(locked),
-        "lockout_created": lockout_created,
-        "retry_after_seconds": int(retry_after),
+        "lockout_created": bool(lockout_created),
+        "retry_after_seconds": int(retry_after or 0),
         "identifier": identifier,
         "failure_count": failures,
         "failure_limit": failure_limit,
-        "block_seconds": block_seconds,
+        "block_seconds": block_seconds if lockout_created else int(retry_after or 0),
         "policy_stage": stage,
         "strikes_so_far": strikes_so_far,
         "strikes_now": strikes_now,

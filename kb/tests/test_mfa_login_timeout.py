@@ -12,6 +12,7 @@ from kb.mfa import (
     PRE_MFA_BACKEND_SESSION_KEY,
     PRE_MFA_CHALLENGE_ID_SESSION_KEY,
     PRE_MFA_EXPIRES_AT_SESSION_KEY,
+    PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY,
     PRE_MFA_NEXT_SESSION_KEY,
     PRE_MFA_STARTED_AT_SESSION_KEY,
     PRE_MFA_USER_ID_SESSION_KEY,
@@ -132,8 +133,27 @@ class MFALoginTimeoutTests(TestCase):
         self.assertRedirects(response, reverse("root_login"), fetch_redirect_response=False)
         self.assertNotIn("_auth_user_id", self.client.session)
 
-    def test_countdown_timeout_post_clears_pending_login(self):
+    def test_early_countdown_timeout_post_does_not_cancel_active_login(self):
         self._set_pending_login(seconds_ago=10)
+        challenge_id = self.client.session[PRE_MFA_CHALLENGE_ID_SESSION_KEY]
+
+        response = self.client.post(
+            reverse("mfa_cancel"),
+            {
+                "reason": "timeout",
+                "challenge_id": challenge_id,
+            },
+        )
+
+        self.assertRedirects(response, reverse("mfa_verify"), fetch_redirect_response=False)
+        self.assertIn(PRE_MFA_USER_ID_SESSION_KEY, self.client.session)
+        self.assertEqual(
+            self.client.session.get(PRE_MFA_CHALLENGE_ID_SESSION_KEY),
+            challenge_id,
+        )
+
+    def test_expired_countdown_timeout_post_clears_pending_login(self):
+        self._set_pending_login(seconds_ago=61)
 
         response = self.client.post(
             reverse("mfa_cancel"),
@@ -145,6 +165,65 @@ class MFALoginTimeoutTests(TestCase):
 
         self.assertRedirects(response, reverse("root_login"), fetch_redirect_response=False)
         self.assertNotIn(PRE_MFA_USER_ID_SESSION_KEY, self.client.session)
+
+    def test_countdown_timeout_post_defers_when_lockout_started_after_page_render(self):
+        self._set_pending_login(seconds_ago=61)
+        old_challenge_id = self.client.session[PRE_MFA_CHALLENGE_ID_SESSION_KEY]
+
+        with patch(
+            "kb.views.mfa.get_auth_lockout_status",
+            return_value=(True, 300, "mfa:user:test"),
+        ):
+            response = self.client.post(
+                reverse("mfa_cancel"),
+                {
+                    "reason": "timeout",
+                    "challenge_id": old_challenge_id,
+                },
+            )
+
+        self.assertRedirects(response, reverse("mfa_verify"), fetch_redirect_response=False)
+        session = self.client.session
+        self.assertIn(PRE_MFA_USER_ID_SESSION_KEY, session)
+        self.assertTrue(session.get(PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY))
+        self.assertNotIn(PRE_MFA_STARTED_AT_SESSION_KEY, session)
+        self.assertNotIn(PRE_MFA_EXPIRES_AT_SESSION_KEY, session)
+        self.assertNotEqual(
+            session.get(PRE_MFA_CHALLENGE_ID_SESSION_KEY),
+            old_challenge_id,
+        )
+
+    def test_active_mfa_lockout_takes_precedence_over_expired_short_timer(self):
+        self._set_pending_login(seconds_ago=61)
+
+        with patch(
+            "kb.views.mfa.get_auth_lockout_status",
+            return_value=(True, 300, "mfa:user:test"),
+        ):
+            locked_response = self.client.get(reverse("mfa_verify"))
+
+        self.assertEqual(locked_response.status_code, 200)
+        self.assertTrue(locked_response.context["mfa_rate_limit_active"])
+        self.assertFalse(locked_response.context["mfa_login_timeout_active"])
+        session = self.client.session
+        self.assertIn(PRE_MFA_USER_ID_SESSION_KEY, session)
+        self.assertTrue(session.get(PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY))
+        self.assertNotIn(PRE_MFA_STARTED_AT_SESSION_KEY, session)
+        self.assertNotIn(PRE_MFA_EXPIRES_AT_SESSION_KEY, session)
+
+        with patch(
+            "kb.views.mfa.get_auth_lockout_status",
+            return_value=(False, 0, "mfa:user:test"),
+        ):
+            resumed_response = self.client.get(reverse("mfa_verify"))
+
+        self.assertEqual(resumed_response.status_code, 200)
+        self.assertFalse(resumed_response.context["mfa_rate_limit_active"])
+        self.assertTrue(resumed_response.context["mfa_login_timeout_active"])
+        session = self.client.session
+        self.assertNotIn(PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY, session)
+        self.assertIn(PRE_MFA_STARTED_AT_SESSION_KEY, session)
+        self.assertIn(PRE_MFA_EXPIRES_AT_SESSION_KEY, session)
 
     def test_password_login_creates_fixed_deadline_and_renders_countdown(self):
         response = self.client.post(

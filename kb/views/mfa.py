@@ -27,6 +27,7 @@ from ..mfa import (
     clear_mfa_verified,
     clear_pending_mfa_login,
     complete_pending_mfa_login,
+    defer_pending_mfa_deadline_for_lockout,
     get_or_create_mfa_device,
     get_mfa_login_timeout_seconds,
     reset_mfa_device_for_user,
@@ -41,6 +42,7 @@ from ..mfa import (
     pending_mfa_next_url,
     pending_mfa_seconds_remaining,
     pending_mfa_target_name,
+    resume_pending_mfa_deadline_after_lockout,
     start_disabled_account_session,
     user_requires_mfa,
     verify_totp_code,
@@ -183,13 +185,29 @@ def _ensure_pending_mfa_login_for_timeout(request):
     return user
 
 
-def _mfa_rate_limit_context(request, user):
-    """Return the current MFA cooldown UI without changing the lockout."""
-    locked, retry_after, _identifier = get_auth_lockout_status(
+def _prepare_pending_mfa_timing(request, user):
+    """Make the longer MFA cooldown authoritative over the short login timer."""
+    locked, retry_after, identifier = get_auth_lockout_status(
         request,
         user=user,
         purpose="mfa",
     )
+    if locked:
+        defer_pending_mfa_deadline_for_lockout(request)
+    else:
+        resume_pending_mfa_deadline_after_lockout(request)
+    return locked, retry_after, identifier
+
+
+def _mfa_rate_limit_context(request, user, *, state=None):
+    """Return the current MFA cooldown UI without changing the lockout."""
+    if state is None:
+        state = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="mfa",
+        )
+    locked, retry_after, _identifier = state
     return build_auth_lockout_ui_context(
         locked=locked,
         retry_after_seconds=retry_after,
@@ -201,8 +219,8 @@ def _mfa_rate_limit_context(request, user):
 
 
 def _mfa_timeout_context(request):
-    """Return countdown values derived from the fixed server-side deadline."""
-    remaining = pending_mfa_seconds_remaining(request)
+    """Return countdown values derived from an already-started deadline."""
+    remaining = pending_mfa_seconds_remaining(request, start_if_missing=False)
     if remaining is None:
         remaining_display = ""
     else:
@@ -214,6 +232,14 @@ def _mfa_timeout_context(request):
         "mfa_login_timeout_remaining_seconds": remaining,
         "mfa_login_timeout_remaining_display": remaining_display,
         "mfa_login_challenge_id": ensure_pending_mfa_challenge_id(request) or "",
+    }
+
+
+def _mfa_page_security_context(request, user):
+    state = _prepare_pending_mfa_timing(request, user)
+    return {
+        **_mfa_timeout_context(request),
+        **_mfa_rate_limit_context(request, user, state=state),
     }
 
 
@@ -279,11 +305,28 @@ def cancel_mfa_login(request):
         return redirect(pending_mfa_target_name(request) or "mfa_verify")
 
     if pending_user and timed_out:
-        return _expire_pending_mfa_login(
+        # The browser countdown is only a display aid. Re-check the current
+        # server-side MFA cooldown before honouring expiry because a lockout may
+        # have started in another tab or request after this page was rendered.
+        # The longer cooldown always takes precedence over the short login timer.
+        locked, _retry_after, _identifier = get_auth_lockout_status(
             request,
             user=pending_user,
-            source="countdown",
+            purpose="mfa",
         )
+        if locked:
+            defer_pending_mfa_deadline_for_lockout(request)
+            return redirect(pending_mfa_target_name(request) or "mfa_verify")
+
+        # A crafted early timeout request must not cancel a still-valid or
+        # lockout-deferred challenge.
+        if pending_mfa_login_has_expired(request):
+            return _expire_pending_mfa_login(
+                request,
+                user=pending_user,
+                source="countdown",
+            )
+        return redirect(pending_mfa_target_name(request) or "mfa_verify")
 
     if pending_user:
         try:
@@ -315,9 +358,6 @@ def cancel_mfa_login(request):
 
 def mfa_setup(request):
     _ensure_pending_mfa_login_for_timeout(request)
-    timeout_response = _enforce_pending_mfa_timeout(request)
-    if timeout_response is not None:
-        return timeout_response
 
     user = _mfa_subject_user(request)
     if not user:
@@ -326,6 +366,11 @@ def mfa_setup(request):
 
     if not user_requires_mfa(user):
         return redirect("login")
+
+    _prepare_pending_mfa_timing(request, user)
+    timeout_response = _enforce_pending_mfa_timeout(request)
+    if timeout_response is not None:
+        return timeout_response
 
     device = get_or_create_mfa_device(user)
 
@@ -352,6 +397,7 @@ def mfa_setup(request):
             purpose="mfa",
         )
         if locked:
+            defer_pending_mfa_deadline_for_lockout(request)
             log_auth_event(
                 request,
                 event_type="mfa_setup_failure",
@@ -393,6 +439,7 @@ def mfa_setup(request):
                 "failure_limit": lockout.get("failure_limit"),
             }
             if lockout.get("locked"):
+                defer_pending_mfa_deadline_for_lockout(request)
                 details["reason"] = "temporary_lockout_created"
                 details["retry_after_seconds"] = lockout.get("retry_after_seconds")
                 messages.error(
@@ -419,17 +466,13 @@ def mfa_setup(request):
             "manual_secret": secret,
             "next": _safe_next_url(request),
             "mfa_user": user,
-            **_mfa_timeout_context(request),
-            **_mfa_rate_limit_context(request, user),
+            **_mfa_page_security_context(request, user),
         },
     )
 
 
 def mfa_verify(request):
     _ensure_pending_mfa_login_for_timeout(request)
-    timeout_response = _enforce_pending_mfa_timeout(request)
-    if timeout_response is not None:
-        return timeout_response
 
     user = _mfa_subject_user(request)
     if not user:
@@ -438,6 +481,11 @@ def mfa_verify(request):
 
     if not user_requires_mfa(user):
         return redirect("login")
+
+    _prepare_pending_mfa_timing(request, user)
+    timeout_response = _enforce_pending_mfa_timeout(request)
+    if timeout_response is not None:
+        return timeout_response
 
     device = getattr(user, "kb_mfa_device", None)
     if not device or not device.confirmed:
@@ -474,8 +522,7 @@ def mfa_verify(request):
             {
                 "next": _safe_next_url(request),
                 "mfa_user": user,
-                **_mfa_timeout_context(request),
-                **_mfa_rate_limit_context(request, user),
+                **_mfa_page_security_context(request, user),
             },
         )
 
@@ -486,6 +533,7 @@ def mfa_verify(request):
             purpose="mfa",
         )
         if locked:
+            defer_pending_mfa_deadline_for_lockout(request)
             log_auth_event(
                 request,
                 event_type="mfa_verify_failure",
@@ -537,6 +585,7 @@ def mfa_verify(request):
                 "failure_limit": lockout.get("failure_limit"),
             }
             if lockout.get("locked"):
+                defer_pending_mfa_deadline_for_lockout(request)
                 details["reason"] = "temporary_lockout_created"
                 details["retry_after_seconds"] = lockout.get("retry_after_seconds")
                 messages.error(
@@ -561,8 +610,7 @@ def mfa_verify(request):
         {
             "next": _safe_next_url(request),
             "mfa_user": user,
-            **_mfa_timeout_context(request),
-            **_mfa_rate_limit_context(request, user),
+            **_mfa_page_security_context(request, user),
         },
     )
 

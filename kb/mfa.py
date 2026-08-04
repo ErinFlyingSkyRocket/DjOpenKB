@@ -23,6 +23,7 @@ PRE_MFA_NEXT_SESSION_KEY = "djopenkb_pre_mfa_next"
 PRE_MFA_STARTED_AT_SESSION_KEY = "djopenkb_pre_mfa_started_at"
 PRE_MFA_EXPIRES_AT_SESSION_KEY = "djopenkb_pre_mfa_expires_at"
 PRE_MFA_CHALLENGE_ID_SESSION_KEY = "djopenkb_pre_mfa_challenge_id"
+PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY = "djopenkb_pre_mfa_lockout_deferred"
 
 MFA_LOGIN_TIMEOUT_DEFAULT_SECONDS = 60
 MFA_LOGIN_TIMEOUT_MIN_SECONDS = 30
@@ -95,14 +96,22 @@ def _pending_mfa_expires_at(request):
     return _pending_mfa_session_datetime(request, PRE_MFA_EXPIRES_AT_SESSION_KEY)
 
 
+def pending_mfa_deadline_is_deferred(request):
+    """Return whether an active MFA cooldown is intentionally pausing the timer."""
+    return bool(request.session.get(PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY))
+
+
 def ensure_pending_mfa_deadline(request):
     """Return the fixed password-to-MFA deadline for the pending login.
 
-    New logins store both timestamps when the password succeeds. The fallback
-    also upgrades an older pending session that has only the start timestamp.
-    Once stored, changing Site settings cannot extend that active login window.
+    The timer is deliberately not started while an MFA rate-limit cooldown is
+    active. Once the cooldown ends, the view calls this helper to begin one new
+    fixed completion window. Changing Site settings cannot extend a deadline
+    that has already started.
     """
     if not request.session.get(PRE_MFA_USER_ID_SESSION_KEY):
+        return None
+    if pending_mfa_deadline_is_deferred(request):
         return None
 
     deadline_changed = False
@@ -126,6 +135,40 @@ def ensure_pending_mfa_deadline(request):
     return expires_at
 
 
+def defer_pending_mfa_deadline_for_lockout(request):
+    """Pause the MFA completion window while the server-side cooldown is active.
+
+    The pending password-authenticated identity remains in the session, but the
+    60-second verification deadline does not run underneath a longer lockout.
+    Rotating the challenge once invalidates any pre-lockout browser tab without
+    repeatedly changing it on every locked-page refresh.
+    """
+    if not request.session.get(PRE_MFA_USER_ID_SESSION_KEY):
+        return
+
+    already_deferred = pending_mfa_deadline_is_deferred(request)
+    had_deadline = bool(
+        request.session.get(PRE_MFA_STARTED_AT_SESSION_KEY)
+        or request.session.get(PRE_MFA_EXPIRES_AT_SESSION_KEY)
+    )
+    request.session.pop(PRE_MFA_STARTED_AT_SESSION_KEY, None)
+    request.session.pop(PRE_MFA_EXPIRES_AT_SESSION_KEY, None)
+    if not already_deferred or had_deadline:
+        request.session[PRE_MFA_CHALLENGE_ID_SESSION_KEY] = secrets.token_urlsafe(32)
+    request.session[PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY] = True
+    request.session.modified = True
+
+
+def resume_pending_mfa_deadline_after_lockout(request):
+    """Start a fresh fixed MFA window after the active cooldown has ended."""
+    if not request.session.get(PRE_MFA_USER_ID_SESSION_KEY):
+        return None
+    if pending_mfa_deadline_is_deferred(request):
+        request.session.pop(PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY, None)
+        request.session.modified = True
+    return ensure_pending_mfa_deadline(request)
+
+
 def ensure_pending_mfa_started_at(request):
     """Backwards-compatible helper that ensures the fixed deadline exists."""
     expires_at = ensure_pending_mfa_deadline(request)
@@ -134,9 +177,12 @@ def ensure_pending_mfa_started_at(request):
     return _pending_mfa_started_at(request)
 
 
-def pending_mfa_seconds_remaining(request):
-    """Return whole seconds left to finish MFA, or None outside pending MFA."""
-    expires_at = ensure_pending_mfa_deadline(request)
+def pending_mfa_seconds_remaining(request, *, start_if_missing=True):
+    """Return whole seconds left to finish MFA, or None while it is deferred."""
+    if start_if_missing:
+        expires_at = ensure_pending_mfa_deadline(request)
+    else:
+        expires_at = _pending_mfa_expires_at(request)
     if expires_at is None:
         return None
 
@@ -145,7 +191,8 @@ def pending_mfa_seconds_remaining(request):
 
 
 def pending_mfa_login_has_expired(request):
-    remaining = pending_mfa_seconds_remaining(request)
+    """Check only an already-started deadline; never start one as a side effect."""
+    remaining = pending_mfa_seconds_remaining(request, start_if_missing=False)
     return remaining is not None and remaining <= 0
 
 
@@ -354,6 +401,7 @@ def clear_pending_mfa_login(request):
     request.session.pop(PRE_MFA_STARTED_AT_SESSION_KEY, None)
     request.session.pop(PRE_MFA_EXPIRES_AT_SESSION_KEY, None)
     request.session.pop(PRE_MFA_CHALLENGE_ID_SESSION_KEY, None)
+    request.session.pop(PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY, None)
     request.session.modified = True
 
 
@@ -367,17 +415,36 @@ def begin_pending_mfa_login(request, user, next_url=None, backend=None):
     """
     clear_mfa_verified(request)
     clear_pending_mfa_login(request)
-    started_at = timezone.now()
-    expires_at = started_at + timezone.timedelta(
-        seconds=get_mfa_login_timeout_seconds()
-    )
 
     request.session[PRE_MFA_USER_ID_SESSION_KEY] = str(user.pk)
     request.session[PRE_MFA_BACKEND_SESSION_KEY] = backend or get_mfa_completion_backend(user)
     request.session[PRE_MFA_NEXT_SESSION_KEY] = next_url or reverse("home")
-    request.session[PRE_MFA_STARTED_AT_SESSION_KEY] = started_at.isoformat()
-    request.session[PRE_MFA_EXPIRES_AT_SESSION_KEY] = expires_at.isoformat()
     request.session[PRE_MFA_CHALLENGE_ID_SESSION_KEY] = secrets.token_urlsafe(32)
+
+    # A longer active MFA cooldown takes precedence over the short completion
+    # window. Keep the password-authenticated pending state, but start the fixed
+    # timer only after the server-side lockout has ended.
+    locked = False
+    try:
+        from .auth_monitoring import get_auth_lockout_status
+
+        locked, _retry_after, _identifier = get_auth_lockout_status(
+            request,
+            user=user,
+            purpose="mfa",
+        )
+    except Exception:
+        locked = False
+
+    if locked:
+        request.session[PRE_MFA_LOCKOUT_DEFERRED_SESSION_KEY] = True
+    else:
+        started_at = timezone.now()
+        expires_at = started_at + timezone.timedelta(
+            seconds=get_mfa_login_timeout_seconds()
+        )
+        request.session[PRE_MFA_STARTED_AT_SESSION_KEY] = started_at.isoformat()
+        request.session[PRE_MFA_EXPIRES_AT_SESSION_KEY] = expires_at.isoformat()
     request.session.modified = True
 
 

@@ -135,10 +135,12 @@ class AuthenticationLockoutCountdownUITests(TestCase):
         client.force_login(admin_user)
         record_auth_failure(user=admin_user, purpose="admin_mfa")
 
-        response = client.get(
-            f"{reverse('admin_mfa_verify')}?next=/admin/&fresh=1",
-            follow=True,
+        start_response = client.post(
+            reverse("admin_mfa_start"),
+            {"next": "/admin/"},
         )
+        self.assertEqual(start_response.status_code, 302)
+        response = client.get(f"{reverse('admin_mfa_verify')}?next=/admin/")
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["admin_mfa_rate_limit_active"])
