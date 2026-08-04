@@ -1,0 +1,106 @@
+/*
+ * Shared rendered-article layout rules.
+ *
+ * This stylesheet is loaded by both the published article page and the
+ * create/edit preview so overflow behaviour stays consistent before and after
+ * publishing.
+ */
+
+.article-detail-layout,
+.article-detail-main,
+.article-detail-main .panel,
+.article-detail-main .panel-body,
+.article-rendered-content {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.article-detail-heading,
+.article-detail-panel .list-group-item,
+.article-detail-panel .list-group-item a,
+.article-detail-main .metaData,
+.article-detail-main .metaData h5,
+.article-detail-main .metaData a {
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+.article-rendered-content {
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: auto;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+    word-break: normal;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Normal prose should wrap instead of widening the page. */
+.article-rendered-content p,
+.article-rendered-content li,
+.article-rendered-content blockquote,
+.article-rendered-content h1,
+.article-rendered-content h2,
+.article-rendered-content h3,
+.article-rendered-content h4,
+.article-rendered-content h5,
+.article-rendered-content h6,
+.article-rendered-content a,
+.article-rendered-content td,
+.article-rendered-content th {
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+.article-rendered-content img,
+.article-rendered-content iframe,
+.article-rendered-content video {
+    max-width: 100%;
+}
+
+.article-rendered-content img {
+    height: auto;
+}
+
+/* Preserve code formatting while keeping its scrolling inside the article. */
+.article-rendered-content pre {
+    max-width: 100%;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    white-space: pre;
+    overflow-wrap: normal;
+    word-break: normal;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    -webkit-overflow-scrolling: touch;
+}
+
+.article-rendered-content pre code {
+    white-space: inherit;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.article-rendered-content :not(pre) > code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+/* Wide tables scroll within their own rendered-content area. */
+.article-rendered-content table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* The preview keeps vertical scrolling but uses these same content rules. */
+.suggest-preview.article-rendered-content {
+    overflow-y: auto;
+    overflow-x: auto;
+    font-family: inherit;
+    color: inherit;
+}

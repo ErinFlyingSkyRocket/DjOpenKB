@@ -50,8 +50,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <style nonce="{{ csp_nonce }}">
         .suggest-preview { min-height: 480px; height: 480px; overflow: auto; background: #fff; }
         .CodeMirror { min-height: 480px; height: 480px; }
-        .suggest-preview img { max-width: 100%; max-height: 1200px; height: auto; object-fit: contain; }
-        .suggest-preview img:not([width]) { max-height: 520px; }
 
         .pasted-image-panel {
             display: block;
@@ -228,6 +226,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
     </style>
     <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260804-layout-1">
     <script defer src="{% static 'javascripts/csp-actions.js' %}"></script>
 </head>
 <body class="">
@@ -427,7 +426,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group" id="preview-wrapper">
                                 <label for="preview">{% trans "Preview" %}</label>
-                                <div id="preview" name="preview" class="form-control suggest-preview" rows="10"></div>
+                                <div id="preview" name="preview" class="form-control suggest-preview article-rendered-content" rows="10"></div>
                             </div>
                         </div>
                     </div>

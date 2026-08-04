@@ -44,14 +44,11 @@
     <script src="{% static 'javascripts/openKB.js' %}"></script>
 
     <style nonce="{{ csp_nonce }}">
-        .body_text img { max-width: 100%; height: auto; }
         .article-video-wrapper,
         .article-video-embed,
         .article-video {
             max-width: {{ article_video_max_width_px|default:720 }}px;
         }
-        .body_text table { width: 100%; margin-bottom: 20px; }
-        .body_text pre { background: #f7f7f7; border: 1px solid #ddd; }
         .metaData h5 { line-height: 1.5; }
         .keywords { margin-top: 15px; margin-bottom: 35px; }
         .keywordSeporator { color: #899aa6; padding: 0 6px; }
@@ -175,6 +172,7 @@
         }
     </style>
     <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}?v=20260720-video-size-5">
+    <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260804-layout-1">
 </head>
 
 <body class="show_footer">
@@ -203,14 +201,17 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
             {% if show_global_back_button %}
-                <div class="col-xs-12 col-md-12 col-lg-12 article-detail-heading-wrap">
-                    <a class="btn btn-default" href="{{ safe_back_url }}">
-                        <i class="fa fa-arrow-left"></i> {% trans "Back" %}
-                    </a>
+                <div class="row">
+                    <div class="col-xs-12 article-detail-heading-wrap">
+                        <a class="btn btn-default" href="{{ safe_back_url }}">
+                            <i class="fa fa-arrow-left"></i> {% trans "Back" %}
+                        </a>
+                    </div>
                 </div>
             {% endif %}
 
-            <div class="col-md-3 col-lg-3">
+            <div class="row article-detail-layout">
+            <div class="col-xs-12 col-md-3 col-lg-3">
                 <div class="panel panel-default article-detail-panel">
                     <div class="panel-heading">{% trans "Related articles" %}</div>
                     <div class="panel-body">
@@ -227,10 +228,10 @@
                 </div>
             </div>
 
-            <div class="col-md-8 col-lg-8">
+            <div class="col-xs-12 col-md-9 col-lg-9 article-detail-main">
                 <h1 class="article-detail-heading">{{ title }} {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h1>
 
-                <div class="body_text">
+                <div class="body_text article-rendered-content">
                     {{ content|safe }}
                 </div>
 
@@ -339,6 +340,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
+            </div>
             </div>
         </div>
     </div>
