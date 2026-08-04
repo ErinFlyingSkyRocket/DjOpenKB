@@ -64,3 +64,75 @@
   <button type="submit" class="button">{% trans "Apply" %}</button>
 </form>
 {% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script nonce="{{ csp_nonce }}">
+(function () {
+  "use strict";
+
+  var limits = {
+    username: {{ input_limits.username }},
+    email: {{ input_limits.email }},
+    password: {{ input_limits.password }},
+    password1: {{ input_limits.password }},
+    password2: {{ input_limits.password }},
+    old_password: {{ input_limits.password }},
+    new_password1: {{ input_limits.password }},
+    new_password2: {{ input_limits.password }},
+    current_password: {{ input_limits.password }},
+    code: {{ input_limits.mfa_code }},
+    mfa_code: {{ input_limits.mfa_code }},
+    q: {{ input_limits.search_query }},
+    url: {{ input_limits.url }},
+    review_notes: {{ input_limits.review_notes }},
+    notes: {{ input_limits.profile_notes }},
+    admin_allowed_cidrs: {{ input_limits.admin_allowed_cidrs }},
+    target_user_lookup: {{ input_limits.user_lookup }}
+  };
+  var genericLimit = {{ input_limits.generic }};
+
+  function applyLimit(element) {
+    var name = element.getAttribute("name") || "";
+    var configuredLimit = limits[name] || genericLimit;
+    var currentLimit = parseInt(element.getAttribute("maxlength") || "0", 10);
+    if (!currentLimit) {
+      element.setAttribute("maxlength", String(configuredLimit));
+    }
+  }
+
+  function applyAllLimits(root) {
+    var scope = root || document;
+    var selector = [
+      'input[type="text"]',
+      'input[type="search"]',
+      'input[type="email"]',
+      'input[type="password"]',
+      'input[type="url"]',
+      'textarea'
+    ].join(",");
+    scope.querySelectorAll(selector).forEach(applyLimit);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    applyAllLimits(document);
+
+    if (window.MutationObserver) {
+      new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          mutation.addedNodes.forEach(function (node) {
+            if (!node || node.nodeType !== 1) {
+              return;
+            }
+            if (node.matches && node.matches('input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="url"], textarea')) {
+              applyLimit(node);
+            }
+            applyAllLimits(node);
+          });
+        });
+      }).observe(document.body, {childList: true, subtree: true});
+    }
+  });
+}());
+</script>
+{% endblock %}

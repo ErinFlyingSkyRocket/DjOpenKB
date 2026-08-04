@@ -80,7 +80,7 @@
 
             <div class="form-group">
                 <label id="username-label" class="sr-only" for="id_username">{% trans "NextLabs email or username" %}</label>
-                <input id="id_username" type="text" name="username" class="form-control" placeholder="{% trans 'NextLabs email or username' %}" value="{{ form.username.value|default:'' }}" required {% if login_lockout_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="login">
+                <input id="id_username" type="text" name="username" maxlength="{{ input_limits.username }}" class="form-control" placeholder="{% trans 'NextLabs email or username' %}" value="{{ form.username.value|default:'' }}" required {% if login_lockout_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="login">
                 <p id="ad-login-help" class="help-block login-help">
                     {% trans "Enter your company email address or username." %}
                 </p>
@@ -90,7 +90,7 @@
             </div>
             <div class="form-group">
                 <label class="sr-only" for="id_password">{% trans "Password" %}</label>
-                <input id="id_password" type="password" name="password" class="form-control" placeholder="{% trans 'Password' %}" value="" required {% if login_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="login">
+                <input id="id_password" type="password" name="password" maxlength="{{ input_limits.password }}" class="form-control" placeholder="{% trans 'Password' %}" value="" required {% if login_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="login">
             </div>
 
             {% include "_auth_lockout_countdown.html" with lockout_active=login_lockout_active lockout_remaining_seconds=login_lockout_remaining_seconds lockout_message_template=login_lockout_message_template lockout_initial_message=login_lockout_initial_message lockout_group='login' only %}

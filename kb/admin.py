@@ -5,6 +5,7 @@ from django import forms
 from django.contrib import admin, messages
 from django.contrib.admin.utils import quote
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.validators import MaxLengthValidator
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -16,6 +17,28 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils import timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _, ngettext
+
+from .input_limits import (
+    ADMIN_ALLOWED_CIDRS_MAX_LENGTH,
+    PASSWORD_MAX_LENGTH,
+    PROFILE_NOTES_MAX_LENGTH,
+    REVIEW_NOTES_MAX_LENGTH,
+)
+
+
+def _apply_form_field_max_length(field, limit):
+    """Apply matching browser and Django form validation to a text field."""
+    if field is None:
+        return
+    field.max_length = limit
+    field.widget.attrs["maxlength"] = limit
+    if not any(
+        isinstance(validator, MaxLengthValidator)
+        and getattr(validator, "limit_value", None) == limit
+        for validator in field.validators
+    ):
+        field.validators.append(MaxLengthValidator(limit))
+
 
 from .models import ActivityLog, AdminActivityLog, ArticleImageUploadLog, ArticleVote, AuthActivityLog, AuthLockoutPolicyStage, SuggestedArticle, SiteSetting, UserMFADevice, UserProfile, get_article_body_character_limit, validate_article_body
 from .auth_monitoring import format_retry_after, log_auth_event, reset_user_auth_lockouts
@@ -589,6 +612,11 @@ class UserProfileAccountFormMixin:
                 "LDAP user/LDAP admin use Active Directory user. "
                 "To convert an LDAP account to a local account, set Account Type to User or Admin and Source to Local user, then set a local password."
             )
+        if "notes" in self.fields:
+            _apply_form_field_max_length(
+                self.fields["notes"],
+                PROFILE_NOTES_MAX_LENGTH,
+            )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -1119,6 +1147,13 @@ class GroupAdmin(AdminAuditMixin, DefaultGroupAdmin):
 class UniqueEmailUserChangeForm(UserChangeForm):
     """Apply global case-insensitive username/email rules in Django Admin."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _apply_form_field_max_length(
+            self.fields.get("password"),
+            PASSWORD_MAX_LENGTH,
+        )
+
     def clean_username(self):
         return validate_unique_username(
             self.cleaned_data.get("username"),
@@ -1139,6 +1174,14 @@ class UniqueEmailUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in ("password1", "password2"):
+            _apply_form_field_max_length(
+                self.fields.get(field_name),
+                PASSWORD_MAX_LENGTH,
+            )
 
     def clean_username(self):
         return validate_unique_username(
@@ -2332,11 +2375,15 @@ class SuggestedArticleAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         character_limit = get_article_body_character_limit()
+        _apply_form_field_max_length(
+            self.fields.get("review_notes"),
+            REVIEW_NOTES_MAX_LENGTH,
+        )
         for field_name in ("body", "pending_update_body"):
             field = self.fields.get(field_name)
             if field is None:
                 continue
-            field.widget.attrs["maxlength"] = character_limit
+            _apply_form_field_max_length(field, character_limit)
             limit_help = _("Maximum %(limit)s characters.") % {
                 "limit": character_limit
             }
@@ -2701,8 +2748,17 @@ class SiteSettingAdminForm(forms.ModelForm):
         model = SiteSetting
         fields = "__all__"
         widgets = {
-            "admin_allowed_cidrs": forms.Textarea(attrs={"rows": 6}),
+            "admin_allowed_cidrs": forms.Textarea(
+                attrs={"rows": 6, "maxlength": ADMIN_ALLOWED_CIDRS_MAX_LENGTH}
+            ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _apply_form_field_max_length(
+            self.fields.get("admin_allowed_cidrs"),
+            ADMIN_ALLOWED_CIDRS_MAX_LENGTH,
+        )
 
     def clean_admin_allowed_cidrs(self):
         raw_value = self.cleaned_data.get("admin_allowed_cidrs") or ""

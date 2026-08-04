@@ -4,6 +4,8 @@ from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from .input_limits import template_input_limits
+
 
 _SKIP_BACK_PATH_PREFIXES = (
     "/logout",
@@ -88,3 +90,8 @@ def openkb_ai_settings(request):
 def csp_nonce(request):
     """Expose the nonce created by ContentSecurityPolicyMiddleware."""
     return {"csp_nonce": getattr(request, "csp_nonce", "")}
+
+
+def input_limits(request):
+    """Expose central browser-side character limits to all templates."""
+    return {"input_limits": template_input_limits()}

@@ -345,7 +345,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div id="adminReviewNotesGroup" class="admin-review-notes{% if current_status != 'failed' %} csp-is-hidden{% endif %}">
                                 <div class="form-group admin-review-notes-group">
                                     <label for="reviewNotesInput">{% trans "Pending failed comments" %}</label>
-                                    <textarea id="reviewNotesInput" name="review_notes" class="form-control" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
+                                    <textarea id="reviewNotesInput" name="review_notes" class="form-control" maxlength="{{ input_limits.review_notes }}" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
                                     <p class="text-muted admin-review-notes-help">{% trans "These comments are shown to the article owner when the article or update is marked as Pending failed." %}</p>
                                 </div>
                             </div>

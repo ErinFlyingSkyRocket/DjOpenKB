@@ -184,7 +184,7 @@
             <div class="orphan-toolbar">
                 <form method="get" class="form-inline">
                     <div class="form-group">
-                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search orphan articles' %}" value="{{ orphan_search_query|default:'' }}">
+                        <input type="text" name="q" maxlength="{{ input_limits.search_query }}" class="form-control" placeholder="{% trans 'Search orphan articles' %}" value="{{ orphan_search_query|default:'' }}">
                     </div>
                     <div class="form-group">
                         <select id="orphanStatusFilter" name="status" class="form-control auto-submit-on-change">
@@ -236,6 +236,7 @@
                                         type="text"
                                         id="target_user_lookup"
                                         name="target_user_lookup"
+                                        maxlength="{{ input_limits.user_lookup }}"
                                         class="form-control orphan-user-lookup"
                                         autocomplete="off"
                                         placeholder="{% trans 'Type username or email' %}"

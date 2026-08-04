@@ -24,6 +24,7 @@
     var pollIntervalMilliseconds = Math.max(500, Number(widget.dataset.pollIntervalMilliseconds || 2000));
     var maximumMessages = 24;
     var maximumMessageCharacters = 8000;
+    var maximumQuestionCharacters = Math.max(100, Number(widget.dataset.maxQuestionCharacters || questionInput.maxLength || 1000));
     var pollTimer = null;
     var pollInProgress = false;
 
@@ -78,7 +79,8 @@
         return value.slice(-maximumMessages).map(function (message) {
             if (!message || typeof message !== "object") { return null; }
             if (message.sender !== "user" && message.sender !== "bot") { return null; }
-            var text = trimText(message.text, maximumMessageCharacters);
+            var textLimit = message.sender === "user" ? maximumQuestionCharacters : maximumMessageCharacters;
+            var text = trimText(message.text, textLimit);
             if (!text) { return null; }
             return {
                 sender: message.sender,
@@ -107,7 +109,7 @@
             var parsed = JSON.parse(stored);
             if (!parsed || typeof parsed !== "object" || (parsed.version !== 1 && parsed.version !== 2)) { return; }
             state.open = Boolean(parsed.open);
-            state.draft = trimText(parsed.draft, maximumMessageCharacters);
+            state.draft = trimText(parsed.draft, maximumQuestionCharacters);
             state.messages = normaliseMessages(parsed.messages);
             state.pendingJobs = parsed.version === 2 ? normalisePendingJobs(parsed.pendingJobs) : [];
         } catch (error) {
@@ -120,7 +122,7 @@
             window.sessionStorage.setItem(storageKey, JSON.stringify({
                 version: 2,
                 open: Boolean(state.open),
-                draft: trimText(state.draft, maximumMessageCharacters),
+                draft: trimText(state.draft, maximumQuestionCharacters),
                 messages: normaliseMessages(state.messages),
                 pendingJobs: normalisePendingJobs(state.pendingJobs)
             }));
@@ -276,7 +278,7 @@
     function appendMessage(sender, text, relatedArticles, jobId) {
         var message = {
             sender: sender === "user" ? "user" : "bot",
-            text: trimText(text, maximumMessageCharacters),
+            text: trimText(text, sender === "user" ? maximumQuestionCharacters : maximumMessageCharacters),
             time: getTime(),
             jobId: isUuid(jobId) ? jobId : "",
             relatedArticles: normaliseRelatedArticles(relatedArticles)
@@ -453,7 +455,7 @@
     closeButton.addEventListener("click", function () { setChatOpen(false); });
     clearButton.addEventListener("click", clearConversation);
     questionInput.addEventListener("input", function () {
-        state.draft = trimText(questionInput.value, maximumMessageCharacters);
+        state.draft = trimText(questionInput.value, maximumQuestionCharacters);
         saveState();
     });
 

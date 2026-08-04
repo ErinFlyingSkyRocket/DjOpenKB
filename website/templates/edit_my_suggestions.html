@@ -168,7 +168,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                     <div class="{% if profile_show_visibility_filter %}col-sm-6{% else %}col-sm-9{% endif %}">
                                         <label for="profile-article-search">{% trans "Search article" %}</label>
                                         <div class="input-group">
-                                            <input id="profile-article-search" type="search" name="q" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}" autocomplete="off" data-search-history="off">
+                                            <input id="profile-article-search" type="search" name="q" maxlength="{{ input_limits.search_query }}" class="form-control" placeholder="{% trans 'Search by title, body, keywords, status, or file path' %}" value="{{ profile_search_query|default:'' }}" autocomplete="off" data-search-history="off">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="submit"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                                             </span>

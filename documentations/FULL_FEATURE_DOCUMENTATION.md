@@ -334,6 +334,38 @@ Important protections include:
 - Nginx rejects ordinary request bodies above 3 MB. The authorised bulk-import route alone has a 100 MB limit, matching the application ZIP validation limit.
 - Per-IP connection caps and request timeouts reduce slow or repeated request pressure at the reverse-proxy layer.
 
+### 8.1 Input Validation and Character Limits
+
+All user-controlled text values are bounded according to their purpose. The normal browser interface uses `maxlength` for usability, while Django forms and `InputLengthLimitMiddleware` provide the authoritative server-side boundary when a browser control is removed or a request is submitted manually.
+
+| Input category | Maximum characters | Examples / notes |
+|---|---:|---|
+| Login username or email identifier | 254 | Login accepts either a username-style identifier or email address. |
+| Username, first name, or last name | 150 | Django identity and administrator user fields. |
+| Email address | 254 | Profile and Django Admin email fields. |
+| Password or password confirmation | 256 | Login, password verification, user creation, and password change. |
+| MFA / OTP / TOTP code | 32 | Normal codes are shorter; the larger boundary permits common spacing/formatting without allowing an unbounded value. |
+| MFA challenge identifier | 128 | Internal authentication workflow value. |
+| Search query | 200 | Main search, pending queues, deletion queue, orphan tools, and live suggestions. |
+| Article title | 200 | Current and pending-update article titles. |
+| Article keyword text | 500 | Submitted keyword text; the separate Site setting still controls keyword count. |
+| Review comments or deletion reason | 4,000 | Reviewer feedback and workflow explanations. |
+| Profile or administrative notes | 4,000 | Free-text note fields in Django Admin. |
+| Admin IPv4/IPv6 address or CIDR list | 4,096 | Complete Site-setting text area. |
+| Video or redirect URL | 2,048 | Submitted video links and safe redirect values. |
+| Administrator user lookup | 254 | User search and reassignment controls. |
+| User-controlled filename/reference | 255 | Image/file references used by application actions. |
+| Language code | 20 | Language-selection values. |
+| Small workflow/hidden control | 32 | Visibility, status, vote, confirmation, tab, and similar values. |
+| General action name | 100 | Django Admin and application action names. |
+| JSON-backed article metadata | 150,000 | Controlled image-asset and review-history metadata fields. |
+| Unknown future non-file text field | 4,096 | Safe fallback until a dedicated field-specific limit is added. |
+| Submitted field name | 128 | Prevents oversized query/form parameter names. |
+
+The article Markdown body remains configurable in **Django Admin → Site settings → Article settings**. Its default is `200,000` characters, with an allowed range of `1,000` to `2,000,000`. The OpenKB AI question limit is controlled by `OPENKB_AI_MAX_PROMPT_CHARS`, defaults to `1,000`, and is constrained to `100`–`10,000` characters.
+
+Oversized normal page submissions return HTTP `400`; JSON endpoints return a structured HTTP `400` response; an excessive overall request body returns HTTP `413`. Rejected content is not written to the warning log. See `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md` for the detailed implementation, multipart exceptions, maintainer checklist, and verification commands.
+
 ## 9. Article Management
 
 ### 9.1 Public and Internal Article Visibility
@@ -1291,6 +1323,7 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | Sensitive profile changes | Fresh MFA/OTP required for sensitive local profile changes. AD-managed values are blocked locally. |
 | Sessions | Configurable fixed session timeout (8 hours by default), server-side sign-in timestamp, browser cookie aligned to the remaining lifetime, and secure cookie settings. |
 | CSRF | Django CSRF middleware and token-protected POST forms/endpoints. |
+| Input length validation | Browser `maxlength`, Django form validators, central request middleware, dedicated multipart/JSON validation, a 4,096-character fallback for unknown fields, and controlled HTTP errors for oversized values. Article body and AI question limits remain configuration-aware. |
 | XSS | Markdown rendered then sanitised with Bleach. |
 | Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames. |
 | Access control | Public/internal article visibility checks, scoped writer/approver/manager roles, protected image serving, admin-only tools, recovery queue restricted to Admin Users, and 404 for non-admin admin-tool access. |
@@ -1417,6 +1450,7 @@ docker compose up -d
 - Review the Article deletion queue retention setting. Keep the default 7-day recovery period unless immediate permanent published deletion (`0`) is genuinely intended.
 - Test `/robots.txt` and the `X-Robots-Tag` response after an Nginx/Django routing change.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
+- When adding a new text-like input, assign the smallest practical limit in `kb/input_limits.py`, add browser/Admin form validation, add direct validation for multipart or independently parsed JSON endpoints, and extend `kb/tests/test_input_length_limits.py`.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
 - Keep the group model clear: `Disabled User`, fallback `Regular User`, public roles (`Article Writer`, `Article Approver`, `Article Manager`), internal add-on roles (`Internal User`, `Internal Article Writer`, `Internal Article Approver`, `Internal Article Manager`), and `Admin Users`.
@@ -1425,6 +1459,6 @@ docker compose up -d
 
 ## 29. Final Notes
 
-DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, upload validation, Markdown sanitisation, audit logging, published-article deletion recovery, public/internal article review workflows, orphan article management, crawler no-index defence in depth, scoped role separation between local and AD users, and role-scoped OpenKB AI integration.
+DjOpenKB is designed as a secure internal knowledge base and cyber security project. The current implementation covers authentication, MFA, LDAPS, HTTPS, CSRF, browser and server-side text input limits, upload validation, Markdown sanitisation, audit logging, published-article deletion recovery, public/internal article review workflows, orphan article management, crawler no-index defence in depth, scoped role separation between local and AD users, and role-scoped OpenKB AI integration.
 
 For a controlled local or intranet deployment, the implemented controls are suitable as long as secrets are not shared, Vault is seeded correctly, LDAPS certificates are mounted correctly, debug mode remains off, the login-only route policy is maintained, public/internal role groups are reviewed, internal OpenKB isolation is checked after major changes, and cleanup/log retention/deletion-queue settings are reviewed by administrators. Crawler controls should be retained as defence in depth, while access control remains the real security boundary.

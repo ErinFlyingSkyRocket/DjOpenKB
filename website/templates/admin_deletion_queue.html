@@ -83,7 +83,7 @@
                     <form method="get" class="form-inline" action="{% url 'manage_article_deletion_queue' %}">
                         <div class="form-group">
                             <label class="sr-only" for="queueSearchInput">{% trans "Search queued articles" %}</label>
-                            <input id="queueSearchInput" type="text" class="form-control" name="q" value="{{ queue_search_query }}" placeholder="{% trans 'Search title, keyword, owner, or reason' %}">
+                            <input id="queueSearchInput" type="text" class="form-control" name="q" maxlength="{{ input_limits.search_query }}" value="{{ queue_search_query }}" placeholder="{% trans 'Search title, keyword, owner, or reason' %}">
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                         {% if is_queue_search %}

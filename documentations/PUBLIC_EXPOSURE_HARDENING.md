@@ -86,6 +86,25 @@ After recovery, configure a new allowlist in **Django Admin → Site settings �
 
 Server shell access is already a privileged administrative capability and should remain restricted to authorised infrastructure administrators.
 
+### 3.2 Application text input limits
+
+Nginx request-body and rate limits are complemented by Django-side character limits. The browser stops normal typing/pasting at the configured boundary, while server validation rejects manually crafted oversized query-string and form values before expensive authentication, search, database, or workflow processing.
+
+| High-risk input | Maximum characters |
+|---|---:|
+| Login identifier | 254 |
+| Password | 256 |
+| MFA / OTP / TOTP code | 32 |
+| Search query | 200 |
+| Article title | 200 |
+| Article keywords | 500 |
+| Review comments / deletion reason | 4,000 |
+| Video URL | 2,048 |
+| Admin allowed IP/CIDR list | 4,096 |
+| Unknown future text field fallback | 4,096 |
+
+The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `200,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. The full table, response behaviour, implementation references, and maintenance requirements are in `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md`.
+
 Nginx uses a read-only root filesystem. Temporary paths are intentionally under the writable `/tmp` `tmpfs`:
 
 ```nginx

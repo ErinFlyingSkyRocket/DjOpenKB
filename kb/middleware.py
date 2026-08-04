@@ -9,15 +9,21 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout
 from django.core.cache import cache
+from django.core.exceptions import RequestDataTooBig, TooManyFieldsSent, TooManyFilesSent
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect
 from django.urls import NoReverseMatch, reverse
 from django.utils import translation
 from django.utils.translation import gettext as _
 from urllib.parse import urlencode
 
+from .input_limits import (
+    FIELD_NAME_MAX_LENGTH,
+    get_field_character_limit,
+    get_field_label,
+)
 from .mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
@@ -217,6 +223,135 @@ class ContentSecurityPolicyMiddleware:
             request.csp_nonce
         )
         return response
+
+
+
+
+class InputLengthLimitMiddleware:
+    """Reject oversized query/form values before expensive view processing.
+
+    Browser ``maxlength`` attributes improve normal user experience, but they
+    are not a security boundary. This middleware checks every GET value and
+    every non-file form value against the same central limits. Multipart bodies
+    are intentionally left to their dedicated upload views so a large file is
+    not parsed early merely to inspect its small companion fields.
+    """
+
+    JSON_ENDPOINTS = {
+        "/ask-openkb-ai/",
+        "/article-video-link-validate/",
+        "/article-image-delete/",
+        "/search/suggestions/",
+        "/internal/search/suggestions/",
+    }
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    @staticmethod
+    def _is_multipart_request(request):
+        return (request.content_type or "").lower().startswith("multipart/form-data")
+
+    @staticmethod
+    def _iter_querydict_values(querydict):
+        for field_name, values in querydict.lists():
+            yield field_name, values
+
+    def _find_violation(self, request):
+        sources = [("GET", request.GET)]
+        if request.method in {"POST", "PUT", "PATCH"} and not self._is_multipart_request(request):
+            sources.append((request.method, request.POST))
+
+        for source_name, querydict in sources:
+            for field_name, values in self._iter_querydict_values(querydict):
+                if len(str(field_name)) > FIELD_NAME_MAX_LENGTH:
+                    return {
+                        "source": source_name,
+                        "field_name": "",
+                        "field_label": str(_("field name")),
+                        "limit": FIELD_NAME_MAX_LENGTH,
+                        "actual": len(str(field_name)),
+                    }
+
+                limit = get_field_character_limit(field_name)
+                for value in values:
+                    value_length = len(str(value or ""))
+                    if value_length > limit:
+                        return {
+                            "source": source_name,
+                            "field_name": field_name,
+                            "field_label": get_field_label(field_name),
+                            "limit": limit,
+                            "actual": value_length,
+                        }
+        return None
+
+    def _expects_json(self, request):
+        path = request.path_info or request.path
+        if path in self.JSON_ENDPOINTS:
+            return True
+        accept = (request.headers.get("Accept") or "").lower()
+        return "application/json" in accept
+
+    def _oversized_response(self, request, violation):
+        message = _(
+            "The submitted %(field)s exceeds the maximum of %(limit)d characters."
+        ) % {
+            "field": violation["field_label"],
+            "limit": violation["limit"],
+        }
+
+        logger.warning(
+            "Rejected oversized request input: method=%s path=%s source=%s field=%s length=%s limit=%s",
+            request.method,
+            request.path,
+            violation["source"],
+            violation["field_name"] or "<field-name>",
+            violation["actual"],
+            violation["limit"],
+        )
+
+        if self._expects_json(request):
+            return JsonResponse(
+                {
+                    "error": message,
+                    "field": violation["field_name"],
+                    "max_length": violation["limit"],
+                },
+                status=400,
+            )
+
+        from .views.errors import render_http_error
+
+        return render_http_error(
+            request,
+            400,
+            error_message=message,
+            error_help=_(
+                "Shorten the submitted value and try again. The browser normally prevents values beyond this limit."
+            ),
+        )
+
+    def __call__(self, request):
+        try:
+            violation = self._find_violation(request)
+        except RequestDataTooBig:
+            from .views.errors import render_http_error
+
+            return render_http_error(request, 413)
+        except (TooManyFieldsSent, TooManyFilesSent):
+            from .views.errors import render_http_error
+
+            return render_http_error(
+                request,
+                400,
+                error_message=_("Too many form fields were submitted."),
+                error_help=_("Reload the page and submit the form again using the available fields."),
+            )
+
+        if violation:
+            return self._oversized_response(request, violation)
+        return self.get_response(request)
 
 
 class NginxErrorPageMiddleware:

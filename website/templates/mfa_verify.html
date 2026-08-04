@@ -44,7 +44,7 @@
 
             <div class="form-group">
                 <label class="sr-only" for="id_code">{% trans "MFA/OTP code" %}</label>
-                <input id="id_code" name="code" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required {% if mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="mfa">
+                <input id="id_code" name="code" maxlength="{{ input_limits.mfa_code }}" class="form-control" placeholder="{% trans 'Enter MFA/OTP code' %}" inputmode="numeric" pattern="[0-9 ]*" autocomplete="one-time-code" required {% if mfa_rate_limit_active %}disabled aria-disabled="true"{% else %}autofocus{% endif %} data-auth-lockout-control="mfa">
             </div>
 
             {% include "_auth_lockout_countdown.html" with lockout_active=mfa_rate_limit_active lockout_remaining_seconds=mfa_rate_limit_remaining_seconds lockout_message_template=mfa_rate_limit_message_template lockout_initial_message=mfa_rate_limit_initial_message lockout_group='mfa' only %}

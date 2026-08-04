@@ -6,6 +6,7 @@
     class="openkb-ai-widget"
     data-endpoint="{% url 'ask_openkb_ai' %}"
     data-poll-interval-milliseconds="{{ OPENKB_AI_POLL_INTERVAL_MILLISECONDS }}"
+    data-max-question-characters="{{ input_limits.ai_question }}"
     data-storage-key="djopenkb.openkb-ai.v1.user-{{ user.pk }}-{% if user|can_view_internal_articles %}internal{% else %}public{% endif %}"
     data-msg-ready="{% trans 'Ready' %}"
     data-msg-thinking="{% trans 'OpenKB AI is thinking...' %}"
@@ -39,7 +40,7 @@
                     <form id="openkbAiForm" novalidate>
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="text" id="openkbAiQuestion" name="question" class="form-control" autocomplete="off" placeholder="{% trans 'Ask OpenKB AI' %}">
+                            <input type="text" id="openkbAiQuestion" name="question" class="form-control" maxlength="{{ input_limits.ai_question }}" autocomplete="off" placeholder="{% trans 'Ask OpenKB AI' %}">
                             <span class="input-group-btn">
                                 <button id="openkbAiSend" class="btn btn-success openkb-ai-send" type="submit" aria-label="{% trans 'Ask OpenKB AI' %}">
                                     <i class="fa fa-paper-plane" aria-hidden="true"></i>

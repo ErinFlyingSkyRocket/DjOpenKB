@@ -70,7 +70,7 @@
                         <input type="hidden" name="visibility" value="{{ pending_visibility }}">
                     {% endif %}
                     <div class="form-group">
-                        <input type="text" name="q" class="form-control" placeholder="{% trans 'Search pending articles' %}" value="{{ pending_search_query|default:'' }}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+                        <input type="text" name="q" class="form-control" maxlength="{{ input_limits.search_query }}" placeholder="{% trans 'Search pending articles' %}" value="{{ pending_search_query|default:'' }}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {% trans "Search" %}</button>
                     {% if is_pending_search %}

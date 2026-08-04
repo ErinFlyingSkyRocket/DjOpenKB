@@ -44,7 +44,7 @@
                         {% if requires_mfa %}
                             <div class="form-group">
                                 <label for="deleteMfaCode">{% trans "MFA/OTP code" %}</label>
-                                <input id="deleteMfaCode" class="form-control" name="mfa_code" inputmode="numeric" autocomplete="one-time-code" placeholder="{% trans 'Enter your 6-digit code' %}" required {% if article_delete_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
+                                <input id="deleteMfaCode" class="form-control" name="mfa_code" maxlength="{{ input_limits.mfa_code }}" inputmode="numeric" autocomplete="one-time-code" placeholder="{% trans 'Enter your 6-digit code' %}" required {% if article_delete_mfa_lockout_active %}disabled aria-disabled="true"{% endif %} data-auth-lockout-control="mfa">
                                 <p class="help-block">{% trans "Enter your MFA/OTP code to confirm this deletion." %}</p>
                                 {% include "_auth_lockout_countdown.html" with lockout_active=article_delete_mfa_lockout_active lockout_remaining_seconds=article_delete_mfa_lockout_remaining_seconds lockout_message_template=article_delete_mfa_lockout_message_template lockout_initial_message=article_delete_mfa_lockout_initial_message lockout_group='mfa' only %}
                             </div>
