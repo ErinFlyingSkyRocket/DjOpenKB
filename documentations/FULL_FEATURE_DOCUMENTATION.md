@@ -933,6 +933,7 @@ The singleton **Site settings** record controls the following operational limits
 | Article deletion queue retention | 7 days | Published articles remain recoverable in the admin queue for this many days. `0` makes published deletion immediate after MFA confirmation. |
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
 | Article keyword limit | 20 keywords | Maximum keywords on each article and pending update. Adjustable from 1 to 100. |
+| Article body character limit | 200,000 characters | Maximum Markdown body size for current articles and pending updates. Adjustable from 1,000 to 2,000,000. The editor blocks additional input and the server rejects bypass attempts. |
 | Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
 | Authentication activity-log retention | 30 days | `0` retains authentication/MFA logs indefinitely. |
 | User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |
@@ -943,6 +944,8 @@ The singleton **Site settings** record controls the following operational limits
 | Lockout escalation memory | 604800 seconds | Failed password/MFA escalation history is retained for 7 days unless successful authentication or an admin reset clears it. |
 | Admin MFA idle timeout | 600 seconds | 10 minutes by default; code clamps values from 60 to 86400 seconds. |
 | OpenKB AI prompts per 24 hours | 20 prompts | Per-user fixed window. The first accepted prompt starts the 24-hour expiry; later prompts do not extend it. Runtime range is 1-1000. |
+
+The article body limit is enforced when creating or editing drafts, submitting pending updates, reviewing content, changing article bodies through Django Admin, approving articles through the Django Admin bulk action, and importing articles from ZIP files. Lowering the configured limit never truncates existing content automatically; an over-limit article must be shortened before its body can be saved or approved.
 
 ### 17.4 Group and User Permission Management
 

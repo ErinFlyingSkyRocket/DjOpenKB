@@ -401,3 +401,10 @@ body > .openkb-site-footer {
     min-height: 20px;
     margin-bottom: 14px;
 }
+
+.article-character-limit-help {
+    margin-top: 6px;
+    margin-bottom: 0;
+    text-align: right;
+}
+

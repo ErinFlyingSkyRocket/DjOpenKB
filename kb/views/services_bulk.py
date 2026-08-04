@@ -720,6 +720,8 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                     continue
 
                 try:
+                    body = validate_article_body(body)
+                    pending_update_body = validate_article_body(pending_update_body)
                     keywords = validate_article_keywords(keywords)
                     pending_update_keywords = validate_article_keywords(
                         pending_update_keywords

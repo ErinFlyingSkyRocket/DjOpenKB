@@ -123,6 +123,7 @@ def _render_suggest_form_for_visibility(request, *, visibility, can_publish_dire
     context = {
         "can_publish_directly": can_publish_directly,
         "article_image_upload_limit": get_article_image_upload_limit(),
+        "article_body_character_limit": get_article_body_character_limit(),
         "article_keyword_limit": get_article_keyword_limit(),
         "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=visibility, user=request.user),
         "article_visibility": visibility,
@@ -195,6 +196,18 @@ def _suggest_unified(request):
     if len(title) < 5 or len(body) < 5:
         return render_suggest_form({
             "error": _("Article title and body must be at least 5 characters."),
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "existing_images_json": draft_images_json,
+        })
+
+    try:
+        body = validate_article_body(body)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_suggest_form({
+            "error": message,
             "title_value": title,
             "body_value": body,
             "keywords_value": keywords_raw,
@@ -530,6 +543,7 @@ def edit_suggestion(request, article_id):
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
             "article_image_upload_limit": get_article_image_upload_limit(),
+            "article_body_character_limit": get_article_body_character_limit(),
             "article_keyword_limit": get_article_keyword_limit(),
             "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=article.visibility, user=request.user),
             "return_url": return_url,
@@ -682,6 +696,7 @@ def edit_suggestion(request, article_id):
         "review_notes_history": get_review_notes_history(article),
         "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=extract_article_image_filenames(body))),
         "article_image_upload_limit": get_article_image_upload_limit(),
+        "article_body_character_limit": get_article_body_character_limit(),
         "article_keyword_limit": get_article_keyword_limit(),
         "return_url": return_url,
         "back_url": return_url or reverse(fallback_view_name),
@@ -709,6 +724,16 @@ def edit_suggestion(request, article_id):
             **error_context,
             "review_notes_value": request.POST.get("review_notes", article.review_notes),
             "error": _("Article title and body must be at least 5 characters."),
+        })
+
+    try:
+        body = validate_article_body(body)
+        error_context["body_value"] = body
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_edit_form({
+            **error_context,
+            "error": message,
         })
 
     try:

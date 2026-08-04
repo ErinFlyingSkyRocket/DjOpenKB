@@ -26,6 +26,10 @@ ARTICLE_KEYWORD_MIN_LIMIT = 1
 ARTICLE_KEYWORD_MAX_LIMIT = 100
 ARTICLE_KEYWORD_MAX_TOTAL_LENGTH = 500
 
+ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT = 200_000
+ARTICLE_BODY_MIN_CHARACTER_LIMIT = 1_000
+ARTICLE_BODY_MAX_CHARACTER_LIMIT = 2_000_000
+
 
 def split_article_keywords(value):
     """Return trimmed keyword values from comma, semicolon, or newline input."""
@@ -508,8 +512,22 @@ class SuggestedArticle(models.Model):
         return self.title
 
     def clean(self):
-        """Validate article keywords and prevent duplicate article titles."""
+        """Validate article bodies, keywords, and duplicate article titles."""
         super().clean()
+
+        try:
+            self.body = validate_article_body(self.body)
+        except ValidationError as error:
+            raise ValidationError({"body": error.messages}) from error
+
+        try:
+            self.pending_update_body = validate_article_body(
+                self.pending_update_body
+            )
+        except ValidationError as error:
+            raise ValidationError(
+                {"pending_update_body": error.messages}
+            ) from error
 
         try:
             self.keywords = validate_article_keywords(self.keywords)
@@ -1221,6 +1239,18 @@ class SiteSetting(models.Model):
             "Default is 20. Allowed range: 1 to 100."
         ),
     )
+    article_body_character_limit = models.PositiveIntegerField(
+        default=ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT,
+        validators=[
+            MinValueValidator(ARTICLE_BODY_MIN_CHARACTER_LIMIT),
+            MaxValueValidator(ARTICLE_BODY_MAX_CHARACTER_LIMIT),
+        ],
+        verbose_name=_("Article body character limit"),
+        help_text=_(
+            "Maximum number of characters allowed in an article body or pending article update. "
+            "Default is 200000. Allowed range: 1000 to 2000000."
+        ),
+    )
     articles_per_page = models.PositiveIntegerField(
         default=10,
         verbose_name=_("Articles per page"),
@@ -1380,6 +1410,58 @@ class SiteSetting(models.Model):
     def load(cls):
         obj, _created = cls.objects.get_or_create(pk=1)
         return obj
+
+
+def get_article_body_character_limit():
+    """Return the configured article body character limit within a safe range."""
+    try:
+        value = int(
+            getattr(
+                SiteSetting.load(),
+                "article_body_character_limit",
+                ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT,
+            )
+            or ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT
+        )
+    except Exception:
+        return ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT
+
+    return min(
+        max(value, ARTICLE_BODY_MIN_CHARACTER_LIMIT),
+        ARTICLE_BODY_MAX_CHARACTER_LIMIT,
+    )
+
+
+def count_article_body_characters(value):
+    """Count Markdown characters while treating every line break as one character."""
+    body = str(value or "")
+    return len(body.replace("\r\n", "\n").replace("\r", "\n"))
+
+
+def article_body_character_limit_error_message(character_count, limit=None):
+    """Return the user-facing article body character-limit message."""
+    limit = get_article_body_character_limit() if limit is None else int(limit)
+    return _(
+        "This article contains %(count)s characters, but the maximum allowed is %(limit)s. "
+        "Please shorten the article before saving."
+    ) % {"count": character_count, "limit": limit}
+
+
+def validate_article_body(value, limit=None):
+    """Validate an article or pending-update Markdown body without truncating it."""
+    body = str(value or "")
+    character_limit = (
+        get_article_body_character_limit() if limit is None else int(limit)
+    )
+    character_count = count_article_body_characters(body)
+    if character_count > character_limit:
+        raise ValidationError(
+            article_body_character_limit_error_message(
+                character_count,
+                character_limit,
+            )
+        )
+    return body
 
 
 def get_article_keyword_limit():

@@ -447,6 +447,97 @@ $(document).ready(function(){
             toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'table', 'horizontal-rule', 'code', 'guide']
         });
 
+        // Enforce the Admin-configured article body limit inside CodeMirror.
+        // Existing over-limit articles are never truncated on load; users may
+        // keep editing only when the change does not increase the body length.
+        var $articleEditor = $('#editor');
+        var articleCharacterLimit = parseInt($articleEditor.attr('data-article-character-limit'), 10);
+        var articleCharacterCounter = document.getElementById('articleCharacterCount');
+        var articleCharacterLimitValue = document.getElementById('articleCharacterLimitValue');
+        var lastArticleLimitNoticeAt = 0;
+
+        function articleCharacterCount(value){
+            // Array.from counts Unicode code points instead of splitting an
+            // emoji into two JavaScript UTF-16 code units.
+            return Array.from((value || '').replace(/\r\n?/g, '\n')).length;
+        }
+
+        function truncateArticleCharacters(value, maximum){
+            if(maximum <= 0){
+                return '';
+            }
+            return Array.from(value || '').slice(0, maximum).join('');
+        }
+
+        function updateArticleCharacterCounter(){
+            if(!articleCharacterCounter || !Number.isFinite(articleCharacterLimit)){
+                return;
+            }
+            var count = articleCharacterCount(simplemde.value());
+            articleCharacterCounter.textContent = count.toLocaleString();
+            articleCharacterCounter.classList.toggle('text-danger', count > articleCharacterLimit);
+        }
+
+        function showArticleCharacterLimitNotice(){
+            var now = Date.now();
+            if(now - lastArticleLimitNoticeAt < 1000){
+                return;
+            }
+            lastArticleLimitNoticeAt = now;
+            var message = $articleEditor.attr('data-article-character-limit-message') || ('Maximum ' + articleCharacterLimit + ' characters allowed.');
+            show_notification(message, 'warning');
+        }
+
+        if(Number.isFinite(articleCharacterLimit) && articleCharacterLimit > 0){
+            if(articleCharacterLimitValue){
+                articleCharacterLimitValue.textContent = articleCharacterLimit.toLocaleString();
+            }
+
+            simplemde.codemirror.on('beforeChange', function(codeMirror, change){
+                // CodeMirror warns against rewriting undo/redo changes because
+                // they contain internal history metadata. Allow them through;
+                // the counter and submit guard still prevent an over-limit save.
+                if(change.origin === 'undo' || change.origin === 'redo'){
+                    return;
+                }
+
+                var currentValue = codeMirror.getValue();
+                var removedValue = codeMirror.getRange(change.from, change.to);
+                var insertedValue = (change.text || []).join('\n');
+                var currentCount = articleCharacterCount(currentValue);
+                var removedCount = articleCharacterCount(removedValue);
+                var insertedCount = articleCharacterCount(insertedValue);
+                var nextCount = currentCount - removedCount + insertedCount;
+
+                if(nextCount <= articleCharacterLimit || nextCount <= currentCount){
+                    return;
+                }
+
+                var baseCount = currentCount - removedCount;
+                var availableCharacters = Math.max(articleCharacterLimit - baseCount, 0);
+                var allowedValue = truncateArticleCharacters(insertedValue, availableCharacters);
+
+                if(allowedValue){
+                    change.update(change.from, change.to, allowedValue.split('\n'));
+                }else{
+                    change.cancel();
+                }
+                showArticleCharacterLimitNotice();
+            });
+
+            simplemde.codemirror.on('change', updateArticleCharacterCounter);
+            updateArticleCharacterCounter();
+
+            $('#edit_form').on('submit.articleBodyCharacterLimit', function(event){
+                if(articleCharacterCount(simplemde.value()) <= articleCharacterLimit){
+                    return;
+                }
+                event.preventDefault();
+                showArticleCharacterLimitNotice();
+                simplemde.codemirror.focus();
+            });
+        }
+
         // The Django article add/edit forms provide their own protected image
         // uploader, preview tray, delete control, CSRF handling, and upload limits.
         // Do not attach the legacy OpenKB uploader on those pages or the same
