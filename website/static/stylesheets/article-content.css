@@ -196,9 +196,15 @@
         width: 100%;
     }
 
-    /* Preview and source editor expose the same published-article canvas. */
+    /*
+     * Preview, published content, and source text use one shared canvas width.
+     *
+     * CodeMirror internally reserves a 30px right-side measurement border on
+     * .CodeMirror-sizer. Give only the sizer that extra width so its reported
+     * scrollable text width remains exactly equal to the preview/published
+     * canvas. The actual source lines stay at the real article width.
+     */
     .article-preview-canvas,
-    .article-editor-page-shell .CodeMirror-sizer,
     .article-editor-page-shell .CodeMirror-lines,
     .article-editor-page-shell .CodeMirror-code,
     .article-editor-page-shell .CodeMirror pre.CodeMirror-line,
@@ -207,6 +213,13 @@
         width: var(--article-shared-canvas-width) !important;
         min-width: var(--article-shared-canvas-width) !important;
         max-width: var(--article-shared-canvas-width) !important;
+    }
+
+    .article-editor-page-shell .CodeMirror-sizer {
+        box-sizing: border-box;
+        width: calc(var(--article-shared-canvas-width) + 30px) !important;
+        min-width: calc(var(--article-shared-canvas-width) + 30px) !important;
+        max-width: calc(var(--article-shared-canvas-width) + 30px) !important;
     }
 }
 
@@ -250,6 +263,7 @@
  */
 .article-editor-page-shell .CodeMirror {
     overflow: hidden !important;
+    padding: 0 !important;
 }
 
 /* Keep CodeMirror's internal scroller and its one managed horizontal bar. */

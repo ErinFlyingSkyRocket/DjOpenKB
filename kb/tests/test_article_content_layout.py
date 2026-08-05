@@ -78,6 +78,8 @@ class ArticleContentLayoutTests(SimpleTestCase):
         self.assertIn("overflow: scroll !important", css)
         self.assertNotIn("overflow-x: auto !important", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-sizer", css)
+        self.assertIn("calc(var(--article-shared-canvas-width) + 30px)", css)
+        self.assertIn("padding: 0 !important", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-code", css)
         self.assertIn("pre.CodeMirror-line", css)
         self.assertIn("margin-left: auto", css)
