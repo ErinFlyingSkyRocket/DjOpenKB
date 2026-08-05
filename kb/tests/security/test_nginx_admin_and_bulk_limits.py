@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.conf import settings
 from django.test import SimpleTestCase
 
 
@@ -7,9 +8,9 @@ class NginxAdminAndBulkLimitTests(SimpleTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.config = (
-            Path(__file__).resolve().parents[2] / "nginx" / "nginx.conf"
-        ).read_text(encoding="utf-8")
+        cls.config = (Path(settings.BASE_DIR) / "nginx" / "nginx.conf").read_text(
+            encoding="utf-8"
+        )
 
     def test_general_admin_uses_separate_edge_rate_bucket(self):
         self.assertIn("zone=djopenkb_admin_per_ip", self.config)

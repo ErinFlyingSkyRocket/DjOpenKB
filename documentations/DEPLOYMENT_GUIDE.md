@@ -123,6 +123,8 @@ nano .env
 
 `.env` must contain **non-secret configuration only**. Put passwords, API keys, the Django secret key, and the encryption key in `vault/bootstrap/djopenkb.env` during first-time Vault seeding.
 
+For a complete map of current `.env` variables, Vault fields, Django Site settings, Nginx limits, and restart requirements, use [CONFIGURATION_REFERENCE.md](CONFIGURATION_REFERENCE.md).
+
 ### 4.1 Browser address, host, and CSRF settings
 
 Choose values based on the **exact URL users open in their browser**. Standard HTTPS uses port `443`, so the origin normally does not include an explicit port suffix.
@@ -140,7 +142,7 @@ DJANGO_CSRF_TRUSTED_ORIGINS=https://<INTERNAL_SERVER_IP>
 DJANGO_SESSION_TIMEOUT_HOURS=8
 
 MFA_TOTP_ISSUER=Knowledge Repository
-MFA_TOTP_VALID_WINDOW=2
+MFA_TOTP_VALID_WINDOW=1
 
 POSTGRES_DB=djopenkb
 POSTGRES_USER=djopenkb
@@ -767,6 +769,8 @@ cleanup-scheduler
 
 `vault-init` and `app-permissions-init` are one-time helpers and must normally exit successfully. `app-permissions-init` runs without a network, prepares the static/OpenKB bind mounts for UID/GID `10001`, and should log three `Prepared ...` lines before `web`, `ai-worker`, and `cleanup-scheduler` start.
 
+A healthy Vault log ends with `Vault is ready for DjOpenKB.` On later starts it should normally report that the existing static application token is valid and is being reused. During a one-time conversion, Vault may reject the requested long TTL or fail to return replacement-token metadata; when the log explicitly says the existing valid token was preserved and then reports `Vault is ready`, startup remains usable and the old token has not been destroyed. Review Section 15 and the troubleshooting note before deleting any Vault key file.
+
 Check logs before creating users:
 
 ```bash
@@ -845,10 +849,17 @@ After the `createsuperuser` command succeeds, complete the initial administrator
 1. Browse to the exact deployed address: `https://<INTERNAL_SERVER_IP>` for direct internal access, or `https://<PUBLIC_HOSTNAME>` after firewall/DNS publication.
 2. Sign in with the local superuser username and password created above.
 3. Complete the normal MFA enrolment and verify the code.
-4. Confirm the browser/client IP is included in the Nginx Django Admin allowlist from Section 5.2.
-5. Use the **Admin** navigation entry, complete the separate Admin MFA prompt, then open Django Admin.
+4. Use the **Admin** navigation entry. The separate Admin OTP field opens immediately; there is no start-verification button.
+5. Complete the Admin OTP and review **Site settings** before enabling the optional Django-managed IPv4/IPv6 Admin allowlist. The allowlist is disabled by default; configure the current management address/CIDR before enabling it.
 
-Do not try to browse directly to `/admin/login/`; that route is intentionally hidden. If the Admin navigation does not open, first check the Nginx administrator network allowlist and the web/nginx logs.
+Do not try to browse directly to `/admin/login/`; that route is intentionally hidden. If the Admin navigation does not open, check the dynamic Site-setting allowlist state, Admin MFA timeout/lockout, and the web/nginx logs.
+
+Before accepting development testers, confirm these current workflows:
+
+- A dual public/internal writer can select visibility when creating, but cannot change an existing article's visibility.
+- Only a full Admin or a user holding both public and internal manager groups sees and can use the edit-page visibility selector.
+- The Markdown source editor soft-wraps comfortably, the preview uses the published article width, and one Enter produces a visible line break in both preview and final article.
+- Site settings show the 100,000-character article-body default, 50-image article default, 100-image/100-MB pending quotas, 60-second login/Admin MFA completion timeouts, and Redis request-rate controls.
 
 ### 10.3 Optional SMTP relay validation
 
@@ -1281,6 +1292,8 @@ Expected permissions:
 
 `vault-init` requests the original long-lived `87600h` token TTL and reuses the resulting token on later starts while it remains valid. Vault may cap that TTL according to its server configuration. `vault-auto-unseal` does not renew or rotate the token. If the static token is ever missing or invalid, recreate the one-shot `vault-init` service so it can issue a replacement. Do not delete the accessor file during normal maintenance.
 
+If `vault-init` logs `Vault did not return complete metadata for the replacement token; preserving the existing valid token`, the fallback worked as designed: the previous valid token remains in use. Confirm that the final log still says `Vault is ready for DjOpenKB.` Do not delete the token, accessor, marker, root-token, or unseal-key files merely to remove the warning. Investigate the Vault token response in a controlled maintenance window.
+
 ### Check secret metadata without printing secret values
 
 The root token file is a break-glass administrator credential. Keep its filesystem permissions restrictive and do not paste its contents into tickets or terminals shared with others.
@@ -1541,6 +1554,8 @@ sudo docker compose exec vault vault status
 
 Check for malformed `KEY=value` lines, missing `DJANGO_SECRET_KEY`, or missing `POSTGRES_PASSWORD`.
 
+Interpret the final log result, not the helper container's `Exited` status alone. `vault-init` is a one-shot service and normally exits. Success requires `Vault is ready for DjOpenKB.` A warning that incomplete replacement metadata caused the existing valid application token to be preserved is non-fatal when that success line follows. A missing success line, an explicit `ERROR`, or a non-zero Compose dependency failure requires correction before application services are trusted.
+
 ### OpenKB AI chat fails
 
 ```bash
@@ -1620,6 +1635,7 @@ sudo docker compose logs --tail=150 vault-init
 sudo docker compose logs --tail=150 web
 
 sudo docker compose exec web python manage.py check --deploy
+python scripts/verify_supply_chain_pins.py
 sudo docker compose exec web python manage.py createsuperuser
 sudo docker compose exec web python manage.py seed_djopenkb_roles --assign-missing-users
 sudo docker compose exec web python manage.py sync_openkb_ai --scope all
@@ -1629,4 +1645,4 @@ curl -k https://<INTERNAL_SERVER_IP>/robots.txt
 curl -k -I https://<INTERNAL_SERVER_IP>/login/
 ```
 
-For application functionality, security controls, user workflows, and role descriptions, use `documentations/FULL_FEATURE_DOCUMENTATION.md` rather than this deployment guide.
+For application functionality, security controls, user workflows, and role descriptions, use `documentations/FULL_FEATURE_DOCUMENTATION.md`. For the current configuration map and restart rules, use `documentations/CONFIGURATION_REFERENCE.md`.

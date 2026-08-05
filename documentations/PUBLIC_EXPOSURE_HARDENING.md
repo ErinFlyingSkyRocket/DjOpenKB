@@ -88,7 +88,7 @@ Server shell access is already a privileged administrative capability and should
 
 ### 3.2 Application text input limits
 
-Nginx request-body and rate limits are complemented by Django-side character limits. The browser stops normal typing/pasting at the configured boundary, while server validation rejects manually crafted oversized query-string and form values before expensive authentication, search, database, or workflow processing.
+Nginx request-body and rate limits are complemented by Django-side character limits. Browser `maxlength` controls improve normal use. Django forms/model validation and the central middleware reject oversized query strings and normal URL-encoded form values before expensive authentication, search, database, or workflow processing. Upload/import/JSON endpoints retain their own direct validation.
 
 | High-risk input | Maximum characters |
 |---|---:|
@@ -103,7 +103,7 @@ Nginx request-body and rate limits are complemented by Django-side character lim
 | Admin allowed IP/CIDR list | 4,096 |
 | Unknown future text field fallback | 4,096 |
 
-The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `100,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. These checks remain server-side even when a client removes `maxlength`, disables JavaScript, or submits requests through an interception tool.
+The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `100,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. Removing `maxlength`, disabling JavaScript, or editing a normal request does not remove the form/model/middleware checks. The generic middleware intentionally does not parse every multipart body; each multipart endpoint must validate its accompanying text fields directly as well as its files. Treat arbitrary multipart re-encoding as a remaining hardening item rather than claiming the generic middleware alone covers it.
 
 Nginx uses a read-only root filesystem. Temporary paths are intentionally under the writable `/tmp` `tmpfs`:
 
@@ -121,11 +121,23 @@ The image entrypoint may log that it cannot change the unused default Nginx conf
 
 Several controls that previously depended mainly on request/session state are now persistent or transactional:
 
-- Pending article images are limited per authenticated user across all sessions and browsers: 100 uncommitted images and 100 MB by default, both configurable in Site settings.
+- Pending article images are limited per authenticated user across all sessions and browsers: 100 uncommitted images and 100 MB by default, both configurable in Site settings. Individual files are limited to 2 MB and pass extension, Pillow verification, decompression-bomb, and pixel-count checks.
 - Simultaneous uploads for the same account are serialised before quota calculation.
 - Article titles have a unique normalised database key, closing concurrent duplicate-title races.
 - Bulk ZIP manifests reject unknown/duplicate fields, invalid types/lengths, unsupported workflow combinations, and transient deletion-queue states before article creation.
 - Imported records pass model validation and database uniqueness inside a transaction.
+
+Application-side Redis request limits are separately configurable in Site settings and take effect without editing Nginx:
+
+| Application limit | Default | Scope |
+|---|---:|---|
+| Login POST submissions | 8 per minute | Per client IP |
+| Normal/Admin MFA POST submissions | 10 per minute | Per client IP |
+| Ordinary Django Admin POST changes | 120 per minute | Per signed-in administrator |
+
+Setting one of these values to `0` disables only that application-side request limit. Nginx edge ceilings and progressive account/MFA lockouts remain separate.
+
+Local account hardening is also centralised: self-service and Django Admin use the same 12-character complexity validator, while PostgreSQL-backed case-insensitive unique indexes prevent duplicate usernames and non-blank emails across concurrent write paths.
 
 ## 4. Docker network and container hardening
 
@@ -221,13 +233,24 @@ The article-video feature adds only narrow external media exceptions: `frame-src
 
 When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`. Any new external frame/media host must be reviewed deliberately rather than broadly weakening the CSP.
 
-## 9. OpenKB Retrieved-Content and Distributed-Lock Hardening
+## 9. Article Visibility Selection Enforcement
+
+The visibility field is treated as an authorisation-sensitive workflow value, not as a trusted browser control. Creation and editing use separate server-side rules:
+
+- During creation, the server accepts only visibility scopes for which the user has article-creation permission. A dual public/internal writer may choose either scope; a single-scope writer remains fixed to the permitted scope even when the request is modified manually.
+- After creation, moving an article between Public and Internal is allowed only for a full Admin user or a user holding both `Article Manager` and `Internal Article Manager`. Both manager groups are checked deliberately; direct permission combinations, dual writer roles, dual approver roles, and single-scope managers do not receive this operation.
+- The edit view recalculates permission from the authenticated user and current article on every request. Hiding or enabling the HTML selector, altering a hidden field, disabling JavaScript, or changing `article_visibility` through an interception proxy cannot bypass the server rule.
+- Every article detail, image, review, edit, delete, search, and AI-data path continues to enforce the resulting Public/Internal scope after a permitted change.
+
+Regression coverage is maintained in `kb/tests/permissions/test_article_visibility_edit_permissions.py`, including creation selection, single-scope request tampering, dual-writer edit tampering, both manager directions, and the Admin override.
+
+## 10. OpenKB Retrieved-Content and Distributed-Lock Hardening
 
 OpenKB Q&A treats article-derived text and image captions as untrusted data. Files are restricted by approved directory, extension, and size; page requests are bounded; a wiki-local instruction file cannot replace the package-owned trusted schema; and model output is never used to make authentication or visibility decisions.
 
 AI concurrency and job-update locks use Redis atomic acquisition and owner-checked Lua release. When production Redis is configured but unavailable, acquisition fails closed rather than falling back to a process-local lock that another worker cannot see.
 
-## 10. Supply-Chain Baseline
+## 11. Supply-Chain Baseline
 
 Direct Python and OpenKB dependencies, the OpenKB build backend, Python build tools, and production container tags are explicitly pinned. The final runtime image installs from the builder wheelhouse with `--no-index`. Verify the repository guard with:
 
@@ -237,7 +260,23 @@ python scripts/verify_supply_chain_pins.py
 
 This guard complements, but does not replace, CVE scanning, a hash-locked transitive dependency set, SBOM review, and immutable image digests.
 
-## 11. Required verification after an update
+## 12. Current Residual Risks and Production Follow-Up
+
+The controls above describe the current implementation, but they should not be interpreted as a claim that every production-hardening item is complete.
+
+| Current limitation | Security/operational consequence | Recommended production follow-up |
+|---|---|---|
+| Generic input middleware skips arbitrary multipart parsing | Changing a normal form to multipart may bypass that middleware even when form/view validation still applies | Validate multipart `request.POST` fields centrally or on every route, excluding only `request.FILES` bytes |
+| Pending upload quota covers uncommitted files only | Committing images into repeated drafts can move them outside the pending quota | Add total per-user committed count/byte quotas, disk-free thresholds, and indexed image-state accounting |
+| Static Vault token is long-lived and shared by several services | Compromise of one token-bearing container has a wider secret-reading impact | Use service-specific policies and AppRole/Vault Agent short-lived tokens |
+| Auto-unseal key is stored on the same host as Vault data | Full host compromise can obtain both encrypted data and unseal material | Use external KMS/HSM auto-unseal or separately held Shamir shares for production |
+| Database article save and Markdown mirror are not one atomic transaction | Disk/full-permission failure can leave database and OpenKB files temporarily inconsistent | Use atomic file replacement, explicit sync status, retry/reconciliation alerts |
+| Runtime database identity can run migrations and retention cleanup | Audit-table triggers are strong against normal ORM actions, not a fully separate tamper-proof boundary | Split migration, runtime, audit-writer, and cleanup database roles; export important logs externally |
+| Direct dependency versions and image patch tags are pinned, but not hashes/digests | Rebuilds are improved but not fully immutable | Generate hash-locked transitive requirements, pin image digests, create SBOMs, and run CVE scans |
+
+These items are suitable to track as production blockers or accepted risks. They are deliberately documented here so operational reviewers do not mistake defence-in-depth controls for absolute guarantees.
+
+## 13. Required verification after an update
 
 ```bash
 cd /opt/DjOpenKB

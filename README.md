@@ -19,7 +19,7 @@ For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GU
 - Internal IT wiki / knowledge base website.
 - Login-protected public article browsing, title/keyword search, per-browser-session recent-search history, view tracking, voting, trending articles, most-liked articles, and most-recent articles. The main search dropdown shows up to five recent searches while empty and switches to live accessible article suggestions when text is entered.
 - Separate internal article area for users with internal article access.
-- Public/internal article visibility model with separate public and internal writer, approver, and manager roles.
+- Public/internal article visibility model with separate public and internal writer, approver, and manager roles. Users with both creation scopes can choose visibility only while creating; changing an existing article between Public/Internal requires `Admin Users` or both manager groups.
 - User article suggestion workflow with approval and pending-update review for published article edits.
 - Optional SMTP relay workflow and security notifications: newly submitted/re-submitted public or internal review items notify matching reviewer groups in one Bcc-only message, approval/Pending-failed decisions notify the current eligible article owner directly, and a recognised account reaching a new password/MFA lockout notifies eligible `Admin Users` in one Bcc-only alert. Internal messages omit internal titles, content, and review comments.
 - Draft, pending approval, pending failed, published, and deletion-queued article states.
@@ -32,18 +32,21 @@ For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GU
 - Local Django login support.
 - Active Directory login over LDAPS for valid domain users returned by the configured AD search base and user filter.
 - Clear separation between local users and AD users.
-- MFA support using authenticator-app one-time passwords.
+- MFA support using authenticator-app one-time passwords, a configurable 60-second login-completion window, and a separate Admin OTP gate that opens immediately without a start-verification button.
+- One shared local-account password policy across self-service and Django Admin: at least 12 characters with uppercase, lowercase, number, and special character, excluding the username and email name portion. Usernames and non-blank emails are case-insensitively unique.
 - Authentication and append-only activity logging for important user, article, deletion queue, profile email/password, admin, AI, and maintenance actions. Search history and language selection changes are intentionally not logged.
 - Configurable log retention and admin log display settings.
 - Admin-configurable progressive password/MFA lockout policy with reset actions for administrators.
-- Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, AI, and SMTP relay credentials.
+- Vault integration for sensitive secrets such as Django, database, LDAP, field-encryption, AI, and SMTP relay credentials. The current single-server design reuses one static read-only application token; the watcher performs unsealing only.
 - PostgreSQL database through Docker Compose.
 - Redis-backed production cache for authentication lockouts, AI rate limits, fixed 24-hour AI quotas, background AI jobs, and query concurrency controls.
 - Nginx HTTPS reverse proxy on standard host port `443` for direct internal access. A perimeter firewall may later forward public TCP `443` to the same host port. Nginx applies per-IP POST rate limits to login, MFA, admin MFA, AI, upload, and bulk-import submissions.
 - Persistent OpenKB AI chatbot integration using `OpenKB-main/`, `openkb-data/`, and `openkb-data-internal/`. Questions run as short-lived Celery jobs so they continue while a signed-in user moves between normal site pages.
 - AI resource controls: prompt length limit, short-burst rate limit and cooldown, a per-user fixed 24-hour quota, worker/query concurrency limits, timeout controls, related article recommendations, role-scoped AI indexing, and privacy-safe activity metadata.
-- Markdown article rendering with sanitization, plus controlled playable video links for supported YouTube, Vimeo, and direct HTTPS `.mp4`/`.webm`/`.ogg` sources. SharePoint/OneDrive direct-video links are checked for anonymous accessibility before acceptance so viewers are not sent into an external sign-in flow.
-- Image upload restrictions for article content, including protected image serving based on article visibility and ownership/review access.
+- Markdown article rendering with sanitization, a wide centred published layout, a comfortable soft-wrapping source editor, and a live preview that uses the published article width. One Enter creates a visible line break; a blank line creates a separate paragraph.
+- Controlled playable video links for supported YouTube, Vimeo, and direct HTTPS `.mp4`/`.webm`/`.ogg` sources. SharePoint/OneDrive direct-video links are checked for anonymous accessibility before acceptance so viewers are not sent into an external sign-in flow.
+- Image upload restrictions including a 2 MB file limit, format/Pillow/decompression-bomb checks, a configurable 50-image-per-article default, persistent uncommitted per-user quotas of 100 images/100 MB by default, generated filenames, and protected serving based on article visibility and workflow access.
+- Central browser/server input limits, including a configurable 100,000-character article-body default, 20-keyword default, 32-character OTP boundary, and field-specific limits for identity, search, URL, review, Admin, and metadata inputs.
 - Multilingual UI support through Django translation files.
 - Docker cleanup scheduler for routine cleanup tasks. The Compose stack separates the proxy, application, Vault, and worker-egress networks; application services use an unprivileged UID/GID, read-only filesystems, temporary `tmpfs` storage, capability dropping, and process limits where supported.
 - Manual keyword suggestion refresh that scans the current title/body against existing manually created article keywords only.
@@ -80,6 +83,7 @@ Important role notes:
 - Published deletion requires an MFA confirmation. Writers use the owner workflow; managers and Admin Users manage published content within their scope.
 - Approvers can edit content only while it is in their scope’s pending-review flow.
 - Article Managers see public dislike counts; Internal Article Managers see internal dislike counts; Admin Users see both.
+- A user with both public/internal creation permissions can select visibility while creating. Only `Admin Users` or a user holding both `Article Manager` and `Internal Article Manager` can change an existing article between scopes; forged form submissions are rechecked server-side.
 - Django Admin requires normal sign-in/MFA and the separate Admin MFA gate. An optional IPv4/IPv6 allowlist can be enabled dynamically from Site settings.
 
 ### Role interaction rules
@@ -107,18 +111,21 @@ Local and AD users are identified from account-source metadata rather than email
 |---|---|
 | Authentication | Login-only site access, local login, AD/LDAPS login limited by the configured AD search base and user filter, MFA, fixed maximum session lifetime (8 hours by default), authentication logging |
 | Anonymous access | Only the login/language/static support paths and intentionally public `/robots.txt` are public; normal app pages and hidden admin login return 404 when unauthenticated |
-| User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally |
+| User separation | Local and AD users are separated by account source; AD-managed password/email changes are blocked locally; usernames and non-blank emails are case-insensitively unique |
+| Local password policy | One Django validator is used by self-service and Admin paths: minimum 12 characters, uppercase, lowercase, number, special character, and no username/email-name inclusion |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
 | Authorization | Group-based roles, public/internal scope checks, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, protected image serving, and restricted admin routes |
 | Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, pending-update review for published edits, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
 | Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only; normal results are newest-updated matching articles first; the main search dropdown keeps up to five recent searches in browser `sessionStorage` and switches to live accessible article suggestions while typing |
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body. Displayed article keywords are clickable and run the normal title/keyword search. |
-| Uploads | Image-only allowlist, file validation, generated filenames, protected serving, and stray upload cleanup |
-| Markdown / video | Sanitized rendered HTML to reduce XSS risk; supported standalone video links are converted only into controlled YouTube privacy-enhanced, Vimeo, or direct HTTPS video players and remain constrained by the CSP allowlists |
+| Request validation | Browser limits plus Django form/model and central request validation for normal query/form submissions; endpoint-specific validation for upload/import/JSON paths; configured limits for article body, keywords, identity, MFA, search, URL, review, Admin, and metadata fields |
+| Uploads | Image-only allowlist, 2 MB limit, Pillow verification, decompression-bomb/pixel protection, generated filenames, protected serving, persistent pending count/byte quotas, and stray upload cleanup |
+| Bulk import | Admin/CIDR/Admin-MFA restriction, ZIP traversal/resource budgets, duplicate JSON-key and unknown-field rejection, strict workflow/type/length validation, image-reference preservation, model validation, and database uniqueness |
+| Markdown / video | Sanitized rendered HTML, single-Enter visible line breaks, comfortable soft-wrapping editor, published-width live preview, and controlled YouTube privacy-enhanced, Vimeo, or direct HTTPS video players constrained by CSP allowlists |
 | AI chatbot | Login-protected persistent chat widget, role-scoped public/internal indexes, encrypted short-lived Redis job records, Celery background execution, 5 questions per 60 seconds, a 30-minute burst cooldown, an Admin-configurable fixed 24-hour per-user quota (default 20), query/worker concurrency controls, timeout handling, related article recommendations, and privacy-safe activity metadata |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
-| Secrets | Vault-backed Django/database/LDAP/field-encryption/AI secrets. The bind-mounted app token is root-owned, readable only by the application group, and never stored in source control. |
+| Secrets | Vault-backed Django/database/LDAP/field-encryption/AI/SMTP secrets. The current long-lived static read-only app token is root-owned, readable only by the application group, reused while valid, and not renewed/rotated by the auto-unseal watcher. |
 | Network and crawler controls | Nginx HTTPS reverse proxy, POST-only edge rate limits, 3 MB ordinary request limit with a 100 MB admin-import exception, configurable trusted hosts/origins, optional Django-managed IPv4/IPv6 Admin CIDR restrictions, private Compose backend networks, `/robots.txt` with `Disallow: /`, and `X-Robots-Tag` no-index defence in depth for Django responses |
 | Operations | Cleanup commands, cleanup scheduler, deployment checks, `.dockerignore`, and backup guidance |
 
@@ -347,7 +354,7 @@ nginx/certs/localhost.key
 
 Contains HashiCorp Vault configuration and local Vault runtime folders.
 
-Vault is used to store sensitive values such as Django secret key, PostgreSQL password, field-encryption key, LDAP bind password, and AI API keys. The app token at `vault/keys/djopenkb-app-token.txt` is created with owner/group `0:10001` and mode `0440`, allowing only root and the unprivileged application group to read it.
+Vault is used to store sensitive values such as Django secret key, PostgreSQL password, field-encryption key, LDAP/SMTP service credentials, and AI API keys. The current static read-only app token at `vault/keys/djopenkb-app-token.txt` is reused while valid and is created with owner/group `0:10001` and mode `0440`. Its accessor and failed-revocation retry queue remain root-only. `vault-auto-unseal` performs unsealing only; token creation/replacement belongs to the one-shot `vault-init` service.
 
 Important paths:
 

@@ -1,6 +1,7 @@
 # DjOpenKB Code, Dependency, and Configuration Update Guide
 
 This guide is for updating an existing DjOpenKB deployment after the initial installation is complete.
+Use [CONFIGURATION_REFERENCE.md](CONFIGURATION_REFERENCE.md) to confirm configuration ownership and restart requirements before changing a value.
 
 Use `documentations/DEPLOYMENT_GUIDE.md` for a fresh server deployment. The normal deployed project directory used below is:
 
@@ -298,7 +299,11 @@ sudo docker compose up -d --force-recreate vault-init
 sudo docker compose logs --tail=120 vault-init
 ```
 
-Confirm that the log reports that the DjOpenKB secret was seeded successfully. Then immediately remove the temporary plaintext bootstrap file:
+Confirm that the log reports that the DjOpenKB secret was seeded successfully and ends with `Vault is ready for DjOpenKB.` The one-shot `vault-init` service normally exits after this work. It reuses the existing valid static read-only application token and does not rotate it for an ordinary secret update. `vault-auto-unseal` is unseal-only.
+
+A warning that Vault did not return complete metadata for a replacement token is non-fatal only when the log explicitly says the existing valid token was preserved and then reports `Vault is ready for DjOpenKB.` Do not delete Vault key files simply to remove that warning.
+
+Then immediately remove the temporary plaintext bootstrap file:
 
 ```bash
 sudo rm -f vault/bootstrap/djopenkb.env
@@ -332,6 +337,8 @@ Changing `DJANGO_FIELD_ENCRYPTION_KEY` can make existing encrypted application d
 For an existing PostgreSQL database, changing only the Vault `POSTGRES_PASSWORD` value does not automatically change the database user's password inside PostgreSQL.
 
 Keep `DJANGO_SECRET_KEY` stable unless there is a deliberate reason to rotate it and the effect on active sessions and related security data has been considered.
+
+Do not manually replace `vault/keys/djopenkb-app-token.txt` during a routine secret update. Token validation/replacement belongs to `vault-init`; the accessor and pending-revocation queue must remain root-only.
 
 ---
 
@@ -425,6 +432,7 @@ Do not reset the user's email-server cache or AD password unless the diagnostic 
 | Vault secret | Apply the temporary bootstrap update, remove the bootstrap file, then restart the stack |
 | Nginx configuration | Recreate/restart the stack; rebuild only if another image-based change also requires it |
 | Documentation only | No application rebuild is required unless the documentation is served from the deployed application image |
+| Site setting only | Save it in Django Admin; request-rate and AI-quota caches are cleared by the model save path where applicable |
 | Accidental Admin IP allowlist lockout | From the server, run `sudo docker compose exec web python manage.py reset_admin_ip_allowlist`, configure a new allowlist in Site settings, then re-enable the allowlist |
 | One AD login alias works but another fails | Run `./scripts/clear_ldap_dn_cache.sh alice`, then retry the AD login; no rebuild is required |
 
@@ -436,5 +444,71 @@ sudo docker compose ps
 sudo docker compose exec web python manage.py check
 sudo docker compose logs --tail=120 web
 ```
+
+## 9. Post-update verification by change type
+
+Always start with:
+
+```bash
+cd /opt/DjOpenKB
+sudo docker compose config >/dev/null
+sudo docker compose ps
+sudo docker compose exec web python manage.py check
+sudo docker compose exec web python manage.py check --deploy
+sudo docker compose exec web python manage.py migrate --noinput
+python scripts/verify_supply_chain_pins.py
+```
+
+Run the complete suite after broad application changes:
+
+```bash
+sudo docker compose exec web python manage.py test kb.tests
+```
+
+For a focused change, run the matching functional package:
+
+```bash
+# Authentication, MFA, LDAP identity, lockouts and account validation
+sudo docker compose exec web python manage.py test \
+  kb.tests.auth \
+  kb.tests.users \
+  kb.tests.admin
+
+# Article workflow, visibility, permissions, rendering and limits
+sudo docker compose exec web python manage.py test \
+  kb.tests.articles \
+  kb.tests.permissions
+
+# Uploaded media and bulk ZIP import protections
+sudo docker compose exec web python manage.py test \
+  kb.tests.media \
+  kb.tests.bulk_import
+
+# Request, browser, cookie, Nginx and input security controls
+sudo docker compose exec web python manage.py test kb.tests.security
+
+# OpenKB AI jobs, quotas, messages and distributed locks
+sudo docker compose exec web python manage.py test kb.tests.ai
+```
+
+The detailed test layout and single-module examples are maintained in `kb/tests/README.md`.
+
+After a role/workflow update, test both the visible control and a forged POST request. After a template/static update, hard-refresh the browser and confirm the cache-busting query string changed where required. After a Vault update, check token/accessor permissions without printing either value.
+
+## 10. Documentation synchronisation checklist
+
+When implementation changes, update the smallest relevant existing documents rather than creating overlapping guides:
+
+| Change area | Documentation to review |
+|---|---|
+| User roles, article workflow, editor/display, feature behaviour | `FULL_FEATURE_DOCUMENTATION.md` and README summary |
+| `.env`, Vault keys/secrets, Site settings, Nginx values, restart rules | `CONFIGURATION_REFERENCE.md` |
+| First installation or operational commands | `DEPLOYMENT_GUIDE.md` |
+| Update/recovery workflow | This guide |
+| Network/security controls or residual risks | `PUBLIC_EXPOSURE_HARDENING.md` |
+| LDAP/LDAPS | `LDAP_LDAPS_SETUP.md` and Windows test guide where applicable |
+| SMTP notifications | `SMTP_RELAY_NOTIFICATIONS.md` |
+
+Before packaging documentation, search for stale defaults such as article body size, image count, MFA timeout, session timeout, Vault token mode, request-rate values, and role names. Do not document a browser-only restriction as a server security boundary, and keep known production follow-up items separate from implemented controls.
 
 For fresh installation, first administrator creation, certificates, LDAPS, OpenKB initialization, and server reboot persistence, use `documentations/DEPLOYMENT_GUIDE.md`.

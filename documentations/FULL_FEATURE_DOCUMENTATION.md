@@ -23,7 +23,7 @@ The Docker Compose stack contains the following main services:
 | `redis` | Shared production cache for authentication lockouts, AI burst limits/cooldowns, fixed 24-hour per-user quotas, encrypted temporary AI job records, and query concurrency controls. Redis DB 2 is used as the Celery broker by default. |
 | `vault` | HashiCorp Vault used to store runtime secrets such as Django secret key, field-encryption key, PostgreSQL password, AI provider API keys, and LDAP bind password. |
 | `vault-init` | First-time Vault initialisation and secret seeding helper. |
-| `vault-auto-unseal` | Automatically unseals Vault using the stored unseal key in the local lab deployment and recreates the app token if it is missing. |
+| `vault-auto-unseal` | Watches the local Vault service and unseals it using the protected local key in the current single-server development design. It does not issue, renew, or rotate the static application token. |
 | `app-permissions-init` | Short-lived, network-isolated root helper that prepares the static and OpenKB bind mounts for the unprivileged application UID/GID before application services start. It must exit successfully. |
 | `cleanup-scheduler` | Runs scheduled cleanup commands, including stray upload cleanup, published-article deletion-queue purge, authentication log cleanup, and general/admin activity log cleanup. |
 
@@ -72,6 +72,8 @@ DjOpenKB is a login-only main website. Anonymous users receive the login page at
 | See dislike counts in the matching scope | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✗ | ✓ | ✓ |
 | Create own public article | ✗ | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
 | Create own internal article | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| Choose Public/Internal when creating (requires both creation scopes) | ✗ | Combined role only | ✗ | Combined role only | ✗ | Combined role only | ✗ | Combined role only | ✓ |
+| Change an existing article between Public/Internal | ✗ | ✗ | ✗ | Both manager roles only | ✗ | ✗ | ✗ | Both manager roles only | ✓ |
 | Review public pending queue | ✗ | ✗ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
 | Review internal pending queue | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ |
 | Manage published public articles | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
@@ -82,6 +84,8 @@ DjOpenKB is a login-only main website. Anonymous users receive the login page at
 Notes:
 
 - Writers can edit their own draft/returned submissions. An edit to their own published article becomes a pending update instead of replacing the published copy directly.
+- A user with both public and internal creation rights, such as `Article Writer` plus `Internal Article Writer`, sees the Public/Internal selector while creating a new article. The selector is fixed to the only permitted scope for a single-scope user.
+- After an article exists, changing its visibility is more restricted: only `Admin Users` or a user holding both `Article Manager` and `Internal Article Manager` can move it between Public and Internal. Dual writers, dual approvers, single-scope managers, owners, and direct permission add-ons cannot do so.
 - Published deletion requires MFA confirmation. Owner deletion follows the owner workflow; manager/admin deletion follows the matching scope’s management flow.
 - Approvers can edit content only while using the pending-review flow. They do not receive free edit/delete rights for published content.
 - Django Admin also requires normal login/MFA, the administrator network allowlist, and the separate Admin MFA gate.
@@ -203,6 +207,21 @@ The profile layer tracks the main account type:
 
 Admins can edit account type/source in Django Admin for controlled recovery or conversion cases. Use Django's built-in `Active` checkbox when the account should be unable to sign in at all. Use the `Disabled User` group when the account should be retained and redirected to the disabled-account page after authentication.
 
+### 4.5 Shared Local Password and Identity Policy
+
+Every Django-managed local password path uses the same registered validator, including self-service password changes, Django Admin user creation, and Django Admin password changes. The policy requires:
+
+- At least 12 characters.
+- At least one uppercase letter.
+- At least one lowercase letter.
+- At least one number.
+- At least one special character.
+- The password must not contain the username or the name portion of the user's email address when either identity value is at least three characters.
+
+Active Directory passwords remain governed by the domain policy and are not changed locally.
+
+User identity is also normalised consistently across normal views and Django Admin. Usernames are case-insensitively unique, so `Alice` and `alice` cannot represent separate accounts. Non-blank email addresses are also case-insensitively unique. Friendly form errors are shown before the matching PostgreSQL unique indexes become the final concurrency boundary.
+
 ## 5. Multi-Factor Authentication
 
 ### 5.1 MFA Requirement
@@ -245,6 +264,14 @@ Sensitive profile actions require a fresh MFA/OTP code. For example:
 - Changing password for local users.
 
 Domain-managed email/password values are controlled by Active Directory and are blocked from normal website editing.
+
+### 5.5 MFA Completion Windows and Admin Step-Up Flow
+
+The main login MFA challenge defaults to 60 seconds and is configurable from 30 to 900 seconds. When it expires, the pending login is cleared and the user must enter username/password again.
+
+Django Admin and protected administrator tools use a separate 60-second verification challenge. Opening Admin automatically displays the OTP field; there is no user-facing **Start new verification** button. Refreshing an active OTP page does not extend its deadline. If the challenge expires, the pending attempt is cleared and the administrator is returned to the normal Knowledge Repository while remaining signed in. Opening Admin again starts a fresh OTP field immediately.
+
+After successful Admin MFA, the default Admin idle timeout is 600 seconds (10 minutes). Idle expiry returns the user to the normal site and requires a new Admin OTP for the next Admin entry. Normal login MFA and Admin MFA have separate session state, audit events, lockout handling, and configurable timeouts.
 
 ## 6. Progressive Password and MFA Lockout
 
@@ -339,7 +366,7 @@ Important protections include:
 
 ### 8.1 Input Validation and Character Limits
 
-All user-controlled text values are bounded according to their purpose. The normal browser interface uses `maxlength` for usability, while Django forms and `InputLengthLimitMiddleware` provide the authoritative server-side boundary when a browser control is removed or a request is submitted manually.
+All user-controlled text values are bounded according to their purpose. The normal browser interface uses `maxlength` for usability. Django forms/model validation and `InputLengthLimitMiddleware` provide server-side boundaries for normal query strings and URL-encoded form submissions, while upload/import/JSON endpoints perform their own direct validation. File bytes are never trusted merely because the browser accepted them.
 
 | Input category | Maximum characters | Examples / notes |
 |---|---:|---|
@@ -367,7 +394,7 @@ All user-controlled text values are bounded according to their purpose. The norm
 
 The article Markdown body remains configurable in **Django Admin → Site settings → Article settings**. Its default is `100,000` characters, with an allowed range of `1,000` to `2,000,000`. The OpenKB AI question limit is controlled by `OPENKB_AI_MAX_PROMPT_CHARS`, defaults to `1,000`, and is constrained to `100`–`10,000` characters.
 
-Oversized normal page submissions return HTTP `400`; JSON endpoints return a structured HTTP `400` response; an excessive overall request body returns HTTP `413`. Rejected content is not written to the warning log. New text fields must receive both a browser limit and a server-side field-specific limit rather than relying on JavaScript alone.
+Oversized normal page submissions return HTTP `400`; JSON endpoints return a structured HTTP `400` response; an excessive overall request body returns HTTP `413`. Rejected content is not written to the warning log. New text fields must receive both a browser limit and a server-side field-specific limit rather than relying on JavaScript alone. The generic middleware intentionally does not parse every multipart body; any new multipart form must validate its `request.POST` text fields directly as well as its `request.FILES` content.
 
 ## 9. Article Management
 
@@ -381,6 +408,37 @@ Each article has a visibility value:
 | `Internal article` | Restricted article for more sensitive internal IT documentation. | Requires `Internal User`, `Internal Article Writer`, `Internal Article Approver`, `Internal Article Manager`, direct internal permission, or `Admin Users`. |
 
 Public and internal articles share the same database model and workflow fields, but every view checks the article visibility before allowing list/detail/edit/review/delete/image access.
+
+#### Creation visibility selection
+
+The Add Article page follows the user’s creation permissions:
+
+| User capability | Creation form behaviour |
+|---|---|
+| Public creation only | The article is fixed to Public; no visibility selector is shown. |
+| Internal creation only | The article is fixed to Internal; no visibility selector is shown. |
+| Both public and internal creation | The Public/Internal selector is shown. This includes dual writers, dual managers, other legitimate combinations that grant both creation scopes, and Admin Users. |
+
+A user with both `Article Writer` and `Internal Article Writer` can therefore choose the scope when creating a new article. The server validates the selected scope independently of the browser. Changing a hidden value or manually submitting the other scope does not grant a single-scope writer access to that scope.
+
+#### Existing article visibility changes
+
+Changing an existing article from Public to Internal or Internal to Public is deliberately more restricted than choosing the scope during creation. The edit-page visibility selector is shown only to:
+
+- `Admin Users`; or
+- a non-admin user who holds both `Article Manager` and `Internal Article Manager`.
+
+The following users cannot change an existing article’s visibility, including on an article they own:
+
+- A public-only or internal-only manager.
+- A user holding both public and internal writer roles.
+- A user holding both public and internal approver roles.
+- An owner/writer with creation rights in both scopes.
+- A user with direct permission add-ons but without both manager role groups.
+
+This rule is enforced server-side. Removing the selector restriction, changing the hidden field, or submitting `article_visibility` manually does not alter the saved visibility for an unauthorised user.
+
+An authorised visibility change takes effect when the edit is saved. Access checks immediately use the new scope, generated Markdown copies are removed from the previous OpenKB tree and written to the correct destination tree, the AI index is marked stale for resynchronisation, and the change is included in the activity log. Draft privacy and pending-review rules still apply: dual managers cannot browse another user’s private draft merely because they can manage both published scopes.
 
 ### 9.2 Suggested Article Workflow
 
@@ -572,6 +630,19 @@ Authentication lockout alerts use the same SMTP relay but are documented separat
 
 SMTP relay configuration, certificate preparation, Vault credentials, recipient-domain controls, and test commands are documented in [SMTP_RELAY_NOTIFICATIONS.md](SMTP_RELAY_NOTIFICATIONS.md).
 
+### 9.11 Article Display, Editor, and Live Preview Behaviour
+
+The published article layout is centred and uses most of the browser width while retaining a fixed related-article sidebar on desktop. The main article canvas is responsive up to approximately 1,480 pixels; on smaller displays the layout reduces or stacks without forcing the whole page wider than the viewport.
+
+The create/edit page intentionally separates editing comfort from rendered accuracy:
+
+- The Markdown source editor uses a monospace font, comfortable padding, and soft wrapping inside its own pane. It has no horizontal source scrollbar for normal prose.
+- The live preview uses the same rendered-content stylesheet and effective article width as the published article. It is therefore the authoritative representation of wrapping, images, tables, code blocks, and videos.
+- Editor scrolling drives block-aware vertical preview synchronisation. A user may manually move the preview; later editor scrolling continues from that chosen preview offset instead of snapping it back absolutely.
+- Horizontal preview scrolling is independent because Markdown source and rendered HTML do not have a meaningful one-to-one horizontal character position. A long link or image declaration may render as short link text or a visual object.
+- One Enter creates one visible line break in both live preview and published output. A blank line still creates a separate paragraph. Soft visual wrapping inside the editor does not insert an actual line break.
+- Normal prose wraps within the article. Wide tables and fenced code blocks scroll within their own rendered-content area, while images and video players remain responsive.
+
 ## 10. Orphan Article Management
 
 Admins have access to an orphan article management tool for articles that have no active owner, no owner, or a deleted/inactive owner.
@@ -744,9 +815,9 @@ Uploaded article images are limited to:
 2 MB maximum per image
 ```
 
-### 12.3 Pillow Image Verification
+### 12.3 Pillow and Decompression-Bomb Verification
 
-The project does not trust the browser-provided MIME type alone. Uploaded files are opened and verified using Pillow. This helps reject non-image files renamed with an image extension.
+The project does not trust the browser-provided MIME type alone. Uploaded files are opened and verified using Pillow. This rejects many non-image files renamed with an image extension, truncated/invalid images, and formats that do not match the approved extension. Pillow decompression-bomb warnings/errors are treated as upload failures instead of allowing a tiny compressed file to expand into excessive image-processing work.
 
 ### 12.4 Pixel Limit
 
@@ -754,7 +825,7 @@ The image validation also checks image dimensions and rejects images above the c
 
 ### 12.5 Server-Generated Filenames
 
-Uploaded images are stored using generated filenames containing a timestamp and random component. The original filename is not used directly as the storage path.
+Uploaded images are stored using generated filenames containing a timestamp and random component. The original filename is not used directly as the storage path. The editor inserts the protected `/wiki/uploads/<generated-filename>` Markdown reference, tracks uploaded assets, and lets users resize supported images through controlled width metadata rather than accepting an arbitrary filesystem path.
 
 ### 12.6 Path Traversal Protection
 
@@ -815,11 +886,11 @@ This prevents newly uploaded images from being deleted while a user is still dra
 
 ## 14. Markdown and XSS Protection
 
-Article Markdown is converted into HTML using `markdown`, then sanitised using `bleach` before display.
+Article Markdown is converted into HTML using `markdown`, then sanitised using `bleach` before display. The renderer enables fenced code, tables, heading anchors, and `nl2br`, so a single source newline becomes a visible `<br>` while a blank line remains a paragraph boundary. The browser preview enables the matching line-break behaviour.
 
-This protects article pages from unsafe HTML and script injection. Only approved HTML tags/attributes/protocols are allowed through the sanitisation process.
+This protects article pages from unsafe HTML and script injection. Only approved HTML tags, attributes, and protocols are allowed through the sanitisation process. Raw iframe/image attributes are filtered; controlled video expansion and image rendering remain subject to the server policy and Content Security Policy.
 
-The article display template can safely render the sanitised HTML because the input has already passed through the controlled Markdown and Bleach pipeline.
+The article display template can safely render the sanitised HTML because the input has already passed through the controlled Markdown and Bleach pipeline. The preview mirrors this policy for user feedback, but the server renderer remains authoritative.
 
 ## 15. OpenKB AI Integration
 
@@ -997,16 +1068,22 @@ The singleton **Site settings** record controls the following operational limits
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
 | Pending image uploads per user | 100 images | Persistent uncommitted-image quota across all browsers and sessions. Adjustable from 1 to 1000. |
 | Pending image upload storage per user | 100 MB | Persistent combined uncommitted-image storage quota. Adjustable from 1 to 2048 MB. |
+| Article video maximum width | 720 px | Responsive video-player maximum. Adjustable from 160 to 1920 px. |
 | Article keyword limit | 20 keywords | Maximum keywords on each article and pending update. Adjustable from 1 to 100. |
 | Article body character limit | 100,000 characters | Maximum Markdown body size for current articles and pending updates. Adjustable from 1,000 to 2,000,000. The editor blocks additional input and the server rejects bypass attempts. |
 | Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
 | Authentication activity-log retention | 30 days | `0` retains authentication/MFA logs indefinitely. |
 | User session timeout | 8 hours | Fixed authenticated and pending-MFA expiry. Administrators may set 1 to 168 hours. |
+| MFA login completion timeout | 60 seconds | Adjustable from 30 to 900 seconds. Expiry clears the pending login and requires username/password again. |
+| Admin MFA verification timeout | 60 seconds | Adjustable from 30 to 900 seconds. The OTP field opens automatically; expiry returns to the normal site. |
 | General activity/admin-log retention | 30 days | `0` retains general and Django Admin activity logs indefinitely. |
 | Admin log rows per page | 200 | Recommended range is 50-500. |
 | Enable Admin IP allowlist | Disabled | When disabled, source IP does not restrict Admin access. Enable only after valid IPv4/IPv6 addresses or CIDR ranges are configured. |
 | Admin allowed IP ranges | Blank | Optional IPv4/IPv6 address/CIDR list enforced dynamically by Django when the allowlist is enabled. |
 | Lockout escalation memory | 604800 seconds | Failed password/MFA escalation history is retained for 7 days unless successful authentication or an admin reset clears it. |
+| Login POST requests per IP per minute | 8 | Redis-backed application limit; range 0 to 120. `0` disables only this layer. |
+| MFA POST requests per IP per minute | 10 | Shared normal/Admin MFA Redis limit; range 0 to 120. |
+| Django Admin POST requests per administrator per minute | 120 | Per signed-in administrator; range 0 to 600. Nginx still applies a fixed per-IP ceiling. |
 | Admin MFA idle timeout | 600 seconds | 10 minutes by default; code clamps values from 60 to 86400 seconds. |
 | OpenKB AI prompts per 24 hours | 20 prompts | Per-user fixed window. The first accepted prompt starts the 24-hour expiry; later prompts do not extend it. Runtime range is 1-1000. |
 
@@ -1480,7 +1557,8 @@ docker compose up -d
 - Review the Article deletion queue retention setting. Keep the default 7-day recovery period unless immediate permanent published deletion (`0`) is genuinely intended.
 - Test `/robots.txt` and the `X-Robots-Tag` response after an Nginx/Django routing change.
 - Admin log pages can show 500 rows per page, but very large logs should still be filtered by date, user, event type, or action.
-- When adding a new text-like input, assign the smallest practical limit in `kb/input_limits.py`, add browser/Admin form validation, add direct validation for multipart or independently parsed JSON endpoints, and extend `kb/tests/test_input_length_limits.py`.
+- When adding a new text-like input, assign the smallest practical limit in `kb/input_limits.py`, add browser/Admin form validation, add direct validation for multipart or independently parsed JSON endpoints, and extend `kb/tests/security/test_input_length_limits.py`.
+- Keep [CONFIGURATION_REFERENCE.md](CONFIGURATION_REFERENCE.md) synchronised when `.env`, Vault secret fields, Site settings, Nginx limits, service topology, or restart requirements change.
 
 - Keep the site login-only unless there is a clear business requirement for anonymous article browsing.
 - Keep the group model clear: `Disabled User`, fallback `Regular User`, public roles (`Article Writer`, `Article Approver`, `Article Manager`), internal add-on roles (`Internal User`, `Internal Article Writer`, `Internal Article Approver`, `Internal Article Manager`), and `Admin Users`.
