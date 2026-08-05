@@ -72,18 +72,25 @@ class ArticleContentLayoutTests(SimpleTestCase):
         self.assertIn("--article-sidebar-width: 280px", css)
         self.assertIn(".article-preview-canvas", css)
         self.assertIn("--article-canvas-max-width: 1480px", css)
+        self.assertIn(".article-editor-page-shell .CodeMirror {", css)
+        self.assertIn("overflow: hidden !important", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-scroll", css)
         self.assertIn("overflow: scroll !important", css)
         self.assertNotIn("overflow-x: auto !important", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-sizer", css)
+        self.assertIn(".article-editor-page-shell .CodeMirror-code", css)
+        self.assertIn("pre.CodeMirror-line", css)
         self.assertIn("margin-left: auto", css)
         self.assertIn("white-space: pre-wrap", css)
 
         javascript = (
             self.base_dir / "website" / "static" / "javascripts" / "openKB.js"
         ).read_text(encoding="utf-8")
+        self.assertIn("equivalentHorizontalOffset", javascript)
         self.assertIn("syncPreviewHorizontalFromEditor", javascript)
         self.assertIn("syncEditorHorizontalFromPreview", javascript)
+        self.assertIn(".CodeMirror-hscrollbar", javascript)
+        self.assertIn("syncHorizontalAfterPreviewRender", javascript)
 
     def test_preview_has_no_preview_only_image_height_cap(self):
         for template_name in ("suggest.html", "suggest_edit.html"):

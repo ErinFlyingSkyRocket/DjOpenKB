@@ -577,6 +577,10 @@ $(document).ready(function(){
                     clearTimeout(timer);
                 timer = setTimeout(function(){
                     convertTextAreaToMarkdown(false);//pass false to indicate this call is due to a code change
+                    window.requestAnimationFrame(function(){
+                        syncHorizontalAfterPreviewRender();
+                        schedulePreviewFromEditor();
+                    });
                 }, renderDelayTime);
             });
 
@@ -777,27 +781,36 @@ $(document).ready(function(){
                 });
             }
 
-            function horizontalScrollRatio(scrollLeft, scrollWidth, clientWidth){
-                var maximum = Math.max(scrollWidth - clientWidth, 0);
-                if(maximum <= 0){
+            function equivalentHorizontalOffset(sourceLeft, sourceMaximum, targetMaximum){
+                if(sourceMaximum <= 0 || targetMaximum <= 0){
                     return 0;
                 }
-                return clampScrollValue(scrollLeft / maximum, 0, 1);
+
+                // Both panes are built from the same article canvas width. Use
+                // the exact pixel offset whenever their ranges match, so the
+                // same character area is visible in editor and preview. Keep a
+                // proportional fallback for small browser/font rounding changes.
+                if(Math.abs(sourceMaximum - targetMaximum) <= 4){
+                    return clampScrollValue(sourceLeft, 0, targetMaximum);
+                }
+
+                var ratio = clampScrollValue(sourceLeft / sourceMaximum, 0, 1);
+                return targetMaximum * ratio;
             }
 
             function syncPreviewHorizontalFromEditor(){
-                var editorScroller = simplemde.codemirror.getScrollerElement();
                 var editorInfo = simplemde.codemirror.getScrollInfo();
-                var ratio = horizontalScrollRatio(
-                    editorInfo.left,
-                    editorInfo.width,
-                    editorInfo.clientWidth
-                );
+                var editorMaximum = Math.max(editorInfo.width - editorInfo.clientWidth, 0);
                 var previewMaximum = Math.max(preview.scrollWidth - preview.clientWidth, 0);
+                var targetLeft = equivalentHorizontalOffset(
+                    editorInfo.left || 0,
+                    editorMaximum,
+                    previewMaximum
+                );
 
                 suppressPreviewHorizontalSync = true;
-                preview.scrollLeft = previewMaximum * ratio;
-                lastPreviewScrollLeft = preview.scrollLeft;
+                preview.scrollLeft = targetLeft;
+                lastPreviewScrollLeft = preview.scrollLeft || 0;
                 window.requestAnimationFrame(function(){
                     suppressPreviewHorizontalSync = false;
                 });
@@ -805,19 +818,28 @@ $(document).ready(function(){
 
             function syncEditorHorizontalFromPreview(){
                 var editorInfo = simplemde.codemirror.getScrollInfo();
-                var previewRatio = horizontalScrollRatio(
-                    preview.scrollLeft,
-                    preview.scrollWidth,
-                    preview.clientWidth
-                );
                 var editorMaximum = Math.max(editorInfo.width - editorInfo.clientWidth, 0);
+                var previewMaximum = Math.max(preview.scrollWidth - preview.clientWidth, 0);
+                var targetLeft = equivalentHorizontalOffset(
+                    preview.scrollLeft || 0,
+                    previewMaximum,
+                    editorMaximum
+                );
 
                 suppressEditorHorizontalSync = true;
-                simplemde.codemirror.scrollTo(editorMaximum * previewRatio, null);
+                simplemde.codemirror.scrollTo(targetLeft, null);
                 lastEditorScrollLeft = simplemde.codemirror.getScrollInfo().left || 0;
                 window.requestAnimationFrame(function(){
                     suppressEditorHorizontalSync = false;
                 });
+            }
+
+            function syncHorizontalAfterPreviewRender(){
+                if(lastScrollDriver === 'preview'){
+                    syncEditorHorizontalFromPreview();
+                }else{
+                    syncPreviewHorizontalFromEditor();
+                }
             }
 
             simplemde.codemirror.on('scroll', function(){
@@ -829,6 +851,31 @@ $(document).ready(function(){
 
                 lastScrollDriver = 'editor';
                 schedulePreviewFromEditor();
+            });
+
+            // Listen to CodeMirror's managed horizontal bar as well. Its own
+            // handler runs first and updates the editor scroller; this listener
+            // then mirrors the resulting position to the rendered preview.
+            var editorHorizontalScrollbar = simplemde.codemirror
+                .getWrapperElement()
+                .querySelector('.CodeMirror-hscrollbar');
+            if(editorHorizontalScrollbar){
+                editorHorizontalScrollbar.addEventListener('scroll', function(){
+                    if(suppressEditorHorizontalSync){
+                        return;
+                    }
+                    window.requestAnimationFrame(function(){
+                        var editorLeft = simplemde.codemirror.getScrollInfo().left || 0;
+                        lastEditorScrollLeft = editorLeft;
+                        lastScrollDriver = 'editor';
+                        syncPreviewHorizontalFromEditor();
+                    });
+                });
+            }
+
+            window.addEventListener('resize', function(){
+                simplemde.codemirror.refresh();
+                window.requestAnimationFrame(syncHorizontalAfterPreviewRender);
             });
 
             // Horizontal preview scrolling moves the editor to the same relative
@@ -847,6 +894,8 @@ $(document).ready(function(){
                 lastScrollDriver = 'preview';
                 updatePreviewScrollOffsetFromCurrentPosition();
             });
+
+            window.requestAnimationFrame(syncHorizontalAfterPreviewRender);
 
             // Images may finish loading after the preview HTML is rendered. Only
             // re-align when the editor was the pane the user last controlled.
@@ -869,6 +918,7 @@ $(document).ready(function(){
                 convertTextAreaToMarkdown(false);
 
                 window.requestAnimationFrame(function(){
+                    syncHorizontalAfterPreviewRender();
                     var focusSrc = options.focusImageSrc || '';
                     if(focusSrc){
                         var images = Array.prototype.slice.call(preview.querySelectorAll('img'));

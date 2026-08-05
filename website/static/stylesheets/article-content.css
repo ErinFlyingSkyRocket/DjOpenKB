@@ -198,8 +198,11 @@
 
     /* Preview and source editor expose the same published-article canvas. */
     .article-preview-canvas,
+    .article-editor-page-shell .CodeMirror-sizer,
     .article-editor-page-shell .CodeMirror-lines,
-    .article-editor-page-shell .CodeMirror-sizer {
+    .article-editor-page-shell .CodeMirror-code,
+    .article-editor-page-shell .CodeMirror pre.CodeMirror-line,
+    .article-editor-page-shell .CodeMirror pre.CodeMirror-line-like {
         box-sizing: border-box;
         width: var(--article-shared-canvas-width) !important;
         min-width: var(--article-shared-canvas-width) !important;
@@ -239,11 +242,17 @@
 }
 
 /*
- * Keep CodeMirror's own single horizontal scrollbar. Do not override the
- * internal scrolling element with overflow-x:auto: CodeMirror already renders
- * a dedicated .CodeMirror-hscrollbar, and exposing the native scroller as well
- * creates two horizontal bars.
+ * style.css sets the outer CodeMirror wrapper to overflow:auto. That wrapper
+ * must remain clipped because CodeMirror already owns the scrolling through
+ * its internal scroller and .CodeMirror-hscrollbar. Allowing the outer wrapper
+ * to scroll creates the second horizontal bar shown below the real editor bar
+ * and bypasses CodeMirror's scroll events.
  */
+.article-editor-page-shell .CodeMirror {
+    overflow: hidden !important;
+}
+
+/* Keep CodeMirror's internal scroller and its one managed horizontal bar. */
 .article-editor-page-shell .CodeMirror-scroll {
     overflow: scroll !important;
 }
