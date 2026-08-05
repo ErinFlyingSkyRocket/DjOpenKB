@@ -2814,7 +2814,7 @@ def render_safe_markdown(markdown_text):
     """Render Markdown and sanitize raw HTML before displaying an article."""
     html = markdown.markdown(
         expand_standalone_video_links(markdown_text),
-        extensions=["fenced_code", "tables", "toc"],
+        extensions=["fenced_code", "tables", "toc", "nl2br"],
         output_format="html5",
     )
 
