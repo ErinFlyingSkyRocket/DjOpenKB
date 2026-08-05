@@ -104,3 +104,101 @@
     font-family: inherit;
     color: inherit;
 }
+
+/*
+ * Wide desktop article and editor workspaces.
+ *
+ * The published article uses nearly the full browser width. The related
+ * article panel keeps a stable readable width while the article itself takes
+ * all remaining space. Create/edit pages use the same wide outer shell.
+ */
+.article-detail-page-shell,
+.article-editor-page-shell {
+    float: none;
+    width: 100%;
+    max-width: none;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.article-detail-layout {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.article-detail-sidebar,
+.article-detail-main {
+    min-width: 0;
+}
+
+@media (min-width: 992px) {
+    .article-detail-layout {
+        display: flex;
+        align-items: flex-start;
+        gap: 28px;
+    }
+
+    .article-detail-sidebar {
+        float: none;
+        flex: 0 0 300px;
+        width: 300px;
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .article-detail-main {
+        float: none;
+        flex: 1 1 auto;
+        width: auto;
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .article-detail-panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 991px) {
+    .article-detail-sidebar,
+    .article-detail-main {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+/*
+ * The preview canvas approximates the width available to a published article
+ * after the related-article sidebar is deducted. It therefore scrolls left
+ * and right inside the half-width editor preview instead of shrinking the
+ * rendered page to the preview column.
+ */
+.article-preview-canvas {
+    box-sizing: border-box;
+    min-width: 100%;
+}
+
+@media (min-width: 992px) {
+    .article-preview-canvas {
+        width: calc(100vw - 390px);
+    }
+}
+
+/* Allow genuine left/right navigation in both editor panes. */
+.article-editor-page-shell .suggest-preview {
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.article-editor-page-shell .CodeMirror-scroll {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+}
+
+.article-editor-page-shell .CodeMirror pre.CodeMirror-line,
+.article-editor-page-shell .CodeMirror pre.CodeMirror-line-like,
+.article-editor-page-shell textarea#editor {
+    white-space: pre;
+    overflow-wrap: normal;
+    word-break: normal;
+}

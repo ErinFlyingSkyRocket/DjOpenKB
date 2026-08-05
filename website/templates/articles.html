@@ -172,7 +172,7 @@
         }
     </style>
     <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}?v=20260720-video-size-5">
-    <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260804-layout-1">
+    <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260805-wide-layout-1">
 </head>
 
 <body class="show_footer">
@@ -199,7 +199,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+        <div class="col-xs-12 article-detail-page-shell">
             {% if show_global_back_button %}
                 <div class="row">
                     <div class="col-xs-12 article-detail-heading-wrap">
@@ -211,7 +211,7 @@
             {% endif %}
 
             <div class="row article-detail-layout">
-            <div class="col-xs-12 col-md-3 col-lg-3">
+            <div class="col-xs-12 article-detail-sidebar">
                 <div class="panel panel-default article-detail-panel">
                     <div class="panel-heading">{% trans "Related articles" %}</div>
                     <div class="panel-body">
@@ -228,7 +228,7 @@
                 </div>
             </div>
 
-            <div class="col-xs-12 col-md-9 col-lg-9 article-detail-main">
+            <div class="col-xs-12 article-detail-main">
                 <h1 class="article-detail-heading">{{ title }} {% if metadata.visibility == "internal" %}<span class="label label-warning">{% trans "Internal" %}</span>{% endif %}</h1>
 
                 <div class="body_text article-rendered-content">

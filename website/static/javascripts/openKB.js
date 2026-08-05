@@ -444,8 +444,14 @@ $(document).ready(function(){
             element: $('#editor')[0],
             spellChecker: config.enable_spellchecker,
             forceSync: true,
+            lineWrapping: false,
             toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'table', 'horizontal-rule', 'code', 'guide']
         });
+
+        // Keep long Markdown lines intact so the source editor provides a real
+        // horizontal scrollbar instead of forcing line wrapping. The rendered
+        // preview still follows the published article wrapping rules.
+        simplemde.codemirror.setOption('lineWrapping', false);
 
         // Enforce the Admin-configured article body limit inside CodeMirror.
         // Existing over-limit articles are never truncated on load; users may
@@ -1250,7 +1256,12 @@ $(document).ready(function(){
             }
         });
 
-        $('#preview').html(previewContainer.innerHTML);
+        var previewRenderTarget = document.querySelector('#preview .article-preview-canvas');
+        if(previewRenderTarget){
+            previewRenderTarget.innerHTML = previewContainer.innerHTML;
+        }else{
+            $('#preview').html(previewContainer.innerHTML);
+        }
 
         // re-hightlight the preview
         $('pre code').each(function(i, block){

@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{% static 'stylesheets/flatly.bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'simplemde/simplemde.min.css' %}">
     <link rel="stylesheet" href="{% static 'stylesheets/github.css' %}">
-    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/style.css' %}?v=20260805-wide-editor-1">
     <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'stylesheets/bootstrap-tokenfield.css' %}">
     <link rel="stylesheet" href="{% static 'stylesheets/jasny-bootstrap.min.css' %}">
@@ -45,7 +45,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'lunr/lunr.js' %}"></script>
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
-    <script src="{% static 'javascripts/openKB.js' %}"></script>
+    <script src="{% static 'javascripts/openKB.js' %}?v=20260805-wide-editor-1"></script>
     <style nonce="{{ csp_nonce }}">
         .suggest-preview { min-height: 480px; height: 480px; overflow: auto; background: #fff; }
         .CodeMirror { min-height: 480px; height: 480px; }
@@ -167,14 +167,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         }
     </style>
     <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
-    <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260804-layout-1">
+    <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260805-wide-layout-1">
 </head>
 <body class="">
     <!-- Static navbar -->
     {% include "_navbar.html" %}
 {% include "_page_back_button.html" %}
 <div class="container-fluid">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-xs-12 article-editor-page-shell">
             {% if error %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
@@ -241,7 +241,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group" id="preview-wrapper">
                                 <label for="preview">{% trans "Preview" %}</label>
-                                <div id="preview" name="preview" class="form-control suggest-preview article-rendered-content" rows="10"></div>
+                                <div id="preview" name="preview" class="form-control suggest-preview article-rendered-content" rows="10"><div class="article-preview-canvas"></div></div>
                             </div>
                         </div>
                     </div>
