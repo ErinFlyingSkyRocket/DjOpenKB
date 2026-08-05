@@ -619,19 +619,30 @@ def choose_requested_article_visibility(user, requested_value, *, action="add", 
 
 
 def user_can_change_article_visibility(user, article):
-    """Allow visibility changes only before first publication.
+    """Return whether the edit form may move an article between both scopes.
 
-    Changing a published article between public/internal is intentionally not
-    offered to normal managers because it could leak or hide already-approved
-    content. Admin Users can handle exceptional cases in Django Admin.
+    Visibility changes are deliberately restricted because changing a
+    published article from public to internal (or the reverse) immediately
+    changes who may read it. Full Admin Users may always perform that trusted
+    operation. A non-admin user must hold both the public Article Manager and
+    Internal Article Manager role groups so the same person is authorised to
+    manage the source and destination scopes.
+
+    Writers, approvers, single-scope managers, and users who merely have a
+    mixture of direct permissions must not receive this control.
     """
     if not article or not getattr(user, "is_authenticated", False) or not user.is_active:
         return False
-    if user_can_use_admin_tools(user):
-        return article.status != SuggestedArticle.Status.PUBLISHED
-    if article.status == SuggestedArticle.Status.PUBLISHED:
+    if article_is_queued_for_deletion(article) or user_has_disabled_role(user):
         return False
-    return bool(article.owner_id == user.pk and len(allowed_article_visibility_values_for_user(user, action="add")) > 1)
+    if user_can_use_admin_tools(user):
+        return True
+
+    role_names = user_role_names_for_scope_checks(user)
+    return bool(
+        ROLE_ARTICLE_MANAGER in role_names
+        and ROLE_INTERNAL_ARTICLE_MANAGER in role_names
+    )
 
 
 def user_can_manage_article(user, article, *, review_mode=False):

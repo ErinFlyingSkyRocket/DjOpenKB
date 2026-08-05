@@ -301,7 +301,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <option value="{{ choice.value }}" {% if choice.value == article_visibility %}selected{% endif %}>{{ choice.label }}</option>
                                         {% endfor %}
                                     </select>
-                                    <p class="text-muted article-visibility-help">{% trans "Visibility can be changed only before the article is published." %}</p>
+                                    <p class="text-muted article-visibility-help">{% trans "Internal articles are visible only to internal users." %}</p>
                                 </div>
                             {% elif article.visibility == "internal" %}
                                 <span class="label label-warning article-scope-hint"><i class="fa fa-lock"></i> {% trans "Internal article" %}</span>
