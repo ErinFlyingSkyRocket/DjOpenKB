@@ -448,9 +448,9 @@ $(document).ready(function(){
             toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'table', 'horizontal-rule', 'code', 'guide']
         });
 
-        // Wrap source text at the same fixed canvas width used by the live
-        // preview and published article. The canvas remains wider than each
-        // half-screen pane, so horizontal scrolling still works and stays synced.
+        // Keep Markdown comfortable to edit: source lines soft-wrap inside the
+        // editor pane. The rendered preview, rather than the raw source width,
+        // represents the final published article layout.
         simplemde.codemirror.setOption('lineWrapping', true);
 
         // Enforce the Admin-configured article body limit inside CodeMirror.
@@ -578,7 +578,6 @@ $(document).ready(function(){
                 timer = setTimeout(function(){
                     convertTextAreaToMarkdown(false);//pass false to indicate this call is due to a code change
                     window.requestAnimationFrame(function(){
-                        syncHorizontalAfterPreviewRender();
                         schedulePreviewFromEditor();
                     });
                 }, renderDelayTime);
@@ -595,16 +594,6 @@ $(document).ready(function(){
             var editorToPreviewFrame = null;
             var lastScrollDriver = 'editor';
             var previewScrollOffsetFromEditor = 0;
-
-            // Horizontal movement is two-way. The source editor and rendered
-            // preview use the same fixed article canvas width, so moving either
-            // scrollbar should expose the corresponding part of the other pane.
-            // Vertical behaviour remains the existing one-way editor -> preview
-            // block synchronisation, with manual preview positioning preserved.
-            var suppressEditorHorizontalSync = false;
-            var suppressPreviewHorizontalSync = false;
-            var lastEditorScrollLeft = simplemde.codemirror.getScrollInfo().left || 0;
-            var lastPreviewScrollLeft = preview.scrollLeft || 0;
 
             function syncNowMilliseconds(){
                 if(window.performance && typeof window.performance.now === 'function'){
@@ -781,121 +770,26 @@ $(document).ready(function(){
                 });
             }
 
-            function equivalentHorizontalOffset(sourceLeft, sourceMaximum, targetMaximum){
-                if(sourceMaximum <= 0 || targetMaximum <= 0){
-                    return 0;
-                }
-
-                // Both panes are built from the same article canvas width. Use
-                // the exact pixel offset whenever their ranges match, so the
-                // same character area is visible in editor and preview. Keep a
-                // proportional fallback for small browser/font rounding changes.
-                if(Math.abs(sourceMaximum - targetMaximum) <= 4){
-                    return clampScrollValue(sourceLeft, 0, targetMaximum);
-                }
-
-                var ratio = clampScrollValue(sourceLeft / sourceMaximum, 0, 1);
-                return targetMaximum * ratio;
-            }
-
-            function syncPreviewHorizontalFromEditor(){
-                var editorInfo = simplemde.codemirror.getScrollInfo();
-                var editorMaximum = Math.max(editorInfo.width - editorInfo.clientWidth, 0);
-                var previewMaximum = Math.max(preview.scrollWidth - preview.clientWidth, 0);
-                var targetLeft = equivalentHorizontalOffset(
-                    editorInfo.left || 0,
-                    editorMaximum,
-                    previewMaximum
-                );
-
-                suppressPreviewHorizontalSync = true;
-                preview.scrollLeft = targetLeft;
-                lastPreviewScrollLeft = preview.scrollLeft || 0;
-                window.requestAnimationFrame(function(){
-                    suppressPreviewHorizontalSync = false;
-                });
-            }
-
-            function syncEditorHorizontalFromPreview(){
-                var editorInfo = simplemde.codemirror.getScrollInfo();
-                var editorMaximum = Math.max(editorInfo.width - editorInfo.clientWidth, 0);
-                var previewMaximum = Math.max(preview.scrollWidth - preview.clientWidth, 0);
-                var targetLeft = equivalentHorizontalOffset(
-                    preview.scrollLeft || 0,
-                    previewMaximum,
-                    editorMaximum
-                );
-
-                suppressEditorHorizontalSync = true;
-                simplemde.codemirror.scrollTo(targetLeft, null);
-                lastEditorScrollLeft = simplemde.codemirror.getScrollInfo().left || 0;
-                window.requestAnimationFrame(function(){
-                    suppressEditorHorizontalSync = false;
-                });
-            }
-
-            function syncHorizontalAfterPreviewRender(){
-                if(lastScrollDriver === 'preview'){
-                    syncEditorHorizontalFromPreview();
-                }else{
-                    syncPreviewHorizontalFromEditor();
-                }
-            }
-
             simplemde.codemirror.on('scroll', function(){
-                var editorLeft = simplemde.codemirror.getScrollInfo().left || 0;
-                if(!suppressEditorHorizontalSync && Math.abs(editorLeft - lastEditorScrollLeft) >= 1){
-                    lastEditorScrollLeft = editorLeft;
-                    syncPreviewHorizontalFromEditor();
-                }
-
                 lastScrollDriver = 'editor';
                 schedulePreviewFromEditor();
             });
 
-            // Listen to CodeMirror's managed horizontal bar as well. Its own
-            // handler runs first and updates the editor scroller; this listener
-            // then mirrors the resulting position to the rendered preview.
-            var editorHorizontalScrollbar = simplemde.codemirror
-                .getWrapperElement()
-                .querySelector('.CodeMirror-hscrollbar');
-            if(editorHorizontalScrollbar){
-                editorHorizontalScrollbar.addEventListener('scroll', function(){
-                    if(suppressEditorHorizontalSync){
-                        return;
-                    }
-                    window.requestAnimationFrame(function(){
-                        var editorLeft = simplemde.codemirror.getScrollInfo().left || 0;
-                        lastEditorScrollLeft = editorLeft;
-                        lastScrollDriver = 'editor';
-                        syncPreviewHorizontalFromEditor();
-                    });
-                });
-            }
-
             window.addEventListener('resize', function(){
                 simplemde.codemirror.refresh();
-                window.requestAnimationFrame(syncHorizontalAfterPreviewRender);
             });
 
-            // Horizontal preview scrolling moves the editor to the same relative
-            // position. Vertical preview scrolling remains independent and sets
-            // the anchor used by later editor-driven vertical synchronisation.
+            // The preview is horizontally independent because rendered Markdown
+            // can be much narrower or wider than its source. Vertical preview
+            // scrolling remains independent and sets the anchor used by later
+            // editor-driven vertical synchronisation.
             preview.addEventListener('scroll', function(){
-                var previewLeft = preview.scrollLeft || 0;
-                if(!suppressPreviewHorizontalSync && Math.abs(previewLeft - lastPreviewScrollLeft) >= 1){
-                    lastPreviewScrollLeft = previewLeft;
-                    syncEditorHorizontalFromPreview();
-                }
-
                 if(syncNowMilliseconds() < suppressPreviewScrollUntil){
                     return;
                 }
                 lastScrollDriver = 'preview';
                 updatePreviewScrollOffsetFromCurrentPosition();
             });
-
-            window.requestAnimationFrame(syncHorizontalAfterPreviewRender);
 
             // Images may finish loading after the preview HTML is rendered. Only
             // re-align when the editor was the pane the user last controlled.
@@ -918,7 +812,6 @@ $(document).ready(function(){
                 convertTextAreaToMarkdown(false);
 
                 window.requestAnimationFrame(function(){
-                    syncHorizontalAfterPreviewRender();
                     var focusSrc = options.focusImageSrc || '';
                     if(focusSrc){
                         var images = Array.prototype.slice.call(preview.querySelectorAll('img'));

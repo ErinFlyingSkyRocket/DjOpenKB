@@ -197,29 +197,16 @@
     }
 
     /*
-     * Preview, published content, and source text use one shared canvas width.
-     *
-     * CodeMirror internally reserves a 30px right-side measurement border on
-     * .CodeMirror-sizer. Give only the sizer that extra width so its reported
-     * scrollable text width remains exactly equal to the preview/published
-     * canvas. The actual source lines stay at the real article width.
+     * The rendered preview uses the same canvas width as the published article.
+     * The Markdown source editor intentionally does not: it soft-wraps inside
+     * its own pane for comfortable writing, while the preview remains the
+     * accurate representation of the final article layout.
      */
-    .article-preview-canvas,
-    .article-editor-page-shell .CodeMirror-lines,
-    .article-editor-page-shell .CodeMirror-code,
-    .article-editor-page-shell .CodeMirror pre.CodeMirror-line,
-    .article-editor-page-shell .CodeMirror pre.CodeMirror-line-like {
+    .article-preview-canvas {
         box-sizing: border-box;
         width: var(--article-shared-canvas-width) !important;
         min-width: var(--article-shared-canvas-width) !important;
         max-width: var(--article-shared-canvas-width) !important;
-    }
-
-    .article-editor-page-shell .CodeMirror-sizer {
-        box-sizing: border-box;
-        width: calc(var(--article-shared-canvas-width) + 30px) !important;
-        min-width: calc(var(--article-shared-canvas-width) + 30px) !important;
-        max-width: calc(var(--article-shared-canvas-width) + 30px) !important;
     }
 }
 
@@ -255,48 +242,64 @@
 }
 
 /*
- * style.css sets the outer CodeMirror wrapper to overflow:auto. That wrapper
- * must remain clipped because CodeMirror already owns the scrolling through
- * its internal scroller and .CodeMirror-hscrollbar. Allowing the outer wrapper
- * to scroll creates the second horizontal bar shown below the real editor bar
- * and bypasses CodeMirror's scroll events.
+ * Comfortable Markdown editing mode.
+ *
+ * Source Markdown is not expected to match rendered HTML character-for-
+ * character: links, images, formatting markers, tables, and embeds change size
+ * when rendered. The editor therefore soft-wraps within its visible pane and
+ * has no horizontal scrollbar. The preview remains the source of truth for the
+ * final published width.
  */
 .article-editor-page-shell .CodeMirror {
     overflow: hidden !important;
     padding: 0 !important;
 }
 
-/* Keep CodeMirror's internal scroller and its one managed horizontal bar. */
 .article-editor-page-shell .CodeMirror-scroll {
-    overflow: scroll !important;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+    margin-bottom: 0 !important;
 }
 
-/*
- * The source editor wraps visually at the shared article width instead of at
- * the narrow half-screen pane. The fixed canvas still allows both editor panes
- * to scroll left and right together.
- */
+.article-editor-page-shell .CodeMirror-hscrollbar,
+.article-editor-page-shell .CodeMirror-scrollbar-filler {
+    display: none !important;
+}
+
+.article-editor-page-shell .CodeMirror-sizer,
+.article-editor-page-shell .CodeMirror-lines,
+.article-editor-page-shell .CodeMirror-code,
+.article-editor-page-shell .CodeMirror pre.CodeMirror-line,
+.article-editor-page-shell .CodeMirror pre.CodeMirror-line-like {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
 .article-editor-page-shell .CodeMirror,
 .article-editor-page-shell .CodeMirror pre.CodeMirror-line,
 .article-editor-page-shell .CodeMirror pre.CodeMirror-line-like,
 .article-editor-page-shell textarea#editor {
-    font-family: inherit;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
     font-size: 14px;
-    line-height: 1.42857143;
+    line-height: 1.55;
 }
 
 .article-editor-page-shell .CodeMirror-lines {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .article-editor-page-shell .CodeMirror pre.CodeMirror-line,
 .article-editor-page-shell .CodeMirror pre.CodeMirror-line-like,
 .article-editor-page-shell textarea#editor {
-    padding-right: 0;
-    padding-left: 0;
+    box-sizing: border-box;
+    padding-right: 12px;
+    padding-left: 12px;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     word-wrap: break-word;
     word-break: normal;
 }
+

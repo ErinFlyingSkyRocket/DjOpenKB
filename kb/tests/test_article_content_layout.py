@@ -64,7 +64,7 @@ class ArticleContentLayoutTests(SimpleTestCase):
         self.assertIn("setOption('lineWrapping', true)", javascript)
         self.assertIn("#preview .article-preview-canvas", javascript)
 
-    def test_wide_layout_css_uses_remaining_article_width_and_horizontal_scroll(self):
+    def test_preview_matches_published_width_while_editor_soft_wraps_comfortably(self):
         css = self.stylesheet.read_text(encoding="utf-8")
 
         self.assertIn(".article-detail-page-shell", css)
@@ -72,27 +72,29 @@ class ArticleContentLayoutTests(SimpleTestCase):
         self.assertIn("--article-sidebar-width: 280px", css)
         self.assertIn(".article-preview-canvas", css)
         self.assertIn("--article-canvas-max-width: 1480px", css)
-        self.assertIn(".article-editor-page-shell .CodeMirror {", css)
-        self.assertIn("overflow: hidden !important", css)
+        self.assertIn("width: var(--article-shared-canvas-width) !important", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-scroll", css)
-        self.assertIn("overflow: scroll !important", css)
-        self.assertNotIn("overflow-x: auto !important", css)
-        self.assertIn(".article-editor-page-shell .CodeMirror-sizer", css)
-        self.assertIn("calc(var(--article-shared-canvas-width) + 30px)", css)
-        self.assertIn("padding: 0 !important", css)
-        self.assertIn(".article-editor-page-shell .CodeMirror-code", css)
-        self.assertIn("pre.CodeMirror-line", css)
-        self.assertIn("margin-left: auto", css)
+        self.assertIn("overflow-x: hidden !important", css)
+        self.assertIn("overflow-y: scroll !important", css)
+        self.assertIn(".article-editor-page-shell .CodeMirror-hscrollbar", css)
+        self.assertIn("display: none !important", css)
         self.assertIn("white-space: pre-wrap", css)
+        self.assertIn("overflow-wrap: anywhere", css)
+        self.assertIn("ui-monospace", css)
+        self.assertNotIn(
+            "calc(var(--article-shared-canvas-width) + 30px)",
+            css,
+        )
 
         javascript = (
             self.base_dir / "website" / "static" / "javascripts" / "openKB.js"
         ).read_text(encoding="utf-8")
-        self.assertIn("equivalentHorizontalOffset", javascript)
-        self.assertIn("syncPreviewHorizontalFromEditor", javascript)
-        self.assertIn("syncEditorHorizontalFromPreview", javascript)
-        self.assertIn(".CodeMirror-hscrollbar", javascript)
-        self.assertIn("syncHorizontalAfterPreviewRender", javascript)
+        self.assertIn("lineWrapping: true", javascript)
+        self.assertIn("setOption('lineWrapping', true)", javascript)
+        self.assertNotIn("equivalentHorizontalOffset", javascript)
+        self.assertNotIn("syncPreviewHorizontalFromEditor", javascript)
+        self.assertNotIn("syncEditorHorizontalFromPreview", javascript)
+        self.assertNotIn("syncHorizontalAfterPreviewRender", javascript)
 
     def test_preview_has_no_preview_only_image_height_cap(self):
         for template_name in ("suggest.html", "suggest_edit.html"):
