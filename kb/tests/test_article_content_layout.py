@@ -60,8 +60,8 @@ class ArticleContentLayoutTests(SimpleTestCase):
             self.assertIn('class="col-xs-12 article-editor-page-shell"', template)
             self.assertIn('class="article-preview-canvas"', template)
 
-        self.assertIn("lineWrapping: false", javascript)
-        self.assertIn("setOption('lineWrapping', false)", javascript)
+        self.assertIn("lineWrapping: true", javascript)
+        self.assertIn("setOption('lineWrapping', true)", javascript)
         self.assertIn("#preview .article-preview-canvas", javascript)
 
     def test_wide_layout_css_uses_remaining_article_width_and_horizontal_scroll(self):
@@ -69,11 +69,13 @@ class ArticleContentLayoutTests(SimpleTestCase):
 
         self.assertIn(".article-detail-page-shell", css)
         self.assertIn(".article-detail-sidebar", css)
-        self.assertIn("flex: 0 0 280px", css)
+        self.assertIn("--article-sidebar-width: 280px", css)
         self.assertIn(".article-preview-canvas", css)
-        self.assertIn("--article-shared-canvas-width: 1180px", css)
+        self.assertIn("--article-canvas-max-width: 1480px", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-scroll", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-sizer", css)
+        self.assertIn("margin-left: auto", css)
+        self.assertIn("white-space: pre-wrap", css)
 
         javascript = (
             self.base_dir / "website" / "static" / "javascripts" / "openKB.js"

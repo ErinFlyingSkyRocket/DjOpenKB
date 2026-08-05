@@ -106,29 +106,61 @@
 }
 
 /*
- * Shared article canvas width.
+ * Shared responsive article canvas.
  *
- * The published article, live preview, and Markdown source canvas all use the
- * same desktop width. This keeps rendered line wrapping consistent between
- * preview and publication while allowing the half-width editor panes to move
- * across the canvas with horizontal scrollbars.
+ * On desktop the related-article panel and article are centred as one layout.
+ * The article consumes most of the browser width, up to 1,480px. The create
+ * and edit preview plus the Markdown source canvas use the exact same computed
+ * width, so plain-text wrapping is consistent before and after publishing.
  */
 :root {
-    --article-shared-canvas-width: 1180px;
+    --article-sidebar-width: 280px;
+    --article-layout-gap: 24px;
+    --article-page-gutter: 24px;
+    --article-canvas-max-width: 1480px;
+    --article-shared-canvas-width: min(
+        var(--article-canvas-max-width),
+        calc(
+            100vw
+            - var(--article-sidebar-width)
+            - var(--article-layout-gap)
+            - var(--article-page-gutter)
+            - var(--article-page-gutter)
+        )
+    );
+    --article-shared-layout-width: calc(
+        var(--article-sidebar-width)
+        + var(--article-layout-gap)
+        + var(--article-shared-canvas-width)
+    );
 }
 
 .article-detail-page-shell,
 .article-editor-page-shell {
     float: none;
+    width: calc(100% - 32px);
+    max-width: 1840px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.article-detail-heading-wrap {
+    float: none;
     width: 100%;
-    max-width: none;
-    padding-right: 16px;
-    padding-left: 16px;
+    max-width: var(--article-shared-layout-width);
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
 }
 
 .article-detail-layout {
-    margin-right: 0;
-    margin-left: 0;
+    width: 100%;
+    max-width: var(--article-shared-layout-width);
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .article-detail-sidebar,
@@ -140,20 +172,20 @@
     .article-detail-layout {
         display: flex;
         align-items: flex-start;
-        gap: 24px;
+        gap: var(--article-layout-gap);
     }
 
     .article-detail-sidebar {
         float: none;
-        flex: 0 0 280px;
-        width: 280px;
+        flex: 0 0 var(--article-sidebar-width);
+        width: var(--article-sidebar-width);
         padding-right: 0;
         padding-left: 0;
     }
 
     .article-detail-main {
         float: none;
-        flex: 0 1 var(--article-shared-canvas-width);
+        flex: 0 0 var(--article-shared-canvas-width);
         width: var(--article-shared-canvas-width);
         max-width: var(--article-shared-canvas-width);
         padding-right: 0;
@@ -164,20 +196,26 @@
         width: 100%;
     }
 
-    /* Both editor panes expose the same fixed-width article canvas. */
-    .article-preview-canvas {
-        box-sizing: border-box;
-        width: var(--article-shared-canvas-width);
-        min-width: var(--article-shared-canvas-width);
-        max-width: none;
-    }
-
+    /* Preview and source editor expose the same published-article canvas. */
+    .article-preview-canvas,
+    .article-editor-page-shell .CodeMirror-lines,
     .article-editor-page-shell .CodeMirror-sizer {
+        box-sizing: border-box;
+        width: var(--article-shared-canvas-width) !important;
         min-width: var(--article-shared-canvas-width) !important;
+        max-width: var(--article-shared-canvas-width) !important;
     }
 }
 
 @media (max-width: 991px) {
+    .article-detail-page-shell,
+    .article-editor-page-shell {
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .article-detail-heading-wrap,
     .article-detail-sidebar,
     .article-detail-main {
         padding-right: 15px;
@@ -187,6 +225,7 @@
     .article-preview-canvas {
         width: 100%;
         min-width: 100%;
+        max-width: 100%;
     }
 }
 
@@ -195,15 +234,41 @@
     overflow-y: auto;
 }
 
+.article-editor-page-shell .suggest-preview.form-control {
+    padding: 0;
+}
+
 .article-editor-page-shell .CodeMirror-scroll {
     overflow-x: auto !important;
     overflow-y: auto !important;
 }
 
+/*
+ * The source editor wraps visually at the shared article width instead of at
+ * the narrow half-screen pane. The fixed canvas still allows both editor panes
+ * to scroll left and right together.
+ */
+.article-editor-page-shell .CodeMirror,
 .article-editor-page-shell .CodeMirror pre.CodeMirror-line,
 .article-editor-page-shell .CodeMirror pre.CodeMirror-line-like,
 .article-editor-page-shell textarea#editor {
-    white-space: pre;
-    overflow-wrap: normal;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.42857143;
+}
+
+.article-editor-page-shell .CodeMirror-lines {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.article-editor-page-shell .CodeMirror pre.CodeMirror-line,
+.article-editor-page-shell .CodeMirror pre.CodeMirror-line-like,
+.article-editor-page-shell textarea#editor {
+    padding-right: 0;
+    padding-left: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
     word-break: normal;
 }

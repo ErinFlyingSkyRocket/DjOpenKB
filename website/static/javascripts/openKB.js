@@ -444,14 +444,14 @@ $(document).ready(function(){
             element: $('#editor')[0],
             spellChecker: config.enable_spellchecker,
             forceSync: true,
-            lineWrapping: false,
+            lineWrapping: true,
             toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'table', 'horizontal-rule', 'code', 'guide']
         });
 
-        // Keep long Markdown lines intact so the source editor provides a real
-        // horizontal scrollbar instead of forcing line wrapping. The rendered
-        // preview still follows the published article wrapping rules.
-        simplemde.codemirror.setOption('lineWrapping', false);
+        // Wrap source text at the same fixed canvas width used by the live
+        // preview and published article. The canvas remains wider than each
+        // half-screen pane, so horizontal scrolling still works and stays synced.
+        simplemde.codemirror.setOption('lineWrapping', true);
 
         // Enforce the Admin-configured article body limit inside CodeMirror.
         // Existing over-limit articles are never truncated on load; users may
