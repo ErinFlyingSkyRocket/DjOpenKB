@@ -592,6 +592,16 @@ $(document).ready(function(){
             var lastScrollDriver = 'editor';
             var previewScrollOffsetFromEditor = 0;
 
+            // Horizontal movement is two-way. The source editor and rendered
+            // preview use the same fixed article canvas width, so moving either
+            // scrollbar should expose the corresponding part of the other pane.
+            // Vertical behaviour remains the existing one-way editor -> preview
+            // block synchronisation, with manual preview positioning preserved.
+            var suppressEditorHorizontalSync = false;
+            var suppressPreviewHorizontalSync = false;
+            var lastEditorScrollLeft = simplemde.codemirror.getScrollInfo().left || 0;
+            var lastPreviewScrollLeft = preview.scrollLeft || 0;
+
             function syncNowMilliseconds(){
                 if(window.performance && typeof window.performance.now === 'function'){
                     return window.performance.now();
@@ -767,15 +777,70 @@ $(document).ready(function(){
                 });
             }
 
+            function horizontalScrollRatio(scrollLeft, scrollWidth, clientWidth){
+                var maximum = Math.max(scrollWidth - clientWidth, 0);
+                if(maximum <= 0){
+                    return 0;
+                }
+                return clampScrollValue(scrollLeft / maximum, 0, 1);
+            }
+
+            function syncPreviewHorizontalFromEditor(){
+                var editorScroller = simplemde.codemirror.getScrollerElement();
+                var editorInfo = simplemde.codemirror.getScrollInfo();
+                var ratio = horizontalScrollRatio(
+                    editorInfo.left,
+                    editorInfo.width,
+                    editorInfo.clientWidth
+                );
+                var previewMaximum = Math.max(preview.scrollWidth - preview.clientWidth, 0);
+
+                suppressPreviewHorizontalSync = true;
+                preview.scrollLeft = previewMaximum * ratio;
+                lastPreviewScrollLeft = preview.scrollLeft;
+                window.requestAnimationFrame(function(){
+                    suppressPreviewHorizontalSync = false;
+                });
+            }
+
+            function syncEditorHorizontalFromPreview(){
+                var editorInfo = simplemde.codemirror.getScrollInfo();
+                var previewRatio = horizontalScrollRatio(
+                    preview.scrollLeft,
+                    preview.scrollWidth,
+                    preview.clientWidth
+                );
+                var editorMaximum = Math.max(editorInfo.width - editorInfo.clientWidth, 0);
+
+                suppressEditorHorizontalSync = true;
+                simplemde.codemirror.scrollTo(editorMaximum * previewRatio, null);
+                lastEditorScrollLeft = simplemde.codemirror.getScrollInfo().left || 0;
+                window.requestAnimationFrame(function(){
+                    suppressEditorHorizontalSync = false;
+                });
+            }
+
             simplemde.codemirror.on('scroll', function(){
+                var editorLeft = simplemde.codemirror.getScrollInfo().left || 0;
+                if(!suppressEditorHorizontalSync && Math.abs(editorLeft - lastEditorScrollLeft) >= 1){
+                    lastEditorScrollLeft = editorLeft;
+                    syncPreviewHorizontalFromEditor();
+                }
+
                 lastScrollDriver = 'editor';
                 schedulePreviewFromEditor();
             });
 
-            // Preview scrolling is fully independent. Each manual preview scroll
-            // becomes the new visual anchor. The editor never moves, and the next
-            // editor scroll continues the preview from this chosen position.
+            // Horizontal preview scrolling moves the editor to the same relative
+            // position. Vertical preview scrolling remains independent and sets
+            // the anchor used by later editor-driven vertical synchronisation.
             preview.addEventListener('scroll', function(){
+                var previewLeft = preview.scrollLeft || 0;
+                if(!suppressPreviewHorizontalSync && Math.abs(previewLeft - lastPreviewScrollLeft) >= 1){
+                    lastPreviewScrollLeft = previewLeft;
+                    syncEditorHorizontalFromPreview();
+                }
+
                 if(syncNowMilliseconds() < suppressPreviewScrollUntil){
                     return;
                 }

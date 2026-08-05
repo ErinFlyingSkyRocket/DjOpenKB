@@ -69,10 +69,17 @@ class ArticleContentLayoutTests(SimpleTestCase):
 
         self.assertIn(".article-detail-page-shell", css)
         self.assertIn(".article-detail-sidebar", css)
-        self.assertIn("flex: 0 0 300px", css)
+        self.assertIn("flex: 0 0 280px", css)
         self.assertIn(".article-preview-canvas", css)
-        self.assertIn("width: calc(100vw - 390px)", css)
+        self.assertIn("--article-shared-canvas-width: 1180px", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-scroll", css)
+        self.assertIn(".article-editor-page-shell .CodeMirror-sizer", css)
+
+        javascript = (
+            self.base_dir / "website" / "static" / "javascripts" / "openKB.js"
+        ).read_text(encoding="utf-8")
+        self.assertIn("syncPreviewHorizontalFromEditor", javascript)
+        self.assertIn("syncEditorHorizontalFromPreview", javascript)
 
     def test_preview_has_no_preview_only_image_height_cap(self):
         for template_name in ("suggest.html", "suggest_edit.html"):

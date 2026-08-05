@@ -106,19 +106,24 @@
 }
 
 /*
- * Wide desktop article and editor workspaces.
+ * Shared article canvas width.
  *
- * The published article uses nearly the full browser width. The related
- * article panel keeps a stable readable width while the article itself takes
- * all remaining space. Create/edit pages use the same wide outer shell.
+ * The published article, live preview, and Markdown source canvas all use the
+ * same desktop width. This keeps rendered line wrapping consistent between
+ * preview and publication while allowing the half-width editor panes to move
+ * across the canvas with horizontal scrollbars.
  */
+:root {
+    --article-shared-canvas-width: 1180px;
+}
+
 .article-detail-page-shell,
 .article-editor-page-shell {
     float: none;
     width: 100%;
     max-width: none;
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 16px;
+    padding-left: 16px;
 }
 
 .article-detail-layout {
@@ -135,27 +140,40 @@
     .article-detail-layout {
         display: flex;
         align-items: flex-start;
-        gap: 28px;
+        gap: 24px;
     }
 
     .article-detail-sidebar {
         float: none;
-        flex: 0 0 300px;
-        width: 300px;
+        flex: 0 0 280px;
+        width: 280px;
         padding-right: 0;
         padding-left: 0;
     }
 
     .article-detail-main {
         float: none;
-        flex: 1 1 auto;
-        width: auto;
+        flex: 0 1 var(--article-shared-canvas-width);
+        width: var(--article-shared-canvas-width);
+        max-width: var(--article-shared-canvas-width);
         padding-right: 0;
         padding-left: 0;
     }
 
     .article-detail-panel {
         width: 100%;
+    }
+
+    /* Both editor panes expose the same fixed-width article canvas. */
+    .article-preview-canvas {
+        box-sizing: border-box;
+        width: var(--article-shared-canvas-width);
+        min-width: var(--article-shared-canvas-width);
+        max-width: none;
+    }
+
+    .article-editor-page-shell .CodeMirror-sizer {
+        min-width: var(--article-shared-canvas-width) !important;
     }
 }
 
@@ -165,26 +183,13 @@
         padding-right: 15px;
         padding-left: 15px;
     }
-}
 
-/*
- * The preview canvas approximates the width available to a published article
- * after the related-article sidebar is deducted. It therefore scrolls left
- * and right inside the half-width editor preview instead of shrinking the
- * rendered page to the preview column.
- */
-.article-preview-canvas {
-    box-sizing: border-box;
-    min-width: 100%;
-}
-
-@media (min-width: 992px) {
     .article-preview-canvas {
-        width: calc(100vw - 390px);
+        width: 100%;
+        min-width: 100%;
     }
 }
 
-/* Allow genuine left/right navigation in both editor panes. */
 .article-editor-page-shell .suggest-preview {
     overflow-x: auto;
     overflow-y: auto;
