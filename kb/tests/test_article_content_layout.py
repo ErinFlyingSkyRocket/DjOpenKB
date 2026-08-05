@@ -73,6 +73,8 @@ class ArticleContentLayoutTests(SimpleTestCase):
         self.assertIn(".article-preview-canvas", css)
         self.assertIn("--article-canvas-max-width: 1480px", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-scroll", css)
+        self.assertIn("overflow: scroll !important", css)
+        self.assertNotIn("overflow-x: auto !important", css)
         self.assertIn(".article-editor-page-shell .CodeMirror-sizer", css)
         self.assertIn("margin-left: auto", css)
         self.assertIn("white-space: pre-wrap", css)

@@ -238,9 +238,14 @@
     padding: 0;
 }
 
+/*
+ * Keep CodeMirror's own single horizontal scrollbar. Do not override the
+ * internal scrolling element with overflow-x:auto: CodeMirror already renders
+ * a dedicated .CodeMirror-hscrollbar, and exposing the native scroller as well
+ * creates two horizontal bars.
+ */
 .article-editor-page-shell .CodeMirror-scroll {
-    overflow-x: auto !important;
-    overflow-y: auto !important;
+    overflow: scroll !important;
 }
 
 /*
