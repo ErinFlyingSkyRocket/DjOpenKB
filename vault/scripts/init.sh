@@ -5,7 +5,7 @@
 #   Waits for Vault, performs first-time initialisation/unsealing when required,
 #   enables KV v2, safely seeds or updates secret/djopenkb from the temporary
 #   vault/bootstrap/djopenkb.env file, writes the app policy, and creates the
-#   read-only app token used by Django, Celery, and the scheduler.
+#   long-lived static read-only app token used by Django, Celery, and the scheduler.
 #
 # Normal server usage:
 #   cd /opt/DjOpenKB
@@ -31,56 +31,171 @@ INIT_FILE="$KEY_DIR/vault-init.txt"
 ROOT_TOKEN_FILE="$KEY_DIR/root-token.txt"
 APP_TOKEN_FILE="$KEY_DIR/djopenkb-app-token.txt"
 APP_TOKEN_ACCESSOR_FILE="$KEY_DIR/djopenkb-app-token-accessor.txt"
-APP_TOKEN_PERIOD="${VAULT_APP_TOKEN_PERIOD:-24h}"
+APP_TOKEN_STATIC_MARKER_FILE="$KEY_DIR/djopenkb-app-token-static.txt"
+PENDING_REVOCATIONS_FILE="$KEY_DIR/pending-token-revocations.txt"
 BOOTSTRAP_FILE="/vault/bootstrap/djopenkb.env"
 POLICY_FILE="/vault/config/djopenkb-policy.hcl"
+# This intentionally restores the original long-lived/static application-token
+# model. Vault may cap the requested TTL according to its server configuration,
+# but DjOpenKB will not renew or rotate a valid token automatically.
+APP_TOKEN_TTL="87600h"
 
 mkdir -p "$KEY_DIR"
 chmod 700 "$KEY_DIR" || true
 
 log() { echo "[vault-init] $*"; }
 
-write_app_token_files() {
-  token="$1"
-  accessor="$2"
-  printf '%s\n' "$token" > "$APP_TOKEN_FILE"
-  printf '%s\n' "$accessor" > "$APP_TOKEN_ACCESSOR_FILE"
-  # The application services need the token, but only Vault maintenance
-  # services need the accessor used for revocation.
+set_app_token_permissions() {
   chown 0:10001 "$APP_TOKEN_FILE" || true
   chmod 0440 "$APP_TOKEN_FILE" || true
-  chown 0:0 "$APP_TOKEN_ACCESSOR_FILE" || true
-  chmod 0600 "$APP_TOKEN_ACCESSOR_FILE" || true
+  if [ -s "$APP_TOKEN_ACCESSOR_FILE" ]; then
+    chown 0:0 "$APP_TOKEN_ACCESSOR_FILE" || true
+    chmod 0600 "$APP_TOKEN_ACCESSOR_FILE" || true
+  fi
+  if [ -s "$APP_TOKEN_STATIC_MARKER_FILE" ]; then
+    chown 0:0 "$APP_TOKEN_STATIC_MARKER_FILE" || true
+    chmod 0600 "$APP_TOKEN_STATIC_MARKER_FILE" || true
+  fi
+  if [ -s "$PENDING_REVOCATIONS_FILE" ]; then
+    chown 0:0 "$PENDING_REVOCATIONS_FILE" || true
+    chmod 0600 "$PENDING_REVOCATIONS_FILE" || true
+  fi
 }
 
-issue_rotated_app_token() {
+queue_accessor_for_revocation() {
+  accessor="$1"
+  [ -n "$accessor" ] || return 0
+  touch "$PENDING_REVOCATIONS_FILE"
+  chmod 0600 "$PENDING_REVOCATIONS_FILE" || true
+  if ! grep -Fqx "$accessor" "$PENDING_REVOCATIONS_FILE" 2>/dev/null; then
+    printf '%s\n' "$accessor" >> "$PENDING_REVOCATIONS_FILE"
+  fi
+}
+
+process_pending_revocations() {
+  [ -s "$PENDING_REVOCATIONS_FILE" ] || return 0
+
+  pending_tmp="$PENDING_REVOCATIONS_FILE.tmp.$$"
+  current_accessor="$(cat "$APP_TOKEN_ACCESSOR_FILE" 2>/dev/null || true)"
+  : > "$pending_tmp"
+  while IFS= read -r accessor; do
+    [ -n "$accessor" ] || continue
+    if [ -n "$current_accessor" ] && [ "$accessor" = "$current_accessor" ]; then
+      log "WARNING: Refusing to revoke the accessor belonging to the current static application token." >&2
+      continue
+    fi
+    if vault token revoke -accessor "$accessor" >/dev/null 2>&1; then
+      log "Revoked a previously replaced application-token accessor."
+    else
+      printf '%s\n' "$accessor" >> "$pending_tmp"
+      log "WARNING: Could not revoke one previous token accessor; it remains queued for a later vault-init run." >&2
+    fi
+  done < "$PENDING_REVOCATIONS_FILE"
+
+  if [ -s "$pending_tmp" ]; then
+    cat "$pending_tmp" > "$PENDING_REVOCATIONS_FILE"
+    chmod 0600 "$PENDING_REVOCATIONS_FILE" || true
+  else
+    rm -f "$PENDING_REVOCATIONS_FILE"
+  fi
+  rm -f "$pending_tmp"
+}
+
+app_token_is_valid() {
+  [ -s "$APP_TOKEN_FILE" ] || return 1
+  token="$(cat "$APP_TOKEN_FILE")"
+  [ -n "$token" ] || return 1
+  vault token lookup "$token" >/dev/null 2>&1
+}
+
+record_current_accessor() {
+  token="$1"
+  accessor="$(vault token lookup -field=accessor "$token" 2>/dev/null || true)"
+  if [ -n "$accessor" ]; then
+    printf '%s\n' "$accessor" > "$APP_TOKEN_ACCESSOR_FILE"
+  fi
+}
+
+write_static_app_token() {
+  token="$1"
+  accessor="$2"
+
+  # Preserve the existing file inode because application containers use a
+  # single-file bind mount. Replacing the inode after containers are created can
+  # leave them reading an older mounted file.
+  printf '%s\n' "$token" > "$APP_TOKEN_FILE"
+  printf '%s\n' "$accessor" > "$APP_TOKEN_ACCESSOR_FILE"
+  printf '%s\n' 'static-v1' > "$APP_TOKEN_STATIC_MARKER_FILE"
+  set_app_token_permissions
+}
+
+create_static_app_token() {
   old_token=""
   old_accessor=""
-  [ -s "$APP_TOKEN_FILE" ] && old_token="$(cat "$APP_TOKEN_FILE")"
-  [ -s "$APP_TOKEN_ACCESSOR_FILE" ] && old_accessor="$(cat "$APP_TOKEN_ACCESSOR_FILE")"
+  old_token_valid=false
 
-  log "Issuing a renewable periodic read-only application token ..."
-  new_token="$(
-    vault token create -policy=djopenkb-app -orphan -period="$APP_TOKEN_PERIOD" -field=token 2>/dev/null \
-      || vault token create -policy=djopenkb-app -orphan -ttl="$APP_TOKEN_PERIOD" -renewable=true -field=token
-  )"
-  new_accessor="$(vault token lookup -field=accessor "$new_token")"
+  if app_token_is_valid; then
+    old_token_valid=true
+    old_token="$(cat "$APP_TOKEN_FILE")"
+    old_accessor="$(vault token lookup -field=accessor "$old_token" 2>/dev/null || true)"
+  fi
 
+  token_tmp="$KEY_DIR/.djopenkb-app-token.new.$$"
+  rm -f "$token_tmp"
+  log "Creating one long-lived static read-only application token ..."
+  if ! vault token create -policy=djopenkb-app -orphan -ttl="$APP_TOKEN_TTL" -field=token > "$token_tmp"; then
+    log "WARNING: Vault rejected the requested long TTL; retrying with Vault's configured default token TTL." >&2
+    if ! vault token create -policy=djopenkb-app -orphan -field=token > "$token_tmp"; then
+      rm -f "$token_tmp"
+      if [ "$old_token_valid" = true ]; then
+        log "WARNING: Static-token replacement failed, so the existing valid application token was preserved." >&2
+        set_app_token_permissions
+        return 0
+      fi
+      log "ERROR: Vault could not create an application token and no valid existing token is available." >&2
+      return 1
+    fi
+  fi
+
+  new_token="$(cat "$token_tmp")"
+  rm -f "$token_tmp"
+  new_accessor="$(vault token lookup -field=accessor "$new_token" 2>/dev/null || true)"
   if [ -z "$new_token" ] || [ -z "$new_accessor" ]; then
     [ -n "$new_token" ] && vault token revoke "$new_token" >/dev/null 2>&1 || true
+    if [ "$old_token_valid" = true ]; then
+      log "WARNING: Vault did not return complete metadata for the replacement token; preserving the existing valid token." >&2
+      set_app_token_permissions
+      return 0
+    fi
     log "ERROR: Vault did not return a usable application token and accessor." >&2
-    exit 1
+    return 1
   fi
 
-  write_app_token_files "$new_token" "$new_accessor"
-
-  # Revoke the previous credential only after the replacement is safely stored.
-  # The accessor is preferred because it cannot be used to read secrets.
   if [ -n "$old_accessor" ] && [ "$old_accessor" != "$new_accessor" ]; then
-    vault token revoke -accessor "$old_accessor" >/dev/null 2>&1 || true
-  elif [ -n "$old_token" ] && [ "$old_token" != "$new_token" ]; then
-    vault token revoke "$old_token" >/dev/null 2>&1 || true
+    queue_accessor_for_revocation "$old_accessor"
   fi
+
+  write_static_app_token "$new_token" "$new_accessor"
+  log "Static application token stored. Future vault-init runs will reuse it while it remains valid."
+  process_pending_revocations || true
+}
+
+ensure_static_app_token() {
+  if app_token_is_valid && [ "$(cat "$APP_TOKEN_STATIC_MARKER_FILE" 2>/dev/null || true)" = 'static-v1' ]; then
+    current_token="$(cat "$APP_TOKEN_FILE")"
+    record_current_accessor "$current_token"
+    set_app_token_permissions
+    log "Existing static application token is valid; reusing it without renewal or rotation."
+    process_pending_revocations || true
+    return 0
+  fi
+
+  if app_token_is_valid; then
+    log "Existing application token predates static-token mode; replacing it once with a static token."
+  else
+    log "Application token is missing or invalid; creating a static token."
+  fi
+  create_static_app_token
 }
 
 log "Waiting for Vault server at $VAULT_ADDR ..."
@@ -213,6 +328,6 @@ else
 fi
 
 vault policy write djopenkb-app "$POLICY_FILE" >/dev/null
-issue_rotated_app_token
+ensure_static_app_token
 
 log "Vault is ready for DjOpenKB."

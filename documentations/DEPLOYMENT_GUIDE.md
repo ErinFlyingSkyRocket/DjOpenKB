@@ -154,8 +154,6 @@ USE_SQLITE=false
 VAULT_KV_MOUNT=secret
 VAULT_SECRET_PATH=djopenkb
 VAULT_AUTO_UNSEAL_INTERVAL_SECONDS=15
-VAULT_APP_TOKEN_PERIOD=24h
-VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS=43200
 ```
 
 Use `hostname -I` to identify the Linux host IP address:
@@ -1262,7 +1260,7 @@ sudo docker compose logs --tail=120 vault-auto-unseal
 sudo docker compose logs --tail=160 vault-init
 ```
 
-### Check the renewable application token without printing it
+### Check the static application token without printing it
 
 The usable application token is readable by application group `10001`; its revocation accessor is root-only and is never mounted into application containers.
 
@@ -1281,7 +1279,7 @@ Expected permissions:
 0:0 600 vault/keys/djopenkb-app-token-accessor.txt
 ```
 
-The default token period is 24 hours. The maintenance service begins renewal when 43,200 seconds or less remain. If renewal fails or the token is invalid, it writes a replacement first and then revokes the previous credential, preferably by accessor. Recreating `vault-init` also performs a controlled rotation. Do not delete the accessor file during normal maintenance.
+`vault-init` requests the original long-lived `87600h` token TTL and reuses the resulting token on later starts while it remains valid. Vault may cap that TTL according to its server configuration. `vault-auto-unseal` does not renew or rotate the token. If the static token is ever missing or invalid, recreate the one-shot `vault-init` service so it can issue a replacement. Do not delete the accessor file during normal maintenance.
 
 ### Check secret metadata without printing secret values
 

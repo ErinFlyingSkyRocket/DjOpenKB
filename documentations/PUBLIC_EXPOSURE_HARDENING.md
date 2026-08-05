@@ -146,9 +146,9 @@ A healthy deployment shows `app-permissions-init` exiting successfully after pri
 sudo docker compose logs --tail=80 app-permissions-init
 ```
 
-## 5. Vault Application-Token Lifecycle and Permissions
+## 5. Static Vault Application Token and Permissions
 
-The Vault initialisation process issues a renewable read-only application token and stores it at:
+The Vault initialisation process creates one long-lived static read-only application token and stores it at:
 
 ```text
 vault/keys/djopenkb-app-token.txt
@@ -156,7 +156,7 @@ owner/group: 0:10001
 mode: 0440
 ```
 
-Only the application group can read the usable token. A separate revocation accessor is stored at:
+Only the application group can read the usable token. Its non-secret accessor is stored separately at:
 
 ```text
 vault/keys/djopenkb-app-token-accessor.txt
@@ -164,16 +164,13 @@ owner/group: 0:0
 mode: 0600
 ```
 
-The accessor is not mounted into Django, Celery, or scheduler containers. `vault-init` writes a replacement before revoking the previous token, while `vault-auto-unseal` renews the token before expiry and replaces/revokes it if validation or renewal fails. Startup ordering requires `vault-init` to complete before automatic maintenance begins.
+`vault-init` reuses the existing static token while Vault confirms that it is valid. It creates a replacement only when the token is missing, invalid, or when converting once from the earlier renewable-token mode. `vault-auto-unseal` now performs unsealing only; it does not renew or rotate the application token.
 
-Defaults:
+The token request uses the original long-lived TTL of `87600h`. Vault may cap that request according to its server lease configuration. The application therefore does not depend on the removed `VAULT_APP_TOKEN_PERIOD` or `VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS` settings.
 
-```env
-VAULT_APP_TOKEN_PERIOD=24h
-VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS=43200
-```
+If a replaced token cannot be revoked immediately, its accessor remains in the root-only `vault/keys/pending-token-revocations.txt` queue for a later `vault-init` retry. This cleanup failure does not discard the working replacement or block application startup.
 
-Verify both files without printing their contents:
+Verify the files without printing their contents:
 
 ```bash
 cd /opt/DjOpenKB
