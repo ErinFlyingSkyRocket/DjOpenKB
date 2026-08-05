@@ -30,6 +30,8 @@ KEY_DIR="/vault/keys"
 INIT_FILE="$KEY_DIR/vault-init.txt"
 ROOT_TOKEN_FILE="$KEY_DIR/root-token.txt"
 APP_TOKEN_FILE="$KEY_DIR/djopenkb-app-token.txt"
+APP_TOKEN_ACCESSOR_FILE="$KEY_DIR/djopenkb-app-token-accessor.txt"
+APP_TOKEN_PERIOD="${VAULT_APP_TOKEN_PERIOD:-24h}"
 BOOTSTRAP_FILE="/vault/bootstrap/djopenkb.env"
 POLICY_FILE="/vault/config/djopenkb-policy.hcl"
 
@@ -37,6 +39,49 @@ mkdir -p "$KEY_DIR"
 chmod 700 "$KEY_DIR" || true
 
 log() { echo "[vault-init] $*"; }
+
+write_app_token_files() {
+  token="$1"
+  accessor="$2"
+  printf '%s\n' "$token" > "$APP_TOKEN_FILE"
+  printf '%s\n' "$accessor" > "$APP_TOKEN_ACCESSOR_FILE"
+  # The application services need the token, but only Vault maintenance
+  # services need the accessor used for revocation.
+  chown 0:10001 "$APP_TOKEN_FILE" || true
+  chmod 0440 "$APP_TOKEN_FILE" || true
+  chown 0:0 "$APP_TOKEN_ACCESSOR_FILE" || true
+  chmod 0600 "$APP_TOKEN_ACCESSOR_FILE" || true
+}
+
+issue_rotated_app_token() {
+  old_token=""
+  old_accessor=""
+  [ -s "$APP_TOKEN_FILE" ] && old_token="$(cat "$APP_TOKEN_FILE")"
+  [ -s "$APP_TOKEN_ACCESSOR_FILE" ] && old_accessor="$(cat "$APP_TOKEN_ACCESSOR_FILE")"
+
+  log "Issuing a renewable periodic read-only application token ..."
+  new_token="$(
+    vault token create -policy=djopenkb-app -orphan -period="$APP_TOKEN_PERIOD" -field=token 2>/dev/null \
+      || vault token create -policy=djopenkb-app -orphan -ttl="$APP_TOKEN_PERIOD" -renewable=true -field=token
+  )"
+  new_accessor="$(vault token lookup -field=accessor "$new_token")"
+
+  if [ -z "$new_token" ] || [ -z "$new_accessor" ]; then
+    [ -n "$new_token" ] && vault token revoke "$new_token" >/dev/null 2>&1 || true
+    log "ERROR: Vault did not return a usable application token and accessor." >&2
+    exit 1
+  fi
+
+  write_app_token_files "$new_token" "$new_accessor"
+
+  # Revoke the previous credential only after the replacement is safely stored.
+  # The accessor is preferred because it cannot be used to read secrets.
+  if [ -n "$old_accessor" ] && [ "$old_accessor" != "$new_accessor" ]; then
+    vault token revoke -accessor "$old_accessor" >/dev/null 2>&1 || true
+  elif [ -n "$old_token" ] && [ "$old_token" != "$new_token" ]; then
+    vault token revoke "$old_token" >/dev/null 2>&1 || true
+  fi
+}
 
 log "Waiting for Vault server at $VAULT_ADDR ..."
 i=0
@@ -168,12 +213,6 @@ else
 fi
 
 vault policy write djopenkb-app "$POLICY_FILE" >/dev/null
-vault token create -policy=djopenkb-app -orphan -ttl=87600h -field=token > "$APP_TOKEN_FILE" \
-  || vault token create -policy=djopenkb-app -orphan -field=token > "$APP_TOKEN_FILE"
-# The Django, Celery, and scheduler containers run as UID/GID 10001.
-# Keep the token unreadable to unrelated host users, but permit that app group
-# to read the single bind-mounted token file.
-chown 0:10001 "$APP_TOKEN_FILE" || true
-chmod 0440 "$APP_TOKEN_FILE" || true
+issue_rotated_app_token
 
 log "Vault is ready for DjOpenKB."

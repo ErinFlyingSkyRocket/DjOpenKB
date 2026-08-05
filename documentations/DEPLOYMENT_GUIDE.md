@@ -154,6 +154,8 @@ USE_SQLITE=false
 VAULT_KV_MOUNT=secret
 VAULT_SECRET_PATH=djopenkb
 VAULT_AUTO_UNSEAL_INTERVAL_SECONDS=15
+VAULT_APP_TOKEN_PERIOD=24h
+VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS=43200
 ```
 
 Use `hostname -I` to identify the Linux host IP address:
@@ -902,8 +904,10 @@ sudo docker compose logs --tail=120 vault-auto-unseal
 sudo docker compose logs --tail=120 app-permissions-init
 sudo docker compose logs --tail=120 cleanup-scheduler
 
-# Confirm the unprivileged app group can read the Vault token without making it world-readable.
-sudo stat -c '%u:%g %a %n' vault/keys/djopenkb-app-token.txt
+# Confirm the application can read only the token and that its revocation accessor remains root-only.
+sudo stat -c '%u:%g %a %n' \
+  vault/keys/djopenkb-app-token.txt \
+  vault/keys/djopenkb-app-token-accessor.txt
 ```
 
 Follow a live service log:
@@ -1258,6 +1262,27 @@ sudo docker compose logs --tail=120 vault-auto-unseal
 sudo docker compose logs --tail=160 vault-init
 ```
 
+### Check the renewable application token without printing it
+
+The usable application token is readable by application group `10001`; its revocation accessor is root-only and is never mounted into application containers.
+
+```bash
+cd /opt/DjOpenKB
+sudo stat -c '%u:%g %a %n' \
+  vault/keys/djopenkb-app-token.txt \
+  vault/keys/djopenkb-app-token-accessor.txt
+sudo docker compose logs --tail=160 vault-init vault-auto-unseal
+```
+
+Expected permissions:
+
+```text
+0:10001 440 vault/keys/djopenkb-app-token.txt
+0:0 600 vault/keys/djopenkb-app-token-accessor.txt
+```
+
+The default token period is 24 hours. The maintenance service begins renewal when 43,200 seconds or less remain. If renewal fails or the token is invalid, it writes a replacement first and then revokes the previous credential, preferably by accessor. Recreating `vault-init` also performs a controlled rotation. Do not delete the accessor file during normal maintenance.
+
 ### Check secret metadata without printing secret values
 
 The root token file is a break-glass administrator credential. Keep its filesystem permissions restrictive and do not paste its contents into tickets or terminals shared with others.
@@ -1407,6 +1432,8 @@ sudo docker compose logs --tail=100 ai-worker
 
 The `web` service automatically runs Django migrations, the knowledge-base schema repair, and `collectstatic` before Gunicorn starts. Therefore, do **not** run `migrate` or `collectstatic` separately after every normal `git pull`.
 
+Migration `0011_security_hardening_title_and_upload_quotas` adds persistent per-user pending-image quotas and the database normalised-title uniqueness key. It intentionally stops if existing titles become identical after trimming whitespace, collapsing repeated spaces, and case-folding. Rename the reported conflicts, then recreate/restart `web` so the migration can run again; do not bypass the uniqueness constraint.
+
 The local runtime files below are ignored by Git and are not normally modified or deleted by `git pull`:
 
 ```text
@@ -1438,6 +1465,10 @@ sudo docker compose exec web python manage.py sync_openkb_ai --scope all
 # Perform a deployment-security health check after an important configuration,
 # authentication, infrastructure, or dependency update.
 sudo docker compose exec web python manage.py check --deploy
+
+# Verify exact direct Python/build pins, patch-level container tags, and the
+# offline final-stage wheel installation rule.
+python scripts/verify_supply_chain_pins.py
 ```
 
 For a documentation-only Git update, no Docker command is required. For a deliberately small template/Python update where no dependency, Docker, Compose, Nginx, or migration-related file changed, this quicker restart is also sufficient:

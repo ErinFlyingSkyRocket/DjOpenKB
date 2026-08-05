@@ -22,6 +22,7 @@ from django.core.cache import cache
 from django.utils import translation
 from django.utils.translation import gettext as _
 
+from ..cache_locks import acquire_distributed_lock, release_distributed_lock
 from ..crypto import decrypt_value, encrypt_value
 from ..permissions import user_can_view_articles, user_can_view_internal_articles
 from .services import user_can_access_main_site
@@ -92,7 +93,7 @@ def _acquire_job_update_lock(job_id: str) -> str | None:
     deadline = _now() + JOB_LOCK_WAIT_SECONDS
     lock_key = _job_lock_key(job_id)
     while _now() < deadline:
-        if cache.add(lock_key, token, timeout=JOB_LOCK_TIMEOUT_SECONDS):
+        if acquire_distributed_lock(lock_key, token, JOB_LOCK_TIMEOUT_SECONDS):
             return token
         time.sleep(0.025)
     return None
@@ -103,8 +104,7 @@ def _release_job_update_lock(job_id: str, token: str | None) -> None:
         return
     lock_key = _job_lock_key(job_id)
     try:
-        if cache.get(lock_key) == token:
-            cache.delete(lock_key)
+        release_distributed_lock(lock_key, token)
     except Exception:
         logger.exception("Failed to release OpenKB AI job update lock: job_id=%s", job_id)
 

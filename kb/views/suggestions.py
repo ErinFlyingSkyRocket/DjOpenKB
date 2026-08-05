@@ -12,6 +12,7 @@ from ..notifications import (
 from collections import Counter
 import json
 import re
+from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 from urllib.parse import quote
 
@@ -286,7 +287,27 @@ def _suggest_unified(request):
         if visibility == SuggestedArticle.Visibility.INTERNAL
         else f"raw/{filename}"
     )
-    article.save()
+    try:
+        with transaction.atomic():
+            article.full_clean()
+            article.save()
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_suggest_form({
+            "error": message,
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "existing_images_json": draft_images_json,
+        })
+    except IntegrityError:
+        return render_suggest_form({
+            "error": duplicate_title_error_message(title),
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+            "existing_images_json": draft_images_json,
+        })
     write_article_files(article)
     sync_article_image_assets(article, old_assets=[])
     clear_committed_pending_uploads(request, article.image_assets)
@@ -768,7 +789,6 @@ def edit_suggestion(request, article_id):
     if visibility_changed:
         if not user_can_change_article_visibility(request.user, article):
             raise Http404("Article visibility not allowed")
-        delete_article_markdown_files(article)
         article.visibility = requested_visibility
 
     write_public_files = True
@@ -887,7 +907,28 @@ def edit_suggestion(request, article_id):
             article.approved_by = None
             article.approved_at = None
 
-    article.save()
+    try:
+        with transaction.atomic():
+            article.full_clean()
+            article.save()
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_edit_form({
+            **error_context,
+            "error": message,
+            "is_pending_update_review": is_admin_pending_update_review,
+        })
+    except IntegrityError:
+        return render_edit_form({
+            **error_context,
+            "error": duplicate_title_error_message(title),
+            "is_pending_update_review": is_admin_pending_update_review,
+        })
+    if visibility_changed:
+        # Remove copies from the previous visibility tree only after database
+        # validation succeeds. A forged/duplicate update must never delete the
+        # currently published Markdown before the save is accepted.
+        delete_article_markdown_files(article)
     if write_public_files:
         write_article_files(article)
         sync_article_image_assets(article, old_assets=old_image_assets)
@@ -1110,24 +1151,25 @@ def validate_article_video_link(request):
 @article_image_editor_required
 @require_POST
 def upload_article_image(request):
-    """Upload a small pasted image for use inside Markdown articles.
-
-    The endpoint is intentionally login-protected because only logged-in users
-    can create/edit suggestions. The returned Markdown can be inserted directly
-    into the editor, for example: ![image](/wiki/uploads/abc.png)
-    """
+    """Upload a validated article image with database-backed user quotas."""
     uploaded_file = request.FILES.get("image")
 
     if not uploaded_file:
         return JsonResponse({"error": _("No image file received.")}, status=400)
 
-    upload_limit = get_article_image_upload_limit()
+    article_limit = get_article_image_upload_limit()
     pending_uploads = request.session.get("pending_article_uploads", [])
-    active_pending_uploads = list(dict.fromkeys(safe_uploaded_filename(item) for item in pending_uploads if safe_uploaded_filename(item)))
-    if upload_limit <= 0:
-        return JsonResponse({"error": article_image_limit_error_message(limit=upload_limit)}, status=403)
-    if len(active_pending_uploads) >= upload_limit:
-        return JsonResponse({"error": article_image_limit_error_message(limit=upload_limit)}, status=400)
+    active_pending_uploads = list(dict.fromkeys(
+        safe_uploaded_filename(item)
+        for item in pending_uploads
+        if safe_uploaded_filename(item)
+    ))
+    if article_limit <= 0:
+        return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=403)
+    # This session check is an editor convenience only. The authoritative abuse
+    # control below is database-backed and applies across browsers/sessions.
+    if len(active_pending_uploads) >= article_limit:
+        return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
 
     try:
         image_info = validate_article_image_upload(uploaded_file)
@@ -1136,25 +1178,50 @@ def upload_article_image(request):
         return JsonResponse({"error": message}, status=400)
 
     extension = image_info["extension"]
-
+    upload_size = max(0, int(getattr(uploaded_file, "size", 0) or 0))
+    count_limit, byte_limit = get_pending_image_upload_limits()
     upload_dir = get_openkb_uploads_dir()
     timestamp = timezone.localtime(timezone.now()).strftime("%Y%m%d-%H%M%S")
     filename = f"{timestamp}-{uuid.uuid4().hex[:12]}{extension}"
     file_path = upload_dir / filename
+    image_log = None
 
-    with file_path.open("wb") as destination:
-        for chunk in uploaded_file.chunks():
-            destination.write(chunk)
+    try:
+        with transaction.atomic():
+            # Serialize quota calculation and upload creation for the same user,
+            # preventing simultaneous requests from racing past the limit.
+            get_user_model().objects.select_for_update().get(pk=request.user.pk)
+            usage = get_user_pending_image_upload_usage(request.user)
+            if usage["count"] >= count_limit or usage["bytes"] + upload_size > byte_limit:
+                return JsonResponse(
+                    {"error": pending_image_upload_quota_error_message(
+                        count_limit=count_limit,
+                        byte_limit=byte_limit,
+                    )},
+                    status=400,
+                )
 
-    image_log = ArticleImageUploadLog.objects.create(
-        filename=filename,
-        original_name=(uploaded_file.name or "")[:255],
-        content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
-        size_bytes=getattr(uploaded_file, "size", 0) or 0,
-        uploaded_by=request.user,
-        upload_ip_address=get_client_ip(request),
-        upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
-    )
+            with file_path.open("wb") as destination:
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+
+            image_log = ArticleImageUploadLog.objects.create(
+                filename=filename,
+                original_name=(uploaded_file.name or "")[:255],
+                content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
+                size_bytes=upload_size,
+                uploaded_by=request.user,
+                upload_ip_address=get_client_ip(request),
+                upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
+            )
+    except Exception:
+        if file_path.exists():
+            try:
+                file_path.unlink()
+            except OSError:
+                pass
+        raise
+
     log_activity(
         request,
         ActivityLog.EventType.IMAGE_UPLOADED,
@@ -1166,10 +1233,9 @@ def upload_article_image(request):
         },
     )
 
-    pending_uploads = active_pending_uploads
-    if filename not in pending_uploads:
-        pending_uploads.append(filename)
-    request.session["pending_article_uploads"] = pending_uploads[-upload_limit:]
+    if filename not in active_pending_uploads:
+        active_pending_uploads.append(filename)
+    request.session["pending_article_uploads"] = active_pending_uploads[-article_limit:]
     request.session.modified = True
 
     image_url = f"/wiki/uploads/{filename}"
@@ -1183,11 +1249,12 @@ def upload_article_image(request):
 @article_image_editor_required
 @require_POST
 def delete_article_image(request):
-    """Delete a pasted image that was uploaded during the current editing session.
+    """Delete an uncommitted image owned by the signed-in uploader.
 
-    This endpoint is used by the editor's image preview tray. It only deletes
-    filenames stored in the current session's pending upload list, so a user
-    cannot delete arbitrary article images by guessing a filename.
+    Ownership is checked against the append-only upload record and current
+    article references, not only browser session data. This lets a user clean up
+    their own pending image from another session without permitting deletion of
+    images committed to an article or uploaded by someone else.
     """
     filename = (request.POST.get("filename") or "").strip()
     if not filename:
@@ -1201,8 +1268,8 @@ def delete_article_image(request):
         return JsonResponse({"error": _("Invalid image filename.")}, status=400)
 
     pending_uploads = request.session.get("pending_article_uploads", [])
-    if filename not in pending_uploads:
-        return JsonResponse({"error": _("This image is not removable from this editing session.")}, status=403)
+    if not user_owns_pending_article_image(request.user, filename):
+        return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
 
     upload_dir = get_openkb_uploads_dir().resolve()
     file_path = (upload_dir / filename).resolve()
@@ -1298,8 +1365,7 @@ def serve_article_image(request, filename):
                 break
 
     if not allowed and not has_reference:
-        pending_uploads = request.session.get("pending_article_uploads", [])
-        allowed = filename in pending_uploads
+        allowed = user_owns_pending_article_image(request.user, filename)
 
     if not allowed:
         raise Http404("Image not found")

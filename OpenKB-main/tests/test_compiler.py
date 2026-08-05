@@ -1146,3 +1146,11 @@ class TestBriefIntegration:
         index_text = (wiki / "index.md").read_text()
         assert "— A paper about transformers" in index_text
         assert "— NN architecture using self-attention" in index_text
+
+
+def test_compiler_system_prompt_marks_source_content_untrusted():
+    from openkb.agent.compiler import _SYSTEM_TEMPLATE, _SUMMARY_USER, _LONG_DOC_SUMMARY_USER
+
+    assert "untrusted data" in _SYSTEM_TEMPLATE.lower()
+    assert "BEGIN UNTRUSTED SOURCE DOCUMENT" in _SUMMARY_USER
+    assert "BEGIN UNTRUSTED SOURCE DOCUMENT" in _LONG_DOC_SUMMARY_USER

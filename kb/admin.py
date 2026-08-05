@@ -261,6 +261,8 @@ def _apply_admin_translation_labels():
             "stray_upload_cleanup_min_age_minutes": "Stray upload cleanup minimum age (minutes)",
             "article_deletion_queue_retention_days": "Article deletion queue retention (days)",
             "article_image_upload_limit": "Article image upload limit",
+            "pending_image_upload_limit_per_user": "Pending image uploads per user",
+            "pending_image_upload_byte_limit_mb_per_user": "Pending image upload storage per user (MB)",
             "article_video_max_width_px": "Article video maximum width (px)",
             "article_body_character_limit": "Article body character limit",
             "auth_activity_log_retention_days": "Authentication activity log retention (days)",
@@ -297,6 +299,8 @@ def _apply_admin_translation_labels():
         (SiteSetting, "stray_upload_cleanup_min_age_minutes"): "Files newer than this many minutes are ignored by the stray upload cleanup tool. Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. Set to 0 to detect/delete stray uploads immediately.",
         (SiteSetting, "article_deletion_queue_retention_days"): "How long deleted published articles remain recoverable in My Profile → Admin tools → Deletion queue before permanent deletion. Default is 7 days. Set to 0 to permanently delete published articles immediately after MFA confirmation.",
         (SiteSetting, "article_image_upload_limit"): "Maximum number of pasted/uploaded images allowed per article, including draft, pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads.",
+        (SiteSetting, "pending_image_upload_limit_per_user"): "Maximum number of uncommitted article images one user may keep across all browsers and sessions. Default is 100. Allowed range: 1 to 1000.",
+        (SiteSetting, "pending_image_upload_byte_limit_mb_per_user"): "Maximum combined storage for one user’s uncommitted article images across all browsers and sessions. Default is 100 MB. Allowed range: 1 to 2048 MB.",
         (SiteSetting, "article_video_max_width_px"): "Maximum display width for article video players in pixels. Videos remain responsive and keep a 16:9 ratio on smaller screens. Default is 720 px. Allowed range: 160 to 1920 px.",
         (SiteSetting, "article_body_character_limit"): "Maximum number of characters allowed in an article body or pending article update. Recommended default is 100000. Allowed range: 1000 to 2000000.",
         (SiteSetting, "auth_activity_log_retention_days"): "Authentication/MFA monitoring logs older than this many days can be deleted by the cleanup command. Use 0 to keep authentication activity logs indefinitely.",
@@ -2810,6 +2814,8 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
             "fields": (
                 "articles_per_page",
                 "article_image_upload_limit",
+                "pending_image_upload_limit_per_user",
+                "pending_image_upload_byte_limit_mb_per_user",
                 "article_video_max_width_px",
                 "article_keyword_limit",
                 "article_body_character_limit",
@@ -2819,6 +2825,7 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "how many pasted/uploaded images each article may contain, the maximum displayed width of article videos, "
                 "how many keywords each article may contain, and the maximum article body length. "
                 "Articles per page defaults to 10. Image upload limit defaults to 50; set it to 0 to disable article image uploads. "
+                "Pending uploads are also limited persistently per user to 100 files and 100 MB across all browsers and sessions. "
                 "Article video width defaults to 720 px and remains responsive on smaller screens. "
                 "The article keyword limit defaults to 20. The article body limit defaults to 100000 characters."
             ),

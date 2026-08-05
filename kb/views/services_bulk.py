@@ -3,8 +3,10 @@
 This module is imported back by services.py so existing imports continue to work.
 """
 
+from django.db import IntegrityError, transaction
 from django.utils.translation import gettext as _
 
+from ..models import ARTICLE_REVIEW_HISTORY_MAX_ENTRIES, ARTICLE_REVIEW_NOTES_MAX_LENGTH
 from .services import *  # noqa: F401,F403
 
 def make_unique_article_filename(title, original_filename=""):
@@ -125,6 +127,410 @@ BULK_IMPORT_MAX_TOTAL_MEMBERS = 5000
 BULK_IMPORT_MAX_PART_ARCHIVES = 20
 BULK_IMPORT_MAX_NESTING_DEPTH = 1
 BULK_IMPORT_MAX_MANIFEST_BYTES = 5 * 1024 * 1024
+BULK_IMPORT_MAX_ARTICLES = 2000
+BULK_IMPORT_MAX_STRING_FIELD_BYTES = 2 * 1024 * 1024
+
+_BULK_ARTICLE_ALLOWED_FIELDS = {
+    "title", "body", "keywords", "keyword", "keyword_list", "tags",
+    "visibility", "status", "filename", "raw_path", "wiki_path",
+    "image_assets", "update_status", "pending_update_title",
+    "pending_update_body", "pending_update_keywords",
+    "pending_update_keyword", "pending_update_keyword_list",
+    "pending_update_tags", "pending_update_image_assets", "review_notes",
+    "review_notes_history", "created_at", "updated_at", "published_at",
+    "author_username", "author_email",
+}
+_BULK_STANDARD_MANIFEST_ALLOWED_FIELDS = {
+    "format", "exported_at", "article_count", "articles", "uploads",
+    "part_number", "part_count",
+}
+_BULK_SPLIT_MANIFEST_ALLOWED_FIELDS = {
+    "format", "exported_at", "part_count", "part_size_target_bytes", "parts",
+}
+_BULK_SPLIT_PART_ALLOWED_FIELDS = {
+    "filename", "size_bytes", "article_count", "upload_count",
+}
+
+
+def _require_manifest_mapping(value, label):
+    if not isinstance(value, dict):
+        raise ValueError(_("%(label)s must be a JSON object.") % {"label": label})
+    return value
+
+
+def _require_manifest_string(
+    value,
+    field,
+    *,
+    required=False,
+    min_length=None,
+    max_length=None,
+):
+    if value is None:
+        value = ""
+    if not isinstance(value, str):
+        raise ValueError(_("Import field %(field)s must be text.") % {"field": field})
+    if len(value.encode("utf-8")) > BULK_IMPORT_MAX_STRING_FIELD_BYTES:
+        raise ValueError(_("Import field %(field)s is too large.") % {"field": field})
+    value = value.strip() if field in {"title", "pending_update_title", "review_notes", "filename"} else value
+    comparable_value = value.strip()
+    if required and not comparable_value:
+        raise ValueError(_("Import field %(field)s is required.") % {"field": field})
+    if min_length is not None and comparable_value and len(comparable_value) < min_length:
+        raise ValueError(
+            _("Import field %(field)s must contain at least %(limit)s characters.")
+            % {"field": field, "limit": min_length}
+        )
+    if max_length is not None and len(value) > max_length:
+        raise ValueError(
+            _("Import field %(field)s cannot exceed %(limit)s characters.")
+            % {"field": field, "limit": max_length}
+        )
+    return value
+
+
+def _get_strict_import_keyword_value(item, *names):
+    """Accept only JSON text or a list of text for keyword aliases."""
+    for name in names:
+        if name not in item or item.get(name) in (None, ""):
+            continue
+        value = item.get(name)
+        if isinstance(value, str):
+            return normalize_import_keywords(value)
+        if isinstance(value, list):
+            if len(value) > 100 or any(
+                not isinstance(entry, str) or len(entry) > 500
+                for entry in value
+            ):
+                raise ValueError(_("Import field %(field)s contains invalid keywords.") % {"field": name})
+            return normalize_import_keywords(value)
+        raise ValueError(_("Import field %(field)s must be text or a list of text.") % {"field": name})
+    return ""
+
+
+def _require_manifest_integer(
+    value,
+    field,
+    *,
+    required=False,
+    minimum=None,
+    maximum=None,
+):
+    if value is None:
+        if required:
+            raise ValueError(_("Import field %(field)s is required.") % {"field": field})
+        return None
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ValueError(_("Import field %(field)s must be an integer.") % {"field": field})
+    if minimum is not None and value < minimum:
+        raise ValueError(
+            _("Import field %(field)s must be at least %(minimum)s.")
+            % {"field": field, "minimum": minimum}
+        )
+    if maximum is not None and value > maximum:
+        raise ValueError(
+            _("Import field %(field)s cannot exceed %(maximum)s.")
+            % {"field": field, "maximum": maximum}
+        )
+    return value
+
+
+def _validate_import_image_list(value, field):
+    if value in (None, ""):
+        return []
+    if not isinstance(value, list):
+        raise ValueError(_("Import field %(field)s must be a list.") % {"field": field})
+    limit = get_article_image_upload_limit()
+    if len(value) > max(limit, 0):
+        raise ValueError(article_image_limit_error_message(len(value), limit))
+    result = []
+    for entry in value:
+        if not isinstance(entry, str) or len(entry) > 255:
+            raise ValueError(_("Import field %(field)s contains an invalid filename.") % {"field": field})
+        filename = safe_uploaded_filename(entry)
+        if not filename or filename != entry.strip():
+            raise ValueError(_("Import field %(field)s contains an unsafe filename.") % {"field": field})
+        if filename not in result:
+            result.append(filename)
+    return result
+
+
+def _validate_manifest_upload_list(value):
+    """Validate the standard manifest's declared upload inventory."""
+    if value in (None, ""):
+        return []
+    if not isinstance(value, list):
+        raise ValueError(_("Import manifest uploads must be a list."))
+    if len(value) > BULK_IMPORT_MAX_TOTAL_MEMBERS:
+        raise ValueError(_("Import manifest declares too many uploaded files."))
+    result = []
+    for entry in value:
+        if not isinstance(entry, str) or len(entry) > 255:
+            raise ValueError(_("Import manifest uploads contains an invalid filename."))
+        filename = safe_uploaded_filename(entry)
+        if not filename or filename != entry.strip():
+            raise ValueError(_("Import manifest uploads contains an unsafe filename."))
+        if filename not in result:
+            result.append(filename)
+    return result
+
+
+def _validate_review_history(value):
+    if value in (None, ""):
+        return []
+    if not isinstance(value, list):
+        raise ValueError(_("Review comment history must be a list."))
+    if len(value) > ARTICLE_REVIEW_HISTORY_MAX_ENTRIES:
+        raise ValueError(
+            _("Review comment history cannot contain more than %(limit)s entries.")
+            % {"limit": ARTICLE_REVIEW_HISTORY_MAX_ENTRIES}
+        )
+    allowed_keys = {"note", "action", "status", "reviewer", "reviewer_id", "created_at"}
+    cleaned = []
+    for index, entry in enumerate(value, start=1):
+        if not isinstance(entry, dict) or set(entry) - allowed_keys:
+            raise ValueError(
+                _("Review comment history entry %(index)s has an invalid structure.")
+                % {"index": index}
+            )
+        note = _require_manifest_string(entry.get("note"), "review_notes_history.note", required=True, max_length=ARTICLE_REVIEW_NOTES_MAX_LENGTH)
+        clean_entry = {"note": note}
+        for key, limit in (("action", 40), ("status", 20), ("reviewer", 255), ("created_at", 64)):
+            if key in entry and entry.get(key) is not None:
+                clean_entry[key] = _require_manifest_string(entry.get(key), f"review_notes_history.{key}", max_length=limit)
+        reviewer_id = entry.get("reviewer_id")
+        if reviewer_id is not None:
+            if not isinstance(reviewer_id, int) or isinstance(reviewer_id, bool) or reviewer_id < 1:
+                raise ValueError(
+                    _("Review comment history entry %(index)s has an invalid reviewer ID.")
+                    % {"index": index}
+                )
+            clean_entry["reviewer_id"] = reviewer_id
+        cleaned.append(clean_entry)
+    return cleaned
+
+
+def validate_bulk_manifest(manifest):
+    """Validate and normalize a standard export manifest before file copying."""
+    manifest = _require_manifest_mapping(manifest, _("Import manifest"))
+    unknown_manifest_fields = set(manifest) - _BULK_STANDARD_MANIFEST_ALLOWED_FIELDS
+    if unknown_manifest_fields:
+        raise ValueError(
+            _("Import manifest contains unsupported fields: %(fields)s")
+            % {"fields": ", ".join(sorted(unknown_manifest_fields))}
+        )
+    if manifest.get("format") != "djopenkb-bulk-export-v1":
+        raise ValueError(_("Unsupported import manifest format."))
+    _require_manifest_string(manifest.get("exported_at"), "exported_at", max_length=64)
+    _validate_manifest_upload_list(manifest.get("uploads"))
+    articles = manifest.get("articles")
+    if not isinstance(articles, list):
+        raise ValueError(_("Import manifest articles must be a list."))
+    if not articles or len(articles) > BULK_IMPORT_MAX_ARTICLES:
+        raise ValueError(
+            _("Import manifest must contain between 1 and %(limit)s articles.")
+            % {"limit": BULK_IMPORT_MAX_ARTICLES}
+        )
+    declared_count = _require_manifest_integer(
+        manifest.get("article_count"),
+        "article_count",
+        minimum=1,
+        maximum=BULK_IMPORT_MAX_ARTICLES,
+    )
+    if declared_count is not None and declared_count != len(articles):
+        raise ValueError(_("Import manifest article_count does not match the articles list."))
+
+    part_number = _require_manifest_integer(
+        manifest.get("part_number"),
+        "part_number",
+        minimum=1,
+        maximum=BULK_IMPORT_MAX_PART_ARCHIVES,
+    )
+    part_count = _require_manifest_integer(
+        manifest.get("part_count"),
+        "part_count",
+        minimum=1,
+        maximum=BULK_IMPORT_MAX_PART_ARCHIVES,
+    )
+    if (part_number is None) != (part_count is None):
+        raise ValueError(_("Import manifest part_number and part_count must be provided together."))
+    if part_number is not None and part_number > part_count:
+        raise ValueError(_("Import manifest part_number cannot exceed part_count."))
+
+    cleaned_articles = []
+    status_values = {value for value, _label in SuggestedArticle.Status.choices}
+    update_values = {value for value, _label in SuggestedArticle.UpdateStatus.choices}
+    visibility_values = {value for value, _label in SuggestedArticle.Visibility.choices}
+
+    for index, raw_item in enumerate(articles, start=1):
+        item = _require_manifest_mapping(raw_item, _("Article %(index)s") % {"index": index})
+        unknown = set(item) - _BULK_ARTICLE_ALLOWED_FIELDS
+        if unknown:
+            raise ValueError(
+                _("Article %(index)s contains unsupported fields: %(fields)s")
+                % {"index": index, "fields": ", ".join(sorted(unknown))}
+            )
+
+        title = _require_manifest_string(
+            item.get("title"), "title", required=True, min_length=5, max_length=200
+        )
+        body = _require_manifest_string(item.get("body"), "body", required=True, min_length=5)
+        status = _require_manifest_string(item.get("status") or SuggestedArticle.Status.PUBLISHED, "status", required=True, max_length=20)
+        visibility = _require_manifest_string(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC, "visibility", required=True, max_length=20)
+        update_status = _require_manifest_string(item.get("update_status") or SuggestedArticle.UpdateStatus.NONE, "update_status", required=True, max_length=20)
+        if status not in status_values or status == SuggestedArticle.Status.DELETE_QUEUED:
+            raise ValueError(_("Article %(index)s has an unsupported workflow status.") % {"index": index})
+        if visibility not in visibility_values:
+            raise ValueError(_("Article %(index)s has an invalid visibility.") % {"index": index})
+        if update_status not in update_values:
+            raise ValueError(_("Article %(index)s has an invalid pending-update status.") % {"index": index})
+
+        pending_title = _require_manifest_string(
+            item.get("pending_update_title"),
+            "pending_update_title",
+            min_length=5,
+            max_length=200,
+        )
+        pending_body = _require_manifest_string(item.get("pending_update_body"), "pending_update_body")
+        pending_keywords = _get_strict_import_keyword_value(
+            item,
+            "pending_update_keywords",
+            "pending_update_keyword",
+            "pending_update_keyword_list",
+            "pending_update_tags",
+        )
+        pending_assets = _validate_import_image_list(item.get("pending_update_image_assets"), "pending_update_image_assets")
+        review_notes = _require_manifest_string(
+            item.get("review_notes"),
+            "review_notes",
+            max_length=ARTICLE_REVIEW_NOTES_MAX_LENGTH,
+        )
+        has_pending_update_content = any((pending_title, pending_body.strip(), pending_keywords, pending_assets))
+        if status != SuggestedArticle.Status.PUBLISHED:
+            if update_status != SuggestedArticle.UpdateStatus.NONE or has_pending_update_content:
+                raise ValueError(_("Only published articles may contain an unpublished or pending update."))
+        if (update_status != SuggestedArticle.UpdateStatus.NONE or has_pending_update_content) and (not pending_title or not pending_body.strip()):
+            raise ValueError(_("An unpublished or pending article update requires both a title and article body."))
+        if status == SuggestedArticle.Status.FAILED and not review_notes:
+            raise ValueError(_("A Pending failed article requires review comments."))
+        if update_status == SuggestedArticle.UpdateStatus.FAILED and not review_notes:
+            raise ValueError(_("A failed pending article update requires review comments."))
+
+        filename = _require_manifest_string(item.get("filename"), "filename", max_length=255)
+        if filename and (
+            safe_uploaded_filename(filename) != filename
+            or Path(filename).suffix.lower() != ".md"
+        ):
+            raise ValueError(_("Import field filename must be a safe Markdown filename."))
+
+        # Validate metadata fields even though ownership and timestamps are
+        # intentionally rebuilt locally rather than trusted from the archive.
+        for field_name, maximum in (
+            ("raw_path", 500),
+            ("wiki_path", 500),
+            ("created_at", 64),
+            ("updated_at", 64),
+            ("published_at", 64),
+            ("author_username", 150),
+            ("author_email", 254),
+        ):
+            _require_manifest_string(item.get(field_name), field_name, max_length=maximum)
+
+        cleaned_articles.append({
+            "title": title,
+            "body": body,
+            "keywords": _get_strict_import_keyword_value(item, "keywords", "keyword", "keyword_list", "tags"),
+            "status": status,
+            "visibility": visibility,
+            "filename": filename,
+            "image_assets": _validate_import_image_list(item.get("image_assets"), "image_assets"),
+            "update_status": update_status,
+            "pending_update_title": pending_title,
+            "pending_update_body": pending_body,
+            "pending_update_keywords": pending_keywords,
+            "pending_update_image_assets": pending_assets,
+            "review_notes": review_notes,
+            "review_notes_history": _validate_review_history(item.get("review_notes_history")),
+        })
+    return cleaned_articles
+
+
+def validate_split_manifest(manifest, safe_names):
+    manifest = _require_manifest_mapping(manifest, _("Split import manifest"))
+    unknown_manifest_fields = set(manifest) - _BULK_SPLIT_MANIFEST_ALLOWED_FIELDS
+    if unknown_manifest_fields:
+        raise ValueError(
+            _("Split import manifest contains unsupported fields: %(fields)s")
+            % {"fields": ", ".join(sorted(unknown_manifest_fields))}
+        )
+    if manifest.get("format") != "djopenkb-bulk-export-split-v1":
+        raise ValueError(_("Unsupported split import manifest format."))
+    _require_manifest_string(manifest.get("exported_at"), "exported_at", max_length=64)
+    _require_manifest_integer(
+        manifest.get("part_size_target_bytes"),
+        "part_size_target_bytes",
+        minimum=1,
+        maximum=BULK_IMPORT_MAX_UPLOAD_BYTES,
+    )
+    parts = manifest.get("parts")
+    if not isinstance(parts, list) or not parts:
+        raise ValueError(_("Split import manifest parts must be a non-empty list."))
+    if len(parts) > BULK_IMPORT_MAX_PART_ARCHIVES:
+        raise ValueError(_("Split import package contains too many part archives. Maximum allowed is 20 parts."))
+    declared_count = _require_manifest_integer(
+        manifest.get("part_count"),
+        "part_count",
+        minimum=1,
+        maximum=BULK_IMPORT_MAX_PART_ARCHIVES,
+    )
+    if declared_count is not None and declared_count != len(parts):
+        raise ValueError(_("Split import manifest part_count does not match the parts list."))
+    part_names = []
+    for index, part in enumerate(parts, start=1):
+        part = _require_manifest_mapping(part, _("Split part %(index)s") % {"index": index})
+        unknown_part_fields = set(part) - _BULK_SPLIT_PART_ALLOWED_FIELDS
+        if unknown_part_fields:
+            raise ValueError(
+                _("Split part %(index)s contains unsupported fields: %(fields)s")
+                % {"index": index, "fields": ", ".join(sorted(unknown_part_fields))}
+            )
+        filename = _require_manifest_string(part.get("filename"), "parts.filename", required=True, max_length=500)
+        _require_manifest_integer(
+            part.get("size_bytes"),
+            "parts.size_bytes",
+            minimum=0,
+            maximum=BULK_IMPORT_MAX_UPLOAD_BYTES,
+        )
+        _require_manifest_integer(
+            part.get("article_count"),
+            "parts.article_count",
+            minimum=0,
+            maximum=BULK_IMPORT_MAX_ARTICLES,
+        )
+        _require_manifest_integer(
+            part.get("upload_count"),
+            "parts.upload_count",
+            minimum=0,
+            maximum=BULK_IMPORT_MAX_TOTAL_MEMBERS,
+        )
+        safe_name = safe_zip_member_name(filename)
+        if not safe_name or safe_name != filename or not safe_name.lower().endswith(".zip"):
+            raise ValueError(_("Split import manifest contains an unsafe part filename."))
+        if safe_name not in safe_names:
+            raise ValueError(_("Split import part is missing from the package: %(filename)s") % {"filename": safe_name})
+        if safe_name in part_names:
+            raise ValueError(_("Split import manifest contains a duplicate part filename."))
+        part_names.append(safe_name)
+    return sorted(part_names)
+
+
+def _reject_duplicate_json_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(_("Import manifest contains a duplicate JSON field: %(field)s") % {"field": key})
+        result[key] = value
+    return result
 
 
 def _read_bulk_manifest(archive, manifest_name):
@@ -134,7 +540,15 @@ def _read_bulk_manifest(archive, manifest_name):
         data = manifest_file.read(BULK_IMPORT_MAX_MANIFEST_BYTES + 1)
     if len(data) > BULK_IMPORT_MAX_MANIFEST_BYTES:
         raise ValueError(_("Import manifest is too large. Maximum allowed size is 5 MB."))
-    return json.loads(data.decode("utf-8"))
+    try:
+        return json.loads(
+            data.decode("utf-8"),
+            object_pairs_hook=_reject_duplicate_json_keys,
+        )
+    except UnicodeDecodeError as error:
+        raise ValueError(_("Import manifest must use valid UTF-8 text.")) from error
+    except json.JSONDecodeError as error:
+        raise ValueError(_("Import manifest contains invalid JSON.")) from error
 
 
 def _preflight_bulk_import_archive(uploaded_zip, *, depth=0, budget=None):
@@ -182,18 +596,7 @@ def _preflight_bulk_import_archive(uploaded_zip, *, depth=0, budget=None):
             if depth >= BULK_IMPORT_MAX_NESTING_DEPTH:
                 raise ValueError(_("Nested split import packages are not allowed."))
 
-            part_names = [
-                part.get("filename")
-                for part in sorted(
-                    manifest.get("parts", []),
-                    key=lambda item: item.get("filename") or "",
-                )
-                if part.get("filename") in safe_names
-            ]
-            if not part_names:
-                raise ValueError(_("Split export package did not contain any importable part zip files."))
-            if len(part_names) > BULK_IMPORT_MAX_PART_ARCHIVES:
-                raise ValueError(_("Split import package contains too many part archives. Maximum allowed is 20 parts."))
+            part_names = validate_split_manifest(manifest, safe_names)
 
             for part_name in part_names:
                 with archive.open(safe_names[part_name], "r") as part_file:
@@ -561,18 +964,7 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
             if _depth >= BULK_IMPORT_MAX_NESTING_DEPTH:
                 raise ValueError(_("Nested split import packages are not allowed."))
 
-            part_names = [
-                part.get("filename")
-                for part in sorted(
-                    manifest.get("parts", []),
-                    key=lambda item: item.get("filename") or "",
-                )
-                if part.get("filename") in safe_names
-            ]
-            if not part_names:
-                raise ValueError(_("Split export package did not contain any importable part zip files."))
-            if len(part_names) > BULK_IMPORT_MAX_PART_ARCHIVES:
-                raise ValueError(_("Split import package contains too many part archives. Maximum allowed is 20 parts."))
+            part_names = validate_split_manifest(manifest, safe_names)
 
             for part_name in part_names:
                 with archive.open(safe_names[part_name], "r") as part_file:
@@ -596,24 +988,8 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
 
         article_payloads = []
 
-        if manifest and manifest.get("format") == "djopenkb-bulk-export-v1":
-            for item in manifest.get("articles", []):
-                article_payloads.append({
-                    "title": item.get("title") or "Imported article",
-                    "body": item.get("body") or "",
-                    "keywords": get_import_keyword_value(item, "keywords", "keyword", "keyword_list", "tags"),
-                    "status": item.get("status") or SuggestedArticle.Status.PUBLISHED,
-                    "visibility": normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC),
-                    "filename": item.get("filename") or "",
-                    "image_assets": item.get("image_assets") or [],
-                    "update_status": item.get("update_status") or SuggestedArticle.UpdateStatus.NONE,
-                    "pending_update_title": item.get("pending_update_title") or "",
-                    "pending_update_body": item.get("pending_update_body") or "",
-                    "pending_update_keywords": get_import_keyword_value(item, "pending_update_keywords", "pending_update_keyword", "pending_update_keyword_list", "pending_update_tags"),
-                    "pending_update_image_assets": item.get("pending_update_image_assets") or [],
-                    "review_notes": item.get("review_notes") or "",
-                    "review_notes_history": item.get("review_notes_history") or [],
-                })
+        if manifest:
+            article_payloads = validate_bulk_manifest(manifest)
         else:
             markdown_names = [
                 original_name
@@ -666,7 +1042,7 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
 
         try:
             for item in article_payloads:
-                title = (item.get("title") or "Imported article").strip()[:200]
+                title = (item.get("title") or "").strip()
                 source_image_refs = imported_payload_image_filenames(item)
                 missing_image_refs = [
                     filename
@@ -690,9 +1066,9 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                 body = rewrite_uploaded_file_references(item.get("body") or "", filename_map)
                 keywords = normalize_import_keywords(item.get("keywords"))
                 status = item.get("status") or SuggestedArticle.Status.PUBLISHED
-                visibility = normalize_article_visibility(item.get("visibility") or SuggestedArticle.Visibility.PUBLIC)
+                visibility = item.get("visibility") or SuggestedArticle.Visibility.PUBLIC
                 update_status = item.get("update_status") or SuggestedArticle.UpdateStatus.NONE
-                pending_update_title = (item.get("pending_update_title") or "").strip()[:200]
+                pending_update_title = (item.get("pending_update_title") or "").strip()
                 pending_update_body = rewrite_uploaded_file_references(item.get("pending_update_body") or "", filename_map)
                 pending_update_keywords = normalize_import_keywords(item.get("pending_update_keywords"))
                 review_notes = (item.get("review_notes") or "").strip()
@@ -703,10 +1079,12 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                     if safe_uploaded_filename(filename)
                 ]
 
-                if status not in dict(SuggestedArticle.Status.choices):
-                    status = SuggestedArticle.Status.PUBLISHED
-                if update_status not in dict(SuggestedArticle.UpdateStatus.choices):
-                    update_status = SuggestedArticle.UpdateStatus.NONE
+                if len(title) < 5 or len(body.strip()) < 5:
+                    errors.append(
+                        _("Skipped %(title)s: article title and body must each contain at least 5 characters.")
+                        % {"title": title or _("Untitled article")}
+                    )
+                    continue
 
                 normalized_title = normalize_article_title(title)
                 if normalized_title in seen_import_titles:
@@ -726,6 +1104,12 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                     pending_update_keywords = validate_article_keywords(
                         pending_update_keywords
                     )
+                    validate_article_video_links_for_anonymous_access(body)
+                    validate_article_video_links_for_anonymous_access(pending_update_body)
+                    validate_article_image_count(extract_article_image_filenames(body))
+                    validate_article_image_count(
+                        sorted(set(imported_pending_assets + extract_article_image_filenames(pending_update_body)))
+                    )
                 except ValidationError as error:
                     message = error.messages[0] if getattr(error, "messages", None) else str(error)
                     errors.append(f"{title}: {message}")
@@ -736,7 +1120,8 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
 
                 try:
                     with transaction.atomic():
-                        article = SuggestedArticle.objects.create(
+                        now = timezone.now()
+                        article = SuggestedArticle(
                             owner=owner,
                             title=title,
                             body=body,
@@ -746,21 +1131,34 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                             wiki_path=f"internal/sources/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"sources/{filename}",
                             raw_path=f"raw/internal/{filename}" if visibility == SuggestedArticle.Visibility.INTERNAL else f"raw/{filename}",
                             status=status,
+                            approved_by=owner if status == SuggestedArticle.Status.PUBLISHED else None,
+                            approved_at=now if status == SuggestedArticle.Status.PUBLISHED else None,
                             image_assets=extract_article_image_filenames(body),
                             update_status=update_status,
+                            update_submitted_at=now if update_status == SuggestedArticle.UpdateStatus.PENDING else None,
+                            update_reviewed_at=now if update_status == SuggestedArticle.UpdateStatus.FAILED else None,
                             pending_update_title=pending_update_title,
                             pending_update_body=pending_update_body,
                             pending_update_keywords=pending_update_keywords,
                             pending_update_image_assets=sorted(set(imported_pending_assets + extract_article_image_filenames(pending_update_body))),
                             review_notes=review_notes,
-                            review_notes_history=review_notes_history if isinstance(review_notes_history, list) else [],
+                            review_notes_history=review_notes_history,
                         )
+                        article.full_clean()
+                        article.save()
                         write_article_files(article)
                         sync_article_image_assets(article, old_assets=[])
 
                     retained_import_uploads.update(article.image_assets or [])
                     retained_import_uploads.update(article.pending_update_image_assets or [])
                     imported_count += 1
+                except IntegrityError:
+                    if article is not None:
+                        try:
+                            delete_article_files(article)
+                        except Exception:
+                            pass
+                    errors.append(_("Skipped duplicate title already in OpenKB: %(title)s") % {"title": title})
                 except Exception as error:
                     if article is not None:
                         try:

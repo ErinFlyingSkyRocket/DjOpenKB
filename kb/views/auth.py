@@ -14,6 +14,7 @@ from ..auth_monitoring import (
     record_browser_auth_failure,
     record_browser_auth_success,
 )
+from ..http_cookies import set_language_cookie
 from ..mfa import (
     begin_pending_mfa_login,
     clear_mfa_verified,
@@ -445,12 +446,7 @@ def set_site_language(request):
     request.LANGUAGE_CODE = language_code
 
     response = redirect(next_url)
-    response.set_cookie(
-        settings.LANGUAGE_COOKIE_NAME,
-        language_code,
-        max_age=60 * 60 * 24 * 365,
-        samesite="Lax",
-    )
+    set_language_cookie(response, language_code)
     return response
 
 
@@ -632,12 +628,7 @@ def update_profile(request):
 
         messages.success(request, _("Language preference updated successfully."))
         response = redirect("profile")
-        response.set_cookie(
-            settings.LANGUAGE_COOKIE_NAME,
-            language_code,
-            max_age=60 * 60 * 24 * 365,
-            samesite="Lax",
-        )
+        set_language_cookie(response, language_code)
         return response
 
     if profile_action == "username":
@@ -728,11 +719,6 @@ def change_password(request):
 
     if new_password1 != new_password2:
         messages.error(request, _("New password and confirm password do not match."))
-        return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
-
-    policy_issues = validate_profile_password_policy(new_password1, user)
-    if policy_issues:
-        messages.error(request, " ".join(policy_issues))
         return _profile_dialog_redirect(PROFILE_DIALOG_CHANGE_PASSWORD)
 
     try:

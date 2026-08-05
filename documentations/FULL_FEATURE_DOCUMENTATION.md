@@ -310,10 +310,13 @@ When `DJANGO_DEBUG=false`, the project enables secure deployment cookie settings
 - `LANGUAGE_COOKIE_SECURE=True`
 - `SESSION_COOKIE_HTTPONLY=True`
 - `CSRF_COOKIE_HTTPONLY=True`
+- `LANGUAGE_COOKIE_HTTPONLY=True`
 - `SESSION_COOKIE_SAMESITE=Lax`
 - `CSRF_COOKIE_SAMESITE=Lax`
+- `LANGUAGE_COOKIE_SAMESITE=Lax`
+- `LANGUAGE_COOKIE_PATH=/`
 
-This means session and CSRF cookies are protected for HTTPS deployment.
+The language cookie is set through one shared helper so both the public language selector and profile update path apply the same attributes. Session, CSRF, and language cookies therefore keep a consistent HTTPS deployment policy.
 
 ### 7.3 Cache Control After Logout/MFA
 
@@ -364,7 +367,7 @@ All user-controlled text values are bounded according to their purpose. The norm
 
 The article Markdown body remains configurable in **Django Admin → Site settings → Article settings**. Its default is `100,000` characters, with an allowed range of `1,000` to `2,000,000`. The OpenKB AI question limit is controlled by `OPENKB_AI_MAX_PROMPT_CHARS`, defaults to `1,000`, and is constrained to `100`–`10,000` characters.
 
-Oversized normal page submissions return HTTP `400`; JSON endpoints return a structured HTTP `400` response; an excessive overall request body returns HTTP `413`. Rejected content is not written to the warning log. See `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md` for the detailed implementation, multipart exceptions, maintainer checklist, and verification commands.
+Oversized normal page submissions return HTTP `400`; JSON endpoints return a structured HTTP `400` response; an excessive overall request body returns HTTP `413`. Rejected content is not written to the warning log. New text fields must receive both a browser limit and a server-side field-specific limit rather than relying on JavaScript alone.
 
 ## 9. Article Management
 
@@ -526,7 +529,7 @@ password reset guide
  Password   Reset   Guide
 ```
 
-from being created as separate articles.
+from being created as separate articles. The normalised value is stored in the database as a unique internal key, so two simultaneous requests cannot race past an application-only duplicate check. Migration `0011_security_hardening_title_and_upload_quotas` deliberately stops with a clear error if older data already contains conflicting titles; rename those articles and rerun the migration.
 
 ### 9.9 Article File Sync and Storage Isolation
 
@@ -775,6 +778,17 @@ Article image uploads are logged in `ArticleImageUploadLog`. The log records det
 - User agent.
 - Deletion reason when deleted.
 
+### 12.9 Persistent Per-User Pending Upload Quota
+
+Uncommitted image uploads are limited by authenticated user rather than browser session. The default limits are:
+
+| Quota | Default | Allowed range |
+|---|---:|---:|
+| Pending image count per user | 100 images | 1-1000 |
+| Pending image storage per user | 100 MB | 1-2048 MB |
+
+The quota is calculated from persistent upload audit records, files that still exist, and current article references. Opening another browser, signing in again, or clearing a session does not reset it. Simultaneous uploads for the same account are serialised with a database row lock before the count and byte limits are checked. The session list remains only an editor convenience and is not the security boundary.
+
 ## 13. Stray Upload File Cleanup
 
 ### 13.1 Manual Cleanup
@@ -861,6 +875,8 @@ This gives the following behaviour:
 
 Temporary job records use the Django shared cache (Redis in production). Prompt and result text are Fernet-encrypted before storage. Celery receives only the opaque job ID, not prompt text. Records expire automatically after `OPENKB_AI_JOB_TTL_SECONDS` (1800 seconds by default).
 
+AI job-update and shared-concurrency locks use Redis `SET NX EX` for atomic acquisition and a Lua compare-and-delete operation for release. A worker can therefore release only the lock token it still owns; it cannot delete a replacement lock that was acquired after its original lock expired. When Redis is configured but unavailable, lock acquisition fails closed instead of creating a separate process-local lock namespace.
+
 The worker confirms the job owner is still active and still has the required public/internal article permission before executing. The polling endpoint checks job ownership and current permission again before returning a result, preventing a user from retrieving another user’s job or a result after internal access is removed.
 
 ### 15.4 AI Provider
@@ -902,6 +918,21 @@ OpenKB internal metadata and generated sync markers are removed before display. 
 ### 15.7 AI Logging and Privacy
 
 Long-lived activity logs record only operational metadata: authenticated account reference, source identifier, scope, question length, execution type, quota usage, rate-limit events, and outcome. The question and answer text remain only in the encrypted, temporary job record and expire automatically.
+
+### 15.8 Indirect Prompt-Injection and Tool Boundaries
+
+Published article text, summaries, PageIndex content, and image captions are treated as untrusted reference data rather than instructions. The Q&A system prompt explicitly tells the model not to follow embedded commands, reveal prompts, inspect unrelated files, change roles, or expand tool access.
+
+Tool enforcement does not rely on that prompt alone:
+
+- Text reads are restricted to approved Markdown under `sources/`, `summaries/`, and `concepts/`, plus the generated root `index.md`.
+- PageIndex reads are restricted to bounded JSON files under `sources/`.
+- Image reads are restricted to known image extensions under `sources/images/`.
+- Text, JSON, image, page-count, and write sizes are bounded before data reaches an agent tool.
+- Wiki-local `AGENTS.md` content is never promoted into trusted system instructions; the package-owned schema is used instead.
+- Write operations, where used by OpenKB maintenance processes, are limited to approved Markdown locations.
+
+These controls reduce the effect of malicious instructions embedded in repository content. They do not make model output a security authority: authentication, visibility, permissions, and article selection remain enforced by Django outside the model.
 
 ## 16. Internationalisation and Local Translation
 
@@ -964,6 +995,8 @@ The singleton **Site settings** record controls the following operational limits
 | Stray upload cleanup minimum age | 1440 minutes | Files newer than the threshold are not treated as stray. `0` allows immediate stray-file cleanup. |
 | Article deletion queue retention | 7 days | Published articles remain recoverable in the admin queue for this many days. `0` makes published deletion immediate after MFA confirmation. |
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
+| Pending image uploads per user | 100 images | Persistent uncommitted-image quota across all browsers and sessions. Adjustable from 1 to 1000. |
+| Pending image upload storage per user | 100 MB | Persistent combined uncommitted-image storage quota. Adjustable from 1 to 2048 MB. |
 | Article keyword limit | 20 keywords | Maximum keywords on each article and pending update. Adjustable from 1 to 100. |
 | Article body character limit | 100,000 characters | Maximum Markdown body size for current articles and pending updates. Adjustable from 1,000 to 2,000,000. The editor blocks additional input and the server rejects bypass attempts. |
 | Articles per page | 10 | Used by article lists/search and homepage tabs. Runtime range is clamped to 5-100. |
@@ -1036,7 +1069,7 @@ Scope checks are repeated in the view layer. A user seeing a button in the UI is
 
 ### 17.6 Article Import/Export
 
-Bulk import/export supports article content and referenced upload files. Zip member names are normalised to avoid unsafe paths. Duplicate article titles are detected during import.
+Bulk import/export supports article content and referenced upload files. Zip member names are normalised to avoid unsafe paths. Before any records are created, the importer enforces a strict manifest schema, rejects duplicate JSON keys and unknown fields, validates string/list/integer types and lengths, checks image inventories, and verifies allowed article/update workflow combinations. Deletion-queue/transient states are not accepted for restore. Each constructed article then passes model `full_clean()` and the database title-uniqueness constraint inside a transaction.
 
 The export package is an administrator backup/migration file. It includes the actual article data needed to restore the knowledge base, such as:
 
@@ -1215,7 +1248,9 @@ HashiCorp Vault is used to store sensitive runtime values, including:
 
 The `.env` file should contain non-secret runtime configuration only. Passwords and API keys should be stored in `vault/bootstrap/djopenkb.env` only for first-time Vault seeding, then removed from shared/exported packages.
 
-Vault encrypts stored secrets at rest and gives the application access through the configured Vault token file. The application token is created as owner/group `0:10001` with mode `0440`: root may manage it, while only the unprivileged application group may read the bind-mounted file. The project does not rely on hardcoded production secrets in source code. The Django PostgreSQL password fallback is disabled in production, so missing production database secrets fail startup instead of silently using a weak default.
+Vault encrypts stored secrets at rest and gives the application access through a renewable, read-only application token. `vault-init` writes the replacement token before revoking the previous credential, preferring revocation by accessor. `vault-auto-unseal` validates the token, renews it before expiry, and replaces/revokes it if it is missing, invalid, expired, or cannot be renewed. Automatic token maintenance starts only after `vault-init` finishes, preventing competing startup rotations.
+
+The usable application token is stored as owner/group `0:10001` with mode `0440`, allowing the unprivileged application group to read its bind mount. Its non-secret revocation accessor is stored separately as `0:0` mode `0600` and is not mounted into Django, Celery, or scheduler containers. The default token period is 24 hours and renewal begins when 12 hours or less remain; both values are non-secret `.env` settings. The project does not rely on hardcoded production secrets in source code. The Django PostgreSQL password fallback is disabled in production, so missing production database secrets fail startup instead of silently using a weak default.
 
 ### SMTP relay certificate trust
 
@@ -1271,28 +1306,19 @@ noindex, nofollow, noarchive, nosnippet, noimageindex
 
 These mechanisms are defence in depth for cooperative crawlers only. They do not protect routes, content, or secrets. Actual protection remains login enforcement, MFA, role/public-internal scope checks, restricted admin access, and 404 responses for unauthenticated or unauthorised routes.
 
-## 23. Dependency Pinning
+## 23. Dependency and Container Pinning
 
-The project pins Python package versions/ranges in `requirements.txt` to reduce unexpected breakage from upstream updates.
+Production-facing direct Python dependencies are exact-version pinned in both `requirements.txt` and `OpenKB-main/pyproject.toml`. The OpenKB build backend is also pinned, and the builder pins `pip`, `setuptools`, and `wheel`. The final runtime stage installs only from the wheelhouse produced by the builder rather than resolving packages from the internet again.
 
-Current dependencies are:
+Runtime container references use explicit patch-level image tags instead of floating aliases such as `latest`, `python:3.13-slim`, `redis:7-alpine`, or `nginx:alpine`. The current patch includes exact direct pins for Django, OpenKB, cryptography, Redis client, Celery, and the remaining declared packages, together with patch-level Python, PostgreSQL, Vault, Redis, and Nginx image tags.
 
-```text
-Django==6.0.6
-gunicorn==26.0.0
-Markdown==3.10
-bleach==6.3.0
-Pillow==12.2.0
-python-dotenv==1.2.1
-django-auth-ldap==5.2.0
-psycopg[binary]==3.3.2
-pyotp==2.9.0
-qrcode[pil]==8.2
-cryptography>=42.0.0
-redis>=5.0.0,<7.0.0
+Run the repository guard after dependency or container-reference changes:
+
+```bash
+python scripts/verify_supply_chain_pins.py
 ```
 
-This helps ensure the same behaviour across developer machines and deployment servers. Dependency review and rebuilding should still be performed when applying security updates.
+The guard rejects non-exact direct Python dependencies, an unpinned OpenKB build backend, floating container tags, unpinned Python build tools, or a final runtime installation that does not use the offline wheelhouse. It is a reproducibility baseline, not a replacement for a resolver-generated hash-locked transitive dependency file, immutable container digests, SBOM generation, or regular CVE scanning.
 
 ## 24. Database and Storage
 
@@ -1310,13 +1336,13 @@ Article metadata is stored in PostgreSQL. Article Markdown content is also mirro
 
 ### 24.4 Redis Cache and Counters
 
-Redis is used as the shared Django cache backend in production. It stores temporary counters and lock flags for authentication lockout, AI burst limits/cooldowns, fixed 24-hour AI quota counters, encrypted short-lived AI job records, job update locks, and AI concurrency control. Redis DB 2 is the default Celery broker for the `ai-worker` queue. It is not the primary database and should not be used as the only backup source for article data.
+Redis is used as the shared Django cache backend in production. It stores temporary counters for authentication lockout, AI burst limits/cooldowns, fixed 24-hour AI quota counters, encrypted short-lived AI job records, and distributed AI locks. Lock acquisition uses `SET NX EX`; owner-checked release uses one Lua compare-and-delete operation. Redis DB 2 is the default Celery broker for the `ai-worker` queue. It is not the primary database and should not be used as the only backup source for article data.
 
 ## 25. Main Security Controls Summary
 
 | Area | Implemented control |
 |---|---|
-| Password storage | Django password hashing for local users. AD passwords managed by Active Directory. |
+| Password storage and policy | Django password hashing for local users. One registered 12-character complexity validator is shared by self-service changes, Django Admin user creation, and Django Admin password reset. AD passwords remain managed by Active Directory. |
 | Account source separation | Local and AD users are separated by stored profile metadata, not email domain guessing. |
 | MFA | TOTP MFA required after password/AD authentication. |
 | Password/MFA lockout | Progressive admin-configurable lockout stages with repeat counts, Redis-backed counters, automatic reset after successful login/MFA, and admin reset actions. |
@@ -1324,12 +1350,16 @@ Redis is used as the shared Django cache backend in production. It stores tempor
 | Sessions | Configurable fixed session timeout (8 hours by default), server-side sign-in timestamp, browser cookie aligned to the remaining lifetime, and secure cookie settings. |
 | CSRF | Django CSRF middleware and token-protected POST forms/endpoints. |
 | Input length validation | Browser `maxlength`, Django form validators, central request middleware, dedicated multipart/JSON validation, a 4,096-character fallback for unknown fields, and controlled HTTP errors for oversized values. Article body and AI question limits remain configuration-aware. |
+| Article integrity | Database-backed normalised title uniqueness prevents concurrent duplicate-title races; strict model validation covers workflow state and review-history structure. |
+| Bulk import integrity | Strict JSON schema/type/length/workflow validation, duplicate-key rejection, archive resource budgets, model validation, and transactional database uniqueness. |
+| AI tool boundary | Retrieved content is untrusted; file types, directories, sizes, page counts, trusted schema source, and Redis lock ownership are enforced outside model instructions. |
+| Supply chain | Exact direct Python/build-tool pins, patch-level container tags, offline final-stage wheel installation, and a repository verification script. |
 | XSS | Markdown rendered then sanitised with Bleach. |
-| Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames. |
+| Upload safety | Extension allowlist, 2 MB size limit, Pillow image verification, pixel limit, generated filenames, and persistent per-user pending count/byte quotas across sessions. |
 | Access control | Public/internal article visibility checks, scoped writer/approver/manager roles, protected image serving, admin-only tools, recovery queue restricted to Admin Users, and 404 for non-admin admin-tool access. |
 | Article deletion recovery | Published deletion requires MFA and normally enters a configurable admin recovery queue; non-published content deletes immediately; setting `0` deliberately enables immediate published deletion. |
 | Orphan content | Admin-only orphan article scan, assign, delete, and confirmation workflow across article visibility scopes. |
-| Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. Vault app token is readable only by root and application group `10001` (`0:10001`, mode `0440`). |
+| Secrets | Runtime secrets stored in Vault instead of source code, with production database fallback disabled. The renewable app token is rotated/renewed and previous credentials are revoked; its accessor is root-only and separate from application containers. |
 | LDAP | LDAPS with certificate validation, low-privilege read-only bind-account guidance, connection/operation timeouts, and configurable AD user-search scope. |
 | HTTPS / edge protection | Nginx HTTPS and security headers; POST-only endpoint rate limits, per-IP connection limits, request timeouts, 3 MB ordinary request size limit, restricted 100 MB bulk-import route, and a strict nonce-based Content Security Policy without `'unsafe-inline'`. |
 | Crawler controls | `/robots.txt` disallows all cooperative crawling and application responses receive an `X-Robots-Tag` no-index header. This is not access control. |

@@ -103,7 +103,7 @@ Nginx request-body and rate limits are complemented by Django-side character lim
 | Admin allowed IP/CIDR list | 4,096 |
 | Unknown future text field fallback | 4,096 |
 
-The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `100,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. The full table, response behaviour, implementation references, and maintenance requirements are in `documentations/INPUT_VALIDATION_AND_LENGTH_LIMITS.md`.
+The article body remains a separately configurable `1,000`–`2,000,000` characters with a default of `100,000`. The OpenKB AI prompt remains configurable from `100`–`10,000` characters with a default of `1,000`. These checks remain server-side even when a client removes `maxlength`, disables JavaScript, or submits requests through an interception tool.
 
 Nginx uses a read-only root filesystem. Temporary paths are intentionally under the writable `/tmp` `tmpfs`:
 
@@ -116,6 +116,16 @@ scgi_temp_path /tmp/scgi_temp 1 2;
 ```
 
 The image entrypoint may log that it cannot change the unused default Nginx configuration because the root filesystem is read-only. That informational message is harmless when Nginx subsequently starts without an `[emerg]` error. A `mkdir()` error for one of the Nginx temporary paths is not harmless and requires restoring the paths above.
+
+### 3.3 Database-Backed Abuse and Integrity Limits
+
+Several controls that previously depended mainly on request/session state are now persistent or transactional:
+
+- Pending article images are limited per authenticated user across all sessions and browsers: 100 uncommitted images and 100 MB by default, both configurable in Site settings.
+- Simultaneous uploads for the same account are serialised before quota calculation.
+- Article titles have a unique normalised database key, closing concurrent duplicate-title races.
+- Bulk ZIP manifests reject unknown/duplicate fields, invalid types/lengths, unsupported workflow combinations, and transient deletion-queue states before article creation.
+- Imported records pass model validation and database uniqueness inside a transaction.
 
 ## 4. Docker network and container hardening
 
@@ -136,35 +146,43 @@ A healthy deployment shows `app-permissions-init` exiting successfully after pri
 sudo docker compose logs --tail=80 app-permissions-init
 ```
 
-## 5. Vault application-token permissions
+## 5. Vault Application-Token Lifecycle and Permissions
 
-The Vault initialisation and auto-unseal scripts create `vault/keys/djopenkb-app-token.txt` with:
+The Vault initialisation process issues a renewable read-only application token and stores it at:
 
 ```text
+vault/keys/djopenkb-app-token.txt
 owner/group: 0:10001
 mode: 0440
 ```
 
-This permits the unprivileged Django, Celery, and scheduler containers to read the bind-mounted token while keeping it unreadable to unrelated users. Verify it after a first deployment or a Vault recovery:
+Only the application group can read the usable token. A separate revocation accessor is stored at:
+
+```text
+vault/keys/djopenkb-app-token-accessor.txt
+owner/group: 0:0
+mode: 0600
+```
+
+The accessor is not mounted into Django, Celery, or scheduler containers. `vault-init` writes a replacement before revoking the previous token, while `vault-auto-unseal` renews the token before expiry and replaces/revokes it if validation or renewal fails. Startup ordering requires `vault-init` to complete before automatic maintenance begins.
+
+Defaults:
+
+```env
+VAULT_APP_TOKEN_PERIOD=24h
+VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS=43200
+```
+
+Verify both files without printing their contents:
 
 ```bash
 cd /opt/DjOpenKB
-sudo stat -c '%u:%g %a %n' vault/keys/djopenkb-app-token.txt
+sudo stat -c '%u:%g %a %n' \
+  vault/keys/djopenkb-app-token.txt \
+  vault/keys/djopenkb-app-token-accessor.txt
 ```
 
-Expected output includes:
-
-```text
-0:10001 440 vault/keys/djopenkb-app-token.txt
-```
-
-Do not loosen this file to world-readable mode. If `web` or `ai-worker` reports `Permission denied` for `/run/vault-keys/djopenkb-app-token.txt`, restore these exact owner/group and mode values, then recreate the affected services without deleting volumes:
-
-```bash
-sudo chown 0:10001 vault/keys/djopenkb-app-token.txt
-sudo chmod 0440 vault/keys/djopenkb-app-token.txt
-sudo docker compose up -d --force-recreate web ai-worker cleanup-scheduler
-```
+Expected modes are `0:10001 440` for the token and `0:0 600` for the accessor. Never make either file world-readable.
 
 ## 6. Fixed eight-hour session policy
 
@@ -206,15 +224,33 @@ The article-video feature adds only narrow external media exceptions: `frame-src
 
 When adding a new dynamic inline block, preserve the `csp_nonce`; do not reintroduce `onclick=`, `onsubmit=`, `style=`, or `'unsafe-inline'`. Any new external frame/media host must be reviewed deliberately rather than broadly weakening the CSP.
 
-## 9. Required verification after an update
+## 9. OpenKB Retrieved-Content and Distributed-Lock Hardening
+
+OpenKB Q&A treats article-derived text and image captions as untrusted data. Files are restricted by approved directory, extension, and size; page requests are bounded; a wiki-local instruction file cannot replace the package-owned trusted schema; and model output is never used to make authentication or visibility decisions.
+
+AI concurrency and job-update locks use Redis atomic acquisition and owner-checked Lua release. When production Redis is configured but unavailable, acquisition fails closed rather than falling back to a process-local lock that another worker cannot see.
+
+## 10. Supply-Chain Baseline
+
+Direct Python and OpenKB dependencies, the OpenKB build backend, Python build tools, and production container tags are explicitly pinned. The final runtime image installs from the builder wheelhouse with `--no-index`. Verify the repository guard with:
+
+```bash
+python scripts/verify_supply_chain_pins.py
+```
+
+This guard complements, but does not replace, CVE scanning, a hash-locked transitive dependency set, SBOM review, and immutable image digests.
+
+## 11. Required verification after an update
 
 ```bash
 cd /opt/DjOpenKB
 sudo docker compose config >/dev/null && echo "Compose configuration is valid"
 sudo docker compose up -d --build
 sudo docker compose ps
-sudo docker compose logs --tail=100 app-permissions-init web ai-worker nginx
+sudo docker compose logs --tail=100 app-permissions-init web ai-worker nginx vault-init vault-auto-unseal
 sudo docker compose exec web python manage.py check --deploy
+python scripts/verify_supply_chain_pins.py
+sudo stat -c '%u:%g %a %n' vault/keys/djopenkb-app-token*.txt
 ```
 
 For the current direct internal deployment, test the browser-facing address rather than `localhost`:

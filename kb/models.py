@@ -29,6 +29,11 @@ ARTICLE_KEYWORD_MAX_TOTAL_LENGTH = 500
 ARTICLE_BODY_DEFAULT_CHARACTER_LIMIT = 100_000
 ARTICLE_BODY_MIN_CHARACTER_LIMIT = 1_000
 ARTICLE_BODY_MAX_CHARACTER_LIMIT = 2_000_000
+ARTICLE_NORMALIZED_TITLE_MAX_LENGTH = 600
+ARTICLE_REVIEW_NOTES_MAX_LENGTH = 4_000
+ARTICLE_REVIEW_HISTORY_MAX_ENTRIES = 50
+PENDING_IMAGE_UPLOAD_DEFAULT_COUNT_LIMIT = 100
+PENDING_IMAGE_UPLOAD_DEFAULT_BYTE_LIMIT_MB = 100
 
 
 def split_article_keywords(value):
@@ -368,6 +373,13 @@ class SuggestedArticle(models.Model):
     author_email_snapshot = models.EmailField(blank=True)
     author_account_type_snapshot = models.CharField(max_length=50, blank=True)
     title = models.CharField(max_length=200)
+    normalized_title = models.CharField(
+        max_length=ARTICLE_NORMALIZED_TITLE_MAX_LENGTH,
+        unique=True,
+        editable=False,
+        verbose_name=_("Normalized article title"),
+        help_text=_("Internal case-insensitive title key used to prevent duplicate article titles."),
+    )
     body = models.TextField()
     keywords = models.CharField(max_length=500, blank=True)
     visibility = models.CharField(
@@ -511,9 +523,23 @@ class SuggestedArticle(models.Model):
     def __str__(self):
         return self.title
 
+    def full_clean(self, exclude=None, validate_unique=True, validate_constraints=True):
+        """Populate the derived title key before Django validates model fields."""
+        self.normalized_title = normalize_article_title(self.title)
+        return super().full_clean(
+            exclude=exclude,
+            validate_unique=validate_unique,
+            validate_constraints=validate_constraints,
+        )
+
     def clean(self):
         """Validate article bodies, keywords, and duplicate article titles."""
         super().clean()
+
+        if len((self.title or "").strip()) < 5:
+            raise ValidationError({"title": _("Article title must contain at least 5 characters.")})
+        if len((self.body or "").strip()) < 5:
+            raise ValidationError({"body": _("Article body must contain at least 5 characters.")})
 
         try:
             self.body = validate_article_body(self.body)
@@ -543,18 +569,91 @@ class SuggestedArticle(models.Model):
                 {"pending_update_keywords": error.messages}
             ) from error
 
-        normalized_title = normalize_article_title(self.title)
-        if not normalized_title:
-            return
+        self.normalized_title = normalize_article_title(self.title)
+        if not self.normalized_title:
+            raise ValidationError({"title": _("Enter an article title.")})
 
-        queryset = SuggestedArticle.objects.all()
+        queryset = SuggestedArticle.objects.filter(normalized_title=self.normalized_title)
         if self.pk:
             queryset = queryset.exclude(pk=self.pk)
+        if queryset.exists():
+            raise ValidationError({
+                "title": _("An article with this title already exists. Please use a different title.")
+            })
 
-        for article in queryset.only("id", "title"):
-            if normalize_article_title(article.title) == normalized_title:
+        if len(self.review_notes or "") > ARTICLE_REVIEW_NOTES_MAX_LENGTH:
+            raise ValidationError({
+                "review_notes": _("Review comments cannot exceed %(limit)s characters.")
+                % {"limit": ARTICLE_REVIEW_NOTES_MAX_LENGTH}
+            })
+
+        history = self.review_notes_history or []
+        if not isinstance(history, list):
+            raise ValidationError({"review_notes_history": _("Review comment history must be a list.")})
+        if len(history) > ARTICLE_REVIEW_HISTORY_MAX_ENTRIES:
+            raise ValidationError({
+                "review_notes_history": _("Review comment history cannot contain more than %(limit)s entries.")
+                % {"limit": ARTICLE_REVIEW_HISTORY_MAX_ENTRIES}
+            })
+        allowed_history_keys = {"note", "action", "status", "reviewer", "reviewer_id", "created_at"}
+        for index, entry in enumerate(history, start=1):
+            if not isinstance(entry, dict):
                 raise ValidationError({
-                    "title": _("An article with this title already exists. Please use a different title.")
+                    "review_notes_history": _("Review comment history entry %(index)s must be an object.")
+                    % {"index": index}
+                })
+            if set(entry) - allowed_history_keys:
+                raise ValidationError({
+                    "review_notes_history": _("Review comment history entry %(index)s contains unsupported fields.")
+                    % {"index": index}
+                })
+            note = entry.get("note", "")
+            if not isinstance(note, str) or not note.strip() or len(note) > ARTICLE_REVIEW_NOTES_MAX_LENGTH:
+                raise ValidationError({
+                    "review_notes_history": _("Review comment history entry %(index)s has an invalid note.")
+                    % {"index": index}
+                })
+            for key, limit in (("action", 40), ("status", 20), ("reviewer", 255), ("created_at", 64)):
+                value = entry.get(key, "")
+                if value is not None and (not isinstance(value, str) or len(value) > limit):
+                    raise ValidationError({
+                        "review_notes_history": _("Review comment history entry %(index)s has an invalid %(field)s value.")
+                        % {"index": index, "field": key}
+                    })
+            reviewer_id = entry.get("reviewer_id")
+            if reviewer_id is not None and (not isinstance(reviewer_id, int) or isinstance(reviewer_id, bool) or reviewer_id < 1):
+                raise ValidationError({
+                    "review_notes_history": _("Review comment history entry %(index)s has an invalid reviewer ID.")
+                    % {"index": index}
+                })
+
+        pending_update_has_content = any((
+            (self.pending_update_title or "").strip(),
+            (self.pending_update_body or "").strip(),
+            (self.pending_update_keywords or "").strip(),
+            self.pending_update_image_assets or [],
+        ))
+        supports_pending_update = self.status == self.Status.PUBLISHED or (
+            self.status == self.Status.DELETE_QUEUED
+            and self.deletion_previous_status == self.Status.PUBLISHED
+        )
+        if not supports_pending_update:
+            if self.update_status != self.UpdateStatus.NONE:
+                raise ValidationError({
+                    "update_status": _("Only published articles can have a pending article update.")
+                })
+            if pending_update_has_content:
+                raise ValidationError({
+                    "pending_update_title": _("Only published articles can store an unpublished update draft.")
+                })
+        if self.update_status != self.UpdateStatus.NONE or pending_update_has_content:
+            if len((self.pending_update_title or "").strip()) < 5:
+                raise ValidationError({
+                    "pending_update_title": _("A pending article update title must contain at least 5 characters.")
+                })
+            if len((self.pending_update_body or "").strip()) < 5:
+                raise ValidationError({
+                    "pending_update_body": _("A pending article update body must contain at least 5 characters.")
                 })
 
 
@@ -699,6 +798,11 @@ class SuggestedArticle(models.Model):
     def save(self, *args, **kwargs):
         if self.owner:
             self.refresh_author_snapshot()
+        self.normalized_title = normalize_article_title(self.title)
+
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None and "title" in update_fields:
+            kwargs["update_fields"] = set(update_fields) | {"normalized_title"}
 
         super().save(*args, **kwargs)
 
@@ -1215,6 +1319,24 @@ class SiteSetting(models.Model):
         help_text=_(
             "Maximum number of pasted/uploaded images allowed per article, including draft, "
             "pending, published, and pending-update versions. Default is 50. Set to 0 to disable article image uploads."
+        ),
+    )
+    pending_image_upload_limit_per_user = models.PositiveIntegerField(
+        default=PENDING_IMAGE_UPLOAD_DEFAULT_COUNT_LIMIT,
+        validators=[MinValueValidator(1), MaxValueValidator(1000)],
+        verbose_name=_("Pending image uploads per user"),
+        help_text=_(
+            "Maximum number of uncommitted article images one user may keep across all browsers and sessions. "
+            "Default is 100. Allowed range: 1 to 1000."
+        ),
+    )
+    pending_image_upload_byte_limit_mb_per_user = models.PositiveIntegerField(
+        default=PENDING_IMAGE_UPLOAD_DEFAULT_BYTE_LIMIT_MB,
+        validators=[MinValueValidator(1), MaxValueValidator(2048)],
+        verbose_name=_("Pending image upload storage per user (MB)"),
+        help_text=_(
+            "Maximum combined storage for one user's uncommitted article images across all browsers and sessions. "
+            "Default is 100 MB. Allowed range: 1 to 2048 MB."
         ),
     )
     article_video_max_width_px = models.PositiveIntegerField(

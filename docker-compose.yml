@@ -2,7 +2,7 @@ services:
   # Vault stays private to the host and the vault-backend Docker network.
   vault:
     user: "0:0"
-    image: hashicorp/vault:1.21
+    image: hashicorp/vault:1.21.4
     container_name: djopenkb-vault
     restart: unless-stopped
     cap_add:
@@ -24,7 +24,7 @@ services:
 
   vault-init:
     user: "0:0"
-    image: hashicorp/vault:1.21
+    image: hashicorp/vault:1.21.4
     container_name: djopenkb-vault-init
     depends_on:
       vault:
@@ -33,6 +33,7 @@ services:
       - no-new-privileges:true
     environment:
       VAULT_ADDR: http://vault:8200
+      VAULT_APP_TOKEN_PERIOD: ${VAULT_APP_TOKEN_PERIOD:-24h}
     volumes:
       - ./vault/config:/vault/config:ro
       - ./vault/scripts:/vault/scripts:ro
@@ -45,17 +46,19 @@ services:
 
   vault-auto-unseal:
     user: "0:0"
-    image: hashicorp/vault:1.21
+    image: hashicorp/vault:1.21.4
     container_name: djopenkb-vault-auto-unseal
     restart: unless-stopped
     depends_on:
-      vault:
-        condition: service_started
+      vault-init:
+        condition: service_completed_successfully
     security_opt:
       - no-new-privileges:true
     environment:
       VAULT_ADDR: http://vault:8200
       VAULT_AUTO_UNSEAL_INTERVAL_SECONDS: ${VAULT_AUTO_UNSEAL_INTERVAL_SECONDS:-15}
+      VAULT_APP_TOKEN_PERIOD: ${VAULT_APP_TOKEN_PERIOD:-24h}
+      VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS: ${VAULT_APP_TOKEN_RENEW_BEFORE_SECONDS:-43200}
     volumes:
       - ./vault/config:/vault/config:ro
       - ./vault/scripts:/vault/scripts:ro
@@ -65,7 +68,7 @@ services:
       - vault_backend
 
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.10-alpine3.21
     container_name: djopenkb-redis
     restart: unless-stopped
     security_opt:
@@ -352,7 +355,7 @@ services:
       "
 
   nginx:
-    image: nginx:alpine
+    image: nginx:1.30.4-alpine3.24
     container_name: djopenkb-nginx
     restart: unless-stopped
     read_only: true

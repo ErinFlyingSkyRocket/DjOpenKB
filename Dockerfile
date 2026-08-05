@@ -1,6 +1,6 @@
 # Build wheels in a disposable stage so compiler toolchains and source-control
 # clients are not present in the final Django/Gunicorn runtime image.
-FROM python:3.13-slim AS builder
+FROM python:3.13.14-slim-bookworm AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -20,11 +20,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /build/requirements.txt
 COPY OpenKB-main /build/OpenKB-main
 
-RUN python -m pip install --upgrade pip setuptools wheel && \
+RUN python -m pip install --no-cache-dir pip==26.1.2 setuptools==83.0.0 wheel==0.47.0 && \
     python -m pip wheel --wheel-dir /wheels -r /build/requirements.txt /build/OpenKB-main
 
 
-FROM python:3.13-slim
+FROM python:3.13.14-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

@@ -232,19 +232,15 @@ def slugify_title(title):
 
 
 def find_duplicate_article_by_title(title, exclude_pk=None):
-    """Return an existing article with the same normalized title, if any."""
+    """Return an existing article with the same database-normalized title."""
     normalized_title = normalize_article_title(title)
     if not normalized_title:
         return None
 
-    queryset = SuggestedArticle.objects.all()
+    queryset = SuggestedArticle.objects.filter(normalized_title=normalized_title)
     if exclude_pk:
         queryset = queryset.exclude(pk=exclude_pk)
-
-    for article in queryset.only("id", "title"):
-        if normalize_article_title(article.title) == normalized_title:
-            return article
-    return None
+    return queryset.only("id", "title", "normalized_title").first()
 
 
 def duplicate_title_error_message(title):
@@ -1604,6 +1600,87 @@ def get_all_referenced_uploaded_files():
     return {
         filename for filename in referenced
         if filename and "/" not in filename and "\\" not in filename
+    }
+
+
+def get_pending_image_upload_limits():
+    """Return database-backed per-user pending image count and byte limits."""
+    try:
+        site_setting = SiteSetting.load()
+        count_limit = int(getattr(site_setting, "pending_image_upload_limit_per_user", 100) or 100)
+        byte_limit_mb = int(getattr(site_setting, "pending_image_upload_byte_limit_mb_per_user", 100) or 100)
+    except Exception:
+        count_limit = 100
+        byte_limit_mb = 100
+
+    count_limit = min(max(count_limit, 1), 1000)
+    byte_limit_mb = min(max(byte_limit_mb, 1), 2048)
+    return count_limit, byte_limit_mb * 1024 * 1024
+
+
+def get_user_pending_image_upload_usage(user):
+    """Return uncommitted image usage for one user across all sessions.
+
+    The immutable upload log provides ownership while the filesystem and current
+    article references determine whether an upload is still pending. This means
+    opening another browser or obtaining a fresh Django session cannot reset the
+    quota.
+    """
+    if not user or not getattr(user, "pk", None):
+        return {"count": 0, "bytes": 0, "filenames": []}
+
+    referenced = get_all_referenced_uploaded_files()
+    upload_dir = get_openkb_uploads_dir().resolve()
+    pending = []
+    total_bytes = 0
+
+    logs = (
+        ArticleImageUploadLog.objects
+        .filter(uploaded_by_id=user.pk)
+        .only("filename", "size_bytes")
+        .order_by("uploaded_at", "pk")
+    )
+    for upload_log in logs:
+        filename = safe_uploaded_filename(upload_log.filename)
+        if not filename or filename in referenced:
+            continue
+        file_path = (upload_dir / filename).resolve()
+        try:
+            file_path.relative_to(upload_dir)
+            stat = file_path.stat()
+        except (ValueError, OSError):
+            continue
+        if not file_path.is_file():
+            continue
+        pending.append(filename)
+        total_bytes += max(0, int(stat.st_size))
+
+    return {"count": len(pending), "bytes": total_bytes, "filenames": pending}
+
+
+def user_owns_pending_article_image(user, filename):
+    """Return whether an unreferenced upload belongs to the authenticated user."""
+    filename = safe_uploaded_filename(filename)
+    if not filename or not user or not getattr(user, "pk", None):
+        return False
+    if image_is_used_by_other_article(filename):
+        return False
+    return ArticleImageUploadLog.objects.filter(
+        filename=filename,
+        uploaded_by_id=user.pk,
+    ).exists()
+
+
+def pending_image_upload_quota_error_message(*, count_limit=None, byte_limit=None):
+    configured_count_limit, configured_byte_limit = get_pending_image_upload_limits()
+    count_limit = configured_count_limit if count_limit is None else int(count_limit)
+    byte_limit = configured_byte_limit if byte_limit is None else int(byte_limit)
+    return _(
+        "Your pending article image quota has been reached. Commit or remove unused images before uploading more. "
+        "Maximum: %(count)s image(s) and %(size)s MB across all browsers and sessions."
+    ) % {
+        "count": count_limit,
+        "size": max(1, byte_limit // (1024 * 1024)),
     }
 
 
@@ -3219,35 +3296,17 @@ def get_profile_account_context(user, request=None):
 
 
 def validate_profile_password_policy(password, user):
-    """Return password policy issues for the profile change-password form.
+    """Return shared project password-policy issues for compatibility callers.
 
-    This enforces the local project policy used for Django-managed accounts:
-    minimum length plus uppercase, lowercase, number, and special character.
-    LDAP-managed users should change passwords through LDAP/AD instead.
+    New password workflows should call Django's ``validate_password`` directly;
+    this helper remains for older integrations and uses the same registered
+    project validator rather than maintaining a second policy implementation.
     """
-    issues = []
-
-    if len(password) < 12:
-        issues.append(_("Password must be at least 12 characters long."))
-    if not re.search(r"[A-Z]", password):
-        issues.append(_("Password must include at least 1 uppercase letter."))
-    if not re.search(r"[a-z]", password):
-        issues.append(_("Password must include at least 1 lowercase letter."))
-    if not re.search(r"[0-9]", password):
-        issues.append(_("Password must include at least 1 number."))
-    if not re.search(r"[^A-Za-z0-9]", password):
-        issues.append(_("Password must include at least 1 special character."))
-
-    lower_password = password.lower()
-    username = (user.get_username() or "").lower()
-    email_name = (user.email or "").split("@")[0].lower()
-
-    if username and len(username) >= 3 and username in lower_password:
-        issues.append(_("Password must not contain your username."))
-    if email_name and len(email_name) >= 3 and email_name in lower_password:
-        issues.append(_("Password must not contain the name part of your email address."))
-
-    return issues
+    try:
+        validate_password(password, user=user)
+    except ValidationError as error:
+        return list(error.messages)
+    return []
 
 
 

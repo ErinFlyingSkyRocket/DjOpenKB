@@ -36,6 +36,7 @@ from .mfa import (
     start_disabled_account_session,
     user_requires_mfa,
 )
+from .http_cookies import set_language_cookie
 from .models import SiteSetting, UserProfile
 from .auth_monitoring import log_auth_event
 from .permissions import user_has_disabled_role
@@ -614,7 +615,7 @@ class UserProfileLanguageMiddleware:
         response = self.get_response(request)
 
         if user and user.is_authenticated:
-            response.set_cookie(settings.LANGUAGE_COOKIE_NAME, request.LANGUAGE_CODE)
+            set_language_cookie(response, request.LANGUAGE_CODE)
 
         return response
 

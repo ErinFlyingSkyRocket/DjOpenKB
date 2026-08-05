@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.utils.translation import gettext as _, ngettext
 from redis import Redis, RedisError
 
+from ..cache_locks import acquire_distributed_lock, release_distributed_lock
 from ..models import SiteSetting
 from .services import *  # noqa: F401,F403
 
@@ -137,7 +138,7 @@ def acquire_openkb_ai_slot():
 
     for slot in range(limit):
         key = f"openkb_ai:active:{slot}"
-        if cache.add(key, token, lock_seconds):
+        if acquire_distributed_lock(key, token, lock_seconds):
             return key, token
 
     raise OpenKBAIOverloaded("OpenKB AI is currently busy")
@@ -148,8 +149,7 @@ def release_openkb_ai_slot(lock):
         return
     key, token = lock
     try:
-        if cache.get(key) == token:
-            cache.delete(key)
+        release_distributed_lock(key, token)
     except Exception:
         logger.exception("Failed to release OpenKB AI concurrency lock")
 

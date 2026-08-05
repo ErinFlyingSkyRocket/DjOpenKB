@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -27,16 +27,16 @@ classifiers = [
 keywords = ["ai", "rag", "retrieval", "knowledge-base", "llm", "pageindex", "agents", "document"]
 dependencies = [
     "pageindex==0.3.0.dev1",
-    "markitdown[all]",
-    "click>=8.0",
-    "watchdog>=3.0",
-    "litellm",
-    "openai-agents",
-    "pyyaml",
-    "python-dotenv",
-    "json-repair",
-    "prompt_toolkit>=3.0",
-    "rich>=13.0",
+    "markitdown[all]==0.1.6",
+    "click==8.4.2",
+    "watchdog==6.0.0",
+    "litellm==1.93.0",
+    "openai-agents==0.18.3",
+    "pyyaml==6.0.3",
+    "python-dotenv==1.2.1",
+    "json-repair==0.61.6",
+    "prompt_toolkit==3.0.52",
+    "rich==15.0.0",
 ]
 
 [project.urls]

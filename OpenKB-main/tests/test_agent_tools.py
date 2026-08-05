@@ -46,12 +46,12 @@ class TestListWikiFiles:
         assert "image.png" not in result
         assert "data.json" not in result
 
-    def test_nonexistent_directory_returns_no_files(self, tmp_path):
+    def test_nonexistent_directory_returns_access_denied(self, tmp_path):
         wiki_root = str(tmp_path)
 
         result = list_wiki_files("does_not_exist", wiki_root)
 
-        assert result == "No files found."
+        assert result == "Access denied: directory is outside approved wiki content."
 
 
 # ---------------------------------------------------------------------------
@@ -111,23 +111,23 @@ class TestWriteWikiFile:
 
         assert (tmp_path / "concepts" / "existing.md").read_text() == "New content."
 
-    def test_creates_parent_directories(self, tmp_path):
+    def test_creates_parent_directories_inside_approved_content(self, tmp_path):
         wiki_root = str(tmp_path)
 
         result = write_wiki_file(
-            "deep/nested/dir/file.md", "# Deep File\n", wiki_root
+            "concepts/deep/nested/file.md", "# Deep File\n", wiki_root
         )
 
-        assert result == "Written: deep/nested/dir/file.md"
-        assert (tmp_path / "deep" / "nested" / "dir" / "file.md").exists()
+        assert result == "Written: concepts/deep/nested/file.md"
+        assert (tmp_path / "concepts" / "deep" / "nested" / "file.md").exists()
 
-    def test_returns_written_path(self, tmp_path):
+    def test_rejects_unapproved_markdown_directory(self, tmp_path):
         wiki_root = str(tmp_path)
-        (tmp_path / "reports").mkdir()
 
         result = write_wiki_file("reports/health.md", "All good.", wiki_root)
 
-        assert result == "Written: reports/health.md"
+        assert result == "Access denied: only approved Markdown wiki files may be written."
+        assert not (tmp_path / "reports" / "health.md").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -213,3 +213,39 @@ class TestGetWikiPageContent:
         (tmp_path / "sources").mkdir()
         result = get_wiki_page_content("../../etc/passwd", "1", wiki_root)
         assert "denied" in result.lower() or "not found" in result.lower()
+
+
+class TestAgentToolSecurityBoundaries:
+    def test_read_file_rejects_non_markdown_and_unapproved_root(self, tmp_path):
+        (tmp_path / "sources").mkdir()
+        (tmp_path / "sources" / "secret.txt").write_text("secret")
+        (tmp_path / "config.yaml").write_text("secret")
+        assert "Access denied" in read_wiki_file("sources/secret.txt", str(tmp_path))
+        assert "Access denied" in read_wiki_file("config.yaml", str(tmp_path))
+
+    def test_read_file_rejects_path_escape(self, tmp_path):
+        outside = tmp_path.parent / "outside.md"
+        outside.write_text("outside")
+        assert "Access denied" in read_wiki_file("../outside.md", str(tmp_path))
+
+    def test_page_requests_are_bounded(self):
+        assert len(parse_pages("1-1000")) == 25
+
+    def test_image_is_restricted_to_sources_images(self, tmp_path):
+        from openkb.agent.tools import read_wiki_image
+
+        (tmp_path / "sources").mkdir()
+        (tmp_path / "sources" / "not-approved.png").write_bytes(b"png")
+        result = read_wiki_image("sources/not-approved.png", str(tmp_path))
+        assert result["type"] == "text"
+        assert "Access denied" in result["text"]
+
+    def test_image_extension_is_allowlisted(self, tmp_path):
+        from openkb.agent.tools import read_wiki_image
+
+        image_dir = tmp_path / "sources" / "images"
+        image_dir.mkdir(parents=True)
+        (image_dir / "payload.svg").write_text("<svg></svg>")
+        result = read_wiki_image("sources/images/payload.svg", str(tmp_path))
+        assert result["type"] == "text"
+        assert "unsupported" in result["text"].lower()
