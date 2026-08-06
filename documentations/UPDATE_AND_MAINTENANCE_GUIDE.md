@@ -514,6 +514,13 @@ After changing the new-article workspace or image lifecycle, manually verify the
 sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-run
 ```
 
+
+9. Verify account-state cleanup separately: set a test user inactive and confirm the checkpoint remains; assign `Disabled User` and confirm it remains; then permanently delete another test user and confirm its active checkpoint, private uncommitted image files, checkpoint upload/activity rows, and sessions are removed while its saved articles remain with no owner. Run:
+
+```bash
+sudo docker compose exec web python manage.py test kb.tests.users.test_user_account_deletion_cleanup
+```
+
 ## 10. Documentation synchronisation checklist
 
 When implementation changes, update the smallest relevant existing documents rather than creating overlapping guides:

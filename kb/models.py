@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -1121,11 +1121,20 @@ class ArticleImageUploadLog(models.Model):
 
     @property
     def uploader_display(self):
-        if self.uploaded_by:
-            full_name = self.uploaded_by.get_full_name().strip()
+        # ``uploaded_by`` intentionally has no database constraint so immutable
+        # audit rows can survive deletion of an account that uploaded an image
+        # later committed to an article. Fall back to the stored snapshot when
+        # the referenced Django user row no longer exists.
+        try:
+            uploader = self.uploaded_by
+        except ObjectDoesNotExist:
+            uploader = None
+
+        if uploader:
+            full_name = uploader.get_full_name().strip()
             if full_name:
-                return f"{full_name} ({self.uploaded_by.get_username()})"
-            return self.uploaded_by.get_username()
+                return f"{full_name} ({uploader.get_username()})"
+            return uploader.get_username()
         return self.uploader_username_snapshot or ""
 
     def snapshot_uploader(self):

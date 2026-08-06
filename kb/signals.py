@@ -1,10 +1,23 @@
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models.signals import m2m_changed, post_migrate, post_save
+from django.db.models.signals import m2m_changed, post_migrate, post_save, pre_delete
 from django.dispatch import receiver
 
 from .models import SuggestedArticle, UserProfile
+
+
+@receiver(pre_delete, sender=get_user_model())
+def purge_deleted_user_checkpoint(sender, instance, **kwargs):
+    """Purge only the active New Article checkpoint on permanent account deletion.
+
+    Setting ``is_active=False`` or assigning the Disabled User role does not
+    delete the User row and therefore does not run this cleanup. Existing
+    articles remain and become orphaned through SuggestedArticle.owner SET_NULL.
+    """
+    from .account_cleanup import prepare_user_account_deletion
+
+    prepare_user_account_deletion(instance)
 
 
 @receiver(post_save, sender=get_user_model())

@@ -263,7 +263,9 @@ Direct address-bar navigation, refresh, tab close, and browser close cannot show
 
 Multiple tabs share the same user checkpoint, so every content save includes a server revision, per-tab editor token, and increasing save sequence. A different stale tab cannot overwrite or discard a newer checkpoint and receives HTTP 409. Requests from the same editor are ordered by sequence so a late unload request cannot replace a newer save. This is an integrity safeguard in addition to normal owner and CSRF checks.
 
-Regression coverage is maintained in `kb/tests/articles/test_article_creation_workspace.py`.
+Permanent user deletion has a separate privacy cleanup path. A `pre_delete` user signal locks and snapshots the active checkpoint, removes checkpoint-specific image-upload and image-activity rows through the protected transaction-local account-deletion mechanism, and schedules physical file/session cleanup only after the database transaction commits. Existing articles use `SET_NULL` ownership and retain author snapshots. Disabled and inactive accounts do not trigger this path, so their checkpoints remain recoverable. Physical deletion rechecks article and other-workspace references before unlinking a file, preventing account removal from deleting an image still needed by preserved content. The account-deletion action itself remains in the append-only administrator audit trail according to its configured retention period, but the private checkpoint content and checkpoint-only image metadata are purged.
+
+Regression coverage is maintained in `kb/tests/articles/test_article_creation_workspace.py` and `kb/tests/users/test_user_account_deletion_cleanup.py`.
 
 ## 10. OpenKB Retrieved-Content and Distributed-Lock Hardening
 
