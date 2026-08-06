@@ -7,9 +7,28 @@ from django.dispatch import receiver
 from .models import SuggestedArticle, UserProfile
 
 
+@receiver(pre_delete, sender=SuggestedArticle)
+def purge_deleted_article_edit_checkpoints(sender, instance, **kwargs):
+    """Remove uncommitted edit-checkpoint files when an article is truly deleted."""
+    from .models import ArticleEditWorkspace
+    from .views.services import _delete_article_edit_workspace_files
+
+    workspaces = list(
+        ArticleEditWorkspace.objects.filter(article_id=instance.pk).select_related("owner")
+    )
+    for workspace in workspaces:
+        transaction.on_commit(
+            lambda checkpoint=workspace: _delete_article_edit_workspace_files(
+                checkpoint,
+                actor=None,
+                keep_filenames=[],
+            )
+        )
+
+
 @receiver(pre_delete, sender=get_user_model())
 def purge_deleted_user_checkpoint(sender, instance, **kwargs):
-    """Purge only the active New Article checkpoint on permanent account deletion.
+    """Purge private New Article and existing-article checkpoints on permanent account deletion.
 
     Setting ``is_active=False`` or assigning the Disabled User role does not
     delete the User row and therefore does not run this cleanup. Existing

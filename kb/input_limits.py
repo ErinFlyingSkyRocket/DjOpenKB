@@ -108,6 +108,7 @@ STATIC_FIELD_LIMITS = {
     "split": SMALL_CONTROL_MAX_LENGTH,
     "frm_kb_id": SMALL_CONTROL_MAX_LENGTH,
     "workspace_id": 36,
+    "edit_workspace_id": 36,
     "workspace_revision": 20,
     "workspace_editor_token": 64,
     "workspace_save_sequence": 20,

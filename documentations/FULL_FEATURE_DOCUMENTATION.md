@@ -156,7 +156,7 @@ Admins can edit the profile `Account Type` and `Source` fields in Django Admin f
 
 The Django `Active` checkbox is separate from `Disabled User`. Unticking `Active` prevents login entirely. Assigning `Disabled User` gives a cleaner disabled-account page flow for accounts that should remain visible for history but should not access the website.
 
-Permanent account deletion is intentionally different from either of those retained-account states. When the Django user row is actually deleted, any active private New Article checkpoint is cascade-deleted, every uncommitted image owned only by that checkpoint is removed after the deletion transaction commits, checkpoint-specific image upload/activity rows are purged, and authenticated or pending-MFA sessions for that account are invalidated. Existing articles are not deleted: `SuggestedArticle.owner` becomes `NULL` and the stored author snapshots remain so published and historical content can be managed through the orphan-article workflow. A defensive reference check preserves an image file if inconsistent legacy data shows that an existing article or another checkpoint still uses it. Setting `Active` to off or assigning `Disabled User` does not invoke this purge and preserves the checkpoint for possible account restoration. The minimal administrator audit event recording that an account was deleted remains subject to the normal audit-retention policy; private checkpoint title/body/keywords, checkpoint-only images, and checkpoint-specific upload/activity records do not remain.
+Permanent account deletion is intentionally different from either of those retained-account states. When the Django user row is actually deleted, all active private New Article and existing-article edit/review checkpoints are cascade-deleted, every uncommitted image owned only by those checkpoints is removed after the deletion transaction commits, checkpoint-specific image upload/activity rows are purged, and authenticated or pending-MFA sessions for that account are invalidated. Existing articles are not deleted: `SuggestedArticle.owner` becomes `NULL` and the stored author snapshots remain so published and historical content can be managed through the orphan-article workflow. A defensive reference check preserves an image file if inconsistent legacy data shows that an existing article or another checkpoint still uses it. Setting `Active` to off or assigning `Disabled User` does not invoke this purge and preserves the checkpoint for possible account restoration. The minimal administrator audit event recording that an account was deleted remains subject to the normal audit-retention policy; private creation/edit checkpoint fields, checkpoint-only images, and checkpoint-specific upload/activity records do not remain.
 
 Main-site admin tools and Django Admin access require superuser access after role synchronisation. Non-admin users receive 404 responses for protected main-site admin tools. Anonymous users also receive 404 for normal protected routes instead of being shown application content.
 
@@ -487,6 +487,27 @@ Only one persistent creation workspace is maintained per user. Opening New Artic
 Checkpoint persistence lasts for the lifetime of the retained account, not forever after account removal. Disabling or inactivating the account preserves the workspace and its files. Permanently deleting the account purges the active checkpoint and its private uncommitted files while leaving existing saved articles as orphaned records.
 
 Workspace image ownership is server-side. An image uploaded in the new-article editor is bound to that user's workspace and continues to count against the persistent pending-image quota. Typing another user's pending upload filename into Markdown does not transfer ownership and cannot make Discard delete that file. A workspace may reuse an image that is already committed to repository article content, but it cannot save an uncommitted image owned by another workspace.
+
+#### Persistent Existing-Article Edit and Review Checkpoints
+
+Opening an authorised **Edit Article** or **Review Article** page creates or restores a private `ArticleEditWorkspace` for the exact user, article, and editor mode. Edit and review checkpoints are separate so a combined-role account does not accidentally mix an owner-style edit with a reviewer decision. The checkpoint stores the current title, body, keywords, permitted visibility, selected review status/comments, image references, and any new images uploaded in that editor. It does not modify `SuggestedArticle` until the user presses a normal workflow button.
+
+Changed fields autosave after a short pause. In-application navigation is stopped before redirecting and uses the same blocking two-choice workflow as New Article:
+
+| Choice | Result |
+|---|---|
+| **Keep checkpoint and continue** | Complete the latest autosave, preserve the private edit/review checkpoint and its uncommitted images, then continue to the selected page or form action. Reopening the same article in the same editor mode restores the checkpoint. |
+| **Discard and continue** | Delete only that user's private checkpoint and its uncommitted images, leave the saved article/pending update unchanged, then continue to the selected destination. |
+
+**Reset edits** explicitly discards the private checkpoint and reloads the latest saved article or staged pending update. A normal browser refresh restores the checkpoint. Address-bar navigation, tab closure, browser closure, and refresh use delayed autosave, a final same-origin unload save attempt, and the browser-native unsaved-change warning when the newest snapshot is still pending.
+
+Existing-article checkpoints deliberately use **last autosave wins** rather than revision-conflict prompts. Multiple tabs belonging to the same user share the same user/article/mode checkpoint, and the request that reaches the server last becomes the restored checkpoint. Different authorised users have separate checkpoints. The article itself changes only when someone performs the normal Save, Save draft/update progress, Submit, Approve, Reject, Publish, or Revert action; the last successful normal article action remains authoritative.
+
+Normal workflow behaviour is preserved. Autosave and Keep checkpoint do not send SMTP messages. A real new submission or published-update submission still notifies the matching reviewer pool, and a final approval or Pending failed decision still follows the existing owner-notification rules. Saving successfully removes that user's checkpoint, retains images committed by the resulting article or pending update, and removes only unused images that were uploaded into that checkpoint.
+
+Edit-workspace image operations require the exact owner-scoped workspace and authorised article context. A checkpoint may reference images already committed to the article being edited and new pending images uploaded into that exact checkpoint; another user's uncommitted filename cannot be claimed by pasting it into Markdown. Existing article files are not physically removed merely by removing their preview card—the deletion is applied only after the normal article save confirms that the image is no longer referenced. Active creation/edit checkpoints also protect their images from direct synchronisation cleanup and scheduled stray-file cleanup.
+
+Edit/review checkpoints remain when an account is inactive or assigned `Disabled User`. Permanent user deletion purges that user's private creation and edit/review checkpoints, checkpoint-only image files, checkpoint-specific upload/activity rows, and sessions while preserving saved articles through `owner=NULL` and author snapshots. Deleting the article itself cascade-removes all edit/review checkpoints for that article and cleans their uncommitted owned files.
 
 For an already published article edited by an owner/writer flow, the live article is not overwritten immediately. The proposed update is stored separately and sent for review.
 
@@ -886,28 +907,28 @@ Uncommitted image uploads are limited by authenticated user rather than browser 
 
 The quota is calculated from persistent upload audit records, files that still exist, and current article references. Opening another browser, signing in again, or clearing a session does not reset it. Simultaneous uploads for the same account are serialised with a database row lock before the count and byte limits are checked. The session list remains only an editor convenience and is not the security boundary.
 
-### 12.10 New-Article Image Lifecycle
+### 12.10 Article Checkpoint Image Lifecycle
 
-New-article uploads are recorded against the authenticated user's `ArticleCreationWorkspace` UUID as well as in `ArticleImageUploadLog`. This provides a persistent ownership boundary across tabs, browsers, and login sessions:
+New-article uploads are recorded against the authenticated user's `ArticleCreationWorkspace` UUID. Existing-article uploads are recorded against the exact `ArticleEditWorkspace` UUID and article ID. Both are also recorded in `ArticleImageUploadLog`, providing a persistent ownership boundary across tabs, browsers, and login sessions:
 
 ```text
 Upload image
--> bind generated filename to the user's persistent checkpoint
+-> bind generated filename to the exact user-owned creation/edit checkpoint
 -> autosave a private checkpoint
 -> Keep checkpoint and continue preserves temporary fields/files
--> Save draft / Submit / Publish keeps only referenced files
--> Discard and continue / Reset article deletes all uncommitted workspace-owned files
+-> normal Save / Submit / Publish / Review keeps only committed references
+-> Discard / Reset removes only uncommitted checkpoint-owned files
 ```
 
-Active workspace files are excluded from stray-file results, but they still count as uncommitted files for the per-user count and byte quotas. The upload and delete endpoints require either the exact owned workspace UUID or an authorised existing-article edit context; a caller cannot omit the context or supply both contexts. Upload audit rows retain the workspace/article identifier as a historical snapshot after the checkpoint is removed.
+Active creation and edit/review workspace files are excluded from stray-file results, but new uncommitted uploads still count toward the per-user count and byte quotas. The upload and delete endpoints require the exact owned workspace UUID plus the authorised article context for existing edits. Existing article images removed in the checkpoint remain physically available until the normal save applies the article change. Upload audit rows retain the creation/edit workspace and article identifiers as historical snapshots after a checkpoint is removed.
 
 ## 13. Stray Upload File Cleanup
 
 ### 13.1 Manual Cleanup
 
-Admins have access to a clean stray upload files tool. It finds uploaded files that are no longer referenced by an article, approved Markdown content, or a persistent user-owned New Article checkpoint.
+Admins have access to a clean stray upload files tool. It finds uploaded files that are no longer referenced by an article, approved Markdown content, or a persistent user-owned New Article or existing-article edit/review checkpoint.
 
-The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept. The cleanup logic checks live article content, pending-update content, checkpoint image ownership so images used only by a pending update or a recoverable New Article checkpoint are not incorrectly treated as stray files.
+The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept. The cleanup logic checks live article content, pending-update content, and creation/edit checkpoint ownership so images used only by a pending update or a recoverable checkpoint are not incorrectly treated as stray files.
 
 ### 13.2 Automatic Cleanup
 
@@ -923,7 +944,7 @@ The default stray upload minimum age is also 24 hours:
 stray_upload_cleanup_min_age_minutes = 1440
 ```
 
-This minimum age protects newly created orphan files while an upload or filesystem operation may still be completing. Existing New Article checkpoints are always excluded from automatic cleanup, regardless of age. Explicit **Discard and continue**, **Reset article**, Save draft, Submit, or Publish remains responsible for ending a checkpoint and cleaning its unused images. Scheduled cleanup removes only genuinely unreferenced remnants left by browser crashes, network loss, failed file deletion, interrupted finalisation, legacy uploads, or files introduced outside the expected workflow.
+This minimum age protects newly created orphan files while an upload or filesystem operation may still be completing. Existing New Article and existing-article edit/review checkpoints are always excluded from automatic cleanup, regardless of age. Explicit **Discard and continue**, **Reset article**, Save draft, Submit, or Publish remains responsible for ending a checkpoint and cleaning its unused images. Scheduled cleanup removes only genuinely unreferenced remnants left by browser crashes, network loss, failed file deletion, interrupted finalisation, legacy uploads, or files introduced outside the expected workflow.
 
 ## 14. Markdown and XSS Protection
 
@@ -1548,11 +1569,12 @@ Sync articles to OpenKB AI:
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
-Verify the persistent New Article checkpoint and image lifecycle:
+Verify the persistent New Article and existing-article edit/review checkpoints:
 
 ```bash
 docker compose exec web python manage.py test \
-  kb.tests.articles.test_article_creation_workspace
+  kb.tests.articles.test_article_creation_workspace \
+  kb.tests.articles.test_article_edit_workspace
 ```
 
 Run cleanup manually:

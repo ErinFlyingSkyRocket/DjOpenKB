@@ -41,6 +41,16 @@ urlpatterns = [
     path("articles/<int:article_id>/vote/", views.vote_article, name="vote_article"),
     path("article-creation-workspace/autosave/", views.autosave_article_creation_workspace, name="autosave_article_creation_workspace"),
     path("article-creation-workspace/discard/", views.discard_article_creation_workspace_view, name="discard_article_creation_workspace"),
+    path(
+        "profile/articles/<int:article_id>/edit-workspace/autosave/",
+        views.autosave_article_edit_workspace,
+        name="autosave_article_edit_workspace",
+    ),
+    path(
+        "profile/articles/<int:article_id>/edit-workspace/discard/",
+        views.discard_article_edit_workspace_view,
+        name="discard_article_edit_workspace",
+    ),
     path("article-video-link-validate/", views.validate_article_video_link, name="validate_article_video_link"),
     path("article-image-upload/", views.upload_article_image, name="upload_article_image"),
     path("article-image-delete/", views.delete_article_image, name="delete_article_image"),

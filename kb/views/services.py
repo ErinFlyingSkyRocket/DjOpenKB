@@ -40,7 +40,23 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ActivityLog, ArticleCreationWorkspace, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, get_article_body_character_limit, get_article_keyword_limit, normalize_article_title, validate_article_body, validate_article_keywords
+from ..models import (
+    ActivityLog,
+    ArticleCreationWorkspace,
+    ArticleEditWorkspace,
+    ArticleDeletionRequest,
+    ArticleImageUploadLog,
+    ArticleVote,
+    SuggestedArticle,
+    UserProfile,
+    SiteSetting,
+    UserMFADevice,
+    get_article_body_character_limit,
+    get_article_keyword_limit,
+    normalize_article_title,
+    validate_article_body,
+    validate_article_keywords,
+)
 from ..mfa import user_requires_mfa, verify_totp_code
 from ..auth_monitoring import (
     build_auth_lockout_ui_context,
@@ -1446,7 +1462,12 @@ def sync_article_image_assets(article, old_assets=None):
     for filename in stale_assets:
         # Do not delete an image if it is still referenced by this article's
         # pending-update draft/review fields or by any other article.
-        if article_references_uploaded_filename(article, filename) or image_is_used_by_other_article(filename, current_article=article):
+        if (
+            article_references_uploaded_filename(article, filename)
+            or image_is_used_by_other_article(filename, current_article=article)
+            or image_is_used_by_other_creation_workspace(filename)
+            or image_is_used_by_other_edit_workspace(filename)
+        ):
             continue
         delete_uploaded_image_file(filename)
 
@@ -1541,6 +1562,221 @@ def get_owned_article_creation_workspace(user, workspace_id, *, for_update=False
     if for_update:
         queryset = queryset.select_for_update()
     return queryset.filter(pk=workspace_uuid, owner_id=user.pk).first()
+
+
+
+def article_edit_workspace_assets(workspace):
+    """Return safe image references currently represented by an edit checkpoint."""
+    if workspace is None:
+        return []
+    assets = []
+    for filename in list(workspace.image_assets or []):
+        safe_name = safe_uploaded_filename(filename)
+        if safe_name and safe_name not in assets:
+            assets.append(safe_name)
+    return assets
+
+
+def article_edit_workspace_owned_assets(workspace):
+    """Return safe uncommitted uploads owned specifically by an edit checkpoint."""
+    if workspace is None:
+        return []
+    assets = []
+    for filename in list(workspace.owned_image_assets or []):
+        safe_name = safe_uploaded_filename(filename)
+        if safe_name and safe_name not in assets:
+            assets.append(safe_name)
+    return assets
+
+
+def get_owned_article_edit_workspace(
+    user,
+    workspace_id,
+    *,
+    article=None,
+    editor_mode=None,
+    for_update=False,
+):
+    """Return one authorised user's existing-article checkpoint or ``None``."""
+    if not user or not getattr(user, "pk", None) or not workspace_id:
+        return None
+    try:
+        workspace_uuid = uuid.UUID(str(workspace_id))
+    except (TypeError, ValueError, AttributeError):
+        return None
+
+    queryset = ArticleEditWorkspace.objects.select_related("owner", "article")
+    if for_update:
+        queryset = queryset.select_for_update()
+    queryset = queryset.filter(pk=workspace_uuid, owner_id=user.pk)
+    if article is not None:
+        queryset = queryset.filter(article_id=article.pk)
+    if editor_mode:
+        queryset = queryset.filter(editor_mode=editor_mode)
+    return queryset.first()
+
+
+def image_is_used_by_other_edit_workspace(filename, current_workspace=None):
+    """Return whether another persistent existing-article checkpoint references an image."""
+    safe_name = safe_uploaded_filename(filename)
+    if not safe_name:
+        return False
+
+    queryset = ArticleEditWorkspace.objects.all()
+    if current_workspace is not None and getattr(current_workspace, "pk", None):
+        queryset = queryset.exclude(pk=current_workspace.pk)
+    for workspace in queryset.only("image_assets", "owned_image_assets"):
+        if (
+            safe_name in article_edit_workspace_assets(workspace)
+            or safe_name in article_edit_workspace_owned_assets(workspace)
+        ):
+            return True
+    return False
+
+
+def validate_article_edit_workspace_image_references(workspace, body, article):
+    """Validate image references before an edit checkpoint changes an article.
+
+    Accepted files are images already committed to repository content, images
+    already referenced by the article being edited, or uncommitted images owned
+    by this exact checkpoint. A filename from another user's unsaved workspace
+    never becomes authorised merely because it was pasted into Markdown.
+    """
+    referenced = validate_article_image_count(extract_article_image_filenames(body))
+    owned = set(article_edit_workspace_owned_assets(workspace))
+    upload_dir = get_openkb_uploads_dir().resolve()
+
+    for filename in referenced:
+        file_path = (upload_dir / filename).resolve()
+        try:
+            file_path.relative_to(upload_dir)
+        except ValueError:
+            raise ValidationError(_("The article contains an invalid image reference."))
+        if not file_path.exists() or not file_path.is_file():
+            raise ValidationError(
+                _("The article references an uploaded image that is no longer available: %(filename)s")
+                % {"filename": filename}
+            )
+
+        if filename in owned:
+            if not user_owns_pending_article_image(workspace.owner, filename):
+                raise ValidationError(
+                    _("An uploaded image in this edit checkpoint is no longer owned by your account.")
+                )
+            continue
+        if article_references_uploaded_filename(article, filename):
+            continue
+        if image_is_used_by_other_article(filename):
+            continue
+        raise ValidationError(
+            _("The article references an uncommitted image that does not belong to this edit checkpoint.")
+        )
+    return referenced
+
+
+def _delete_article_edit_workspace_files(
+    workspace,
+    *,
+    actor=None,
+    keep_filenames=None,
+    reason=None,
+):
+    """Delete only uncommitted files owned by an existing-article checkpoint."""
+    keep = {
+        safe_uploaded_filename(filename)
+        for filename in (keep_filenames or [])
+        if safe_uploaded_filename(filename)
+    }
+    delete_reason = reason or ArticleImageUploadLog.DeleteReason.USER_REMOVED
+    deleted = []
+    for filename in article_edit_workspace_owned_assets(workspace):
+        if filename in keep:
+            continue
+        if image_is_used_by_other_article(filename):
+            continue
+        if image_is_used_by_other_creation_workspace(filename):
+            continue
+        if image_is_used_by_other_edit_workspace(filename, current_workspace=workspace):
+            continue
+        try:
+            if delete_uploaded_image_file(filename, actor=actor, reason=delete_reason):
+                deleted.append(filename)
+        except OSError:
+            logger.exception("Unable to delete Article Edit checkpoint image %s", filename)
+    return deleted
+
+
+def discard_article_edit_workspace(request, workspace, *, reason=None):
+    """Delete an edit checkpoint and every uncommitted image it owns."""
+    if workspace is None:
+        return []
+    snapshot = workspace
+    owned = article_edit_workspace_owned_assets(workspace)
+    actor = getattr(request, "user", None) if request is not None else None
+    delete_reason = reason or ArticleImageUploadLog.DeleteReason.USER_REMOVED
+    workspace.delete()
+
+    transaction.on_commit(
+        lambda: _delete_article_edit_workspace_files(
+            snapshot,
+            actor=actor,
+            keep_filenames=[],
+            reason=delete_reason,
+        )
+    )
+    if request is not None:
+        pending_uploads = request.session.get("pending_article_uploads", [])
+        request.session["pending_article_uploads"] = [
+            item for item in pending_uploads if item not in set(owned)
+        ]
+        request.session.modified = True
+    return owned
+
+
+def finalize_article_edit_workspace(request, workspace, committed_image_assets):
+    """Remove an edit checkpoint while retaining its images committed by the save."""
+    if workspace is None:
+        return []
+    committed = {
+        safe_uploaded_filename(filename)
+        for filename in (committed_image_assets or [])
+        if safe_uploaded_filename(filename)
+    }
+    snapshot = workspace
+    owned = article_edit_workspace_owned_assets(workspace)
+    actor = getattr(request, "user", None) if request is not None else None
+    workspace.delete()
+
+    transaction.on_commit(
+        lambda: _delete_article_edit_workspace_files(
+            snapshot,
+            actor=actor,
+            keep_filenames=committed,
+            reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+        )
+    )
+    if request is not None:
+        pending_uploads = request.session.get("pending_article_uploads", [])
+        request.session["pending_article_uploads"] = [
+            item for item in pending_uploads if item not in set(owned)
+        ]
+        request.session.modified = True
+    return owned
+
+
+def get_article_edit_workspace_image_cards(workspace):
+    """Return editor image cards while preserving which files are uncommitted."""
+    if workspace is None:
+        return []
+    owned = set(article_edit_workspace_owned_assets(workspace))
+    cards = []
+    for filename in article_edit_workspace_assets(workspace):
+        card_list = get_article_image_cards_from_filenames(
+            [filename],
+            existing=filename not in owned,
+        )
+        cards.extend(card_list)
+    return cards
 
 
 def image_is_used_by_other_creation_workspace(filename, current_workspace=None):
@@ -1777,10 +2013,19 @@ def extract_uploaded_file_filenames_from_text(text):
     return filenames
 
 
-def get_all_referenced_uploaded_files(*, include_creation_workspaces=True, exclude_workspace_ids=None):
+def get_all_referenced_uploaded_files(
+    *,
+    include_creation_workspaces=True,
+    include_edit_workspaces=True,
+    exclude_workspace_ids=None,
+    exclude_edit_workspace_ids=None,
+):
     """Return uploaded filenames still referenced by articles, workspaces, or Markdown."""
     referenced = set()
     excluded_workspace_ids = {str(item) for item in (exclude_workspace_ids or [])}
+    excluded_edit_workspace_ids = {
+        str(item) for item in (exclude_edit_workspace_ids or [])
+    }
 
     # 1) Trust Django article records first. This covers draft/published articles,
     # published-update drafts/reviews, and images tracked in image asset fields.
@@ -1804,7 +2049,19 @@ def get_all_referenced_uploaded_files(*, include_creation_workspaces=True, exclu
                 continue
             referenced.update(article_creation_workspace_assets(workspace))
 
-    # 3) Also scan all OpenKB wiki Markdown files. This protects manually added
+    # 3) Protect persistent existing-article edit checkpoints. New uploads
+    # remain valid account-owned data until the user saves, resets, or discards
+    # the checkpoint, regardless of age.
+    if include_edit_workspaces:
+        for workspace in ArticleEditWorkspace.objects.only(
+            "id", "body", "image_assets", "owned_image_assets"
+        ):
+            if str(workspace.pk) in excluded_edit_workspace_ids:
+                continue
+            referenced.update(article_edit_workspace_assets(workspace))
+            referenced.update(article_edit_workspace_owned_assets(workspace))
+
+    # 4) Also scan all OpenKB wiki Markdown files. This protects manually added
     # Markdown files or files edited outside Django.
     wiki_dir = settings.OPENKB_WIKI_DIR
     if wiki_dir.exists():
@@ -1847,7 +2104,10 @@ def get_user_pending_image_upload_usage(user):
     if not user or not getattr(user, "pk", None):
         return {"count": 0, "bytes": 0, "filenames": []}
 
-    referenced = get_all_referenced_uploaded_files(include_creation_workspaces=False)
+    referenced = get_all_referenced_uploaded_files(
+        include_creation_workspaces=False,
+        include_edit_workspaces=False,
+    )
     upload_dir = get_openkb_uploads_dir().resolve()
     pending = []
     total_bytes = 0

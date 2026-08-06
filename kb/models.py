@@ -1032,6 +1032,91 @@ class ArticleCreationWorkspace(models.Model):
         )
 
 
+class ArticleEditWorkspace(models.Model):
+    """Persistent per-user checkpoint for editing one existing article.
+
+    Each authorised user receives an independent checkpoint for an article and
+    editor mode. Autosave uses last-write-wins semantics by design: the most
+    recent save from that user's tabs becomes the restored checkpoint. The
+    workspace is separate from ``SuggestedArticle`` until the user performs a
+    normal Save, submit, review, or publish action.
+    """
+
+    class EditorMode(models.TextChoices):
+        EDIT = "edit", _("Edit")
+        REVIEW = "review", _("Review")
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="article_edit_workspaces",
+    )
+    article = models.ForeignKey(
+        SuggestedArticle,
+        on_delete=models.CASCADE,
+        related_name="edit_workspaces",
+    )
+    editor_mode = models.CharField(
+        max_length=10,
+        choices=EditorMode.choices,
+        default=EditorMode.EDIT,
+    )
+    title = models.CharField(max_length=200, blank=True)
+    body = models.TextField(blank=True)
+    keywords = models.CharField(max_length=500, blank=True)
+    visibility = models.CharField(
+        max_length=20,
+        choices=SuggestedArticle.Visibility.choices,
+        default=SuggestedArticle.Visibility.PUBLIC,
+    )
+    status = models.CharField(max_length=20, blank=True)
+    review_notes = models.TextField(blank=True)
+    image_assets = models.JSONField(default=list, blank=True)
+    owned_image_assets = models.JSONField(
+        default=list,
+        blank=True,
+        help_text=_(
+            "Uncommitted images uploaded specifically into this edit checkpoint."
+        ),
+    )
+    is_dirty = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = _("Article edit workspace")
+        verbose_name_plural = _("Article edit workspaces")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner", "article", "editor_mode"],
+                name="kb_unique_article_edit_workspace",
+            )
+        ]
+
+    def __str__(self):
+        owner_name = self.owner.get_username() if self.owner_id else str(_("unknown user"))
+        article_title = self.article.title if self.article_id else str(_("unknown article"))
+        return _("%(mode)s checkpoint for %(article)s by %(owner)s") % {
+            "mode": self.get_editor_mode_display(),
+            "article": article_title,
+            "owner": owner_name,
+        }
+
+    @property
+    def has_content(self):
+        return bool(
+            self.is_dirty
+            or self.title.strip()
+            or self.body.strip()
+            or self.keywords.strip()
+            or self.review_notes.strip()
+            or self.image_assets
+            or self.owned_image_assets
+        )
+
+
 class ArticleImageUploadLog(models.Model):
     """Audit record for images uploaded through the article editor.
 
@@ -1057,6 +1142,16 @@ class ArticleImageUploadLog(models.Model):
         editable=False,
         help_text=_(
             "Temporary new-article workspace that owned this upload when it was created. "
+            "The UUID is retained as an audit snapshot after the workspace is removed."
+        ),
+    )
+    edit_workspace_id = models.UUIDField(
+        null=True,
+        blank=True,
+        db_index=True,
+        editable=False,
+        help_text=_(
+            "Existing-article checkpoint that owned this upload when it was created. "
             "The UUID is retained as an audit snapshot after the workspace is removed."
         ),
     )

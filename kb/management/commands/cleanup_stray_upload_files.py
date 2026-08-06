@@ -15,8 +15,9 @@ Run non-interactively for the Docker scheduler:
 
 Purpose and warning:
     Delete files under the OpenKB uploads directory only when they are not
-    referenced by an article, Markdown file, or persistent user-owned New
-    Article checkpoint. Valid checkpoints never expire because of age. Use
+    referenced by an article, Markdown file, persistent New Article checkpoint,
+    or persistent existing-article edit/review checkpoint. Valid checkpoints
+    never expire because of age. Use
     --dry-run first because deleted orphan files cannot be restored by this
     command.
 """
@@ -32,7 +33,7 @@ from kb.views import find_stray_uploaded_files, get_openkb_uploads_dir, mark_art
 class Command(BaseCommand):
     help = (
         "Delete orphaned files under openkb-data/wiki/uploads. Files owned by "
-        "articles or persistent New Article checkpoints are always protected, "
+        "articles or persistent article creation/edit checkpoints are always protected, "
         "regardless of age."
     )
 

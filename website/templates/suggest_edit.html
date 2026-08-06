@@ -216,6 +216,13 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             display: inline-block;
             margin-top: 6px;
         }
+        .article-edit-workspace-status {
+            display: inline-block;
+            margin-left: 4px;
+            min-height: 18px;
+        }
+        .article-edit-workspace-status.is-saving { color: #8a6d3b; }
+        .article-edit-workspace-status.is-error { color: #a94442; }
         @media (max-width: 767px) {
             .article-action-buttons {
                 align-items: stretch;
@@ -239,10 +246,22 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
             <div class="row">
-                <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
+                <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator"
+                      data-article-edit-workspace-id="{{ article_edit_workspace_id }}"
+                      data-article-edit-workspace-dirty="{% if article_edit_workspace_dirty %}true{% else %}false{% endif %}"
+                      data-article-edit-workspace-autosave-url="{% url 'autosave_article_edit_workspace' article.id %}"
+                      data-article-edit-workspace-discard-url="{% url 'discard_article_edit_workspace' article.id %}"
+                      data-article-edit-workspace-fallback-url="{{ back_url|default:'/home/' }}"
+                      data-article-edit-workspace-reset-url="{% url 'edit_suggestion' article.id %}?editor_mode={{ article_editor_mode|default:'edit' }}{% if return_url %}&amp;next={{ return_url|urlencode }}{% endif %}"
+                      data-article-edit-workspace-saving-text="{% trans 'Saving edit checkpoint…' %}"
+                      data-article-edit-workspace-saved-text="{% trans 'Edit checkpoint saved. You can continue later.' %}"
+                      data-article-edit-workspace-restored-text="{% trans 'Edit checkpoint restored. Use Reset edits to reload the latest saved article.' %}"
+                      data-article-edit-workspace-save-error-text="{% trans 'The edit checkpoint could not be saved.' %}"
+                      data-article-edit-workspace-discard-error-text="{% trans 'The edit checkpoint could not be discarded.' %}">
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
                 <input type="hidden" name="editor_mode" value="{{ article_editor_mode|default:'edit' }}">
+                    <input type="hidden" name="edit_workspace_id" value="{{ article_edit_workspace_id }}">
                     <input type="hidden" name="frm_kb_id" value="" />
                     <input type="hidden" name="article_visibility" value="{{ article.visibility }}" {% if can_change_article_visibility %}disabled{% endif %}>
                     {% if is_review_only_article %}
@@ -252,7 +271,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                             <div class="form-group">
                                 <label for="preview">{% trans "Article title" %} *</label><br/>
-                                <input type="text" name="frm_kb_title" id="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value|default:article.title }}" {% if not can_edit_article_content %}readonly{% endif %} required/>
+                                <input type="text" name="frm_kb_title" id="frm_kb_title" class="form-control input-normal" minlength="5" maxlength="200" value="{{ title_value }}" {% if not can_edit_article_content %}readonly{% endif %} required/>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
@@ -261,14 +280,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% if can_review_article %}
                                     <select name="status" id="articleStatusSelect" class="form-control">
                                         {% if is_pending_update_review %}
-                                            <option value="pending" {% if current_update_status == 'pending' or current_update_status == 'none' %}selected{% endif %}>{% trans "Keep update pending / Save review edits" %}</option>
-                                            <option value="published">{% trans "Approve update" %}</option>
-                                            <option value="failed" {% if current_update_status == 'failed' %}selected{% endif %}>{% trans "Reject update" %}</option>
+                                            <option value="pending" {% if edit_status_value == 'pending' %}selected{% endif %}>{% trans "Keep update pending / Save review edits" %}</option>
+                                            <option value="published" {% if edit_status_value == 'published' %}selected{% endif %}>{% trans "Approve update" %}</option>
+                                            <option value="failed" {% if edit_status_value == 'failed' %}selected{% endif %}>{% trans "Reject update" %}</option>
                                         {% else %}
-                                            {% if allow_status_draft %}<option value="draft" {% if current_status == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>{% endif %}
-                                            {% if allow_status_pending %}<option value="pending" {% if current_status == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>{% endif %}
-                                            {% if allow_status_failed %}<option value="failed" {% if current_status == 'failed' %}selected{% endif %}>{% trans "Reject / Pending failed" %}</option>{% endif %}
-                                            {% if allow_status_published %}<option value="published" {% if current_status == 'published' %}selected{% endif %}>{% trans "Approve / Publish" %}</option>{% endif %}
+                                            {% if allow_status_draft %}<option value="draft" {% if edit_status_value == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>{% endif %}
+                                            {% if allow_status_pending %}<option value="pending" {% if edit_status_value == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>{% endif %}
+                                            {% if allow_status_failed %}<option value="failed" {% if edit_status_value == 'failed' %}selected{% endif %}>{% trans "Reject / Pending failed" %}</option>{% endif %}
+                                            {% if allow_status_published %}<option value="published" {% if edit_status_value == 'published' %}selected{% endif %}>{% trans "Approve / Publish" %}</option>{% endif %}
                                         {% endif %}
                                     </select>
                                 {% else %}
@@ -309,6 +328,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
+                            <button id="articleEditWorkspaceResetButton" class="btn btn-warning" type="button"><i class="fa fa-refresh"></i> {% trans "Reset edits" %}</button>
+                            <span id="articleEditWorkspaceStatus" class="text-muted article-edit-workspace-status" aria-live="polite"></span>
                             {% trans "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed." as revert_confirm_text %}
                             {% if can_review_article %}
                                 {% if is_pending_update_review %}
@@ -345,7 +366,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div id="adminReviewNotesGroup" class="admin-review-notes{% if current_status != 'failed' %} csp-is-hidden{% endif %}">
                                 <div class="form-group admin-review-notes-group">
                                     <label for="reviewNotesInput">{% trans "Pending failed comments" %}</label>
-                                    <textarea id="reviewNotesInput" name="review_notes" class="form-control" maxlength="{{ input_limits.review_notes }}" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value|default:article.review_notes }}</textarea>
+                                    <textarea id="reviewNotesInput" name="review_notes" class="form-control" maxlength="{{ input_limits.review_notes }}" rows="4" placeholder="{% trans 'Explain what the user needs to fix before resubmitting this article or update.' %}">{{ review_notes_value }}</textarea>
                                     <p class="text-muted admin-review-notes-help">{% trans "These comments are shown to the article owner when the article or update is marked as Pending failed." %}</p>
                                 </div>
                             </div>
@@ -419,7 +440,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                         <input id="articleImageUploadInput" class="article-image-upload-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp">
                                     </p>
                                 {% endif %}
-                                <textarea id="editor" minlength="5" maxlength="{{ article_body_character_limit|default:'100000' }}" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" data-article-character-limit="{{ article_body_character_limit|default:'100000' }}" data-article-character-limit-message="{% blocktrans with limit=article_body_character_limit %}Maximum {{ limit }} characters allowed.{% endblocktrans %}" aria-describedby="articleCharacterLimitHelp" class="form-control" {% if not can_edit_article_content %}readonly{% endif %} required>{{ body_value|default:article.body }}</textarea>
+                                <textarea id="editor" minlength="5" maxlength="{{ article_body_character_limit|default:'100000' }}" name="frm_kb_body" data-provide="markdown" data-hidden-buttons="cmdPreview" data-iconlibrary="fa" data-article-character-limit="{{ article_body_character_limit|default:'100000' }}" data-article-character-limit-message="{% blocktrans with limit=article_body_character_limit %}Maximum {{ limit }} characters allowed.{% endblocktrans %}" aria-describedby="articleCharacterLimitHelp" class="form-control" {% if not can_edit_article_content %}readonly{% endif %} required>{{ body_value }}</textarea>
                                 <p id="articleCharacterLimitHelp" class="text-muted article-character-limit-help"><span id="articleCharacterCount">0</span> / <span id="articleCharacterLimitValue">{{ article_body_character_limit|default:'100000' }}</span> {% trans "characters" %}</p>
                             </div>
                         </div>
@@ -434,7 +455,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label>{% trans "Keywords" %}</label><br/>
-                                <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value|default:article.keywords }}" maxlength="500" data-keyword-limit="{{ article_keyword_limit|default:'20' }}" data-keyword-limit-message="{% blocktrans with limit=article_keyword_limit %}Maximum {{ limit }} keywords allowed.{% endblocktrans %}" {% if not can_edit_article_content %}readonly{% endif %}>
+                                <input type="text" class="form-control" name="frm_kb_keywords" id="frm_kb_keywords" value="{{ keywords_value }}" maxlength="500" data-keyword-limit="{{ article_keyword_limit|default:'20' }}" data-keyword-limit-message="{% blocktrans with limit=article_keyword_limit %}Maximum {{ limit }} keywords allowed.{% endblocktrans %}" {% if not can_edit_article_content %}readonly{% endif %}>
                                 {% include "_keyword_suggestions.html" %}
                             </div>
                         </div>
@@ -447,6 +468,43 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         {% include "_video_insert_modal.html" %}
     {% include "_image_size_modal.html" %}
     {% endif %}
+    <div class="modal fade" id="articleEditWorkspaceLeaveModal" tabindex="-1" role="dialog" aria-labelledby="articleEditWorkspaceLeaveModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="articleEditWorkspaceLeaveModalLabel">{% trans "Leave this article editor?" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "Your latest changes can remain as a private edit checkpoint, or you can discard them before continuing." %}</p>
+                    <div id="articleEditWorkspaceLeaveError" class="alert alert-danger csp-is-hidden" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="articleEditWorkspaceDiscardContinueButton" type="button" class="btn btn-danger">{% trans "Discard and continue" %}</button>
+                    <button id="articleEditWorkspaceKeepContinueButton" type="button" class="btn btn-success">{% trans "Keep checkpoint and continue" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="articleEditWorkspaceResetModal" tabindex="-1" role="dialog" aria-labelledby="articleEditWorkspaceResetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="articleEditWorkspaceResetModalLabel">{% trans "Reset these edits?" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "This removes the private edit checkpoint and its uncommitted images, then reloads the latest saved article or pending update." %}</p>
+                    <div id="articleEditWorkspaceResetError" class="alert alert-danger csp-is-hidden" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button id="articleEditWorkspaceResetConfirmButton" type="button" class="btn btn-danger">{% trans "Reset edits" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% empty %}{% if has_pending_update %}{% trans 'Pending update — This edit is waiting for admin approval. The current published version is still visible to users.' %}{% elif has_failed_update %}{% trans 'Update pending failed — Please review the admin comments, update your changes, and submit again.' %}{% elif has_saved_update_draft %}{% trans 'Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval.' %}{% endif %}{% endfor %}">
     <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% empty %}{% if has_pending_update %}warning{% elif has_failed_update %}danger{% elif has_saved_update_draft %}info{% endif %}{% endfor %}">
     <input type="hidden" value="" id="app_context">
@@ -497,6 +555,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     const csrfToken = "{{ csrf_token }}";
     const articleEditorArticleId = "{{ article.id }}";
     const articleEditorMode = "{{ article_editor_mode|default:'edit' }}";
+    const articleEditWorkspaceId = "{{ article_edit_workspace_id }}";
     const articleImageUploadLimit = parseInt("{{ article_image_upload_limit|default:50 }}", 10) || 0;
     const uploadedImages = new Map();
     const uploadedHashes = new Map();
@@ -1196,23 +1255,30 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             removeButton.innerHTML = "&times;";
 
             removeButton.addEventListener("click", async function () {
+                const originalBody = getEditorValue();
                 removeMarkdownForFilename(info.filename, info.markdown);
 
-                if (!info.existing) {
-                    const formData = new FormData();
-                    formData.append("filename", info.filename);
-                    formData.append("article_id", articleEditorArticleId);
-                    formData.append("editor_mode", articleEditorMode);
+                const formData = new FormData();
+                formData.append("filename", info.filename);
+                formData.append("article_id", articleEditorArticleId);
+                formData.append("edit_workspace_id", articleEditWorkspaceId);
+                formData.append("editor_mode", articleEditorMode);
+                formData.append("frm_kb_body", getEditorValue());
 
-                    try {
-                        await fetch(deleteUrl, {
-                            method: "POST",
-                            headers: { "X-CSRFToken": csrfToken },
-                            body: formData
-                        });
-                    } catch (error) {
-                        // Markdown is removed locally even if server cleanup fails.
+                try {
+                    const response = await fetch(deleteUrl, {
+                        method: "POST",
+                        headers: { "X-CSRFToken": csrfToken },
+                        body: formData
+                    });
+                    const data = await readImageUploadResponse(response);
+                    if (!response.ok || !data.deleted) {
+                        throw new Error(data.error || "{% trans 'The image could not be removed. Please try again.' %}");
                     }
+                } catch (error) {
+                    setEditorValue(originalBody);
+                    showPasteMessage(error.message || "{% trans 'The image could not be removed. Please try again.' %}", "danger");
+                    return;
                 }
 
                 uploadedImages.delete(key);
@@ -1221,7 +1287,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 }
                 card.remove();
                 ensureImagePanelVisible();
-                showPasteMessage(info.existing ? "{% trans 'Image removed from this draft. Save the article to delete it from storage.' %}" : "{% trans 'Image removed from this article draft.' %}", "success");
+                showPasteMessage(info.existing ? "{% trans 'Image removed from this edit checkpoint. Save the article to apply the change.' %}" : "{% trans 'Image removed from this edit checkpoint.' %}", "success");
             });
 
             card.appendChild(removeButton);
@@ -1268,6 +1334,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         const formData = new FormData();
         formData.append("image", file);
         formData.append("article_id", articleEditorArticleId);
+        formData.append("edit_workspace_id", articleEditWorkspaceId);
         formData.append("editor_mode", articleEditorMode);
 
         try {
@@ -1364,11 +1431,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     }
 
     existingImages.forEach(function (info) {
-        info.existing = true;
+        if (typeof info.existing !== "boolean") {
+            info.existing = true;
+        }
         addImageCard(info);
     });
 })();
 </script>
+<script src="{% static 'javascripts/article-edit-workspace.js' %}?v=20260806-edit-checkpoint-1"></script>
 
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}

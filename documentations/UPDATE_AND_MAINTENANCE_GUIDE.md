@@ -483,6 +483,10 @@ sudo docker compose exec web python manage.py test \
 sudo docker compose exec web python manage.py test \
   kb.tests.articles.test_article_creation_workspace
 
+# Existing-article edit/review checkpoint, autosave and leave handling
+sudo docker compose exec web python manage.py test \
+  kb.tests.articles.test_article_edit_workspace
+
 # Uploaded media and bulk ZIP import protections
 sudo docker compose exec web python manage.py test \
   kb.tests.media \
@@ -515,11 +519,23 @@ sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-r
 ```
 
 
-9. Verify account-state cleanup separately: set a test user inactive and confirm the checkpoint remains; assign `Disabled User` and confirm it remains; then permanently delete another test user and confirm its active checkpoint, private uncommitted image files, checkpoint upload/activity rows, and sessions are removed while its saved articles remain with no owner. Run:
+9. Verify account-state cleanup separately: set a test user inactive and confirm the checkpoint remains; assign `Disabled User` and confirm it remains; then permanently delete another test user and confirm its active creation/edit checkpoints, private uncommitted image files, checkpoint upload/activity rows, and sessions are removed while its saved articles remain with no owner. Run:
 
 ```bash
 sudo docker compose exec web python manage.py test kb.tests.users.test_user_account_deletion_cleanup
 ```
+
+After changing the existing-article edit/review checkpoint workflow, manually verify these paths:
+
+1. Open an editable Draft or published article, change title/body/keywords, wait for **Edit checkpoint saved**, leave through Back/navbar, choose **Keep checkpoint and continue**, and confirm reopening the same article restores the fields. Confirm the saved article itself did not change before pressing a normal workflow button.
+2. Repeat and choose **Discard and continue**. Confirm the saved article remains unchanged and a newly uploaded checkpoint-only image is removed.
+3. Use **Reset edits** and confirm the latest saved article or staged pending update is reloaded. Ordinary refresh should restore rather than discard the checkpoint.
+4. Open the same article in two tabs under one account and confirm the latest autosave becomes the restored checkpoint. This workflow intentionally uses last-autosave-wins rather than conflict prompts.
+5. Open the same manageable article as two authorised accounts, save from each in sequence, and confirm the last successful normal article action is authoritative.
+6. For a published article owner, submit an update and confirm the public version stays visible while the update enters review and the normal reviewer SMTP notification is sent. Confirm checkpoint autosave alone sends no email.
+7. For a reviewer, keep a pending update pending, mark it Pending failed, and approve it in separate tests. Confirm each normal action preserves the existing review/owner notification rules.
+8. Upload a new image in Edit Article and verify it is owned by that edit checkpoint. Remove an existing committed image from the checkpoint and confirm the physical file is retained until a successful normal article save applies the removal.
+9. Run stray cleanup in dry-run mode and confirm images owned by creation or edit/review checkpoints are never listed solely because the checkpoint is old.
 
 ## 10. Documentation synchronisation checklist
 

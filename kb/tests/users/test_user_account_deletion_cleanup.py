@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.test import Client, TestCase
 
-from kb.models import ActivityLog, ArticleCreationWorkspace, ArticleImageUploadLog, SuggestedArticle
+from kb.models import ActivityLog, ArticleCreationWorkspace, ArticleEditWorkspace, ArticleImageUploadLog, SuggestedArticle
 from kb.permissions import ROLE_ARTICLE_WRITER, ROLE_DISABLED_USER, assign_single_role_group, seed_djopenkb_role_groups
 from kb.views.services import get_openkb_uploads_dir
 
@@ -137,6 +137,61 @@ class UserAccountDeletionCheckpointCleanupTests(TestCase):
         )
         committed_log.refresh_from_db()
         self.assertEqual(committed_log.uploader_display, "delete-workspace-user")
+
+
+    def test_permanent_user_delete_purges_existing_article_edit_checkpoint(self):
+        article = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Saved article kept after edit checkpoint deletion",
+            body="Saved article body",
+            status=SuggestedArticle.Status.DRAFT,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+        filename = "account-delete-edit-checkpoint.png"
+        workspace = ArticleEditWorkspace.objects.create(
+            owner=self.user,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
+            title="Private unsaved edit",
+            body=f"Private edit body\n![image](/wiki/uploads/{filename})",
+            image_assets=[filename],
+            owned_image_assets=[filename],
+            is_dirty=True,
+        )
+        file_path = get_openkb_uploads_dir() / filename
+        file_path.write_bytes(PNG_1X1)
+        ArticleImageUploadLog.objects.create(
+            filename=filename,
+            original_name=filename,
+            content_type="image/png",
+            size_bytes=len(PNG_1X1),
+            edit_workspace_id=workspace.pk,
+            editing_article_id=article.pk,
+            uploaded_by=self.user,
+        )
+        ActivityLog.objects.create(
+            event_type=ActivityLog.EventType.IMAGE_UPLOADED,
+            user=self.user,
+            username=self.user.username,
+            details={
+                "filename": filename,
+                "edit_workspace_id": str(workspace.pk),
+                "article_id": article.pk,
+                "editor_context": "edit_workspace",
+            },
+        )
+
+        with self.captureOnCommitCallbacks(execute=True):
+            self.user.delete()
+
+        self.assertFalse(ArticleEditWorkspace.objects.filter(pk=workspace.pk).exists())
+        self.assertFalse(file_path.exists())
+        self.assertFalse(
+            ArticleImageUploadLog.objects.filter(edit_workspace_id=workspace.pk).exists()
+        )
+        article.refresh_from_db()
+        self.assertIsNone(article.owner)
+        self.assertEqual(article.body, "Saved article body")
 
     def test_inactive_account_preserves_checkpoint_and_image(self):
         workspace, file_path = self._create_checkpoint_with_image("inactive-checkpoint.png")

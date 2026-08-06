@@ -21,6 +21,7 @@ from ..input_limits import (
     ARTICLE_KEYWORDS_MAX_LENGTH,
     ARTICLE_TITLE_MAX_LENGTH,
     FILENAME_MAX_LENGTH,
+    REVIEW_NOTES_MAX_LENGTH,
     URL_MAX_LENGTH,
 )
 
@@ -248,6 +249,206 @@ def _get_or_create_article_creation_workspace(request, *, visibility_choices, re
     request.session.modified = True
     return workspace, created
 
+
+
+
+def _article_edit_workspace_mode(is_review_mode):
+    return (
+        ArticleEditWorkspace.EditorMode.REVIEW
+        if is_review_mode
+        else ArticleEditWorkspace.EditorMode.EDIT
+    )
+
+
+def _article_edit_workspace_baseline(article, user, *, is_review_mode):
+    """Return the current saved values used to initialise an edit checkpoint."""
+    can_review = user_can_review_article(user, article, review_mode=is_review_mode)
+    has_staged_update = bool(getattr(article, "has_staged_update", False))
+    if has_staged_update:
+        title = article.pending_update_title or article.title
+        body = article.pending_update_body or article.body
+        keywords = article.pending_update_keywords or article.keywords
+        image_assets = list(
+            article.pending_update_image_assets
+            or extract_article_image_filenames(body)
+        )
+    else:
+        title = article.title
+        body = article.body
+        keywords = article.keywords
+        image_assets = list(article.image_assets or extract_article_image_filenames(body))
+
+    if can_review:
+        if has_staged_update:
+            status = (
+                SuggestedArticle.Status.FAILED
+                if article.update_status == SuggestedArticle.UpdateStatus.FAILED
+                else SuggestedArticle.Status.PENDING
+            )
+        else:
+            status = article.status
+        review_notes = article.review_notes
+    else:
+        status = ""
+        review_notes = ""
+
+    return {
+        "title": title or "",
+        "body": body or "",
+        "keywords": keywords or "",
+        "visibility": article.visibility,
+        "status": status or "",
+        "review_notes": review_notes or "",
+        "image_assets": list(dict.fromkeys(image_assets)),
+    }
+
+
+def _get_or_create_article_edit_workspace(request, article, *, is_review_mode):
+    """Return this user's persistent checkpoint for one article/editor mode."""
+    editor_mode = _article_edit_workspace_mode(is_review_mode)
+    baseline = _article_edit_workspace_baseline(
+        article,
+        request.user,
+        is_review_mode=is_review_mode,
+    )
+    with transaction.atomic():
+        workspace = (
+            ArticleEditWorkspace.objects.select_for_update()
+            .filter(
+                owner=request.user,
+                article=article,
+                editor_mode=editor_mode,
+            )
+            .first()
+        )
+        if workspace is None:
+            workspace = ArticleEditWorkspace.objects.create(
+                owner=request.user,
+                article=article,
+                editor_mode=editor_mode,
+                **baseline,
+            )
+        elif not workspace.is_dirty:
+            changed_fields = []
+            for field, value in baseline.items():
+                if getattr(workspace, field) != value:
+                    setattr(workspace, field, value)
+                    changed_fields.append(field)
+            if changed_fields:
+                workspace.save(update_fields=changed_fields + ["updated_at"])
+    return workspace
+
+
+def _allowed_edit_workspace_statuses(user, article, *, is_review_mode):
+    if not user_can_review_article(user, article, review_mode=is_review_mode):
+        return set()
+    if bool(getattr(article, "has_staged_update", False)):
+        return {
+            SuggestedArticle.Status.PENDING,
+            SuggestedArticle.Status.PUBLISHED,
+            SuggestedArticle.Status.FAILED,
+        }
+    return set(allowed_article_statuses_for_admin_edit(article, user=user))
+
+
+def _update_article_edit_workspace_from_request(
+    request,
+    workspace,
+    article,
+    *,
+    is_review_mode,
+):
+    """Apply last-write-wins checkpoint values from an authorised edit request."""
+    can_edit_content = user_can_edit_article_content(
+        request.user,
+        article,
+        review_mode=is_review_mode,
+    )
+    baseline = _article_edit_workspace_baseline(
+        article,
+        request.user,
+        is_review_mode=is_review_mode,
+    )
+
+    if can_edit_content:
+        title = request.POST.get("frm_kb_title", "")
+        body = request.POST.get("frm_kb_body", "")
+        keywords = request.POST.get("frm_kb_keywords", "")
+        if len(title) > ARTICLE_TITLE_MAX_LENGTH or len(keywords) > ARTICLE_KEYWORDS_MAX_LENGTH:
+            raise ValidationError(_("The article checkpoint contains an oversized field."))
+        body = validate_article_body(body)
+    else:
+        title = baseline["title"]
+        body = baseline["body"]
+        keywords = baseline["keywords"]
+
+    if user_can_change_article_visibility(request.user, article):
+        visibility = choose_requested_article_visibility(
+            request.user,
+            request.POST.get("article_visibility"),
+            action="add",
+            default=workspace.visibility or article.visibility,
+        )
+    else:
+        visibility = article.visibility
+
+    allowed_statuses = _allowed_edit_workspace_statuses(
+        request.user,
+        article,
+        is_review_mode=is_review_mode,
+    )
+    requested_status = (request.POST.get("status") or workspace.status or baseline["status"]).strip()
+    if allowed_statuses:
+        if requested_status not in allowed_statuses:
+            raise ValidationError(_("The selected article status is not allowed."))
+        status = requested_status
+        review_notes = request.POST.get("review_notes", "")
+        if len(review_notes) > REVIEW_NOTES_MAX_LENGTH:
+            raise ValidationError(
+                _("Review comments cannot exceed %(limit)s characters.")
+                % {"limit": REVIEW_NOTES_MAX_LENGTH}
+            )
+    else:
+        status = ""
+        review_notes = ""
+
+    referenced = validate_article_edit_workspace_image_references(
+        workspace,
+        body,
+        article,
+    )
+    owned = article_edit_workspace_owned_assets(workspace)
+    image_assets = list(dict.fromkeys(list(referenced) + owned))
+
+    changed = any([
+        workspace.title != title,
+        workspace.body != body,
+        workspace.keywords != keywords,
+        workspace.visibility != visibility,
+        workspace.status != status,
+        workspace.review_notes != review_notes,
+        article_edit_workspace_assets(workspace) != image_assets,
+    ])
+    workspace.title = title
+    workspace.body = body
+    workspace.keywords = keywords
+    workspace.visibility = visibility
+    workspace.status = status
+    workspace.review_notes = review_notes
+    workspace.image_assets = image_assets
+    workspace.is_dirty = bool(workspace.is_dirty or changed or owned)
+    workspace.save(update_fields=[
+        "title",
+        "body",
+        "keywords",
+        "visibility",
+        "status",
+        "review_notes",
+        "image_assets",
+        "is_dirty",
+        "updated_at",
+    ])
+    return workspace
 
 
 def _render_suggest_form_for_visibility(request, *, visibility, can_publish_directly, visibility_choices=None, workspace=None, extra_context=None):
@@ -818,6 +1019,11 @@ def edit_suggestion(request, article_id):
 
     fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
     return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
+    edit_workspace = _get_or_create_article_edit_workspace(
+        request,
+        article,
+        is_review_mode=is_review_mode,
+    )
 
     def render_edit_form(extra_context=None):
         extra_context = extra_context or {}
@@ -825,12 +1031,12 @@ def edit_suggestion(request, article_id):
         has_staged_update = bool(getattr(article, "has_staged_update", False))
         pending_update_review = can_review_article and has_staged_update
         has_saved_update_draft = has_staged_update and article.update_status == SuggestedArticle.UpdateStatus.NONE
-        use_pending_update_values = has_staged_update
-
-        edit_title = article.pending_update_title if use_pending_update_values else article.title
-        edit_body = article.pending_update_body if use_pending_update_values else article.body
-        edit_keywords = article.pending_update_keywords if use_pending_update_values else article.keywords
-        edit_image_assets = article.pending_update_image_assets if use_pending_update_values else article.image_assets
+        edit_title = extra_context.get("title_value", edit_workspace.title)
+        edit_body = extra_context.get("body_value", edit_workspace.body)
+        edit_keywords = extra_context.get("keywords_value", edit_workspace.keywords)
+        edit_status = extra_context.get("status_value", edit_workspace.status)
+        edit_review_notes = extra_context.get("review_notes_value", edit_workspace.review_notes)
+        edit_visibility = extra_context.get("article_visibility", edit_workspace.visibility)
 
         back_url = return_url or reverse(fallback_view_name)
         can_edit_content = user_can_edit_article_content(request.user, article, review_mode=is_review_mode)
@@ -841,14 +1047,14 @@ def edit_suggestion(request, article_id):
         context = {
             "article": article,
             "current_status": extra_context.get("current_status", article.status),
-            "review_notes_value": article.review_notes,
+            "review_notes_value": edit_review_notes,
             "review_notes_history": get_review_notes_history(article),
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
-            "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=edit_image_assets)),
+            "existing_images_json": json.dumps(get_article_edit_workspace_image_cards(edit_workspace)),
             "article_image_upload_limit": get_article_image_upload_limit(),
             "article_body_character_limit": get_article_body_character_limit(),
             "article_keyword_limit": get_article_keyword_limit(),
-            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=article.visibility, user=request.user),
+            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=edit_visibility, user=request.user),
             "return_url": return_url,
             "back_url": back_url,
             "title_value": edit_title,
@@ -856,6 +1062,7 @@ def edit_suggestion(request, article_id):
             "keywords_value": edit_keywords,
             "is_pending_update_review": pending_update_review,
             "current_update_status": article.update_status,
+            "edit_status_value": edit_status,
             "can_review_article": can_review_article,
             "article_editor_mode": "review" if is_review_mode else "edit",
             "is_article_review_mode": is_review_mode,
@@ -868,7 +1075,9 @@ def edit_suggestion(request, article_id):
             "has_failed_update": article.has_failed_update,
             "has_update_draft": article.has_update_draft,
             "has_saved_update_draft": has_saved_update_draft,
-            "article_visibility": article.visibility,
+            "article_visibility": edit_visibility,
+            "article_edit_workspace_id": str(edit_workspace.pk),
+            "article_edit_workspace_dirty": bool(edit_workspace.is_dirty),
             "article_visibility_label": article.visibility_label,
             "is_internal_article_form": article.is_internal,
             "allow_status_draft": SuggestedArticle.Status.DRAFT in allowed_statuses,
@@ -881,6 +1090,36 @@ def edit_suggestion(request, article_id):
 
     if request.method == "GET":
         return render_edit_form()
+
+    submitted_workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
+    # Preserve compatibility with forms or tests opened before the checkpoint
+    # field was introduced. The server-created workspace above remains the
+    # authoritative owner-scoped context; a supplied non-empty UUID must still
+    # match exactly.
+    if not submitted_workspace_id:
+        submitted_workspace_id = str(edit_workspace.pk)
+    requested_submit_action = (request.POST.get("submit_action") or "save").strip()
+    with transaction.atomic():
+        edit_workspace = get_owned_article_edit_workspace(
+            request.user,
+            submitted_workspace_id,
+            article=article,
+            editor_mode=_article_edit_workspace_mode(is_review_mode),
+            for_update=True,
+        )
+        if edit_workspace is None:
+            raise Http404("Article edit workspace not found")
+        if requested_submit_action != "revert_published":
+            try:
+                _update_article_edit_workspace_from_request(
+                    request,
+                    edit_workspace,
+                    article,
+                    is_review_mode=is_review_mode,
+                )
+            except ValidationError as error:
+                message = error.messages[0] if getattr(error, "messages", None) else str(error)
+                return render_edit_form({"error": message})
 
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
@@ -958,6 +1197,16 @@ def edit_suggestion(request, article_id):
         article.review_notes = ""
         article.clear_pending_update()
         article.save()
+        with transaction.atomic():
+            locked_workspace = get_owned_article_edit_workspace(
+                request.user,
+                edit_workspace.pk,
+                article=article,
+                editor_mode=_article_edit_workspace_mode(is_review_mode),
+                for_update=True,
+            )
+            if locked_workspace is not None:
+                discard_article_edit_workspace(request, locked_workspace)
 
         log_activity(
             request,
@@ -997,7 +1246,7 @@ def edit_suggestion(request, article_id):
         "current_status": status,
         "review_notes_value": review_notes,
         "review_notes_history": get_review_notes_history(article),
-        "existing_images_json": json.dumps(get_article_image_cards(article, image_assets=extract_article_image_filenames(body))),
+        "existing_images_json": json.dumps(get_article_edit_workspace_image_cards(edit_workspace)),
         "article_image_upload_limit": get_article_image_upload_limit(),
         "article_body_character_limit": get_article_body_character_limit(),
         "article_keyword_limit": get_article_keyword_limit(),
@@ -1056,9 +1305,12 @@ def edit_suggestion(request, article_id):
         })
 
     old_image_assets = list(article.image_assets or extract_article_image_filenames(article.body))
-    new_image_assets = extract_article_image_filenames(body)
     try:
-        new_image_assets = validate_article_image_count(new_image_assets)
+        new_image_assets = validate_article_edit_workspace_image_references(
+            edit_workspace,
+            body,
+            article,
+        )
     except ValidationError as error:
         message = error.messages[0] if getattr(error, "messages", None) else str(error)
         return render_edit_form({
@@ -1214,6 +1466,16 @@ def edit_suggestion(request, article_id):
         write_article_files(article)
         sync_article_image_assets(article, old_assets=old_image_assets)
     clear_committed_pending_uploads(request, new_image_assets)
+    with transaction.atomic():
+        locked_workspace = get_owned_article_edit_workspace(
+            request.user,
+            edit_workspace.pk,
+            article=article,
+            editor_mode=_article_edit_workspace_mode(is_review_mode),
+            for_update=True,
+        )
+        if locked_workspace is not None:
+            finalize_article_edit_workspace(request, locked_workspace, new_image_assets)
 
     effective_status = article.status
 
@@ -1529,6 +1791,74 @@ def discard_article_creation_workspace_view(request):
     return JsonResponse({"discarded": True, "image_count": len(deleted_assets)})
 
 
+
+@article_image_editor_required
+@require_POST
+def autosave_article_edit_workspace(request, article_id):
+    """Persist one user's existing-article checkpoint using last-save-wins."""
+    article = get_object_or_404(SuggestedArticle, pk=article_id)
+    is_review_mode = _article_editor_review_mode(request)
+    if not user_can_manage_article(request.user, article, review_mode=is_review_mode):
+        raise Http404("Article not found")
+    if is_review_mode and not user_can_review_article(request.user, article, review_mode=True):
+        raise Http404("Article not found")
+
+    workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
+    with transaction.atomic():
+        workspace = get_owned_article_edit_workspace(
+            request.user,
+            workspace_id,
+            article=article,
+            editor_mode=_article_edit_workspace_mode(is_review_mode),
+            for_update=True,
+        )
+        if workspace is None:
+            return JsonResponse({"error": _("Article edit checkpoint not found.")}, status=404)
+        try:
+            _update_article_edit_workspace_from_request(
+                request,
+                workspace,
+                article,
+                is_review_mode=is_review_mode,
+            )
+        except ValidationError as error:
+            message = error.messages[0] if getattr(error, "messages", None) else str(error)
+            return JsonResponse({"error": message}, status=400)
+
+    return JsonResponse({
+        "saved": True,
+        "dirty": workspace.is_dirty,
+        "updated_at": workspace.updated_at.isoformat(),
+    })
+
+
+@article_image_editor_required
+@require_POST
+def discard_article_edit_workspace_view(request, article_id):
+    """Discard one user's edit checkpoint and its uncommitted uploads."""
+    article = get_object_or_404(SuggestedArticle, pk=article_id)
+    is_review_mode = _article_editor_review_mode(request)
+    if not user_can_manage_article(request.user, article, review_mode=is_review_mode):
+        raise Http404("Article not found")
+    if is_review_mode and not user_can_review_article(request.user, article, review_mode=True):
+        raise Http404("Article not found")
+
+    workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
+    with transaction.atomic():
+        workspace = get_owned_article_edit_workspace(
+            request.user,
+            workspace_id,
+            article=article,
+            editor_mode=_article_edit_workspace_mode(is_review_mode),
+            for_update=True,
+        )
+        if workspace is None:
+            return JsonResponse({"discarded": True})
+        deleted_assets = discard_article_edit_workspace(request, workspace)
+
+    return JsonResponse({"discarded": True, "image_count": len(deleted_assets)})
+
+
 @article_image_editor_required
 @require_POST
 def validate_article_video_link(request):
@@ -1549,13 +1879,14 @@ def validate_article_video_link(request):
 
 
 def _resolve_article_image_editor_context(request, *, for_update=False):
-    """Resolve the exact new-workspace or existing-article editor context."""
+    """Resolve the exact creation workspace, edit workspace, or legacy article context."""
     workspace_id = (request.POST.get("workspace_id") or "").strip()
+    edit_workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
     article_id = (request.POST.get("article_id") or "").strip()
-    if bool(workspace_id) == bool(article_id):
-        raise Http404("Article editor context not found")
 
     if workspace_id:
+        if edit_workspace_id or article_id:
+            raise Http404("Article editor context not found")
         workspace = get_owned_article_creation_workspace(
             request.user,
             workspace_id,
@@ -1563,10 +1894,30 @@ def _resolve_article_image_editor_context(request, *, for_update=False):
         )
         if workspace is None:
             raise Http404("Article workspace not found")
-        allowed_visibilities = set(allowed_article_visibility_values_for_user(request.user, action="add"))
+        allowed_visibilities = set(
+            allowed_article_visibility_values_for_user(request.user, action="add")
+        )
         if workspace.visibility not in allowed_visibilities:
             raise Http404("Article workspace not found")
         return "workspace", workspace
+
+    if edit_workspace_id:
+        edit_workspace = get_owned_article_edit_workspace(
+            request.user,
+            edit_workspace_id,
+            for_update=for_update,
+        )
+        if edit_workspace is None:
+            raise Http404("Article edit checkpoint not found")
+        article = edit_workspace.article
+        if article_id and str(article.pk) != article_id:
+            raise Http404("Article edit checkpoint not found")
+        review_mode = edit_workspace.editor_mode == ArticleEditWorkspace.EditorMode.REVIEW
+        if not user_can_manage_article(request.user, article, review_mode=review_mode):
+            raise Http404("Article not found")
+        if review_mode and not user_can_review_article(request.user, article, review_mode=True):
+            raise Http404("Article not found")
+        return "edit_workspace", edit_workspace
 
     try:
         article_pk = int(article_id)
@@ -1605,6 +1956,10 @@ def upload_article_image(request):
         current_context_assets = article_creation_workspace_assets(context_object)
         if len(current_context_assets) >= article_limit:
             return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
+    elif context_kind == "edit_workspace":
+        current_context_assets = article_edit_workspace_assets(context_object)
+        if len(current_context_assets) >= article_limit:
+            return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
     elif len(active_pending_uploads) >= article_limit:
         return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
 
@@ -1637,6 +1992,17 @@ def upload_article_image(request):
                 current_context_assets = article_creation_workspace_assets(context_object)
                 if len(current_context_assets) >= article_limit:
                     return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
+            elif context_kind == "edit_workspace":
+                context_object = get_owned_article_edit_workspace(
+                    request.user,
+                    context_object.pk,
+                    for_update=True,
+                )
+                if context_object is None:
+                    raise Http404("Article edit checkpoint not found")
+                current_context_assets = article_edit_workspace_assets(context_object)
+                if len(current_context_assets) >= article_limit:
+                    return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
 
             usage = get_user_pending_image_upload_usage(request.user)
             if usage["count"] >= count_limit or usage["bytes"] + upload_size > byte_limit:
@@ -1658,7 +2024,12 @@ def upload_article_image(request):
                 content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
                 size_bytes=upload_size,
                 creation_workspace_id=context_object.pk if context_kind == "workspace" else None,
-                editing_article_id=context_object.pk if context_kind == "article" else None,
+                edit_workspace_id=context_object.pk if context_kind == "edit_workspace" else None,
+                editing_article_id=(
+                    context_object.article_id
+                    if context_kind == "edit_workspace"
+                    else context_object.pk if context_kind == "article" else None
+                ),
                 uploaded_by=request.user,
                 upload_ip_address=get_client_ip(request),
                 upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
@@ -1671,6 +2042,19 @@ def upload_article_image(request):
                 context_object.image_assets = workspace_assets
                 context_object.is_dirty = True
                 context_object.save(update_fields=["image_assets", "is_dirty", "updated_at"])
+            elif context_kind == "edit_workspace":
+                workspace_assets = article_edit_workspace_assets(context_object)
+                owned_assets = article_edit_workspace_owned_assets(context_object)
+                if filename not in workspace_assets:
+                    workspace_assets.append(filename)
+                if filename not in owned_assets:
+                    owned_assets.append(filename)
+                context_object.image_assets = workspace_assets
+                context_object.owned_image_assets = owned_assets
+                context_object.is_dirty = True
+                context_object.save(update_fields=[
+                    "image_assets", "owned_image_assets", "is_dirty", "updated_at"
+                ])
     except Exception:
         if file_path.exists():
             try:
@@ -1689,7 +2073,12 @@ def upload_article_image(request):
             "size_bytes": image_log.size_bytes,
             "editor_context": context_kind,
             "workspace_id": str(context_object.pk) if context_kind == "workspace" else "",
-            "article_id": context_object.pk if context_kind == "article" else None,
+            "edit_workspace_id": str(context_object.pk) if context_kind == "edit_workspace" else "",
+            "article_id": (
+                context_object.article_id
+                if context_kind == "edit_workspace"
+                else context_object.pk if context_kind == "article" else None
+            ),
         },
     )
 
@@ -1722,6 +2111,7 @@ def delete_article_image(request):
     pending_uploads = request.session.get("pending_article_uploads", [])
 
     with transaction.atomic():
+        physical_delete_allowed = True
         if context_kind == "workspace":
             context_object = get_owned_article_creation_workspace(
                 request.user,
@@ -1733,11 +2123,26 @@ def delete_article_image(request):
             workspace_assets = article_creation_workspace_assets(context_object)
             if filename not in workspace_assets:
                 return JsonResponse({"error": _("This image does not belong to this article workspace.")}, status=403)
-        elif not user_owns_pending_article_image(request.user, filename):
-            return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
-
-        if not user_owns_pending_article_image(request.user, filename):
-            return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
+            if not user_owns_pending_article_image(request.user, filename):
+                return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
+        elif context_kind == "edit_workspace":
+            context_object = get_owned_article_edit_workspace(
+                request.user,
+                context_object.pk,
+                for_update=True,
+            )
+            if context_object is None:
+                return JsonResponse({"error": _("Article edit checkpoint not found.")}, status=404)
+            workspace_assets = article_edit_workspace_assets(context_object)
+            owned_assets = article_edit_workspace_owned_assets(context_object)
+            if filename not in workspace_assets:
+                return JsonResponse({"error": _("This image is not part of this edit checkpoint.")}, status=403)
+            physical_delete_allowed = filename in owned_assets
+            if physical_delete_allowed and not user_owns_pending_article_image(request.user, filename):
+                return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
+        else:
+            if not user_owns_pending_article_image(request.user, filename):
+                return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
 
         upload_dir = get_openkb_uploads_dir().resolve()
         file_path = (upload_dir / filename).resolve()
@@ -1746,7 +2151,7 @@ def delete_article_image(request):
         except ValueError:
             return JsonResponse({"error": _("Invalid image path.")}, status=400)
 
-        if file_path.exists() and file_path.is_file():
+        if physical_delete_allowed and file_path.exists() and file_path.is_file():
             file_path.unlink()
             mark_article_image_deleted(
                 filename,
@@ -1775,10 +2180,26 @@ def delete_article_image(request):
                     pass
             context_object.is_dirty = True
             context_object.save(update_fields=["body", "image_assets", "is_dirty", "updated_at"])
+        elif context_kind == "edit_workspace":
+            context_object.image_assets = [item for item in workspace_assets if item != filename]
+            if physical_delete_allowed:
+                context_object.owned_image_assets = [
+                    item for item in owned_assets if item != filename
+                ]
+            submitted_body = request.POST.get("frm_kb_body")
+            if submitted_body is not None:
+                try:
+                    context_object.body = validate_article_body(submitted_body)
+                except ValidationError:
+                    pass
+            context_object.is_dirty = True
+            context_object.save(update_fields=[
+                "body", "image_assets", "owned_image_assets", "is_dirty", "updated_at"
+            ])
 
     request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
     request.session.modified = True
-    return JsonResponse({"deleted": True})
+    return JsonResponse({"deleted": True, "physical_deleted": physical_delete_allowed})
 
 
 @main_site_login_required

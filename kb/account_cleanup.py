@@ -9,8 +9,14 @@ from __future__ import annotations
 import logging
 from django.contrib.sessions.models import Session
 from django.db import connection, transaction
+from django.db.models import Q
 
-from .models import ActivityLog, ArticleCreationWorkspace, ArticleImageUploadLog
+from .models import (
+    ActivityLog,
+    ArticleCreationWorkspace,
+    ArticleEditWorkspace,
+    ArticleImageUploadLog,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +26,7 @@ def _enable_protected_audit_deletion() -> None:
 
     PostgreSQL audit triggers permit deletion only when the transaction-local
     account-deletion cleanup flag is enabled. The flag is transaction-local
-    and is used solely for rows that expose the active New Article checkpoint.
+    and is used solely for rows that expose private article creation/edit checkpoints.
     """
 
     if connection.vendor != "postgresql":
@@ -29,8 +35,14 @@ def _enable_protected_audit_deletion() -> None:
         cursor.execute("SET LOCAL djopenkb.account_deletion_cleanup = 'on'")
 
 
-def _checkpoint_activity_log_ids(*, user_id: int, workspace_id: str, filenames: set[str]) -> list[int]:
-    """Return image activity rows that belong only to one active checkpoint."""
+def _checkpoint_activity_log_ids(
+    *,
+    user_id: int,
+    creation_workspace_ids: set[str],
+    edit_workspace_ids: set[str],
+    filenames: set[str],
+) -> list[int]:
+    """Return image activity rows that belong only to deleted-account checkpoints."""
 
     ids: list[int] = []
     queryset = ActivityLog.objects.filter(
@@ -43,24 +55,39 @@ def _checkpoint_activity_log_ids(*, user_id: int, workspace_id: str, filenames: 
 
     for log_entry in queryset.iterator():
         details = log_entry.details if isinstance(log_entry.details, dict) else {}
-        details_workspace_id = str(details.get("workspace_id") or "")
-        details_filename = str(details.get("filename") or "").strip()
-        if details_workspace_id == workspace_id or details_filename in filenames:
+        creation_id = str(details.get("workspace_id") or "")
+        edit_id = str(details.get("edit_workspace_id") or "")
+        filename = str(details.get("filename") or "").strip()
+        if (
+            creation_id in creation_workspace_ids
+            or edit_id in edit_workspace_ids
+            or filename in filenames
+        ):
             ids.append(log_entry.pk)
     return ids
 
 
-def _purge_checkpoint_audit_rows(*, user_id: int, workspace_id, filenames: set[str]) -> None:
-    """Delete checkpoint-only upload/activity rows inside the user-delete transaction."""
+def _purge_checkpoint_audit_rows(
+    *,
+    user_id: int,
+    creation_workspace_ids: set,
+    edit_workspace_ids: set,
+    filenames: set[str],
+) -> None:
+    """Delete private checkpoint upload/activity rows inside user deletion."""
 
+    upload_filter = Q()
+    if creation_workspace_ids:
+        upload_filter |= Q(creation_workspace_id__in=creation_workspace_ids)
+    if edit_workspace_ids:
+        upload_filter |= Q(edit_workspace_id__in=edit_workspace_ids)
     upload_log_ids = list(
-        ArticleImageUploadLog.objects.filter(
-            creation_workspace_id=workspace_id,
-        ).values_list("pk", flat=True)
-    )
+        ArticleImageUploadLog.objects.filter(upload_filter).values_list("pk", flat=True)
+    ) if upload_filter else []
     activity_log_ids = _checkpoint_activity_log_ids(
         user_id=user_id,
-        workspace_id=str(workspace_id),
+        creation_workspace_ids={str(value) for value in creation_workspace_ids},
+        edit_workspace_ids={str(value) for value in edit_workspace_ids},
         filenames=filenames,
     )
 
@@ -116,6 +143,7 @@ def _delete_checkpoint_files(filenames: set[str]) -> None:
         get_openkb_uploads_dir,
         image_is_used_by_other_article,
         image_is_used_by_other_creation_workspace,
+        image_is_used_by_other_edit_workspace,
         safe_uploaded_filename,
     )
 
@@ -128,6 +156,8 @@ def _delete_checkpoint_files(filenames: set[str]) -> None:
             if image_is_used_by_other_article(filename):
                 continue
             if image_is_used_by_other_creation_workspace(filename):
+                continue
+            if image_is_used_by_other_edit_workspace(filename):
                 continue
         except Exception:
             logger.exception(
@@ -149,7 +179,7 @@ def _delete_checkpoint_files(filenames: set[str]) -> None:
             # The normal stray-file cleanup remains the recovery path if a
             # filesystem failure prevents immediate deletion.
             logger.exception(
-                "Unable to purge New Article checkpoint image after account deletion: %s",
+                "Unable to purge private article checkpoint image after account deletion: %s",
                 filename,
             )
 
@@ -165,20 +195,31 @@ def prepare_user_account_deletion(user) -> None:
     if not user_id:
         return
 
-    workspace = (
-        ArticleCreationWorkspace.objects.select_for_update()
-        .filter(owner_id=user_id)
-        .first()
+    creation_workspaces = list(
+        ArticleCreationWorkspace.objects.select_for_update().filter(owner_id=user_id)
     )
+    edit_workspaces = list(
+        ArticleEditWorkspace.objects.select_for_update().filter(owner_id=user_id)
+    )
+    creation_workspace_ids = {workspace.pk for workspace in creation_workspaces}
+    edit_workspace_ids = {workspace.pk for workspace in edit_workspaces}
 
     filenames: set[str] = set()
-    if workspace is not None:
-        from .views.services import article_creation_workspace_assets, safe_uploaded_filename
+    if creation_workspaces or edit_workspaces:
+        from .views.services import (
+            article_creation_workspace_assets,
+            article_edit_workspace_owned_assets,
+            safe_uploaded_filename,
+        )
 
-        filenames.update(article_creation_workspace_assets(workspace))
+        for workspace in creation_workspaces:
+            filenames.update(article_creation_workspace_assets(workspace))
+        for workspace in edit_workspaces:
+            filenames.update(article_edit_workspace_owned_assets(workspace))
         filenames.update(
             ArticleImageUploadLog.objects.filter(
-                creation_workspace_id=workspace.pk,
+                Q(creation_workspace_id__in=creation_workspace_ids)
+                | Q(edit_workspace_id__in=edit_workspace_ids)
             ).values_list("filename", flat=True)
         )
         filenames = {
@@ -188,7 +229,8 @@ def prepare_user_account_deletion(user) -> None:
         }
         _purge_checkpoint_audit_rows(
             user_id=user_id,
-            workspace_id=workspace.pk,
+            creation_workspace_ids=creation_workspace_ids,
+            edit_workspace_ids=edit_workspace_ids,
             filenames=filenames,
         )
 
