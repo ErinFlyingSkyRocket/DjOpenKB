@@ -479,7 +479,7 @@ sudo docker compose exec web python manage.py test \
   kb.tests.articles \
   kb.tests.permissions
 
-# New-article temporary workspace, leave/discard workflow and image lifecycle
+# Persistent New Article checkpoint, leave/discard workflow and image lifecycle
 sudo docker compose exec web python manage.py test \
   kb.tests.articles.test_article_creation_workspace
 
@@ -506,8 +506,9 @@ After changing the new-article workspace or image lifecycle, manually verify the
 3. Upload an image without saving an article, choose **Discard and continue**, and confirm the workspace and file are removed before navigation continues. Reopen New Article and confirm it is blank.
 4. Change fields again, use **Reset article**, confirm the warning, and verify the page reloads with a new blank workspace and no uncommitted images. Confirm ordinary browser refresh restores rather than clears the checkpoint.
 5. Use the normal **Save draft** button and confirm a real Draft appears in My Articles. Use **Submit for approval** separately and confirm the article enters the matching pending queue and the existing SMTP reviewer notification is still issued. Confirm checkpoint autosave and Save draft do not send reviewer notifications.
-6. After autosave completes, type another same-site URL directly into the address bar, leave the page, and reopen New Article to confirm recovery. Repeat while a save is still pending and confirm the browser-native unsaved-changes warning appears. A crash or host failure can still interrupt the final in-flight save, so scheduled cleanup remains the fallback.
-7. Preview cleanup before deleting anything:
+6. After autosave completes, type another same-site URL directly into the address bar, leave the page, and reopen New Article to confirm recovery. Repeat while a save is still pending and confirm the browser-native unsaved-changes warning appears.
+7. Open New Article in two tabs. Save from one tab, then attempt to save or discard from the older tab. Confirm the older tab receives the checkpoint-conflict message and cannot replace or remove the newer checkpoint. Reload the older tab and confirm it restores the latest content.
+8. Set a checkpoint and its image timestamps to an old date in a development environment, run cleanup, and confirm the checkpoint and owned image remain. Create a genuinely unreferenced test upload and confirm only that orphan is listed/deleted. Preview cleanup before deleting anything:
 
 ```bash
 sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-run

@@ -975,12 +975,13 @@ class ArticleVote(models.Model):
 
 
 class ArticleCreationWorkspace(models.Model):
-    """Temporary server-side workspace for one user's unsaved new article.
+    """Persistent server-side checkpoint for one user's unsaved new article.
 
-    The workspace owns uncommitted image uploads until the user saves,
-    submits, or explicitly discards the new article. It is intentionally
-    separate from SuggestedArticle so an untouched editor page does not create
-    a visible Draft entry in My Articles.
+    The checkpoint owns uncommitted image uploads until the user saves,
+    submits, publishes, resets, or explicitly discards the new article. It is
+    intentionally separate from SuggestedArticle so checkpoint content does
+    not create a visible Draft entry in My Articles and never expires merely
+    because it has not been edited recently.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -999,6 +1000,15 @@ class ArticleCreationWorkspace(models.Model):
     )
     image_assets = models.JSONField(default=list, blank=True)
     is_dirty = models.BooleanField(default=False, db_index=True)
+    revision = models.PositiveBigIntegerField(
+        default=0,
+        help_text=_(
+            "Optimistic-concurrency revision used to prevent an older browser tab "
+            "from overwriting a newer checkpoint."
+        ),
+    )
+    last_editor_token = models.CharField(max_length=64, blank=True, editable=False)
+    last_editor_sequence = models.PositiveBigIntegerField(default=0, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
@@ -1369,10 +1379,10 @@ class SiteSetting(models.Model):
         default=1440,
         verbose_name=_("Stray upload cleanup minimum age (minutes)"),
         help_text=_(
-            "Ordinary stray files newer than this many minutes are ignored by cleanup. "
-            "The same value controls abandoned new-article workspaces, but a workspace is never "
-            "automatically discarded earlier than 1440 minutes (24 hours). Set to 0 only for "
-            "immediate ordinary stray-file detection/deletion."
+            "Uploaded files newer than this many minutes are ignored when they are not "
+            "referenced by an article or a user-owned New Article checkpoint. Existing "
+            "checkpoints never expire because of age. Set to 0 only for immediate orphan-file "
+            "detection/deletion."
         ),
     )
     article_deletion_queue_retention_days = models.PositiveIntegerField(

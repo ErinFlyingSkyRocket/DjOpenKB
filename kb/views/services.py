@@ -1468,12 +1468,12 @@ def clear_committed_pending_uploads(request, image_assets):
 
 
 def article_creation_workspace_assets(workspace):
-    """Return safe uploads explicitly owned by a temporary workspace.
+    """Return safe uploads explicitly owned by a persistent checkpoint workspace.
 
     The database-owned ``image_assets`` list is authoritative. Markdown body
     references are deliberately not merged into ownership: a user can type or
     paste an existing ``/wiki/uploads/...`` URL, but that must never make the
-    temporary workspace capable of deleting another user's pending upload.
+    persistent checkpoint workspace capable of deleting another user's pending upload.
     """
     if workspace is None:
         return []
@@ -1522,14 +1522,14 @@ def validate_article_creation_workspace_image_references(workspace, body):
             continue
 
         raise ValidationError(
-            _("The article references an uncommitted image that does not belong to this temporary workspace.")
+            _("The article references an uncommitted image that does not belong to this persistent checkpoint workspace.")
         )
 
     return referenced
 
 
 def get_owned_article_creation_workspace(user, workspace_id, *, for_update=False):
-    """Return one user's temporary creation workspace or None."""
+    """Return one user's persistent creation checkpoint or None."""
     if not user or not getattr(user, "pk", None) or not workspace_id:
         return None
     try:
@@ -1544,7 +1544,7 @@ def get_owned_article_creation_workspace(user, workspace_id, *, for_update=False
 
 
 def image_is_used_by_other_creation_workspace(filename, current_workspace=None):
-    """Return whether another active temporary workspace owns the image."""
+    """Return whether another active persistent checkpoint workspace owns the image."""
     safe_name = safe_uploaded_filename(filename)
     if not safe_name:
         return False
@@ -1579,12 +1579,12 @@ def _delete_article_creation_workspace_files(workspace, *, actor=None, keep_file
             if delete_uploaded_image_file(filename, actor=actor, reason=delete_reason):
                 deleted.append(filename)
         except OSError:
-            logger.exception("Unable to delete temporary article workspace image %s", filename)
+            logger.exception("Unable to delete New Article checkpoint image %s", filename)
     return deleted
 
 
 def discard_article_creation_workspace(request, workspace, *, reason=None):
-    """Delete a temporary workspace and its uncommitted files after commit."""
+    """Delete a persistent checkpoint workspace and its uncommitted files after commit."""
     if workspace is None:
         return []
 
@@ -1618,7 +1618,7 @@ def discard_article_creation_workspace(request, workspace, *, reason=None):
 
 
 def finalize_article_creation_workspace(request, workspace, committed_image_assets):
-    """Remove a temporary workspace while preserving files committed to an article."""
+    """Remove a persistent checkpoint workspace while preserving files committed to an article."""
     if workspace is None:
         return []
 
@@ -1653,16 +1653,6 @@ def finalize_article_creation_workspace(request, workspace, committed_image_asse
             request.session.pop(ARTICLE_CREATION_WORKSPACE_SESSION_KEY, None)
         request.session.modified = True
     return workspace_assets
-
-
-def stale_article_creation_workspaces(min_age_minutes):
-    """Return temporary workspaces older than the configured safety period."""
-    try:
-        minimum_age = max(int(min_age_minutes), 0)
-    except (TypeError, ValueError):
-        minimum_age = 1440
-    cutoff = timezone.now() - timedelta(minutes=minimum_age)
-    return ArticleCreationWorkspace.objects.filter(updated_at__lte=cutoff).order_by("updated_at")
 
 
 def user_can_use_admin_tools(user):
@@ -1805,7 +1795,7 @@ def get_all_referenced_uploaded_files(*, include_creation_workspaces=True, exclu
         referenced.update(article.pending_update_image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.pending_update_body))
 
-    # 2) Protect active temporary new-article workspaces. These files are still
+    # 2) Protect active persistent New Article checkpoints. These files are still
     # uncommitted and continue counting toward the user's pending quota, but
     # they must not be treated as stray while the workspace remains active.
     if include_creation_workspaces:

@@ -1,4 +1,4 @@
-"""Find and remove uploaded image files that are no longer referenced by articles.
+"""Find and remove uploaded image files that are no longer owned anywhere.
 
 Run a safe preview from the Ubuntu server host:
     cd /opt/DjOpenKB
@@ -13,36 +13,27 @@ Run non-interactively for the Docker scheduler:
     sudo docker compose exec web \
       python manage.py cleanup_stray_upload_files --noinput
 
-Show all supported options:
-    sudo docker compose exec web \
-      python manage.py cleanup_stray_upload_files --help
-
 Purpose and warning:
-    Discards abandoned temporary new-article workspaces and deletes files under
-    the OpenKB uploads directory when they are no longer owned by an active
-    workspace or linked to an article. Use --dry-run first because discarded
-    temporary work and deleted files cannot be restored by this command.
+    Delete files under the OpenKB uploads directory only when they are not
+    referenced by an article, Markdown file, or persistent user-owned New
+    Article checkpoint. Valid checkpoints never expire because of age. Use
+    --dry-run first because deleted orphan files cannot be restored by this
+    command.
 """
 
-import logging
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
-from django.db import transaction
 
-from kb.models import ArticleCreationWorkspace, ArticleImageUploadLog, SiteSetting
+from kb.models import ArticleImageUploadLog, SiteSetting
 from kb.views import find_stray_uploaded_files, get_openkb_uploads_dir, mark_article_image_deleted
-from kb.views.services import discard_article_creation_workspace, stale_article_creation_workspaces
-
-
-logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
     help = (
-        "Discard abandoned new-article workspaces and delete stray files under "
-        "openkb-data/wiki/uploads. Uses the minimum age configured in Django Admin "
-        "→ Site settings by default; workspace retention is never shorter than 24 hours."
+        "Delete orphaned files under openkb-data/wiki/uploads. Files owned by "
+        "articles or persistent New Article checkpoints are always protected, "
+        "regardless of age."
     )
 
     def add_arguments(self, parser):
@@ -51,8 +42,8 @@ class Command(BaseCommand):
             type=int,
             default=None,
             help=(
-                "Override Django Admin setting. Files newer than this many minutes are ignored. "
-                "Use 0 to delete stray uploads immediately."
+                "Override the Django Admin setting. Orphan files newer than this "
+                "many minutes are ignored. Use 0 to delete detected orphan uploads immediately."
             ),
         )
         parser.add_argument(
@@ -75,76 +66,35 @@ class Command(BaseCommand):
             min_age_minutes = SiteSetting.load().stray_upload_cleanup_min_age_minutes
 
         min_age_minutes = max(int(min_age_minutes), 0)
-        # Temporary creation workspaces are never auto-discarded earlier than
-        # 24 hours, even when ordinary stray-file scanning is set to 0.
-        workspace_min_age_minutes = max(min_age_minutes, 1440)
-        stale_workspaces = list(stale_article_creation_workspaces(workspace_min_age_minutes))
-        stale_workspace_ids = [str(workspace.pk) for workspace in stale_workspaces]
-        stray_files = find_stray_uploaded_files(
-            min_age_minutes=min_age_minutes,
-            exclude_workspace_ids=stale_workspace_ids,
-        )
+        stray_files = find_stray_uploaded_files(min_age_minutes=min_age_minutes)
 
         self.stdout.write(
             f"Stray upload cleanup scan complete. "
-            f"File minimum age: {min_age_minutes} minute(s). "
-            f"Abandoned workspace minimum age: {workspace_min_age_minutes} minute(s). "
-            f"Abandoned workspaces: {len(stale_workspaces)}. "
+            f"Orphan-file minimum age: {min_age_minutes} minute(s). "
+            f"Persistent checkpoints are protected: yes. "
             f"Stray files: {len(stray_files)}."
         )
 
-        for workspace in stale_workspaces:
-            self.stdout.write(
-                f"- workspace {workspace.pk} for user ID {workspace.owner_id} "
-                f"(last updated {workspace.updated_at:%Y-%m-%d %H:%M})"
-            )
         for item in stray_files:
             self.stdout.write(
                 f"- {item['filename']} "
                 f"({item['size_kb']} KB, modified {item['modified_at']:%Y-%m-%d %H:%M})"
             )
 
-        if not stale_workspaces and not stray_files:
+        if not stray_files:
             return
 
         if dry_run:
-            self.stdout.write(self.style.WARNING(
-                "Dry run only. No workspaces or files were deleted."
-            ))
+            self.stdout.write(self.style.WARNING("Dry run only. No files were deleted."))
             return
 
         if not noinput:
             answer = input(
-                "Discard all listed abandoned workspaces and delete all listed stray files? "
-                "Type yes to continue: "
+                "Delete all listed orphan upload files? Type yes to continue: "
             ).strip().lower()
             if answer != "yes":
                 self.stdout.write(self.style.WARNING("Cleanup cancelled."))
                 return
-
-        discarded_workspace_count = 0
-        workspace_errors = []
-        for workspace in stale_workspaces:
-            try:
-                with transaction.atomic():
-                    locked_workspace = (
-                        ArticleCreationWorkspace.objects
-                        .select_for_update()
-                        .filter(pk=workspace.pk)
-                        .first()
-                    )
-                    if locked_workspace is not None:
-                        discard_article_creation_workspace(
-                            None,
-                            locked_workspace,
-                            reason=ArticleImageUploadLog.DeleteReason.AUTO_CLEANUP,
-                        )
-                        discarded_workspace_count += 1
-            except Exception as error:
-                logger.exception("Could not discard stale article creation workspace %s", workspace.pk)
-                workspace_errors.append(
-                    f"Could not discard stale article workspace {workspace.pk}: {error}"
-                )
 
         upload_dir = get_openkb_uploads_dir().resolve()
         deleted_count = 0
@@ -173,17 +123,13 @@ class Command(BaseCommand):
             except OSError as error:
                 errors.append(f"Could not delete {item['filename']}: {error}")
 
-        if discarded_workspace_count:
-            self.stdout.write(self.style.SUCCESS(
-                f"Discarded {discarded_workspace_count} abandoned article workspace(s)."
-            ))
         if deleted_count:
             self.stdout.write(self.style.SUCCESS(
-                f"Deleted {deleted_count} stray upload file(s), "
+                f"Deleted {deleted_count} orphan upload file(s), "
                 f"freeing {round(deleted_size_bytes / 1024, 1)} KB."
             ))
-        if not discarded_workspace_count and not deleted_count:
-            self.stdout.write(self.style.WARNING("No workspaces or files were deleted."))
+        else:
+            self.stdout.write(self.style.WARNING("No files were deleted."))
 
-        for error in workspace_errors + errors:
+        for error in errors:
             self.stderr.write(self.style.ERROR(error))

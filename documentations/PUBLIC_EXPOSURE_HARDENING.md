@@ -244,9 +244,9 @@ The visibility field is treated as an authorisation-sensitive workflow value, no
 
 Regression coverage is maintained in `kb/tests/permissions/test_article_visibility_edit_permissions.py`, including creation selection, single-scope request tampering, dual-writer edit tampering, both manager directions, and the Admin override.
 
-### 9.1 Temporary New-Article Workspace and Upload Ownership
+### 9.1 Persistent New-Article Checkpoint and Upload Ownership
 
-The New Article page uses a private database-backed `ArticleCreationWorkspace` rather than relying on browser memory or a session-only image list. The workspace is owned by exactly one authenticated user and stores temporary fields plus the generated filenames uploaded in that editor context. Autosave and discard requests require the exact owned workspace UUID and recheck article-creation scope on the server.
+The New Article page uses a private database-backed `ArticleCreationWorkspace` rather than relying on browser memory or a session-only image list. The workspace is owned by exactly one authenticated user and persistently stores checkpoint fields plus the generated filenames uploaded in that editor context until the user explicitly completes or resets the workflow. Autosave and discard requests require the exact owned workspace UUID and recheck article-creation scope on the server.
 
 This closes the normal stray-image gap when an author pastes or uploads an image and then leaves without creating an article:
 
@@ -259,7 +259,9 @@ This closes the normal stray-image gap when an author pastes or uploads an image
 - A Markdown body cannot claim another user's uncommitted filename; body text is not treated as proof of file ownership.
 - Upload/delete requests require an authorised workspace or existing-article context, so changing JavaScript or forging a context identifier does not grant access to another user's temporary files.
 
-Direct address-bar navigation, refresh, tab close, and browser close cannot show the custom application modal. The editor therefore autosaves after a short delay and attempts a final same-origin flush on `visibilitychange` and `pagehide`; the browser-native unsaved-changes warning is used only while a newer snapshot is still pending. The scheduled cleanup service remains necessary because a browser or host crash, power loss, network interruption, failed filesystem deletion, or manually introduced file may never complete the final save or explicit discard request. Abandoned workspaces are eligible for automatic discard only after the configured age and never earlier than 24 hours.
+Direct address-bar navigation, refresh, tab close, and browser close cannot show the custom application modal. The editor therefore autosaves after a short delay and attempts a final same-origin flush on `visibilitychange` and `pagehide`; the browser-native unsaved-changes warning is used only while a newer snapshot is still pending. A valid checkpoint never expires because of age. The scheduled cleanup service remains necessary only for genuinely orphaned files left after a browser or host crash, power loss, network interruption, failed filesystem deletion, interrupted finalisation, legacy data, or manually introduced files.
+
+Multiple tabs share the same user checkpoint, so every content save includes a server revision, per-tab editor token, and increasing save sequence. A different stale tab cannot overwrite or discard a newer checkpoint and receives HTTP 409. Requests from the same editor are ordered by sequence so a late unload request cannot replace a newer save. This is an integrity safeguard in addition to normal owner and CSRF checks.
 
 Regression coverage is maintained in `kb/tests/articles/test_article_creation_workspace.py`.
 
