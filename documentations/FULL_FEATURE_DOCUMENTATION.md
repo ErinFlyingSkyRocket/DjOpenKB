@@ -459,8 +459,29 @@ A user with only a writer role cannot approve. Roles are additive, however: a us
 For a new article, the normal workflow is:
 
 ```text
+Temporary creation workspace -> Draft or Pending/Published
 Draft -> Pending -> Pending failed / Published
 ```
+
+#### Temporary New-Article Workspace
+
+Opening **New Article** creates or restores one private server-side creation workspace for the signed-in author. This workspace is not a normal `SuggestedArticle` row and does not appear in **My Articles**. It temporarily stores the title, body, keywords, permitted visibility, dirty state, and the generated filenames of images uploaded while creating the article.
+
+The browser automatically caches changed fields in this workspace after a short pause. Once any field or image changes, in-application navigation such as the Back button, navbar links, language/logout forms, or another page link is stopped before redirecting and opens a blocking three-way prompt. The dialog has no close button, does not close when its backdrop is clicked, and ignores Escape so the author must make an explicit decision:
+
+| Choice | Result |
+|---|---|
+| **Continue editing** | Cancel the attempted navigation and return to the current editor with the same cached workspace. |
+| **Save as draft** | Validate the article, convert the workspace into a real Draft in **My Articles**, retain only referenced images, and then continue to the page or form action the user originally selected. Validation errors keep the dialog open and prevent navigation. |
+| **Discard** | Delete the temporary workspace and immediately remove its uncommitted owned images after the database transaction commits, then continue to the originally selected destination or action. |
+
+The normal page buttons remain available. The main **Save draft** button performs the same real-Draft conversion through the normal form workflow. **Submit for approval** converts the workspace into a Pending article and preserves the existing reviewer SMTP notification flow. **Publish article** remains the Admin direct-publication path and does not create a reviewer-queue notification. Referenced images are retained; workspace-owned images that are no longer referenced are removed.
+
+A browser tab being closed, the browser process crashing, a network interruption, or the computer losing power cannot reliably complete an asynchronous discard request. The browser therefore uses its native leave warning for close/refresh actions, while the already-autosaved workspace remains recoverable. The scheduled cleanup command remains required as a recovery safety net and discards abandoned workspaces only after the configured cleanup age, with an enforced minimum of 24 hours.
+
+Only one active temporary creation workspace is maintained per user. Opening New Article in multiple tabs therefore shows the same temporary work; this avoids creating an unlimited number of hidden abandoned workspaces.
+
+Workspace image ownership is server-side. An image uploaded in the new-article editor is bound to that user's workspace and continues to count against the persistent pending-image quota. Typing another user's pending upload filename into Markdown does not transfer ownership and cannot make Discard delete that file. A workspace may reuse an image that is already committed to repository article content, but it cannot save an uncommitted image owned by another workspace.
 
 For an already published article edited by an owner/writer flow, the live article is not overwritten immediately. The proposed update is stored separately and sent for review.
 
@@ -860,13 +881,27 @@ Uncommitted image uploads are limited by authenticated user rather than browser 
 
 The quota is calculated from persistent upload audit records, files that still exist, and current article references. Opening another browser, signing in again, or clearing a session does not reset it. Simultaneous uploads for the same account are serialised with a database row lock before the count and byte limits are checked. The session list remains only an editor convenience and is not the security boundary.
 
+### 12.10 New-Article Image Lifecycle
+
+New-article uploads are recorded against the authenticated user's `ArticleCreationWorkspace` UUID as well as in `ArticleImageUploadLog`. This provides a persistent ownership boundary across tabs, browsers, and login sessions:
+
+```text
+Upload image
+-> bind generated filename to the user's temporary workspace
+-> autosave workspace/body
+-> Save draft / Submit / Publish keeps only referenced files
+-> Discard deletes all uncommitted workspace-owned files
+```
+
+Active workspace files are excluded from stray-file results, but they still count as uncommitted files for the per-user count and byte quotas. The upload and delete endpoints require either the exact owned workspace UUID or an authorised existing-article edit context; a caller cannot omit the context or supply both contexts. Upload audit rows retain the workspace/article identifier as a historical snapshot after the temporary workspace is removed.
+
 ## 13. Stray Upload File Cleanup
 
 ### 13.1 Manual Cleanup
 
-Admins have access to a clean stray upload files tool. It finds uploaded files that are no longer referenced by any article or Markdown file.
+Admins have access to a clean stray upload files tool. It finds uploaded files that are no longer referenced by an article, approved Markdown content, or an active temporary creation workspace.
 
-The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept. The cleanup logic checks both live article content and pending-update content so images used only by a pending update are not incorrectly treated as stray files.
+The admin cleanup page allows review before deletion so admins can avoid removing files that should be kept. The cleanup logic checks live article content, pending-update content, and active creation-workspace ownership so images used only by a pending update or a recoverable new-article workspace are not incorrectly treated as stray files.
 
 ### 13.2 Automatic Cleanup
 
@@ -882,7 +917,7 @@ The default stray upload minimum age is also 24 hours:
 stray_upload_cleanup_min_age_minutes = 1440
 ```
 
-This prevents newly uploaded images from being deleted while a user is still drafting an article.
+This prevents newly uploaded images from being deleted while a user is still drafting an article. The same scheduled command also discards abandoned temporary creation workspaces. A workspace is never automatically discarded earlier than 24 hours, even when the ordinary stray-file threshold is configured as `0`. Explicit **Discard** remains the normal immediate cleanup path; scheduled cleanup covers browser crashes, network loss, abandoned tabs, failed file deletion, legacy uploads, and files introduced outside the expected workflow.
 
 ## 14. Markdown and XSS Protection
 
@@ -1507,9 +1542,17 @@ Sync articles to OpenKB AI:
 docker compose exec web python manage.py sync_openkb_ai
 ```
 
+Verify the temporary new-article workspace and image lifecycle:
+
+```bash
+docker compose exec web python manage.py test \
+  kb.tests.articles.test_article_creation_workspace
+```
+
 Run cleanup manually:
 
 ```bash
+docker compose exec web python manage.py cleanup_stray_upload_files --dry-run
 docker compose exec web python manage.py cleanup_stray_upload_files --noinput
 docker compose exec web python manage.py cleanup_article_deletion_queue --dry-run
 docker compose exec web python manage.py cleanup_article_deletion_queue --noinput

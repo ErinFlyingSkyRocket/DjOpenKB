@@ -156,6 +156,17 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         .article-header-actions .btn {
             margin-bottom: 6px;
         }
+        .article-workspace-status {
+            margin-top: 4px;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+        .article-workspace-status.is-error {
+            color: #a94442;
+        }
+        .article-workspace-status.is-saving {
+            color: #31708f;
+        }
         @media (max-width: 767px) {
             .article-header-actions {
                 padding-top: 0;
@@ -179,9 +190,20 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
             <div class="row">
-                <form method="post" id="edit_form" action="{{ suggest_form_action|default:'/suggest/' }}" data-toggle="validator">
+                <form method="post" id="edit_form" action="{{ suggest_form_action|default:'/suggest/' }}" data-toggle="validator"
+                      data-article-workspace-id="{{ article_creation_workspace_id }}"
+                      data-article-workspace-dirty="{% if article_creation_workspace_dirty %}true{% else %}false{% endif %}"
+                      data-article-workspace-autosave-url="{% url 'autosave_article_creation_workspace' %}"
+                      data-article-workspace-discard-url="{% url 'discard_article_creation_workspace' %}"
+                      data-article-workspace-fallback-url="{% url 'home' %}"
+                      data-article-workspace-saving-text="{% trans 'Saving temporary workspace…' %}"
+                      data-article-workspace-saved-text="{% trans 'Temporary workspace saved. Use Save draft to keep it in My Articles.' %}"
+                      data-article-workspace-restored-text="{% trans 'Temporary workspace restored. Save it as a draft or discard it when finished.' %}"
+                      data-article-workspace-save-error-text="{% trans 'The article could not be saved as a draft.' %}"
+                      data-article-workspace-discard-error-text="{% trans 'The temporary article could not be discarded.' %}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
+                    <input type="hidden" name="workspace_id" value="{{ article_creation_workspace_id }}" />
                     <input type="hidden" name="article_visibility" value="{{ article_visibility|default:'public' }}" {% if show_visibility_selector %}disabled{% endif %}>
                     <div id="header row">
                         <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
@@ -197,6 +219,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% else %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
                             {% endif %}
+                            <div id="articleWorkspaceStatus" class="text-muted article-workspace-status" aria-live="polite">
+                                {% trans "Temporary changes are saved automatically until you save, submit, or discard this article." %}
+                            </div>
                         </div>
                     </div>
 
@@ -274,6 +299,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
     const maxArticleImageSizeBytes = 2 * 1024 * 1024;
     const csrfToken = "{{ csrf_token }}";
+    const articleCreationWorkspaceId = "{{ article_creation_workspace_id }}";
     const articleImageUploadLimit = parseInt("{{ article_image_upload_limit|default:50 }}", 10) || 0;
     const uploadedImages = new Map();
     const uploadedHashes = new Map();
@@ -974,6 +1000,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             if (!info.existing) {
                 const formData = new FormData();
                 formData.append("filename", info.filename);
+                formData.append("workspace_id", articleCreationWorkspaceId);
+                formData.append("frm_kb_body", getEditorValue());
 
                 try {
                     await fetch(deleteUrl, {
@@ -1036,6 +1064,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("workspace_id", articleCreationWorkspaceId);
 
         try {
             const response = await fetch(uploadUrl, {
@@ -1128,11 +1157,32 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     }
 
     existingImages.forEach(function (info) {
-        info.existing = true;
+        info.existing = Boolean(info.existing);
         addImageCard(info);
     });
 })();
 </script>
+
+<div class="modal fade" id="articleWorkspaceLeaveModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="articleWorkspaceLeaveTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="articleWorkspaceLeaveTitle">{% trans "Save or discard this article before leaving" %}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{% trans "This new article has changes. Choose what to do before leaving this page." %}</p>
+                <p class="text-muted">{% trans "Save as draft creates a Draft in My Articles and then continues to the page or action you selected. Discard permanently clears the temporary content and deletes its uncommitted images. Continue editing returns to this editor." %}</p>
+                <div id="articleWorkspaceLeaveError" class="alert alert-danger csp-is-hidden" role="alert"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="articleWorkspaceStayButton">{% trans "Continue editing" %}</button>
+                <button type="button" class="btn btn-danger" id="articleWorkspaceDiscardButton">{% trans "Discard" %}</button>
+                <button type="button" class="btn btn-primary" id="articleWorkspaceSaveDraftButton">{% trans "Save as draft" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'javascripts/article-creation-workspace.js' %}?v=20260806-blocking-workspace-1"></script>
 
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}

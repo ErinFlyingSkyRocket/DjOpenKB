@@ -40,7 +40,7 @@ from django.utils.translation import gettext as _
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from ..models import ActivityLog, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, get_article_body_character_limit, get_article_keyword_limit, normalize_article_title, validate_article_body, validate_article_keywords
+from ..models import ActivityLog, ArticleCreationWorkspace, ArticleDeletionRequest, ArticleImageUploadLog, ArticleVote, SuggestedArticle, UserProfile, SiteSetting, UserMFADevice, get_article_body_character_limit, get_article_keyword_limit, normalize_article_title, validate_article_body, validate_article_keywords
 from ..mfa import user_requires_mfa, verify_totp_code
 from ..auth_monitoring import (
     build_auth_lockout_ui_context,
@@ -77,6 +77,7 @@ from ..permissions import (
 
 IGNORED_WIKI_NAMES = {"AGENTS.md", "log.md", "index.md", "README.md"}
 DJANGO_ARTICLE_SOURCE_MARKER = "generated_by: django-suggested-article"
+ARTICLE_CREATION_WORKSPACE_SESSION_KEY = "active_article_creation_workspace"
 
 # Small image files that users paste/upload into suggested Markdown articles.
 # These are served through the protected /wiki/uploads/<filename> view, not by
@@ -1367,9 +1368,14 @@ def article_image_url(filename):
     return f"/wiki/uploads/{filename}"
 
 
-def delete_uploaded_image_file(filename):
+def delete_uploaded_image_file(
+    filename,
+    *,
+    actor=None,
+    reason=ArticleImageUploadLog.DeleteReason.AUTO_CLEANUP,
+):
     if not filename or "/" in filename or "\\" in filename or filename in {".", ".."}:
-        return
+        return False
 
     upload_dir = get_openkb_uploads_dir().resolve()
     file_path = (upload_dir / filename).resolve()
@@ -1377,15 +1383,18 @@ def delete_uploaded_image_file(filename):
     try:
         file_path.relative_to(upload_dir)
     except ValueError:
-        return
+        return False
 
-    if file_path.exists() and file_path.is_file():
-        file_path.unlink()
-        mark_article_image_deleted(
-            filename,
-            actor=None,
-            reason=ArticleImageUploadLog.DeleteReason.AUTO_CLEANUP,
-        )
+    if not file_path.exists() or not file_path.is_file():
+        return False
+
+    file_path.unlink()
+    mark_article_image_deleted(
+        filename,
+        actor=actor,
+        reason=reason,
+    )
+    return True
 
 
 def article_references_uploaded_filename(article, filename, include_pending_update=True):
@@ -1456,6 +1465,204 @@ def clear_committed_pending_uploads(request, image_assets):
         item for item in pending_uploads if item not in image_assets
     ]
     request.session.modified = True
+
+
+def article_creation_workspace_assets(workspace):
+    """Return safe uploads explicitly owned by a temporary workspace.
+
+    The database-owned ``image_assets`` list is authoritative. Markdown body
+    references are deliberately not merged into ownership: a user can type or
+    paste an existing ``/wiki/uploads/...`` URL, but that must never make the
+    temporary workspace capable of deleting another user's pending upload.
+    """
+    if workspace is None:
+        return []
+
+    assets = []
+    for filename in list(workspace.image_assets or []):
+        safe_name = safe_uploaded_filename(filename)
+        if safe_name and safe_name not in assets:
+            assets.append(safe_name)
+    return assets
+
+
+def validate_article_creation_workspace_image_references(workspace, body):
+    """Validate uploaded-image references before a workspace becomes an article.
+
+    A referenced filename is accepted when it was uploaded into this workspace
+    or is already committed to another article. This prevents a forged Markdown
+    body from claiming another user's uncommitted upload while still allowing
+    intentional reuse of an image that is already part of repository content.
+    """
+    referenced = validate_article_image_count(extract_article_image_filenames(body))
+    owned = set(article_creation_workspace_assets(workspace))
+    upload_dir = get_openkb_uploads_dir().resolve()
+
+    for filename in referenced:
+        file_path = (upload_dir / filename).resolve()
+        try:
+            file_path.relative_to(upload_dir)
+        except ValueError:
+            raise ValidationError(_("The article contains an invalid image reference."))
+
+        if not file_path.exists() or not file_path.is_file():
+            raise ValidationError(
+                _("The article references an uploaded image that is no longer available: %(filename)s")
+                % {"filename": filename}
+            )
+
+        if filename in owned:
+            if not user_owns_pending_article_image(workspace.owner, filename):
+                raise ValidationError(
+                    _("An uploaded image in this temporary article is no longer owned by your account.")
+                )
+            continue
+
+        if image_is_used_by_other_article(filename):
+            continue
+
+        raise ValidationError(
+            _("The article references an uncommitted image that does not belong to this temporary workspace.")
+        )
+
+    return referenced
+
+
+def get_owned_article_creation_workspace(user, workspace_id, *, for_update=False):
+    """Return one user's temporary creation workspace or None."""
+    if not user or not getattr(user, "pk", None) or not workspace_id:
+        return None
+    try:
+        workspace_uuid = uuid.UUID(str(workspace_id))
+    except (TypeError, ValueError, AttributeError):
+        return None
+
+    queryset = ArticleCreationWorkspace.objects.select_related("owner")
+    if for_update:
+        queryset = queryset.select_for_update()
+    return queryset.filter(pk=workspace_uuid, owner_id=user.pk).first()
+
+
+def image_is_used_by_other_creation_workspace(filename, current_workspace=None):
+    """Return whether another active temporary workspace owns the image."""
+    safe_name = safe_uploaded_filename(filename)
+    if not safe_name:
+        return False
+
+    queryset = ArticleCreationWorkspace.objects.all()
+    if current_workspace is not None and getattr(current_workspace, "pk", None):
+        queryset = queryset.exclude(pk=current_workspace.pk)
+
+    for workspace in queryset.only("body", "image_assets"):
+        if safe_name in article_creation_workspace_assets(workspace):
+            return True
+    return False
+
+
+def _delete_article_creation_workspace_files(workspace, *, actor=None, keep_filenames=None, reason=None):
+    keep = {
+        safe_uploaded_filename(filename)
+        for filename in (keep_filenames or [])
+        if safe_uploaded_filename(filename)
+    }
+    delete_reason = reason or ArticleImageUploadLog.DeleteReason.USER_REMOVED
+    deleted = []
+
+    for filename in article_creation_workspace_assets(workspace):
+        if filename in keep:
+            continue
+        if image_is_used_by_other_article(filename):
+            continue
+        if image_is_used_by_other_creation_workspace(filename, current_workspace=workspace):
+            continue
+        try:
+            if delete_uploaded_image_file(filename, actor=actor, reason=delete_reason):
+                deleted.append(filename)
+        except OSError:
+            logger.exception("Unable to delete temporary article workspace image %s", filename)
+    return deleted
+
+
+def discard_article_creation_workspace(request, workspace, *, reason=None):
+    """Delete a temporary workspace and its uncommitted files after commit."""
+    if workspace is None:
+        return []
+
+    workspace_assets = article_creation_workspace_assets(workspace)
+    workspace_snapshot = workspace
+    workspace_id = str(workspace.pk)
+    actor = getattr(request, "user", None) if request is not None else None
+    delete_reason = reason or ArticleImageUploadLog.DeleteReason.USER_REMOVED
+
+    workspace.delete()
+
+    def cleanup_files():
+        _delete_article_creation_workspace_files(
+            workspace_snapshot,
+            actor=actor,
+            keep_filenames=[],
+            reason=delete_reason,
+        )
+
+    transaction.on_commit(cleanup_files)
+
+    if request is not None:
+        pending_uploads = request.session.get("pending_article_uploads", [])
+        request.session["pending_article_uploads"] = [
+            item for item in pending_uploads if item not in set(workspace_assets)
+        ]
+        if request.session.get(ARTICLE_CREATION_WORKSPACE_SESSION_KEY) == workspace_id:
+            request.session.pop(ARTICLE_CREATION_WORKSPACE_SESSION_KEY, None)
+        request.session.modified = True
+    return workspace_assets
+
+
+def finalize_article_creation_workspace(request, workspace, committed_image_assets):
+    """Remove a temporary workspace while preserving files committed to an article."""
+    if workspace is None:
+        return []
+
+    committed = {
+        safe_uploaded_filename(filename)
+        for filename in (committed_image_assets or [])
+        if safe_uploaded_filename(filename)
+    }
+    workspace_assets = article_creation_workspace_assets(workspace)
+    workspace_snapshot = workspace
+    workspace_id = str(workspace.pk)
+    actor = getattr(request, "user", None) if request is not None else None
+
+    workspace.delete()
+
+    def cleanup_unused_files():
+        _delete_article_creation_workspace_files(
+            workspace_snapshot,
+            actor=actor,
+            keep_filenames=committed,
+            reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+        )
+
+    transaction.on_commit(cleanup_unused_files)
+
+    if request is not None:
+        pending_uploads = request.session.get("pending_article_uploads", [])
+        request.session["pending_article_uploads"] = [
+            item for item in pending_uploads if item not in set(workspace_assets)
+        ]
+        if request.session.get(ARTICLE_CREATION_WORKSPACE_SESSION_KEY) == workspace_id:
+            request.session.pop(ARTICLE_CREATION_WORKSPACE_SESSION_KEY, None)
+        request.session.modified = True
+    return workspace_assets
+
+
+def stale_article_creation_workspaces(min_age_minutes):
+    """Return temporary workspaces older than the configured safety period."""
+    try:
+        minimum_age = max(int(min_age_minutes), 0)
+    except (TypeError, ValueError):
+        minimum_age = 1440
+    cutoff = timezone.now() - timedelta(minutes=minimum_age)
+    return ArticleCreationWorkspace.objects.filter(updated_at__lte=cutoff).order_by("updated_at")
 
 
 def user_can_use_admin_tools(user):
@@ -1580,9 +1787,10 @@ def extract_uploaded_file_filenames_from_text(text):
     return filenames
 
 
-def get_all_referenced_uploaded_files():
-    """Return uploaded filenames still referenced by articles or Markdown files."""
+def get_all_referenced_uploaded_files(*, include_creation_workspaces=True, exclude_workspace_ids=None):
+    """Return uploaded filenames still referenced by articles, workspaces, or Markdown."""
     referenced = set()
+    excluded_workspace_ids = {str(item) for item in (exclude_workspace_ids or [])}
 
     # 1) Trust Django article records first. This covers draft/published articles,
     # published-update drafts/reviews, and images tracked in image asset fields.
@@ -1597,7 +1805,16 @@ def get_all_referenced_uploaded_files():
         referenced.update(article.pending_update_image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.pending_update_body))
 
-    # 2) Also scan all OpenKB wiki Markdown files. This protects manually added
+    # 2) Protect active temporary new-article workspaces. These files are still
+    # uncommitted and continue counting toward the user's pending quota, but
+    # they must not be treated as stray while the workspace remains active.
+    if include_creation_workspaces:
+        for workspace in ArticleCreationWorkspace.objects.only("id", "body", "image_assets"):
+            if str(workspace.pk) in excluded_workspace_ids:
+                continue
+            referenced.update(article_creation_workspace_assets(workspace))
+
+    # 3) Also scan all OpenKB wiki Markdown files. This protects manually added
     # Markdown files or files edited outside Django.
     wiki_dir = settings.OPENKB_WIKI_DIR
     if wiki_dir.exists():
@@ -1640,7 +1857,7 @@ def get_user_pending_image_upload_usage(user):
     if not user or not getattr(user, "pk", None):
         return {"count": 0, "bytes": 0, "filenames": []}
 
-    referenced = get_all_referenced_uploaded_files()
+    referenced = get_all_referenced_uploaded_files(include_creation_workspaces=False)
     upload_dir = get_openkb_uploads_dir().resolve()
     pending = []
     total_bytes = 0
@@ -1761,7 +1978,7 @@ def mark_article_image_deleted(filename, actor=None, reason="", record_activity=
     except Exception:
         logger.exception("Unable to append image deletion ActivityLog for %s", filename)
 
-def find_stray_uploaded_files(min_age_minutes=1440):
+def find_stray_uploaded_files(min_age_minutes=1440, *, exclude_workspace_ids=None):
     """Return uploaded files that are not referenced anywhere.
 
     The minimum age protects someone who is currently editing an article: a
@@ -1769,7 +1986,7 @@ def find_stray_uploaded_files(min_age_minutes=1440):
     """
     init_openkb_storage()
     upload_dir = get_openkb_uploads_dir().resolve()
-    referenced = get_all_referenced_uploaded_files()
+    referenced = get_all_referenced_uploaded_files(exclude_workspace_ids=exclude_workspace_ids)
     cutoff_time = timezone.now().timestamp() - (min_age_minutes * 60)
 
     stray_files = []

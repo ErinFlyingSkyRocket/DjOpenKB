@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 import re
+import uuid
 
 from .crypto import decrypt_value, encrypt_value, is_encrypted_value
 
@@ -973,6 +974,54 @@ class ArticleVote(models.Model):
         return f"{self.article.title} - {self.user} - {label}"
 
 
+class ArticleCreationWorkspace(models.Model):
+    """Temporary server-side workspace for one user's unsaved new article.
+
+    The workspace owns uncommitted image uploads until the user saves,
+    submits, or explicitly discards the new article. It is intentionally
+    separate from SuggestedArticle so an untouched editor page does not create
+    a visible Draft entry in My Articles.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    owner = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="article_creation_workspace",
+    )
+    title = models.CharField(max_length=200, blank=True)
+    body = models.TextField(blank=True)
+    keywords = models.CharField(max_length=500, blank=True)
+    visibility = models.CharField(
+        max_length=20,
+        choices=SuggestedArticle.Visibility.choices,
+        default=SuggestedArticle.Visibility.PUBLIC,
+    )
+    image_assets = models.JSONField(default=list, blank=True)
+    is_dirty = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+        verbose_name = _("Article creation workspace")
+        verbose_name_plural = _("Article creation workspaces")
+
+    def __str__(self):
+        owner_name = self.owner.get_username() if self.owner_id else str(_("unknown user"))
+        return _("New article workspace for %(owner)s") % {"owner": owner_name}
+
+    @property
+    def has_content(self):
+        return bool(
+            self.is_dirty
+            or self.title.strip()
+            or self.body.strip()
+            or self.keywords.strip()
+            or self.image_assets
+        )
+
+
 class ArticleImageUploadLog(models.Model):
     """Audit record for images uploaded through the article editor.
 
@@ -991,6 +1040,26 @@ class ArticleImageUploadLog(models.Model):
     original_name = models.CharField(max_length=255, blank=True)
     content_type = models.CharField(max_length=100, blank=True)
     size_bytes = models.PositiveIntegerField(default=0)
+    creation_workspace_id = models.UUIDField(
+        null=True,
+        blank=True,
+        db_index=True,
+        editable=False,
+        help_text=_(
+            "Temporary new-article workspace that owned this upload when it was created. "
+            "The UUID is retained as an audit snapshot after the workspace is removed."
+        ),
+    )
+    editing_article_id = models.PositiveBigIntegerField(
+        null=True,
+        blank=True,
+        db_index=True,
+        editable=False,
+        help_text=_(
+            "Existing article being edited when this upload was created. "
+            "This is an audit snapshot and does not enforce a database relation."
+        ),
+    )
 
     uploaded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -1300,9 +1369,10 @@ class SiteSetting(models.Model):
         default=1440,
         verbose_name=_("Stray upload cleanup minimum age (minutes)"),
         help_text=_(
-            "Files newer than this many minutes are ignored by the stray upload cleanup tool. "
-            "Default is 1440 minutes (24 hours) to avoid deleting images while users are drafting articles. "
-            "Set to 0 to detect/delete stray uploads immediately."
+            "Ordinary stray files newer than this many minutes are ignored by cleanup. "
+            "The same value controls abandoned new-article workspaces, but a workspace is never "
+            "automatically discarded earlier than 1440 minutes (24 hours). Set to 0 only for "
+            "immediate ordinary stray-file detection/deletion."
         ),
     )
     article_deletion_queue_retention_days = models.PositiveIntegerField(

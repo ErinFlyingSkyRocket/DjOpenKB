@@ -244,6 +244,24 @@ The visibility field is treated as an authorisation-sensitive workflow value, no
 
 Regression coverage is maintained in `kb/tests/permissions/test_article_visibility_edit_permissions.py`, including creation selection, single-scope request tampering, dual-writer edit tampering, both manager directions, and the Admin override.
 
+### 9.1 Temporary New-Article Workspace and Upload Ownership
+
+The New Article page uses a private database-backed `ArticleCreationWorkspace` rather than relying on browser memory or a session-only image list. The workspace is owned by exactly one authenticated user and stores temporary fields plus the generated filenames uploaded in that editor context. Autosave and discard requests require the exact owned workspace UUID and recheck article-creation scope on the server.
+
+This closes the normal stray-image gap when an author pastes or uploads an image and then leaves without creating an article:
+
+- In-application navigation is intercepted before redirecting and opens a blocking **Save as draft / Discard / Continue editing** decision. Backdrop clicks, Escape, and a close icon cannot dismiss the dialog.
+- **Save as draft** creates a real Draft and only then continues the originally selected navigation or form action; server-side validation errors keep the author on the editor.
+- **Discard** deletes the workspace and its uncommitted owned images after commit before navigation continues.
+- Save Draft/Submit/Publish retains only images referenced by the resulting article and removes unused workspace uploads. Normal Submit continues invoking the existing reviewer-notification workflow, while Draft creation does not notify reviewers.
+- Active workspace images remain protected from stray cleanup but continue counting against persistent per-user pending count/byte limits.
+- A Markdown body cannot claim another user's uncommitted filename; body text is not treated as proof of file ownership.
+- Upload/delete requests require an authorised workspace or existing-article context, so changing JavaScript or forging a context identifier does not grant access to another user's temporary files.
+
+The scheduled cleanup service remains necessary because a browser close, process crash, host shutdown, network interruption, failed filesystem deletion, or manually introduced file may never send the explicit discard request. Abandoned workspaces are eligible for automatic discard only after the configured age and never earlier than 24 hours.
+
+Regression coverage is maintained in `kb/tests/articles/test_article_creation_workspace.py`.
+
 ## 10. OpenKB Retrieved-Content and Distributed-Lock Hardening
 
 OpenKB Q&A treats article-derived text and image captions as untrusted data. Files are restricted by approved directory, extension, and size; page requests are bounded; a wiki-local instruction file cannot replace the package-owned trusted schema; and model output is never used to make authentication or visibility decisions.

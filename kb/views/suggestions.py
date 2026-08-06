@@ -17,7 +17,12 @@ from django.utils.translation import gettext as _
 from urllib.parse import quote
 
 from ..auth_monitoring import build_auth_lockout_ui_context, get_auth_lockout_status
-from ..input_limits import FILENAME_MAX_LENGTH, URL_MAX_LENGTH
+from ..input_limits import (
+    ARTICLE_KEYWORDS_MAX_LENGTH,
+    ARTICLE_TITLE_MAX_LENGTH,
+    FILENAME_MAX_LENGTH,
+    URL_MAX_LENGTH,
+)
 
 
 def _article_delete_lockout_context(request, requires_mfa):
@@ -115,7 +120,69 @@ def get_keyword_suggestion_catalog_json(visibility=SuggestedArticle.Visibility.P
 
 
 
-def _render_suggest_form_for_visibility(request, *, visibility, can_publish_directly, visibility_choices=None, extra_context=None):
+def _article_creation_workspace_allowed_visibilities(visibility_choices):
+    return {
+        str(choice.get("value"))
+        for choice in (visibility_choices or [])
+        if isinstance(choice, dict) and choice.get("value")
+    }
+
+
+def _get_or_create_article_creation_workspace(request, *, visibility_choices, requested_visibility):
+    """Return the signed-in user's single temporary new-article workspace."""
+    allowed_visibilities = _article_creation_workspace_allowed_visibilities(visibility_choices)
+    if requested_visibility not in allowed_visibilities:
+        requested_visibility = (
+            SuggestedArticle.Visibility.PUBLIC
+            if SuggestedArticle.Visibility.PUBLIC in allowed_visibilities
+            else sorted(allowed_visibilities)[0]
+        )
+
+    requested_workspace_id = (request.GET.get("workspace") or "").strip()
+    if requested_workspace_id:
+        workspace = get_owned_article_creation_workspace(request.user, requested_workspace_id)
+        if workspace is None:
+            raise Http404("Article workspace not found")
+        if workspace.visibility not in allowed_visibilities:
+            workspace.visibility = requested_visibility
+            workspace.save(update_fields=["visibility", "updated_at"])
+        request.session[ARTICLE_CREATION_WORKSPACE_SESSION_KEY] = str(workspace.pk)
+        request.session.modified = True
+        return workspace, False
+
+    try:
+        with transaction.atomic():
+            workspace = (
+                ArticleCreationWorkspace.objects
+                .select_for_update()
+                .filter(owner=request.user)
+                .first()
+            )
+            created = workspace is None
+            if workspace is None:
+                workspace = ArticleCreationWorkspace.objects.create(
+                    owner=request.user,
+                    visibility=requested_visibility,
+                )
+            elif workspace.visibility not in allowed_visibilities:
+                # Preserve the temporary content but never retain a scope the
+                # account is no longer authorised to create.
+                workspace.visibility = requested_visibility
+                workspace.save(update_fields=["visibility", "updated_at"])
+            elif not workspace.is_dirty and workspace.visibility != requested_visibility:
+                workspace.visibility = requested_visibility
+                workspace.save(update_fields=["visibility", "updated_at"])
+    except IntegrityError:
+        workspace = ArticleCreationWorkspace.objects.get(owner=request.user)
+        created = False
+
+    request.session[ARTICLE_CREATION_WORKSPACE_SESSION_KEY] = str(workspace.pk)
+    request.session.modified = True
+    return workspace, created
+
+
+
+def _render_suggest_form_for_visibility(request, *, visibility, can_publish_directly, visibility_choices=None, workspace=None, extra_context=None):
     visibility = normalize_article_visibility(visibility)
     visibility_choices = visibility_choices or article_visibility_choices_for_user(request.user, action="add")
     show_visibility_selector = bool(
@@ -136,6 +203,17 @@ def _render_suggest_form_for_visibility(request, *, visibility, can_publish_dire
         "suggest_form_action": reverse("suggest"),
         "suggest_page_title": _("Add Article"),
         "suggest_submit_label": _("Submit article"),
+        "article_creation_workspace_id": str(workspace.pk) if workspace else "",
+        "article_creation_workspace_dirty": bool(workspace and workspace.is_dirty),
+        "title_value": workspace.title if workspace else "",
+        "body_value": workspace.body if workspace else "",
+        "keywords_value": workspace.keywords if workspace else "",
+        "existing_images_json": json.dumps(
+            get_article_image_cards_from_filenames(
+                article_creation_workspace_assets(workspace),
+                existing=False,
+            )
+        ) if workspace else "[]",
     }
     if extra_context:
         context.update(extra_context)
@@ -149,27 +227,52 @@ def _suggest_unified(request):
     if not visibility_choices:
         raise Http404("Article not found")
 
-    if request.method == "POST":
+    requested_visibility = choose_requested_article_visibility(
+        request.user,
+        request.POST.get("article_visibility") if request.method == "POST" else request.GET.get("visibility"),
+        action="add",
+        default=SuggestedArticle.Visibility.PUBLIC,
+    )
+
+    if request.method == "GET":
+        workspace, _created = _get_or_create_article_creation_workspace(
+            request,
+            visibility_choices=visibility_choices,
+            requested_visibility=requested_visibility,
+        )
+        visibility = workspace.visibility
+    else:
+        workspace_id = (request.POST.get("workspace_id") or "").strip()
+        workspace = get_owned_article_creation_workspace(request.user, workspace_id)
+        if workspace is None:
+            raise Http404("Article workspace not found")
         visibility = choose_requested_article_visibility(
             request.user,
             request.POST.get("article_visibility"),
             action="add",
-            default=SuggestedArticle.Visibility.PUBLIC,
-        )
-    else:
-        visibility = choose_requested_article_visibility(
-            request.user,
-            request.GET.get("visibility"),
-            action="add",
-            default=SuggestedArticle.Visibility.PUBLIC,
+            default=workspace.visibility,
         )
 
+    workspace_leave_save = bool(
+        request.method == "POST"
+        and (request.POST.get("workspace_leave_action") or "").strip() == "save_draft"
+    )
+
     def render_suggest_form(extra_context=None):
+        if workspace_leave_save and extra_context and extra_context.get("error"):
+            return JsonResponse(
+                {
+                    "saved": False,
+                    "error": str(extra_context["error"]),
+                },
+                status=400,
+            )
         return _render_suggest_form_for_visibility(
             request,
             visibility=visibility,
             can_publish_directly=can_publish_directly,
             visibility_choices=visibility_choices,
+            workspace=workspace,
             extra_context=extra_context,
         )
 
@@ -180,10 +283,59 @@ def _suggest_unified(request):
     body = request.POST.get("frm_kb_body", "").strip()
     keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
     draft_image_assets = extract_article_image_filenames(body)
+
+    if len(title) > ARTICLE_TITLE_MAX_LENGTH or len(keywords_raw) > ARTICLE_KEYWORDS_MAX_LENGTH:
+        return render_suggest_form({
+            "error": _("The temporary article contains an oversized field."),
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+        })
+    try:
+        validate_article_body(body)
+    except ValidationError as error:
+        message = error.messages[0] if getattr(error, "messages", None) else str(error)
+        return render_suggest_form({
+            "error": message,
+            "title_value": title,
+            "body_value": body,
+            "keywords_value": keywords_raw,
+        })
+
+    with transaction.atomic():
+        workspace = get_owned_article_creation_workspace(
+            request.user,
+            workspace_id,
+            for_update=True,
+        )
+        if workspace is None:
+            raise Http404("Article workspace not found")
+        workspace.title = title
+        workspace.body = body
+        workspace.keywords = keywords_raw
+        workspace.visibility = visibility
+        workspace.image_assets = article_creation_workspace_assets(workspace)
+        workspace.is_dirty = True
+        workspace.save(update_fields=[
+            "title",
+            "body",
+            "keywords",
+            "visibility",
+            "image_assets",
+            "is_dirty",
+            "updated_at",
+        ])
     draft_images_json = json.dumps(
-        get_article_image_cards_from_filenames(draft_image_assets, existing=False)
+        get_article_image_cards_from_filenames(
+            article_creation_workspace_assets(workspace),
+            existing=False,
+        )
     )
-    submit_action = request.POST.get("submit_action", "submit").strip()
+    submit_action = (
+        "draft"
+        if workspace_leave_save
+        else request.POST.get("submit_action", "submit").strip()
+    )
     if submit_action not in {"draft", "submit"}:
         raise Http404("Article action not allowed")
 
@@ -252,7 +404,7 @@ def _suggest_unified(request):
 
     new_image_assets = draft_image_assets
     try:
-        new_image_assets = validate_article_image_count(new_image_assets)
+        new_image_assets = validate_article_creation_workspace_image_references(workspace, body)
     except ValidationError as error:
         message = error.messages[0] if getattr(error, "messages", None) else str(error)
         return render_suggest_form({
@@ -289,6 +441,19 @@ def _suggest_unified(request):
     )
     try:
         with transaction.atomic():
+            locked_workspace = get_owned_article_creation_workspace(
+                request.user,
+                workspace_id,
+                for_update=True,
+            )
+            if locked_workspace is None:
+                raise ValidationError(_("This temporary article is no longer available. Open New Article and try again."))
+            # Recheck ownership while the workspace row is locked so a
+            # concurrent upload/discard request cannot race article creation.
+            article.image_assets = validate_article_creation_workspace_image_references(
+                locked_workspace,
+                body,
+            )
             article.full_clean()
             article.save()
     except ValidationError as error:
@@ -310,7 +475,20 @@ def _suggest_unified(request):
         })
     write_article_files(article)
     sync_article_image_assets(article, old_assets=[])
-    clear_committed_pending_uploads(request, article.image_assets)
+    # Re-lock and refresh before final cleanup so an upload that completed
+    # while the article was being validated cannot become an untracked stray.
+    with transaction.atomic():
+        latest_workspace = get_owned_article_creation_workspace(
+            request.user,
+            workspace_id,
+            for_update=True,
+        )
+        if latest_workspace is not None:
+            finalize_article_creation_workspace(
+                request,
+                latest_workspace,
+                article.image_assets,
+            )
 
     if status == SuggestedArticle.Status.DRAFT:
         activity_event = ActivityLog.EventType.ARTICLE_CREATED
@@ -340,6 +518,13 @@ def _suggest_unified(request):
             article,
             NOTIFICATION_KIND_NEW_SUBMISSION,
         )
+
+    if workspace_leave_save:
+        return JsonResponse({
+            "saved": True,
+            "article_id": article.pk,
+            "status": article.status,
+        })
 
     if status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))
@@ -1131,6 +1316,86 @@ def delete_suggestion(request, article_id):
 
 @article_image_editor_required
 @require_POST
+def autosave_article_creation_workspace(request):
+    """Persist new-article fields into the user's temporary server workspace."""
+    workspace_id = (request.POST.get("workspace_id") or "").strip()
+    with transaction.atomic():
+        workspace = get_owned_article_creation_workspace(
+            request.user,
+            workspace_id,
+            for_update=True,
+        )
+        if workspace is None:
+            return JsonResponse({"error": _("Article workspace not found.")}, status=404)
+
+        allowed_visibilities = _article_creation_workspace_allowed_visibilities(
+            article_visibility_choices_for_user(request.user, action="add")
+        )
+        requested_visibility = (request.POST.get("article_visibility") or workspace.visibility).strip().lower()
+        if requested_visibility not in allowed_visibilities:
+            return JsonResponse({"error": _("You cannot create an article with this visibility.")}, status=403)
+
+        title = request.POST.get("frm_kb_title", "")
+        body = request.POST.get("frm_kb_body", "")
+        keywords = request.POST.get("frm_kb_keywords", "")
+        try:
+            validate_article_body(body)
+        except ValidationError as error:
+            message = error.messages[0] if getattr(error, "messages", None) else str(error)
+            return JsonResponse({"error": message}, status=400)
+
+        if len(title) > ARTICLE_TITLE_MAX_LENGTH or len(keywords) > ARTICLE_KEYWORDS_MAX_LENGTH:
+            return JsonResponse({"error": _("The temporary article contains an oversized field.")}, status=400)
+
+        changed = any([
+            workspace.title != title,
+            workspace.body != body,
+            workspace.keywords != keywords,
+            workspace.visibility != requested_visibility,
+        ])
+        workspace.title = title
+        workspace.body = body
+        workspace.keywords = keywords
+        workspace.visibility = requested_visibility
+        workspace.image_assets = article_creation_workspace_assets(workspace)
+        workspace.is_dirty = bool(workspace.is_dirty or changed or workspace.image_assets)
+        workspace.save(update_fields=[
+            "title",
+            "body",
+            "keywords",
+            "visibility",
+            "image_assets",
+            "is_dirty",
+            "updated_at",
+        ])
+
+    return JsonResponse({
+        "saved": True,
+        "dirty": workspace.is_dirty,
+        "updated_at": workspace.updated_at.isoformat(),
+    })
+
+
+@article_image_editor_required
+@require_POST
+def discard_article_creation_workspace_view(request):
+    """Discard the user's temporary new article and delete its owned images."""
+    workspace_id = (request.POST.get("workspace_id") or "").strip()
+    with transaction.atomic():
+        workspace = get_owned_article_creation_workspace(
+            request.user,
+            workspace_id,
+            for_update=True,
+        )
+        if workspace is None:
+            return JsonResponse({"discarded": True})
+        deleted_assets = discard_article_creation_workspace(request, workspace)
+
+    return JsonResponse({"discarded": True, "image_count": len(deleted_assets)})
+
+
+@article_image_editor_required
+@require_POST
 def validate_article_video_link(request):
     """Validate a video link before the editor inserts it into article Markdown.
 
@@ -1148,15 +1413,49 @@ def validate_article_video_link(request):
     return JsonResponse({"valid": True, "url": url})
 
 
+def _resolve_article_image_editor_context(request, *, for_update=False):
+    """Resolve the exact new-workspace or existing-article editor context."""
+    workspace_id = (request.POST.get("workspace_id") or "").strip()
+    article_id = (request.POST.get("article_id") or "").strip()
+    if bool(workspace_id) == bool(article_id):
+        raise Http404("Article editor context not found")
+
+    if workspace_id:
+        workspace = get_owned_article_creation_workspace(
+            request.user,
+            workspace_id,
+            for_update=for_update,
+        )
+        if workspace is None:
+            raise Http404("Article workspace not found")
+        allowed_visibilities = set(allowed_article_visibility_values_for_user(request.user, action="add"))
+        if workspace.visibility not in allowed_visibilities:
+            raise Http404("Article workspace not found")
+        return "workspace", workspace
+
+    try:
+        article_pk = int(article_id)
+    except (TypeError, ValueError):
+        raise Http404("Article not found")
+    article = get_object_or_404(SuggestedArticle, pk=article_pk)
+    if not user_can_manage_article(
+        request.user,
+        article,
+        review_mode=_article_editor_review_mode(request),
+    ):
+        raise Http404("Article not found")
+    return "article", article
+
+
 @article_image_editor_required
 @require_POST
 def upload_article_image(request):
-    """Upload a validated article image with database-backed user quotas."""
+    """Upload a validated image into an authorised article editor context."""
     uploaded_file = request.FILES.get("image")
-
     if not uploaded_file:
         return JsonResponse({"error": _("No image file received.")}, status=400)
 
+    context_kind, context_object = _resolve_article_image_editor_context(request)
     article_limit = get_article_image_upload_limit()
     pending_uploads = request.session.get("pending_article_uploads", [])
     active_pending_uploads = list(dict.fromkeys(
@@ -1166,9 +1465,12 @@ def upload_article_image(request):
     ))
     if article_limit <= 0:
         return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=403)
-    # This session check is an editor convenience only. The authoritative abuse
-    # control below is database-backed and applies across browsers/sessions.
-    if len(active_pending_uploads) >= article_limit:
+
+    if context_kind == "workspace":
+        current_context_assets = article_creation_workspace_assets(context_object)
+        if len(current_context_assets) >= article_limit:
+            return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
+    elif len(active_pending_uploads) >= article_limit:
         return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
 
     try:
@@ -1188,9 +1490,19 @@ def upload_article_image(request):
 
     try:
         with transaction.atomic():
-            # Serialize quota calculation and upload creation for the same user,
-            # preventing simultaneous requests from racing past the limit.
             get_user_model().objects.select_for_update().get(pk=request.user.pk)
+            if context_kind == "workspace":
+                context_object = get_owned_article_creation_workspace(
+                    request.user,
+                    context_object.pk,
+                    for_update=True,
+                )
+                if context_object is None:
+                    raise Http404("Article workspace not found")
+                current_context_assets = article_creation_workspace_assets(context_object)
+                if len(current_context_assets) >= article_limit:
+                    return JsonResponse({"error": article_image_limit_error_message(limit=article_limit)}, status=400)
+
             usage = get_user_pending_image_upload_usage(request.user)
             if usage["count"] >= count_limit or usage["bytes"] + upload_size > byte_limit:
                 return JsonResponse(
@@ -1210,10 +1522,20 @@ def upload_article_image(request):
                 original_name=(uploaded_file.name or "")[:255],
                 content_type=(getattr(uploaded_file, "content_type", "") or "")[:100],
                 size_bytes=upload_size,
+                creation_workspace_id=context_object.pk if context_kind == "workspace" else None,
+                editing_article_id=context_object.pk if context_kind == "article" else None,
                 uploaded_by=request.user,
                 upload_ip_address=get_client_ip(request),
                 upload_user_agent=request.META.get("HTTP_USER_AGENT", ""),
             )
+
+            if context_kind == "workspace":
+                workspace_assets = article_creation_workspace_assets(context_object)
+                if filename not in workspace_assets:
+                    workspace_assets.append(filename)
+                context_object.image_assets = workspace_assets
+                context_object.is_dirty = True
+                context_object.save(update_fields=["image_assets", "is_dirty", "updated_at"])
     except Exception:
         if file_path.exists():
             try:
@@ -1230,12 +1552,15 @@ def upload_article_image(request):
             "original_name": image_log.original_name,
             "content_type": image_log.content_type,
             "size_bytes": image_log.size_bytes,
+            "editor_context": context_kind,
+            "workspace_id": str(context_object.pk) if context_kind == "workspace" else "",
+            "article_id": context_object.pk if context_kind == "article" else None,
         },
     )
 
     if filename not in active_pending_uploads:
         active_pending_uploads.append(filename)
-    request.session["pending_article_uploads"] = active_pending_uploads[-article_limit:]
+    request.session["pending_article_uploads"] = active_pending_uploads[-max(article_limit, 1):]
     request.session.modified = True
 
     image_url = f"/wiki/uploads/{filename}"
@@ -1249,52 +1574,72 @@ def upload_article_image(request):
 @article_image_editor_required
 @require_POST
 def delete_article_image(request):
-    """Delete an uncommitted image owned by the signed-in uploader.
-
-    Ownership is checked against the append-only upload record and current
-    article references, not only browser session data. This lets a user clean up
-    their own pending image from another session without permitting deletion of
-    images committed to an article or uploaded by someone else.
-    """
+    """Delete an uncommitted image from its authorised editor context."""
     filename = (request.POST.get("filename") or "").strip()
     if not filename:
         return JsonResponse({"error": _("No image filename received.")}, status=400)
     if len(filename) > FILENAME_MAX_LENGTH:
         return JsonResponse({"error": _("Invalid image filename.")}, status=400)
-
-    # Basic filename-only guard. Uploaded names are generated by the server and
-    # should not contain path separators.
     if "/" in filename or "\\" in filename or filename in {".", ".."}:
         return JsonResponse({"error": _("Invalid image filename.")}, status=400)
 
+    context_kind, context_object = _resolve_article_image_editor_context(request)
     pending_uploads = request.session.get("pending_article_uploads", [])
-    if not user_owns_pending_article_image(request.user, filename):
-        return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
 
-    upload_dir = get_openkb_uploads_dir().resolve()
-    file_path = (upload_dir / filename).resolve()
-    try:
-        file_path.relative_to(upload_dir)
-    except ValueError:
-        return JsonResponse({"error": _("Invalid image path.")}, status=400)
+    with transaction.atomic():
+        if context_kind == "workspace":
+            context_object = get_owned_article_creation_workspace(
+                request.user,
+                context_object.pk,
+                for_update=True,
+            )
+            if context_object is None:
+                return JsonResponse({"error": _("Article workspace not found.")}, status=404)
+            workspace_assets = article_creation_workspace_assets(context_object)
+            if filename not in workspace_assets:
+                return JsonResponse({"error": _("This image does not belong to this article workspace.")}, status=403)
+        elif not user_owns_pending_article_image(request.user, filename):
+            return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
 
-    if file_path.exists() and file_path.is_file():
-        file_path.unlink()
-        mark_article_image_deleted(
-            filename,
-            actor=request.user,
-            reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
-            record_activity=False,
-        )
-        log_activity(
-            request,
-            ActivityLog.EventType.IMAGE_DELETED,
-            details={
-                "filename": filename,
-                "reason": ArticleImageUploadLog.DeleteReason.USER_REMOVED,
-                "source": "editor_preview",
-            },
-        )
+        if not user_owns_pending_article_image(request.user, filename):
+            return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
+
+        upload_dir = get_openkb_uploads_dir().resolve()
+        file_path = (upload_dir / filename).resolve()
+        try:
+            file_path.relative_to(upload_dir)
+        except ValueError:
+            return JsonResponse({"error": _("Invalid image path.")}, status=400)
+
+        if file_path.exists() and file_path.is_file():
+            file_path.unlink()
+            mark_article_image_deleted(
+                filename,
+                actor=request.user,
+                reason=ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+                record_activity=False,
+            )
+            log_activity(
+                request,
+                ActivityLog.EventType.IMAGE_DELETED,
+                details={
+                    "filename": filename,
+                    "reason": ArticleImageUploadLog.DeleteReason.USER_REMOVED,
+                    "source": "editor_preview",
+                    "editor_context": context_kind,
+                },
+            )
+
+        if context_kind == "workspace":
+            context_object.image_assets = [item for item in workspace_assets if item != filename]
+            submitted_body = request.POST.get("frm_kb_body")
+            if submitted_body is not None:
+                try:
+                    context_object.body = validate_article_body(submitted_body)
+                except ValidationError:
+                    pass
+            context_object.is_dirty = True
+            context_object.save(update_fields=["body", "image_assets", "is_dirty", "updated_at"])
 
     request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
     request.session.modified = True

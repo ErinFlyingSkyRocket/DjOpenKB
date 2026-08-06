@@ -495,6 +495,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
     const maxArticleImageSizeBytes = 2 * 1024 * 1024;
     const csrfToken = "{{ csrf_token }}";
+    const articleEditorArticleId = "{{ article.id }}";
+    const articleEditorMode = "{{ article_editor_mode|default:'edit' }}";
     const articleImageUploadLimit = parseInt("{{ article_image_upload_limit|default:50 }}", 10) || 0;
     const uploadedImages = new Map();
     const uploadedHashes = new Map();
@@ -1199,6 +1201,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 if (!info.existing) {
                     const formData = new FormData();
                     formData.append("filename", info.filename);
+                    formData.append("article_id", articleEditorArticleId);
+                    formData.append("editor_mode", articleEditorMode);
 
                     try {
                         await fetch(deleteUrl, {
@@ -1263,6 +1267,8 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 
         const formData = new FormData();
         formData.append("image", file);
+        formData.append("article_id", articleEditorArticleId);
+        formData.append("editor_mode", articleEditorMode);
 
         try {
             const response = await fetch(uploadUrl, {

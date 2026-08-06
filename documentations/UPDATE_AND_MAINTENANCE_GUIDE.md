@@ -479,6 +479,10 @@ sudo docker compose exec web python manage.py test \
   kb.tests.articles \
   kb.tests.permissions
 
+# New-article temporary workspace, leave/discard workflow and image lifecycle
+sudo docker compose exec web python manage.py test \
+  kb.tests.articles.test_article_creation_workspace
+
 # Uploaded media and bulk ZIP import protections
 sudo docker compose exec web python manage.py test \
   kb.tests.media \
@@ -494,6 +498,20 @@ sudo docker compose exec web python manage.py test kb.tests.ai
 The detailed test layout and single-module examples are maintained in `kb/tests/README.md`.
 
 After a role/workflow update, test both the visible control and a forged POST request. After a template/static update, hard-refresh the browser and confirm the cache-busting query string changed where required. After a Vault update, check token/accessor permissions without printing either value.
+
+After changing the new-article workspace or image lifecycle, manually verify these paths in a non-production account:
+
+1. Open New Article, change one field, click an in-site Back/navbar link, and confirm navigation is stopped before redirecting. Verify that clicking the backdrop, pressing Escape, or looking for a close icon cannot dismiss the prompt.
+2. Choose **Continue editing** and confirm the attempted navigation is cancelled and the same cached fields remain in the editor.
+3. Choose **Save as draft** with valid title/body values and confirm a real Draft appears in My Articles before the originally selected page or form action continues. Repeat with invalid values and confirm the error remains in the blocking dialog without navigating.
+4. Upload an image without saving an article, choose **Discard**, and confirm the workspace and file are removed before navigation continues.
+5. Use the normal **Submit for approval** button and confirm the article enters the matching pending queue and the existing SMTP reviewer notification is still issued. Confirm Save as draft does not send a reviewer notification.
+6. Close the browser after autosave, reopen New Article, and confirm recovery. A browser close or host failure can only use the browser-native unsaved-changes warning; scheduled cleanup remains the fallback.
+7. Preview cleanup before deleting anything:
+
+```bash
+sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-run
+```
 
 ## 10. Documentation synchronisation checklist
 

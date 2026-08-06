@@ -241,7 +241,10 @@ class InputLengthLimitMiddleware:
     JSON_ENDPOINTS = {
         "/ask-openkb-ai/",
         "/article-video-link-validate/",
+        "/article-image-upload/",
         "/article-image-delete/",
+        "/article-creation-workspace/autosave/",
+        "/article-creation-workspace/discard/",
         "/search/suggestions/",
         "/internal/search/suggestions/",
     }
