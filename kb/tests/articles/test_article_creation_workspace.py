@@ -232,6 +232,41 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertEqual(stale_discard.status_code, 409)
         self.assertTrue(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
 
+    def test_confirmed_reset_discards_latest_checkpoint_without_manual_reload(self):
+        workspace, _response = self._open_workspace()
+        file_path = self._create_workspace_image(workspace, "reset-latest.png")
+        saved = self.client.post(
+            reverse("autosave_article_creation_workspace"),
+            {
+                "workspace_id": str(workspace.pk),
+                "workspace_revision": "0",
+                "workspace_editor_token": "newer-tab",
+                "workspace_save_sequence": "1",
+                "frm_kb_title": "Newer checkpoint that will be reset",
+                "frm_kb_body": "Latest checkpoint body",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+            },
+        )
+        self.assertEqual(saved.status_code, 200)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            reset = self.client.post(
+                reverse("discard_article_creation_workspace"),
+                {
+                    "workspace_id": str(workspace.pk),
+                    # Deliberately stale values from the reset-confirming tab.
+                    "workspace_revision": "0",
+                    "workspace_editor_token": "stale-tab",
+                    "workspace_save_sequence": "1",
+                    "reset_latest": "1",
+                },
+            )
+
+        self.assertEqual(reset.status_code, 200)
+        self.assertTrue(reset.json()["discarded"])
+        self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
+        self.assertFalse(file_path.exists())
+
     def test_stale_tab_cannot_create_article_over_a_newer_checkpoint(self):
         workspace, _response = self._open_workspace()
         saved = self.client.post(

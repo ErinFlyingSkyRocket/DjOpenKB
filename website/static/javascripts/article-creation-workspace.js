@@ -16,12 +16,16 @@
     var restoredText = form.dataset.articleWorkspaceRestoredText || "Checkpoint restored. Use Reset article to start again with a blank editor.";
     var saveErrorText = form.dataset.articleWorkspaceSaveErrorText || "The checkpoint could not be saved.";
     var discardErrorText = form.dataset.articleWorkspaceDiscardErrorText || "The temporary article could not be discarded.";
+    var conflictText = form.dataset.articleWorkspaceConflictText || "This checkpoint was updated in another tab. Reload the page to use the newest version.";
     var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
     var csrfToken = csrfInput ? csrfInput.value : "";
     var titleInput = document.getElementById("frm_kb_title");
     var keywordInput = document.getElementById("frm_kb_keywords");
     var visibilityInput = document.getElementById("articleVisibilitySelect") || form.querySelector('input[name="article_visibility"]');
     var textarea = document.getElementById("editor");
+    var revisionInput = form.querySelector('input[name="workspace_revision"]');
+    var editorTokenInput = form.querySelector('input[name="workspace_editor_token"]');
+    var saveSequenceInput = form.querySelector('input[name="workspace_save_sequence"]');
     var statusElement = document.getElementById("articleWorkspaceStatus");
     var leaveModalElement = document.getElementById("articleWorkspaceLeaveModal");
     var leaveModalError = document.getElementById("articleWorkspaceLeaveError");
@@ -39,6 +43,39 @@
     var pendingNavigation = null;
     var historyGuardEnabled = Boolean(window.history && window.history.pushState);
     var allowLeaveModalHide = false;
+    var workspaceRevision = parseInt(form.dataset.articleWorkspaceRevision || (revisionInput ? revisionInput.value : "0"), 10);
+    if (!Number.isFinite(workspaceRevision) || workspaceRevision < 0) {
+        workspaceRevision = 0;
+    }
+    var editorToken = "";
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        editorToken = window.crypto.randomUUID();
+    } else {
+        editorToken = "editor-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+    }
+    editorToken = editorToken.slice(0, 64);
+    var saveSequence = 0;
+    var conflictDetected = false;
+
+    function syncVersionInputs() {
+        if (revisionInput) {
+            revisionInput.value = String(workspaceRevision);
+        }
+        if (editorTokenInput) {
+            editorTokenInput.value = editorToken;
+        }
+        if (saveSequenceInput) {
+            saveSequenceInput.value = String(saveSequence);
+        }
+    }
+
+    function nextSaveSequence() {
+        saveSequence += 1;
+        syncVersionInputs();
+        return saveSequence;
+    }
+
+    syncVersionInputs();
 
     function getCodeMirror() {
         var wrapper = document.querySelector(".CodeMirror");
@@ -83,7 +120,7 @@
         });
     }
 
-    function buildWorkspaceFormData(snapshot, includeFormCsrfToken) {
+    function buildWorkspaceFormData(snapshot, includeFormCsrfToken, sequence) {
         var values = JSON.parse(snapshot || currentWorkspaceSnapshot());
         var data = new FormData();
         data.append("workspace_id", workspaceId);
@@ -91,6 +128,9 @@
         data.append("frm_kb_body", values.body);
         data.append("frm_kb_keywords", values.keywords);
         data.append("article_visibility", values.visibility);
+        data.append("workspace_revision", String(workspaceRevision));
+        data.append("workspace_editor_token", editorToken);
+        data.append("workspace_save_sequence", String(sequence));
         if (includeFormCsrfToken && csrfToken) {
             data.append("csrfmiddlewaretoken", csrfToken);
         }
@@ -98,7 +138,7 @@
     }
 
     function scheduleAutosave() {
-        if (bypassLeaveGuard) {
+        if (bypassLeaveGuard || conflictDetected) {
             return;
         }
         window.clearTimeout(autosaveTimer);
@@ -111,6 +151,10 @@
         }
         dirty = true;
         form.dataset.articleWorkspaceDirty = "true";
+        if (conflictDetected) {
+            setStatus(conflictText, "error");
+            return;
+        }
         setStatus(savingText, "saving");
         scheduleAutosave();
     }
@@ -146,6 +190,10 @@
         if (bypassLeaveGuard || !dirty) {
             return true;
         }
+        if (conflictDetected) {
+            setStatus(conflictText, "error");
+            return false;
+        }
         if (saveInFlight) {
             await waitForAutosaveToFinish();
         }
@@ -155,13 +203,14 @@
             return true;
         }
 
+        var sequence = nextSaveSequence();
         saveInFlight = true;
         try {
             var response = await fetch(autosaveUrl, {
                 method: "POST",
                 headers: { "X-CSRFToken": csrfToken },
                 credentials: "same-origin",
-                body: buildWorkspaceFormData(snapshot, false)
+                body: buildWorkspaceFormData(snapshot, false, sequence)
             });
             var data = {};
             try {
@@ -169,8 +218,17 @@
             } catch (error) {
                 data = {};
             }
+            if (response.status === 409 || data.conflict) {
+                conflictDetected = true;
+                throw new Error(data.error || conflictText);
+            }
             if (!response.ok || !data.saved) {
                 throw new Error(data.error || saveErrorText);
+            }
+            var returnedRevision = parseInt(data.revision, 10);
+            if (Number.isFinite(returnedRevision) && returnedRevision >= 0) {
+                workspaceRevision = returnedRevision;
+                syncVersionInputs();
             }
             lastSavedSnapshot = snapshot;
             setStatus(savedText, "saved");
@@ -184,12 +242,13 @@
     }
 
     function flushWorkspaceCheckpointForUnload() {
-        if (bypassLeaveGuard || !dirty || !snapshotNeedsSaving()) {
+        if (bypassLeaveGuard || conflictDetected || !dirty || !snapshotNeedsSaving()) {
             return;
         }
         window.clearTimeout(autosaveTimer);
         var snapshot = currentWorkspaceSnapshot();
-        var data = buildWorkspaceFormData(snapshot, true);
+        var sequence = nextSaveSequence();
+        var data = buildWorkspaceFormData(snapshot, true, sequence);
 
         if (navigator.sendBeacon) {
             try {
@@ -206,7 +265,7 @@
                 method: "POST",
                 headers: { "X-CSRFToken": csrfToken },
                 credentials: "same-origin",
-                body: buildWorkspaceFormData(snapshot, false),
+                body: buildWorkspaceFormData(snapshot, false, sequence),
                 keepalive: true
             }).catch(function () {});
         } catch (error) {
@@ -214,10 +273,18 @@
         }
     }
 
-    async function discardWorkspace() {
+    async function discardWorkspace(options) {
+        options = options || {};
         await waitForAutosaveToFinish();
         var data = new FormData();
+        var sequence = nextSaveSequence();
         data.append("workspace_id", workspaceId);
+        data.append("workspace_revision", String(workspaceRevision));
+        data.append("workspace_editor_token", editorToken);
+        data.append("workspace_save_sequence", String(sequence));
+        if (options.resetLatest) {
+            data.append("reset_latest", "1");
+        }
         var response = await fetch(discardUrl, {
             method: "POST",
             headers: { "X-CSRFToken": csrfToken },
@@ -229,6 +296,10 @@
             payload = await response.json();
         } catch (error) {
             payload = {};
+        }
+        if (response.status === 409 || payload.conflict) {
+            conflictDetected = true;
+            throw new Error(payload.error || conflictText);
         }
         if (!response.ok || !payload.discarded) {
             throw new Error(payload.error || discardErrorText);
@@ -265,7 +336,13 @@
     }
     attachCodeMirrorListener();
 
-    form.addEventListener("submit", function () {
+    form.addEventListener("submit", function (event) {
+        if (conflictDetected) {
+            event.preventDefault();
+            setStatus(conflictText, "error");
+            return;
+        }
+        nextSaveSequence();
         bypassLeaveGuard = true;
         dirty = false;
         window.clearTimeout(autosaveTimer);
@@ -379,7 +456,7 @@
             var saved = await saveWorkspace();
             if (!saved) {
                 if (leaveModalError) {
-                    leaveModalError.textContent = saveErrorText;
+                    leaveModalError.textContent = conflictDetected ? conflictText : saveErrorText;
                     leaveModalError.classList.remove("csp-is-hidden");
                 }
                 setLeaveButtonsDisabled(false);
@@ -439,14 +516,19 @@
         resetConfirmButton.addEventListener("click", async function () {
             resetConfirmButton.disabled = true;
             try {
-                await discardWorkspace();
+                // Reset is an explicit destructive action.  Remove the latest
+                // server checkpoint even when another tab advanced its revision,
+                // then replace this page with a freshly requested blank workspace.
+                await discardWorkspace({ resetLatest: true });
                 dirty = false;
                 bypassLeaveGuard = true;
+                conflictDetected = false;
                 window.clearTimeout(autosaveTimer);
                 if (window.jQuery && resetModalElement) {
                     window.jQuery(resetModalElement).modal("hide");
                 }
-                window.location.href = resetUrl;
+                var separator = resetUrl.indexOf("?") === -1 ? "?" : "&";
+                window.location.replace(resetUrl + separator + "workspace_reset=" + Date.now());
             } catch (error) {
                 if (resetModalError) {
                     resetModalError.textContent = error.message || discardErrorText;

@@ -1503,18 +1503,27 @@ def discard_article_creation_workspace_view(request):
         )
         if workspace is None:
             return JsonResponse({"discarded": True})
-        expected_revision, editor_token, save_sequence = _workspace_client_version(request)
-        if not _workspace_client_write_allowed(
-            workspace,
-            expected_revision,
-            editor_token,
-            save_sequence,
-        ):
-            return JsonResponse({
-                "error": _workspace_conflict_message(),
-                "conflict": True,
-                "revision": workspace.revision,
-            }, status=409)
+        # A normal navigation discard must still match the revision loaded by
+        # this editor tab.  Reset article is different: after the owner has
+        # explicitly confirmed the destructive reset, it intentionally removes
+        # the latest account-owned checkpoint even when another tab saved a
+        # newer revision.  This avoids making the user reload and confirm the
+        # same reset a second time while retaining stale-tab protection for all
+        # ordinary discard and article-submit requests.
+        reset_latest = (request.POST.get("reset_latest") or "").strip() == "1"
+        if not reset_latest:
+            expected_revision, editor_token, save_sequence = _workspace_client_version(request)
+            if not _workspace_client_write_allowed(
+                workspace,
+                expected_revision,
+                editor_token,
+                save_sequence,
+            ):
+                return JsonResponse({
+                    "error": _workspace_conflict_message(),
+                    "conflict": True,
+                    "revision": workspace.revision,
+                }, status=409)
         deleted_assets = discard_article_creation_workspace(request, workspace)
 
     return JsonResponse({"discarded": True, "image_count": len(deleted_assets)})

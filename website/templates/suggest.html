@@ -192,6 +192,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             <div class="row">
                 <form method="post" id="edit_form" action="{{ suggest_form_action|default:'/suggest/' }}" data-toggle="validator"
                       data-article-workspace-id="{{ article_creation_workspace_id }}"
+                      data-article-workspace-revision="{{ article_creation_workspace_revision|default:0 }}"
                       data-article-workspace-dirty="{% if article_creation_workspace_dirty %}true{% else %}false{% endif %}"
                       data-article-workspace-autosave-url="{% url 'autosave_article_creation_workspace' %}"
                       data-article-workspace-discard-url="{% url 'discard_article_creation_workspace' %}"
@@ -201,10 +202,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                       data-article-workspace-saved-text="{% trans 'Checkpoint saved. You can continue this article later.' %}"
                       data-article-workspace-restored-text="{% trans 'Checkpoint restored. Use Reset article to start again with a blank editor.' %}"
                       data-article-workspace-save-error-text="{% trans 'The checkpoint could not be saved.' %}"
-                      data-article-workspace-discard-error-text="{% trans 'The temporary article could not be discarded.' %}">
+                      data-article-workspace-discard-error-text="{% trans 'The temporary article could not be discarded.' %}"
+                      data-article-workspace-conflict-text="{% trans 'This New Article checkpoint was updated in another tab. Reload this page to use the newest checkpoint without overwriting it.' %}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
                     <input type="hidden" name="workspace_id" value="{{ article_creation_workspace_id }}" />
+                    <input type="hidden" name="workspace_revision" value="{{ article_creation_workspace_revision|default:0 }}" />
+                    <input type="hidden" name="workspace_editor_token" value="" />
+                    <input type="hidden" name="workspace_save_sequence" value="0" />
                     <input type="hidden" name="article_visibility" value="{{ article_visibility|default:'public' }}" {% if show_visibility_selector %}disabled{% endif %}>
                     <div id="header row">
                         <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
@@ -997,7 +1002,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         removeButton.innerHTML = "&times;";
 
         removeButton.addEventListener("click", async function () {
+            const originalBody = getEditorValue();
             removeMarkdownForFilename(info.filename, info.markdown);
+            removeButton.disabled = true;
 
             if (!info.existing) {
                 const formData = new FormData();
@@ -1006,13 +1013,25 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                 formData.append("frm_kb_body", getEditorValue());
 
                 try {
-                    await fetch(deleteUrl, {
+                    const response = await fetch(deleteUrl, {
                         method: "POST",
                         headers: { "X-CSRFToken": csrfToken },
                         body: formData
                     });
+                    let payload = {};
+                    try {
+                        payload = await response.json();
+                    } catch (error) {
+                        payload = {};
+                    }
+                    if (!response.ok || !payload.deleted) {
+                        throw new Error(payload.error || "{% trans 'The image could not be removed. Please try again.' %}");
+                    }
                 } catch (error) {
-                    // Markdown is removed locally even if server cleanup fails.
+                    setEditorValue(originalBody);
+                    removeButton.disabled = false;
+                    showPasteMessage(error.message || "{% trans 'The image could not be removed. Please try again.' %}", "danger");
+                    return;
                 }
             }
 
@@ -1202,7 +1221,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         </div>
     </div>
 </div>
-<script src="{% static 'javascripts/article-creation-workspace.js' %}?v=20260806-checkpoint-workspace-2"></script>
+<script src="{% static 'javascripts/article-creation-workspace.js' %}?v=20260806-reset-latest-workspace-4"></script>
 
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}
