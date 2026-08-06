@@ -253,20 +253,7 @@ def _suggest_unified(request):
             default=workspace.visibility,
         )
 
-    workspace_leave_save = bool(
-        request.method == "POST"
-        and (request.POST.get("workspace_leave_action") or "").strip() == "save_draft"
-    )
-
     def render_suggest_form(extra_context=None):
-        if workspace_leave_save and extra_context and extra_context.get("error"):
-            return JsonResponse(
-                {
-                    "saved": False,
-                    "error": str(extra_context["error"]),
-                },
-                status=400,
-            )
         return _render_suggest_form_for_visibility(
             request,
             visibility=visibility,
@@ -331,11 +318,7 @@ def _suggest_unified(request):
             existing=False,
         )
     )
-    submit_action = (
-        "draft"
-        if workspace_leave_save
-        else request.POST.get("submit_action", "submit").strip()
-    )
+    submit_action = request.POST.get("submit_action", "submit").strip()
     if submit_action not in {"draft", "submit"}:
         raise Http404("Article action not allowed")
 
@@ -518,13 +501,6 @@ def _suggest_unified(request):
             article,
             NOTIFICATION_KIND_NEW_SUBMISSION,
         )
-
-    if workspace_leave_save:
-        return JsonResponse({
-            "saved": True,
-            "article_id": article.pk,
-            "status": article.status,
-        })
 
     if status == SuggestedArticle.Status.DRAFT:
         messages.success(request, _("Draft saved successfully."))

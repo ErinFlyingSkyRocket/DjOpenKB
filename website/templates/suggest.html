@@ -196,10 +196,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                       data-article-workspace-autosave-url="{% url 'autosave_article_creation_workspace' %}"
                       data-article-workspace-discard-url="{% url 'discard_article_creation_workspace' %}"
                       data-article-workspace-fallback-url="{% url 'home' %}"
-                      data-article-workspace-saving-text="{% trans 'Saving temporary workspace…' %}"
-                      data-article-workspace-saved-text="{% trans 'Temporary workspace saved. Use Save draft to keep it in My Articles.' %}"
-                      data-article-workspace-restored-text="{% trans 'Temporary workspace restored. Save it as a draft or discard it when finished.' %}"
-                      data-article-workspace-save-error-text="{% trans 'The article could not be saved as a draft.' %}"
+                      data-article-workspace-reset-url="{{ suggest_form_action|default:'/suggest/' }}"
+                      data-article-workspace-saving-text="{% trans 'Saving checkpoint…' %}"
+                      data-article-workspace-saved-text="{% trans 'Checkpoint saved. You can continue this article later.' %}"
+                      data-article-workspace-restored-text="{% trans 'Checkpoint restored. Use Reset article to start again with a blank editor.' %}"
+                      data-article-workspace-save-error-text="{% trans 'The checkpoint could not be saved.' %}"
                       data-article-workspace-discard-error-text="{% trans 'The temporary article could not be discarded.' %}">
                     {% csrf_token %}
                     <input type="hidden" name="frm_kb_id" value="" />
@@ -213,6 +214,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 text-right article-header-actions">
+                            <button class="btn btn-warning editor_btn_action" type="button" id="articleWorkspaceResetButton"><i class="fa fa-refresh"></i> {% trans "Reset article" %}</button>
                             <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="draft">{% trans "Save draft" %}</button>
                             {% if can_publish_directly %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Publish article" %}</button>
@@ -220,7 +222,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit" name="submit_action" value="submit">{% trans "Submit for approval" %}</button>
                             {% endif %}
                             <div id="articleWorkspaceStatus" class="text-muted article-workspace-status" aria-live="polite">
-                                {% trans "Temporary changes are saved automatically until you save, submit, or discard this article." %}
+                                {% trans "Changes are saved automatically as a private checkpoint until you save, submit, publish, reset, or discard this article." %}
                             </div>
                         </div>
                     </div>
@@ -1167,22 +1169,40 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="articleWorkspaceLeaveTitle">{% trans "Save or discard this article before leaving" %}</h4>
+                <h4 class="modal-title" id="articleWorkspaceLeaveTitle">{% trans "Keep or discard this checkpoint before leaving" %}</h4>
             </div>
             <div class="modal-body">
-                <p>{% trans "This new article has changes. Choose what to do before leaving this page." %}</p>
-                <p class="text-muted">{% trans "Save as draft creates a Draft in My Articles and then continues to the page or action you selected. Discard permanently clears the temporary content and deletes its uncommitted images. Continue editing returns to this editor." %}</p>
+                <p>{% trans "This new article has a private checkpoint. Choose what should happen before continuing to the page or action you selected." %}</p>
+                <p class="text-muted">{% trans "Keep checkpoint and continue preserves the current fields and images so New Article can restore them later. Discard and continue permanently clears the checkpoint and deletes its uncommitted images." %}</p>
                 <div id="articleWorkspaceLeaveError" class="alert alert-danger csp-is-hidden" role="alert"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="articleWorkspaceStayButton">{% trans "Continue editing" %}</button>
-                <button type="button" class="btn btn-danger" id="articleWorkspaceDiscardButton">{% trans "Discard" %}</button>
-                <button type="button" class="btn btn-primary" id="articleWorkspaceSaveDraftButton">{% trans "Save as draft" %}</button>
+                <button type="button" class="btn btn-danger" id="articleWorkspaceDiscardContinueButton">{% trans "Discard and continue" %}</button>
+                <button type="button" class="btn btn-primary" id="articleWorkspaceKeepContinueButton">{% trans "Keep checkpoint and continue" %}</button>
             </div>
         </div>
     </div>
 </div>
-<script src="{% static 'javascripts/article-creation-workspace.js' %}?v=20260806-blocking-workspace-1"></script>
+
+<div class="modal fade" id="articleWorkspaceResetModal" tabindex="-1" role="dialog" aria-labelledby="articleWorkspaceResetTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="articleWorkspaceResetTitle">{% trans "Reset this new article?" %}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{% trans "Resetting starts a blank New Article workspace. The current checkpoint and all of its uncommitted images will be permanently deleted." %}</p>
+                <div id="articleWorkspaceResetError" class="alert alert-danger csp-is-hidden" role="alert"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-danger" id="articleWorkspaceResetConfirmButton">{% trans "Reset article" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'javascripts/article-creation-workspace.js' %}?v=20260806-checkpoint-workspace-2"></script>
 
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}

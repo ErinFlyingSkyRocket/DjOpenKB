@@ -250,15 +250,16 @@ The New Article page uses a private database-backed `ArticleCreationWorkspace` r
 
 This closes the normal stray-image gap when an author pastes or uploads an image and then leaves without creating an article:
 
-- In-application navigation is intercepted before redirecting and opens a blocking **Save as draft / Discard / Continue editing** decision. Backdrop clicks, Escape, and a close icon cannot dismiss the dialog.
-- **Save as draft** creates a real Draft and only then continues the originally selected navigation or form action; server-side validation errors keep the author on the editor.
-- **Discard** deletes the workspace and its uncommitted owned images after commit before navigation continues.
-- Save Draft/Submit/Publish retains only images referenced by the resulting article and removes unused workspace uploads. Normal Submit continues invoking the existing reviewer-notification workflow, while Draft creation does not notify reviewers.
+- In-application navigation is intercepted before redirecting and opens a blocking **Keep checkpoint and continue / Discard and continue** decision. The selected destination is held, and backdrop clicks, Escape, and a close icon cannot dismiss the dialog.
+- **Keep checkpoint and continue** performs the latest server autosave, preserves the workspace and its owned images, and only then continues the selected navigation. It does not create a `SuggestedArticle` row and does not notify reviewers.
+- **Discard and continue** deletes the workspace and its uncommitted owned images after commit before navigation continues.
+- The explicit **Reset article** control uses the same owner-checked discard path and then opens a fresh blank New Article workspace. A normal page refresh restores the checkpoint instead of silently clearing it.
+- Save Draft/Submit/Publish retains only images referenced by the resulting article and removes unused workspace uploads. Normal Submit continues invoking the existing reviewer-notification workflow, while Draft creation and checkpoint autosave do not notify reviewers.
 - Active workspace images remain protected from stray cleanup but continue counting against persistent per-user pending count/byte limits.
 - A Markdown body cannot claim another user's uncommitted filename; body text is not treated as proof of file ownership.
 - Upload/delete requests require an authorised workspace or existing-article context, so changing JavaScript or forging a context identifier does not grant access to another user's temporary files.
 
-The scheduled cleanup service remains necessary because a browser close, process crash, host shutdown, network interruption, failed filesystem deletion, or manually introduced file may never send the explicit discard request. Abandoned workspaces are eligible for automatic discard only after the configured age and never earlier than 24 hours.
+Direct address-bar navigation, refresh, tab close, and browser close cannot show the custom application modal. The editor therefore autosaves after a short delay and attempts a final same-origin flush on `visibilitychange` and `pagehide`; the browser-native unsaved-changes warning is used only while a newer snapshot is still pending. The scheduled cleanup service remains necessary because a browser or host crash, power loss, network interruption, failed filesystem deletion, or manually introduced file may never complete the final save or explicit discard request. Abandoned workspaces are eligible for automatic discard only after the configured age and never earlier than 24 hours.
 
 Regression coverage is maintained in `kb/tests/articles/test_article_creation_workspace.py`.
 

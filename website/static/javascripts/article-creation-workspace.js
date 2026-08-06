@@ -10,10 +10,11 @@
     var autosaveUrl = form.dataset.articleWorkspaceAutosaveUrl;
     var discardUrl = form.dataset.articleWorkspaceDiscardUrl;
     var fallbackUrl = form.dataset.articleWorkspaceFallbackUrl || "/home/";
-    var savingText = form.dataset.articleWorkspaceSavingText || "Saving temporary workspace…";
-    var savedText = form.dataset.articleWorkspaceSavedText || "Temporary workspace saved. Use Save draft to keep it in My Articles.";
-    var restoredText = form.dataset.articleWorkspaceRestoredText || "Temporary workspace restored. Save it as a draft or discard it when finished.";
-    var saveErrorText = form.dataset.articleWorkspaceSaveErrorText || "Temporary workspace could not be saved.";
+    var resetUrl = form.dataset.articleWorkspaceResetUrl || form.action || fallbackUrl;
+    var savingText = form.dataset.articleWorkspaceSavingText || "Saving checkpoint…";
+    var savedText = form.dataset.articleWorkspaceSavedText || "Checkpoint saved. You can continue this article later.";
+    var restoredText = form.dataset.articleWorkspaceRestoredText || "Checkpoint restored. Use Reset article to start again with a blank editor.";
+    var saveErrorText = form.dataset.articleWorkspaceSaveErrorText || "The checkpoint could not be saved.";
     var discardErrorText = form.dataset.articleWorkspaceDiscardErrorText || "The temporary article could not be discarded.";
     var csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
     var csrfToken = csrfInput ? csrfInput.value : "";
@@ -22,20 +23,22 @@
     var visibilityInput = document.getElementById("articleVisibilitySelect") || form.querySelector('input[name="article_visibility"]');
     var textarea = document.getElementById("editor");
     var statusElement = document.getElementById("articleWorkspaceStatus");
-    var modalElement = document.getElementById("articleWorkspaceLeaveModal");
-    var modalError = document.getElementById("articleWorkspaceLeaveError");
-    var discardButton = document.getElementById("articleWorkspaceDiscardButton");
-    var saveDraftButton = document.getElementById("articleWorkspaceSaveDraftButton");
-    var stayButton = document.getElementById("articleWorkspaceStayButton");
+    var leaveModalElement = document.getElementById("articleWorkspaceLeaveModal");
+    var leaveModalError = document.getElementById("articleWorkspaceLeaveError");
+    var discardContinueButton = document.getElementById("articleWorkspaceDiscardContinueButton");
+    var keepContinueButton = document.getElementById("articleWorkspaceKeepContinueButton");
+    var resetButton = document.getElementById("articleWorkspaceResetButton");
+    var resetModalElement = document.getElementById("articleWorkspaceResetModal");
+    var resetConfirmButton = document.getElementById("articleWorkspaceResetConfirmButton");
+    var resetModalError = document.getElementById("articleWorkspaceResetError");
     var dirty = form.dataset.articleWorkspaceDirty === "true";
     var bypassLeaveGuard = false;
     var autosaveTimer = null;
     var saveInFlight = false;
-    var saveAgain = false;
     var lastSavedSnapshot = null;
     var pendingNavigation = null;
     var historyGuardEnabled = Boolean(window.history && window.history.pushState);
-    var allowModalHide = false;
+    var allowLeaveModalHide = false;
 
     function getCodeMirror() {
         var wrapper = document.querySelector(".CodeMirror");
@@ -80,7 +83,7 @@
         });
     }
 
-    function buildWorkspaceFormData(snapshot) {
+    function buildWorkspaceFormData(snapshot, includeFormCsrfToken) {
         var values = JSON.parse(snapshot || currentWorkspaceSnapshot());
         var data = new FormData();
         data.append("workspace_id", workspaceId);
@@ -88,6 +91,9 @@
         data.append("frm_kb_body", values.body);
         data.append("frm_kb_keywords", values.keywords);
         data.append("article_visibility", values.visibility);
+        if (includeFormCsrfToken && csrfToken) {
+            data.append("csrfmiddlewaretoken", csrfToken);
+        }
         return data;
     }
 
@@ -96,7 +102,7 @@
             return;
         }
         window.clearTimeout(autosaveTimer);
-        autosaveTimer = window.setTimeout(saveWorkspace, 650);
+        autosaveTimer = window.setTimeout(saveWorkspace, 400);
     }
 
     function markChanged() {
@@ -109,59 +115,15 @@
         scheduleAutosave();
     }
 
-    async function saveWorkspace() {
-        window.clearTimeout(autosaveTimer);
-        if (bypassLeaveGuard || !dirty) {
-            return true;
+    function snapshotNeedsSaving() {
+        if (!dirty) {
+            return false;
         }
-        if (saveInFlight) {
-            saveAgain = true;
-            await new Promise(function (resolve) {
-                var waitTimer = window.setInterval(function () {
-                    if (!saveInFlight) {
-                        window.clearInterval(waitTimer);
-                        resolve();
-                    }
-                }, 50);
-            });
-            return saveWorkspace();
-        }
-
-        var snapshot = currentWorkspaceSnapshot();
-        if (snapshot === lastSavedSnapshot) {
-            return true;
-        }
-
-        saveInFlight = true;
-        saveAgain = false;
-        var succeeded = false;
         try {
-            var response = await fetch(autosaveUrl, {
-                method: "POST",
-                headers: { "X-CSRFToken": csrfToken },
-                credentials: "same-origin",
-                body: buildWorkspaceFormData(snapshot)
-            });
-            var data = {};
-            try {
-                data = await response.json();
-            } catch (error) {
-                data = {};
-            }
-            if (!response.ok || !data.saved) {
-                throw new Error(data.error || saveErrorText);
-            }
-            lastSavedSnapshot = snapshot;
-            setStatus(savedText, "saved");
-            succeeded = true;
+            return currentWorkspaceSnapshot() !== lastSavedSnapshot;
         } catch (error) {
-            setStatus(error.message || saveErrorText, "error");
-            succeeded = false;
-        } finally {
-            saveInFlight = false;
-            saveAgain = false;
+            return true;
         }
-        return succeeded;
     }
 
     async function waitForAutosaveToFinish() {
@@ -179,21 +141,86 @@
         });
     }
 
-    async function saveWorkspaceAsDraft() {
+    async function saveWorkspace() {
+        window.clearTimeout(autosaveTimer);
+        if (bypassLeaveGuard || !dirty) {
+            return true;
+        }
+        if (saveInFlight) {
+            await waitForAutosaveToFinish();
+        }
+
+        var snapshot = currentWorkspaceSnapshot();
+        if (snapshot === lastSavedSnapshot) {
+            return true;
+        }
+
+        saveInFlight = true;
+        try {
+            var response = await fetch(autosaveUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
+                credentials: "same-origin",
+                body: buildWorkspaceFormData(snapshot, false)
+            });
+            var data = {};
+            try {
+                data = await response.json();
+            } catch (error) {
+                data = {};
+            }
+            if (!response.ok || !data.saved) {
+                throw new Error(data.error || saveErrorText);
+            }
+            lastSavedSnapshot = snapshot;
+            setStatus(savedText, "saved");
+            return true;
+        } catch (error) {
+            setStatus(error.message || saveErrorText, "error");
+            return false;
+        } finally {
+            saveInFlight = false;
+        }
+    }
+
+    function flushWorkspaceCheckpointForUnload() {
+        if (bypassLeaveGuard || !dirty || !snapshotNeedsSaving()) {
+            return;
+        }
+        window.clearTimeout(autosaveTimer);
+        var snapshot = currentWorkspaceSnapshot();
+        var data = buildWorkspaceFormData(snapshot, true);
+
+        if (navigator.sendBeacon) {
+            try {
+                if (navigator.sendBeacon(autosaveUrl, data)) {
+                    return;
+                }
+            } catch (error) {
+                // Fall through to keepalive fetch when the browser rejects the beacon.
+            }
+        }
+
+        try {
+            fetch(autosaveUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrfToken },
+                credentials: "same-origin",
+                body: buildWorkspaceFormData(snapshot, false),
+                keepalive: true
+            }).catch(function () {});
+        } catch (error) {
+            // The browser-native leave warning remains the final protection.
+        }
+    }
+
+    async function discardWorkspace() {
         await waitForAutosaveToFinish();
-        syncBodyToTextarea();
-
-        var data = new FormData(form);
-        data.set("workspace_id", workspaceId);
-        data.set("submit_action", "draft");
-        data.set("workspace_leave_action", "save_draft");
-
-        var response = await fetch(form.action, {
+        var data = new FormData();
+        data.append("workspace_id", workspaceId);
+        var response = await fetch(discardUrl, {
             method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken,
-                "X-Requested-With": "XMLHttpRequest"
-            },
+            headers: { "X-CSRFToken": csrfToken },
             credentials: "same-origin",
             body: data
         });
@@ -203,8 +230,8 @@
         } catch (error) {
             payload = {};
         }
-        if (!response.ok || !payload.saved) {
-            throw new Error(payload.error || saveErrorText);
+        if (!response.ok || !payload.discarded) {
+            throw new Error(payload.error || discardErrorText);
         }
         return payload;
     }
@@ -247,13 +274,13 @@
 
     function showLeaveModal(navigation) {
         pendingNavigation = navigation;
-        allowModalHide = false;
-        if (modalError) {
-            modalError.textContent = "";
-            modalError.classList.add("csp-is-hidden");
+        allowLeaveModalHide = false;
+        if (leaveModalError) {
+            leaveModalError.textContent = "";
+            leaveModalError.classList.add("csp-is-hidden");
         }
-        if (window.jQuery && modalElement) {
-            window.jQuery(modalElement).modal({
+        if (window.jQuery && leaveModalElement) {
+            window.jQuery(leaveModalElement).modal({
                 backdrop: "static",
                 keyboard: false,
                 show: true
@@ -262,9 +289,9 @@
     }
 
     function hideLeaveModal() {
-        allowModalHide = true;
-        if (window.jQuery && modalElement) {
-            window.jQuery(modalElement).modal("hide");
+        allowLeaveModalHide = true;
+        if (window.jQuery && leaveModalElement) {
+            window.jQuery(leaveModalElement).modal("hide");
         }
     }
 
@@ -295,6 +322,15 @@
         window.location.href = navigation.url || fallbackUrl;
     }
 
+    function setLeaveButtonsDisabled(disabled) {
+        if (keepContinueButton) {
+            keepContinueButton.disabled = disabled;
+        }
+        if (discardContinueButton) {
+            discardContinueButton.disabled = disabled;
+        }
+    }
+
     document.addEventListener("click", function (event) {
         if (
             !dirty
@@ -309,7 +345,7 @@
             return;
         }
         var link = event.target.closest ? event.target.closest("a[href]") : null;
-        if (!link || link.closest("#articleWorkspaceLeaveModal")) {
+        if (!link || link.closest("#articleWorkspaceLeaveModal") || link.closest("#articleWorkspaceResetModal")) {
             return;
         }
         if (link.target === "_blank" || link.hasAttribute("download")) {
@@ -337,107 +373,111 @@
         });
     }, true);
 
-    if (saveDraftButton) {
-        saveDraftButton.addEventListener("click", async function () {
-            saveDraftButton.disabled = true;
-            if (discardButton) {
-                discardButton.disabled = true;
+    if (keepContinueButton) {
+        keepContinueButton.addEventListener("click", async function () {
+            setLeaveButtonsDisabled(true);
+            var saved = await saveWorkspace();
+            if (!saved) {
+                if (leaveModalError) {
+                    leaveModalError.textContent = saveErrorText;
+                    leaveModalError.classList.remove("csp-is-hidden");
+                }
+                setLeaveButtonsDisabled(false);
+                return;
             }
-            if (stayButton) {
-                stayButton.disabled = true;
-            }
-            try {
-                await saveWorkspaceAsDraft();
-                dirty = false;
-                bypassLeaveGuard = true;
-                window.clearTimeout(autosaveTimer);
-                hideLeaveModal();
-                navigateAfterDecision();
-            } catch (error) {
-                if (modalError) {
-                    modalError.textContent = error.message || saveErrorText;
-                    modalError.classList.remove("csp-is-hidden");
-                }
-                saveDraftButton.disabled = false;
-                if (discardButton) {
-                    discardButton.disabled = false;
-                }
-                if (stayButton) {
-                    stayButton.disabled = false;
-                }
-            }
-        });
-    }
-
-    if (discardButton) {
-        discardButton.addEventListener("click", async function () {
-            discardButton.disabled = true;
-            if (saveDraftButton) {
-                saveDraftButton.disabled = true;
-            }
-            try {
-                var data = new FormData();
-                data.append("workspace_id", workspaceId);
-                var response = await fetch(discardUrl, {
-                    method: "POST",
-                    headers: { "X-CSRFToken": csrfToken },
-                    credentials: "same-origin",
-                    body: data
-                });
-                var payload = {};
-                try {
-                    payload = await response.json();
-                } catch (error) {
-                    payload = {};
-                }
-                if (!response.ok || !payload.discarded) {
-                    throw new Error(payload.error || discardErrorText);
-                }
-                dirty = false;
-                bypassLeaveGuard = true;
-                window.clearTimeout(autosaveTimer);
-                hideLeaveModal();
-                navigateAfterDecision();
-            } catch (error) {
-                if (modalError) {
-                    modalError.textContent = error.message || discardErrorText;
-                    modalError.classList.remove("csp-is-hidden");
-                }
-                discardButton.disabled = false;
-                if (saveDraftButton) {
-                    saveDraftButton.disabled = false;
-                }
-            }
-        });
-    }
-
-    if (stayButton) {
-        stayButton.addEventListener("click", function () {
-            pendingNavigation = null;
+            dirty = false;
+            bypassLeaveGuard = true;
+            window.clearTimeout(autosaveTimer);
             hideLeaveModal();
-            window.setTimeout(function () {
-                allowModalHide = false;
-            }, 0);
+            navigateAfterDecision();
         });
     }
 
-    if (window.jQuery && modalElement) {
-        window.jQuery(modalElement).on("hide.bs.modal", function (event) {
-            if (!allowModalHide) {
+    if (discardContinueButton) {
+        discardContinueButton.addEventListener("click", async function () {
+            setLeaveButtonsDisabled(true);
+            try {
+                await discardWorkspace();
+                dirty = false;
+                bypassLeaveGuard = true;
+                window.clearTimeout(autosaveTimer);
+                hideLeaveModal();
+                navigateAfterDecision();
+            } catch (error) {
+                if (leaveModalError) {
+                    leaveModalError.textContent = error.message || discardErrorText;
+                    leaveModalError.classList.remove("csp-is-hidden");
+                }
+                setLeaveButtonsDisabled(false);
+            }
+        });
+    }
+
+    if (window.jQuery && leaveModalElement) {
+        window.jQuery(leaveModalElement).on("hide.bs.modal", function (event) {
+            if (!allowLeaveModalHide) {
                 event.preventDefault();
             }
         });
-        window.jQuery(modalElement).on("hidden.bs.modal", function () {
-            allowModalHide = false;
+        window.jQuery(leaveModalElement).on("hidden.bs.modal", function () {
+            allowLeaveModalHide = false;
+            setLeaveButtonsDisabled(false);
+        });
+    }
+
+    if (resetButton && window.jQuery && resetModalElement) {
+        resetButton.addEventListener("click", function () {
+            if (resetModalError) {
+                resetModalError.textContent = "";
+                resetModalError.classList.add("csp-is-hidden");
+            }
+            window.jQuery(resetModalElement).modal("show");
+        });
+    }
+
+    if (resetConfirmButton) {
+        resetConfirmButton.addEventListener("click", async function () {
+            resetConfirmButton.disabled = true;
+            try {
+                await discardWorkspace();
+                dirty = false;
+                bypassLeaveGuard = true;
+                window.clearTimeout(autosaveTimer);
+                if (window.jQuery && resetModalElement) {
+                    window.jQuery(resetModalElement).modal("hide");
+                }
+                window.location.href = resetUrl;
+            } catch (error) {
+                if (resetModalError) {
+                    resetModalError.textContent = error.message || discardErrorText;
+                    resetModalError.classList.remove("csp-is-hidden");
+                }
+                resetConfirmButton.disabled = false;
+            }
+        });
+    }
+
+    if (window.jQuery && resetModalElement) {
+        window.jQuery(resetModalElement).on("hidden.bs.modal", function () {
+            if (resetConfirmButton) {
+                resetConfirmButton.disabled = false;
+            }
         });
     }
 
     window.addEventListener("beforeunload", function (event) {
-        if (!dirty || bypassLeaveGuard) {
+        if (bypassLeaveGuard || !dirty || !snapshotNeedsSaving()) {
             return;
         }
         event.preventDefault();
         event.returnValue = "";
+    });
+
+    window.addEventListener("pagehide", flushWorkspaceCheckpointForUnload);
+    document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "hidden" && dirty && !bypassLeaveGuard) {
+            saveWorkspace();
+        }
     });
 
     if (historyGuardEnabled) {

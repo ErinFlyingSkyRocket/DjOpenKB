@@ -108,7 +108,6 @@ STATIC_FIELD_LIMITS = {
     "split": SMALL_CONTROL_MAX_LENGTH,
     "frm_kb_id": SMALL_CONTROL_MAX_LENGTH,
     "workspace_id": 36,
-    "workspace_leave_action": SMALL_CONTROL_MAX_LENGTH,
     "article_id": SMALL_CONTROL_MAX_LENGTH,
     "target_user": SMALL_CONTROL_MAX_LENGTH,
     "selected_articles": SMALL_CONTROL_MAX_LENGTH,

@@ -467,17 +467,18 @@ Draft -> Pending -> Pending failed / Published
 
 Opening **New Article** creates or restores one private server-side creation workspace for the signed-in author. This workspace is not a normal `SuggestedArticle` row and does not appear in **My Articles**. It temporarily stores the title, body, keywords, permitted visibility, dirty state, and the generated filenames of images uploaded while creating the article.
 
-The browser automatically caches changed fields in this workspace after a short pause. Once any field or image changes, in-application navigation such as the Back button, navbar links, language/logout forms, or another page link is stopped before redirecting and opens a blocking three-way prompt. The dialog has no close button, does not close when its backdrop is clicked, and ignores Escape so the author must make an explicit decision:
+The browser automatically saves changed fields into this workspace after a short pause, treating it as a private checkpoint rather than a real Draft. Once any field or image changes, in-application navigation such as the Back button, navbar links, language/logout forms, or another page link is stopped before redirecting and opens a blocking two-way prompt. The clicked destination or form action is held until the author makes one explicit decision; the dialog has no close button, does not close when its backdrop is clicked, and ignores Escape:
 
 | Choice | Result |
 |---|---|
-| **Continue editing** | Cancel the attempted navigation and return to the current editor with the same cached workspace. |
-| **Save as draft** | Validate the article, convert the workspace into a real Draft in **My Articles**, retain only referenced images, and then continue to the page or form action the user originally selected. Validation errors keep the dialog open and prevent navigation. |
-| **Discard** | Delete the temporary workspace and immediately remove its uncommitted owned images after the database transaction commits, then continue to the originally selected destination or action. |
+| **Keep checkpoint and continue** | Complete the latest checkpoint save, preserve the fields and workspace-owned images, and then continue to the page or form action originally selected. Opening **New Article** later restores the checkpoint. This does not create a Draft in **My Articles** and does not notify reviewers. |
+| **Discard and continue** | Delete the temporary workspace and immediately remove its uncommitted owned images after the database transaction commits, then continue to the originally selected destination or action. |
 
-The normal page buttons remain available. The main **Save draft** button performs the same real-Draft conversion through the normal form workflow. **Submit for approval** converts the workspace into a Pending article and preserves the existing reviewer SMTP notification flow. **Publish article** remains the Admin direct-publication path and does not create a reviewer-queue notification. Referenced images are retained; workspace-owned images that are no longer referenced are removed.
+The normal page buttons remain unchanged. **Save draft** converts the checkpoint into a real Draft in **My Articles**. **Submit for approval** converts it into a Pending article and preserves the existing reviewer SMTP notification flow. **Publish article** remains the Admin direct-publication path and does not create a reviewer-queue notification. Referenced images are retained; workspace-owned images that are no longer referenced are removed.
 
-A browser tab being closed, the browser process crashing, a network interruption, or the computer losing power cannot reliably complete an asynchronous discard request. The browser therefore uses its native leave warning for close/refresh actions, while the already-autosaved workspace remains recoverable. The scheduled cleanup command remains required as a recovery safety net and discards abandoned workspaces only after the configured cleanup age, with an enforced minimum of 24 hours.
+The New Article page also provides **Reset article**. After confirmation, Reset discards the current checkpoint and all of its uncommitted images, then reloads New Article with a fresh blank workspace. This is the explicit way to start over; ordinary refresh restores the existing checkpoint instead of silently deleting it.
+
+Typing another URL, refreshing, closing the tab, or closing the browser cannot display the custom two-button application dialog because browsers restrict custom unload interfaces. Normal field changes are already saved after a short delay, and the page also attempts a final same-origin checkpoint flush through `visibilitychange`, `pagehide`, `sendBeacon`, or keepalive fetch. If the newest change has not yet reached the server, the browser-native unsaved-changes warning remains the final guard. A crash, power loss, or immediate forced termination can still interrupt the last in-flight save, so the scheduled cleanup command remains required as a recovery safety net and discards abandoned workspaces only after the configured cleanup age, with an enforced minimum of 24 hours.
 
 Only one active temporary creation workspace is maintained per user. Opening New Article in multiple tabs therefore shows the same temporary work; this avoids creating an unlimited number of hidden abandoned workspaces.
 
@@ -888,9 +889,10 @@ New-article uploads are recorded against the authenticated user's `ArticleCreati
 ```text
 Upload image
 -> bind generated filename to the user's temporary workspace
--> autosave workspace/body
+-> autosave a private checkpoint
+-> Keep checkpoint and continue preserves temporary fields/files
 -> Save draft / Submit / Publish keeps only referenced files
--> Discard deletes all uncommitted workspace-owned files
+-> Discard and continue / Reset article deletes all uncommitted workspace-owned files
 ```
 
 Active workspace files are excluded from stray-file results, but they still count as uncommitted files for the per-user count and byte quotas. The upload and delete endpoints require either the exact owned workspace UUID or an authorised existing-article edit context; a caller cannot omit the context or supply both contexts. Upload audit rows retain the workspace/article identifier as a historical snapshot after the temporary workspace is removed.
@@ -917,7 +919,7 @@ The default stray upload minimum age is also 24 hours:
 stray_upload_cleanup_min_age_minutes = 1440
 ```
 
-This prevents newly uploaded images from being deleted while a user is still drafting an article. The same scheduled command also discards abandoned temporary creation workspaces. A workspace is never automatically discarded earlier than 24 hours, even when the ordinary stray-file threshold is configured as `0`. Explicit **Discard** remains the normal immediate cleanup path; scheduled cleanup covers browser crashes, network loss, abandoned tabs, failed file deletion, legacy uploads, and files introduced outside the expected workflow.
+This prevents newly uploaded images from being deleted while a user is still drafting an article. The same scheduled command also discards abandoned temporary creation workspaces. A workspace is never automatically discarded earlier than 24 hours, even when the ordinary stray-file threshold is configured as `0`. Explicit **Discard and continue** or **Reset article** remains the normal immediate cleanup path; scheduled cleanup covers browser crashes, network loss, abandoned tabs, failed file deletion, legacy uploads, and files introduced outside the expected workflow.
 
 ## 14. Markdown and XSS Protection
 

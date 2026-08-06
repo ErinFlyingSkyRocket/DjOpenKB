@@ -502,11 +502,11 @@ After a role/workflow update, test both the visible control and a forged POST re
 After changing the new-article workspace or image lifecycle, manually verify these paths in a non-production account:
 
 1. Open New Article, change one field, click an in-site Back/navbar link, and confirm navigation is stopped before redirecting. Verify that clicking the backdrop, pressing Escape, or looking for a close icon cannot dismiss the prompt.
-2. Choose **Continue editing** and confirm the attempted navigation is cancelled and the same cached fields remain in the editor.
-3. Choose **Save as draft** with valid title/body values and confirm a real Draft appears in My Articles before the originally selected page or form action continues. Repeat with invalid values and confirm the error remains in the blocking dialog without navigating.
-4. Upload an image without saving an article, choose **Discard**, and confirm the workspace and file are removed before navigation continues.
-5. Use the normal **Submit for approval** button and confirm the article enters the matching pending queue and the existing SMTP reviewer notification is still issued. Confirm Save as draft does not send a reviewer notification.
-6. Close the browser after autosave, reopen New Article, and confirm recovery. A browser close or host failure can only use the browser-native unsaved-changes warning; scheduled cleanup remains the fallback.
+2. Choose **Keep checkpoint and continue**, confirm the originally selected page/action continues, then reopen New Article and confirm the title, body, keywords, visibility, and uploaded images are restored. Confirm no Draft appears in My Articles and no reviewer email is sent.
+3. Upload an image without saving an article, choose **Discard and continue**, and confirm the workspace and file are removed before navigation continues. Reopen New Article and confirm it is blank.
+4. Change fields again, use **Reset article**, confirm the warning, and verify the page reloads with a new blank workspace and no uncommitted images. Confirm ordinary browser refresh restores rather than clears the checkpoint.
+5. Use the normal **Save draft** button and confirm a real Draft appears in My Articles. Use **Submit for approval** separately and confirm the article enters the matching pending queue and the existing SMTP reviewer notification is still issued. Confirm checkpoint autosave and Save draft do not send reviewer notifications.
+6. After autosave completes, type another same-site URL directly into the address bar, leave the page, and reopen New Article to confirm recovery. Repeat while a save is still pending and confirm the browser-native unsaved-changes warning appears. A crash or host failure can still interrupt the final in-flight save, so scheduled cleanup remains the fallback.
 7. Preview cleanup before deleting anything:
 
 ```bash

@@ -383,18 +383,20 @@ class ArticleCreationWorkspaceTests(TestCase):
         stray = find_stray_uploaded_files(min_age_minutes=0)
 
         self.assertNotIn("old-workspace.png", {item["filename"] for item in stray})
-    def test_leave_modal_is_blocking_and_offers_only_explicit_decisions(self):
+
+    def test_leave_modal_is_blocking_and_offers_checkpoint_or_discard(self):
         _workspace, response = self._open_workspace()
 
         html = response.content.decode("utf-8")
         modal = html.split('id="articleWorkspaceLeaveModal"', 1)[1].split(
-            'article-creation-workspace.js', 1
+            'id="articleWorkspaceResetModal"', 1
         )[0]
         self.assertIn('data-backdrop="static"', modal)
         self.assertIn('data-keyboard="false"', modal)
-        self.assertIn("Save as draft", modal)
-        self.assertIn("Discard", modal)
-        self.assertIn("Continue editing", modal)
+        self.assertIn("Keep checkpoint and continue", modal)
+        self.assertIn("Discard and continue", modal)
+        self.assertNotIn("Save as draft", modal)
+        self.assertNotIn("Continue editing", modal)
         self.assertNotIn('class="close"', modal)
         self.assertNotIn('data-dismiss="modal"', modal)
 
@@ -407,61 +409,78 @@ class ArticleCreationWorkspaceTests(TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn('backdrop: "static"', javascript)
         self.assertIn('keyboard: false', javascript)
-        self.assertIn('workspace_leave_action', javascript)
-        self.assertIn('saveWorkspaceAsDraft', javascript)
+        self.assertIn('saveWorkspace()', javascript)
+        self.assertIn('discardWorkspace()', javascript)
+        self.assertNotIn('workspace_leave_action', javascript)
+        self.assertNotIn('saveWorkspaceAsDraft', javascript)
 
-    def test_modal_save_as_draft_creates_real_draft_then_returns_json(self):
+    def test_reset_control_starts_a_blank_workspace_after_discard(self):
+        workspace, response = self._open_workspace()
+        workspace.title = "Checkpoint to reset"
+        workspace.body = "Temporary body"
+        workspace.is_dirty = True
+        workspace.save(update_fields=["title", "body", "is_dirty", "updated_at"])
+        file_path = self._create_workspace_image(workspace, "reset-workspace.png")
+
+        html = response.content.decode("utf-8")
+        self.assertIn('id="articleWorkspaceResetButton"', html)
+        self.assertIn('id="articleWorkspaceResetModal"', html)
+        self.assertIn('id="articleWorkspaceResetConfirmButton"', html)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            discard = self.client.post(
+                reverse("discard_article_creation_workspace"),
+                {"workspace_id": str(workspace.pk)},
+            )
+        self.assertEqual(discard.status_code, 200)
+        self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
+        self.assertFalse(file_path.exists())
+
+        reopened = self.client.get(reverse("suggest"))
+        self.assertEqual(reopened.status_code, 200)
+        new_workspace = ArticleCreationWorkspace.objects.get(owner=self.user)
+        self.assertNotEqual(new_workspace.pk, workspace.pk)
+        self.assertEqual(new_workspace.title, "")
+        self.assertEqual(new_workspace.body, "")
+        self.assertFalse(new_workspace.is_dirty)
+
+    def test_direct_navigation_recovery_is_supported_by_autosave_and_unload_flush(self):
+        _workspace, _response = self._open_workspace()
+        javascript = (
+            Path(__file__).resolve().parents[3]
+            / "website"
+            / "static"
+            / "javascripts"
+            / "article-creation-workspace.js"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('window.addEventListener("pagehide"', javascript)
+        self.assertIn("navigator.sendBeacon", javascript)
+        self.assertIn('keepalive: true', javascript)
+        self.assertIn('window.addEventListener("beforeunload"', javascript)
+        self.assertIn('document.addEventListener("visibilitychange"', javascript)
+
+    def test_checkpoint_autosave_does_not_create_real_draft_or_notify_reviewers(self):
         workspace, _response = self._open_workspace()
 
-        with (
-            patch("kb.views.suggestions.write_article_files"),
-            patch("kb.views.suggestions.send_article_review_notification_after_commit") as notify,
-        ):
+        with patch("kb.views.suggestions.send_article_review_notification_after_commit") as notify:
             response = self.client.post(
-                reverse("suggest"),
+                reverse("autosave_article_creation_workspace"),
                 {
                     "workspace_id": str(workspace.pk),
-                    "frm_kb_title": "Saved from leave prompt",
-                    "frm_kb_body": "This valid body is saved before navigation.",
-                    "frm_kb_keywords": "workspace, draft",
+                    "frm_kb_title": "Saved checkpoint",
+                    "frm_kb_body": "This body remains a private checkpoint.",
+                    "frm_kb_keywords": "workspace, checkpoint",
                     "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-                    "submit_action": "submit",
-                    "workspace_leave_action": "save_draft",
                 },
-                HTTP_X_REQUESTED_WITH="XMLHttpRequest",
             )
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.json()["saved"])
-        article = SuggestedArticle.objects.get(
-            owner=self.user,
-            title="Saved from leave prompt",
-        )
-        self.assertEqual(article.status, SuggestedArticle.Status.DRAFT)
-        self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
-        notify.assert_not_called()
-
-    def test_modal_save_as_draft_validation_error_blocks_navigation(self):
-        workspace, _response = self._open_workspace()
-
-        response = self.client.post(
-            reverse("suggest"),
-            {
-                "workspace_id": str(workspace.pk),
-                "frm_kb_title": "x",
-                "frm_kb_body": "y",
-                "frm_kb_keywords": "",
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-                "workspace_leave_action": "save_draft",
-            },
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
-
-        self.assertEqual(response.status_code, 400)
-        self.assertFalse(response.json()["saved"])
-        self.assertIn("at least 5 characters", response.json()["error"])
-        self.assertTrue(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
+        workspace.refresh_from_db()
+        self.assertEqual(workspace.title, "Saved checkpoint")
+        self.assertTrue(workspace.is_dirty)
         self.assertFalse(SuggestedArticle.objects.filter(owner=self.user).exists())
+        notify.assert_not_called()
 
     def test_normal_submit_still_notifies_article_reviewers(self):
         workspace, _response = self._open_workspace()
