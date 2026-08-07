@@ -1079,11 +1079,19 @@ def allowed_article_edit_actions_for(user, article, *, review_mode=False):
         # Article Approvers/Managers, Internal Approvers/Managers, and Admin Users
         # review through the status dropdown and Save button within their own scope.
         #
-        # Use the same revert action as article owners whenever a published
-        # article has a separate staged update.
+        # Managers/Admins editing an already-published article outside the review
+        # queue may also keep an explicit *personal* draft in their owner-scoped
+        # ArticleEditWorkspace. This does not change the article until Save is
+        # clicked. Keep this separate from the shared pending-update workflow.
         allowed_actions = {"save", ""}
-        if getattr(article, "has_staged_update", False):
+        has_staged_update = bool(getattr(article, "has_staged_update", False))
+        if has_staged_update:
             allowed_actions.add("revert_published")
+        elif (
+            not review_mode
+            and article.status == SuggestedArticle.Status.PUBLISHED
+        ):
+            allowed_actions.update({"save_personal_draft", "revert_personal_draft"})
         return allowed_actions
 
     if not user_owns_article(user, article) or not user_can_add_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)):

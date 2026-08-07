@@ -248,13 +248,14 @@ def _get_or_create_article_edit_workspace(
     *,
     is_review_mode,
     refresh_clean_workspace=True,
+    restore_manual_draft=False,
 ):
-    """Return the temporary image-upload context for an existing article editor.
+    """Return the owner-scoped context for editing one existing article.
 
-    Existing-article text is deliberately *not* restored from this model. Opening
-    the editor starts from the latest saved article or staged update, while this
-    workspace exists only to own uncommitted image uploads until the user performs
-    an explicit Save/Submit/Review action.
+    Existing-article changes are never autosaved. Normally a fresh GET discards
+    the temporary workspace and reloads the latest saved article/staged update.
+    Managers/Admins may explicitly save a personal draft for a published article;
+    only that deliberate draft (``is_dirty=True``) is restored on a later GET.
     """
     editor_mode = _article_edit_workspace_mode(is_review_mode)
     baseline = _article_edit_workspace_baseline(
@@ -274,9 +275,10 @@ def _get_or_create_article_edit_workspace(
                 )
                 .first()
             )
-            if existing is not None:
+            if existing is not None and not (restore_manual_draft and existing.is_dirty):
                 # Existing-article edits are manual-save only. A fresh GET must
-                # never restore old text or temporary image changes.
+                # never restore unsaved text or temporary image changes. The one
+                # exception is an explicit personal draft saved by a Manager/Admin.
                 discard_article_edit_workspace(request, existing)
 
     try:
@@ -854,11 +856,18 @@ def edit_suggestion(request, article_id):
 
     fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
     return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
+    can_restore_personal_draft = bool(
+        not is_review_mode
+        and user_can_review_article(request.user, article, review_mode=False)
+        and article.status == SuggestedArticle.Status.PUBLISHED
+        and not bool(getattr(article, "has_staged_update", False))
+    )
     edit_workspace = _get_or_create_article_edit_workspace(
         request,
         article,
         is_review_mode=is_review_mode,
         refresh_clean_workspace=request.method == "GET",
+        restore_manual_draft=can_restore_personal_draft,
     )
 
     def render_edit_form(extra_context=None):
@@ -872,12 +881,24 @@ def edit_suggestion(request, article_id):
             request.user,
             is_review_mode=is_review_mode,
         )
-        edit_title = extra_context.get("title_value", baseline["title"])
-        edit_body = extra_context.get("body_value", baseline["body"])
-        edit_keywords = extra_context.get("keywords_value", baseline["keywords"])
+        has_personal_edit_draft = bool(
+            can_restore_personal_draft
+            and edit_workspace is not None
+            and edit_workspace.is_dirty
+        )
+        draft_title = edit_workspace.title if has_personal_edit_draft else baseline["title"]
+        draft_body = edit_workspace.body if has_personal_edit_draft else baseline["body"]
+        draft_keywords = edit_workspace.keywords if has_personal_edit_draft else baseline["keywords"]
+        draft_review_notes = edit_workspace.review_notes if has_personal_edit_draft else baseline["review_notes"]
+        draft_visibility = edit_workspace.visibility if has_personal_edit_draft else baseline["visibility"]
+
+        edit_title = extra_context.get("title_value", draft_title)
+        edit_body = extra_context.get("body_value", draft_body)
+        edit_keywords = extra_context.get("keywords_value", draft_keywords)
+        # A personal draft never stores a future approval/rejection decision.
         edit_status = extra_context.get("status_value", baseline["status"])
-        edit_review_notes = extra_context.get("review_notes_value", baseline["review_notes"])
-        edit_visibility = extra_context.get("article_visibility", baseline["visibility"])
+        edit_review_notes = extra_context.get("review_notes_value", draft_review_notes)
+        edit_visibility = extra_context.get("article_visibility", draft_visibility)
 
         back_url = return_url or reverse(fallback_view_name)
         can_edit_content = user_can_edit_article_content(request.user, article, review_mode=is_review_mode)
@@ -887,7 +908,11 @@ def edit_suggestion(request, article_id):
         if "article_edit_approved_at_snapshot_value" in extra_context:
             approved_at_snapshot_value = extra_context["article_edit_approved_at_snapshot_value"]
         else:
-            approved_at_snapshot = baseline["article_approved_at_snapshot"]
+            approved_at_snapshot = (
+                edit_workspace.article_approved_at_snapshot
+                if has_personal_edit_draft
+                else baseline["article_approved_at_snapshot"]
+            )
             approved_at_snapshot_value = approved_at_snapshot.isoformat() if approved_at_snapshot else ""
 
         context = {
@@ -922,6 +947,8 @@ def edit_suggestion(request, article_id):
             "has_failed_update": article.has_failed_update,
             "has_update_draft": article.has_update_draft,
             "has_saved_update_draft": has_saved_update_draft,
+            "has_personal_edit_draft": has_personal_edit_draft,
+            "show_personal_edit_draft_actions": can_restore_personal_draft,
             "article_visibility": edit_visibility,
             "article_edit_workspace_id": str(edit_workspace.pk),
             "article_edit_approved_at_snapshot_value": approved_at_snapshot_value,
@@ -1001,18 +1028,26 @@ def edit_suggestion(request, article_id):
             effective_approval_snapshot,
         )
 
-    if approval_took_precedence:
-        return render_approval_precedence_conflict()
-
-    title = request.POST.get("frm_kb_title", "").strip()
-    body = request.POST.get("frm_kb_body", "").strip()
-    keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
     submit_action = validate_article_edit_action(
         request.user,
         article,
         request.POST.get("submit_action", "save"),
         review_mode=is_review_mode,
     )
+
+    # Personal-draft operations never modify the shared article, so preserve the
+    # user's work even if a newer published version appeared while the editor was
+    # open. The original approval snapshot stays attached to the workspace; a later
+    # real Save will still be blocked until the user reloads/reverts appropriately.
+    if approval_took_precedence and submit_action not in {
+        "save_personal_draft",
+        "revert_personal_draft",
+    }:
+        return render_approval_precedence_conflict()
+
+    title = request.POST.get("frm_kb_title", "").strip()
+    body = request.POST.get("frm_kb_body", "").strip()
+    keywords_raw = request.POST.get("frm_kb_keywords", "").strip()
 
     previous_status = article.status
     previous_update_status = article.update_status
@@ -1023,6 +1058,26 @@ def edit_suggestion(request, article_id):
         is_admin_action
         and bool(getattr(article, "has_staged_update", False))
     )
+
+    if submit_action == "revert_personal_draft":
+        # This is an editor-only reset. It discards only this user's private
+        # workspace and never changes the shared article or another user's staged
+        # update. The next GET recreates the editor from the latest published row.
+        with transaction.atomic():
+            locked_workspace = get_owned_article_edit_workspace(
+                request.user,
+                edit_workspace.pk,
+                article=article,
+                editor_mode=_article_edit_workspace_mode(is_review_mode),
+                for_update=True,
+            )
+            if locked_workspace is not None:
+                discard_article_edit_workspace(request, locked_workspace)
+        messages.success(request, _("Reverted to the last published version. Any unpublished update changes were discarded."))
+        return redirect(
+            f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}"
+            f"?next={quote(return_url, safe='')}"
+        )
 
     if is_admin_action:
         status = validate_admin_requested_article_status(
@@ -1137,6 +1192,73 @@ def edit_suggestion(request, article_id):
         "back_url": return_url or reverse(fallback_view_name),
         "article_visibility": requested_visibility,
     }
+
+    if submit_action == "save_personal_draft":
+        # Explicit manual draft for Managers/Admins editing an already-published
+        # article. This persists only in the current user's ArticleEditWorkspace;
+        # it never changes the article row, status, approval metadata, Markdown,
+        # notifications, or another editor's draft.
+        if not can_edit_content or not can_restore_personal_draft:
+            raise Http404("Article action not allowed")
+        if len(title) > ARTICLE_TITLE_MAX_LENGTH or len(keywords_raw) > ARTICLE_KEYWORDS_MAX_LENGTH:
+            return render_edit_form({
+                **error_context,
+                "error": _("The temporary article contains an oversized field."),
+            })
+        try:
+            keywords_raw = validate_article_keywords(keywords_raw)
+            body = validate_article_body(body)
+            draft_image_assets = validate_article_edit_workspace_image_references(
+                edit_workspace,
+                body,
+                article,
+            )
+        except ValidationError as error:
+            message = error.messages[0] if getattr(error, "messages", None) else str(error)
+            return render_edit_form({
+                **error_context,
+                "keywords_value": keywords_raw,
+                "body_value": body,
+                "error": message,
+            })
+
+        with transaction.atomic():
+            locked_workspace = get_owned_article_edit_workspace(
+                request.user,
+                edit_workspace.pk,
+                article=article,
+                editor_mode=_article_edit_workspace_mode(is_review_mode),
+                for_update=True,
+            )
+            if locked_workspace is None:
+                raise Http404("Article edit workspace not found")
+            locked_workspace.title = title
+            locked_workspace.body = body
+            locked_workspace.keywords = keywords_raw
+            locked_workspace.visibility = requested_visibility
+            # Do not remember a status dropdown choice in a personal draft. A
+            # publish/reject/status change always requires an explicit final Save.
+            locked_workspace.status = article.status
+            locked_workspace.review_notes = ""
+            locked_workspace.image_assets = list(dict.fromkeys(draft_image_assets))
+            locked_workspace.is_dirty = True
+            locked_workspace.save(update_fields=[
+                "title",
+                "body",
+                "keywords",
+                "visibility",
+                "status",
+                "review_notes",
+                "image_assets",
+                "is_dirty",
+                "updated_at",
+            ])
+
+        messages.success(request, _("Draft saved successfully."))
+        return redirect(
+            f"{reverse('edit_suggestion', kwargs={'article_id': article.pk})}"
+            f"?next={quote(return_url, safe='')}"
+        )
 
     if is_admin_action and status == SuggestedArticle.Status.FAILED and not review_notes:
         return render_edit_form({
@@ -1861,9 +1983,11 @@ def upload_article_image(request):
                     owned_assets.append(filename)
                 context_object.image_assets = workspace_assets
                 context_object.owned_image_assets = owned_assets
-                context_object.is_dirty = True
+                # Existing-article image uploads are temporary editor state. They
+                # must not silently turn the workspace into a restorable draft;
+                # only the explicit Save draft action may set is_dirty=True.
                 context_object.save(update_fields=[
-                    "image_assets", "owned_image_assets", "is_dirty", "updated_at"
+                    "image_assets", "owned_image_assets", "updated_at"
                 ])
     except Exception:
         if file_path.exists():
@@ -1947,8 +2071,16 @@ def delete_article_image(request):
             owned_assets = article_edit_workspace_owned_assets(context_object)
             if filename not in workspace_assets:
                 return JsonResponse({"error": _("This image is not part of this edit checkpoint.")}, status=403)
-            physical_delete_allowed = filename in owned_assets
-            if physical_delete_allowed and not user_owns_pending_article_image(request.user, filename):
+            # If this file belongs to an explicitly saved personal draft, leave
+            # that saved snapshot intact until the user presses Save draft again.
+            # Removing the image in the current browser is still allowed, but
+            # leaving the page without saving restores the last deliberate draft.
+            preserve_saved_draft_image = bool(
+                context_object.is_dirty
+                and filename in extract_article_image_filenames(context_object.body)
+            )
+            physical_delete_allowed = filename in owned_assets and not preserve_saved_draft_image
+            if filename in owned_assets and not user_owns_pending_article_image(request.user, filename):
                 return JsonResponse({"error": _("This pending image does not belong to your account or is already used by an article.")}, status=403)
         else:
             if not user_owns_pending_article_image(request.user, filename):
@@ -1991,21 +2123,17 @@ def delete_article_image(request):
             context_object.is_dirty = True
             context_object.save(update_fields=["body", "image_assets", "is_dirty", "updated_at"])
         elif context_kind == "edit_workspace":
-            context_object.image_assets = [item for item in workspace_assets if item != filename]
-            if physical_delete_allowed:
-                context_object.owned_image_assets = [
-                    item for item in owned_assets if item != filename
-                ]
-            submitted_body = request.POST.get("frm_kb_body")
-            if submitted_body is not None:
-                try:
-                    context_object.body = validate_article_body(submitted_body)
-                except ValidationError:
-                    pass
-            context_object.is_dirty = True
-            context_object.save(update_fields=[
-                "body", "image_assets", "owned_image_assets", "is_dirty", "updated_at"
-            ])
+            if not preserve_saved_draft_image:
+                context_object.image_assets = [item for item in workspace_assets if item != filename]
+                if physical_delete_allowed:
+                    context_object.owned_image_assets = [
+                        item for item in owned_assets if item != filename
+                    ]
+                # Do not copy the browser's current body into the workspace here.
+                # Existing-article text remains manual-save only.
+                context_object.save(update_fields=[
+                    "image_assets", "owned_image_assets", "updated_at"
+                ])
 
     request.session["pending_article_uploads"] = [item for item in pending_uploads if item != filename]
     request.session.modified = True

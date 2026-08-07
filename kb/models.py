@@ -1016,13 +1016,12 @@ class ArticleCreationWorkspace(models.Model):
 
 
 class ArticleEditWorkspace(models.Model):
-    """Persistent per-user checkpoint for editing one existing article.
+    """Owner-scoped workspace for editing one existing article.
 
-    Each authorised user receives an independent checkpoint for an article and
-    editor mode. Autosave uses last-write-wins semantics by design: the most
-    recent save from that user's tabs becomes the restored checkpoint. The
-    workspace is separate from ``SuggestedArticle`` until the user performs a
-    normal Save, submit, review, or publish action.
+    Existing-article text is manual-save only. The workspace normally owns only
+    temporary editor images, but Managers/Admins may explicitly save a personal
+    draft for a published article. That draft remains separate from
+    ``SuggestedArticle`` until the user performs a real Save/publish action.
     """
 
     class EditorMode(models.TextChoices):
