@@ -326,6 +326,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             {% endif %}
                         </div>
                         <div class="col-xs-12 edit-status-actions">
+                            {% if review_reset_to_submitted %}
+                                <div class="alert alert-info article-review-reset-notice" role="status">
+                                    {% trans "Review form reset to the user's submitted version. Click Save review action to apply these values or choose another review decision." %}
+                                </div>
+                            {% endif %}
                             <div class="article-action-buttons">
                             {% trans "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed." as revert_confirm_text %}
                             {% if can_review_article %}
@@ -334,6 +339,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                 {% elif show_personal_edit_draft_actions %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_personal_draft" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_personal_draft">{% trans "Save draft" %}</button>
+                                {% endif %}
+                                {% if is_article_review_mode and can_reset_to_submitted_version %}
+                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="reset_to_submitted" formnovalidate>{% trans "Reset to user-submitted version" %}</button>
                                 {% endif %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit"{% if is_article_review_mode %} data-review-action-button="true"{% endif %}>{% if is_article_review_mode %}{% trans "Save review action" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}

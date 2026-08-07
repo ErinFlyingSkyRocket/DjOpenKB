@@ -2519,7 +2519,14 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
             article.status = SuggestedArticle.Status.PUBLISHED
             article.approved_by = request.user
             article.approved_at = timezone.now()
-            article.save(update_fields=["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"])
+            update_fields = ["status", "approved_by", "approved_at", "review_notes", "review_notes_history", "updated_at"]
+            if article.update_status not in {
+                SuggestedArticle.UpdateStatus.PENDING,
+                SuggestedArticle.UpdateStatus.FAILED,
+            }:
+                article.clear_review_submission_snapshot()
+                update_fields.append("review_submission_snapshot")
+            article.save(update_fields=update_fields)
             write_article_files(article)
             log_activity(
                 request,
@@ -2619,9 +2626,19 @@ class SuggestedArticleAdmin(AdminAuditMixin, admin.ModelAdmin):
         if obj.status == SuggestedArticle.Status.PUBLISHED and not obj.approved_by:
             obj.approved_by = request.user
             obj.approved_at = timezone.now()
+        if (
+            obj.status == SuggestedArticle.Status.PUBLISHED
+            and obj.update_status not in {
+                SuggestedArticle.UpdateStatus.PENDING,
+                SuggestedArticle.UpdateStatus.FAILED,
+            }
+        ):
+            obj.clear_review_submission_snapshot()
         elif obj.status != SuggestedArticle.Status.PUBLISHED:
             obj.approved_by = None
             obj.approved_at = None
+            if obj.status not in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
+                obj.clear_review_submission_snapshot()
 
         if obj.status == SuggestedArticle.Status.FAILED:
             if not obj.review_notes:

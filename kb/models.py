@@ -422,6 +422,16 @@ class SuggestedArticle(models.Model):
         verbose_name=_("Pending failed comments history"),
         help_text=_("Historical review feedback entries from previous rejection/resubmission rounds."),
     )
+    review_submission_snapshot = models.JSONField(
+        default=dict,
+        blank=True,
+        editable=False,
+        verbose_name=_("User-submitted review snapshot"),
+        help_text=_(
+            "Server-owned copy of the latest version explicitly submitted by the article owner. "
+            "Reviewers may edit the shared pending copy and reset their review form back to this submitted version."
+        ),
+    )
     pending_update_title = models.CharField(
         max_length=200,
         blank=True,
@@ -757,6 +767,46 @@ class SuggestedArticle(models.Model):
             self.UpdateStatus.FAILED,
         }
 
+    def capture_review_submission_snapshot(self, *, is_update=False):
+        """Store the owner-submitted version used as the review reset baseline.
+
+        Reviewers may change the shared pending copy while keeping it Pending.
+        This server-owned snapshot remains unchanged until the owner submits a
+        newer version or the review workflow is resolved/retracted.
+        """
+        if is_update:
+            title = self.pending_update_title or self.title
+            body = self.pending_update_body or self.body
+            keywords = self.pending_update_keywords or self.keywords
+            image_assets = list(self.pending_update_image_assets or [])
+            kind = "update"
+        else:
+            title = self.title
+            body = self.body
+            keywords = self.keywords
+            image_assets = list(self.image_assets or [])
+            kind = "article"
+
+        self.review_submission_snapshot = {
+            "kind": kind,
+            "title": title or "",
+            "body": body or "",
+            "keywords": keywords or "",
+            "visibility": self.visibility,
+            "image_assets": list(dict.fromkeys(image_assets)),
+        }
+
+    def clear_review_submission_snapshot(self):
+        self.review_submission_snapshot = {}
+
+    def get_review_submission_snapshot(self):
+        snapshot = self.review_submission_snapshot or {}
+        if not isinstance(snapshot, dict):
+            return {}
+        if snapshot.get("kind") not in {"article", "update"}:
+            return {}
+        return snapshot
+
     def clear_pending_update(self):
         self.pending_update_title = ""
         self.pending_update_body = ""
@@ -765,6 +815,7 @@ class SuggestedArticle(models.Model):
         self.update_status = self.UpdateStatus.NONE
         self.update_submitted_at = None
         self.update_reviewed_at = timezone.now()
+        self.clear_review_submission_snapshot()
 
     def refresh_author_snapshot(self):
         """Store a copy of the current owner details on the article.

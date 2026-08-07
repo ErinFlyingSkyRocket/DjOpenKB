@@ -750,6 +750,11 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.article.refresh_from_db()
         self.assertEqual(self.article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        self.assertEqual(self.article.review_submission_snapshot.get("kind"), "update")
+        self.assertEqual(
+            self.article.review_submission_snapshot.get("title"),
+            "Published article edited title",
+        )
         notify.assert_called_once()
         self.assertEqual(notify.call_args.args[2], NOTIFICATION_KIND_UPDATE_SUBMISSION)
         self.assertFalse(ArticleEditWorkspace.objects.filter(pk=workspace.pk).exists())

@@ -137,7 +137,8 @@ _BULK_ARTICLE_ALLOWED_FIELDS = {
     "pending_update_body", "pending_update_keywords",
     "pending_update_keyword", "pending_update_keyword_list",
     "pending_update_tags", "pending_update_image_assets", "review_notes",
-    "review_notes_history", "created_at", "updated_at", "published_at",
+    "review_notes_history", "review_submission_snapshot",
+    "created_at", "updated_at", "published_at",
     "author_username", "author_email",
 }
 _BULK_STANDARD_MANIFEST_ALLOWED_FIELDS = {
@@ -310,6 +311,38 @@ def _validate_review_history(value):
     return cleaned
 
 
+def _validate_review_submission_snapshot(value):
+    if value in (None, ""):
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(_("Review submission snapshot must be a JSON object."))
+    allowed = {"kind", "title", "body", "keywords", "visibility", "image_assets"}
+    unknown = set(value) - allowed
+    if unknown:
+        raise ValueError(
+            _("Review submission snapshot contains unsupported fields: %(fields)s")
+            % {"fields": ", ".join(sorted(unknown))}
+        )
+    kind = _require_manifest_string(value.get("kind"), "review_submission_snapshot.kind", required=True, max_length=20)
+    if kind not in {"article", "update"}:
+        raise ValueError(_("Review submission snapshot has an invalid kind."))
+    title = _require_manifest_string(value.get("title"), "review_submission_snapshot.title", required=True, min_length=5, max_length=200)
+    body = _require_manifest_string(value.get("body"), "review_submission_snapshot.body", required=True, min_length=5)
+    keywords = _require_manifest_string(value.get("keywords"), "review_submission_snapshot.keywords", max_length=500)
+    visibility = _require_manifest_string(value.get("visibility"), "review_submission_snapshot.visibility", required=True, max_length=20)
+    if visibility not in {SuggestedArticle.Visibility.PUBLIC, SuggestedArticle.Visibility.INTERNAL}:
+        raise ValueError(_("Review submission snapshot has an invalid visibility."))
+    image_assets = _validate_import_image_list(value.get("image_assets"), "review_submission_snapshot.image_assets")
+    return {
+        "kind": kind,
+        "title": title,
+        "body": body,
+        "keywords": keywords,
+        "visibility": visibility,
+        "image_assets": image_assets,
+    }
+
+
 def validate_bulk_manifest(manifest):
     """Validate and normalize a standard export manifest before file copying."""
     manifest = _require_manifest_mapping(manifest, _("Import manifest"))
@@ -436,6 +469,26 @@ def validate_bulk_manifest(manifest):
         ):
             _require_manifest_string(item.get(field_name), field_name, max_length=maximum)
 
+        review_submission_snapshot = _validate_review_submission_snapshot(
+            item.get("review_submission_snapshot")
+        )
+        if review_submission_snapshot:
+            expected_snapshot_kind = None
+            if status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
+                expected_snapshot_kind = "article"
+            elif (
+                status == SuggestedArticle.Status.PUBLISHED
+                and update_status in {
+                    SuggestedArticle.UpdateStatus.PENDING,
+                    SuggestedArticle.UpdateStatus.FAILED,
+                }
+            ):
+                expected_snapshot_kind = "update"
+            if review_submission_snapshot.get("kind") != expected_snapshot_kind:
+                raise ValueError(
+                    _("Review submission snapshot does not match the article workflow state.")
+                )
+
         cleaned_articles.append({
             "title": title,
             "body": body,
@@ -451,6 +504,7 @@ def validate_bulk_manifest(manifest):
             "pending_update_image_assets": pending_assets,
             "review_notes": review_notes,
             "review_notes_history": _validate_review_history(item.get("review_notes_history")),
+            "review_submission_snapshot": review_submission_snapshot,
         })
     return cleaned_articles
 
@@ -630,8 +684,16 @@ def build_bulk_export_payload(articles=None):
     for article in articles:
         live_assets = sorted(set((article.image_assets or []) + extract_article_image_filenames(article.body)))
         pending_assets = sorted(set((article.pending_update_image_assets or []) + extract_article_image_filenames(article.pending_update_body)))
+        review_snapshot = article.review_submission_snapshot or {}
+        snapshot_assets = []
+        if isinstance(review_snapshot, dict):
+            snapshot_assets = sorted(set(
+                (review_snapshot.get("image_assets") or [])
+                + extract_article_image_filenames(review_snapshot.get("body") or "")
+            ))
         referenced_uploads.update(live_assets)
         referenced_uploads.update(pending_assets)
+        referenced_uploads.update(snapshot_assets)
 
         article_rows.append({
             "title": article.title,
@@ -653,6 +715,7 @@ def build_bulk_export_payload(articles=None):
             "pending_update_image_assets": pending_assets,
             "review_notes": getattr(article, "review_notes", "") or "",
             "review_notes_history": getattr(article, "review_notes_history", []) or [],
+            "review_submission_snapshot": review_snapshot if isinstance(review_snapshot, dict) else {},
             "created_at": article.created_at.isoformat() if article.created_at else "",
             "updated_at": article.updated_at.isoformat() if article.updated_at else "",
             "published_at": article.published_at.isoformat() if getattr(article, "published_at", None) else "",
@@ -688,11 +751,18 @@ def _upload_file_size(filename):
 def _article_export_size_estimate(article):
     live_assets = set((article.image_assets or []) + extract_article_image_filenames(article.body))
     pending_assets = set((article.pending_update_image_assets or []) + extract_article_image_filenames(article.pending_update_body))
-    upload_size = sum(_upload_file_size(filename) for filename in live_assets | pending_assets)
+    snapshot = article.review_submission_snapshot or {}
+    snapshot_body = snapshot.get("body", "") if isinstance(snapshot, dict) else ""
+    snapshot_assets = set(
+        (snapshot.get("image_assets", []) if isinstance(snapshot, dict) else [])
+        + extract_article_image_filenames(snapshot_body)
+    )
+    upload_size = sum(_upload_file_size(filename) for filename in live_assets | pending_assets | snapshot_assets)
     markdown_size = len(build_article_markdown(article).encode("utf-8"))
     pending_text_size = len((getattr(article, "pending_update_body", "") or "").encode("utf-8"))
+    snapshot_text_size = len(snapshot_body.encode("utf-8"))
     # Add a little overhead for manifest JSON and zip metadata.
-    return upload_size + markdown_size + pending_text_size + 4096
+    return upload_size + markdown_size + pending_text_size + snapshot_text_size + 4096
 
 
 def split_articles_for_bulk_export(max_part_size_bytes=BULK_EXPORT_PART_SIZE_BYTES):
@@ -873,9 +943,12 @@ def copy_imported_uploads_from_zip(zip_file, upload_member_names):
 def imported_payload_image_filenames(item):
     """Return safe source upload names referenced by one import payload."""
     referenced = []
+    review_snapshot = item.get("review_submission_snapshot") or {}
+    snapshot_body = review_snapshot.get("body", "") if isinstance(review_snapshot, dict) else ""
     for text in (
         item.get("body") or "",
         item.get("pending_update_body") or "",
+        snapshot_body,
     ):
         for filename in extract_article_image_filenames(text):
             safe_name = safe_uploaded_filename(filename)
@@ -884,6 +957,11 @@ def imported_payload_image_filenames(item):
 
     for field_name in ("image_assets", "pending_update_image_assets"):
         for filename in item.get(field_name) or []:
+            safe_name = safe_uploaded_filename(filename)
+            if safe_name and safe_name not in referenced:
+                referenced.append(safe_name)
+    if isinstance(review_snapshot, dict):
+        for filename in review_snapshot.get("image_assets") or []:
             safe_name = safe_uploaded_filename(filename)
             if safe_name and safe_name not in referenced:
                 referenced.append(safe_name)
@@ -1070,6 +1148,18 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                 pending_update_keywords = normalize_import_keywords(item.get("pending_update_keywords"))
                 review_notes = (item.get("review_notes") or "").strip()
                 review_notes_history = item.get("review_notes_history") or []
+                review_submission_snapshot = item.get("review_submission_snapshot") or {}
+                if isinstance(review_submission_snapshot, dict) and review_submission_snapshot:
+                    review_submission_snapshot = dict(review_submission_snapshot)
+                    review_submission_snapshot["body"] = rewrite_uploaded_file_references(
+                        review_submission_snapshot.get("body") or "",
+                        filename_map,
+                    )
+                    review_submission_snapshot["image_assets"] = [
+                        filename_map.get(safe_uploaded_filename(filename), safe_uploaded_filename(filename))
+                        for filename in (review_submission_snapshot.get("image_assets") or [])
+                        if safe_uploaded_filename(filename)
+                    ]
                 imported_pending_assets = [
                     filename_map.get(safe_uploaded_filename(filename), safe_uploaded_filename(filename))
                     for filename in (item.get("pending_update_image_assets") or [])
@@ -1140,7 +1230,19 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                             pending_update_image_assets=sorted(set(imported_pending_assets + extract_article_image_filenames(pending_update_body))),
                             review_notes=review_notes,
                             review_notes_history=review_notes_history,
+                            review_submission_snapshot=review_submission_snapshot,
                         )
+                        if not article.review_submission_snapshot:
+                            if article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
+                                article.capture_review_submission_snapshot(is_update=False)
+                            elif (
+                                article.status == SuggestedArticle.Status.PUBLISHED
+                                and article.update_status in {
+                                    SuggestedArticle.UpdateStatus.PENDING,
+                                    SuggestedArticle.UpdateStatus.FAILED,
+                                }
+                            ):
+                                article.capture_review_submission_snapshot(is_update=True)
                         article.full_clean()
                         article.save()
                         write_article_files(article)
@@ -1148,6 +1250,12 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
 
                     retained_import_uploads.update(article.image_assets or [])
                     retained_import_uploads.update(article.pending_update_image_assets or [])
+                    snapshot = article.review_submission_snapshot or {}
+                    if isinstance(snapshot, dict):
+                        retained_import_uploads.update(snapshot.get("image_assets") or [])
+                        retained_import_uploads.update(
+                            extract_article_image_filenames(snapshot.get("body") or "")
+                        )
                     imported_count += 1
                 except IntegrityError:
                     if article is not None:

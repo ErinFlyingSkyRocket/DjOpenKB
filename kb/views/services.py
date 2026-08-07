@@ -1091,6 +1091,8 @@ def allowed_article_edit_actions_for(user, article, *, review_mode=False):
                 SuggestedArticle.UpdateStatus.FAILED,
             }
         )
+        if review_mode:
+            allowed_actions.add("reset_to_submitted")
         if has_shared_review_update:
             allowed_actions.add("revert_published")
         elif (
@@ -1444,6 +1446,16 @@ def article_references_uploaded_filename(article, filename, include_pending_upda
         if filename in extract_article_image_filenames(getattr(article, "pending_update_body", "") or ""):
             return True
 
+        # Keep the owner's original submitted review version intact even when a
+        # reviewer has edited the shared pending copy and removed one of its
+        # images. Snapshot-only images remain protected for reviewer reset.
+        snapshot = getattr(article, "review_submission_snapshot", None) or {}
+        if isinstance(snapshot, dict):
+            if filename in (snapshot.get("image_assets") or []):
+                return True
+            if filename in extract_article_image_filenames(snapshot.get("body") or ""):
+                return True
+
     return False
 
 
@@ -1457,6 +1469,7 @@ def image_is_used_by_other_article(filename, current_article=None):
         "image_assets",
         "pending_update_body",
         "pending_update_image_assets",
+        "review_submission_snapshot",
     ):
         if article_references_uploaded_filename(article, filename):
             return True
@@ -2033,11 +2046,16 @@ def get_all_referenced_uploaded_files(
         "image_assets",
         "pending_update_body",
         "pending_update_image_assets",
+        "review_submission_snapshot",
     ):
         referenced.update(article.image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.body))
         referenced.update(article.pending_update_image_assets or [])
         referenced.update(extract_uploaded_file_filenames_from_text(article.pending_update_body))
+        snapshot = article.review_submission_snapshot or {}
+        if isinstance(snapshot, dict):
+            referenced.update(snapshot.get("image_assets") or [])
+            referenced.update(extract_uploaded_file_filenames_from_text(snapshot.get("body") or ""))
 
     # 2) Protect active persistent New Article checkpoints. These files are still
     # uncommitted and continue counting toward the user's pending quota, but
@@ -3433,11 +3451,16 @@ def delete_article_files(article):
             file_path.unlink()
 
     image_candidates = []
+    review_snapshot = article.review_submission_snapshot or {}
+    snapshot_body = review_snapshot.get("body", "") if isinstance(review_snapshot, dict) else ""
+    snapshot_assets = review_snapshot.get("image_assets", []) if isinstance(review_snapshot, dict) else []
     for source_list in (
         article.image_assets or [],
         extract_article_image_filenames(article.body),
         article.pending_update_image_assets or [],
         extract_article_image_filenames(article.pending_update_body),
+        snapshot_assets,
+        extract_article_image_filenames(snapshot_body),
     ):
         for filename in source_list:
             if filename and filename not in image_candidates:

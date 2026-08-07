@@ -224,6 +224,28 @@ def _article_shared_staged_update_visible_to_editor(article, user, *, is_review_
     )
 
 
+def _current_review_submission_snapshot(article):
+    """Return the server-owned owner submission for the current review flow."""
+    snapshot = article.get_review_submission_snapshot()
+    if not snapshot:
+        return {}
+
+    if (
+        article.status == SuggestedArticle.Status.PUBLISHED
+        and article.update_status in {
+            SuggestedArticle.UpdateStatus.PENDING,
+            SuggestedArticle.UpdateStatus.FAILED,
+        }
+    ):
+        expected_kind = "update"
+    elif article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
+        expected_kind = "article"
+    else:
+        return {}
+
+    return snapshot if snapshot.get("kind") == expected_kind else {}
+
+
 def _article_edit_workspace_baseline(article, user, *, is_review_mode):
     """Return the current saved values used to initialise an edit workspace."""
     can_review = user_can_review_article(user, article, review_mode=is_review_mode)
@@ -614,6 +636,8 @@ def _suggest_unified(request):
                 locked_workspace,
                 body,
             )
+            if article.status == SuggestedArticle.Status.PENDING:
+                article.capture_review_submission_snapshot(is_update=False)
             article.full_clean()
             article.save()
     except ValidationError as error:
@@ -919,6 +943,11 @@ def edit_suggestion(request, article_id):
             has_staged_update
             and article.update_status == SuggestedArticle.UpdateStatus.NONE
         )
+        review_submission_snapshot = (
+            _current_review_submission_snapshot(article)
+            if is_review_mode and can_review_article
+            else {}
+        )
         baseline = _article_edit_workspace_baseline(
             article,
             request.user,
@@ -971,6 +1000,7 @@ def edit_suggestion(request, article_id):
             "can_review_article": can_review_article,
             "article_editor_mode": "review" if is_review_mode else "edit",
             "is_article_review_mode": is_review_mode,
+            "can_reset_to_submitted_version": bool(review_submission_snapshot),
             "can_edit_article_content": can_edit_content,
             "is_review_only_article": can_review_article and not can_edit_content,
             "can_change_article_visibility": can_change_visibility,
@@ -1081,6 +1111,31 @@ def edit_suggestion(request, article_id):
             SuggestedArticle.UpdateStatus.FAILED,
         }
     )
+
+    if submit_action == "reset_to_submitted":
+        if not is_review_mode or not is_admin_action:
+            raise Http404("Article action not allowed")
+        submitted_snapshot = _current_review_submission_snapshot(article)
+        if not submitted_snapshot:
+            raise Http404("Submitted review version not found")
+
+        submitted_images = list(dict.fromkeys(
+            (submitted_snapshot.get("image_assets") or [])
+            + extract_article_image_filenames(submitted_snapshot.get("body") or "")
+        ))
+        return render_edit_form({
+            "title_value": submitted_snapshot.get("title", ""),
+            "body_value": submitted_snapshot.get("body", ""),
+            "keywords_value": submitted_snapshot.get("keywords", ""),
+            "article_visibility": submitted_snapshot.get("visibility", article.visibility),
+            "status_value": SuggestedArticle.Status.PENDING,
+            "current_status": SuggestedArticle.Status.PENDING,
+            "review_notes_value": "",
+            "existing_images_json": json.dumps(
+                get_article_image_cards_from_filenames(submitted_images, existing=True)
+            ),
+            "review_reset_to_submitted": True,
+        })
 
     if submit_action == "revert_personal_draft":
         # This is an editor-only reset. It discards only this user's private
@@ -1369,10 +1424,12 @@ def edit_suggestion(request, article_id):
             article.update_status = SuggestedArticle.UpdateStatus.NONE
             article.update_submitted_at = None
             article.update_reviewed_at = None
+            article.clear_review_submission_snapshot()
         else:
             article.update_status = SuggestedArticle.UpdateStatus.PENDING
             article.update_submitted_at = timezone.now()
             article.update_reviewed_at = None
+            article.capture_review_submission_snapshot(is_update=True)
             # Do not archive the same rejection comment again when the author
             # resubmits an update. The existing admin rejection entry is already
             # stored in review_notes_history.
@@ -1447,6 +1504,14 @@ def edit_suggestion(request, article_id):
             # Do not archive the same rejection comment again when the author
             # resubmits. The actual admin rejection was already recorded.
             article.review_notes = ""
+
+        if not is_admin_action:
+            if status == SuggestedArticle.Status.PENDING:
+                article.capture_review_submission_snapshot(is_update=False)
+            else:
+                article.clear_review_submission_snapshot()
+        elif status not in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
+            article.clear_review_submission_snapshot()
 
         if is_admin_action and status == SuggestedArticle.Status.PUBLISHED:
             # Admin save/publish changes the public version immediately, so refresh
@@ -2206,6 +2271,38 @@ def serve_article_image(request, filename):
         if not any(user_can_view_article(request.user, article) for article in published_references):
             raise Http404("Image not found")
         return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
+
+    # The owner-submitted review snapshot can retain images that a reviewer
+    # removed from the current shared pending copy. Those files are not public
+    # article content: serve them only to the article owner or an authorised
+    # reviewer/manager so Reset to user-submitted version can render correctly.
+    snapshot_references = (
+        SuggestedArticle.objects
+        .filter(review_submission_snapshot__image_assets__contains=[filename])
+        .filter(
+            Q(status__in=[SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED])
+            | Q(
+                status=SuggestedArticle.Status.PUBLISHED,
+                update_status__in=[
+                    SuggestedArticle.UpdateStatus.PENDING,
+                    SuggestedArticle.UpdateStatus.FAILED,
+                ],
+            )
+        )
+        .exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
+        .select_related("owner")
+    )
+    if request.user.is_authenticated:
+        for snapshot_article in snapshot_references:
+            if (
+                snapshot_article.owner_id == request.user.id
+                or user_can_review_article(request.user, snapshot_article, review_mode=True)
+                or user_can_delete_article(request.user, snapshot_article)
+            ):
+                return FileResponse(
+                    file_path.open("rb"),
+                    content_type=uploaded_image_content_type(filename),
+                )
 
     allowed = False
 

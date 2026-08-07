@@ -704,5 +704,11 @@ class ArticleCreationWorkspaceTests(TestCase):
             title="Submitted workspace article",
         )
         self.assertEqual(article.status, SuggestedArticle.Status.PENDING)
+        self.assertEqual(article.review_submission_snapshot.get("kind"), "article")
+        self.assertEqual(article.review_submission_snapshot.get("title"), "Submitted workspace article")
+        self.assertEqual(
+            article.review_submission_snapshot.get("body"),
+            "This valid body enters the normal review workflow.",
+        )
         notify.assert_called_once()
 

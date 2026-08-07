@@ -214,6 +214,10 @@ def _article_private_image_filenames(article: SuggestedArticle) -> set[str]:
     candidates.update(extract_article_image_filenames(article.body or ""))
     candidates.update(article.pending_update_image_assets or [])
     candidates.update(extract_article_image_filenames(article.pending_update_body or ""))
+    snapshot = article.review_submission_snapshot or {}
+    if isinstance(snapshot, dict):
+        candidates.update(snapshot.get("image_assets") or [])
+        candidates.update(extract_article_image_filenames(snapshot.get("body") or ""))
     return {
         safe_name
         for filename in candidates
@@ -273,6 +277,10 @@ def prepare_user_account_deletion(user) -> None:
         # committed image assets remain with the orphaned published knowledge.
         staged_candidates = set(article.pending_update_image_assets or [])
         staged_candidates.update(extract_article_image_filenames(article.pending_update_body or ""))
+        snapshot = article.review_submission_snapshot or {}
+        if isinstance(snapshot, dict):
+            staged_candidates.update(snapshot.get("image_assets") or [])
+            staged_candidates.update(extract_article_image_filenames(snapshot.get("body") or ""))
         filenames.update(
             safe_name
             for filename in staged_candidates
@@ -330,6 +338,7 @@ def prepare_user_account_deletion(user) -> None:
             update_submitted_at=None,
             update_reviewed_at=None,
             review_notes="",
+            review_submission_snapshot={},
         )
 
     # These callbacks run only after the account deletion transaction commits.

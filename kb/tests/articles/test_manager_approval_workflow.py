@@ -165,3 +165,175 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         self.assertEqual(article.pending_update_body, "Updated body that should return to review.")
         self.assertFalse(article.review_notes)
         self.assertTrue(article.review_notes_history)
+
+    def test_review_can_reset_saved_manager_edits_to_owner_submitted_article_version(self):
+        from kb.models import ArticleEditWorkspace, SuggestedArticle
+
+        article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Owner submitted review title",
+            body="Owner submitted review body for the pending article.",
+            keywords="owner, submitted",
+            filename="owner-submitted-review.md",
+            status=SuggestedArticle.Status.PENDING,
+        )
+        article.capture_review_submission_snapshot(is_update=False)
+        article.save(update_fields=["review_submission_snapshot"])
+
+        self.client.force_login(self.manager)
+        review_url = reverse("edit_suggestion", args=[article.pk]) + "?editor_mode=review"
+        response = self.client.get(review_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reset to user-submitted version")
+
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=self.manager,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.REVIEW,
+        )
+        response = self.client.post(
+            reverse("edit_suggestion", args=[article.pk]),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "review",
+                "frm_kb_title": "Manager edited pending title",
+                "frm_kb_body": "Manager edited the pending body but kept the article pending.",
+                "frm_kb_keywords": "manager, edited",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "submit_action": "save",
+                "status": SuggestedArticle.Status.PENDING,
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        article.refresh_from_db()
+        self.assertEqual(article.title, "Manager edited pending title")
+        self.assertEqual(
+            article.review_submission_snapshot.get("title"),
+            "Owner submitted review title",
+        )
+
+        response = self.client.get(review_url)
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=self.manager,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.REVIEW,
+        )
+        response = self.client.post(
+            reverse("edit_suggestion", args=[article.pk]),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "review",
+                "frm_kb_title": article.title,
+                "frm_kb_body": article.body,
+                "frm_kb_keywords": article.keywords,
+                "submit_action": "reset_to_submitted",
+                "status": SuggestedArticle.Status.PENDING,
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Owner submitted review title")
+        self.assertContains(response, "Owner submitted review body for the pending article.")
+        self.assertContains(response, "Review form reset to the user&#x27;s submitted version")
+
+        # Resetting the form itself is non-destructive. The shared article changes
+        # only after Save review action is deliberately pressed.
+        article.refresh_from_db()
+        self.assertEqual(article.title, "Manager edited pending title")
+
+        response = self.client.post(
+            reverse("edit_suggestion", args=[article.pk]),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "review",
+                "frm_kb_title": "Owner submitted review title",
+                "frm_kb_body": "Owner submitted review body for the pending article.",
+                "frm_kb_keywords": "owner, submitted",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "submit_action": "save",
+                "status": SuggestedArticle.Status.PENDING,
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        article.refresh_from_db()
+        self.assertEqual(article.title, "Owner submitted review title")
+        self.assertEqual(article.body, "Owner submitted review body for the pending article.")
+        self.assertEqual(article.status, SuggestedArticle.Status.PENDING)
+
+    def test_review_can_reset_pending_update_to_owner_submitted_update_version(self):
+        from kb.models import ArticleEditWorkspace, SuggestedArticle
+
+        article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Published reset baseline",
+            body="Currently published body remains visible to readers.",
+            keywords="published",
+            filename="published-reset-baseline.md",
+            status=SuggestedArticle.Status.PUBLISHED,
+            pending_update_title="Owner submitted update title",
+            pending_update_body="Owner submitted update body waiting for review.",
+            pending_update_keywords="owner, update",
+            update_status=SuggestedArticle.UpdateStatus.PENDING,
+        )
+        article.capture_review_submission_snapshot(is_update=True)
+        article.save(update_fields=["review_submission_snapshot"])
+
+        self.client.force_login(self.manager)
+        review_url = reverse("edit_suggestion", args=[article.pk]) + "?editor_mode=review"
+        response = self.client.get(review_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reset to user-submitted version")
+
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=self.manager,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.REVIEW,
+        )
+        response = self.client.post(
+            reverse("edit_suggestion", args=[article.pk]),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "review",
+                "frm_kb_title": "Reviewer changed update title",
+                "frm_kb_body": "Reviewer changed the submitted update while keeping it pending.",
+                "frm_kb_keywords": "reviewer, update",
+                "submit_action": "save",
+                "status": SuggestedArticle.Status.PENDING,
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        article.refresh_from_db()
+        self.assertEqual(article.pending_update_title, "Reviewer changed update title")
+        self.assertEqual(
+            article.review_submission_snapshot.get("title"),
+            "Owner submitted update title",
+        )
+
+        self.client.get(review_url)
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=self.manager,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.REVIEW,
+        )
+        response = self.client.post(
+            reverse("edit_suggestion", args=[article.pk]),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "review",
+                "frm_kb_title": article.pending_update_title,
+                "frm_kb_body": article.pending_update_body,
+                "frm_kb_keywords": article.pending_update_keywords,
+                "submit_action": "reset_to_submitted",
+                "status": SuggestedArticle.Status.PENDING,
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Owner submitted update title")
+        self.assertContains(response, "Owner submitted update body waiting for review.")
+
+        article.refresh_from_db()
+        self.assertEqual(article.pending_update_title, "Reviewer changed update title")

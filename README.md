@@ -156,13 +156,15 @@ Revert to last published version -> discards that user's personal edit draft
 
 Review pending article/update:
 No autosave
+Reviewer may edit all content allowed by their review role
+Reset to user-submitted version -> restores the review form to the owner's latest explicit submission
 Selecting a status alone does nothing
-Save review action -> applies Keep pending / Approve-Publish / Pending failed
+Save review action -> applies the current review fields plus Keep pending / Approve-Publish / Pending failed
 ```
 
 Permanent account deletion is different from disabling an account. Inactive and **Disabled User** accounts keep their recoverable workspaces. Permanently deleting a user removes that user's New Article/edit workspaces, saved Draft/Pending/Pending-failed articles, and any unpublished `pending_update_*` copy; already published knowledge is preserved as an orphan with author snapshots.
 
-Existing-article editors are manual-save only. The server-owned `ArticleEditWorkspace.article_approved_at_snapshot` is the authoritative stale-editor baseline; a browser-supplied timestamp is not trusted. Static JavaScript/CSS uses Nginx revalidation so stable asset filenames are checked after deployment instead of remaining cached for seven days.
+Existing-article editors are manual-save only. The server-owned `ArticleEditWorkspace.article_approved_at_snapshot` is the authoritative stale-editor baseline; a browser-supplied timestamp is not trusted. When an owner explicitly submits an article or published update, DjOpenKB also keeps a temporary server-owned `review_submission_snapshot`. Reviewer edits may change the shared Pending copy without overwriting that owner baseline, allowing Admin Users, matching Approvers, and matching Managers to reset their review form to exactly what the owner last submitted. Reset itself is non-destructive; the restored values are applied only after **Save review action**. Static JavaScript/CSS uses Nginx revalidation so stable asset filenames are checked after deployment instead of remaining cached for seven days.
 
 Roles are additive. A user with only a writer role cannot approve; a user intentionally assigned the matching approver or manager role can approve their own matching-scope submission. This is an intended design decision for the project.
 
