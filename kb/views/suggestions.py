@@ -2270,41 +2270,59 @@ def serve_article_image(request, filename):
     if not file_path.exists() or not file_path.is_file():
         raise Http404("Image not found")
 
-    referenced_articles = (
+    # Keep live article references separate from staged update references.
+    # A published parent article must never make a pending-only image public: an
+    # image receives published visibility only when it is part of image_assets
+    # for the currently live article version.
+    live_references = list(
         SuggestedArticle.objects
-        .filter(
-            Q(image_assets__contains=[filename])
-            | Q(pending_update_image_assets__contains=[filename])
-        )
+        .filter(image_assets__contains=[filename])
         .exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
         .select_related("owner")
     )
 
-    has_reference = referenced_articles.exists()
-
-    published_references = referenced_articles.filter(status=SuggestedArticle.Status.PUBLISHED)
-    has_public_published_reference = published_references.filter(
-        visibility=SuggestedArticle.Visibility.PUBLIC
-    ).exists()
-    has_internal_published_reference = published_references.filter(
-        visibility=SuggestedArticle.Visibility.INTERNAL
-    ).exists()
+    published_live_references = [
+        article
+        for article in live_references
+        if article.status == SuggestedArticle.Status.PUBLISHED
+    ]
+    has_public_published_reference = any(
+        article.visibility == SuggestedArticle.Visibility.PUBLIC
+        for article in published_live_references
+    )
+    has_internal_published_reference = any(
+        article.visibility == SuggestedArticle.Visibility.INTERNAL
+        for article in published_live_references
+    )
 
     if has_internal_published_reference and not user_can_view_internal_articles(request.user):
-        # Internal references are treated as private even if the same file is
-        # accidentally embedded elsewhere.
+        # Internal live references are treated as private even if the same file
+        # is unexpectedly referenced elsewhere.
         raise Http404("Image not found")
 
     if has_public_published_reference or has_internal_published_reference:
-        if not any(user_can_view_article(request.user, article) for article in published_references):
+        if not any(
+            user_can_view_article(request.user, article)
+            for article in published_live_references
+        ):
             raise Http404("Image not found")
-        return FileResponse(file_path.open("rb"), content_type=uploaded_image_content_type(filename))
+        return FileResponse(
+            file_path.open("rb"),
+            content_type=uploaded_image_content_type(filename),
+        )
 
     # The owner-submitted review snapshot can retain images that a reviewer
     # removed from the current shared pending copy. Those files are not public
     # article content: serve them only to the article owner or an authorised
     # reviewer/manager so Reset to user-submitted version can render correctly.
-    snapshot_references = (
+    pending_update_references = list(
+        SuggestedArticle.objects
+        .filter(pending_update_image_assets__contains=[filename])
+        .exclude(status=SuggestedArticle.Status.DELETE_QUEUED)
+        .select_related("owner")
+    )
+
+    snapshot_references = list(
         SuggestedArticle.objects
         .filter(review_submission_snapshot__image_assets__contains=[filename])
         .filter(
@@ -2335,12 +2353,39 @@ def serve_article_image(request, filename):
     allowed = False
 
     if request.user.is_authenticated:
-        for article in referenced_articles:
-            if article.owner_id == request.user.id or user_can_review_article(request.user, article, review_mode=True) or user_can_delete_article(request.user, article):
+        # Main Draft/Pending/Failed article images are unpublished content even
+        # though they live in image_assets. Pending-update images are always
+        # unpublished until they are promoted into the live article's
+        # image_assets on publication. Owners and authorised reviewers/managers
+        # may render those images while editing or reviewing them.
+        unpublished_live_references = [
+            article
+            for article in live_references
+            if article.status != SuggestedArticle.Status.PUBLISHED
+        ]
+        for article in unpublished_live_references:
+            if (
+                article.owner_id == request.user.id
+                or user_can_review_article(request.user, article, review_mode=True)
+                or user_can_delete_article(request.user, article)
+            ):
                 allowed = True
                 break
 
-    if not allowed and not has_reference:
+        if not allowed:
+            for article in pending_update_references:
+                if (
+                    article.owner_id == request.user.id
+                    or user_can_review_article(request.user, article, review_mode=True)
+                    or user_can_delete_article(request.user, article)
+                ):
+                    allowed = True
+                    break
+
+    has_structured_article_reference = bool(
+        live_references or pending_update_references or snapshot_references
+    )
+    if not allowed and not has_structured_article_reference:
         allowed = user_owns_pending_article_image(request.user, filename)
 
     if not allowed:

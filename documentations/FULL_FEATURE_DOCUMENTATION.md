@@ -874,7 +874,7 @@ Uploaded and imported filenames are normalised. Path traversal patterns such as 
 
 ### 12.7 Protected Image Serving
 
-The project does not expose the whole OpenKB uploads folder as a raw static directory. Images are served through a Django view that checks filenames and article visibility rules. Request-time ownership uses the structured `image_assets`, `pending_update_image_assets`, review-snapshot image assets, and workspace ownership fields; it no longer performs legacy `body__icontains` searches for each image request. Full body/Markdown scanning remains limited to maintenance/stray-file reconciliation so externally edited or legacy files can still be protected during cleanup.
+The project does not expose the whole OpenKB uploads folder as a raw static directory. Images are served through a Django view that checks filenames and article visibility rules. Request-time ownership uses the structured `image_assets`, `pending_update_image_assets`, review-snapshot image assets, and workspace ownership fields; it no longer performs legacy `body__icontains` searches for each image request. Published reader access is granted only when the filename is present in the live article's `image_assets`. A filename that exists only in `pending_update_image_assets` or the active review snapshot remains unpublished and is limited to the owner or an authorised reviewer/manager. If an image is present in both the live and staged copies, its existing live reference continues to follow the published article's normal visibility rules. Full body/Markdown scanning remains limited to maintenance/stray-file reconciliation so externally edited or legacy files can still be protected during cleanup.
 
 ### 12.8 Upload Audit Log
 
