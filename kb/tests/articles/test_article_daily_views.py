@@ -57,13 +57,8 @@ class ArticleSessionViewTests(TestCase):
 
         self.article.refresh_from_db()
         self.assertEqual(self.article.view_count, 1)
-        self.assertEqual(
-            ActivityLog.objects.filter(
-                event_type=ActivityLog.EventType.ARTICLE_VIEWED,
-                article_id=self.article.pk,
-                user_id=self.viewer.pk,
-            ).count(),
-            1,
+        self.assertFalse(
+            ActivityLog.objects.filter(article_id=self.article.pk).exists()
         )
 
     def test_new_browser_or_login_session_can_add_another_view(self):
@@ -120,10 +115,7 @@ class ArticleSessionViewTests(TestCase):
         self.article.refresh_from_db()
         self.assertEqual(self.article.view_count, 0)
         self.assertFalse(
-            ActivityLog.objects.filter(
-                event_type=ActivityLog.EventType.ARTICLE_VIEWED,
-                article_id=self.article.pk,
-            ).exists()
+            ActivityLog.objects.filter(article_id=self.article.pk).exists()
         )
 
     def test_missing_session_is_a_safe_no_op(self):

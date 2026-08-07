@@ -274,9 +274,6 @@ def _apply_admin_translation_labels():
             "admin_ip_allowlist_enabled": "Enable Admin IP allowlist",
             "admin_allowed_cidrs": "Admin allowed IP ranges",
             "auth_lockout_strike_ttl_seconds": "Authentication lockout escalation memory (seconds)",
-            "login_request_limit_per_minute": "Login POST requests per IP per minute",
-            "mfa_request_limit_per_minute": "MFA POST requests per IP per minute",
-            "admin_request_limit_per_minute": "Django Admin POST requests per administrator per minute",
             "admin_mfa_idle_timeout_seconds": "Admin MFA idle timeout (seconds)",
             "openkb_ai_prompt_limit_per_24_hours": "OpenKB AI prompts per 24 hours",
             "updated_at": "Updated at",
@@ -2885,18 +2882,6 @@ class SiteSettingAdmin(AdminAuditMixin, admin.ModelAdmin):
                 "Use the inline rows below to control progressive password/MFA lockouts. "
                 "Enter durations in seconds; the admin page also shows a readable minutes/hours/days conversion. "
                 "repeat_count=0 means the stage repeats forever, which should normally be used on the final row."
-            ),
-        }),
-        (_("Web request rate limits"), {
-            "fields": (
-                "login_request_limit_per_minute",
-                "mfa_request_limit_per_minute",
-                "admin_request_limit_per_minute",
-            ),
-            "description": _(
-                "These application-side limits use the shared Redis cache and take effect without reloading Nginx. "
-                "Login and MFA limits are per client IP. Ordinary Django Admin changes are limited per signed-in administrator. "
-                "Set a value to 0 to disable that application-side request limit. Progressive account/MFA lockouts remain active separately."
             ),
         }),
         (_("OpenKB AI rate limits"), {

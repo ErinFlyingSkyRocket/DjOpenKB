@@ -69,6 +69,8 @@ The reverse proxy now applies these controls before traffic reaches Django or Ac
 
 The rate limits use the TCP peer address seen by Nginx. With direct firewall NAT, this is normally the browser IP. If a CDN or Layer-7 reverse proxy is introduced later, configure `real_ip_header` and `set_real_ip_from` for the known proxy range before relying on IP-based rate limits or audit records. Never trust browser-supplied `X-Forwarded-For` directly.
 
+The application does not duplicate these endpoint limits with a second general Django request-rate middleware. Progressive account and MFA failure lockouts remain application-side because they protect identities rather than merely limiting source-IP traffic.
+
 ### 3.1 Emergency recovery from an incorrect Admin IP allowlist
 
 The dynamic Django Admin allowlist intentionally uses an implicit-deny policy when enabled. This means an administrator can lock out their own management device by saving the wrong address or CIDR range.
@@ -244,6 +246,10 @@ The visibility field is treated as an authorisation-sensitive workflow value, no
 
 Regression coverage is maintained in `kb/tests/permissions/test_article_visibility_edit_permissions.py`, including creation selection, single-scope request tampering, dual-writer edit tampering, both manager directions, and the Admin override.
 
+### 9.0 Runtime Processing Controls
+
+Homepage article cards are ordered and paginated by PostgreSQL using only card fields, rather than loading complete article bodies and generating Markdown. Related-article suggestions use a bounded title/keyword candidate query and never inspect every article body. The singleton Site Settings row is cached briefly and invalidated on save. Session-based aggregate view counts remain, but ordinary article views are excluded from the append-only activity log to avoid unbounded low-value log growth. The retired deletion-request approval path has no active runtime or UI handling, while its existing database records and historical event labels remain available for retention purposes.
+
 ### 9.1 Persistent New-Article Checkpoint and Upload Ownership
 
 The New Article page uses a private database-backed `ArticleCreationWorkspace` rather than relying on browser memory or a session-only image list. The workspace is owned by exactly one authenticated user and persistently stores checkpoint fields plus the generated filenames uploaded in that editor context until the user explicitly completes or resets the workflow. Autosave and discard requests require the exact owned workspace UUID and recheck article-creation scope on the server.
@@ -259,9 +265,9 @@ This closes the normal stray-image gap when an author pastes or uploads an image
 - A Markdown body cannot claim another user's uncommitted filename; body text is not treated as proof of file ownership.
 - Upload/delete requests require an authorised workspace or existing-article context, so changing JavaScript or forging a context identifier does not grant access to another user's temporary files.
 
-Direct address-bar navigation, refresh, tab close, and browser close cannot show the custom application modal. The editor therefore autosaves after a short delay and attempts a final same-origin flush on `visibilitychange` and `pagehide`; the browser-native unsaved-changes warning is used only while a newer snapshot is still pending. A valid checkpoint never expires because of age. The scheduled cleanup service remains necessary only for genuinely orphaned files left after a browser or host crash, power loss, network interruption, failed filesystem deletion, interrupted finalisation, legacy data, or manually introduced files.
+Direct address-bar navigation, refresh, tab close, and browser close cannot show the custom application modal. The editor therefore autosaves after a two-second delay and attempts a final same-origin flush on `visibilitychange` and `pagehide`; the browser-native unsaved-changes warning is used only while a newer snapshot is still pending. A valid checkpoint never expires because of age. The scheduled cleanup service remains necessary only for genuinely orphaned files left after a browser or host crash, power loss, network interruption, failed filesystem deletion, interrupted finalisation, legacy data, or manually introduced files.
 
-Multiple tabs share the same user checkpoint, so every content save includes a server revision, per-tab editor token, and increasing save sequence. A different stale tab cannot overwrite or discard a newer checkpoint and receives HTTP 409. Requests from the same editor are ordered by sequence so a late unload request cannot replace a newer save. This is an integrity safeguard in addition to normal owner and CSRF checks.
+Multiple tabs or browsers belonging to the same account share that account's single New Article checkpoint and deliberately use last-save-wins behaviour. The last valid owner-scoped save or discard request received by the server becomes authoritative. This keeps the recovery workflow simple while retaining normal authentication, ownership, CSRF, permission, image-reference, and finalisation checks. Different users continue to receive completely separate workspaces.
 
 Permanent user deletion has a separate privacy cleanup path. A `pre_delete` user signal locks and snapshots the user's active creation and edit/review checkpoints, removes checkpoint-specific image-upload and image-activity rows through the protected transaction-local account-deletion mechanism, and schedules physical file/session cleanup only after the database transaction commits. Existing articles use `SET_NULL` ownership and retain author snapshots. Disabled and inactive accounts do not trigger this path, so their checkpoints remain recoverable. Physical deletion rechecks article and other-workspace references before unlinking a file, preventing account removal from deleting an image still needed by preserved content. The account-deletion action itself remains in the append-only administrator audit trail according to its configured retention period, but the private creation/edit checkpoint content and checkpoint-only image metadata are purged.
 

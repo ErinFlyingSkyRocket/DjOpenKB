@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -757,14 +757,6 @@ class SuggestedArticle(models.Model):
             self.UpdateStatus.FAILED,
         }
 
-    @property
-    def has_pending_deletion_request(self):
-        return self.deletion_requests.filter(status=ArticleDeletionRequest.Status.PENDING).exists()
-
-    @property
-    def pending_deletion_request(self):
-        return self.deletion_requests.filter(status=ArticleDeletionRequest.Status.PENDING).order_by("-requested_at").first()
-
     def clear_pending_update(self):
         self.pending_update_title = ""
         self.pending_update_body = ""
@@ -864,11 +856,11 @@ class SuggestedArticle(models.Model):
 
 
 class ArticleDeletionRequest(models.Model):
-    """Approval workflow for deleting already-published articles.
+    """Historical records from the retired deletion-request approval workflow.
 
-    Published articles must stay visible until a scoped approver/manager/admin
-    approves the deletion request. Draft, pending, and failed articles can still
-    be deleted directly by their allowed owner/manager/admin flow.
+    The active application no longer creates, reviews, or queries these records.
+    The model and table are retained so earlier audit/history data is not destroyed
+    by this simplification migration.
     """
 
     class Status(models.TextChoices):
@@ -1000,15 +992,6 @@ class ArticleCreationWorkspace(models.Model):
     )
     image_assets = models.JSONField(default=list, blank=True)
     is_dirty = models.BooleanField(default=False, db_index=True)
-    revision = models.PositiveBigIntegerField(
-        default=0,
-        help_text=_(
-            "Optimistic-concurrency revision used to prevent an older browser tab "
-            "from overwriting a newer checkpoint."
-        ),
-    )
-    last_editor_token = models.CharField(max_length=64, blank=True, editable=False)
-    last_editor_sequence = models.PositiveBigIntegerField(default=0, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
@@ -1485,6 +1468,10 @@ class AdminActivityLog(AppendOnlyAuditLogMixin, models.Model):
         return f"{self.get_event_type_display()} - {actor} - {target} - {self.created_at:%Y-%m-%d %H:%M:%S}"
 
 
+SITE_SETTING_CACHE_KEY = "site_setting:singleton:v1"
+SITE_SETTING_CACHE_SECONDS = 60
+
+
 class SiteSetting(models.Model):
     """Singleton-style site settings editable from Django Admin."""
 
@@ -1655,35 +1642,6 @@ class SiteSetting(models.Model):
         ),
     )
 
-    login_request_limit_per_minute = models.PositiveIntegerField(
-        default=8,
-        validators=[MinValueValidator(0), MaxValueValidator(120)],
-        verbose_name=_("Login POST requests per IP per minute"),
-        help_text=_(
-            "Application-side Redis request limit for username/password submissions from one IP address. "
-            "Default is 8 per minute. Set to 0 to disable this application-side limit. Allowed range: 0 to 120."
-        ),
-    )
-    mfa_request_limit_per_minute = models.PositiveIntegerField(
-        default=10,
-        validators=[MinValueValidator(0), MaxValueValidator(120)],
-        verbose_name=_("MFA POST requests per IP per minute"),
-        help_text=_(
-            "Application-side Redis request limit shared by main-login MFA and Admin MFA submissions from one IP address. "
-            "Default is 10 per minute. Set to 0 to disable this application-side limit. Allowed range: 0 to 120."
-        ),
-    )
-    admin_request_limit_per_minute = models.PositiveIntegerField(
-        default=120,
-        validators=[MinValueValidator(0), MaxValueValidator(600)],
-        verbose_name=_("Django Admin POST requests per administrator per minute"),
-        help_text=_(
-            "Application-side Redis request limit for ordinary Django Admin changes after Admin MFA succeeds. "
-            "The counter is per signed-in administrator, not shared by everyone behind the same office IP. "
-            "Default is 120 per minute. Set to 0 to disable this application-side limit. Allowed range: 0 to 600."
-        ),
-    )
-
     admin_mfa_idle_timeout_seconds = models.PositiveIntegerField(
         default=600,
         verbose_name=_("Admin MFA idle timeout (seconds)"),
@@ -1716,14 +1674,40 @@ class SiteSetting(models.Model):
         # Keep this model singleton-like: always use primary key 1.
         self.pk = 1
         super().save(*args, **kwargs)
-        # Prompt submissions read this value through a one-minute cache. Clear
-        # it immediately after an Admin save so a new limit takes effect at once.
-        cache.delete("openkb_ai:quota24h:configured-limit")
-        cache.delete("request_rate_limit:configured-limits")
+        # Settings are cached briefly because many requests read several limits.
+        # Clear both the singleton cache and the dedicated AI quota cache after
+        # every Admin save so changes take effect immediately.
+        try:
+            cache.delete_many([
+                SITE_SETTING_CACHE_KEY,
+                "openkb_ai:quota24h:configured-limit",
+            ])
+        except Exception:
+            # A settings save must not fail after the database write merely
+            # because the shared cache is temporarily unavailable.
+            pass
 
     @classmethod
     def load(cls):
+        # Django TestCase and data migrations run inside database transactions.
+        # Avoid sharing a cached model instance across rolled-back transactional
+        # state; normal request paths still use the one-minute shared cache.
+        if connection.in_atomic_block:
+            obj, _created = cls.objects.get_or_create(pk=1)
+            return obj
+
+        try:
+            cached = cache.get(SITE_SETTING_CACHE_KEY)
+        except Exception:
+            cached = None
+        if isinstance(cached, cls) and cached.pk == 1:
+            return cached
+
         obj, _created = cls.objects.get_or_create(pk=1)
+        try:
+            cache.set(SITE_SETTING_CACHE_KEY, obj, SITE_SETTING_CACHE_SECONDS)
+        except Exception:
+            pass
         return obj
 
 

@@ -206,84 +206,97 @@ def rank_articles_for_query(articles, query):
 
 
 
-def _article_identity_matches(left, right):
-    """Return True when two article dictionaries refer to the same Django article."""
-    left_id = left.get("suggested_id")
-    right_id = right.get("suggested_id")
-    if left_id and right_id and str(left_id) == str(right_id):
-        return True
-
-    left_url = left.get("url")
-    right_url = right.get("url")
-    if left_url and right_url and left_url == right_url:
-        return True
-
-    left_path = left.get("path")
-    right_path = right.get("path")
-    if left_path and right_path and left_path == right_path:
-        return True
-
-    return False
-
 
 def score_article_relationship(current_article, candidate_article):
-    """Score how related a candidate is to the current article.
-
-    The article page sidebar should show genuinely related articles, not random
-    recommendations. Keyword overlap is weighted highest, followed by title/body
-    topic overlap. View count is used only as a very small tie-breaker.
-    """
-    current_keywords = set(tokenize_search_query(" ".join(current_article.get("keywords") or [])))
-    candidate_keywords = set(tokenize_search_query(" ".join(candidate_article.get("keywords") or [])))
-
+    """Score relatedness using only article titles and explicit keywords."""
+    current_keyword_phrases = {
+        _normalize_article_search_text(value)
+        for value in (current_article.get("keywords") or [])
+        if _normalize_article_search_text(value)
+    }
+    candidate_keyword_phrases = {
+        _normalize_article_search_text(value)
+        for value in (candidate_article.get("keywords") or [])
+        if _normalize_article_search_text(value)
+    }
+    current_keyword_tokens = set(tokenize_search_query(" ".join(current_keyword_phrases)))
+    candidate_keyword_tokens = set(tokenize_search_query(" ".join(candidate_keyword_phrases)))
     current_title_tokens = set(tokenize_search_query(current_article.get("title") or ""))
     candidate_title_tokens = set(tokenize_search_query(candidate_article.get("title") or ""))
 
-    current_body_tokens = set(tokenize_search_query(strip_markdown_for_search(current_article.get("raw_markdown") or "")))
-    candidate_body_tokens = set(tokenize_search_query(strip_markdown_for_search(candidate_article.get("raw_markdown") or "")))
-
-    keyword_overlap = current_keywords & candidate_keywords
-    title_overlap = current_title_tokens & candidate_title_tokens
-    topic_overlap = (current_keywords | current_title_tokens | current_body_tokens) & (
-        candidate_keywords | candidate_title_tokens | candidate_body_tokens
-    )
-
     score = 0
-    score += len(keyword_overlap) * 100
-    score += len(current_keywords & candidate_title_tokens) * 45
-    score += len(current_title_tokens & candidate_keywords) * 35
-    score += len(title_overlap) * 25
-    score += min(len(topic_overlap), 12) * 8
-
-    # Small tie-breaker only. This should never make an unrelated article appear.
-    score += min(int(candidate_article.get("views") or 0), 20)
-
+    score += len(current_keyword_phrases & candidate_keyword_phrases) * 120
+    score += len(current_keyword_tokens & candidate_keyword_tokens) * 60
+    score += len(current_keyword_tokens & candidate_title_tokens) * 35
+    score += len(current_title_tokens & candidate_keyword_tokens) * 30
+    score += len(current_title_tokens & candidate_title_tokens) * 20
     return score
 
 
 def get_contextual_related_articles(current_article, limit=5, user=None):
-    """Return genuinely related article-page links.
+    """Return related articles using a bounded title/keyword database query.
 
-    Related articles are selected mainly by shared keywords. If there are no
-    shared keywords, the function can still use meaningful title/body topic
-    overlap, but it no longer falls back to random trending articles.
+    Article bodies are never loaded or tokenised. PostgreSQL first narrows the
+    candidates to title/keyword matches, then a small in-memory score chooses the
+    best links. There is no random or popularity-only fallback.
     """
-    if not current_article:
+    if not current_article or limit <= 0:
         return []
 
-    candidates = []
-    for article in get_openkb_wiki_articles(sort_by_views=True, visibility="all", user=user):
-        if _article_identity_matches(current_article, article):
-            continue
-        candidates.append(article)
+    current_keywords = [
+        str(value).strip()
+        for value in (current_article.get("keywords") or [])
+        if str(value).strip()
+    ]
+    current_title_tokens = tokenize_search_query(current_article.get("title") or "")
+    search_terms = list(dict.fromkeys(current_keywords + current_title_tokens))[:30]
+    if not search_terms:
+        return []
+
+    related_filter = None
+    for term in search_terms:
+        term_filter = Q(title__icontains=term) | Q(keywords__icontains=term)
+        related_filter = term_filter if related_filter is None else related_filter | term_filter
+
+    queryset = SuggestedArticle.objects.filter(
+        status=SuggestedArticle.Status.PUBLISHED,
+    ).filter(related_filter)
+
+    if not user_can_view_internal_articles(user):
+        queryset = queryset.filter(visibility=SuggestedArticle.Visibility.PUBLIC)
+
+    current_id = current_article.get("suggested_id")
+    if current_id:
+        queryset = queryset.exclude(pk=current_id)
+
+    candidate_limit = min(max(int(limit) * 10, 30), 100)
+    queryset = queryset.only(
+        "id",
+        "title",
+        "keywords",
+        "visibility",
+        "view_count",
+        "updated_at",
+    ).order_by("-view_count", "-updated_at", "-pk")[:candidate_limit]
 
     scored = []
-    for article in candidates:
-        score = score_article_relationship(current_article, article)
-        if score >= 40:
-            item = dict(article)
-            item["related_score"] = score
-            scored.append(item)
+    for article in queryset:
+        candidate = {
+            "title": article.title,
+            "date": timezone.localtime(article.updated_at).strftime("%Y-%m-%d %H:%M"),
+            "views": article.view_count or 0,
+            "url": article.public_url,
+            "path": "",
+            "keywords": article.keyword_list,
+            "suggested_id": article.pk,
+            "visibility": article.visibility,
+            "visibility_label": article.visibility_label,
+        }
+        score = score_article_relationship(current_article, candidate)
+        if score <= 0:
+            continue
+        candidate["related_score"] = score
+        scored.append(candidate)
 
     scored.sort(
         key=lambda item: (
@@ -293,6 +306,4 @@ def get_contextual_related_articles(current_article, limit=5, user=None):
         ),
         reverse=True,
     )
-
     return scored[:limit]
-

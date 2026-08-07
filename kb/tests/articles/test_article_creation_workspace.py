@@ -62,12 +62,8 @@ class ArticleCreationWorkspaceTests(TestCase):
         return ArticleCreationWorkspace.objects.get(owner=self.user), response
 
     def _workspace_version_fields(self, workspace, *, token="test-editor", sequence=1):
-        workspace.refresh_from_db()
-        return {
-            "workspace_revision": str(workspace.revision),
-            "workspace_editor_token": token,
-            "workspace_save_sequence": str(sequence),
-        }
+        # New Article checkpoints now use simple owner-scoped last-save-wins.
+        return {}
 
     def _create_workspace_image(self, workspace, filename="workspace-image.png", data=PNG_1X1):
         upload_dir = get_openkb_uploads_dir()
@@ -120,128 +116,83 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertIn("second line", workspace.body)
         self.assertFalse(SuggestedArticle.objects.filter(owner=self.user).exists())
 
-    def test_stale_browser_tab_cannot_overwrite_a_newer_checkpoint(self):
+    def test_latest_completed_autosave_wins_across_browser_tabs(self):
         workspace, _response = self._open_workspace()
 
         first = self.client.post(
             reverse("autosave_article_creation_workspace"),
             {
                 "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "tab-a",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Newer checkpoint",
-                "frm_kb_body": "Newer body",
-                "frm_kb_keywords": "newer",
+                "frm_kb_title": "First checkpoint",
+                "frm_kb_body": "First body",
+                "frm_kb_keywords": "first",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
             },
         )
-        stale = self.client.post(
+        second = self.client.post(
             reverse("autosave_article_creation_workspace"),
             {
                 "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "tab-b",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Stale overwrite",
-                "frm_kb_body": "Stale body",
-                "frm_kb_keywords": "stale",
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-            },
-        )
-
-        self.assertEqual(first.status_code, 200)
-        self.assertEqual(stale.status_code, 409)
-        self.assertTrue(stale.json()["conflict"])
-        workspace.refresh_from_db()
-        self.assertEqual(workspace.title, "Newer checkpoint")
-        self.assertEqual(workspace.revision, 1)
-
-    def test_newer_save_from_same_editor_wins_when_requests_arrive_out_of_order(self):
-        workspace, _response = self._open_workspace()
-
-        first = self.client.post(
-            reverse("autosave_article_creation_workspace"),
-            {
-                "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "same-tab",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Earlier snapshot",
-                "frm_kb_body": "Earlier body",
-                "frm_kb_keywords": "earlier",
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-            },
-        )
-        newer = self.client.post(
-            reverse("autosave_article_creation_workspace"),
-            {
-                "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "same-tab",
-                "workspace_save_sequence": "2",
-                "frm_kb_title": "Latest snapshot",
+                "frm_kb_title": "Latest checkpoint",
                 "frm_kb_body": "Latest body",
                 "frm_kb_keywords": "latest",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
             },
         )
-        older_late = self.client.post(
-            reverse("autosave_article_creation_workspace"),
-            {
-                "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "same-tab",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Older request arriving late",
-                "frm_kb_body": "Older late body",
-                "frm_kb_keywords": "older",
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-            },
-        )
 
         self.assertEqual(first.status_code, 200)
-        self.assertEqual(newer.status_code, 200)
-        self.assertEqual(older_late.status_code, 409)
+        self.assertEqual(second.status_code, 200)
         workspace.refresh_from_db()
-        self.assertEqual(workspace.title, "Latest snapshot")
-        self.assertEqual(workspace.revision, 2)
-        self.assertEqual(workspace.last_editor_sequence, 2)
+        self.assertEqual(workspace.title, "Latest checkpoint")
+        self.assertEqual(workspace.body, "Latest body")
 
-    def test_stale_tab_cannot_discard_a_newer_checkpoint(self):
+    def test_last_request_to_finish_can_replace_an_earlier_autosave(self):
+        workspace, _response = self._open_workspace()
+
+        for title in ("Earlier snapshot", "Latest snapshot", "Older request arriving late"):
+            response = self.client.post(
+                reverse("autosave_article_creation_workspace"),
+                {
+                    "workspace_id": str(workspace.pk),
+                    "frm_kb_title": title,
+                    "frm_kb_body": f"Body for {title}",
+                    "frm_kb_keywords": "checkpoint",
+                    "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                },
+            )
+            self.assertEqual(response.status_code, 200)
+
+        workspace.refresh_from_db()
+        self.assertEqual(workspace.title, "Older request arriving late")
+
+    def test_discard_removes_the_users_current_checkpoint(self):
         workspace, _response = self._open_workspace()
         saved = self.client.post(
             reverse("autosave_article_creation_workspace"),
             {
                 "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "tab-a",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Protected checkpoint",
-                "frm_kb_body": "Protected body",
+                "frm_kb_title": "Checkpoint to discard",
+                "frm_kb_body": "Checkpoint body",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
             },
         )
         self.assertEqual(saved.status_code, 200)
 
-        stale_discard = self.client.post(
+        discard = self.client.post(
             reverse("discard_article_creation_workspace"),
-            {"workspace_id": str(workspace.pk), "workspace_revision": "0"},
+            {"workspace_id": str(workspace.pk)},
         )
 
-        self.assertEqual(stale_discard.status_code, 409)
-        self.assertTrue(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
+        self.assertEqual(discard.status_code, 200)
+        self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
 
-    def test_confirmed_reset_discards_latest_checkpoint_without_manual_reload(self):
+    def test_confirmed_reset_discards_current_checkpoint_without_manual_reload(self):
         workspace, _response = self._open_workspace()
         file_path = self._create_workspace_image(workspace, "reset-latest.png")
         saved = self.client.post(
             reverse("autosave_article_creation_workspace"),
             {
                 "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "newer-tab",
-                "workspace_save_sequence": "1",
                 "frm_kb_title": "Newer checkpoint that will be reset",
                 "frm_kb_body": "Latest checkpoint body",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
@@ -252,14 +203,7 @@ class ArticleCreationWorkspaceTests(TestCase):
         with self.captureOnCommitCallbacks(execute=True):
             reset = self.client.post(
                 reverse("discard_article_creation_workspace"),
-                {
-                    "workspace_id": str(workspace.pk),
-                    # Deliberately stale values from the reset-confirming tab.
-                    "workspace_revision": "0",
-                    "workspace_editor_token": "stale-tab",
-                    "workspace_save_sequence": "1",
-                    "reset_latest": "1",
-                },
+                {"workspace_id": str(workspace.pk)},
             )
 
         self.assertEqual(reset.status_code, 200)
@@ -267,41 +211,35 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
         self.assertFalse(file_path.exists())
 
-    def test_stale_tab_cannot_create_article_over_a_newer_checkpoint(self):
+    def test_submit_uses_the_submitting_form_and_consumes_the_checkpoint(self):
         workspace, _response = self._open_workspace()
         saved = self.client.post(
             reverse("autosave_article_creation_workspace"),
             {
                 "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "tab-a",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Newest checkpoint title",
-                "frm_kb_body": "Newest checkpoint body",
+                "frm_kb_title": "Earlier checkpoint title",
+                "frm_kb_body": "Earlier checkpoint body",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
             },
         )
         self.assertEqual(saved.status_code, 200)
 
-        stale_submit = self.client.post(
-            reverse("suggest"),
-            {
-                "workspace_id": str(workspace.pk),
-                "workspace_revision": "0",
-                "workspace_editor_token": "tab-b",
-                "workspace_save_sequence": "1",
-                "frm_kb_title": "Stale article submission",
-                "frm_kb_body": "This stale tab must not create an article.",
-                "frm_kb_keywords": "stale",
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-                "submit_action": "draft",
-            },
-        )
+        with patch("kb.views.suggestions.write_article_files"):
+            submitted = self.client.post(
+                reverse("suggest"),
+                {
+                    "workspace_id": str(workspace.pk),
+                    "frm_kb_title": "Submitted article version",
+                    "frm_kb_body": "This valid article body comes from the submitting page.",
+                    "frm_kb_keywords": "submission",
+                    "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                    "submit_action": "draft",
+                },
+            )
 
-        self.assertEqual(stale_submit.status_code, 200)
-        self.assertContains(stale_submit, "updated in another tab")
-        self.assertContains(stale_submit, "Newest checkpoint title")
-        self.assertFalse(SuggestedArticle.objects.filter(title="Stale article submission").exists())
+        self.assertEqual(submitted.status_code, 302)
+        self.assertTrue(SuggestedArticle.objects.filter(title="Submitted article version").exists())
+        self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
 
     def test_other_user_cannot_autosave_or_discard_workspace(self):
         workspace, _response = self._open_workspace()
@@ -481,36 +419,30 @@ class ArticleCreationWorkspaceTests(TestCase):
 
 
 
-    def test_newer_checkpoint_saved_during_article_finalisation_is_preserved(self):
+    def test_successful_article_submission_consumes_the_single_new_article_workspace(self):
         workspace, _response = self._open_workspace()
 
-        def simulate_newer_checkpoint(*_args, **_kwargs):
+        def simulate_late_autosave(*_args, **_kwargs):
             ArticleCreationWorkspace.objects.filter(pk=workspace.pk).update(
-                title="Next checkpoint after submission",
-                body="This content belongs to the next New Article checkpoint.",
+                title="Late autosave before final cleanup",
+                body="This still belongs to the single workspace being submitted.",
                 is_dirty=True,
-                revision=2,
-                last_editor_token="other-tab",
-                last_editor_sequence=1,
             )
 
         with (
             patch("kb.views.suggestions.write_article_files"),
             patch(
                 "kb.views.suggestions.sync_article_image_assets",
-                side_effect=simulate_newer_checkpoint,
+                side_effect=simulate_late_autosave,
             ),
         ):
             response = self.client.post(
                 reverse("suggest"),
                 {
                     "workspace_id": str(workspace.pk),
-                    "workspace_revision": "0",
-                    "workspace_editor_token": "submit-tab",
-                    "workspace_save_sequence": "1",
-                    "frm_kb_title": "Submitted while another tab continues",
-                    "frm_kb_body": "This valid article is saved from one browser tab.",
-                    "frm_kb_keywords": "concurrency",
+                    "frm_kb_title": "Submitted single workspace article",
+                    "frm_kb_body": "This valid article is saved from the New Article workspace.",
+                    "frm_kb_keywords": "checkpoint",
                     "article_visibility": SuggestedArticle.Visibility.PUBLIC,
                     "submit_action": "draft",
                 },
@@ -519,12 +451,10 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
             SuggestedArticle.objects.filter(
-                title="Submitted while another tab continues"
+                title="Submitted single workspace article"
             ).exists()
         )
-        workspace.refresh_from_db()
-        self.assertEqual(workspace.title, "Next checkpoint after submission")
-        self.assertEqual(workspace.revision, 2)
+        self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
 
     def test_workspace_body_cannot_claim_another_users_uncommitted_image(self):
         workspace, _response = self._open_workspace()
@@ -637,10 +567,11 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertIn('keyboard: false', javascript)
         self.assertIn('saveWorkspace()', javascript)
         self.assertIn('discardWorkspace()', javascript)
-        self.assertIn('workspace_revision', javascript)
-        self.assertIn('workspace_editor_token', javascript)
-        self.assertIn('workspace_save_sequence', javascript)
-        self.assertIn('response.status === 409', javascript)
+        self.assertIn('window.setTimeout(saveWorkspace, 2000)', javascript)
+        self.assertNotIn('workspace_revision', javascript)
+        self.assertNotIn('workspace_editor_token', javascript)
+        self.assertNotIn('workspace_save_sequence', javascript)
+        self.assertNotIn('response.status === 409', javascript)
         self.assertNotIn('workspace_leave_action', javascript)
         self.assertNotIn('saveWorkspaceAsDraft', javascript)
 

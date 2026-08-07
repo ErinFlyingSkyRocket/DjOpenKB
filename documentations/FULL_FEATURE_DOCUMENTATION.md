@@ -469,7 +469,7 @@ Draft -> Pending -> Pending failed / Published
 
 Opening **New Article** creates or restores one private server-side checkpoint workspace for the signed-in author. This workspace is not a normal `SuggestedArticle` row and does not appear in **My Articles**. It persistently stores the title, body, keywords, permitted visibility, dirty state, and the generated filenames of images uploaded while creating the article until the author saves, submits, publishes, resets, or explicitly discards it. The checkpoint does not expire merely because it has not been edited recently.
 
-The browser automatically saves changed fields into this workspace after a short pause, treating it as a private checkpoint rather than a real Draft. Once any field or image changes, in-application navigation such as the Back button, navbar links, language/logout forms, or another page link is stopped before redirecting and opens a blocking two-way prompt. The clicked destination or form action is held until the author makes one explicit decision; the dialog has no close button, does not close when its backdrop is clicked, and ignores Escape:
+The browser automatically saves changed fields into this workspace after a two-second pause, treating it as a private checkpoint rather than a real Draft. Once any field or image changes, in-application navigation such as the Back button, navbar links, language/logout forms, or another page link is stopped before redirecting and opens a blocking two-way prompt. The clicked destination or form action is held until the author makes one explicit decision; the dialog has no close button, does not close when its backdrop is clicked, and ignores Escape:
 
 | Choice | Result |
 |---|---|
@@ -480,9 +480,9 @@ The normal page buttons remain unchanged. **Save draft** converts the checkpoint
 
 The New Article page also provides **Reset article**. After confirmation, Reset discards the current checkpoint and all of its uncommitted images, then reloads New Article with a fresh blank workspace. This is the explicit way to start over; ordinary refresh restores the existing checkpoint instead of silently deleting it.
 
-Typing another URL, refreshing, closing the tab, or closing the browser cannot display the custom two-button application dialog because browsers restrict custom unload interfaces. Normal field changes are already saved after a short delay, and the page also attempts a final same-origin checkpoint flush through `visibilitychange`, `pagehide`, `sendBeacon`, or keepalive fetch. If the newest change has not yet reached the server, the browser-native unsaved-changes warning remains the final guard. A crash, power loss, or immediate forced termination can still interrupt the last in-flight save. The scheduled cleanup command therefore remains as a recovery safety net for genuinely orphaned files left by interrupted operations, but it never deletes a valid user-owned checkpoint merely because it is old.
+Typing another URL, refreshing, closing the tab, or closing the browser cannot display the custom two-button application dialog because browsers restrict custom unload interfaces. Normal field changes are already saved after a two-second delay, and the page also attempts a final same-origin checkpoint flush through `visibilitychange`, `pagehide`, `sendBeacon`, or keepalive fetch. If the newest change has not yet reached the server, the browser-native unsaved-changes warning remains the final guard. A crash, power loss, or immediate forced termination can still interrupt the last in-flight save. The scheduled cleanup command therefore remains as a recovery safety net for genuinely orphaned files left by interrupted operations, but it never deletes a valid user-owned checkpoint merely because it is old.
 
-Only one persistent creation workspace is maintained per user. Opening New Article in multiple tabs therefore shows the same checkpoint instead of creating duplicate hidden records. Each save carries a workspace revision, editor token, and monotonic save sequence. A stale tab receives an HTTP 409 conflict and cannot overwrite or discard a newer checkpoint; the user must reload to continue from the latest saved state. Newer requests from the same editor are accepted even when an earlier autosave or unload request arrives out of order.
+Only one persistent creation workspace is maintained per user. Opening New Article in multiple tabs therefore shows the same checkpoint instead of creating duplicate hidden records. The workspace deliberately uses simple last-save-wins behaviour for tabs and browsers belonging to that same account: whichever valid owner-scoped checkpoint request reaches the server last becomes the restored content. Different users never share a creation workspace, and final Save draft/Submit/Publish processing still locks the owner workspace while converting it into an article and reconciling its images.
 
 Checkpoint persistence lasts for the lifetime of the retained account, not forever after account removal. Disabling or inactivating the account preserves the workspace and its files. Permanently deleting the account purges the active checkpoint and its private uncommitted files while leaving existing saved articles as orphaned records.
 
@@ -492,7 +492,7 @@ Workspace image ownership is server-side. An image uploaded in the new-article e
 
 Opening an authorised **Edit Article** or **Review Article** page creates or restores a private `ArticleEditWorkspace` for the exact user, article, and editor mode. Edit and review checkpoints are separate so a combined-role account does not accidentally mix an owner-style edit with a reviewer decision. The checkpoint stores the current title, body, keywords, permitted visibility, selected review status/comments, image references, and any new images uploaded in that editor. It does not modify `SuggestedArticle` until the user presses a normal workflow button.
 
-Changed fields autosave after a short pause. In-application navigation is stopped before redirecting and uses the same blocking two-choice workflow as New Article:
+Changed fields autosave after a two-second pause. In-application navigation is stopped before redirecting and uses the same blocking two-choice workflow as New Article:
 
 | Choice | Result |
 |---|---|
@@ -1607,7 +1607,7 @@ docker compose exec web python manage.py reset_user_mfa <username-or-email> --ye
 docker compose exec web python manage.py test_ldap_auth <ad-username>
 ```
 
-`repair_kb_schema --noinput` runs automatically during normal web-container startup after migrations. `seed_djopenkb_roles` is a recovery/maintenance command for recreating or normalising default role groups and should be used carefully on a test or maintenance window.
+Normal web-container startup runs Django migrations and static-file collection before Gunicorn. `repair_kb_schema --noinput` is retained only as a manual troubleshooting command for an older or damaged database and is not run on every restart. `seed_djopenkb_roles` is a recovery/maintenance command for recreating or normalising default role groups and should be used carefully in a test or maintenance window.
 
 Build and restart after dependency or Docker Compose changes:
 
@@ -1615,6 +1615,10 @@ Build and restart after dependency or Docker Compose changes:
 docker compose build web ai-worker cleanup-scheduler
 docker compose up -d
 ```
+
+### Runtime Simplifications
+
+The homepage retrieves only the fields displayed by each card and performs sorting and pagination in PostgreSQL; it does not build full Markdown bodies for homepage lists. Related articles are selected from a bounded set of title and keyword matches and do not scan article bodies. The singleton Site Settings row is cached briefly in the shared Django cache and invalidated whenever an administrator saves it. Fixed Nginx endpoint limits and the existing progressive authentication/MFA lockouts remain active; the overlapping configurable Django request-rate middleware has been removed. Aggregate article view counts remain session-based, but ordinary views no longer create one audit-log row each. The retired deletion-request workflow is no longer called by article views or admin tools; its historical table and event labels are retained only to preserve earlier records.
 
 ## 28. Operational Notes for Administrators
 

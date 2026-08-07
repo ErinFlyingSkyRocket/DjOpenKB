@@ -351,13 +351,11 @@ def _manage_pending_articles_for_allowed_visibilities(request):
 
     return render(request, "admin_pending_articles.html", {
         "articles": page_obj.object_list,
-        "deletion_requests": [],
         "page_obj": page_obj,
         "pending_search_query": search_query,
         "pending_result_count": article_queryset.count(),
         "total_pending_article_count": total_pending_article_count,
         "total_article_review_count": total_article_review_count,
-        "total_deletion_request_count": 0,
         "public_pending_count": public_pending_count,
         "internal_pending_count": internal_pending_count,
         "is_pending_search": bool(search_query),
@@ -668,7 +666,6 @@ def manage_orphan_articles(request):
 
     return render(request, "admin_orphan_articles.html", {
         "articles": page_obj.object_list,
-        "deletion_requests": [],
         "page_obj": page_obj,
         "orphan_search_query": search_query,
         "status_filter": status_filter,

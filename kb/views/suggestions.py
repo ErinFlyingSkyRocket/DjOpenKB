@@ -131,57 +131,6 @@ def _article_creation_workspace_allowed_visibilities(visibility_choices):
     }
 
 
-def _parse_workspace_version_value(value):
-    try:
-        parsed = int(str(value).strip())
-    except (TypeError, ValueError):
-        return None
-    return parsed if 0 <= parsed <= 9_223_372_036_854_775_807 else None
-
-
-def _workspace_client_version(request):
-    editor_token = (request.POST.get("workspace_editor_token") or "").strip()
-    if len(editor_token) > 64:
-        editor_token = ""
-    return (
-        _parse_workspace_version_value(request.POST.get("workspace_revision")),
-        editor_token,
-        _parse_workspace_version_value(request.POST.get("workspace_save_sequence")),
-    )
-
-
-def _workspace_client_write_allowed(workspace, expected_revision, editor_token, save_sequence):
-    if expected_revision is None:
-        return False
-    if expected_revision == workspace.revision:
-        return True
-    return bool(
-        editor_token
-        and save_sequence is not None
-        and workspace.last_editor_token == editor_token
-        and save_sequence > workspace.last_editor_sequence
-    )
-
-
-def _record_workspace_client_write(workspace, editor_token, save_sequence):
-    workspace.revision += 1
-    workspace.last_editor_token = editor_token or ""
-    workspace.last_editor_sequence = save_sequence or 0
-
-
-def _workspace_conflict_message():
-    return _(
-        "This New Article checkpoint was updated in another tab. Reload this page "
-        "to use the newest checkpoint without overwriting it."
-    )
-
-
-def _bump_workspace_server_revision(workspace):
-    workspace.revision += 1
-    workspace.last_editor_token = ""
-    workspace.last_editor_sequence = 0
-
-
 def _get_or_create_article_creation_workspace(request, *, visibility_choices, requested_visibility):
     """Return the signed-in user's single persistent New Article checkpoint."""
     allowed_visibilities = _article_creation_workspace_allowed_visibilities(visibility_choices)
@@ -204,11 +153,7 @@ def _get_or_create_article_creation_workspace(request, *, visibility_choices, re
                 raise Http404("Article workspace not found")
             if workspace.visibility not in allowed_visibilities:
                 workspace.visibility = requested_visibility
-                _bump_workspace_server_revision(workspace)
-                workspace.save(update_fields=[
-                    "visibility", "revision", "last_editor_token",
-                    "last_editor_sequence", "updated_at",
-                ])
+                workspace.save(update_fields=["visibility", "updated_at"])
         request.session[ARTICLE_CREATION_WORKSPACE_SESSION_KEY] = str(workspace.pk)
         request.session.modified = True
         return workspace, False
@@ -231,18 +176,10 @@ def _get_or_create_article_creation_workspace(request, *, visibility_choices, re
                 # Preserve the temporary content but never retain a scope the
                 # account is no longer authorised to create.
                 workspace.visibility = requested_visibility
-                _bump_workspace_server_revision(workspace)
-                workspace.save(update_fields=[
-                    "visibility", "revision", "last_editor_token",
-                    "last_editor_sequence", "updated_at",
-                ])
+                workspace.save(update_fields=["visibility", "updated_at"])
             elif not workspace.is_dirty and workspace.visibility != requested_visibility:
                 workspace.visibility = requested_visibility
-                _bump_workspace_server_revision(workspace)
-                workspace.save(update_fields=[
-                    "visibility", "revision", "last_editor_token",
-                    "last_editor_sequence", "updated_at",
-                ])
+                workspace.save(update_fields=["visibility", "updated_at"])
     except IntegrityError:
         workspace = ArticleCreationWorkspace.objects.get(owner=request.user)
         created = False
@@ -520,7 +457,6 @@ def _render_suggest_form_for_visibility(request, *, visibility, can_publish_dire
         "suggest_page_title": _("Add Article"),
         "suggest_submit_label": _("Submit article"),
         "article_creation_workspace_id": str(workspace.pk) if workspace else "",
-        "article_creation_workspace_revision": int(workspace.revision) if workspace else 0,
         "article_creation_workspace_dirty": bool(workspace and workspace.is_dirty),
         "title_value": workspace.title if workspace else "",
         "body_value": workspace.body if workspace else "",
@@ -560,7 +496,6 @@ def _suggest_unified(request):
         visibility = workspace.visibility
     else:
         workspace_id = (request.POST.get("workspace_id") or "").strip()
-        expected_workspace_revision, workspace_editor_token, workspace_save_sequence = _workspace_client_version(request)
         workspace = get_owned_article_creation_workspace(request.user, workspace_id)
         if workspace is None:
             raise Http404("Article workspace not found")
@@ -615,36 +550,12 @@ def _suggest_unified(request):
         )
         if workspace is None:
             raise Http404("Article workspace not found")
-        if not _workspace_client_write_allowed(
-            workspace,
-            expected_workspace_revision,
-            workspace_editor_token,
-            workspace_save_sequence,
-        ):
-            visibility = workspace.visibility
-            return render_suggest_form({
-                "error": _workspace_conflict_message(),
-                "title_value": workspace.title,
-                "body_value": workspace.body,
-                "keywords_value": workspace.keywords,
-                "existing_images_json": json.dumps(
-                    get_article_image_cards_from_filenames(
-                        article_creation_workspace_assets(workspace),
-                        existing=False,
-                    )
-                ),
-            })
         workspace.title = title
         workspace.body = body
         workspace.keywords = keywords_raw
         workspace.visibility = visibility
         workspace.image_assets = article_creation_workspace_assets(workspace)
         workspace.is_dirty = True
-        _record_workspace_client_write(
-            workspace,
-            workspace_editor_token,
-            workspace_save_sequence,
-        )
         workspace.save(update_fields=[
             "title",
             "body",
@@ -652,12 +563,8 @@ def _suggest_unified(request):
             "visibility",
             "image_assets",
             "is_dirty",
-            "revision",
-            "last_editor_token",
-            "last_editor_sequence",
             "updated_at",
         ])
-        submission_workspace_revision = workspace.revision
     draft_images_json = json.dumps(
         get_article_image_cards_from_filenames(
             article_creation_workspace_assets(workspace),
@@ -777,8 +684,6 @@ def _suggest_unified(request):
             )
             if locked_workspace is None:
                 raise ValidationError(_("This temporary article is no longer available. Open New Article and try again."))
-            if locked_workspace.revision != submission_workspace_revision:
-                raise ValidationError(_workspace_conflict_message())
             # Recheck ownership while the workspace row is locked so a
             # concurrent upload/discard request cannot race article creation.
             article.image_assets = validate_article_creation_workspace_image_references(
@@ -789,23 +694,6 @@ def _suggest_unified(request):
             article.save()
     except ValidationError as error:
         message = error.messages[0] if getattr(error, "messages", None) else str(error)
-        if message == str(_workspace_conflict_message()):
-            latest_workspace = get_owned_article_creation_workspace(request.user, workspace_id)
-            if latest_workspace is not None:
-                workspace = latest_workspace
-                visibility = latest_workspace.visibility
-                return render_suggest_form({
-                    "error": message,
-                    "title_value": latest_workspace.title,
-                    "body_value": latest_workspace.body,
-                    "keywords_value": latest_workspace.keywords,
-                    "existing_images_json": json.dumps(
-                        get_article_image_cards_from_filenames(
-                            article_creation_workspace_assets(latest_workspace),
-                            existing=False,
-                        )
-                    ),
-                })
         return render_suggest_form({
             "error": message,
             "title_value": title,
@@ -831,10 +719,7 @@ def _suggest_unified(request):
             workspace_id,
             for_update=True,
         )
-        if (
-            latest_workspace is not None
-            and latest_workspace.revision == submission_workspace_revision
-        ):
+        if latest_workspace is not None:
             finalize_article_creation_workspace(
                 request,
                 latest_workspace,
@@ -1716,19 +1601,6 @@ def delete_suggestion(request, article_id):
             })
 
         title = article.title
-        # Close any historical pending deletion-request records from the older
-        # approval workflow so stale requests do not remain in admin records.
-        pending_requests = list(ArticleDeletionRequest.objects.filter(
-            article=article,
-            status=ArticleDeletionRequest.Status.PENDING,
-        ))
-        for deletion_request in pending_requests:
-            deletion_request.status = ArticleDeletionRequest.Status.APPROVED
-            deletion_request.reviewed_by = request.user
-            deletion_request.reviewed_at = timezone.now()
-            deletion_request.review_comment = deletion_request.review_comment or _("Article deletion confirmed after MFA.")
-            deletion_request.save(update_fields=["status", "reviewed_by", "reviewed_at", "review_comment"])
-
         if article.status == SuggestedArticle.Status.PUBLISHED:
             if article_deletion_queue_immediate_delete_enabled():
                 delete_article_immediately(
@@ -1806,19 +1678,6 @@ def autosave_article_creation_workspace(request):
         if len(title) > ARTICLE_TITLE_MAX_LENGTH or len(keywords) > ARTICLE_KEYWORDS_MAX_LENGTH:
             return JsonResponse({"error": _("The temporary article contains an oversized field.")}, status=400)
 
-        expected_revision, editor_token, save_sequence = _workspace_client_version(request)
-        if not _workspace_client_write_allowed(
-            workspace,
-            expected_revision,
-            editor_token,
-            save_sequence,
-        ):
-            return JsonResponse({
-                "error": _workspace_conflict_message(),
-                "conflict": True,
-                "revision": workspace.revision,
-            }, status=409)
-
         changed = any([
             workspace.title != title,
             workspace.body != body,
@@ -1831,7 +1690,6 @@ def autosave_article_creation_workspace(request):
         workspace.visibility = requested_visibility
         workspace.image_assets = article_creation_workspace_assets(workspace)
         workspace.is_dirty = bool(workspace.is_dirty or changed or workspace.image_assets)
-        _record_workspace_client_write(workspace, editor_token, save_sequence)
         workspace.save(update_fields=[
             "title",
             "body",
@@ -1839,16 +1697,12 @@ def autosave_article_creation_workspace(request):
             "visibility",
             "image_assets",
             "is_dirty",
-            "revision",
-            "last_editor_token",
-            "last_editor_sequence",
             "updated_at",
         ])
 
     return JsonResponse({
         "saved": True,
         "dirty": workspace.is_dirty,
-        "revision": workspace.revision,
         "updated_at": workspace.updated_at.isoformat(),
     })
 
@@ -1866,27 +1720,6 @@ def discard_article_creation_workspace_view(request):
         )
         if workspace is None:
             return JsonResponse({"discarded": True})
-        # A normal navigation discard must still match the revision loaded by
-        # this editor tab.  Reset article is different: after the owner has
-        # explicitly confirmed the destructive reset, it intentionally removes
-        # the latest account-owned checkpoint even when another tab saved a
-        # newer revision.  This avoids making the user reload and confirm the
-        # same reset a second time while retaining stale-tab protection for all
-        # ordinary discard and article-submit requests.
-        reset_latest = (request.POST.get("reset_latest") or "").strip() == "1"
-        if not reset_latest:
-            expected_revision, editor_token, save_sequence = _workspace_client_version(request)
-            if not _workspace_client_write_allowed(
-                workspace,
-                expected_revision,
-                editor_token,
-                save_sequence,
-            ):
-                return JsonResponse({
-                    "error": _workspace_conflict_message(),
-                    "conflict": True,
-                    "revision": workspace.revision,
-                }, status=409)
         deleted_assets = discard_article_creation_workspace(request, workspace)
 
     return JsonResponse({"discarded": True, "image_count": len(deleted_assets)})

@@ -4,98 +4,81 @@ from django.utils.translation import gettext as _
 
 
 def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
-    """Render the public or internal article landing page using the same layout."""
+    """Render public/internal landing pages with database-side card pagination."""
     can_view_internal = user_can_view_internal_articles(request.user)
-
-    if visibility == SuggestedArticle.Visibility.INTERNAL:
-        all_articles = get_openkb_wiki_articles(
-            sort_by_views=False,
-            visibility=SuggestedArticle.Visibility.INTERNAL,
-            user=request.user,
-        )
-        home_heading = _("Internal Knowledge Repository")
-        search_action_url = reverse("internal_search")
-        search_suggestions_url = reverse("internal_search_article_suggestions")
-        total_label = _("internal article")
-    else:
-        # Main homepage/search works differently by role:
-        # - normal users see/search public articles only
-        # - internal-capable users see/search public + internal articles mixed together
-        all_articles = get_openkb_wiki_articles(
-            sort_by_views=False,
-            visibility="all" if can_view_internal else SuggestedArticle.Visibility.PUBLIC,
-            user=request.user,
-        )
-        home_heading = _("How can we help?")
-        search_action_url = reverse("search")
-        search_suggestions_url = reverse("search_article_suggestions")
-        total_label = _("article")
-
     article_limit = get_articles_per_page()
 
     active_home_tab = request.GET.get("tab") or "trending"
     if active_home_tab not in {"trending", "liked", "recent"}:
         active_home_tab = "trending"
 
-    internal_articles_page_obj = None
+    internal_page_obj = None
+    trending_page_obj = None
+    most_liked_page_obj = None
+    most_recent_page_obj = None
+
     if visibility == SuggestedArticle.Visibility.INTERNAL:
-        internal_articles_all = sorted(
-            all_articles,
-            key=lambda item: item.get("date") or "",
-            reverse=True,
-        )
-        internal_articles_page_obj = paginate_articles(
+        card_visibility = SuggestedArticle.Visibility.INTERNAL
+        home_heading = _("Internal Knowledge Repository")
+        search_action_url = reverse("internal_search")
+        search_suggestions_url = reverse("internal_search_article_suggestions")
+        total_label = _("internal article")
+        internal_page_obj = paginate_home_article_cards(
             request,
-            internal_articles_all,
+            visibility=card_visibility,
+            user=request.user,
+            sort_mode="recent",
             per_page=article_limit,
             page_param="page",
         )
+        total_article_count = internal_page_obj.paginator.count
+    else:
+        # Normal users see public cards. Internal-capable users see public and
+        # internal cards together on the main homepage, matching search scope.
+        card_visibility = "all" if can_view_internal else SuggestedArticle.Visibility.PUBLIC
+        home_heading = _("How can we help?")
+        search_action_url = reverse("search")
+        search_suggestions_url = reverse("search_article_suggestions")
+        total_label = _("article")
 
-    trending_articles_all = sorted(
-        all_articles,
-        key=lambda item: (item.get("views") or 0, item.get("likes") or 0, item.get("date") or ""),
-        reverse=True,
-    )
-    most_liked_articles_all = sorted(
-        all_articles,
-        key=lambda item: (item.get("likes") or 0, item.get("views") or 0, item.get("date") or ""),
-        reverse=True,
-    )
-    most_recent_articles_all = sorted(
-        all_articles,
-        key=lambda item: item.get("date") or "",
-        reverse=True,
-    )
-
-    trending_page_obj = paginate_articles(
-        request,
-        trending_articles_all,
-        per_page=article_limit,
-        page_param="trending_page",
-    )
-    most_liked_page_obj = paginate_articles(
-        request,
-        most_liked_articles_all,
-        per_page=article_limit,
-        page_param="liked_page",
-    )
-    most_recent_page_obj = paginate_articles(
-        request,
-        most_recent_articles_all,
-        per_page=article_limit,
-        page_param="recent_page",
-    )
+        trending_page_obj = paginate_home_article_cards(
+            request,
+            visibility=card_visibility,
+            user=request.user,
+            sort_mode="trending",
+            per_page=article_limit,
+            page_param="trending_page",
+        )
+        total_article_count = trending_page_obj.paginator.count
+        most_liked_page_obj = paginate_home_article_cards(
+            request,
+            visibility=card_visibility,
+            user=request.user,
+            sort_mode="liked",
+            per_page=article_limit,
+            page_param="liked_page",
+            known_total_count=total_article_count,
+        )
+        most_recent_page_obj = paginate_home_article_cards(
+            request,
+            visibility=card_visibility,
+            user=request.user,
+            sort_mode="recent",
+            per_page=article_limit,
+            page_param="recent_page",
+            known_total_count=total_article_count,
+        )
 
     return render(request, "index.html", {
-        "trending_articles": trending_page_obj.object_list,
-        "most_liked_articles": most_liked_page_obj.object_list,
-        "most_recent_articles": most_recent_page_obj.object_list,
+        "trending_articles": trending_page_obj.object_list if trending_page_obj else [],
+        "most_liked_articles": most_liked_page_obj.object_list if most_liked_page_obj else [],
+        "most_recent_articles": most_recent_page_obj.object_list if most_recent_page_obj else [],
         "trending_page_obj": trending_page_obj,
         "most_liked_page_obj": most_liked_page_obj,
         "most_recent_page_obj": most_recent_page_obj,
         "active_home_tab": active_home_tab,
         "article_limit": article_limit,
-        "total_article_count": len(all_articles),
+        "total_article_count": total_article_count,
         "home_heading": home_heading,
         "search_action_url": search_action_url,
         "search_suggestions_url": search_suggestions_url,
@@ -104,8 +87,8 @@ def _render_article_home(request, *, visibility=SuggestedArticle.Visibility.PUBL
         "total_article_label": total_label,
         "is_internal_space": visibility == SuggestedArticle.Visibility.INTERNAL,
         "show_internal_article_tags": can_view_internal,
-        "internal_articles": internal_articles_page_obj.object_list if internal_articles_page_obj else [],
-        "internal_page_obj": internal_articles_page_obj,
+        "internal_articles": internal_page_obj.object_list if internal_page_obj else [],
+        "internal_page_obj": internal_page_obj,
     })
 
 
@@ -169,7 +152,6 @@ def article_detail(request, article_id):
         "can_edit": request.user.is_authenticated and user_can_manage_article(request.user, article),
         "can_delete": request.user.is_authenticated and user_can_delete_article(request.user, article),
         "delete_action": article_delete_action_type(request.user, article) if request.user.is_authenticated else "none",
-        "has_pending_deletion_request": False,
         "edit_url": reverse("edit_suggestion", kwargs={"article_id": article.pk}),
         "delete_url": reverse("delete_suggestion", kwargs={"article_id": article.pk}),
         "visibility": article.visibility,

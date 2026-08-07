@@ -333,7 +333,6 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "kb.middleware.InputLengthLimitMiddleware",
-    "kb.middleware.ConfigurableRequestRateLimitMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "kb.middleware.NginxErrorPageMiddleware",
     "kb.middleware.DisabledUserLogoutMiddleware",

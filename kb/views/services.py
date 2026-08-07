@@ -44,7 +44,6 @@ from ..models import (
     ActivityLog,
     ArticleCreationWorkspace,
     ArticleEditWorkspace,
-    ArticleDeletionRequest,
     ArticleImageUploadLog,
     ArticleVote,
     SuggestedArticle,
@@ -716,13 +715,6 @@ def user_can_manage_article(user, article, *, review_mode=False):
 
     return False
 
-def article_has_pending_deletion_request(article):
-    # Backwards-compatible helper kept for older templates/code paths.
-    # Published articles now use fresh owner/manager/admin MFA confirmation
-    # instead of an approver deletion-request workflow.
-    return False
-
-
 def user_can_direct_delete_article(user, article):
     """Return True when the user may open the delete-confirmation page.
 
@@ -754,12 +746,6 @@ def user_can_direct_delete_article(user, article):
         return False
 
     return user_can_delete_article_visibility(user, visibility)
-
-
-def user_can_request_article_deletion(user, article):
-    # The deletion-approval workflow has been replaced by direct deletion with
-    # MFA confirmation for published articles.
-    return False
 
 
 def user_can_delete_article(user, article):
@@ -3511,16 +3497,113 @@ def record_article_session_view(request, article):
     session[session_key] = viewed_ids[-1000:]
     session.modified = True
 
-    log_activity(
-        request,
-        ActivityLog.EventType.ARTICLE_VIEWED,
-        article=article,
-        details={
-            "view_count_after": article.view_count,
-            "counting_method": "unique_browser_session",
-        },
-    )
     return True
+
+
+def get_home_article_card_queryset(*, visibility=None, user=None, sort_mode="recent"):
+    """Return a lightweight published-article queryset for homepage cards.
+
+    Only the small fields displayed by the homepage are selected. Article bodies,
+    Markdown generation, authors, and image metadata are deliberately excluded.
+    Sorting and pagination therefore remain inside PostgreSQL.
+    """
+    queryset = SuggestedArticle.objects.filter(
+        status=SuggestedArticle.Status.PUBLISHED,
+    )
+
+    if visibility == "all":
+        if not user_can_view_internal_articles(user):
+            queryset = queryset.filter(visibility=SuggestedArticle.Visibility.PUBLIC)
+    else:
+        requested_visibility = (
+            normalize_article_visibility(visibility)
+            if visibility
+            else SuggestedArticle.Visibility.PUBLIC
+        )
+        queryset = queryset.filter(visibility=requested_visibility)
+
+    queryset = queryset.annotate(
+        db_helpful_vote_count=Count(
+            "votes",
+            filter=Q(votes__value=ArticleVote.VoteValue.UP),
+        )
+    ).values(
+        "id",
+        "title",
+        "updated_at",
+        "view_count",
+        "visibility",
+        "db_helpful_vote_count",
+    )
+
+    if sort_mode == "trending":
+        return queryset.order_by(
+            "-view_count",
+            "-db_helpful_vote_count",
+            "-updated_at",
+            "-id",
+        )
+    if sort_mode == "liked":
+        return queryset.order_by(
+            "-db_helpful_vote_count",
+            "-view_count",
+            "-updated_at",
+            "-id",
+        )
+    return queryset.order_by("-updated_at", "-id")
+
+
+def build_home_article_card(row):
+    """Convert one lightweight database row into the existing homepage shape."""
+    modified_at = timezone.localtime(row["updated_at"]).strftime("%Y-%m-%d %H:%M")
+    visibility = row.get("visibility") or SuggestedArticle.Visibility.PUBLIC
+    return {
+        "title": row.get("title") or "",
+        "date": modified_at,
+        "views": row.get("view_count") or 0,
+        "likes": row.get("db_helpful_vote_count") or 0,
+        "url": reverse("article_detail", kwargs={"article_id": row["id"]}),
+        "suggested_id": row["id"],
+        "visibility": visibility,
+        "visibility_label": article_visibility_label(visibility),
+    }
+
+
+def paginate_home_article_cards(
+    request,
+    *,
+    visibility=None,
+    user=None,
+    sort_mode="recent",
+    per_page=10,
+    page_param="page",
+    known_total_count=None,
+):
+    """Database-paginate one homepage card list and return normal Page metadata."""
+    queryset = get_home_article_card_queryset(
+        visibility=visibility,
+        user=user,
+        sort_mode=sort_mode,
+    )
+    paginator = Paginator(queryset, per_page)
+    if known_total_count is not None:
+        # Paginator.count is a cached property. Supplying the already-known count
+        # avoids repeating the same COUNT query for each homepage sort order.
+        paginator.count = int(known_total_count)
+
+    page_number = request.GET.get(page_param, 1)
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    page_obj.object_list = [
+        build_home_article_card(row)
+        for row in page_obj.object_list
+    ]
+    return page_obj
 
 
 def get_openkb_wiki_articles(sort_by_views=False, visibility=None, user=None):

@@ -11,8 +11,9 @@ Show all supported options:
 
 Purpose and warning:
     Adds only the safe, explicitly supported columns handled in this command and
-    preserves existing data. DjOpenKB also invokes it during normal startup.
-    This command is not a replacement for `python manage.py migrate`. Take a
+    preserves existing data. Run it only when troubleshooting known schema drift;
+    normal container startup uses migrations only. This command is not a replacement
+    for `python manage.py migrate`. Take a
     database backup before manual schema work and do not extend this file with
     unreviewed SQL repairs.
 """
@@ -31,7 +32,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--noinput",
             action="store_true",
-            help="Run without confirmation prompts. Intended for Docker startup.",
+            help="Run without confirmation prompts during a manual maintenance operation.",
         )
 
     def handle(self, *args, **options):
@@ -48,7 +49,6 @@ class Command(BaseCommand):
         self._repair_mfa_login_timeout_setting()
         self._repair_admin_mfa_verification_timeout_setting()
         self._repair_admin_ip_allowlist_setting()
-        self._repair_request_rate_limit_settings()
         self._repair_user_email_unique_index()
         self._repair_user_username_unique_index()
         self.stdout.write(self.style.SUCCESS("KB schema repair check completed."))
@@ -320,40 +320,6 @@ class Command(BaseCommand):
                 "The allowlist is disabled by default, so Admin source-IP access is unrestricted until explicitly enabled."
             )
         )
-
-    def _repair_request_rate_limit_settings(self):
-        table_name = "kb_sitesetting"
-        if not self._table_exists(table_name):
-            return
-
-        columns = (
-            ("login_request_limit_per_minute", 8, 120),
-            ("mfa_request_limit_per_minute", 10, 120),
-            ("admin_request_limit_per_minute", 120, 600),
-        )
-        repaired = 0
-        with connection.cursor() as cursor:
-            for column_name, default_value, maximum in columns:
-                if self._column_exists(table_name, column_name):
-                    continue
-                self.stdout.write(f"Adding missing column: {table_name}.{column_name}")
-                cursor.execute(
-                    f"""
-                    ALTER TABLE kb_sitesetting
-                    ADD COLUMN {column_name} integer NOT NULL DEFAULT {int(default_value)}
-                    CHECK ({column_name} >= 0 AND {column_name} <= {int(maximum)})
-                    """
-                )
-                repaired += 1
-
-        if repaired:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Added {repaired} configurable request-rate-limit Site setting column(s)."
-                )
-            )
-        else:
-            self.stdout.write("No configurable request-rate-limit schema drift found.")
 
     def _repair_user_email_unique_index(self):
         table_name = "auth_user"
