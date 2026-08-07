@@ -101,3 +101,35 @@ class ArticleContentLayoutTests(SimpleTestCase):
             template = (self.templates_dir / template_name).read_text(encoding="utf-8")
             self.assertNotIn(".suggest-preview img:not([width])", template)
             self.assertNotIn("max-height: 520px", template)
+
+    def test_video_preview_and_published_article_share_admin_configured_width(self):
+        csp_css = (
+            self.base_dir / "website" / "static" / "stylesheets" / "csp-template.css"
+        ).read_text(encoding="utf-8")
+        javascript = (
+            self.base_dir / "website" / "static" / "javascripts" / "openKB.js"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("var(--article-video-max-width, 720px)", csp_css)
+        self.assertGreaterEqual(javascript.count('class="article-video-wrapper"'), 2)
+
+        for template_name in ("articles.html", "suggest.html", "suggest_edit.html"):
+            template = (self.templates_dir / template_name).read_text(encoding="utf-8")
+            self.assertIn(
+                "--article-video-max-width: {{ article_video_max_width_px|default:720 }}px",
+                template,
+            )
+            self.assertIn("20260807-media-display-1", template)
+
+    def test_image_size_dialog_offers_quarter_steps_through_two_hundred_percent(self):
+        modal = (self.templates_dir / "_image_size_modal.html").read_text(encoding="utf-8")
+
+        for percent in (25, 50, 75, 100, 125, 150, 175, 200):
+            self.assertIn(
+                f'data-image-size-percent="{percent}">{percent}%</button>',
+                modal,
+            )
+
+        self.assertIn('id="imageSizeWidth"', modal)
+        self.assertIn('id="imageSizeHeight"', modal)
+

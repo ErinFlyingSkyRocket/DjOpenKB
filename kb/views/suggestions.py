@@ -347,6 +347,7 @@ def _render_suggest_form_for_visibility(request, *, visibility, can_publish_dire
     context = {
         "can_publish_directly": can_publish_directly,
         "article_image_upload_limit": get_article_image_upload_limit(),
+        "article_video_max_width_px": get_article_video_max_width_px(),
         "article_body_character_limit": get_article_body_character_limit(),
         "article_keyword_limit": get_article_keyword_limit(),
         "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=visibility, user=request.user),
@@ -897,6 +898,7 @@ def edit_suggestion(request, article_id):
             "show_pending_failed_comments": article.status in {SuggestedArticle.Status.DRAFT, SuggestedArticle.Status.FAILED} and bool(article.review_notes),
             "existing_images_json": json.dumps(get_article_edit_workspace_image_cards(edit_workspace)),
             "article_image_upload_limit": get_article_image_upload_limit(),
+            "article_video_max_width_px": get_article_video_max_width_px(),
             "article_body_character_limit": get_article_body_character_limit(),
             "article_keyword_limit": get_article_keyword_limit(),
             "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=edit_visibility, user=request.user),

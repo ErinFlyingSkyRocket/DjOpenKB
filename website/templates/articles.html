@@ -41,14 +41,10 @@
     <script src="{% static 'markdown-it/markdown-it.min.js' %}"></script>
     <script src="{% static 'lunr/lunr.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
-    <script src="{% static 'javascripts/openKB.js' %}?v=20260805-comfortable-markdown-editor-7"></script>
+    <script src="{% static 'javascripts/openKB.js' %}?v=20260807-media-display-1"></script>
 
     <style nonce="{{ csp_nonce }}">
-        .article-video-wrapper,
-        .article-video-embed,
-        .article-video {
-            max-width: {{ article_video_max_width_px|default:720 }}px;
-        }
+        :root { --article-video-max-width: {{ article_video_max_width_px|default:720 }}px; }
         .metaData h5 { line-height: 1.5; }
         .keywords { margin-top: 15px; margin-bottom: 35px; }
         .keywordSeporator { color: #899aa6; padding: 0 6px; }
@@ -171,7 +167,7 @@
             color: #2c3e50;
         }
     </style>
-    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}?v=20260720-video-size-5">
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}?v=20260807-media-display-1">
     <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260805-comfortable-markdown-editor-7">
 </head>
 

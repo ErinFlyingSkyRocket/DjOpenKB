@@ -1003,12 +1003,12 @@ $(document).ready(function(){
             }
 
             if(/^[A-Za-z0-9_-]{11}$/.test(youtubeId)){
-                return '<iframe class="article-video-embed" ' +
+                return '<div class="article-video-wrapper"><iframe class="article-video-embed" ' +
                     'src="https://www.youtube-nocookie.com/embed/' + youtubeId + '" ' +
                     'title="YouTube video player" loading="lazy" ' +
                     'referrerpolicy="strict-origin-when-cross-origin" ' +
                     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
-                    'allowfullscreen></iframe>';
+                    'allowfullscreen></iframe></div>';
             }
         }
 
@@ -1029,12 +1029,12 @@ $(document).ready(function(){
             }
 
             if(/^[0-9]{1,20}$/.test(vimeoId)){
-                return '<iframe class="article-video-embed" ' +
+                return '<div class="article-video-wrapper"><iframe class="article-video-embed" ' +
                     'src="https://player.vimeo.com/video/' + vimeoId + '" ' +
                     'title="Vimeo video player" loading="lazy" ' +
                     'referrerpolicy="strict-origin-when-cross-origin" ' +
                     'allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" ' +
-                    'allowfullscreen></iframe>';
+                    'allowfullscreen></iframe></div>';
             }
         }
 

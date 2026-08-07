@@ -46,8 +46,9 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     <script src="{% static 'lunr/lunr.js' %}"></script>
     <script src="{% static 'javascripts/sanitizer.min.js' %}"></script>
     <script src="{% static 'javascripts/jpushmenu.js' %}"></script>
-    <script src="{% static 'javascripts/openKB.js' %}?v=20260805-comfortable-markdown-editor-7"></script>
+    <script src="{% static 'javascripts/openKB.js' %}?v=20260807-media-display-1"></script>
     <style nonce="{{ csp_nonce }}">
+        :root { --article-video-max-width: {{ article_video_max_width_px|default:720 }}px; }
         .suggest-preview { min-height: 480px; height: 480px; overflow: auto; background: #fff; }
         .CodeMirror { min-height: 480px; height: 480px; }
 
@@ -232,7 +233,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
             }
         }
     </style>
-    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}">
+    <link rel="stylesheet" href="{% static 'stylesheets/csp-template.css' %}?v=20260807-media-display-1">
     <link rel="stylesheet" href="{% static 'stylesheets/article-content.css' %}?v=20260805-comfortable-markdown-editor-7">
     <script defer src="{% static 'javascripts/csp-actions.js' %}"></script>
 </head>
