@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -18,7 +19,11 @@ from kb.permissions import (
     assign_single_role_group,
     seed_djopenkb_role_groups,
 )
-from kb.views.services import get_openkb_uploads_dir, sync_article_image_assets
+from kb.views.services import (
+    get_openkb_uploads_dir,
+    sync_article_image_assets,
+    validate_article_edit_workspace_image_references,
+)
 
 
 PNG_1X1 = base64.b64decode(
@@ -183,6 +188,27 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertFalse(file_path.exists())
         self.article.refresh_from_db()
         self.assertEqual(self.article.body, "Original saved article body")
+
+    def test_edit_article_cannot_reuse_image_from_another_article(self):
+        workspace, _response = self._open_workspace()
+        filename = "other-article-edit-image.png"
+        file_path = get_openkb_uploads_dir() / filename
+        file_path.write_bytes(PNG_1X1)
+        SuggestedArticle.objects.create(
+            owner=self.other,
+            title="Other article edit image owner",
+            body=f"Other article body\n![image](/wiki/uploads/{filename})",
+            image_assets=[filename],
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+
+        with self.assertRaises(ValidationError):
+            validate_article_edit_workspace_image_references(
+                workspace,
+                f"Edited body\n![image](/wiki/uploads/{filename})",
+                self.article,
+            )
 
     def test_existing_article_image_is_not_physically_deleted_by_checkpoint_removal(self):
         filename = "existing-article-image.png"

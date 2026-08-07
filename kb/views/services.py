@@ -1496,10 +1496,9 @@ def article_creation_workspace_assets(workspace):
 def validate_article_creation_workspace_image_references(workspace, body):
     """Validate uploaded-image references before a workspace becomes an article.
 
-    A referenced filename is accepted when it was uploaded into this workspace
-    or is already committed to another article. This prevents a forged Markdown
-    body from claiming another user's uncommitted upload while still allowing
-    intentional reuse of an image that is already part of repository content.
+    A referenced filename is accepted only when it was uploaded into this exact
+    workspace. Existing images committed to another article cannot be borrowed
+    by pasting their upload URL into a new article.
     """
     referenced = validate_article_image_count(extract_article_image_filenames(body))
     owned = set(article_creation_workspace_assets(workspace))
@@ -1525,12 +1524,7 @@ def validate_article_creation_workspace_image_references(workspace, body):
                 )
             continue
 
-        if image_is_used_by_other_article(filename):
-            continue
-
-        raise ValidationError(
-            _("The article references an uncommitted image that does not belong to this persistent checkpoint workspace.")
-        )
+        raise ValidationError(_("The article contains an invalid image reference."))
 
     return referenced
 
@@ -1623,10 +1617,9 @@ def image_is_used_by_other_edit_workspace(filename, current_workspace=None):
 def validate_article_edit_workspace_image_references(workspace, body, article):
     """Validate image references before an edit checkpoint changes an article.
 
-    Accepted files are images already committed to repository content, images
-    already referenced by the article being edited, or uncommitted images owned
-    by this exact checkpoint. A filename from another user's unsaved workspace
-    never becomes authorised merely because it was pasted into Markdown.
+    Accepted files are images already belonging to the article being edited or
+    uncommitted images owned by this exact checkpoint. Images from a different
+    article or another user's workspace cannot be borrowed by pasting their URL.
     """
     referenced = validate_article_image_count(extract_article_image_filenames(body))
     owned = set(article_edit_workspace_owned_assets(workspace))
@@ -1652,11 +1645,7 @@ def validate_article_edit_workspace_image_references(workspace, body, article):
             continue
         if article_references_uploaded_filename(article, filename):
             continue
-        if image_is_used_by_other_article(filename):
-            continue
-        raise ValidationError(
-            _("The article references an uncommitted image that does not belong to this edit checkpoint.")
-        )
+        raise ValidationError(_("The article contains an invalid image reference."))
     return referenced
 
 
@@ -3922,7 +3911,10 @@ from .services_search import (  # noqa: F401
     strip_markdown_for_search,
     build_search_excerpt,
     article_matches_title_or_keywords,
+    build_search_article_card,
+    get_search_article_queryset,
     search_public_articles_by_title_keywords,
+    paginate_search_article_cards,
     rank_articles_for_query,
     get_contextual_related_articles,
 )

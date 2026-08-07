@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
@@ -18,6 +19,7 @@ from kb.views.services import (
     find_stray_uploaded_files,
     get_openkb_uploads_dir,
     get_user_pending_image_upload_usage,
+    validate_article_creation_workspace_image_references,
 )
 
 
@@ -351,6 +353,26 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(ArticleCreationWorkspace.objects.filter(pk=workspace.pk).exists())
         self.assertFalse(file_path.exists())
+
+    def test_new_article_cannot_reuse_image_from_another_article(self):
+        workspace, _response = self._open_workspace()
+        filename = "other-article-image.png"
+        file_path = get_openkb_uploads_dir() / filename
+        file_path.write_bytes(PNG_1X1)
+        SuggestedArticle.objects.create(
+            owner=self.other,
+            title="Other article image owner",
+            body=f"Other article body\n![image](/wiki/uploads/{filename})",
+            image_assets=[filename],
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+
+        with self.assertRaises(ValidationError):
+            validate_article_creation_workspace_image_references(
+                workspace,
+                f"New article body\n![image](/wiki/uploads/{filename})",
+            )
 
     def test_saving_draft_preserves_referenced_image_and_removes_unused_workspace_image(self):
         workspace, _response = self._open_workspace()

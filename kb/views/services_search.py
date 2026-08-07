@@ -126,19 +126,23 @@ def build_search_article_card(suggested):
     return card
 
 
-def search_public_articles_by_title_keywords(query, limit=None, visibility=None, user=None):
-    """Return published title/keyword matches with keyword matches first.
+def get_search_article_queryset(query, visibility=None, user=None):
+    """Return a lightweight database queryset for published search matches.
 
-    This deliberately uses only a lightweight database-side priority flag rather
-    than a relevance-scoring loop or full-text search. Article bodies are not read.
-    Within the keyword-priority and title-only groups, newer articles remain first.
+    Filtering, keyword priority, sorting, counting, and pagination can therefore
+    stay in PostgreSQL. Only fields required to build one search-result card are
+    selected; article bodies and other large editor/review fields are excluded.
     """
     query = (query or "").strip()[:120]
     query_words = tokenize_search_query(query)
     if not query and not query_words:
-        return []
+        return SuggestedArticle.objects.none()
 
-    full_query_filter = Q(title__icontains=query) | Q(keywords__icontains=query) if query else Q(pk__in=[])
+    full_query_filter = (
+        Q(title__icontains=query) | Q(keywords__icontains=query)
+        if query
+        else Q(pk__in=[])
+    )
 
     token_filter = Q()
     keyword_priority_filter = Q()
@@ -162,10 +166,30 @@ def search_public_articles_by_title_keywords(query, limit=None, visibility=None,
         if not user_can_view_internal_articles(user):
             queryset = queryset.filter(visibility=SuggestedArticle.Visibility.PUBLIC)
     else:
-        queryset = queryset.filter(visibility=normalize_article_visibility(visibility) if visibility else SuggestedArticle.Visibility.PUBLIC)
+        queryset = queryset.filter(
+            visibility=(
+                normalize_article_visibility(visibility)
+                if visibility
+                else SuggestedArticle.Visibility.PUBLIC
+            )
+        )
 
-    queryset = (
+    return (
         queryset
+        .only(
+            "id",
+            "owner",
+            "owner__username",
+            "owner__first_name",
+            "owner__last_name",
+            "title",
+            "keywords",
+            "updated_at",
+            "view_count",
+            "visibility",
+            "author_name_snapshot",
+            "author_username_snapshot",
+        )
         .annotate(
             keyword_priority=Case(
                 When(keyword_priority_filter, then=Value(0)),
@@ -180,10 +204,45 @@ def search_public_articles_by_title_keywords(query, limit=None, visibility=None,
         .order_by("keyword_priority", "-updated_at", "-pk")
     )
 
+
+def search_public_articles_by_title_keywords(query, limit=None, visibility=None, user=None):
+    """Return built search cards, primarily for the small suggestion dropdown.
+
+    Full search pages should paginate ``get_search_article_queryset`` before
+    building cards so Python only processes the rows displayed on that page.
+    """
+    queryset = get_search_article_queryset(query, visibility=visibility, user=user)
     if limit is not None:
         queryset = queryset[:limit]
-
     return [build_search_article_card(suggested) for suggested in queryset]
+
+
+def paginate_search_article_cards(
+    request,
+    query,
+    *,
+    visibility=None,
+    user=None,
+    per_page=20,
+    page_param="page",
+):
+    """Database-paginate search rows, then build cards for one page only."""
+    queryset = get_search_article_queryset(
+        query,
+        visibility=visibility,
+        user=user,
+    )
+    page_obj = paginate_articles(
+        request,
+        queryset,
+        per_page=per_page,
+        page_param=page_param,
+    )
+    page_obj.object_list = [
+        build_search_article_card(suggested)
+        for suggested in page_obj.object_list
+    ]
+    return page_obj
 
 
 def rank_articles_for_query(articles, query):

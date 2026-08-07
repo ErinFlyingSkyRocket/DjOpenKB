@@ -5,7 +5,9 @@ from kb.models import ArticleVote, SuggestedArticle
 from kb.views.services import (
     get_contextual_related_articles,
     get_home_article_card_queryset,
+    get_search_article_queryset,
     paginate_home_article_cards,
+    paginate_search_article_cards,
 )
 
 
@@ -106,6 +108,61 @@ class HomepageArticleCardQueryTests(TestCase):
         self.assertEqual(liked.object_list[0]["suggested_id"], self.liked.pk)
         self.assertNotIn("raw_markdown", trending.object_list[0])
         self.assertNotIn("body", trending.object_list[0])
+
+
+class SearchArticleQueryTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.owner = user_model.objects.create_user(
+            username="search-query-owner",
+            email="search-query-owner@example.invalid",
+            password="safe-test-password",
+            first_name="Search",
+            last_name="Owner",
+        )
+        for index in range(3):
+            SuggestedArticle.objects.create(
+                owner=self.owner,
+                title=f"VPN search result {index}",
+                body=("Large article body that must not be selected by the search listing. " * 20),
+                keywords=f"vpn, remote, item-{index}",
+                filename=f"vpn-search-result-{index}.md",
+                status=SuggestedArticle.Status.PUBLISHED,
+                visibility=SuggestedArticle.Visibility.PUBLIC,
+            )
+        self.factory = RequestFactory()
+
+    def test_search_queryset_excludes_large_article_fields(self):
+        queryset = get_search_article_queryset(
+            "vpn",
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+            user=self.owner,
+        )
+
+        sql = str(queryset.query).lower()
+        self.assertNotIn('\"body\"', sql)
+        self.assertNotIn('\"pending_update_body\"', sql)
+        self.assertNotIn('\"review_notes\"', sql)
+        self.assertEqual(queryset.count(), 3)
+
+    def test_search_paginates_database_rows_before_building_cards(self):
+        request = self.factory.get("/search/", {"q": "vpn", "page": "2"})
+        request.user = self.owner
+
+        page_obj = paginate_search_article_cards(
+            request,
+            "vpn",
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+            user=self.owner,
+            per_page=1,
+        )
+
+        self.assertEqual(page_obj.paginator.count, 3)
+        self.assertEqual(page_obj.number, 2)
+        self.assertEqual(len(page_obj.object_list), 1)
+        self.assertIn("suggested_id", page_obj.object_list[0])
+        self.assertNotIn("body", page_obj.object_list[0])
+        self.assertNotIn("raw_markdown", page_obj.object_list[0])
 
 
 class RelatedArticleQueryTests(TestCase):

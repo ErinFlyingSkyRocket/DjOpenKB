@@ -120,3 +120,66 @@ class BulkImportImageReferenceTests(TestCase):
         self.assertTrue(any("duplicate title" in str(error).lower() for error in errors))
         upload_dir = Path(self.temp_directory.name) / "openkb-data" / "wiki" / "uploads"
         self.assertEqual(list(upload_dir.glob("*")), [])
+
+    def test_shared_source_image_is_copied_separately_for_each_imported_article(self):
+        manifest = {
+            "format": "djopenkb-bulk-export-v1",
+            "articles": [
+                {
+                    "title": "First isolated image article",
+                    "body": "First body\n![shared](/wiki/uploads/shared.png)",
+                    "image_assets": ["shared.png"],
+                    "status": SuggestedArticle.Status.PUBLISHED,
+                    "visibility": SuggestedArticle.Visibility.PUBLIC,
+                },
+                {
+                    "title": "Second isolated image article",
+                    "body": "Second body\n![shared](/wiki/uploads/shared.png)",
+                    "image_assets": ["shared.png"],
+                    "status": SuggestedArticle.Status.PUBLISHED,
+                    "visibility": SuggestedArticle.Visibility.INTERNAL,
+                },
+            ],
+        }
+        archive = self._zip_bytes(manifest, {"shared.png": self._png_bytes()})
+
+        imported_count, errors = import_articles_from_zip(archive, self.owner)
+
+        self.assertEqual(imported_count, 2)
+        self.assertEqual(errors, [])
+        first = SuggestedArticle.objects.get(title="First isolated image article")
+        second = SuggestedArticle.objects.get(title="Second isolated image article")
+        self.assertEqual(len(first.image_assets), 1)
+        self.assertEqual(len(second.image_assets), 1)
+        self.assertNotEqual(first.image_assets[0], second.image_assets[0])
+        self.assertIn(first.image_assets[0], first.body)
+        self.assertIn(second.image_assets[0], second.body)
+
+    def test_import_cannot_borrow_existing_repository_image_without_zip_member(self):
+        existing_filename = "existing-repository-image.png"
+        upload_dir = Path(self.temp_directory.name) / "openkb-data" / "wiki" / "uploads"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        (upload_dir / existing_filename).write_bytes(self._png_bytes())
+        SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Existing repository image owner",
+            body=f"Existing body\n![image](/wiki/uploads/{existing_filename})",
+            image_assets=[existing_filename],
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+        manifest = self._manifest(
+            "Borrowed repository image article",
+            f"Borrowed body\n![image](/wiki/uploads/{existing_filename})",
+            [existing_filename],
+        )
+        archive = self._zip_bytes(manifest)
+
+        imported_count, errors = import_articles_from_zip(archive, self.owner)
+
+        self.assertEqual(imported_count, 0)
+        self.assertTrue(any(existing_filename in str(error) for error in errors))
+        self.assertFalse(
+            SuggestedArticle.objects.filter(title="Borrowed repository image article").exists()
+        )
+

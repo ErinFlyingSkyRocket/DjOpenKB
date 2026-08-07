@@ -332,9 +332,13 @@ def _search_articles(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
     if not query_original:
         return redirect("internal_articles" if visibility == SuggestedArticle.Visibility.INTERNAL else "home")
 
-    all_articles = search_public_articles_by_title_keywords(query_original, visibility=visibility, user=request.user)
-
-    page_obj = paginate_articles(request, all_articles, per_page=get_articles_per_page())
+    page_obj = paginate_search_article_cards(
+        request,
+        query_original,
+        visibility=visibility,
+        user=request.user,
+        per_page=get_articles_per_page(),
+    )
 
     return render(request, "index.html", {
         "articles": page_obj.object_list,
@@ -342,7 +346,7 @@ def _search_articles(request, *, visibility=SuggestedArticle.Visibility.PUBLIC):
         "paginator": page_obj.paginator,
         "search_query": query_original,
         "is_search": bool(query_original),
-        "result_count": len(all_articles),
+        "result_count": page_obj.paginator.count,
         "home_heading": _("Internal Knowledge Repository") if visibility == SuggestedArticle.Visibility.INTERNAL else _("How can we help?"),
         "search_action_url": reverse("internal_search") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("search"),
         "search_suggestions_url": reverse("internal_search_article_suggestions") if visibility == SuggestedArticle.Visibility.INTERNAL else reverse("search_article_suggestions"),

@@ -891,20 +891,6 @@ def imported_payload_image_filenames(item):
     return referenced
 
 
-def imported_upload_exists(filename):
-    """Return True when an already-managed upload can satisfy an import link."""
-    safe_name = safe_uploaded_filename(filename)
-    if not safe_name:
-        return False
-    upload_dir = get_openkb_uploads_dir().resolve()
-    file_path = (upload_dir / safe_name).resolve()
-    try:
-        file_path.relative_to(upload_dir)
-    except ValueError:
-        return False
-    return file_path.exists() and file_path.is_file()
-
-
 def cleanup_unreferenced_import_uploads(filename_map, retained_filenames, errors=None):
     """Remove newly copied import images that no successful article references."""
     retained = {safe_uploaded_filename(name) for name in retained_filenames or []}
@@ -1019,39 +1005,27 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
         if not article_payloads:
             raise ValueError(_("No articles found in the zip. Include manifest.json or Markdown files."))
 
-        # Copy only upload members that are linked by at least one article
-        # payload. Files packaged in the ZIP but not referenced are ignored.
-        referenced_source_uploads = {
-            filename
-            for item in article_payloads
-            for filename in imported_payload_image_filenames(item)
-        }
+        # Only ZIP-contained uploads may satisfy imported article references.
+        # Each article receives its own copied filename mapping, so two imported
+        # articles never become coupled to the same managed upload file. Files
+        # packaged in the ZIP but not referenced by an article remain ignored.
         available_upload_members = {
             safe_uploaded_filename(safe_name): original_name
             for safe_name, original_name in safe_names.items()
             if safe_name.startswith("uploads/") and safe_uploaded_filename(safe_name)
         }
-        upload_members = [
-            member_name
-            for original_name, member_name in available_upload_members.items()
-            if original_name in referenced_source_uploads
-        ]
-        filename_map = copy_imported_uploads_from_zip(archive, upload_members)
+        copied_import_uploads = {}
         retained_import_uploads = set()
         seen_import_titles = set()
 
         try:
-            for item in article_payloads:
+            for item_index, item in enumerate(article_payloads):
                 title = (item.get("title") or "").strip()
                 source_image_refs = imported_payload_image_filenames(item)
                 missing_image_refs = [
                     filename
                     for filename in source_image_refs
-                    if filename not in filename_map
-                    and (
-                        filename in available_upload_members
-                        or not imported_upload_exists(filename)
-                    )
+                    if filename not in available_upload_members
                 ]
                 if missing_image_refs:
                     errors.append(
@@ -1059,6 +1033,29 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                         % {
                             "title": title,
                             "filenames": ", ".join(sorted(missing_image_refs)),
+                        }
+                    )
+                    continue
+
+                item_upload_members = [
+                    available_upload_members[filename]
+                    for filename in source_image_refs
+                ]
+                filename_map = copy_imported_uploads_from_zip(archive, item_upload_members)
+                for source_name, copied_name in filename_map.items():
+                    copied_import_uploads[f"{item_index}:{source_name}"] = copied_name
+
+                invalid_copied_refs = [
+                    filename
+                    for filename in source_image_refs
+                    if filename not in filename_map
+                ]
+                if invalid_copied_refs:
+                    errors.append(
+                        _("Skipped %(title)s because linked image files were missing or invalid: %(filenames)s")
+                        % {
+                            "title": title,
+                            "filenames": ", ".join(sorted(invalid_copied_refs)),
                         }
                     )
                     continue
@@ -1168,7 +1165,7 @@ def import_articles_from_zip(uploaded_zip, owner, *, _depth=0, _preflight_comple
                     errors.append(f"{title}: {error}")
         finally:
             cleanup_unreferenced_import_uploads(
-                filename_map,
+                copied_import_uploads,
                 retained_import_uploads,
                 errors=errors,
             )
