@@ -1084,13 +1084,23 @@ def allowed_article_edit_actions_for(user, article, *, review_mode=False):
         # ArticleEditWorkspace. This does not change the article until Save is
         # clicked. Keep this separate from the shared pending-update workflow.
         allowed_actions = {"save", ""}
-        has_staged_update = bool(getattr(article, "has_staged_update", False))
-        if has_staged_update:
+        has_shared_review_update = bool(
+            getattr(article, "has_staged_update", False)
+            and article.update_status in {
+                SuggestedArticle.UpdateStatus.PENDING,
+                SuggestedArticle.UpdateStatus.FAILED,
+            }
+        )
+        if has_shared_review_update:
             allowed_actions.add("revert_published")
         elif (
             not review_mode
             and article.status == SuggestedArticle.Status.PUBLISHED
         ):
+            # ``UpdateStatus.NONE`` is the article owner's private unpublished
+            # update draft. Managers/Admins editing the live article must not
+            # inherit or act on that private copy. Their own manual draft lives
+            # in ArticleEditWorkspace instead.
             allowed_actions.update({"save_personal_draft", "revert_personal_draft"})
         return allowed_actions
 
@@ -1122,9 +1132,9 @@ def allowed_article_statuses_for_admin_edit(article, user=None):
     expose three safe choices: keep pending, approve/publish, or reject.
 
     Managers and Admin Users retain broader workflow controls inside their own
-    scope, except every staged update (saved, pending, or rejected) is
-    constrained so an already-published article is never accidentally hidden
-    while its separate update copy is being resolved.
+    scope, except submitted/rejected shared updates are constrained so an already-published
+    article is never accidentally hidden while its separate review copy is being
+    resolved. An owner-private ``UpdateStatus.NONE`` draft is ignored here.
     """
     review_choices = {
         SuggestedArticle.Status.PENDING,
@@ -1132,10 +1142,16 @@ def allowed_article_statuses_for_admin_edit(article, user=None):
         SuggestedArticle.Status.FAILED,
     }
 
-    if getattr(article, "has_staged_update", False):
-        # Saved, pending, and rejected updates all use the same constrained
-        # workflow. A manager must not be able to turn the underlying published
-        # article into Draft/Failed while resolving its separate update copy.
+    if (
+        getattr(article, "has_staged_update", False)
+        and article.update_status in {
+            SuggestedArticle.UpdateStatus.PENDING,
+            SuggestedArticle.UpdateStatus.FAILED,
+        }
+    ):
+        # Submitted and rejected updates use the constrained review workflow.
+        # ``UpdateStatus.NONE`` is the owner's private unpublished draft and is
+        # deliberately ignored by Manager/Admin live-article editing.
         return review_choices
 
     if user is not None and user_is_article_approver_only_for_visibility(

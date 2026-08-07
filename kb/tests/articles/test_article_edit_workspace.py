@@ -204,6 +204,104 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertContains(other_view, published_body)
         self.assertNotContains(other_view, "Manager private draft title")
 
+    def test_manager_cannot_see_writer_private_saved_update_draft(self):
+        manager = self._manager_for_personal_draft()
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now()
+        self.article.pending_update_title = "Writer private unpublished title"
+        self.article.pending_update_body = "Writer private unpublished body that was never submitted."
+        self.article.pending_update_keywords = "writer, private"
+        self.article.update_status = SuggestedArticle.UpdateStatus.NONE
+        self.article.save()
+
+        self.client.force_login(manager)
+        response = self.client.get(self._edit_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.article.title)
+        self.assertContains(response, self.article.body)
+        self.assertNotContains(response, "Writer private unpublished title")
+        self.assertNotContains(response, "Writer private unpublished body that was never submitted.")
+        self.assertContains(response, 'value="save_personal_draft"')
+
+    def test_manager_personal_draft_survives_while_writer_update_is_in_review(self):
+        manager = self._manager_for_personal_draft()
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now()
+        self.article.save(update_fields=["status", "approved_at", "updated_at"])
+        self.client.force_login(manager)
+        self.client.get(self._edit_url())
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=manager,
+            article=self.article,
+            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
+        )
+        workspace.title = "Manager personal draft kept during review"
+        workspace.body = "Manager personal draft body kept while another update is pending."
+        workspace.is_dirty = True
+        workspace.save(update_fields=["title", "body", "is_dirty", "updated_at"])
+
+        self.article.pending_update_title = "Writer submitted update"
+        self.article.pending_update_body = "Writer submitted update body."
+        self.article.pending_update_keywords = "writer, submitted"
+        self.article.update_status = SuggestedArticle.UpdateStatus.PENDING
+        self.article.update_submitted_at = timezone.now()
+        self.article.save()
+
+        response = self.client.get(self._edit_url())
+
+        self.assertEqual(response.status_code, 200)
+        workspace.refresh_from_db()
+        self.assertTrue(workspace.is_dirty)
+        self.assertEqual(workspace.title, "Manager personal draft kept during review")
+        # While the shared update is pending, the review copy is shown instead.
+        self.assertContains(response, "Writer submitted update")
+
+        self.article.clear_pending_update()
+        self.article.save()
+        restored = self.client.get(self._edit_url())
+        workspace.refresh_from_db()
+        self.assertTrue(workspace.is_dirty)
+        self.assertContains(restored, "Manager personal draft kept during review")
+
+    def test_writer_save_draft_retracts_previously_submitted_update(self):
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now()
+        self.article.pending_update_title = "Submitted update title"
+        self.article.pending_update_body = "Submitted update body before returning to draft."
+        self.article.pending_update_keywords = "submitted"
+        self.article.update_status = SuggestedArticle.UpdateStatus.PENDING
+        self.article.update_submitted_at = timezone.now()
+        self.article.save()
+        workspace, _response = self._open_workspace()
+
+        response = self.client.post(
+            self._edit_url(),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "edit",
+                "frm_kb_title": "Private update draft title",
+                "frm_kb_body": "Private update draft body after retracting from review.",
+                "frm_kb_keywords": "private, draft",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "submit_action": "save_update_draft",
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.update_status, SuggestedArticle.UpdateStatus.NONE)
+        self.assertIsNone(self.article.update_submitted_at)
+        self.assertIsNone(self.article.update_reviewed_at)
+        self.assertEqual(self.article.pending_update_title, "Private update draft title")
+        self.assertEqual(
+            self.article.pending_update_body,
+            "Private update draft body after retracting from review.",
+        )
+        self.assertFalse(self.article.has_pending_update)
+        self.assertTrue(self.article.has_staged_update)
+
     def test_manager_revert_personal_draft_restores_latest_published_article(self):
         manager = self._manager_for_personal_draft()
         self.article.status = SuggestedArticle.Status.PUBLISHED
@@ -477,7 +575,7 @@ class ArticleEditWorkspaceTests(TestCase):
         self.article.approved_at = timezone.now() - timedelta(minutes=5)
         self.article.save(update_fields=["status", "approved_at", "updated_at"])
         workspace, _response = self._open_workspace()
-        original_snapshot = workspace.article_approved_at_snapshot
+        self.assertIsNotNone(workspace.article_approved_at_snapshot)
 
         approved_title = "Newly approved article version"
         approved_body = "This is the version approved while the old editor remained open."
@@ -490,7 +588,9 @@ class ArticleEditWorkspaceTests(TestCase):
             self._edit_url(),
             {
                 "edit_workspace_id": str(workspace.pk),
-                "article_edit_approved_at_snapshot": original_snapshot.isoformat(),
+                # A forged browser timestamp must not override the server-owned
+                # ArticleEditWorkspace approval baseline.
+                "article_edit_approved_at_snapshot": (timezone.now() + timedelta(days=1)).isoformat(),
                 "editor_mode": "edit",
                 "frm_kb_title": "Older editor title",
                 "frm_kb_body": "Older editor body that must not replace approval",
@@ -518,7 +618,7 @@ class ArticleEditWorkspaceTests(TestCase):
         self.article.save(update_fields=["status", "approved_at", "updated_at"])
         workspace, _response = self._open_workspace()
         old_workspace_id = workspace.pk
-        old_snapshot = workspace.article_approved_at_snapshot
+        self.assertIsNotNone(workspace.article_approved_at_snapshot)
         workspace.delete()
 
         self.article.title = "Approved after previous submission"
@@ -530,7 +630,7 @@ class ArticleEditWorkspaceTests(TestCase):
             self._edit_url(),
             {
                 "edit_workspace_id": str(old_workspace_id),
-                "article_edit_approved_at_snapshot": old_snapshot.isoformat(),
+                "article_edit_approved_at_snapshot": (timezone.now() + timedelta(days=1)).isoformat(),
                 "editor_mode": "edit",
                 "frm_kb_title": "Old tab continued editing",
                 "frm_kb_body": "Old tab content",
@@ -545,10 +645,11 @@ class ArticleEditWorkspaceTests(TestCase):
         self.article.refresh_from_db()
         self.assertEqual(self.article.title, "Approved after previous submission")
 
-    def test_manual_edit_page_keeps_approval_snapshot_without_checkpoint_javascript(self):
-        _workspace, response = self._open_workspace()
+    def test_manual_edit_page_keeps_approval_snapshot_server_side_only(self):
+        workspace, response = self._open_workspace()
 
-        self.assertContains(response, 'name="article_edit_approved_at_snapshot"')
+        self.assertEqual(workspace.article_approved_at_snapshot, self.article.approved_at)
+        self.assertNotContains(response, 'name="article_edit_approved_at_snapshot"')
         self.assertNotContains(response, "article-edit-workspace.js")
         self.assertNotContains(response, "articleEditWorkspaceResetButton")
         self.assertNotContains(response, "articleEditWorkspaceLeaveModal")

@@ -14,7 +14,6 @@ import json
 import re
 from django.db import IntegrityError, transaction
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext as _
 from urllib.parse import quote
 
@@ -91,7 +90,7 @@ def _split_keywords_for_suggestions(value):
     return candidates
 
 
-def get_keyword_suggestion_catalog_json(visibility=SuggestedArticle.Visibility.PUBLIC, user=None):
+def get_keyword_suggestion_catalog(visibility=SuggestedArticle.Visibility.PUBLIC, user=None):
     """Return existing manually-created keywords for the add/edit article forms.
 
     Suggestions are intentionally limited to keywords that already exist on
@@ -118,7 +117,7 @@ def get_keyword_suggestion_catalog_json(visibility=SuggestedArticle.Visibility.P
         for keyword, count in counts.items()
     ]
     catalog.sort(key=lambda item: (-item["usage_count"], item["keyword"]))
-    return json.dumps(catalog[:500], ensure_ascii=False)
+    return catalog[:500]
 
 
 
@@ -198,10 +197,41 @@ def _article_edit_workspace_mode(is_review_mode):
     )
 
 
+def _article_shared_staged_update_visible_to_editor(article, user, *, is_review_mode):
+    """Return whether this editor may load the shared ``pending_update_*`` copy.
+
+    A published owner's ``UpdateStatus.NONE`` copy is a private saved draft. It
+    is visible only to that owner while they are using the normal writer/edit
+    workflow. Submitted or rejected copies are shared review state and remain
+    visible to authorised reviewers/managers. Managers/Admins editing the live
+    published article therefore never inherit another user's unsubmitted draft.
+    """
+    if not bool(getattr(article, "has_staged_update", False)):
+        return False
+
+    if article.update_status in {
+        SuggestedArticle.UpdateStatus.PENDING,
+        SuggestedArticle.UpdateStatus.FAILED,
+    }:
+        return True
+
+    if article.update_status != SuggestedArticle.UpdateStatus.NONE:
+        return False
+
+    return bool(
+        article.owner_id == getattr(user, "pk", None)
+        and not user_can_review_article(user, article, review_mode=is_review_mode)
+    )
+
+
 def _article_edit_workspace_baseline(article, user, *, is_review_mode):
-    """Return the current saved values used to initialise an edit checkpoint."""
+    """Return the current saved values used to initialise an edit workspace."""
     can_review = user_can_review_article(user, article, review_mode=is_review_mode)
-    has_staged_update = bool(getattr(article, "has_staged_update", False))
+    has_staged_update = _article_shared_staged_update_visible_to_editor(
+        article,
+        user,
+        is_review_mode=is_review_mode,
+    )
     if has_staged_update:
         title = article.pending_update_title or article.title
         body = article.pending_update_body or article.body
@@ -248,7 +278,7 @@ def _get_or_create_article_edit_workspace(
     *,
     is_review_mode,
     refresh_clean_workspace=True,
-    restore_manual_draft=False,
+    preserve_manual_draft=False,
 ):
     """Return the owner-scoped context for editing one existing article.
 
@@ -275,10 +305,12 @@ def _get_or_create_article_edit_workspace(
                 )
                 .first()
             )
-            if existing is not None and not (restore_manual_draft and existing.is_dirty):
+            if existing is not None and not (preserve_manual_draft and existing.is_dirty):
                 # Existing-article edits are manual-save only. A fresh GET must
-                # never restore unsaved text or temporary image changes. The one
-                # exception is an explicit personal draft saved by a Manager/Admin.
+                # never restore unsaved text or temporary image changes. An
+                # explicitly saved Manager/Admin personal draft is preserved even
+                # while a separate shared update is submitted/rejected; it becomes
+                # restorable again after that shared review state is resolved.
                 discard_article_edit_workspace(request, existing)
 
     try:
@@ -306,19 +338,6 @@ def _get_or_create_article_edit_workspace(
             editor_mode=editor_mode,
         )
     return workspace
-
-
-def _parse_article_approval_snapshot(value):
-    """Parse the hidden approval baseline emitted by an older editor page."""
-    value = (value or "").strip()
-    if not value:
-        return None
-    parsed = parse_datetime(value)
-    if parsed is None:
-        return None
-    if timezone.is_naive(parsed):
-        parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
-    return parsed
 
 
 def _article_approval_took_precedence(article, approved_at_snapshot):
@@ -352,7 +371,7 @@ def _render_suggest_form_for_visibility(request, *, visibility, can_publish_dire
         "article_video_max_width_px": get_article_video_max_width_px(),
         "article_body_character_limit": get_article_body_character_limit(),
         "article_keyword_limit": get_article_keyword_limit(),
-        "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=visibility, user=request.user),
+        "keyword_suggestion_catalog": get_keyword_suggestion_catalog(visibility=visibility, user=request.user),
         "article_visibility": visibility,
         "article_visibility_label": article_visibility_label(visibility),
         "visibility_choices": visibility_choices,
@@ -856,26 +875,50 @@ def edit_suggestion(request, article_id):
 
     fallback_view_name = "edit_my_internal_suggestions" if article.is_internal else "edit_my_suggestions"
     return_url = get_safe_return_url(request, fallback_view_name=fallback_view_name)
-    can_restore_personal_draft = bool(
+    can_keep_personal_draft = bool(
         not is_review_mode
         and user_can_review_article(request.user, article, review_mode=False)
         and article.status == SuggestedArticle.Status.PUBLISHED
-        and not bool(getattr(article, "has_staged_update", False))
+    )
+    has_shared_review_update = bool(
+        getattr(article, "has_staged_update", False)
+        and article.update_status in {
+            SuggestedArticle.UpdateStatus.PENDING,
+            SuggestedArticle.UpdateStatus.FAILED,
+        }
+    )
+    can_restore_personal_draft = bool(
+        can_keep_personal_draft
+        and not has_shared_review_update
     )
     edit_workspace = _get_or_create_article_edit_workspace(
         request,
         article,
         is_review_mode=is_review_mode,
         refresh_clean_workspace=request.method == "GET",
-        restore_manual_draft=can_restore_personal_draft,
+        preserve_manual_draft=can_keep_personal_draft,
     )
 
     def render_edit_form(extra_context=None):
         extra_context = extra_context or {}
         can_review_article = user_can_review_article(request.user, article, review_mode=is_review_mode)
-        has_staged_update = bool(getattr(article, "has_staged_update", False))
-        pending_update_review = can_review_article and has_staged_update
-        has_saved_update_draft = has_staged_update and article.update_status == SuggestedArticle.UpdateStatus.NONE
+        has_staged_update = _article_shared_staged_update_visible_to_editor(
+            article,
+            request.user,
+            is_review_mode=is_review_mode,
+        )
+        pending_update_review = bool(
+            can_review_article
+            and has_staged_update
+            and article.update_status in {
+                SuggestedArticle.UpdateStatus.PENDING,
+                SuggestedArticle.UpdateStatus.FAILED,
+            }
+        )
+        has_saved_update_draft = bool(
+            has_staged_update
+            and article.update_status == SuggestedArticle.UpdateStatus.NONE
+        )
         baseline = _article_edit_workspace_baseline(
             article,
             request.user,
@@ -905,16 +948,6 @@ def edit_suggestion(request, article_id):
         can_change_visibility = user_can_change_article_visibility(request.user, article)
         visibility_choices = article_visibility_choices_for_user(request.user, action="add") if can_change_visibility else []
         allowed_statuses = allowed_article_statuses_for_admin_edit(article, user=request.user) if can_review_article else set()
-        if "article_edit_approved_at_snapshot_value" in extra_context:
-            approved_at_snapshot_value = extra_context["article_edit_approved_at_snapshot_value"]
-        else:
-            approved_at_snapshot = (
-                edit_workspace.article_approved_at_snapshot
-                if has_personal_edit_draft
-                else baseline["article_approved_at_snapshot"]
-            )
-            approved_at_snapshot_value = approved_at_snapshot.isoformat() if approved_at_snapshot else ""
-
         context = {
             "article": article,
             "current_status": extra_context.get("current_status", article.status),
@@ -926,7 +959,7 @@ def edit_suggestion(request, article_id):
             "article_video_max_width_px": get_article_video_max_width_px(),
             "article_body_character_limit": get_article_body_character_limit(),
             "article_keyword_limit": get_article_keyword_limit(),
-            "keyword_suggestion_catalog_json": get_keyword_suggestion_catalog_json(visibility=edit_visibility, user=request.user),
+            "keyword_suggestion_catalog": get_keyword_suggestion_catalog(visibility=edit_visibility, user=request.user),
             "return_url": return_url,
             "back_url": back_url,
             "title_value": edit_title,
@@ -951,7 +984,6 @@ def edit_suggestion(request, article_id):
             "show_personal_edit_draft_actions": can_restore_personal_draft,
             "article_visibility": edit_visibility,
             "article_edit_workspace_id": str(edit_workspace.pk),
-            "article_edit_approved_at_snapshot_value": approved_at_snapshot_value,
             "approval_precedence_conflict": bool(extra_context.get("approval_precedence_conflict", False)),
             "article_visibility_label": article.visibility_label,
             "is_internal_article_form": article.is_internal,
@@ -963,19 +995,15 @@ def edit_suggestion(request, article_id):
         context.update(extra_context)
         return render(request, "suggest_edit.html", context)
 
-    def render_approval_precedence_conflict(*, snapshot_value=None):
+    def render_approval_precedence_conflict():
         baseline = _article_edit_workspace_baseline(
             article,
             request.user,
             is_review_mode=is_review_mode,
         )
-        if snapshot_value is None:
-            snapshot = baseline["article_approved_at_snapshot"]
-            snapshot_value = snapshot.isoformat() if snapshot else ""
         return render_edit_form({
             "error": _approval_precedence_error_message(),
             "approval_precedence_conflict": True,
-            "article_edit_approved_at_snapshot_value": snapshot_value,
             "title_value": request.POST.get("frm_kb_title", baseline["title"]),
             "body_value": request.POST.get("frm_kb_body", baseline["body"]),
             "keywords_value": request.POST.get("frm_kb_keywords", baseline["keywords"]),
@@ -989,16 +1017,9 @@ def edit_suggestion(request, article_id):
         return render_edit_form()
 
     submitted_workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
-    submitted_approval_snapshot_value = (
-        request.POST.get("article_edit_approved_at_snapshot") or ""
-    ).strip()
-    submitted_approval_snapshot = _parse_article_approval_snapshot(
-        submitted_approval_snapshot_value
-    )
-    # Preserve compatibility with forms or tests opened before the checkpoint
-    # field was introduced. The server-created workspace above remains the
-    # authoritative owner-scoped context; a supplied non-empty UUID must still
-    # match exactly.
+    # The server-owned ArticleEditWorkspace is the only approval baseline. A
+    # browser-supplied timestamp is deliberately ignored so a modified hidden
+    # field cannot weaken stale-editor/approval precedence protection.
     if not submitted_workspace_id:
         submitted_workspace_id = str(edit_workspace.pk)
     with transaction.atomic():
@@ -1010,19 +1031,13 @@ def edit_suggestion(request, article_id):
             for_update=True,
         )
         if edit_workspace is None:
-            # An older tab may refer to an editor context that was finalised and
-            # removed when its earlier version was submitted. If that version has
-            # since been approved, show a safe workflow conflict instead of a 404.
-            if _article_approval_took_precedence(article, submitted_approval_snapshot):
-                return render_approval_precedence_conflict(
-                    snapshot_value=submitted_approval_snapshot_value
-                )
+            # A finalised/missing workspace cannot provide an authoritative
+            # server baseline. Fail closed for a published article instead of
+            # trusting any timestamp supplied by an older browser tab.
+            if article.status == SuggestedArticle.Status.PUBLISHED:
+                return render_approval_precedence_conflict()
             raise Http404("Article edit workspace not found")
-        effective_approval_snapshot = submitted_approval_snapshot
-        if not submitted_approval_snapshot_value:
-            # Compatibility for older forms/tests that pre-date the hidden
-            # approval snapshot. New pages always submit the explicit value.
-            effective_approval_snapshot = edit_workspace.article_approved_at_snapshot
+        effective_approval_snapshot = edit_workspace.article_approved_at_snapshot
         approval_took_precedence = _article_approval_took_precedence(
             article,
             effective_approval_snapshot,
@@ -1054,9 +1069,17 @@ def edit_suggestion(request, article_id):
 
     is_admin_action = user_can_review_article(request.user, article, review_mode=is_review_mode)
     is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
-    is_admin_pending_update_review = (
+    is_admin_pending_update_review = bool(
         is_admin_action
-        and bool(getattr(article, "has_staged_update", False))
+        and _article_shared_staged_update_visible_to_editor(
+            article,
+            request.user,
+            is_review_mode=is_review_mode,
+        )
+        and article.update_status in {
+            SuggestedArticle.UpdateStatus.PENDING,
+            SuggestedArticle.UpdateStatus.FAILED,
+        }
     )
 
     if submit_action == "revert_personal_draft":
@@ -1339,24 +1362,13 @@ def edit_suggestion(request, article_id):
         write_public_files = False
 
         if submit_action == "save_update_draft":
-            # Save the user's edited update progress without changing the public
-            # article and without forcing an immediate admin review.
-            #
-            # Existing rejected updates stay rejected so the admin feedback stays
-            # visible. Existing pending updates stay pending because they are
-            # already in the review queue. Brand-new published edits are saved
-            # as a private update draft by keeping update_status as NONE while
-            # storing the edited content in pending_update_* fields.
-            if previous_update_status == SuggestedArticle.UpdateStatus.FAILED:
-                article.update_status = SuggestedArticle.UpdateStatus.FAILED
-                if not article.update_reviewed_at:
-                    article.update_reviewed_at = timezone.now()
-            elif previous_update_status == SuggestedArticle.UpdateStatus.PENDING:
-                article.update_status = SuggestedArticle.UpdateStatus.PENDING
-            else:
-                article.update_status = SuggestedArticle.UpdateStatus.NONE
-                article.update_submitted_at = None
-                article.update_reviewed_at = None
+            # ``Save draft`` is always private. It retracts a previously submitted
+            # or rejected update from the shared review workflow and keeps only
+            # the owner's unpublished ``pending_update_*`` copy. Reviewers cannot
+            # see or act on it again until the owner explicitly submits it.
+            article.update_status = SuggestedArticle.UpdateStatus.NONE
+            article.update_submitted_at = None
+            article.update_reviewed_at = None
         else:
             article.update_status = SuggestedArticle.UpdateStatus.PENDING
             article.update_submitted_at = timezone.now()

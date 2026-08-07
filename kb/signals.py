@@ -31,26 +31,50 @@ def purge_deleted_user_checkpoint(sender, instance, **kwargs):
     """Purge private New Article and existing-article checkpoints on permanent account deletion.
 
     Setting ``is_active=False`` or assigning the Disabled User role does not
-    delete the User row and therefore does not run this cleanup. Existing
-    articles remain and become orphaned through SuggestedArticle.owner SET_NULL.
+    delete the User row and therefore does not run this cleanup. Published
+    knowledge remains as orphaned content; unpublished saved articles and
+    private update copies are removed with the deleted account.
     """
     from .account_cleanup import prepare_user_account_deletion
 
     prepare_user_account_deletion(instance)
 
 
+def _refresh_owned_article_author_snapshots(user):
+    """Refresh all owned article author snapshots with one database UPDATE."""
+
+    try:
+        profile = user.kb_profile
+    except UserProfile.DoesNotExist:
+        profile = None
+
+    if profile is not None:
+        account_type = profile.get_account_type_display()
+    elif user.is_superuser or user.is_staff:
+        account_type = "Admin"
+    else:
+        account_type = ""
+
+    SuggestedArticle.objects.filter(owner_id=user.pk).update(
+        author_username_snapshot=user.get_username(),
+        author_name_snapshot=user.get_full_name().strip(),
+        author_email_snapshot=user.email or "",
+        author_account_type_snapshot=account_type,
+    )
+
+
 @receiver(post_save, sender=get_user_model())
 def create_user_profile(sender, instance, created, **kwargs):
-    """Create/sync the main-site profile whenever a User is created.
+    """Create/sync the main-site profile and author identity snapshots.
 
-    New users are placed into a default Knowledge Repository role group:
-    - staff/superuser/admin-type accounts -> Admin Users
-    - all other local/AD accounts -> Regular User (view-only)
-
-    The article author snapshot is also refreshed while the user still exists,
-    so username/email changes are reflected in the article metadata. If the
-    user is later deleted, the last stored snapshot remains on the article.
+    Routine saves such as Django's ``last_login`` update must not scan/update
+    every article owned by the user. Role normalisation runs only when creation
+    or staff/superuser state may have changed, while article snapshots refresh
+    only when identity/account-type fields may have changed.
     """
+    update_fields = kwargs.get("update_fields")
+    changed_fields = set(update_fields or [])
+
     if created:
         if instance.is_superuser or instance.is_staff:
             account_type = UserProfile.AccountType.ADMIN
@@ -67,30 +91,38 @@ def create_user_profile(sender, instance, created, **kwargs):
             },
         )
 
-    try:
-        from .permissions import assign_default_kb_role_group
+    role_fields = {"is_staff", "is_superuser"}
+    should_normalise_role = bool(
+        created
+        or update_fields is None
+        or changed_fields.intersection(role_fields)
+    )
+    if should_normalise_role:
+        try:
+            from .permissions import assign_default_kb_role_group
 
-        assign_default_kb_role_group(instance)
-    except Exception:
-        # Do not break migrations or login if auth_group/auth_permission are not
-        # ready yet during initial deployment.
-        pass
+            assign_default_kb_role_group(instance)
+        except Exception:
+            # Do not break migrations if auth_group/auth_permission are not ready
+            # during initial deployment. Runtime role changes are also normalised
+            # by the dedicated m2m role signal below.
+            pass
 
-    # Keep author snapshot details updated when a user edits their name/email,
-    # and avoid crashing during login if the model code and signal code are ever
-    # temporarily out of sync. Login updates User.last_login, which also fires
-    # this signal.
-    for article in SuggestedArticle.objects.filter(owner=instance):
-        if not hasattr(article, "refresh_author_snapshot"):
-            continue
-
-        article.refresh_author_snapshot()
-        SuggestedArticle.objects.filter(pk=article.pk).update(
-            author_username_snapshot=article.author_username_snapshot,
-            author_name_snapshot=article.author_name_snapshot,
-            author_email_snapshot=article.author_email_snapshot,
-            author_account_type_snapshot=article.author_account_type_snapshot,
-        )
+    snapshot_fields = {
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "is_staff",
+        "is_superuser",
+    }
+    should_refresh_snapshots = bool(
+        created
+        or update_fields is None
+        or changed_fields.intersection(snapshot_fields)
+    )
+    if should_refresh_snapshots:
+        _refresh_owned_article_author_snapshots(instance)
 
 
 @receiver(m2m_changed, sender=get_user_model().groups.through)

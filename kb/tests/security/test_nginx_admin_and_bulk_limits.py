@@ -32,3 +32,12 @@ class NginxAdminAndBulkLimitTests(SimpleTestCase):
         self.assertIn("client_body_timeout 300s", self.config)
         self.assertIn("limit_conn djopenkb_conn_per_ip 1", self.config)
         self.assertIn("proxy_read_timeout 310s", self.config)
+
+    def test_static_assets_are_revalidated_instead_of_cached_stale_for_days(self):
+        static_block_start = self.config.index("location /static/")
+        static_block_end = self.config.index("}", static_block_start)
+        static_block = self.config[static_block_start:static_block_end]
+
+        self.assertIn("expires -1", static_block)
+        self.assertNotIn("expires 7d", static_block)
+

@@ -483,7 +483,7 @@ sudo docker compose exec web python manage.py test \
 sudo docker compose exec web python manage.py test \
   kb.tests.articles.test_article_creation_workspace
 
-# Existing-article edit/review checkpoint, autosave and leave handling
+# Existing-article manual edit/review, personal drafts and approval precedence
 sudo docker compose exec web python manage.py test \
   kb.tests.articles.test_article_edit_workspace
 
@@ -501,7 +501,7 @@ sudo docker compose exec web python manage.py test kb.tests.ai
 
 The detailed test layout and single-module examples are maintained in `kb/tests/README.md`.
 
-After a role/workflow update, test both the visible control and a forged POST request. After a template/static update, hard-refresh the browser and confirm the cache-busting query string changed where required. After a Vault update, check token/accessor permissions without printing either value.
+After a role/workflow update, test both the visible control and a forged POST request. Static JavaScript/CSS is served with Nginx revalidation (`expires -1` / `Cache-Control: no-cache`), so normal navigation/reload should validate the current asset rather than reuse a seven-day-fresh copy; use a hard refresh only as troubleshooting, not as a deployment requirement. After a Vault update, check token/accessor permissions without printing either value.
 
 After changing the new-article workspace or image lifecycle, manually verify these paths in a non-production account:
 
@@ -519,23 +519,37 @@ sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-r
 ```
 
 
-9. Verify account-state cleanup separately: set a test user inactive and confirm the checkpoint remains; assign `Disabled User` and confirm it remains; then permanently delete another test user and confirm its active creation/edit checkpoints, private uncommitted image files, checkpoint upload/activity rows, and sessions are removed while its saved articles remain with no owner. Run:
+9. Verify account-state cleanup separately: set a test user inactive and confirm its workspaces/articles remain; assign `Disabled User` and confirm they remain; then permanently delete another test user and confirm its New Article/edit workspaces, saved Draft/Pending/Pending-failed articles, private unpublished update copy, private image files, checkpoint upload/activity rows, and sessions are removed while already-published knowledge remains as an orphan with author snapshots. Run:
 
 ```bash
 sudo docker compose exec web python manage.py test kb.tests.users.test_user_account_deletion_cleanup
 ```
 
-After changing the existing-article edit/review checkpoint workflow, manually verify these paths:
+After changing the existing-article edit/review workflow, manually verify these paths:
 
-1. Open an editable Draft or published article, change title/body/keywords, wait for **Edit checkpoint saved**, leave through Back/navbar, choose **Keep checkpoint and continue**, and confirm reopening the same article restores the fields. Confirm the saved article itself did not change before pressing a normal workflow button.
-2. Repeat and choose **Discard and continue**. Confirm the saved article remains unchanged and a newly uploaded checkpoint-only image is removed.
-3. Use **Reset edits** and confirm the latest saved article or staged pending update is reloaded. Ordinary refresh should restore rather than discard the checkpoint.
-4. Open the same article in two tabs under one account and confirm the latest autosave becomes the restored checkpoint. This workflow intentionally uses last-autosave-wins rather than conflict prompts.
-5. Open the same manageable article as two authorised accounts, save from each in sequence, and confirm the last successful normal article action is authoritative.
-6. For a published article owner, submit an update and confirm the public version stays visible while the update enters review and the normal reviewer SMTP notification is sent. Confirm checkpoint autosave alone sends no email.
-7. For a reviewer, keep a pending update pending, mark it Pending failed, and approve it in separate tests. Confirm each normal action preserves the existing review/owner notification rules.
-8. Upload a new image in Edit Article and verify it is owned by that edit checkpoint. Remove an existing committed image from the checkpoint and confirm the physical file is retained until a successful normal article save applies the removal.
-9. Run stray cleanup in dry-run mode and confirm images owned by creation or edit/review checkpoints are never listed solely because the checkpoint is old.
+1. Open an existing Draft or published article, type changes, leave without clicking a workflow button, and reopen it. Confirm the unsaved text was **not** restored. Existing articles do not autosave.
+2. For a published article owner, click **Save draft** and confirm the public article remains unchanged, `update_status` is private/`NONE`, the item is absent from Manage Pending, and no reviewer notification is sent. Reopen the article as the owner and confirm the saved update draft is available.
+3. Submit that update and confirm it becomes `PENDING`, appears in the matching review queue, and sends the normal reviewer notification. Then open it as the owner and click **Save draft** again; confirm it retracts from the queue to private `NONE`, clears submitted/reviewed timing state, and is no longer visible to reviewers until resubmitted.
+4. While an owner has a private `NONE` published-update draft, open the same published article as a Manager/Admin. Confirm the manager sees the live published version, not the owner's private draft.
+5. As a Manager/Admin editing a published article outside review, use **Save draft** and confirm the content is stored only in that account's `ArticleEditWorkspace`. Open the article as another manager and confirm drafts are isolated. Use **Save** to apply an authorised change and **Revert to last published version** to discard only the current manager's personal draft.
+6. Save a Manager/Admin personal draft, then have the writer submit a separate update. Confirm the manager's personal draft is preserved rather than deleted. Review the submitted copy through Manage Pending; after that shared review state is resolved, confirm the manager personal draft remains available.
+7. For a reviewer, select Keep pending, Approve/Publish, and Pending failed in separate tests. Confirm changing the dropdown alone does not apply the decision; only the final review action changes shared workflow state and notifications.
+8. Test approval precedence by opening a published article editor, approving/publishing a newer version elsewhere, then submitting the stale editor. Confirm the stale operation is rejected. Modify/add any browser approval timestamp field and confirm it cannot bypass the check because the server workspace snapshot is authoritative.
+9. Upload images while editing and confirm the final article can reference only its own committed images plus uploads owned by that exact edit workspace. Confirm copying another article's managed upload URL is rejected. Test 25%-200% image sizing/manual dimensions and verify video preview width matches the final Admin-configured published width.
+10. Verify keyword suggestions with unusual characters such as `<`, `>`, quotes, and `</script>` remain data and cannot break out of the JSON script element.
+11. After a static JavaScript/CSS deployment, reload normally and confirm the browser revalidates the asset. Verify the Nginx static block still uses `expires -1`.
+12. Run stray cleanup in dry-run mode and confirm images referenced by active New Article workspaces, saved personal edit drafts, pending updates, or committed articles are not listed as stray.
+
+Run the focused regression modules when these areas change:
+
+```bash
+sudo docker compose exec web python manage.py test \
+  kb.tests.articles.test_article_edit_workspace \
+  kb.tests.security.test_keyword_suggestion_json \
+  kb.tests.security.test_nginx_admin_and_bulk_limits \
+  kb.tests.users.test_user_account_deletion_cleanup \
+  kb.tests.users.test_user_author_snapshot_signal
+```
 
 ## 10. Documentation synchronisation checklist
 

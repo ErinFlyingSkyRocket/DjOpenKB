@@ -16,6 +16,7 @@ from .models import (
     ArticleCreationWorkspace,
     ArticleEditWorkspace,
     ArticleImageUploadLog,
+    SuggestedArticle,
 )
 
 logger = logging.getLogger(__name__)
@@ -128,12 +129,14 @@ def _delete_user_sessions(user_id: int) -> None:
         Session.objects.filter(session_key__in=session_keys).delete()
 
 
-def _delete_checkpoint_files(filenames: set[str]) -> None:
-    """Delete uncommitted checkpoint files after the account deletion commits.
+def _delete_private_account_files(filenames: set[str]) -> None:
+    """Delete private/unpublished image files after account deletion commits.
 
-    A defensive reference check prevents accidental removal if inconsistent
-    legacy data points a published article or another checkpoint at the same
-    generated filename.
+    A defensive reference check prevents accidental removal if another saved
+    article or another user's creation/edit workspace still references the same
+    generated filename. This covers New Article checkpoints, personal edit
+    drafts, unpublished articles removed with the account, and unpublished
+    ``pending_update_*`` copies cleared from preserved published articles.
     """
 
     if not filenames:
@@ -161,7 +164,7 @@ def _delete_checkpoint_files(filenames: set[str]) -> None:
                 continue
         except Exception:
             logger.exception(
-                "Unable to verify references before purging deleted-account checkpoint image %s",
+                "Unable to verify references before purging deleted-account private image %s",
                 filename,
             )
             continue
@@ -179,16 +182,53 @@ def _delete_checkpoint_files(filenames: set[str]) -> None:
             # The normal stray-file cleanup remains the recovery path if a
             # filesystem failure prevents immediate deletion.
             logger.exception(
-                "Unable to purge private article checkpoint image after account deletion: %s",
+                "Unable to purge private article image after account deletion: %s",
                 filename,
             )
 
 
-def prepare_user_account_deletion(user) -> None:
-    """Prepare permanent account cleanup before Django deletes the User row.
+def _delete_unpublished_article_markdown(articles: list[SuggestedArticle]) -> None:
+    """Remove generated Markdown for unpublished articles deleted with an account."""
 
-    Existing SuggestedArticle rows are intentionally untouched; their owner
-    foreign key uses SET_NULL and their author snapshots remain available.
+    if not articles:
+        return
+
+    from .views.services import delete_article_markdown_files
+
+    for article in articles:
+        try:
+            delete_article_markdown_files(article)
+        except OSError:
+            logger.exception(
+                "Unable to purge unpublished article Markdown after account deletion: article_id=%s",
+                article.pk,
+            )
+
+
+def _article_private_image_filenames(article: SuggestedArticle) -> set[str]:
+    """Return uploaded image filenames held by live or staged content on ``article``."""
+
+    from .views.services import extract_article_image_filenames, safe_uploaded_filename
+
+    candidates = set(article.image_assets or [])
+    candidates.update(extract_article_image_filenames(article.body or ""))
+    candidates.update(article.pending_update_image_assets or [])
+    candidates.update(extract_article_image_filenames(article.pending_update_body or ""))
+    return {
+        safe_name
+        for filename in candidates
+        if (safe_name := safe_uploaded_filename(filename))
+    }
+
+
+def prepare_user_account_deletion(user) -> None:
+    """Prepare privacy cleanup before Django permanently deletes a User row.
+
+    Disabled/inactive accounts are untouched because this helper runs only for
+    real User deletion. Unpublished Draft/Pending/Pending-failed articles are
+    deleted with the account. Published (and deletion-queued published) knowledge
+    is preserved as orphaned content with author snapshots, but any unpublished
+    ``pending_update_*`` copy owned by the deleted account is cleared.
     """
 
     user_id = getattr(user, "pk", None)
@@ -204,7 +244,41 @@ def prepare_user_account_deletion(user) -> None:
     creation_workspace_ids = {workspace.pk for workspace in creation_workspaces}
     edit_workspace_ids = {workspace.pk for workspace in edit_workspaces}
 
+    # Saved but unpublished article rows are private user content, unlike an
+    # already-published article that must remain useful after staff turnover.
+    private_statuses = {
+        SuggestedArticle.Status.DRAFT,
+        SuggestedArticle.Status.PENDING,
+        SuggestedArticle.Status.FAILED,
+    }
+    owned_articles = list(
+        SuggestedArticle.objects.select_for_update()
+        .filter(owner_id=user_id)
+        .order_by("pk")
+    )
+    unpublished_articles = [
+        article for article in owned_articles if article.status in private_statuses
+    ]
+    preserved_articles = [
+        article for article in owned_articles if article.status not in private_statuses
+    ]
+
+    from .views.services import extract_article_image_filenames, safe_uploaded_filename
+
     filenames: set[str] = set()
+    for article in unpublished_articles:
+        filenames.update(_article_private_image_filenames(article))
+    for article in preserved_articles:
+        # Only the unpublished staged copy is private. The published article's
+        # committed image assets remain with the orphaned published knowledge.
+        staged_candidates = set(article.pending_update_image_assets or [])
+        staged_candidates.update(extract_article_image_filenames(article.pending_update_body or ""))
+        filenames.update(
+            safe_name
+            for filename in staged_candidates
+            if (safe_name := safe_uploaded_filename(filename))
+        )
+
     if creation_workspaces or edit_workspaces:
         from .views.services import (
             article_creation_workspace_assets,
@@ -212,31 +286,58 @@ def prepare_user_account_deletion(user) -> None:
             safe_uploaded_filename,
         )
 
+        checkpoint_filenames: set[str] = set()
         for workspace in creation_workspaces:
-            filenames.update(article_creation_workspace_assets(workspace))
+            checkpoint_filenames.update(article_creation_workspace_assets(workspace))
         for workspace in edit_workspaces:
-            filenames.update(article_edit_workspace_owned_assets(workspace))
-        filenames.update(
+            checkpoint_filenames.update(article_edit_workspace_owned_assets(workspace))
+        checkpoint_filenames.update(
             ArticleImageUploadLog.objects.filter(
                 Q(creation_workspace_id__in=creation_workspace_ids)
                 | Q(edit_workspace_id__in=edit_workspace_ids)
             ).values_list("filename", flat=True)
         )
-        filenames = {
+        checkpoint_filenames = {
             safe_name
-            for filename in filenames
+            for filename in checkpoint_filenames
             if (safe_name := safe_uploaded_filename(filename))
         }
+        filenames.update(checkpoint_filenames)
         _purge_checkpoint_audit_rows(
             user_id=user_id,
             creation_workspace_ids=creation_workspace_ids,
             edit_workspace_ids=edit_workspace_ids,
-            filenames=filenames,
+            filenames=checkpoint_filenames,
+        )
+
+    # Remove unpublished saved articles inside the same database transaction as
+    # account deletion. Their generated files are removed only after commit.
+    unpublished_article_ids = [article.pk for article in unpublished_articles]
+    if unpublished_article_ids:
+        SuggestedArticle.objects.filter(pk__in=unpublished_article_ids).delete()
+
+    preserved_article_ids = [article.pk for article in preserved_articles]
+    if preserved_article_ids:
+        # Published knowledge survives as an orphan, but private update drafts,
+        # submitted updates, rejection state, and staged images do not survive
+        # permanent deletion of their owner.
+        SuggestedArticle.objects.filter(pk__in=preserved_article_ids).update(
+            pending_update_title="",
+            pending_update_body="",
+            pending_update_keywords="",
+            pending_update_image_assets=[],
+            update_status=SuggestedArticle.UpdateStatus.NONE,
+            update_submitted_at=None,
+            update_reviewed_at=None,
+            review_notes="",
         )
 
     # These callbacks run only after the account deletion transaction commits.
     transaction.on_commit(lambda uid=user_id: _delete_user_sessions(uid))
-    transaction.on_commit(lambda owned_files=set(filenames): _delete_checkpoint_files(owned_files))
+    transaction.on_commit(lambda owned_files=set(filenames): _delete_private_account_files(owned_files))
+    transaction.on_commit(
+        lambda articles=list(unpublished_articles): _delete_unpublished_article_markdown(articles)
+    )
 
     try:
         from .auth_monitoring import reset_auth_lockout

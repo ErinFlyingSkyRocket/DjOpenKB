@@ -189,9 +189,82 @@ class UserAccountDeletionCheckpointCleanupTests(TestCase):
         self.assertFalse(
             ArticleImageUploadLog.objects.filter(edit_workspace_id=workspace.pk).exists()
         )
-        article.refresh_from_db()
-        self.assertIsNone(article.owner)
-        self.assertEqual(article.body, "Saved article body")
+        self.assertFalse(SuggestedArticle.objects.filter(pk=article.pk).exists())
+
+    def test_permanent_user_delete_removes_all_unpublished_saved_articles(self):
+        draft = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Private draft removed with account",
+            body="Private draft body",
+            status=SuggestedArticle.Status.DRAFT,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+        pending = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Private pending removed with account",
+            body="Private pending body",
+            status=SuggestedArticle.Status.PENDING,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+        failed = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Private failed removed with account",
+            body="Private failed body",
+            status=SuggestedArticle.Status.FAILED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+        published = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Published knowledge survives account deletion",
+            body="Published knowledge body",
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+
+        with self.captureOnCommitCallbacks(execute=True):
+            self.user.delete()
+
+        self.assertFalse(
+            SuggestedArticle.objects.filter(pk__in=[draft.pk, pending.pk, failed.pk]).exists()
+        )
+        published.refresh_from_db()
+        self.assertIsNone(published.owner)
+        self.assertEqual(published.body, "Published knowledge body")
+        self.assertEqual(published.author_username_snapshot, "delete-workspace-user")
+
+    def test_permanent_user_delete_clears_unpublished_update_from_preserved_article(self):
+        filename = "deleted-owner-pending-update.png"
+        file_path = get_openkb_uploads_dir() / filename
+        file_path.write_bytes(PNG_1X1)
+        published = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Published article with private update",
+            body="Published body remains",
+            keywords="published",
+            image_assets=[],
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+            pending_update_title="Private pending update title",
+            pending_update_body=f"Private pending update body\n![image](/wiki/uploads/{filename})",
+            pending_update_keywords="private",
+            pending_update_image_assets=[filename],
+            update_status=SuggestedArticle.UpdateStatus.PENDING,
+        )
+
+        with self.captureOnCommitCallbacks(execute=True):
+            self.user.delete()
+
+        published.refresh_from_db()
+        self.assertIsNone(published.owner)
+        self.assertEqual(published.body, "Published body remains")
+        self.assertEqual(published.pending_update_title, "")
+        self.assertEqual(published.pending_update_body, "")
+        self.assertEqual(published.pending_update_keywords, "")
+        self.assertEqual(published.pending_update_image_assets, [])
+        self.assertEqual(published.update_status, SuggestedArticle.UpdateStatus.NONE)
+        self.assertIsNone(published.update_submitted_at)
+        self.assertIsNone(published.update_reviewed_at)
+        self.assertFalse(file_path.exists())
 
     def test_inactive_account_preserves_checkpoint_and_image(self):
         workspace, file_path = self._create_checkpoint_with_image("inactive-checkpoint.png")

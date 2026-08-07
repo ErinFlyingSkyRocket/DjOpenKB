@@ -104,7 +104,7 @@
     <div class="openkb-keyword-scroll-hint">{% trans "Scroll sideways to view more matching keywords." %}</div>
 </div>
 
-<script nonce="{{ csp_nonce }}" id="openkbKeywordSuggestionCatalog" type="application/json">{{ keyword_suggestion_catalog_json|default:"[]"|safe }}</script>
+{{ keyword_suggestion_catalog|json_script:"openkbKeywordSuggestionCatalog" }}
 <script nonce="{{ csp_nonce }}">
 (function () {
     const titleInput = document.getElementById("frm_kb_title");

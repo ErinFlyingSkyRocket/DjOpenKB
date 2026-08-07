@@ -23,7 +23,7 @@ For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GU
 - User article suggestion workflow with approval and pending-update review for published article edits.
 - Optional SMTP relay workflow and security notifications: newly submitted/re-submitted public or internal review items notify matching reviewer groups in one Bcc-only message, approval/Pending-failed decisions notify the current eligible article owner directly, and a recognised account reaching a new password/MFA lockout notifies eligible `Admin Users` in one Bcc-only alert. Internal messages omit internal titles, content, and review comments.
 - Draft, pending approval, pending failed, published, and deletion-queued article states.
-- Published article update workflow where user edits are held as pending updates while the current published version remains visible.
+- Published article update workflow where the owner may keep a private **Save draft** copy first; only **Submit update for approval** places it in the reviewer queue while the current published version remains visible.
 - Separate public and internal pending-review queues, including internal-only pending management for internal approvers/managers.
 - Article owners can manage their own drafts, failed submissions, and pending updates within the visibility scope they are allowed to create.
 - Published article deletion requires MFA confirmation. By default, a published article is hidden and placed in a recoverable admin deletion queue for 7 days; administrators can restore or permanently purge it. The retention setting can be set to `0` for immediate permanent deletion. Draft, pending, and pending-failed articles delete immediately.
@@ -115,13 +115,13 @@ Local and AD users are identified from account-source metadata rather than email
 | Local password policy | One Django validator is used by self-service and Admin paths: minimum 12 characters, uppercase, lowercase, number, special character, and no username/email-name inclusion |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
 | Authorization | Group-based roles, public/internal scope checks, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, protected image serving, and restricted admin routes |
-| Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, pending-update review for published edits, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
+| Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, private owner drafts for published updates, explicit pending-update review, per-manager/admin personal edit drafts, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
 | Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only; normal results are newest-updated matching articles first; the main search dropdown keeps up to five recent searches in browser `sessionStorage` and switches to live accessible article suggestions while typing |
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body. Displayed article keywords are clickable and run the normal title/keyword search. |
 | Request validation | Browser limits plus Django form/model and central request validation for normal query/form submissions; endpoint-specific validation for upload/import/JSON paths; configured limits for article body, keywords, identity, MFA, search, URL, review, Admin, and metadata fields |
-| Uploads | Image-only allowlist, 2 MB limit, Pillow verification, decompression-bomb/pixel protection, generated filenames, protected serving, persistent pending count/byte quotas, and stray upload cleanup |
+| Uploads | Image-only allowlist, 2 MB limit, Pillow verification, decompression-bomb/pixel protection, generated filenames, article-scoped image references, 25%-200% display sizing plus manual dimensions, protected serving, persistent pending count/byte quotas, and stray upload cleanup |
 | Bulk import | Admin/CIDR/Admin-MFA restriction, ZIP traversal/resource budgets, duplicate JSON-key and unknown-field rejection, strict workflow/type/length validation, image-reference preservation, model validation, and database uniqueness |
-| Markdown / video | Sanitized rendered HTML, single-Enter visible line breaks, comfortable soft-wrapping editor, published-width live preview, and controlled YouTube privacy-enhanced, Vimeo, or direct HTTPS video players constrained by CSP allowlists |
+| Markdown / video | Sanitized rendered HTML, safely embedded keyword-suggestion JSON, single-Enter visible line breaks, comfortable soft-wrapping editor, published-width live preview, and controlled YouTube privacy-enhanced, Vimeo, or direct HTTPS video players using the same Admin-configured responsive maximum width in preview and published display |
 | AI chatbot | Login-protected persistent chat widget, role-scoped public/internal indexes, encrypted short-lived Redis job records, Celery background execution, 5 questions per 60 seconds, a 30-minute burst cooldown, an Admin-configurable fixed 24-hour per-user quota (default 20), query/worker concurrency controls, timeout handling, related article recommendations, and privacy-safe activity metadata |
 | Password/MFA lockout | Progressive lockout policy stored in Site settings, with configurable stages, repeat counts, block durations, and admin reset actions |
 | Logging | Separate authentication logs, append-only general activity logs, and admin activity logs with retention cleanup. Queue, restore, manual purge, automatic purge, profile email, and local-password changes are recorded. |
@@ -134,18 +134,35 @@ Local and AD users are identified from account-source metadata rather than email
 DjOpenKB keeps approved article content stable while still allowing controlled user updates. The same workflow exists for public and internal articles, but each visibility scope has its own permissions and review access.
 
 ```text
-New public article by Article Writer:
-Draft -> Pending -> Pending failed / Published
+New Article:
+Private ArticleCreationWorkspace autosaves while composing
+Reset article -> clears that private creation workspace
+Save draft -> creates a real Draft article
+Submit for approval -> Pending -> Pending failed / Published
 
-New internal article by Internal Article Writer:
-Draft -> Pending -> Pending failed / Published
-
-User edits an already published article:
+Writer edits an already published article:
 Published article remains visible
-Edited version is saved as a pending update
-Scope approver/manager/admin approves -> pending update replaces the published article
+Save draft -> private owner-only update (UpdateStatus.NONE; not in reviewer queue)
+Submit update for approval -> shared Pending update
+Save draft after submission -> retracts the update back to the private owner-only draft
+Scope approver/manager/admin approves -> submitted update replaces the published article
 Scope approver/manager/admin rejects -> published article stays unchanged and feedback is shown to the owner
+
+Manager/Admin edits an already published article outside review:
+No autosave
+Save draft -> that manager/admin's own ArticleEditWorkspace draft only
+Save -> applies the authorised live-article change
+Revert to last published version -> discards that user's personal edit draft
+
+Review pending article/update:
+No autosave
+Selecting a status alone does nothing
+Save review action -> applies Keep pending / Approve-Publish / Pending failed
 ```
+
+Permanent account deletion is different from disabling an account. Inactive and **Disabled User** accounts keep their recoverable workspaces. Permanently deleting a user removes that user's New Article/edit workspaces, saved Draft/Pending/Pending-failed articles, and any unpublished `pending_update_*` copy; already published knowledge is preserved as an orphan with author snapshots.
+
+Existing-article editors are manual-save only. The server-owned `ArticleEditWorkspace.article_approved_at_snapshot` is the authoritative stale-editor baseline; a browser-supplied timestamp is not trusted. Static JavaScript/CSS uses Nginx revalidation so stable asset filenames are checked after deployment instead of remaining cached for seven days.
 
 Roles are additive. A user with only a writer role cannot approve; a user intentionally assigned the matching approver or manager role can approve their own matching-scope submission. This is an intended design decision for the project.
 

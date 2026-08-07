@@ -261,7 +261,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     {% csrf_token %}
                 <input type="hidden" name="editor_mode" value="{{ article_editor_mode|default:'edit' }}">
                     <input type="hidden" name="edit_workspace_id" value="{{ article_edit_workspace_id }}">
-                    <input type="hidden" name="article_edit_approved_at_snapshot" value="{{ article_edit_approved_at_snapshot_value }}">
                     <input type="hidden" name="frm_kb_id" value="" />
                     <input type="hidden" name="article_visibility" value="{{ article.visibility }}" {% if can_change_article_visibility %}disabled{% endif %}>
                     {% if is_review_only_article %}
