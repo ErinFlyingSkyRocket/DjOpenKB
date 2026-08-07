@@ -23,7 +23,6 @@ from ..input_limits import (
     ARTICLE_KEYWORDS_MAX_LENGTH,
     ARTICLE_TITLE_MAX_LENGTH,
     FILENAME_MAX_LENGTH,
-    REVIEW_NOTES_MAX_LENGTH,
     URL_MAX_LENGTH,
 )
 
@@ -250,38 +249,60 @@ def _get_or_create_article_edit_workspace(
     is_review_mode,
     refresh_clean_workspace=True,
 ):
-    """Return this user's persistent checkpoint for one article/editor mode."""
+    """Return the temporary image-upload context for an existing article editor.
+
+    Existing-article text is deliberately *not* restored from this model. Opening
+    the editor starts from the latest saved article or staged update, while this
+    workspace exists only to own uncommitted image uploads until the user performs
+    an explicit Save/Submit/Review action.
+    """
     editor_mode = _article_edit_workspace_mode(is_review_mode)
     baseline = _article_edit_workspace_baseline(
         article,
         request.user,
         is_review_mode=is_review_mode,
     )
-    with transaction.atomic():
-        workspace = (
-            ArticleEditWorkspace.objects.select_for_update()
-            .filter(
-                owner=request.user,
-                article=article,
-                editor_mode=editor_mode,
+
+    if refresh_clean_workspace:
+        with transaction.atomic():
+            existing = (
+                ArticleEditWorkspace.objects.select_for_update()
+                .filter(
+                    owner=request.user,
+                    article=article,
+                    editor_mode=editor_mode,
+                )
+                .first()
             )
-            .first()
+            if existing is not None:
+                # Existing-article edits are manual-save only. A fresh GET must
+                # never restore old text or temporary image changes.
+                discard_article_edit_workspace(request, existing)
+
+    try:
+        with transaction.atomic():
+            workspace = (
+                ArticleEditWorkspace.objects.select_for_update()
+                .filter(
+                    owner=request.user,
+                    article=article,
+                    editor_mode=editor_mode,
+                )
+                .first()
+            )
+            if workspace is None:
+                workspace = ArticleEditWorkspace.objects.create(
+                    owner=request.user,
+                    article=article,
+                    editor_mode=editor_mode,
+                    **baseline,
+                )
+    except IntegrityError:
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=request.user,
+            article=article,
+            editor_mode=editor_mode,
         )
-        if workspace is None:
-            workspace = ArticleEditWorkspace.objects.create(
-                owner=request.user,
-                article=article,
-                editor_mode=editor_mode,
-                **baseline,
-            )
-        elif refresh_clean_workspace and not workspace.is_dirty:
-            changed_fields = []
-            for field, value in baseline.items():
-                if getattr(workspace, field) != value:
-                    setattr(workspace, field, value)
-                    changed_fields.append(field)
-            if changed_fields:
-                workspace.save(update_fields=changed_fields + ["updated_at"])
     return workspace
 
 
@@ -308,131 +329,12 @@ def _article_approval_took_precedence(article, approved_at_snapshot):
     return current_approved_at > approved_at_snapshot
 
 
-def _article_edit_workspace_was_superseded_by_publish(workspace, article):
-    return _article_approval_took_precedence(
-        article,
-        getattr(workspace, "article_approved_at_snapshot", None),
-    )
-
-
 def _approval_precedence_error_message():
     return _(
         "The article version opened in this editor was approved or published while you were editing. "
-        "Your checkpoint was kept, but it was not applied to the article. Reload the latest article "
-        "before saving or submitting another update."
+        "Your unsaved changes were not applied to the article. Reload the latest article before saving "
+        "or submitting another update."
     )
-
-
-def _allowed_edit_workspace_statuses(user, article, *, is_review_mode):
-    if not user_can_review_article(user, article, review_mode=is_review_mode):
-        return set()
-    if bool(getattr(article, "has_staged_update", False)):
-        return {
-            SuggestedArticle.Status.PENDING,
-            SuggestedArticle.Status.PUBLISHED,
-            SuggestedArticle.Status.FAILED,
-        }
-    return set(allowed_article_statuses_for_admin_edit(article, user=user))
-
-
-def _update_article_edit_workspace_from_request(
-    request,
-    workspace,
-    article,
-    *,
-    is_review_mode,
-):
-    """Apply last-write-wins checkpoint values from an authorised edit request."""
-    can_edit_content = user_can_edit_article_content(
-        request.user,
-        article,
-        review_mode=is_review_mode,
-    )
-    baseline = _article_edit_workspace_baseline(
-        article,
-        request.user,
-        is_review_mode=is_review_mode,
-    )
-
-    if can_edit_content:
-        title = request.POST.get("frm_kb_title", "")
-        body = request.POST.get("frm_kb_body", "")
-        keywords = request.POST.get("frm_kb_keywords", "")
-        if len(title) > ARTICLE_TITLE_MAX_LENGTH or len(keywords) > ARTICLE_KEYWORDS_MAX_LENGTH:
-            raise ValidationError(_("The article checkpoint contains an oversized field."))
-        body = validate_article_body(body)
-    else:
-        title = baseline["title"]
-        body = baseline["body"]
-        keywords = baseline["keywords"]
-
-    if user_can_change_article_visibility(request.user, article):
-        visibility = choose_requested_article_visibility(
-            request.user,
-            request.POST.get("article_visibility"),
-            action="add",
-            default=workspace.visibility or article.visibility,
-        )
-    else:
-        visibility = article.visibility
-
-    allowed_statuses = _allowed_edit_workspace_statuses(
-        request.user,
-        article,
-        is_review_mode=is_review_mode,
-    )
-    requested_status = (request.POST.get("status") or workspace.status or baseline["status"]).strip()
-    if allowed_statuses:
-        if requested_status not in allowed_statuses:
-            raise ValidationError(_("The selected article status is not allowed."))
-        status = requested_status
-        review_notes = request.POST.get("review_notes", "")
-        if len(review_notes) > REVIEW_NOTES_MAX_LENGTH:
-            raise ValidationError(
-                _("Review comments cannot exceed %(limit)s characters.")
-                % {"limit": REVIEW_NOTES_MAX_LENGTH}
-            )
-    else:
-        status = ""
-        review_notes = ""
-
-    referenced = validate_article_edit_workspace_image_references(
-        workspace,
-        body,
-        article,
-    )
-    owned = article_edit_workspace_owned_assets(workspace)
-    image_assets = list(dict.fromkeys(list(referenced) + owned))
-
-    changed = any([
-        workspace.title != title,
-        workspace.body != body,
-        workspace.keywords != keywords,
-        workspace.visibility != visibility,
-        workspace.status != status,
-        workspace.review_notes != review_notes,
-        article_edit_workspace_assets(workspace) != image_assets,
-    ])
-    workspace.title = title
-    workspace.body = body
-    workspace.keywords = keywords
-    workspace.visibility = visibility
-    workspace.status = status
-    workspace.review_notes = review_notes
-    workspace.image_assets = image_assets
-    workspace.is_dirty = bool(workspace.is_dirty or changed or owned)
-    workspace.save(update_fields=[
-        "title",
-        "body",
-        "keywords",
-        "visibility",
-        "status",
-        "review_notes",
-        "image_assets",
-        "is_dirty",
-        "updated_at",
-    ])
-    return workspace
 
 
 def _render_suggest_form_for_visibility(request, *, visibility, can_publish_directly, visibility_choices=None, workspace=None, extra_context=None):
@@ -964,12 +866,17 @@ def edit_suggestion(request, article_id):
         has_staged_update = bool(getattr(article, "has_staged_update", False))
         pending_update_review = can_review_article and has_staged_update
         has_saved_update_draft = has_staged_update and article.update_status == SuggestedArticle.UpdateStatus.NONE
-        edit_title = extra_context.get("title_value", edit_workspace.title)
-        edit_body = extra_context.get("body_value", edit_workspace.body)
-        edit_keywords = extra_context.get("keywords_value", edit_workspace.keywords)
-        edit_status = extra_context.get("status_value", edit_workspace.status)
-        edit_review_notes = extra_context.get("review_notes_value", edit_workspace.review_notes)
-        edit_visibility = extra_context.get("article_visibility", edit_workspace.visibility)
+        baseline = _article_edit_workspace_baseline(
+            article,
+            request.user,
+            is_review_mode=is_review_mode,
+        )
+        edit_title = extra_context.get("title_value", baseline["title"])
+        edit_body = extra_context.get("body_value", baseline["body"])
+        edit_keywords = extra_context.get("keywords_value", baseline["keywords"])
+        edit_status = extra_context.get("status_value", baseline["status"])
+        edit_review_notes = extra_context.get("review_notes_value", baseline["review_notes"])
+        edit_visibility = extra_context.get("article_visibility", baseline["visibility"])
 
         back_url = return_url or reverse(fallback_view_name)
         can_edit_content = user_can_edit_article_content(request.user, article, review_mode=is_review_mode)
@@ -979,7 +886,7 @@ def edit_suggestion(request, article_id):
         if "article_edit_approved_at_snapshot_value" in extra_context:
             approved_at_snapshot_value = extra_context["article_edit_approved_at_snapshot_value"]
         else:
-            approved_at_snapshot = getattr(edit_workspace, "article_approved_at_snapshot", None)
+            approved_at_snapshot = baseline["article_approved_at_snapshot"]
             approved_at_snapshot_value = approved_at_snapshot.isoformat() if approved_at_snapshot else ""
 
         context = {
@@ -1015,7 +922,6 @@ def edit_suggestion(request, article_id):
             "has_saved_update_draft": has_saved_update_draft,
             "article_visibility": edit_visibility,
             "article_edit_workspace_id": str(edit_workspace.pk),
-            "article_edit_workspace_dirty": bool(edit_workspace.is_dirty),
             "article_edit_approved_at_snapshot_value": approved_at_snapshot_value,
             "approval_precedence_conflict": bool(extra_context.get("approval_precedence_conflict", False)),
             "article_visibility_label": article.visibility_label,
@@ -1029,25 +935,28 @@ def edit_suggestion(request, article_id):
         return render(request, "suggest_edit.html", context)
 
     def render_approval_precedence_conflict(*, snapshot_value=None):
+        baseline = _article_edit_workspace_baseline(
+            article,
+            request.user,
+            is_review_mode=is_review_mode,
+        )
         if snapshot_value is None:
-            snapshot = getattr(edit_workspace, "article_approved_at_snapshot", None)
+            snapshot = baseline["article_approved_at_snapshot"]
             snapshot_value = snapshot.isoformat() if snapshot else ""
         return render_edit_form({
             "error": _approval_precedence_error_message(),
             "approval_precedence_conflict": True,
             "article_edit_approved_at_snapshot_value": snapshot_value,
-            "title_value": request.POST.get("frm_kb_title", edit_workspace.title),
-            "body_value": request.POST.get("frm_kb_body", edit_workspace.body),
-            "keywords_value": request.POST.get("frm_kb_keywords", edit_workspace.keywords),
-            "status_value": request.POST.get("status", edit_workspace.status),
+            "title_value": request.POST.get("frm_kb_title", baseline["title"]),
+            "body_value": request.POST.get("frm_kb_body", baseline["body"]),
+            "keywords_value": request.POST.get("frm_kb_keywords", baseline["keywords"]),
+            "status_value": request.POST.get("status", baseline["status"]),
             "current_status": request.POST.get("status", article.status),
-            "review_notes_value": request.POST.get("review_notes", edit_workspace.review_notes),
-            "article_visibility": request.POST.get("article_visibility", edit_workspace.visibility),
+            "review_notes_value": request.POST.get("review_notes", baseline["review_notes"]),
+            "article_visibility": request.POST.get("article_visibility", baseline["visibility"]),
         })
 
     if request.method == "GET":
-        if _article_edit_workspace_was_superseded_by_publish(edit_workspace, article):
-            return render_approval_precedence_conflict()
         return render_edit_form()
 
     submitted_workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
@@ -1063,7 +972,6 @@ def edit_suggestion(request, article_id):
     # match exactly.
     if not submitted_workspace_id:
         submitted_workspace_id = str(edit_workspace.pk)
-    requested_submit_action = (request.POST.get("submit_action") or "save").strip()
     with transaction.atomic():
         edit_workspace = get_owned_article_edit_workspace(
             request.user,
@@ -1073,28 +981,22 @@ def edit_suggestion(request, article_id):
             for_update=True,
         )
         if edit_workspace is None:
-            # An older tab may refer to a checkpoint that was finalised and removed
-            # when its earlier version was submitted. If that version has since
-            # been approved, show a safe workflow conflict instead of a 404.
+            # An older tab may refer to an editor context that was finalised and
+            # removed when its earlier version was submitted. If that version has
+            # since been approved, show a safe workflow conflict instead of a 404.
             if _article_approval_took_precedence(article, submitted_approval_snapshot):
                 return render_approval_precedence_conflict(
                     snapshot_value=submitted_approval_snapshot_value
                 )
             raise Http404("Article edit workspace not found")
-        if requested_submit_action != "revert_published":
-            try:
-                _update_article_edit_workspace_from_request(
-                    request,
-                    edit_workspace,
-                    article,
-                    is_review_mode=is_review_mode,
-                )
-            except ValidationError as error:
-                message = error.messages[0] if getattr(error, "messages", None) else str(error)
-                return render_edit_form({"error": message})
-        approval_took_precedence = _article_edit_workspace_was_superseded_by_publish(
-            edit_workspace,
+        effective_approval_snapshot = submitted_approval_snapshot
+        if not submitted_approval_snapshot_value:
+            # Compatibility for older forms/tests that pre-date the hidden
+            # approval snapshot. New pages always submit the explicit value.
+            effective_approval_snapshot = edit_workspace.article_approved_at_snapshot
+        approval_took_precedence = _article_approval_took_precedence(
             article,
+            effective_approval_snapshot,
         )
 
     if approval_took_precedence:
@@ -1422,9 +1324,9 @@ def edit_suggestion(request, article_id):
     try:
         with transaction.atomic():
             current_article = SuggestedArticle.objects.select_for_update().get(pk=article.pk)
-            if _article_edit_workspace_was_superseded_by_publish(
-                edit_workspace,
+            if _article_approval_took_precedence(
                 current_article,
+                effective_approval_snapshot,
             ):
                 article = current_article
                 return render_approval_precedence_conflict()
@@ -1729,41 +1631,13 @@ def discard_article_creation_workspace_view(request):
 @article_image_editor_required
 @require_POST
 def autosave_article_edit_workspace(request, article_id):
-    """Persist one user's existing-article checkpoint using last-save-wins."""
-    article = get_object_or_404(SuggestedArticle, pk=article_id)
-    is_review_mode = _article_editor_review_mode(request)
-    if not user_can_manage_article(request.user, article, review_mode=is_review_mode):
-        raise Http404("Article not found")
-    if is_review_mode and not user_can_review_article(request.user, article, review_mode=True):
-        raise Http404("Article not found")
+    """Existing-article autosave is intentionally disabled.
 
-    workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
-    with transaction.atomic():
-        workspace = get_owned_article_edit_workspace(
-            request.user,
-            workspace_id,
-            article=article,
-            editor_mode=_article_edit_workspace_mode(is_review_mode),
-            for_update=True,
-        )
-        if workspace is None:
-            return JsonResponse({"error": _("Article edit checkpoint not found.")}, status=404)
-        try:
-            _update_article_edit_workspace_from_request(
-                request,
-                workspace,
-                article,
-                is_review_mode=is_review_mode,
-            )
-        except ValidationError as error:
-            message = error.messages[0] if getattr(error, "messages", None) else str(error)
-            return JsonResponse({"error": message}, status=400)
-
-    return JsonResponse({
-        "saved": True,
-        "dirty": workspace.is_dirty,
-        "updated_at": workspace.updated_at.isoformat(),
-    })
+    New Article keeps its private persistent autosave workspace. Existing article
+    edits, pending reviews, and published updates are manual-save only. The route
+    remains as a harmless compatibility endpoint for older cached pages.
+    """
+    raise Http404("Existing article autosave is disabled")
 
 
 @article_image_editor_required

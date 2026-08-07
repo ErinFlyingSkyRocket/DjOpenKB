@@ -101,18 +101,30 @@ class ArticleEditWorkspaceTests(TestCase):
             payload,
         )
 
-    def test_opening_edit_page_creates_private_checkpoint_from_saved_article(self):
+    def test_opening_edit_page_uses_manual_save_editor_context(self):
         workspace, response = self._open_workspace()
 
         self.assertEqual(workspace.title, self.article.title)
         self.assertEqual(workspace.body, self.article.body)
         self.assertFalse(workspace.is_dirty)
         self.assertContains(response, str(workspace.pk))
-        self.assertContains(response, "article-edit-workspace.js")
-        self.assertContains(response, "articleEditWorkspaceLeaveModal")
-        self.assertContains(response, "Reset edits")
+        self.assertNotContains(response, "article-edit-workspace.js")
+        self.assertNotContains(response, "articleEditWorkspaceLeaveModal")
+        self.assertNotContains(response, "Reset edits")
+        self.assertNotContains(response, "Edit checkpoint saved")
 
-    def test_autosave_changes_checkpoint_without_changing_article(self):
+    def test_published_editor_has_revert_without_reset_edits_button(self):
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now()
+        self.article.save(update_fields=["status", "approved_at", "updated_at"])
+
+        _workspace, response = self._open_workspace()
+
+        self.assertContains(response, "Revert to last published version")
+        self.assertNotContains(response, "Reset edits")
+        self.assertNotContains(response, "Edit checkpoint saved")
+
+    def test_existing_article_autosave_endpoint_is_disabled(self):
         workspace, _response = self._open_workspace()
 
         response = self._autosave(
@@ -121,38 +133,52 @@ class ArticleEditWorkspaceTests(TestCase):
             frm_kb_body="x",
         )
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
         workspace.refresh_from_db()
         self.article.refresh_from_db()
-        self.assertTrue(workspace.is_dirty)
-        self.assertEqual(workspace.title, "Incomplete autosaved edit")
-        self.assertEqual(workspace.body, "x")
+        self.assertFalse(workspace.is_dirty)
+        self.assertEqual(workspace.title, self.article.title)
+        self.assertEqual(workspace.body, self.article.body)
         self.assertEqual(self.article.title, "Editable checkpoint article")
         self.assertEqual(self.article.body, "Original saved article body")
 
-    def test_latest_autosave_wins_across_tabs(self):
+    def test_reopening_edit_page_discards_unsaved_legacy_workspace(self):
         workspace, _response = self._open_workspace()
-        first = self._autosave(workspace, frm_kb_title="First tab value")
-        second = self._autosave(workspace, frm_kb_title="Second tab value")
+        old_workspace_id = workspace.pk
+        workspace.title = "Old unsaved editor title"
+        workspace.body = "Old unsaved editor body"
+        workspace.is_dirty = True
+        workspace.save(update_fields=["title", "body", "is_dirty", "updated_at"])
 
-        self.assertEqual(first.status_code, 200)
-        self.assertEqual(second.status_code, 200)
-        workspace.refresh_from_db()
-        self.assertEqual(workspace.title, "Second tab value")
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.get(self._edit_url())
 
-    def test_reopening_edit_page_restores_checkpoint(self):
-        workspace, _response = self._open_workspace()
-        self._autosave(
-            workspace,
-            frm_kb_title="Restored edit title",
-            frm_kb_body="Restored edit body",
+        replacement = ArticleEditWorkspace.objects.get(
+            owner=self.user,
+            article=self.article,
+            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
         )
+        self.assertNotEqual(replacement.pk, old_workspace_id)
+        self.assertEqual(replacement.title, self.article.title)
+        self.assertEqual(replacement.body, self.article.body)
+        self.assertFalse(replacement.is_dirty)
+        self.assertContains(response, self.article.title)
+        self.assertContains(response, self.article.body)
+        self.assertNotContains(response, "Old unsaved editor title")
+
+    def test_reopening_edit_page_never_restores_previous_text_changes(self):
+        workspace, _response = self._open_workspace()
+        workspace.title = "Restored edit title"
+        workspace.body = "Restored edit body"
+        workspace.is_dirty = True
+        workspace.save(update_fields=["title", "body", "is_dirty", "updated_at"])
 
         response = self.client.get(self._edit_url())
 
-        self.assertContains(response, "Restored edit title")
-        self.assertContains(response, "Restored edit body")
-        self.assertContains(response, "Edit checkpoint restored")
+        self.assertContains(response, "Editable checkpoint article")
+        self.assertContains(response, "Original saved article body")
+        self.assertNotContains(response, "Restored edit title")
+        self.assertNotContains(response, "Edit checkpoint restored")
 
     def test_discard_removes_checkpoint_and_uncommitted_image_only(self):
         workspace, _response = self._open_workspace()
@@ -297,8 +323,8 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertEqual(self.article.body, approved_body)
         self.assertEqual(self.article.status, SuggestedArticle.Status.PUBLISHED)
         workspace.refresh_from_db()
-        self.assertEqual(workspace.title, "Older editor title")
-        self.assertTrue(workspace.is_dirty)
+        self.assertEqual(workspace.title, "Editable checkpoint article")
+        self.assertFalse(workspace.is_dirty)
 
     def test_deleted_old_checkpoint_returns_approval_conflict_instead_of_404(self):
         self.article.status = SuggestedArticle.Status.PUBLISHED
@@ -333,22 +359,13 @@ class ArticleEditWorkspaceTests(TestCase):
         self.article.refresh_from_db()
         self.assertEqual(self.article.title, "Approved after previous submission")
 
-    def test_checkpoint_javascript_escapes_expired_session_and_supports_reload_button(self):
+    def test_manual_edit_page_keeps_approval_snapshot_without_checkpoint_javascript(self):
         _workspace, response = self._open_workspace()
-        self.assertContains(response, 'name="article_edit_approved_at_snapshot"')
 
-        javascript = (
-            Path(__file__).resolve().parents[3]
-            / "website"
-            / "static"
-            / "javascripts"
-            / "article-edit-workspace.js"
-        ).read_text(encoding="utf-8")
-        self.assertIn("redirectAfterSessionEnded", javascript)
-        self.assertIn("response.redirected", javascript)
-        self.assertIn("window.location.replace(redirectUrl)", javascript)
-        self.assertIn("articleEditReloadLatestButton", javascript)
-        self.assertIn("edit_workspace_reload", javascript)
+        self.assertContains(response, 'name="article_edit_approved_at_snapshot"')
+        self.assertNotContains(response, "article-edit-workspace.js")
+        self.assertNotContains(response, "articleEditWorkspaceResetButton")
+        self.assertNotContains(response, "articleEditWorkspaceLeaveModal")
 
     def test_normal_save_commits_checkpoint_and_removes_workspace(self):
         workspace, _response = self._open_workspace()
@@ -451,7 +468,7 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertFalse(ArticleEditWorkspace.objects.filter(pk=workspace.pk).exists())
 
 
-    def test_review_mode_uses_separate_checkpoint_without_changing_article(self):
+    def test_review_mode_is_manual_save_and_does_not_expose_autosave_ui(self):
         user_model = get_user_model()
         manager = user_model.objects.create_user(
             username="edit-checkpoint-manager",
@@ -490,14 +507,15 @@ class ArticleEditWorkspaceTests(TestCase):
             },
         )
 
-        self.assertEqual(autosave.status_code, 200)
+        self.assertEqual(autosave.status_code, 404)
         workspace.refresh_from_db()
         pending.refresh_from_db()
-        self.assertEqual(workspace.title, "Reviewer checkpoint title")
-        self.assertEqual(workspace.status, SuggestedArticle.Status.FAILED)
-        self.assertEqual(workspace.review_notes, "Please revise this article.")
-        self.assertEqual(pending.title, "Pending review checkpoint article")
+        self.assertEqual(workspace.title, pending.title)
+        self.assertEqual(workspace.status, SuggestedArticle.Status.PENDING)
+        self.assertFalse(workspace.is_dirty)
         self.assertEqual(pending.status, SuggestedArticle.Status.PENDING)
+        self.assertNotContains(response, "article-edit-workspace.js")
+        self.assertContains(response, 'data-review-action-button="true"')
 
     def test_other_user_cannot_access_or_autosave_checkpoint(self):
         workspace, _response = self._open_workspace()

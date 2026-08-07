@@ -247,27 +247,15 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     <div>{{ error }}</div>
                     {% if approval_precedence_conflict %}
                         <div class="form-group">
-                            <button id="articleEditReloadLatestButton" type="button" class="btn btn-primary">
+                            <a class="btn btn-primary" href="{% url 'edit_suggestion' article.id %}?editor_mode={{ article_editor_mode|default:'edit' }}{% if return_url %}&amp;next={{ return_url|urlencode }}{% endif %}">
                                 <i class="fa fa-refresh"></i> {% trans "Reload latest article" %}
-                            </button>
-                            <span id="articleEditReloadLatestError" class="help-block text-danger csp-is-hidden"></span>
+                            </a>
                         </div>
                     {% endif %}
                 </div>
             {% endif %}
             <div class="row">
-                <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator"
-                      data-article-edit-workspace-id="{{ article_edit_workspace_id }}"
-                      data-article-edit-workspace-dirty="{% if article_edit_workspace_dirty %}true{% else %}false{% endif %}"
-                      data-article-edit-workspace-autosave-url="{% url 'autosave_article_edit_workspace' article.id %}"
-                      data-article-edit-workspace-discard-url="{% url 'discard_article_edit_workspace' article.id %}"
-                      data-article-edit-workspace-fallback-url="{{ back_url|default:'/home/' }}"
-                      data-article-edit-workspace-reset-url="{% url 'edit_suggestion' article.id %}?editor_mode={{ article_editor_mode|default:'edit' }}{% if return_url %}&amp;next={{ return_url|urlencode }}{% endif %}"
-                      data-article-edit-workspace-saving-text="{% trans 'Saving edit checkpoint…' %}"
-                      data-article-edit-workspace-saved-text="{% trans 'Edit checkpoint saved. You can continue later.' %}"
-                      data-article-edit-workspace-restored-text="{% trans 'Edit checkpoint restored. Use Reset edits to reload the latest saved article.' %}"
-                      data-article-edit-workspace-save-error-text="{% trans 'The edit checkpoint could not be saved.' %}"
-                      data-article-edit-workspace-discard-error-text="{% trans 'The edit checkpoint could not be discarded.' %}">
+                <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator">
                     <input type="hidden" name="next" value="{{ return_url|default:'' }}">
                     {% csrf_token %}
                 <input type="hidden" name="editor_mode" value="{{ article_editor_mode|default:'edit' }}">
@@ -339,14 +327,12 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                         </div>
                         <div class="col-xs-12 edit-status-actions">
                             <div class="article-action-buttons">
-                            <button id="articleEditWorkspaceResetButton" class="btn btn-warning" type="button"><i class="fa fa-refresh"></i> {% trans "Reset edits" %}</button>
-                            <span id="articleEditWorkspaceStatus" class="text-muted article-edit-workspace-status" aria-live="polite"></span>
                             {% trans "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed." as revert_confirm_text %}
                             {% if can_review_article %}
                                 {% if is_pending_update_review %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
                                 {% endif %}
-                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit">{% if is_article_review_mode %}{% trans "Save review action" %}{% else %}{% trans "Save" %}{% endif %}</button>
+                                <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit"{% if is_article_review_mode %} data-review-action-button="true"{% endif %}>{% if is_article_review_mode %}{% trans "Save review action" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}
                                 {% if has_failed_update %}
                                     <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
@@ -479,43 +465,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
         {% include "_video_insert_modal.html" %}
     {% include "_image_size_modal.html" %}
     {% endif %}
-    <div class="modal fade" id="articleEditWorkspaceLeaveModal" tabindex="-1" role="dialog" aria-labelledby="articleEditWorkspaceLeaveModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="articleEditWorkspaceLeaveModalLabel">{% trans "Leave this article editor?" %}</h4>
-                </div>
-                <div class="modal-body">
-                    <p>{% trans "Your latest changes can remain as a private edit checkpoint, or you can discard them before continuing." %}</p>
-                    <div id="articleEditWorkspaceLeaveError" class="alert alert-danger csp-is-hidden" role="alert"></div>
-                </div>
-                <div class="modal-footer">
-                    <button id="articleEditWorkspaceDiscardContinueButton" type="button" class="btn btn-danger">{% trans "Discard and continue" %}</button>
-                    <button id="articleEditWorkspaceKeepContinueButton" type="button" class="btn btn-success">{% trans "Keep checkpoint and continue" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="articleEditWorkspaceResetModal" tabindex="-1" role="dialog" aria-labelledby="articleEditWorkspaceResetModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="{% trans 'Close' %}"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="articleEditWorkspaceResetModalLabel">{% trans "Reset these edits?" %}</h4>
-                </div>
-                <div class="modal-body">
-                    <p>{% trans "This removes the private edit checkpoint and its uncommitted images, then reloads the latest saved article or pending update." %}</p>
-                    <div id="articleEditWorkspaceResetError" class="alert alert-danger csp-is-hidden" role="alert"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-                    <button id="articleEditWorkspaceResetConfirmButton" type="button" class="btn btn-danger">{% trans "Reset edits" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <input type="hidden" id="input_notify_message" value="{% for message in messages %}{% if forloop.first %}{{ message }}{% endif %}{% empty %}{% if has_pending_update %}{% trans 'Pending update — This edit is waiting for admin approval. The current published version is still visible to users.' %}{% elif has_failed_update %}{% trans 'Update pending failed — Please review the admin comments, update your changes, and submit again.' %}{% elif has_saved_update_draft %}{% trans 'Saved update draft — You are currently editing saved changes for this published article. The current published version is still visible until you submit this update for approval.' %}{% endif %}{% endfor %}">
     <input type="hidden" id="input_notify_message_type" value="{% for message in messages %}{% if forloop.first %}{{ message.tags|default:'success' }}{% endif %}{% empty %}{% if has_pending_update %}warning{% elif has_failed_update %}danger{% elif has_saved_update_draft %}info{% endif %}{% endfor %}">
     <input type="hidden" value="" id="app_context">
@@ -529,6 +478,23 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     const statusSelect = document.getElementById("articleStatusSelect");
     const reviewGroup = document.getElementById("adminReviewNotesGroup");
     const reviewInput = document.getElementById("reviewNotesInput");
+    const reviewActionButton = document.querySelector('[data-review-action-button="true"]');
+    const defaultReviewActionText = reviewActionButton ? reviewActionButton.textContent.trim() : "";
+
+    function updateReviewActionButton() {
+        if (!statusSelect || !reviewActionButton) {
+            return;
+        }
+        const selectedOption = statusSelect.options[statusSelect.selectedIndex];
+        if (selectedOption && (statusSelect.value === "published" || statusSelect.value === "failed")) {
+            reviewActionButton.textContent = selectedOption.textContent.trim();
+        } else {
+            reviewActionButton.textContent = defaultReviewActionText;
+        }
+        const rejecting = statusSelect.value === "failed";
+        reviewActionButton.classList.toggle("btn-danger", rejecting);
+        reviewActionButton.classList.toggle("btn-success", !rejecting);
+    }
 
     function toggleAdminReviewNotes() {
         if (!statusSelect || !reviewGroup) {
@@ -546,8 +512,12 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     }
 
     if (statusSelect) {
-        statusSelect.addEventListener("change", toggleAdminReviewNotes);
+        statusSelect.addEventListener("change", function () {
+            toggleAdminReviewNotes();
+            updateReviewActionButton();
+        });
         toggleAdminReviewNotes();
+        updateReviewActionButton();
     }
 
     if (isReadOnlyArticleEditor) {
@@ -1449,7 +1419,6 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     });
 })();
 </script>
-<script src="{% static 'javascripts/article-edit-workspace.js' %}?v=20260807-approval-precedence-1"></script>
 
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}
