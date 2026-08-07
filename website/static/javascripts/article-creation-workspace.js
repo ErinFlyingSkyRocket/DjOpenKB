@@ -56,6 +56,7 @@
     editorToken = editorToken.slice(0, 64);
     var saveSequence = 0;
     var conflictDetected = false;
+    var sessionRedirecting = false;
 
     function syncVersionInputs() {
         if (revisionInput) {
@@ -104,6 +105,34 @@
         statusElement.textContent = message;
         statusElement.classList.toggle("is-error", state === "error");
         statusElement.classList.toggle("is-saving", state === "saving");
+    }
+
+    function sessionRedirectUrl(response) {
+        if (!response) {
+            return "";
+        }
+        if (response.redirected && response.url) {
+            return response.url;
+        }
+        if (response.status === 401) {
+            return fallbackUrl;
+        }
+        return "";
+    }
+
+    function redirectAfterSessionEnded(response) {
+        var redirectUrl = sessionRedirectUrl(response);
+        if (!redirectUrl) {
+            return false;
+        }
+        sessionRedirecting = true;
+        bypassLeaveGuard = true;
+        dirty = false;
+        pendingNavigation = null;
+        window.clearTimeout(autosaveTimer);
+        allowLeaveModalHide = true;
+        window.location.replace(redirectUrl);
+        return true;
     }
 
     function currentVisibility() {
@@ -212,6 +241,9 @@
                 credentials: "same-origin",
                 body: buildWorkspaceFormData(snapshot, false, sequence)
             });
+            if (redirectAfterSessionEnded(response)) {
+                return false;
+            }
             var data = {};
             try {
                 data = await response.json();
@@ -291,6 +323,9 @@
             credentials: "same-origin",
             body: data
         });
+        if (redirectAfterSessionEnded(response)) {
+            return null;
+        }
         var payload = {};
         try {
             payload = await response.json();
@@ -455,6 +490,9 @@
             setLeaveButtonsDisabled(true);
             var saved = await saveWorkspace();
             if (!saved) {
+                if (sessionRedirecting) {
+                    return;
+                }
                 if (leaveModalError) {
                     leaveModalError.textContent = conflictDetected ? conflictText : saveErrorText;
                     leaveModalError.classList.remove("csp-is-hidden");
@@ -475,6 +513,9 @@
             setLeaveButtonsDisabled(true);
             try {
                 await discardWorkspace();
+                if (sessionRedirecting) {
+                    return;
+                }
                 dirty = false;
                 bypassLeaveGuard = true;
                 window.clearTimeout(autosaveTimer);
@@ -520,6 +561,9 @@
                 // server checkpoint even when another tab advanced its revision,
                 // then replace this page with a freshly requested blank workspace.
                 await discardWorkspace({ resetLatest: true });
+                if (sessionRedirecting) {
+                    return;
+                }
                 dirty = false;
                 bypassLeaveGuard = true;
                 conflictDetected = false;

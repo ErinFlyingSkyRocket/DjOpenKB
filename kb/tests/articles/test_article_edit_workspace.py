@@ -1,5 +1,6 @@
 import base64
 import tempfile
+from datetime import timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -7,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from kb.models import ArticleEditWorkspace, ArticleImageUploadLog, SuggestedArticle
 from kb.notifications import NOTIFICATION_KIND_UPDATE_SUBMISSION
@@ -231,6 +233,96 @@ class ArticleEditWorkspaceTests(TestCase):
                 editing_article_id=self.article.pk,
             ).exists()
         )
+
+    def test_newer_approval_blocks_older_editor_save_and_offers_reload(self):
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now() - timedelta(minutes=5)
+        self.article.save(update_fields=["status", "approved_at", "updated_at"])
+        workspace, _response = self._open_workspace()
+        original_snapshot = workspace.article_approved_at_snapshot
+
+        approved_title = "Newly approved article version"
+        approved_body = "This is the version approved while the old editor remained open."
+        self.article.title = approved_title
+        self.article.body = approved_body
+        self.article.approved_at = timezone.now()
+        self.article.save()
+
+        response = self.client.post(
+            self._edit_url(),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "article_edit_approved_at_snapshot": original_snapshot.isoformat(),
+                "editor_mode": "edit",
+                "frm_kb_title": "Older editor title",
+                "frm_kb_body": "Older editor body that must not replace approval",
+                "frm_kb_keywords": "older",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "submit_action": "save_update_draft",
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "approved or published while you were editing")
+        self.assertContains(response, "Reload latest article")
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.title, approved_title)
+        self.assertEqual(self.article.body, approved_body)
+        self.assertEqual(self.article.status, SuggestedArticle.Status.PUBLISHED)
+        workspace.refresh_from_db()
+        self.assertEqual(workspace.title, "Older editor title")
+        self.assertTrue(workspace.is_dirty)
+
+    def test_deleted_old_checkpoint_returns_approval_conflict_instead_of_404(self):
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now() - timedelta(minutes=5)
+        self.article.save(update_fields=["status", "approved_at", "updated_at"])
+        workspace, _response = self._open_workspace()
+        old_workspace_id = workspace.pk
+        old_snapshot = workspace.article_approved_at_snapshot
+        workspace.delete()
+
+        self.article.title = "Approved after previous submission"
+        self.article.body = "Approved content remains authoritative."
+        self.article.approved_at = timezone.now()
+        self.article.save()
+
+        response = self.client.post(
+            self._edit_url(),
+            {
+                "edit_workspace_id": str(old_workspace_id),
+                "article_edit_approved_at_snapshot": old_snapshot.isoformat(),
+                "editor_mode": "edit",
+                "frm_kb_title": "Old tab continued editing",
+                "frm_kb_body": "Old tab content",
+                "frm_kb_keywords": "old-tab",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "submit_action": "save_update_draft",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Reload latest article")
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.title, "Approved after previous submission")
+
+    def test_checkpoint_javascript_escapes_expired_session_and_supports_reload_button(self):
+        _workspace, response = self._open_workspace()
+        self.assertContains(response, 'name="article_edit_approved_at_snapshot"')
+
+        javascript = (
+            Path(__file__).resolve().parents[3]
+            / "website"
+            / "static"
+            / "javascripts"
+            / "article-edit-workspace.js"
+        ).read_text(encoding="utf-8")
+        self.assertIn("redirectAfterSessionEnded", javascript)
+        self.assertIn("response.redirected", javascript)
+        self.assertIn("window.location.replace(redirectUrl)", javascript)
+        self.assertIn("articleEditReloadLatestButton", javascript)
+        self.assertIn("edit_workspace_reload", javascript)
 
     def test_normal_save_commits_checkpoint_and_removes_workspace(self):
         workspace, _response = self._open_workspace()

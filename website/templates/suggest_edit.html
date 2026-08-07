@@ -243,7 +243,17 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
 <div class="container-fluid">
         <div class="col-xs-12 article-editor-page-shell">
             {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
+                <div class="alert alert-danger">
+                    <div>{{ error }}</div>
+                    {% if approval_precedence_conflict %}
+                        <div class="form-group">
+                            <button id="articleEditReloadLatestButton" type="button" class="btn btn-primary">
+                                <i class="fa fa-refresh"></i> {% trans "Reload latest article" %}
+                            </button>
+                            <span id="articleEditReloadLatestError" class="help-block text-danger csp-is-hidden"></span>
+                        </div>
+                    {% endif %}
+                </div>
             {% endif %}
             <div class="row">
                 <form method="post" id="edit_form" action="{% url 'edit_suggestion' article.id %}" data-toggle="validator"
@@ -262,6 +272,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                     {% csrf_token %}
                 <input type="hidden" name="editor_mode" value="{{ article_editor_mode|default:'edit' }}">
                     <input type="hidden" name="edit_workspace_id" value="{{ article_edit_workspace_id }}">
+                    <input type="hidden" name="article_edit_approved_at_snapshot" value="{{ article_edit_approved_at_snapshot_value }}">
                     <input type="hidden" name="frm_kb_id" value="" />
                     <input type="hidden" name="article_visibility" value="{{ article.visibility }}" {% if can_change_article_visibility %}disabled{% endif %}>
                     {% if is_review_only_article %}
@@ -1438,7 +1449,7 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
     });
 })();
 </script>
-<script src="{% static 'javascripts/article-edit-workspace.js' %}?v=20260806-edit-checkpoint-1"></script>
+<script src="{% static 'javascripts/article-edit-workspace.js' %}?v=20260807-approval-precedence-1"></script>
 
     {% include "_openkb_ai_chat.html" %}
     {% include "_footer.html" %}

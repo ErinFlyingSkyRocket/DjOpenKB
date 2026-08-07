@@ -273,6 +273,10 @@ In-site navigation is intercepted before redirecting and requires **Keep checkpo
 
 Existing-article checkpoints intentionally use last-write-wins checkpoint semantics rather than revision conflicts. Tabs for the same user/article/mode share one checkpoint; different users receive separate rows. This does not bypass article permissions: every autosave, discard, image upload/delete, and final form action rechecks the authenticated user against the current article and editor mode.
 
+A newer successful approval/publication takes precedence over an older open editor. The checkpoint stores the approved-version timestamp used as its baseline, and the final workflow action rechecks that timestamp while holding a database row lock. An editor based on an older approved version is rejected before it can return the article to Draft/Pending or apply a second decision. The user receives a **Reload latest article** action; the stale private checkpoint remains available until that explicit reload/reset.
+
+Blocking checkpoint dialogs also recognise server redirects caused by session expiry or account disablement. The browser exits the dialog and follows the login or disabled-account redirect rather than requiring a checkpoint save/discard request that the expired session can no longer complete.
+
 Uncommitted image uploads are bound to the exact edit-workspace UUID and article ID. Pasting another user's pending filename does not grant ownership. Removing an already committed article image changes only the private checkpoint until a normal save succeeds, preventing a discard/reset from deleting live article media. Direct image synchronisation and scheduled stray cleanup also preserve files referenced by any active creation or edit/review checkpoint.
 
 Permanent account deletion purges that user's creation and edit/review checkpoints and their private files/metadata, while inactive or Disabled User accounts retain them. Article deletion cascade-removes checkpoints tied to the deleted article.

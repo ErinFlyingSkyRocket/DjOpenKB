@@ -698,6 +698,9 @@ class ArticleCreationWorkspaceTests(TestCase):
         self.assertIn('keepalive: true', javascript)
         self.assertIn('window.addEventListener("beforeunload"', javascript)
         self.assertIn('document.addEventListener("visibilitychange"', javascript)
+        self.assertIn("redirectAfterSessionEnded", javascript)
+        self.assertIn("response.redirected", javascript)
+        self.assertIn("window.location.replace(redirectUrl)", javascript)
 
     def test_checkpoint_autosave_does_not_create_real_draft_or_notify_reviewers(self):
         workspace, _response = self._open_workspace()

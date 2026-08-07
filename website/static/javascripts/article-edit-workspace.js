@@ -36,6 +36,8 @@
     var resetModalElement = document.getElementById("articleEditWorkspaceResetModal");
     var resetConfirmButton = document.getElementById("articleEditWorkspaceResetConfirmButton");
     var resetModalError = document.getElementById("articleEditWorkspaceResetError");
+    var reloadLatestButton = document.getElementById("articleEditReloadLatestButton");
+    var reloadLatestError = document.getElementById("articleEditReloadLatestError");
 
     var dirty = form.dataset.articleEditWorkspaceDirty === "true";
     var bypassLeaveGuard = false;
@@ -45,6 +47,7 @@
     var pendingNavigation = null;
     var allowLeaveModalHide = false;
     var historyGuardEnabled = Boolean(window.history && window.history.pushState);
+    var sessionRedirecting = false;
 
     function getCodeMirror() {
         var wrapper = document.querySelector(".CodeMirror");
@@ -70,6 +73,34 @@
         statusElement.textContent = message || "";
         statusElement.classList.toggle("is-error", state === "error");
         statusElement.classList.toggle("is-saving", state === "saving");
+    }
+
+    function sessionRedirectUrl(response) {
+        if (!response) {
+            return "";
+        }
+        if (response.redirected && response.url) {
+            return response.url;
+        }
+        if (response.status === 401) {
+            return fallbackUrl;
+        }
+        return "";
+    }
+
+    function redirectAfterSessionEnded(response) {
+        var redirectUrl = sessionRedirectUrl(response);
+        if (!redirectUrl) {
+            return false;
+        }
+        sessionRedirecting = true;
+        bypassLeaveGuard = true;
+        dirty = false;
+        pendingNavigation = null;
+        window.clearTimeout(autosaveTimer);
+        allowLeaveModalHide = true;
+        window.location.replace(redirectUrl);
+        return true;
     }
 
     function currentSnapshot() {
@@ -159,6 +190,9 @@
                 credentials: "same-origin",
                 body: buildFormData(snapshot, false)
             });
+            if (redirectAfterSessionEnded(response)) {
+                return false;
+            }
             var data = {};
             try {
                 data = await response.json();
@@ -217,6 +251,9 @@
             credentials: "same-origin",
             body: data
         });
+        if (redirectAfterSessionEnded(response)) {
+            return null;
+        }
         var payload = {};
         try {
             payload = await response.json();
@@ -366,6 +403,9 @@
             setLeaveButtonsDisabled(true);
             var saved = await saveWorkspace();
             if (!saved) {
+                if (sessionRedirecting) {
+                    return;
+                }
                 if (leaveModalError) {
                     leaveModalError.textContent = saveErrorText;
                     leaveModalError.classList.remove("csp-is-hidden");
@@ -385,6 +425,9 @@
             setLeaveButtonsDisabled(true);
             try {
                 await discardWorkspace();
+                if (sessionRedirecting) {
+                    return;
+                }
                 dirty = false;
                 bypassLeaveGuard = true;
                 hideLeaveModal();
@@ -426,6 +469,9 @@
             resetConfirmButton.disabled = true;
             try {
                 await discardWorkspace();
+                if (sessionRedirecting) {
+                    return;
+                }
                 dirty = false;
                 bypassLeaveGuard = true;
                 window.clearTimeout(autosaveTimer);
@@ -440,6 +486,33 @@
                     resetModalError.classList.remove("csp-is-hidden");
                 }
                 resetConfirmButton.disabled = false;
+            }
+        });
+    }
+
+    if (reloadLatestButton) {
+        reloadLatestButton.addEventListener("click", async function () {
+            reloadLatestButton.disabled = true;
+            if (reloadLatestError) {
+                reloadLatestError.textContent = "";
+                reloadLatestError.classList.add("csp-is-hidden");
+            }
+            try {
+                await discardWorkspace();
+                if (sessionRedirecting) {
+                    return;
+                }
+                dirty = false;
+                bypassLeaveGuard = true;
+                window.clearTimeout(autosaveTimer);
+                var separator = resetUrl.indexOf("?") === -1 ? "?" : "&";
+                window.location.replace(resetUrl + separator + "edit_workspace_reload=" + Date.now());
+            } catch (error) {
+                if (reloadLatestError) {
+                    reloadLatestError.textContent = error.message || discardErrorText;
+                    reloadLatestError.classList.remove("csp-is-hidden");
+                }
+                reloadLatestButton.disabled = false;
             }
         });
     }

@@ -1081,6 +1081,15 @@ class ArticleEditWorkspace(models.Model):
         ),
     )
     is_dirty = models.BooleanField(default=False, db_index=True)
+    article_approved_at_snapshot = models.DateTimeField(
+        null=True,
+        blank=True,
+        editable=False,
+        help_text=_(
+            "Approval timestamp of the article version used to initialise this checkpoint. "
+            "A newer approval takes precedence over an older open editor."
+        ),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 

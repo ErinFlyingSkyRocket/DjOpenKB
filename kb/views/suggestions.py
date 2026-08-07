@@ -13,6 +13,8 @@ from collections import Counter
 import json
 import re
 from django.db import IntegrityError, transaction
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext as _
 from urllib.parse import quote
 
@@ -300,10 +302,17 @@ def _article_edit_workspace_baseline(article, user, *, is_review_mode):
         "status": status or "",
         "review_notes": review_notes or "",
         "image_assets": list(dict.fromkeys(image_assets)),
+        "article_approved_at_snapshot": article.approved_at,
     }
 
 
-def _get_or_create_article_edit_workspace(request, article, *, is_review_mode):
+def _get_or_create_article_edit_workspace(
+    request,
+    article,
+    *,
+    is_review_mode,
+    refresh_clean_workspace=True,
+):
     """Return this user's persistent checkpoint for one article/editor mode."""
     editor_mode = _article_edit_workspace_mode(is_review_mode)
     baseline = _article_edit_workspace_baseline(
@@ -328,7 +337,7 @@ def _get_or_create_article_edit_workspace(request, article, *, is_review_mode):
                 editor_mode=editor_mode,
                 **baseline,
             )
-        elif not workspace.is_dirty:
+        elif refresh_clean_workspace and not workspace.is_dirty:
             changed_fields = []
             for field, value in baseline.items():
                 if getattr(workspace, field) != value:
@@ -337,6 +346,44 @@ def _get_or_create_article_edit_workspace(request, article, *, is_review_mode):
             if changed_fields:
                 workspace.save(update_fields=changed_fields + ["updated_at"])
     return workspace
+
+
+def _parse_article_approval_snapshot(value):
+    """Parse the hidden approval baseline emitted by an older editor page."""
+    value = (value or "").strip()
+    if not value:
+        return None
+    parsed = parse_datetime(value)
+    if parsed is None:
+        return None
+    if timezone.is_naive(parsed):
+        parsed = timezone.make_aware(parsed, timezone.get_current_timezone())
+    return parsed
+
+
+def _article_approval_took_precedence(article, approved_at_snapshot):
+    """Return True when a newer published version replaced this editor baseline."""
+    current_approved_at = getattr(article, "approved_at", None)
+    if article.status != SuggestedArticle.Status.PUBLISHED or not current_approved_at:
+        return False
+    if approved_at_snapshot is None:
+        return True
+    return current_approved_at > approved_at_snapshot
+
+
+def _article_edit_workspace_was_superseded_by_publish(workspace, article):
+    return _article_approval_took_precedence(
+        article,
+        getattr(workspace, "article_approved_at_snapshot", None),
+    )
+
+
+def _approval_precedence_error_message():
+    return _(
+        "The article version opened in this editor was approved or published while you were editing. "
+        "Your checkpoint was kept, but it was not applied to the article. Reload the latest article "
+        "before saving or submitting another update."
+    )
 
 
 def _allowed_edit_workspace_statuses(user, article, *, is_review_mode):
@@ -1023,6 +1070,7 @@ def edit_suggestion(request, article_id):
         request,
         article,
         is_review_mode=is_review_mode,
+        refresh_clean_workspace=request.method == "GET",
     )
 
     def render_edit_form(extra_context=None):
@@ -1043,6 +1091,11 @@ def edit_suggestion(request, article_id):
         can_change_visibility = user_can_change_article_visibility(request.user, article)
         visibility_choices = article_visibility_choices_for_user(request.user, action="add") if can_change_visibility else []
         allowed_statuses = allowed_article_statuses_for_admin_edit(article, user=request.user) if can_review_article else set()
+        if "article_edit_approved_at_snapshot_value" in extra_context:
+            approved_at_snapshot_value = extra_context["article_edit_approved_at_snapshot_value"]
+        else:
+            approved_at_snapshot = getattr(edit_workspace, "article_approved_at_snapshot", None)
+            approved_at_snapshot_value = approved_at_snapshot.isoformat() if approved_at_snapshot else ""
 
         context = {
             "article": article,
@@ -1078,6 +1131,8 @@ def edit_suggestion(request, article_id):
             "article_visibility": edit_visibility,
             "article_edit_workspace_id": str(edit_workspace.pk),
             "article_edit_workspace_dirty": bool(edit_workspace.is_dirty),
+            "article_edit_approved_at_snapshot_value": approved_at_snapshot_value,
+            "approval_precedence_conflict": bool(extra_context.get("approval_precedence_conflict", False)),
             "article_visibility_label": article.visibility_label,
             "is_internal_article_form": article.is_internal,
             "allow_status_draft": SuggestedArticle.Status.DRAFT in allowed_statuses,
@@ -1088,10 +1143,35 @@ def edit_suggestion(request, article_id):
         context.update(extra_context)
         return render(request, "suggest_edit.html", context)
 
+    def render_approval_precedence_conflict(*, snapshot_value=None):
+        if snapshot_value is None:
+            snapshot = getattr(edit_workspace, "article_approved_at_snapshot", None)
+            snapshot_value = snapshot.isoformat() if snapshot else ""
+        return render_edit_form({
+            "error": _approval_precedence_error_message(),
+            "approval_precedence_conflict": True,
+            "article_edit_approved_at_snapshot_value": snapshot_value,
+            "title_value": request.POST.get("frm_kb_title", edit_workspace.title),
+            "body_value": request.POST.get("frm_kb_body", edit_workspace.body),
+            "keywords_value": request.POST.get("frm_kb_keywords", edit_workspace.keywords),
+            "status_value": request.POST.get("status", edit_workspace.status),
+            "current_status": request.POST.get("status", article.status),
+            "review_notes_value": request.POST.get("review_notes", edit_workspace.review_notes),
+            "article_visibility": request.POST.get("article_visibility", edit_workspace.visibility),
+        })
+
     if request.method == "GET":
+        if _article_edit_workspace_was_superseded_by_publish(edit_workspace, article):
+            return render_approval_precedence_conflict()
         return render_edit_form()
 
     submitted_workspace_id = (request.POST.get("edit_workspace_id") or "").strip()
+    submitted_approval_snapshot_value = (
+        request.POST.get("article_edit_approved_at_snapshot") or ""
+    ).strip()
+    submitted_approval_snapshot = _parse_article_approval_snapshot(
+        submitted_approval_snapshot_value
+    )
     # Preserve compatibility with forms or tests opened before the checkpoint
     # field was introduced. The server-created workspace above remains the
     # authoritative owner-scoped context; a supplied non-empty UUID must still
@@ -1108,6 +1188,13 @@ def edit_suggestion(request, article_id):
             for_update=True,
         )
         if edit_workspace is None:
+            # An older tab may refer to a checkpoint that was finalised and removed
+            # when its earlier version was submitted. If that version has since
+            # been approved, show a safe workflow conflict instead of a 404.
+            if _article_approval_took_precedence(article, submitted_approval_snapshot):
+                return render_approval_precedence_conflict(
+                    snapshot_value=submitted_approval_snapshot_value
+                )
             raise Http404("Article edit workspace not found")
         if requested_submit_action != "revert_published":
             try:
@@ -1120,6 +1207,13 @@ def edit_suggestion(request, article_id):
             except ValidationError as error:
                 message = error.messages[0] if getattr(error, "messages", None) else str(error)
                 return render_edit_form({"error": message})
+        approval_took_precedence = _article_edit_workspace_was_superseded_by_publish(
+            edit_workspace,
+            article,
+        )
+
+    if approval_took_precedence:
+        return render_approval_precedence_conflict()
 
     title = request.POST.get("frm_kb_title", "").strip()
     body = request.POST.get("frm_kb_body", "").strip()
@@ -1442,6 +1536,13 @@ def edit_suggestion(request, article_id):
 
     try:
         with transaction.atomic():
+            current_article = SuggestedArticle.objects.select_for_update().get(pk=article.pk)
+            if _article_edit_workspace_was_superseded_by_publish(
+                edit_workspace,
+                current_article,
+            ):
+                article = current_article
+                return render_approval_precedence_conflict()
             article.full_clean()
             article.save()
     except ValidationError as error:
