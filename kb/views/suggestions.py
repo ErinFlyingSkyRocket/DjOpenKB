@@ -1083,6 +1083,12 @@ def edit_suggestion(request, article_id):
     previous_update_status = article.update_status
     previous_had_staged_update = bool(article.has_staged_update)
     previous_review_submission_snapshot = _current_review_submission_snapshot(article)
+    # Approval metadata belongs to the currently live published version. Saving
+    # or reviewing a staged Draft/Pending/Failed update must never erase or
+    # replace that live-version audit state until a new version is actually
+    # published.
+    previous_approved_by_id = article.approved_by_id
+    previous_approved_at = article.approved_at
 
     is_admin_action = user_can_review_article(request.user, article, review_mode=is_review_mode)
     is_published_update_flow = article.status == SuggestedArticle.Status.PUBLISHED and not is_admin_action
@@ -1320,11 +1326,32 @@ def edit_suggestion(request, article_id):
             "error": message,
         })
 
-    visibility_changed = requested_visibility != getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+    current_visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+    requested_visibility_changed = requested_visibility != current_visibility
+
+    # A published article keeps its current live visibility while edits are only
+    # staged as Draft/Pending/Pending-failed. Without a separate staged
+    # visibility field, applying the requested scope early would expose or hide
+    # the *currently approved* content before the staged update is published.
+    # The authorised Manager/Admin can select the target visibility again when
+    # performing the final Published action.
+    defer_published_visibility_change = bool(
+        requested_visibility_changed
+        and article.status == SuggestedArticle.Status.PUBLISHED
+        and (
+            is_published_owner_update_action
+            or (is_admin_pending_update_review and status != SuggestedArticle.Status.PUBLISHED)
+            or (is_manager_direct_published_edit and status != SuggestedArticle.Status.PUBLISHED)
+        )
+    )
+    effective_visibility = (
+        current_visibility if defer_published_visibility_change else requested_visibility
+    )
+    visibility_changed = effective_visibility != current_visibility
     if visibility_changed:
         if not user_can_change_article_visibility(request.user, article):
             raise Http404("Article visibility not allowed")
-        article.visibility = requested_visibility
+        article.visibility = effective_visibility
 
     write_public_files = True
 
@@ -1337,6 +1364,8 @@ def edit_suggestion(request, article_id):
         article.pending_update_body = body
         article.pending_update_keywords = keywords_raw
         article.pending_update_image_assets = new_image_assets
+        article.approved_by_id = previous_approved_by_id
+        article.approved_at = previous_approved_at
         write_public_files = False
 
         if submit_action == "save_update_draft":
@@ -1367,6 +1396,8 @@ def edit_suggestion(request, article_id):
             article.pending_update_body = body
             article.pending_update_keywords = keywords_raw
             article.pending_update_image_assets = new_image_assets
+            article.approved_by_id = previous_approved_by_id
+            article.approved_at = previous_approved_at
             article.update_status = SuggestedArticle.UpdateStatus.FAILED
             article.update_reviewed_at = timezone.now()
             if review_notes != article.review_notes or previous_update_status != SuggestedArticle.UpdateStatus.FAILED:
@@ -1381,6 +1412,8 @@ def edit_suggestion(request, article_id):
             article.pending_update_body = body
             article.pending_update_keywords = keywords_raw
             article.pending_update_image_assets = new_image_assets
+            article.approved_by_id = previous_approved_by_id
+            article.approved_at = previous_approved_at
             article.update_status = SuggestedArticle.UpdateStatus.PENDING
             if (
                 previous_update_status != SuggestedArticle.UpdateStatus.PENDING
@@ -1421,6 +1454,8 @@ def edit_suggestion(request, article_id):
             article.pending_update_body = body
             article.pending_update_keywords = keywords_raw
             article.pending_update_image_assets = new_image_assets
+            article.approved_by_id = previous_approved_by_id
+            article.approved_at = previous_approved_at
             write_public_files = False
 
             if status == SuggestedArticle.Status.DRAFT:
@@ -1520,20 +1555,14 @@ def edit_suggestion(request, article_id):
             "is_pending_update_review": is_admin_pending_update_review,
         })
     if visibility_changed:
-        # Remove copies from the previous visibility tree only after database
-        # validation succeeds. A forged/duplicate update must never delete the
-        # currently published Markdown before the save is accepted.
+        # Visibility changes are applied only to the version actually being
+        # saved/published. For a staged update, visibility_changed is deliberately
+        # False so the currently approved live article stays in its existing
+        # website/OpenKB scope until final publication.
         delete_article_markdown_files(article)
     if write_public_files:
         write_article_files(article)
         sync_article_image_assets(article, old_assets=old_image_assets)
-    elif visibility_changed and article.status == SuggestedArticle.Status.PUBLISHED:
-        # A visibility change is an immediate live-article permission change even
-        # when title/body edits are being kept in the staged update. Re-write the
-        # still-approved live content into the new OpenKB scope so the database
-        # and filesystem/AI source trees do not diverge while the staged copy is
-        # Draft/Pending/Failed. Do not commit staged images here.
-        write_article_files(article)
     clear_committed_pending_uploads(request, new_image_assets)
     with transaction.atomic():
         locked_workspace = get_owned_article_edit_workspace(
@@ -1592,7 +1621,9 @@ def edit_suggestion(request, article_id):
             "is_admin_pending_update_review": is_admin_pending_update_review,
             "update_status": article.update_status,
             "visibility": article.visibility,
+            "requested_visibility": requested_visibility,
             "visibility_changed": visibility_changed,
+            "visibility_change_deferred": defer_published_visibility_change,
             "can_edit_content": can_edit_content,
             "image_count": len(article.image_assets or []),
             "old_image_count": len(old_image_assets or []),

@@ -5,6 +5,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from urllib.parse import parse_qs, urlsplit
 
 from django.urls import reverse
+from django.utils import timezone
 
 from kb.admin_security import AdminMFASessionMiddleware, is_admin_step_up_path
 from kb.middleware import ForceLoginAndAdminGuardMiddleware
@@ -160,6 +161,61 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         self.assertEqual(article.update_status, SuggestedArticle.UpdateStatus.NONE)
         self.assertFalse(article.pending_update_body)
         self.assertEqual(article.approved_by_id, self.manager.pk)
+
+
+    def test_manager_staged_update_preserves_live_approval_metadata(self):
+        from kb.models import SuggestedArticle
+
+        approved_at = timezone.now()
+        article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Published approval metadata baseline",
+            body="Currently approved article body must remain the live version.",
+            filename="published-approval-metadata.md",
+            status=SuggestedArticle.Status.PUBLISHED,
+            approved_by=self.manager,
+            approved_at=approved_at,
+        )
+
+        response = self._post_review(
+            article,
+            status=SuggestedArticle.Status.PENDING,
+            editor_mode="edit",
+        )
+        self.assertEqual(response.status_code, 302)
+        article.refresh_from_db()
+        self.assertEqual(article.status, SuggestedArticle.Status.PUBLISHED)
+        self.assertEqual(article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        self.assertEqual(article.approved_by_id, self.manager.pk)
+        self.assertEqual(article.approved_at, approved_at)
+
+    def test_review_keep_pending_preserves_live_approval_metadata(self):
+        from kb.models import SuggestedArticle
+
+        approved_at = timezone.now()
+        article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Published review approval metadata",
+            body="The approved body remains live while an update is reviewed.",
+            filename="review-approval-metadata.md",
+            status=SuggestedArticle.Status.PUBLISHED,
+            approved_by=self.manager,
+            approved_at=approved_at,
+            pending_update_title="Submitted update title",
+            pending_update_body="Submitted update body waiting for a review decision.",
+            pending_update_keywords="submitted, update",
+            update_status=SuggestedArticle.UpdateStatus.PENDING,
+        )
+        article.capture_review_submission_snapshot(is_update=True)
+        article.save(update_fields=["review_submission_snapshot"])
+
+        response = self._post_review(article, status=SuggestedArticle.Status.PENDING)
+        self.assertEqual(response.status_code, 302)
+        article.refresh_from_db()
+        self.assertEqual(article.status, SuggestedArticle.Status.PUBLISHED)
+        self.assertEqual(article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        self.assertEqual(article.approved_by_id, self.manager.pk)
+        self.assertEqual(article.approved_at, approved_at)
 
     def test_manager_reopens_failed_update_without_hiding_published_article(self):
         from kb.models import SuggestedArticle

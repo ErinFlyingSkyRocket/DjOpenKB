@@ -345,7 +345,7 @@ class ArticleVisibilityEditPermissionTests(TestCase):
         self.public_article.refresh_from_db()
         self.assertEqual(self.public_article.visibility, SuggestedArticle.Visibility.INTERNAL)
 
-    def test_staged_published_update_visibility_change_rewrites_live_article_scope(self):
+    def test_staged_published_update_defers_visibility_change_until_publish(self):
         payload = self._edit_payload(
             self.public_article,
             visibility=SuggestedArticle.Visibility.INTERNAL,
@@ -366,12 +366,58 @@ class ArticleVisibilityEditPermissionTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.public_article.refresh_from_db()
         self.assertEqual(self.public_article.status, SuggestedArticle.Status.PUBLISHED)
-        self.assertEqual(self.public_article.visibility, SuggestedArticle.Visibility.INTERNAL)
+        # The currently approved article stays in its existing live scope while
+        # the edited copy is only Pending. The authorised Manager/Admin can
+        # select Internal again on the final Published action.
+        self.assertEqual(self.public_article.visibility, SuggestedArticle.Visibility.PUBLIC)
         self.assertEqual(self.public_article.update_status, SuggestedArticle.UpdateStatus.PENDING)
         self.assertEqual(self.public_article.title, "Published visibility permission article")
         self.assertEqual(self.public_article.pending_update_title, "Staged internal update title")
-        delete_files.assert_called_once()
-        write_files.assert_called_once()
+        delete_files.assert_not_called()
+        write_files.assert_not_called()
+        sync_images.assert_not_called()
+
+    def test_review_keep_pending_defers_visibility_change_until_publish(self):
+        self.public_article.pending_update_title = "Owner submitted update title"
+        self.public_article.pending_update_body = "Owner submitted update body waiting for review."
+        self.public_article.pending_update_keywords = "owner, update"
+        self.public_article.update_status = SuggestedArticle.UpdateStatus.PENDING
+        self.public_article.capture_review_submission_snapshot(is_update=True)
+        self.public_article.save(
+            update_fields=[
+                "pending_update_title",
+                "pending_update_body",
+                "pending_update_keywords",
+                "update_status",
+                "review_submission_snapshot",
+            ]
+        )
+
+        payload = {
+            "frm_kb_title": self.public_article.pending_update_title,
+            "frm_kb_body": self.public_article.pending_update_body,
+            "frm_kb_keywords": self.public_article.pending_update_keywords,
+            "article_visibility": SuggestedArticle.Visibility.INTERNAL,
+            "status": SuggestedArticle.Status.PENDING,
+            "submit_action": "save",
+            "editor_mode": "review",
+        }
+        request = self._edit_request("post", self.dual_manager, self.public_article, data=payload)
+
+        with (
+            patch("kb.views.suggestions.delete_article_markdown_files") as delete_files,
+            patch("kb.views.suggestions.write_article_files") as write_files,
+            patch("kb.views.suggestions.sync_article_image_assets") as sync_images,
+            patch("kb.views.suggestions.clear_committed_pending_uploads"),
+        ):
+            response = self._original_edit_view()(request, self.public_article.pk)
+
+        self.assertEqual(response.status_code, 302)
+        self.public_article.refresh_from_db()
+        self.assertEqual(self.public_article.visibility, SuggestedArticle.Visibility.PUBLIC)
+        self.assertEqual(self.public_article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        delete_files.assert_not_called()
+        write_files.assert_not_called()
         sync_images.assert_not_called()
 
     def test_dual_manager_can_change_published_internal_article_to_public(self):
