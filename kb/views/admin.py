@@ -386,12 +386,16 @@ def manage_internal_pending_articles(request):
 
 @admin_tools_required
 def manage_orphan_articles(request):
-    """Scan articles with no active owner and let admins assign or delete them safely."""
+    """Manage articles whose owner account has actually been removed.
+
+    Inactive/disabled accounts deliberately retain article ownership so simply
+    disabling an account never turns its content into an orphan-management item.
+    """
     UserModel = get_user_model()
     search_query = (request.GET.get("q") or "").strip()
     status_filter = (request.GET.get("status") or "").strip()
 
-    orphan_filter = Q(owner__isnull=True) | Q(owner__is_active=False)
+    orphan_filter = Q(owner__isnull=True)
     orphan_queryset = (
         SuggestedArticle.objects
         .select_related("owner")

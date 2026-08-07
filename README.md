@@ -23,7 +23,7 @@ For a fresh installation, follow [Deployment Guide](documentations/DEPLOYMENT_GU
 - User article suggestion workflow with approval and pending-update review for published article edits.
 - Optional SMTP relay workflow and security notifications: newly submitted/re-submitted public or internal review items notify matching reviewer groups in one Bcc-only message, approval/Pending-failed decisions notify the current eligible article owner directly, and a recognised account reaching a new password/MFA lockout notifies eligible `Admin Users` in one Bcc-only alert. Internal messages omit internal titles, content, and review comments.
 - Draft, pending approval, pending failed, published, and deletion-queued article states.
-- Published article update workflow where the owner may keep a private **Save draft** copy first; only **Submit update for approval** places it in the reviewer queue while the current published version remains visible.
+- Published article update workflow with one shared staged update copy: the owner may **Save draft** without entering the reviewer queue, while **Submit update for approval** places that copy into review and the current published version remains visible. Scope Managers/Admin Users may continue the same staged copy from normal Edit.
 - Separate public and internal pending-review queues, including internal-only pending management for internal approvers/managers.
 - Article owners can manage their own drafts, failed submissions, and pending updates within the visibility scope they are allowed to create.
 - Published article deletion requires MFA confirmation. By default, a published article is hidden and placed in a recoverable admin deletion queue for 7 days; administrators can restore or permanently purge it. The retention setting can be set to `0` for immediate permanent deletion. Draft, pending, and pending-failed articles delete immediately.
@@ -115,7 +115,7 @@ Local and AD users are identified from account-source metadata rather than email
 | Local password policy | One Django validator is used by self-service and Admin paths: minimum 12 characters, uppercase, lowercase, number, special character, and no username/email-name inclusion |
 | MFA | Authenticator-app OTP, MFA setup, MFA verification, MFA reset, and sensitive account-change protection |
 | Authorization | Group-based roles, public/internal scope checks, enforced role precedence, add-on direct user permissions, admin-only tools, article owner checks, approval workflow, protected image serving, and restricted admin routes |
-| Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, private owner drafts for published updates, explicit pending-update review, per-manager/admin personal edit drafts, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
+| Articles | Public/internal visibility, draft/pending/pending failed/published/deletion-queued workflow, one shared staged copy for published updates, explicit pending-update review, Manager/Admin direct status control, duplicate title prevention, scoped approval queues, MFA-protected published deletion, configurable recovery queue, and orphan article management |
 | Search and listing | Public search returns public results; internal-capable users can receive public + internal results; internal search is internal-only; title/keyword matching only; normal results are newest-updated matching articles first; the main search dropdown keeps up to five recent searches in browser `sessionStorage` and switches to live accessible article suggestions while typing |
 | Keywords | Suggested keywords are manually refreshed and only come from existing manually created article keywords when the exact keyword/phrase appears in the current draft title/body. Displayed article keywords are clickable and run the normal title/keyword search. |
 | Request validation | Browser limits plus Django form/model and central request validation for normal query/form submissions; endpoint-specific validation for upload/import/JSON paths; configured limits for article body, keywords, identity, MFA, search, URL, review, Admin, and metadata fields |
@@ -142,17 +142,22 @@ Submit for approval -> Pending -> Pending failed / Published
 
 Writer edits an already published article:
 Published article remains visible
-Save draft -> private owner-only update (UpdateStatus.NONE; not in reviewer queue)
-Submit update for approval -> shared Pending update
-Save draft after submission -> retracts the update back to the private owner-only draft
+Save draft -> shared staged update with UpdateStatus.NONE; not in reviewer queue
+Submit update for approval -> same staged copy becomes Pending
+Save draft after submission -> retracts the staged copy from review back to NONE
 Scope approver/manager/admin approves -> submitted update replaces the published article
 Scope approver/manager/admin rejects -> published article stays unchanged and feedback is shown to the owner
 
 Manager/Admin edits an already published article outside review:
-No autosave
-Save draft -> that manager/admin's own ArticleEditWorkspace draft only
-Save -> applies the authorised live-article change
-Revert to last published version -> discards that user's personal edit draft
+No autosave and no separate personal draft
+Normal Edit loads the shared staged update when one exists
+Status Draft -> save staged copy as UpdateStatus.NONE while live article stays Published
+Status Pending -> save staged copy as PENDING and place it in review
+Status Pending failed -> save staged copy as FAILED while live article stays Published
+Status Published -> apply current form content directly to the live article and clear staged update
+Save -> commits the selected status/action
+Owner who is also Manager/Admin keeps Revert to last published version
+Manager editing their own non-published Draft keeps full Manager status controls
 
 Review pending article/update:
 No autosave
@@ -164,7 +169,7 @@ Save review action -> applies the current review fields plus Keep pending / Appr
 
 Permanent account deletion is different from disabling an account. Inactive and **Disabled User** accounts keep their recoverable workspaces. Permanently deleting a user removes that user's New Article/edit workspaces, saved Draft/Pending/Pending-failed articles, and any unpublished `pending_update_*` copy; already published knowledge is preserved as an orphan with author snapshots.
 
-Existing-article editors are manual-save only. The server-owned `ArticleEditWorkspace.article_approved_at_snapshot` is the authoritative stale-editor baseline; a browser-supplied timestamp is not trusted. When an owner explicitly submits an article or published update, DjOpenKB also keeps a temporary server-owned `review_submission_snapshot`. Reviewer edits may change the shared Pending copy without overwriting that owner baseline, allowing Admin Users, matching Approvers, and matching Managers to reset their review form to exactly what the owner last submitted. Reset itself is non-destructive; the restored values are applied only after **Save review action**. Static JavaScript/CSS uses Nginx revalidation so stable asset filenames are checked after deployment instead of remaining cached for seven days.
+Existing-article editors are manual-save only. The server-owned `ArticleEditWorkspace.article_approved_at_snapshot` is the authoritative stale-editor baseline; a browser-supplied timestamp is not trusted. When an owner explicitly submits an article or published update, DjOpenKB also keeps a temporary server-owned `review_submission_snapshot`. Reviewer edits and Manager/Admin normal-edit changes to an already-Pending copy do not overwrite that submission baseline, allowing Admin Users, matching Approvers, and matching Managers to reset their review form to the latest stored submission. Reset itself is non-destructive; the restored values are applied only after **Save review action**. Static JavaScript/CSS uses Nginx revalidation so stable asset filenames are checked after deployment instead of remaining cached for seven days.
 
 Roles are additive. A user with only a writer role cannot approve; a user intentionally assigned the matching approver or manager role can approve their own matching-scope submission. This is an intended design decision for the project.
 

@@ -345,6 +345,35 @@ class ArticleVisibilityEditPermissionTests(TestCase):
         self.public_article.refresh_from_db()
         self.assertEqual(self.public_article.visibility, SuggestedArticle.Visibility.INTERNAL)
 
+    def test_staged_published_update_visibility_change_rewrites_live_article_scope(self):
+        payload = self._edit_payload(
+            self.public_article,
+            visibility=SuggestedArticle.Visibility.INTERNAL,
+            status=SuggestedArticle.Status.PENDING,
+        )
+        payload["frm_kb_title"] = "Staged internal update title"
+        payload["frm_kb_body"] = "Staged internal update body waiting for review."
+        request = self._edit_request("post", self.dual_manager, self.public_article, data=payload)
+
+        with (
+            patch("kb.views.suggestions.delete_article_markdown_files") as delete_files,
+            patch("kb.views.suggestions.write_article_files") as write_files,
+            patch("kb.views.suggestions.sync_article_image_assets") as sync_images,
+            patch("kb.views.suggestions.clear_committed_pending_uploads"),
+        ):
+            response = self._original_edit_view()(request, self.public_article.pk)
+
+        self.assertEqual(response.status_code, 302)
+        self.public_article.refresh_from_db()
+        self.assertEqual(self.public_article.status, SuggestedArticle.Status.PUBLISHED)
+        self.assertEqual(self.public_article.visibility, SuggestedArticle.Visibility.INTERNAL)
+        self.assertEqual(self.public_article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        self.assertEqual(self.public_article.title, "Published visibility permission article")
+        self.assertEqual(self.public_article.pending_update_title, "Staged internal update title")
+        delete_files.assert_called_once()
+        write_files.assert_called_once()
+        sync_images.assert_not_called()
+
     def test_dual_manager_can_change_published_internal_article_to_public(self):
         request = self._edit_request(
             "post",

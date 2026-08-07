@@ -746,9 +746,10 @@ class SuggestedArticle(models.Model):
     def has_staged_update(self):
         """Return True when a published article holds an editable update copy.
 
-        A staged update can be a private saved draft, a submitted pending update,
-        or a previously rejected update. Managers must resolve this copy through
-        the update workflow so a successful publish clears the temporary fields.
+        A staged update can be a saved update draft, a submitted pending update,
+        or a previously rejected update. The article owner and authorised
+        Managers/Admin Users use this one shared staged copy; the reviewer queue
+        is entered only when ``update_status`` is Pending.
         """
         return self.status == self.Status.PUBLISHED and bool((self.pending_update_body or "").strip())
 
@@ -768,11 +769,13 @@ class SuggestedArticle(models.Model):
         }
 
     def capture_review_submission_snapshot(self, *, is_update=False):
-        """Store the owner-submitted version used as the review reset baseline.
+        """Store the submitted version used as the review reset baseline.
 
-        Reviewers may change the shared pending copy while keeping it Pending.
-        This server-owned snapshot remains unchanged until the owner submits a
-        newer version or the review workflow is resolved/retracted.
+        Reviewers and Managers/Admin Users may change the shared pending copy
+        while keeping it Pending. This server-owned snapshot remains unchanged
+        until a newer explicit owner submission replaces it or the review
+        workflow is resolved/retracted. If no baseline exists, a Manager/Admin
+        promotion of a staged update to Pending may establish the initial copy.
         """
         if is_update:
             title = self.pending_update_title or self.title
@@ -1069,10 +1072,10 @@ class ArticleCreationWorkspace(models.Model):
 class ArticleEditWorkspace(models.Model):
     """Owner-scoped workspace for editing one existing article.
 
-    Existing-article text is manual-save only. The workspace normally owns only
-    temporary editor images, but Managers/Admins may explicitly save a personal
-    draft for a published article. That draft remains separate from
-    ``SuggestedArticle`` until the user performs a real Save/publish action.
+    Existing-article text is manual-save only. This workspace is a temporary
+    server-owned edit/review context for image ownership and approval-precedence
+    checks. Persistent edits to an already-published article use the article's
+    shared ``pending_update_*`` staging fields rather than per-manager drafts.
     """
 
     class EditorMode(models.TextChoices):

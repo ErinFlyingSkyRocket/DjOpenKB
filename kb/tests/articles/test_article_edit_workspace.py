@@ -14,6 +14,7 @@ from django.utils import timezone
 from kb.models import ArticleEditWorkspace, ArticleImageUploadLog, SuggestedArticle
 from kb.notifications import NOTIFICATION_KIND_UPDATE_SUBMISSION
 from kb.permissions import (
+    ROLE_ADMIN_USERS,
     ROLE_ARTICLE_MANAGER,
     ROLE_ARTICLE_WRITER,
     assign_single_role_group,
@@ -124,7 +125,7 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertNotContains(response, "Reset edits")
         self.assertNotContains(response, "Edit checkpoint saved")
 
-    def _manager_for_personal_draft(self, username="personal-draft-manager"):
+    def _manager_for_article_workflow(self, username="article-workflow-manager"):
         manager = get_user_model().objects.create_user(
             username=username,
             email=f"{username}@example.invalid",
@@ -133,8 +134,29 @@ class ArticleEditWorkspaceTests(TestCase):
         assign_single_role_group(manager, ROLE_ARTICLE_MANAGER)
         return manager
 
-    def test_manager_published_editor_exposes_manual_personal_draft_actions(self):
-        manager = self._manager_for_personal_draft()
+    def test_manager_owner_draft_uses_full_manager_status_controls(self):
+        manager = self._manager_for_article_workflow("manager-own-draft")
+        owned = SuggestedArticle.objects.create(
+            owner=manager,
+            title="Manager owned draft article",
+            body="Manager owned draft article body.",
+            keywords="manager, draft",
+            status=SuggestedArticle.Status.DRAFT,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+        )
+        self.client.force_login(manager)
+
+        response = self.client.get(self._edit_url(owned))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'option value="draft"')
+        self.assertContains(response, 'option value="pending"')
+        self.assertContains(response, 'option value="failed"')
+        self.assertContains(response, 'option value="published"')
+        self.assertNotContains(response, 'name="submit_action" value="submit"')
+
+    def test_manager_published_editor_uses_shared_update_actions_not_personal_draft(self):
+        manager = self._manager_for_article_workflow()
         self.article.status = SuggestedArticle.Status.PUBLISHED
         self.article.approved_at = timezone.now()
         self.article.save(update_fields=["status", "approved_at", "updated_at"])
@@ -143,22 +165,46 @@ class ArticleEditWorkspaceTests(TestCase):
         response = self.client.get(self._edit_url())
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'value="revert_personal_draft"')
-        self.assertContains(response, 'value="save_personal_draft"')
-        self.assertContains(response, "Revert to last published version")
-        self.assertContains(response, "Save draft")
+        self.assertNotContains(response, 'value="submit_update"')
+        self.assertNotContains(response, 'value="save_personal_draft"')
+        self.assertNotContains(response, 'value="revert_personal_draft"')
+        self.assertNotContains(response, 'name="submit_action" value="save_update_draft"')
+        self.assertContains(response, 'option value="draft"')
+        self.assertContains(response, 'option value="pending"')
+        self.assertContains(response, 'option value="failed"')
+        self.assertContains(response, 'option value="published"')
+        self.assertContains(response, "Saved update draft")
+        self.assertContains(response, "Pending update")
+        self.assertContains(response, "Update pending failed")
         self.assertNotContains(response, "article-edit-workspace.js")
 
-    def test_manager_personal_draft_is_manual_private_and_restored_only_for_owner(self):
-        manager = self._manager_for_personal_draft()
-        other_manager = self._manager_for_personal_draft("personal-draft-manager-two")
+    def test_manager_can_see_owner_saved_update_draft_as_shared_staging_copy(self):
+        manager = self._manager_for_article_workflow()
         self.article.status = SuggestedArticle.Status.PUBLISHED
         self.article.approved_at = timezone.now()
-        self.article.save(update_fields=["status", "approved_at", "updated_at"])
+        self.article.pending_update_title = "Owner shared unpublished title"
+        self.article.pending_update_body = "Owner shared unpublished body saved before review."
+        self.article.pending_update_keywords = "owner, shared"
+        self.article.update_status = SuggestedArticle.UpdateStatus.NONE
+        self.article.save()
+
+        self.client.force_login(manager)
+        response = self.client.get(self._edit_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Owner shared unpublished title")
+        self.assertContains(response, "Owner shared unpublished body saved before review.")
+        self.assertContains(response, 'option value="draft" selected')
+
+    @patch("kb.views.suggestions.send_article_review_notification_after_commit")
+    def test_manager_can_set_shared_pending_update_without_replacing_published_article(self, notify):
+        manager = self._manager_for_article_workflow()
+        self.article.status = SuggestedArticle.Status.PUBLISHED
+        self.article.approved_at = timezone.now()
         published_title = self.article.title
         published_body = self.article.body
+        self.article.save(update_fields=["status", "approved_at", "updated_at"])
         self.client.force_login(manager)
-
         open_response = self.client.get(self._edit_url())
         self.assertEqual(open_response.status_code, 200)
         workspace = ArticleEditWorkspace.objects.get(
@@ -171,100 +217,258 @@ class ArticleEditWorkspaceTests(TestCase):
             self._edit_url(),
             {
                 "edit_workspace_id": str(workspace.pk),
-                "article_edit_approved_at_snapshot": workspace.article_approved_at_snapshot.isoformat(),
                 "editor_mode": "edit",
-                "frm_kb_title": "Manager private draft title",
-                "frm_kb_body": "Manager private draft body that is not published yet.",
-                "frm_kb_keywords": "manager, private, draft",
+                "frm_kb_title": "Manager shared pending update title",
+                "frm_kb_body": "Manager shared pending update body waiting for review.",
+                "frm_kb_keywords": "manager, shared, pending",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-                # Deliberately choose another status: Save draft must ignore it.
-                "status": SuggestedArticle.Status.DRAFT,
-                "submit_action": "save_personal_draft",
+                "status": SuggestedArticle.Status.PENDING,
+                "submit_action": "save",
                 "next": reverse("edit_my_suggestions"),
             },
         )
 
         self.assertEqual(response.status_code, 302)
         self.article.refresh_from_db()
+        self.assertEqual(self.article.status, SuggestedArticle.Status.PUBLISHED)
         self.assertEqual(self.article.title, published_title)
         self.assertEqual(self.article.body, published_body)
-        self.assertEqual(self.article.status, SuggestedArticle.Status.PUBLISHED)
-        workspace.refresh_from_db()
-        self.assertTrue(workspace.is_dirty)
-        self.assertEqual(workspace.title, "Manager private draft title")
-        self.assertEqual(workspace.status, SuggestedArticle.Status.PUBLISHED)
+        self.assertEqual(self.article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        self.assertEqual(self.article.pending_update_title, "Manager shared pending update title")
+        self.assertEqual(self.article.review_submission_snapshot.get("kind"), "update")
+        notify.assert_called_once()
 
-        owner_view = self.client.get(self._edit_url())
-        self.assertContains(owner_view, "Manager private draft title")
-        self.assertContains(owner_view, "Manager private draft body that is not published yet.")
-
-        self.client.force_login(other_manager)
-        other_view = self.client.get(self._edit_url())
-        self.assertContains(other_view, published_title)
-        self.assertContains(other_view, published_body)
-        self.assertNotContains(other_view, "Manager private draft title")
-
-    def test_manager_cannot_see_writer_private_saved_update_draft(self):
-        manager = self._manager_for_personal_draft()
+    def test_manager_normal_edit_of_pending_update_preserves_original_submission_snapshot(self):
+        manager = self._manager_for_article_workflow("snapshot-preserving-manager")
         self.article.status = SuggestedArticle.Status.PUBLISHED
         self.article.approved_at = timezone.now()
-        self.article.pending_update_title = "Writer private unpublished title"
-        self.article.pending_update_body = "Writer private unpublished body that was never submitted."
-        self.article.pending_update_keywords = "writer, private"
-        self.article.update_status = SuggestedArticle.UpdateStatus.NONE
+        self.article.pending_update_title = "Owner submitted title"
+        self.article.pending_update_body = "Owner submitted body that defines the reset baseline."
+        self.article.pending_update_keywords = "owner, submitted"
+        self.article.update_status = SuggestedArticle.UpdateStatus.PENDING
+        self.article.update_submitted_at = timezone.now()
+        self.article.capture_review_submission_snapshot(is_update=True)
         self.article.save()
+        original_snapshot = dict(self.article.review_submission_snapshot)
 
         self.client.force_login(manager)
         response = self.client.get(self._edit_url())
-
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.article.title)
-        self.assertContains(response, self.article.body)
-        self.assertNotContains(response, "Writer private unpublished title")
-        self.assertNotContains(response, "Writer private unpublished body that was never submitted.")
-        self.assertContains(response, 'value="save_personal_draft"')
-
-    def test_manager_personal_draft_survives_while_writer_update_is_in_review(self):
-        manager = self._manager_for_personal_draft()
-        self.article.status = SuggestedArticle.Status.PUBLISHED
-        self.article.approved_at = timezone.now()
-        self.article.save(update_fields=["status", "approved_at", "updated_at"])
-        self.client.force_login(manager)
-        self.client.get(self._edit_url())
         workspace = ArticleEditWorkspace.objects.get(
             owner=manager,
             article=self.article,
             editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
         )
-        workspace.title = "Manager personal draft kept during review"
-        workspace.body = "Manager personal draft body kept while another update is pending."
-        workspace.is_dirty = True
-        workspace.save(update_fields=["title", "body", "is_dirty", "updated_at"])
 
-        self.article.pending_update_title = "Writer submitted update"
-        self.article.pending_update_body = "Writer submitted update body."
-        self.article.pending_update_keywords = "writer, submitted"
-        self.article.update_status = SuggestedArticle.UpdateStatus.PENDING
-        self.article.update_submitted_at = timezone.now()
-        self.article.save()
+        with patch.multiple(
+            "kb.views.suggestions",
+            write_article_files=lambda article: None,
+            sync_article_image_assets=lambda article, old_assets=None: None,
+            clear_committed_pending_uploads=lambda request, assets: None,
+        ):
+            response = self.client.post(
+                self._edit_url(),
+                {
+                    "edit_workspace_id": str(workspace.pk),
+                    "editor_mode": "edit",
+                    "frm_kb_title": "Manager edited pending title",
+                    "frm_kb_body": "Manager edited the shared pending body without replacing the reset baseline.",
+                    "frm_kb_keywords": "manager, pending",
+                    "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                    "status": SuggestedArticle.Status.PENDING,
+                    "submit_action": "save",
+                    "next": reverse("edit_my_suggestions"),
+                },
+            )
 
-        response = self.client.get(self._edit_url())
+        self.assertEqual(response.status_code, 302)
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.pending_update_title, "Manager edited pending title")
+        self.assertEqual(self.article.review_submission_snapshot, original_snapshot)
 
+    def test_manager_published_status_selector_maps_to_shared_update_states_and_publish(self):
+        manager = self._manager_for_article_workflow()
+        self.client.force_login(manager)
+
+        for index, target_status in enumerate(
+            [
+                SuggestedArticle.Status.DRAFT,
+                SuggestedArticle.Status.PENDING,
+                SuggestedArticle.Status.FAILED,
+                SuggestedArticle.Status.PUBLISHED,
+            ],
+            start=1,
+        ):
+            article = SuggestedArticle.objects.create(
+                owner=self.user,
+                title=f"Manager status article {index}",
+                body=f"Published body for manager status article {index}.",
+                keywords="manager, status",
+                status=SuggestedArticle.Status.PUBLISHED,
+                visibility=SuggestedArticle.Visibility.PUBLIC,
+                approved_at=timezone.now(),
+                pending_update_title=f"Shared staged title {index}",
+                pending_update_body=f"Shared staged body {index} waiting for manager action.",
+                pending_update_keywords="shared, staged",
+                update_status=SuggestedArticle.UpdateStatus.NONE,
+            )
+            response = self.client.get(self._edit_url(article))
+            self.assertEqual(response.status_code, 200)
+            workspace = ArticleEditWorkspace.objects.get(
+                owner=manager,
+                article=article,
+                editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
+            )
+
+            payload = {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "edit",
+                "frm_kb_title": f"Manager applied title {index}",
+                "frm_kb_body": f"Manager applied body {index} with direct status change.",
+                "frm_kb_keywords": "manager, applied",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "status": target_status,
+                "submit_action": "save",
+                "next": reverse("edit_my_suggestions"),
+            }
+            if target_status == SuggestedArticle.Status.FAILED:
+                payload["review_notes"] = "Manager marked this article pending failed."
+
+            with patch.multiple(
+                "kb.views.suggestions",
+                write_article_files=lambda article: None,
+                sync_article_image_assets=lambda article, old_assets=None: None,
+                clear_committed_pending_uploads=lambda request, assets: None,
+            ):
+                response = self.client.post(self._edit_url(article), payload)
+
+            self.assertEqual(response.status_code, 302, target_status)
+            article.refresh_from_db()
+            self.assertEqual(article.status, SuggestedArticle.Status.PUBLISHED)
+            if target_status == SuggestedArticle.Status.PUBLISHED:
+                self.assertEqual(article.title, f"Manager applied title {index}")
+                self.assertEqual(article.pending_update_title, "")
+                self.assertEqual(article.pending_update_body, "")
+                self.assertEqual(article.update_status, SuggestedArticle.UpdateStatus.NONE)
+            else:
+                self.assertEqual(article.title, f"Manager status article {index}")
+                self.assertEqual(article.pending_update_title, f"Manager applied title {index}")
+                self.assertEqual(
+                    article.pending_update_body,
+                    f"Manager applied body {index} with direct status change.",
+                )
+                expected_update_status = {
+                    SuggestedArticle.Status.DRAFT: SuggestedArticle.UpdateStatus.NONE,
+                    SuggestedArticle.Status.PENDING: SuggestedArticle.UpdateStatus.PENDING,
+                    SuggestedArticle.Status.FAILED: SuggestedArticle.UpdateStatus.FAILED,
+                }[target_status]
+                self.assertEqual(article.update_status, expected_update_status)
+                if target_status == SuggestedArticle.Status.PENDING:
+                    self.assertEqual(article.review_submission_snapshot.get("kind"), "update")
+
+    def test_admin_published_editor_uses_same_shared_status_mapping(self):
+        admin = get_user_model().objects.create_user(
+            username="shared-update-admin",
+            email="shared-update-admin@example.invalid",
+            password="Different-Strong-Password-Admin-123!",
+        )
+        assign_single_role_group(admin, ROLE_ADMIN_USERS)
+        article = SuggestedArticle.objects.create(
+            owner=self.user,
+            title="Admin shared status article",
+            body="Published article body before the admin stages an update.",
+            keywords="admin, shared",
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+            approved_at=timezone.now(),
+        )
+        self.client.force_login(admin)
+
+        response = self.client.get(self._edit_url(article))
         self.assertEqual(response.status_code, 200)
-        workspace.refresh_from_db()
-        self.assertTrue(workspace.is_dirty)
-        self.assertEqual(workspace.title, "Manager personal draft kept during review")
-        # While the shared update is pending, the review copy is shown instead.
-        self.assertContains(response, "Writer submitted update")
+        self.assertContains(response, 'option value="draft"')
+        self.assertContains(response, 'option value="pending"')
+        self.assertContains(response, 'option value="failed"')
+        self.assertContains(response, 'option value="published"')
 
-        self.article.clear_pending_update()
-        self.article.save()
-        restored = self.client.get(self._edit_url())
-        workspace.refresh_from_db()
-        self.assertTrue(workspace.is_dirty)
-        self.assertContains(restored, "Manager personal draft kept during review")
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=admin,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
+        )
+        with patch.multiple(
+            "kb.views.suggestions",
+            write_article_files=lambda current: None,
+            sync_article_image_assets=lambda current, old_assets=None: None,
+            clear_committed_pending_uploads=lambda request, assets: None,
+        ):
+            response = self.client.post(
+                self._edit_url(article),
+                {
+                    "edit_workspace_id": str(workspace.pk),
+                    "editor_mode": "edit",
+                    "frm_kb_title": "Admin staged pending title",
+                    "frm_kb_body": "Admin staged pending body that keeps the approved copy live.",
+                    "frm_kb_keywords": "admin, pending",
+                    "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                    "status": SuggestedArticle.Status.PENDING,
+                    "submit_action": "save",
+                    "next": reverse("edit_my_suggestions"),
+                },
+            )
 
-    def test_writer_save_draft_retracts_previously_submitted_update(self):
+        self.assertEqual(response.status_code, 302)
+        article.refresh_from_db()
+        self.assertEqual(article.status, SuggestedArticle.Status.PUBLISHED)
+        self.assertEqual(article.title, "Admin shared status article")
+        self.assertEqual(article.pending_update_title, "Admin staged pending title")
+        self.assertEqual(article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+
+    def test_manager_owner_can_save_shared_draft_with_status_and_revert(self):
+        manager = self._manager_for_article_workflow("manager-owned-article")
+        owned = SuggestedArticle.objects.create(
+            owner=manager,
+            title="Manager owned published article",
+            body="Manager owned published article body.",
+            keywords="manager, owner",
+            status=SuggestedArticle.Status.PUBLISHED,
+            visibility=SuggestedArticle.Visibility.PUBLIC,
+            approved_at=timezone.now(),
+        )
+        self.client.force_login(manager)
+        response = self.client.get(self._edit_url(owned))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'value="save_update_draft"')
+        self.assertContains(response, 'value="revert_published"')
+        self.assertNotContains(response, 'value="submit_update"')
+
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=manager,
+            article=owned,
+            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
+        )
+        response = self.client.post(
+            self._edit_url(owned),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "edit",
+                "frm_kb_title": "Manager owner saved draft title",
+                "frm_kb_body": "Manager owner saved draft body that remains staged.",
+                "frm_kb_keywords": "manager, owner, draft",
+                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
+                "status": SuggestedArticle.Status.DRAFT,
+                "submit_action": "save",
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        owned.refresh_from_db()
+        self.assertEqual(owned.status, SuggestedArticle.Status.PUBLISHED)
+        self.assertEqual(owned.title, "Manager owned published article")
+        self.assertEqual(owned.pending_update_title, "Manager owner saved draft title")
+        self.assertEqual(owned.update_status, SuggestedArticle.UpdateStatus.NONE)
+
+    def test_writer_save_draft_retracts_submitted_update_to_shared_saved_draft(self):
         self.article.status = SuggestedArticle.Status.PUBLISHED
         self.article.approved_at = timezone.now()
         self.article.pending_update_title = "Submitted update title"
@@ -280,9 +484,9 @@ class ArticleEditWorkspaceTests(TestCase):
             {
                 "edit_workspace_id": str(workspace.pk),
                 "editor_mode": "edit",
-                "frm_kb_title": "Private update draft title",
-                "frm_kb_body": "Private update draft body after retracting from review.",
-                "frm_kb_keywords": "private, draft",
+                "frm_kb_title": "Shared update draft title",
+                "frm_kb_body": "Shared update draft body after retracting from review.",
+                "frm_kb_keywords": "shared, draft",
                 "article_visibility": SuggestedArticle.Visibility.PUBLIC,
                 "submit_action": "save_update_draft",
                 "next": reverse("edit_my_suggestions"),
@@ -294,118 +498,13 @@ class ArticleEditWorkspaceTests(TestCase):
         self.assertEqual(self.article.update_status, SuggestedArticle.UpdateStatus.NONE)
         self.assertIsNone(self.article.update_submitted_at)
         self.assertIsNone(self.article.update_reviewed_at)
-        self.assertEqual(self.article.pending_update_title, "Private update draft title")
+        self.assertEqual(self.article.pending_update_title, "Shared update draft title")
         self.assertEqual(
             self.article.pending_update_body,
-            "Private update draft body after retracting from review.",
+            "Shared update draft body after retracting from review.",
         )
         self.assertFalse(self.article.has_pending_update)
         self.assertTrue(self.article.has_staged_update)
-
-    def test_manager_revert_personal_draft_restores_latest_published_article(self):
-        manager = self._manager_for_personal_draft()
-        self.article.status = SuggestedArticle.Status.PUBLISHED
-        self.article.approved_at = timezone.now()
-        self.article.save(update_fields=["status", "approved_at", "updated_at"])
-        self.client.force_login(manager)
-        self.client.get(self._edit_url())
-        workspace = ArticleEditWorkspace.objects.get(
-            owner=manager,
-            article=self.article,
-            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
-        )
-        workspace.title = "Saved manager draft to discard"
-        workspace.body = "Saved manager draft body to discard."
-        workspace.is_dirty = True
-        workspace.save(update_fields=["title", "body", "is_dirty", "updated_at"])
-
-        response = self.client.post(
-            self._edit_url(),
-            {
-                "edit_workspace_id": str(workspace.pk),
-                "article_edit_approved_at_snapshot": workspace.article_approved_at_snapshot.isoformat(),
-                "editor_mode": "edit",
-                "frm_kb_title": workspace.title,
-                "frm_kb_body": workspace.body,
-                "frm_kb_keywords": workspace.keywords,
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-                "status": SuggestedArticle.Status.PUBLISHED,
-                "submit_action": "revert_personal_draft",
-                "next": reverse("edit_my_suggestions"),
-            },
-        )
-
-        self.assertEqual(response.status_code, 302)
-        self.assertFalse(ArticleEditWorkspace.objects.filter(pk=workspace.pk).exists())
-        self.article.refresh_from_db()
-        self.assertEqual(self.article.title, "Editable checkpoint article")
-        self.assertEqual(self.article.body, "Original saved article body")
-
-        refreshed = self.client.get(self._edit_url())
-        self.assertContains(refreshed, "Editable checkpoint article")
-        self.assertContains(refreshed, "Original saved article body")
-        self.assertNotContains(refreshed, "Saved manager draft to discard")
-
-    def test_manager_final_save_applies_personal_draft_and_removes_workspace(self):
-        manager = self._manager_for_personal_draft()
-        self.article.status = SuggestedArticle.Status.PUBLISHED
-        self.article.approved_at = timezone.now()
-        self.article.save(update_fields=["status", "approved_at", "updated_at"])
-        self.client.force_login(manager)
-        self.client.get(self._edit_url())
-        workspace = ArticleEditWorkspace.objects.get(
-            owner=manager,
-            article=self.article,
-            editor_mode=ArticleEditWorkspace.EditorMode.EDIT,
-        )
-
-        draft_response = self.client.post(
-            self._edit_url(),
-            {
-                "edit_workspace_id": str(workspace.pk),
-                "article_edit_approved_at_snapshot": workspace.article_approved_at_snapshot.isoformat(),
-                "editor_mode": "edit",
-                "frm_kb_title": "Manager final draft title",
-                "frm_kb_body": "Manager final draft body ready to publish.",
-                "frm_kb_keywords": "manager, final",
-                "article_visibility": SuggestedArticle.Visibility.PUBLIC,
-                "status": SuggestedArticle.Status.PUBLISHED,
-                "submit_action": "save_personal_draft",
-                "next": reverse("edit_my_suggestions"),
-            },
-        )
-        self.assertEqual(draft_response.status_code, 302)
-        workspace.refresh_from_db()
-
-        with patch.multiple(
-            "kb.views.suggestions",
-            write_article_files=lambda article: None,
-            sync_article_image_assets=lambda article, old_assets=None: None,
-            clear_committed_pending_uploads=lambda request, assets: None,
-        ):
-            final_response = self.client.post(
-                self._edit_url(),
-                {
-                    "edit_workspace_id": str(workspace.pk),
-                    "article_edit_approved_at_snapshot": workspace.article_approved_at_snapshot.isoformat(),
-                    "editor_mode": "edit",
-                    "frm_kb_title": workspace.title,
-                    "frm_kb_body": workspace.body,
-                    "frm_kb_keywords": workspace.keywords,
-                    "article_visibility": workspace.visibility,
-                    "status": SuggestedArticle.Status.PUBLISHED,
-                    "submit_action": "save",
-                    "next": reverse("edit_my_suggestions"),
-                },
-            )
-
-        self.assertEqual(final_response.status_code, 302)
-        self.article.refresh_from_db()
-        self.assertEqual(self.article.title, "Manager final draft title")
-        self.assertEqual(self.article.body, "Manager final draft body ready to publish.")
-        self.assertEqual(self.article.status, SuggestedArticle.Status.PUBLISHED)
-        self.assertEqual(self.article.approved_by_id, manager.pk)
-        self.assertFalse(ArticleEditWorkspace.objects.filter(pk=workspace.pk).exists())
 
     def test_existing_article_autosave_endpoint_is_disabled(self):
         workspace, _response = self._open_workspace()

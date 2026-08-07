@@ -282,6 +282,11 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                                             <option value="pending" {% if edit_status_value == 'pending' %}selected{% endif %}>{% trans "Keep update pending / Save review edits" %}</option>
                                             <option value="published" {% if edit_status_value == 'published' %}selected{% endif %}>{% trans "Approve update" %}</option>
                                             <option value="failed" {% if edit_status_value == 'failed' %}selected{% endif %}>{% trans "Reject update" %}</option>
+                                        {% elif editing_published_article_as_manager %}
+                                            {% if allow_status_draft %}<option value="draft" {% if edit_status_value == 'draft' %}selected{% endif %}>{% trans "Saved update draft" %}</option>{% endif %}
+                                            {% if allow_status_pending %}<option value="pending" {% if edit_status_value == 'pending' %}selected{% endif %}>{% trans "Pending update" %}</option>{% endif %}
+                                            {% if allow_status_failed %}<option value="failed" {% if edit_status_value == 'failed' %}selected{% endif %}>{% trans "Update pending failed" %}</option>{% endif %}
+                                            {% if allow_status_published %}<option value="published" {% if edit_status_value == 'published' %}selected{% endif %}>{% trans "Published" %}</option>{% endif %}
                                         {% else %}
                                             {% if allow_status_draft %}<option value="draft" {% if edit_status_value == 'draft' %}selected{% endif %}>{% trans "Draft" %}</option>{% endif %}
                                             {% if allow_status_pending %}<option value="pending" {% if edit_status_value == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>{% endif %}
@@ -334,14 +339,14 @@ root.config = {"route_name":"kb","add_header_anchors":false,"links_blank_page":t
                             <div class="article-action-buttons">
                             {% trans "Are you sure you want to revert to the last published version? Any unpublished update changes will be permanently removed." as revert_confirm_text %}
                             {% if can_review_article %}
-                                {% if is_pending_update_review %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
-                                {% elif show_personal_edit_draft_actions %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_personal_draft" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="save_personal_draft">{% trans "Save draft" %}</button>
-                                {% endif %}
-                                {% if is_article_review_mode and can_reset_to_submitted_version %}
-                                    <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="reset_to_submitted" formnovalidate>{% trans "Reset to user-submitted version" %}</button>
+                                {% if is_article_review_mode %}
+                                    {% if can_reset_to_submitted_version %}
+                                        <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="reset_to_submitted" formnovalidate>{% trans "Reset to user-submitted version" %}</button>
+                                    {% endif %}
+                                {% else %}
+                                    {% if show_owner_published_revert_action %}
+                                        <button class="btn btn-default editor_btn_action" type="submit" name="submit_action" value="revert_published" formnovalidate data-confirm-on-click="true" data-confirm-message="{{ revert_confirm_text }}">{% trans "Revert to last published version" %}</button>
+                                    {% endif %}
                                 {% endif %}
                                 <button id="frm_edit_kb_save" class="btn btn-success editor_btn_action" type="submit"{% if is_article_review_mode %} data-review-action-button="true"{% endif %}>{% if is_article_review_mode %}{% trans "Save review action" %}{% else %}{% trans "Save" %}{% endif %}</button>
                             {% elif current_status == 'published' %}

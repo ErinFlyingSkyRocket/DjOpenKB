@@ -412,9 +412,24 @@ def user_can_review_article(user, article, *, review_mode=False):
         return False
 
     visibility = getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)
+    reviewable_state = bool(
+        article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}
+        or (
+            article.status == SuggestedArticle.Status.PUBLISHED
+            and article.update_status in {
+                SuggestedArticle.UpdateStatus.PENDING,
+                SuggestedArticle.UpdateStatus.FAILED,
+            }
+        )
+    )
 
     if user_can_use_admin_tools(user):
-        return True
+        # Admin Users may manage every article from the normal Edit workflow,
+        # but an explicit Review URL is valid only for an article/update that is
+        # actually in a reviewable state. This keeps Review constrained to the
+        # shared pending/failed workflow instead of turning any published article
+        # into a review form via a forged editor_mode value.
+        return reviewable_state if review_mode else True
 
     if not user_can_manage_article_visibility(user, visibility):
         return False
@@ -435,6 +450,16 @@ def user_can_review_article(user, article, *, review_mode=False):
 
     if not is_manager:
         return False
+
+    if review_mode:
+        return reviewable_state
+
+    if article.status == SuggestedArticle.Status.DRAFT:
+        # Draft privacy remains intact for other users, but a Manager editing
+        # their own Draft keeps full Manager status authority (Draft/Pending/
+        # Pending failed/Published) instead of being downgraded to writer-only
+        # Save draft / Submit controls.
+        return article.owner_id == getattr(user, "pk", None)
 
     if article.status in {SuggestedArticle.Status.PENDING, SuggestedArticle.Status.FAILED}:
         return True
@@ -1069,41 +1094,27 @@ def require_site_admin(user):
 def allowed_article_edit_actions_for(user, article, *, review_mode=False):
     """Return the exact form actions allowed for this user/article state.
 
-    This protects the edit endpoint from forged POST actions. Templates hide
-    buttons, but the view must still enforce the server-side rule.
+    Review mode and normal Manager/Admin editing are deliberately separate.
+    Review mode is constrained to the pending-review workflow. Outside review
+    mode, Managers/Admin Users may directly save any allowed article status.
+    For an already-published article they may also submit the current editor
+    content as a shared pending update while the approved version stays live.
     """
     if not user_can_manage_article(user, article, review_mode=review_mode):
         return set()
 
     if user_can_review_article(user, article, review_mode=review_mode):
-        # Article Approvers/Managers, Internal Approvers/Managers, and Admin Users
-        # review through the status dropdown and Save button within their own scope.
-        #
-        # Managers/Admins editing an already-published article outside the review
-        # queue may also keep an explicit *personal* draft in their owner-scoped
-        # ArticleEditWorkspace. This does not change the article until Save is
-        # clicked. Keep this separate from the shared pending-update workflow.
         allowed_actions = {"save", ""}
-        has_shared_review_update = bool(
-            getattr(article, "has_staged_update", False)
-            and article.update_status in {
-                SuggestedArticle.UpdateStatus.PENDING,
-                SuggestedArticle.UpdateStatus.FAILED,
-            }
-        )
         if review_mode:
             allowed_actions.add("reset_to_submitted")
-        if has_shared_review_update:
+            return allowed_actions
+
+        if article.status == SuggestedArticle.Status.PUBLISHED and user_owns_article(user, article):
+            # A Manager/Admin who also owns the article may explicitly discard the
+            # shared staged update and reload the last published copy. Draft/Pending/
+            # Failed update states themselves are selected through the status
+            # dropdown and committed by the normal Save action.
             allowed_actions.add("revert_published")
-        elif (
-            not review_mode
-            and article.status == SuggestedArticle.Status.PUBLISHED
-        ):
-            # ``UpdateStatus.NONE`` is the article owner's private unpublished
-            # update draft. Managers/Admins editing the live article must not
-            # inherit or act on that private copy. Their own manual draft lives
-            # in ArticleEditWorkspace instead.
-            allowed_actions.update({"save_personal_draft", "revert_personal_draft"})
         return allowed_actions
 
     if not user_owns_article(user, article) or not user_can_add_article_visibility(user, getattr(article, "visibility", SuggestedArticle.Visibility.PUBLIC)):
@@ -1111,7 +1122,7 @@ def allowed_article_edit_actions_for(user, article, *, review_mode=False):
 
     if article.status == SuggestedArticle.Status.PUBLISHED:
         # Owners cannot overwrite a published article directly. They may save a
-        # private update draft, submit it for approval, or discard it.
+        # staged update draft, submit it for approval, or discard it.
         return {"save_update_draft", "submit_update", "revert_published"}
 
     # Draft/failed articles can be kept as draft or submitted for approval.
@@ -1126,17 +1137,13 @@ def validate_article_edit_action(user, article, submit_action, *, review_mode=Fa
     return submit_action
 
 
-def allowed_article_statuses_for_admin_edit(article, user=None):
-    """Return statuses available in the review/edit form.
+def allowed_article_statuses_for_admin_edit(article, user=None, *, review_mode=False):
+    """Return statuses available in Manager/Admin edit or review forms.
 
-    Approver roles may edit a submitted pending article/update and save those
-    review edits without making a final decision yet. Therefore review screens
-    expose three safe choices: keep pending, approve/publish, or reject.
-
-    Managers and Admin Users retain broader workflow controls inside their own
-    scope, except submitted/rejected shared updates are constrained so an already-published
-    article is never accidentally hidden while its separate review copy is being
-    resolved. An owner-private ``UpdateStatus.NONE`` draft is ignored here.
+    The explicit review workflow is intentionally constrained to Pending,
+    Published, or Pending failed. A Manager/Admin using the normal Edit page is
+    not in review mode and may directly move an article to any normal status,
+    including when a published article also has a shared staged update.
     """
     review_choices = {
         SuggestedArticle.Status.PENDING,
@@ -1144,16 +1151,7 @@ def allowed_article_statuses_for_admin_edit(article, user=None):
         SuggestedArticle.Status.FAILED,
     }
 
-    if (
-        getattr(article, "has_staged_update", False)
-        and article.update_status in {
-            SuggestedArticle.UpdateStatus.PENDING,
-            SuggestedArticle.UpdateStatus.FAILED,
-        }
-    ):
-        # Submitted and rejected updates use the constrained review workflow.
-        # ``UpdateStatus.NONE`` is the owner's private unpublished draft and is
-        # deliberately ignored by Manager/Admin live-article editing.
+    if review_mode:
         return review_choices
 
     if user is not None and user_is_article_approver_only_for_visibility(
@@ -1170,10 +1168,14 @@ def allowed_article_statuses_for_admin_edit(article, user=None):
     }
 
 
-def validate_admin_requested_article_status(article, requested_status, user=None):
+def validate_admin_requested_article_status(article, requested_status, user=None, *, review_mode=False):
     """Raise 404 for forged/tampered admin/reviewer status values."""
     requested_status = (requested_status or article.status).strip()
-    if requested_status not in allowed_article_statuses_for_admin_edit(article, user=user):
+    if requested_status not in allowed_article_statuses_for_admin_edit(
+        article,
+        user=user,
+        review_mode=review_mode,
+    ):
         raise Http404("Article status not allowed")
     return requested_status
 
@@ -1425,6 +1427,35 @@ def delete_uploaded_image_file(
     return True
 
 
+def article_structured_image_filenames(article, include_pending_update=True):
+    """Return canonical managed image filenames recorded on an article.
+
+    Normal request paths use these structured ownership fields instead of
+    reparsing every article body. Body/Markdown parsing remains available only
+    in maintenance/reconciliation helpers for legacy or externally edited data.
+    """
+    referenced = set()
+    for item in (getattr(article, "image_assets", None) or []):
+        safe_name = safe_uploaded_filename(item)
+        if safe_name:
+            referenced.add(safe_name)
+
+    if include_pending_update:
+        for item in (getattr(article, "pending_update_image_assets", None) or []):
+            safe_name = safe_uploaded_filename(item)
+            if safe_name:
+                referenced.add(safe_name)
+
+        snapshot = getattr(article, "review_submission_snapshot", None) or {}
+        if isinstance(snapshot, dict):
+            for item in (snapshot.get("image_assets") or []):
+                safe_name = safe_uploaded_filename(item)
+                if safe_name:
+                    referenced.add(safe_name)
+
+    return referenced
+
+
 def article_references_uploaded_filename(article, filename, include_pending_update=True):
     """Return True when an article references an uploaded image filename.
 
@@ -1435,26 +1466,24 @@ def article_references_uploaded_filename(article, filename, include_pending_upda
     if not filename:
         return False
 
-    if filename in (article.image_assets or []):
+    if filename in article_structured_image_filenames(
+        article,
+        include_pending_update=include_pending_update,
+    ):
         return True
     if filename in extract_article_image_filenames(article.body):
         return True
 
     if include_pending_update:
-        if filename in (getattr(article, "pending_update_image_assets", None) or []):
-            return True
         if filename in extract_article_image_filenames(getattr(article, "pending_update_body", "") or ""):
             return True
 
-        # Keep the owner's original submitted review version intact even when a
-        # reviewer has edited the shared pending copy and removed one of its
-        # images. Snapshot-only images remain protected for reviewer reset.
+        # Maintenance compatibility: body parsing still protects legacy or
+        # externally edited snapshot content even though request-time ownership
+        # checks use the structured image_assets snapshot field.
         snapshot = getattr(article, "review_submission_snapshot", None) or {}
-        if isinstance(snapshot, dict):
-            if filename in (snapshot.get("image_assets") or []):
-                return True
-            if filename in extract_article_image_filenames(snapshot.get("body") or ""):
-                return True
+        if isinstance(snapshot, dict) and filename in extract_article_image_filenames(snapshot.get("body") or ""):
+            return True
 
     return False
 
@@ -2111,34 +2140,102 @@ def get_pending_image_upload_limits():
 
 
 def get_user_pending_image_upload_usage(user):
-    """Return uncommitted image usage for one user across all sessions.
+    """Return this user's currently uncommitted image usage without repo scans.
 
-    The immutable upload log provides ownership while the filesystem and current
-    article references determine whether an upload is still pending. This means
-    opening another browser or obtaining a fresh Django session cannot reset the
-    quota.
+    Current uploads are attached immediately to a user-owned New Article or
+    existing-article edit workspace. Those structured workspace ownership fields
+    are therefore the authoritative pending-quota source. Legacy direct-article
+    uploads are checked only against their specific recorded article ID. No
+    article-body parsing or OpenKB Markdown-tree scan occurs on the upload path.
     """
     if not user or not getattr(user, "pk", None):
         return {"count": 0, "bytes": 0, "filenames": []}
 
-    referenced = get_all_referenced_uploaded_files(
-        include_creation_workspaces=False,
-        include_edit_workspaces=False,
-    )
     upload_dir = get_openkb_uploads_dir().resolve()
-    pending = []
-    total_bytes = 0
+    pending_filenames = set()
 
-    logs = (
+    creation_workspaces = list(
+        ArticleCreationWorkspace.objects
+        .filter(owner_id=user.pk)
+        .only("id", "image_assets")
+    )
+    active_creation_ids = {workspace.pk for workspace in creation_workspaces}
+    for workspace in creation_workspaces:
+        pending_filenames.update(article_creation_workspace_assets(workspace))
+
+    edit_workspaces = list(
+        ArticleEditWorkspace.objects
+        .filter(owner_id=user.pk)
+        .only("id", "owned_image_assets")
+    )
+    active_edit_ids = {workspace.pk for workspace in edit_workspaces}
+    for workspace in edit_workspaces:
+        pending_filenames.update(article_edit_workspace_owned_assets(workspace))
+
+    logs = list(
         ArticleImageUploadLog.objects
         .filter(uploaded_by_id=user.pk)
-        .only("filename", "size_bytes")
+        .only(
+            "filename",
+            "creation_workspace_id",
+            "edit_workspace_id",
+            "editing_article_id",
+            "uploaded_at",
+        )
         .order_by("uploaded_at", "pk")
     )
-    for upload_log in logs:
-        filename = safe_uploaded_filename(upload_log.filename)
-        if not filename or filename in referenced:
+    log_by_filename = {
+        safe_uploaded_filename(log.filename): log
+        for log in logs
+        if safe_uploaded_filename(log.filename)
+    }
+
+    # Keep only workspace filenames that really originated from this account's
+    # upload log. This prevents malformed workspace data from inflating or
+    # borrowing another account's quota state.
+    pending_filenames = {
+        filename for filename in pending_filenames
+        if filename in log_by_filename
+    }
+
+    # Very old/direct article-editor uploads predate workspace-only ownership.
+    # Check only their recorded target article, never the repository as a whole.
+    legacy_logs = [
+        log for log in logs
+        if log.creation_workspace_id is None and log.edit_workspace_id is None
+    ]
+    legacy_article_ids = {
+        log.editing_article_id for log in legacy_logs if log.editing_article_id
+    }
+    legacy_articles = {
+        article.pk: article
+        for article in SuggestedArticle.objects.filter(pk__in=legacy_article_ids).only(
+            "id",
+            "image_assets",
+            "pending_update_image_assets",
+            "review_submission_snapshot",
+        )
+    }
+    for log in legacy_logs:
+        filename = safe_uploaded_filename(log.filename)
+        if not filename:
             continue
+        target_article = legacy_articles.get(log.editing_article_id)
+        if target_article is not None and filename in article_structured_image_filenames(target_article):
+            continue
+        pending_filenames.add(filename)
+
+    # If a workspace was already finalised/deleted, its historical log no longer
+    # counts as pending. Any failed leftover file is handled by stray cleanup.
+    for filename, log in list(log_by_filename.items()):
+        if log.creation_workspace_id is not None and log.creation_workspace_id not in active_creation_ids:
+            pending_filenames.discard(filename)
+        if log.edit_workspace_id is not None and log.edit_workspace_id not in active_edit_ids:
+            pending_filenames.discard(filename)
+
+    pending = []
+    total_bytes = 0
+    for filename in sorted(pending_filenames):
         file_path = (upload_dir / filename).resolve()
         try:
             file_path.relative_to(upload_dir)
@@ -2154,16 +2251,70 @@ def get_user_pending_image_upload_usage(user):
 
 
 def user_owns_pending_article_image(user, filename):
-    """Return whether an unreferenced upload belongs to the authenticated user."""
+    """Return whether an uncommitted upload belongs to this account.
+
+    Ownership is resolved from the upload log plus the exact workspace/article
+    recorded for that upload. It never scans unrelated articles or Markdown.
+    """
     filename = safe_uploaded_filename(filename)
     if not filename or not user or not getattr(user, "pk", None):
         return False
-    if image_is_used_by_other_article(filename):
+
+    upload_log = (
+        ArticleImageUploadLog.objects
+        .filter(filename=filename, uploaded_by_id=user.pk)
+        .only(
+            "filename",
+            "creation_workspace_id",
+            "edit_workspace_id",
+            "editing_article_id",
+        )
+        .first()
+    )
+    if upload_log is None:
         return False
-    return ArticleImageUploadLog.objects.filter(
-        filename=filename,
-        uploaded_by_id=user.pk,
-    ).exists()
+
+    if upload_log.creation_workspace_id is not None:
+        workspace = (
+            ArticleCreationWorkspace.objects
+            .filter(pk=upload_log.creation_workspace_id, owner_id=user.pk)
+            .only("image_assets")
+            .first()
+        )
+        return bool(workspace and filename in article_creation_workspace_assets(workspace))
+
+    if upload_log.edit_workspace_id is not None:
+        workspace = (
+            ArticleEditWorkspace.objects
+            .filter(pk=upload_log.edit_workspace_id, owner_id=user.pk)
+            .only("owned_image_assets")
+            .first()
+        )
+        return bool(workspace and filename in article_edit_workspace_owned_assets(workspace))
+
+    if upload_log.editing_article_id:
+        article = (
+            SuggestedArticle.objects
+            .filter(pk=upload_log.editing_article_id)
+            .only(
+                "image_assets",
+                "pending_update_image_assets",
+                "review_submission_snapshot",
+            )
+            .first()
+        )
+        if article is not None and filename in article_structured_image_filenames(article):
+            return False
+
+    # Context-free rows are legacy audit data. If the generated file still
+    # exists and is not tied to a committed structured article reference above,
+    # treat it as pending rather than weakening the quota.
+    file_path = (get_openkb_uploads_dir().resolve() / filename).resolve()
+    try:
+        file_path.relative_to(get_openkb_uploads_dir().resolve())
+    except ValueError:
+        return False
+    return file_path.exists() and file_path.is_file()
 
 
 def pending_image_upload_quota_error_message(*, count_limit=None, byte_limit=None):

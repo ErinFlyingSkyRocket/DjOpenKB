@@ -483,7 +483,7 @@ sudo docker compose exec web python manage.py test \
 sudo docker compose exec web python manage.py test \
   kb.tests.articles.test_article_creation_workspace
 
-# Existing-article manual edit/review, personal drafts and approval precedence
+# Existing-article manual edit/review, shared update staging and approval precedence
 sudo docker compose exec web python manage.py test \
   kb.tests.articles.test_article_edit_workspace
 
@@ -519,7 +519,7 @@ sudo docker compose exec web python manage.py cleanup_stray_upload_files --dry-r
 ```
 
 
-9. Verify account-state cleanup separately: set a test user inactive and confirm its workspaces/articles remain; assign `Disabled User` and confirm they remain; then permanently delete another test user and confirm its New Article/edit workspaces, saved Draft/Pending/Pending-failed articles, private unpublished update copy, private image files, checkpoint upload/activity rows, and sessions are removed while already-published knowledge remains as an orphan with author snapshots. Run:
+9. Verify account-state cleanup separately: set a test user inactive and confirm its workspaces/articles remain; assign `Disabled User` and confirm they remain; then permanently delete another test user and confirm its New Article/edit workspaces, saved Draft/Pending/Pending-failed articles, unpublished staged update copy, private image files, checkpoint upload/activity rows, and sessions are removed while already-published knowledge remains as an orphan with author snapshots. Run:
 
 ```bash
 sudo docker compose exec web python manage.py test kb.tests.users.test_user_account_deletion_cleanup
@@ -528,17 +528,18 @@ sudo docker compose exec web python manage.py test kb.tests.users.test_user_acco
 After changing the existing-article edit/review workflow, manually verify these paths:
 
 1. Open an existing Draft or published article, type changes, leave without clicking a workflow button, and reopen it. Confirm the unsaved text was **not** restored. Existing articles do not autosave.
-2. For a published article owner, click **Save draft** and confirm the public article remains unchanged, `update_status` is private/`NONE`, the item is absent from Manage Pending, and no reviewer notification is sent. Reopen the article as the owner and confirm the saved update draft is available.
-3. Submit that update and confirm it becomes `PENDING`, appears in the matching review queue, and sends the normal reviewer notification. Then open it as the owner and click **Save draft** again; confirm it retracts from the queue to private `NONE`, clears submitted/reviewed timing state, and is no longer visible to reviewers until resubmitted.
-4. While an owner has a private `NONE` published-update draft, open the same published article as a Manager/Admin. Confirm the manager sees the live published version, not the owner's private draft.
-5. As a Manager/Admin editing a published article outside review, use **Save draft** and confirm the content is stored only in that account's `ArticleEditWorkspace`. Open the article as another manager and confirm drafts are isolated. Use **Save** to apply an authorised change and **Revert to last published version** to discard only the current manager's personal draft.
-6. Save a Manager/Admin personal draft, then have the writer submit a separate update. Confirm the manager's personal draft is preserved rather than deleted. Review the submitted copy through Manage Pending; after that shared review state is resolved, confirm the manager personal draft remains available.
-7. For a reviewer, select Keep pending, Approve/Publish, and Pending failed in separate tests. Confirm changing the dropdown alone does not apply the decision; only the final review action changes shared workflow state and notifications.
-8. Test approval precedence by opening a published article editor, approving/publishing a newer version elsewhere, then submitting the stale editor. Confirm the stale operation is rejected. Modify/add any browser approval timestamp field and confirm it cannot bypass the check because the server workspace snapshot is authoritative.
-9. Upload images while editing and confirm the final article can reference only its own committed images plus uploads owned by that exact edit workspace. Confirm copying another article's managed upload URL is rejected. Test 25%-200% image sizing/manual dimensions and verify video preview width matches the final Admin-configured published width.
-10. Verify keyword suggestions with unusual characters such as `<`, `>`, quotes, and `</script>` remain data and cannot break out of the JSON script element.
-11. After a static JavaScript/CSS deployment, reload normally and confirm the browser revalidates the asset. Verify the Nginx static block still uses `expires -1`.
-12. Run stray cleanup in dry-run mode and confirm images referenced by active New Article workspaces, saved personal edit drafts, pending updates, or committed articles are not listed as stray.
+2. For a published article owner, click **Save draft** and confirm the public article remains unchanged, `update_status=NONE`, the item is absent from Manage Pending, and no reviewer notification is sent. Reopen the article as the owner and confirm the staged update draft is available.
+3. Submit that update and confirm it becomes `PENDING`, appears in the matching review queue, and sends the normal reviewer notification. Then open it as the owner and click **Save draft** again; confirm it retracts from the queue to `NONE`, clears submitted/reviewed timing state, and leaves Manage Pending until resubmitted.
+4. While a published article has an `UpdateStatus.NONE` staged copy, open the article from normal Edit as a matching Manager/Admin. Confirm the same staged title/body is loaded and no separate manager personal draft is created.
+5. As a Manager/Admin on a published article, test the single **Save** action with each status. Confirm Draft keeps the main article Published while storing staged `NONE`; Pending keeps the main article Published and stores `PENDING`; Pending failed keeps the main article Published and stores `FAILED` with required comments; Published applies the form content to the live article and clears `pending_update_*`. Confirm the model no longer raises "Only published articles can store an unpublished update draft."
+6. For a Manager/Admin who is also the article owner, confirm **Revert to last published version** remains available and clears the staged update. Confirm a non-owner Manager/Admin does not receive a separate per-user draft/revert store.
+7. For a reviewer, select Keep pending, Approve/Publish, and Pending failed in separate tests. Confirm changing the dropdown alone does not apply the decision; only the final review action changes shared workflow state and notifications. Confirm an ordinary published article with no Pending/Failed review state returns 404 when `editor_mode=review` is forged.
+8. Submit a Pending copy, record its `review_submission_snapshot`, then let a Manager/Admin edit the already-Pending copy from normal Edit and save it as Pending again. Confirm the shared pending content changes but the stored submission snapshot does not; **Reset to user-submitted version** must still restore the original submission baseline.
+9. Test approval precedence by opening a published article editor, approving/publishing a newer version elsewhere, then submitting the stale editor. Confirm the stale operation is rejected. Modify/add any browser approval timestamp field and confirm it cannot bypass the check because the server workspace snapshot is authoritative.
+10. Upload images while editing and confirm the final article can reference only its own committed images plus uploads owned by that exact edit workspace. Confirm copying another article's managed upload URL is rejected. Test 25%-200% image sizing/manual dimensions and verify video preview width matches the final Admin-configured published width.
+11. Verify keyword suggestions with unusual characters such as `<`, `>`, quotes, and `</script>` remain data and cannot break out of the JSON script element.
+12. After a static JavaScript/CSS deployment, reload normally and confirm the browser revalidates the asset. Verify the Nginx static block still uses `expires -1`.
+13. Run stray cleanup in dry-run mode and confirm images referenced by active New Article workspaces, staged published updates, review snapshots, or committed articles are not listed as stray.
 
 Run the focused regression modules when these areas change:
 

@@ -488,17 +488,17 @@ Checkpoint persistence lasts for the lifetime of the retained account, not forev
 
 Workspace image ownership is server-side. An image uploaded in the New Article editor is bound to that user's workspace and continues to count against the persistent pending-image quota. Typing another user's pending upload filename into Markdown does not transfer ownership and cannot make Discard delete that file. New Article content may use only images uploaded into that creation workspace; it cannot borrow a committed image from another article. This keeps every completed article's managed image set isolated from every other article.
 
-#### Existing-Article Manual Save and Personal Draft Workspaces
+#### Existing-Article Manual Save and Shared Published-Update Staging
 
 Existing articles deliberately do **not** autosave. Opening an authorised **Edit Article** or **Review Article** page creates an owner-scoped `ArticleEditWorkspace` only to provide a secure editor context, temporary image ownership, and the server-side approved-version baseline. Typing, changing a status dropdown, or leaving the page does not save text changes. There is no **Reset edits** checkpoint control and no existing-article leave/autosave dialog.
 
-Normal writers explicitly choose a workflow action. Draft/Pending-failed articles can be **Save draft** or **Submit for approval**. For an already published article, the approved version remains live while the owner may **Save draft** or **Submit update for approval**. **Save draft** always means private: if the update had already been submitted or rejected, saving it as a draft changes `update_status` back to `NONE`, removes it from the reviewer queue, and retains the edited `pending_update_*` copy only for the article owner. Reviewers cannot read or act on that private copy until the owner explicitly submits it again. **Revert to last published version** discards the unpublished update copy.
+Normal writers explicitly choose a workflow action. Draft/Pending-failed articles can be **Save draft** or **Submit for approval**. For an already published article, the approved version remains live while the owner may **Save draft** or **Submit update for approval**. **Save draft** stores the proposed content in the article's single `pending_update_*` staging area with `update_status=NONE`; it is excluded from Manage Pending but can be continued from normal Edit by the owner and authorised scope Managers/Admin Users. If the update had already been submitted or rejected, saving it as draft retracts it to `NONE`, clears submission/review timing state, and removes it from the reviewer queue. **Revert to last published version** discards the staged update copy for an owner using the normal owner edit workflow.
 
-Managers and Admin Users editing a published article outside the review queue receive three distinct actions: **Revert to last published version**, **Save draft**, and **Save**. Their **Save draft** is stored only in that user's `ArticleEditWorkspace`; it does not alter `SuggestedArticle`, workflow status, approval metadata, generated Markdown, notifications, or another manager's personal draft. Different managers therefore keep independent personal drafts for the same article. If a separate writer update becomes Pending/Failed while a manager personal draft exists, the manager draft is preserved rather than deleted; the shared review copy takes precedence in the review workflow and the manager draft becomes restorable again after that shared update is resolved.
+Managers and Admin Users do not receive a separate per-manager article draft. On a published article, normal Edit uses the same shared `pending_update_*` staging area. Their status selector deliberately maps workflow choices without hiding the live article: **Draft** stores the edited staged copy with `UpdateStatus.NONE`; **Pending** stores it with `PENDING` and enters the review queue; **Pending failed** stores it with `FAILED`; and **Published** applies the form content directly to the live article and clears the staged copy. They commit the selected transition with the single **Save** action. A Manager/Admin who is also the article owner additionally retains **Revert to last published version**. Non-published articles continue to use the main article `Draft`, `Pending`, `Pending failed`, or `Published` status directly. A Manager editing their own Draft receives the full Manager status selector; another user's Draft remains owner/Admin-only.
 
-Reviewers/approvers use the explicit **Manage pending articles -> Review** workflow. Selecting a status does not approve or reject by itself. The selected action is applied only when **Save review action** is pressed. Review-mode changes are not autosaved, and the real reviewer queue contains only normal Pending articles and published updates whose `update_status` is `PENDING`. A private `UpdateStatus.NONE` owner draft is excluded from reviewer pages and is not used as the edit baseline for Managers/Admins.
+Reviewers/approvers use the explicit **Manage pending articles -> Review** workflow. Review mode is valid only while the main article or published update is actually in a reviewable Pending/Failed state; a forged `editor_mode=review` on an ordinary published article is rejected. Selecting a status does not approve or reject by itself. The selected action is applied only when **Save review action** is pressed. Review-mode changes are not autosaved. Review mode deliberately does **not** offer the destructive **Revert to last published version** action; a reviewer may only reset the form to the stored submission and then explicitly save a review action.
 
-When the owner explicitly submits a normal article or published-article update, the server captures a temporary **user-submitted review snapshot** containing the submitted title, body, keywords, visibility, and article-owned image references. Admin Users, the matching Article Approver, and the matching Article Manager see **Reset to user-submitted version** while using the explicit Review workflow. Reviewers may edit the shared Pending copy and save those review edits while keeping the item Pending; the owner snapshot is not overwritten by those reviewer changes. **Reset to user-submitted version** restores the form fields to the owner's latest explicit submission but does not immediately modify the database. The reviewer must still press **Save review action** to persist the reset content or make a final approval/rejection decision. A newer owner submission replaces the snapshot, saving an owner update back as a private draft removes it from review and clears the snapshot, and successful approval/retraction clears the completed snapshot. Snapshot-only images remain protected from cleanup and are served only to the owner or an authorised reviewer/manager rather than to normal published-article readers.
+When an owner explicitly submits/resubmits a normal article or published-article update, the server captures a temporary **user-submitted review snapshot** containing the submitted title, body, keywords, visibility, and article-owned image references. If a Manager/Admin is the first actor to promote a staged published update into Pending and no baseline exists, the server captures that submitted copy as the reset baseline. Admin Users, the matching Article Approver, and the matching Article Manager see **Reset to user-submitted version** while using the explicit Review workflow; this is the review workflow's only reset/revert control. Reviewer edits, and Manager/Admin normal-edit changes made while the shared copy is already Pending, do not overwrite an existing submission snapshot. **Reset to user-submitted version** restores the form fields to that stored submission but does not immediately modify the database. The reviewer must still press **Save review action** to persist the reset content or make a final approval/rejection decision. A new explicit owner submission replaces the snapshot; retracting a published update back to Draft/NONE clears it; successful approval/retraction also clears the completed snapshot. Snapshot-only images remain protected from cleanup and are served only to the owner or an authorised reviewer/manager rather than to normal published-article readers.
 
 Approval/publication takes precedence over an older open editor. Every `ArticleEditWorkspace` records the article's `approved_at` value when the server creates that workspace. Final save/submit/review operations compare the current locked article against this **server-owned** snapshot. No browser-supplied approval timestamp is trusted. If the published version changed after the editor was opened, the stale operation is rejected and the page offers **Reload latest article**.
 
@@ -513,20 +513,23 @@ When a user edits an already published article through the normal owner/writer w
 ```text
 Published article remains visible
         |
-        +-- Save draft -> update_status = NONE -> private to owner, not in review queue
+        +-- Save draft -> update_status = NONE -> staged copy, not in review queue
         |
-        +-- Submit update for approval -> update_status = PENDING -> visible to authorised reviewers
+        +-- Submit update for approval -> update_status = PENDING -> reviewer queue
                                               |
-                                              +-- Reviewer edits may be kept Pending
-                                              +-- Reset to user-submitted version -> restore latest owner submission in the form
+                                              +-- Reviewer/Manager edits may be kept Pending
+                                              +-- Reset to user-submitted version -> restore stored submission baseline in the form
                                               +-- Approve -> replace live published content
                                               +-- Reject -> update_status = FAILED; live article unchanged
 
-Pending/Failed update -> Save draft -> update_status = NONE -> retracted from review
-Private draft -> Revert to last published version -> pending_update_* cleared
+Pending/Failed update -> owner Save draft -> update_status = NONE -> retracted from review
+Owner Revert to last published version -> pending_update_* cleared
+
+Manager/Admin normal Edit on a published article:
+Draft -> shared staged NONE | Pending -> shared PENDING | Failed -> shared FAILED | Published -> apply live
 ```
 
-A private `UpdateStatus.NONE` draft is owner-only. Managers/Admins editing the published article use the live approved content plus their own `ArticleEditWorkspace` personal draft; they do not inherit another user's private update copy. This keeps the distinction between an author's unsubmitted work and a shared review submission explicit.
+`pending_update_*` is intentionally the one staged copy for a published article. The owner and authorised scope Managers/Admin Users may continue that copy from normal Edit, while Approver-only users enter through the explicit Pending review workflow. There are no separate per-manager content drafts, avoiding competing draft stores and the validation conflict caused by attaching staged update fields to a non-published main article.
 
 ### 9.4 Scope-Specific Review Queues
 
@@ -683,7 +686,7 @@ The create/edit page intentionally separates editing comfort from rendered accur
 
 ## 10. Orphan Article Management
 
-Admins have access to an orphan article management tool for articles that have no active owner, no owner, or a deleted/inactive owner.
+Admins have access to an orphan article management tool only for articles whose owner relationship is `NULL`, normally because the owner account was permanently deleted. Inactive or Disabled User accounts deliberately retain ownership and are not treated as orphan-management candidates.
 
 The tool supports:
 
@@ -696,7 +699,7 @@ The tool supports:
 - Confirmation before assign/delete actions.
 - Safe error handling for wrong usernames, missing selection, invalid target users, stale article IDs, and unexpected failures.
 
-The assign-user field supports typing/searching by username or email so the admin does not need to scroll through a very large user list.
+The assign-user field supports typing/searching by username or email so the admin does not need to scroll through a very large user list. Assignment changes ownership metadata only; it does not grant article permissions. An active target account that lacks the article's public/internal role may therefore remain listed as owner while normal permission checks still prevent that account from viewing or managing the article.
 
 When an orphan article is published, the same published-article deletion setting is used: retention greater than `0` moves it into the recoverable deletion queue, while retention `0` permanently deletes it immediately. Draft, pending, and pending-failed orphan articles delete immediately. Orphan assignment/deletion actions are recorded in activity logs.
 
@@ -871,7 +874,7 @@ Uploaded and imported filenames are normalised. Path traversal patterns such as 
 
 ### 12.7 Protected Image Serving
 
-The project does not expose the whole OpenKB uploads folder as a raw static directory. Images are served through a Django view that checks filenames and article visibility rules.
+The project does not expose the whole OpenKB uploads folder as a raw static directory. Images are served through a Django view that checks filenames and article visibility rules. Request-time ownership uses the structured `image_assets`, `pending_update_image_assets`, review-snapshot image assets, and workspace ownership fields; it no longer performs legacy `body__icontains` searches for each image request. Full body/Markdown scanning remains limited to maintenance/stray-file reconciliation so externally edited or legacy files can still be protected during cleanup.
 
 ### 12.8 Upload Audit Log
 
@@ -940,7 +943,7 @@ The default stray upload minimum age is also 24 hours:
 stray_upload_cleanup_min_age_minutes = 1440
 ```
 
-This minimum age protects newly created orphan files while an upload or filesystem operation may still be completing. A valid New Article workspace is always protected because it is the user's persistent autosave checkpoint. Existing-article workspaces protect temporary/personal-draft images while they exist, but existing article text is manual-save only. Explicit New Article **Discard and continue** / **Reset article**, or normal manual Save/Submit/Publish/Review finalisation, removes unused workspace images. Scheduled cleanup remains a safety net for genuinely unreferenced remnants left by browser crashes, network loss, failed file deletion, interrupted finalisation, legacy uploads, or files introduced outside the expected workflow.
+This minimum age protects newly created orphan files while an upload or filesystem operation may still be completing. A valid New Article workspace is always protected because it is the user's persistent autosave checkpoint. Existing-article workspaces protect temporary editor images while they exist, but existing article text is manual-save only; persistent published-update work uses the shared staged update fields. Explicit New Article **Discard and continue** / **Reset article**, or normal manual Save/Submit/Publish/Review finalisation, removes unused workspace images. Scheduled cleanup remains a safety net for genuinely unreferenced remnants left by browser crashes, network loss, failed file deletion, interrupted finalisation, legacy uploads, or files introduced outside the expected workflow.
 
 ## 14. Markdown and XSS Protection
 
@@ -1124,7 +1127,7 @@ The singleton **Site settings** record controls the following operational limits
 | Stray upload cleanup minimum age | 1440 minutes | Files newer than the threshold are not treated as stray. `0` allows immediate stray-file cleanup. |
 | Article deletion queue retention | 7 days | Published articles remain recoverable in the admin queue for this many days. `0` makes published deletion immediate after MFA confirmation. |
 | Article image upload limit | 50 images | Maximum images across an article's draft/pending/published/pending-update versions. `0` disables article image uploads. |
-| Pending image uploads per user | 100 images | Persistent uncommitted-image quota across all browsers and sessions. Adjustable from 1 to 1000. |
+| Pending image uploads per user | 100 images | Persistent uncommitted-image quota across all browsers and sessions. The upload request calculates usage from that user's structured New Article/edit-workspace ownership (plus its exact recorded legacy target article where needed), rather than scanning all articles or the OpenKB Markdown tree. Adjustable from 1 to 1000. |
 | Pending image upload storage per user | 100 MB | Persistent combined uncommitted-image storage quota. Adjustable from 1 to 2048 MB. |
 | Article video maximum width | 720 px | Responsive video-player maximum. Adjustable from 160 to 1920 px. |
 | Article keyword limit | 20 keywords | Maximum keywords on each article and pending update. Adjustable from 1 to 100. |

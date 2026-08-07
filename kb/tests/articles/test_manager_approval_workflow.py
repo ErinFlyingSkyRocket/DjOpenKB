@@ -71,6 +71,26 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         ):
             return edit_suggestion(request, article.pk)
 
+    def test_manager_cannot_force_review_mode_for_normal_published_article(self):
+        from kb.models import SuggestedArticle
+
+        article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Published article outside review queue",
+            body="This published article has no submitted update to review.",
+            filename="published-outside-review.md",
+            status=SuggestedArticle.Status.PUBLISHED,
+        )
+
+        self.client.force_login(self.manager)
+        normal_url = reverse("edit_suggestion", args=[article.pk])
+        response = self.client.get(normal_url)
+        self.assertEqual(response.status_code, 200)
+
+        review_url = normal_url + "?editor_mode=review"
+        response = self.client.get(review_url)
+        self.assertEqual(response.status_code, 404)
+
     def test_manager_can_publish_pending_public_article(self):
         from kb.models import SuggestedArticle
 
@@ -185,6 +205,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         response = self.client.get(review_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Reset to user-submitted version")
+        self.assertNotContains(response, 'value="revert_published"')
 
         workspace = ArticleEditWorkspace.objects.get(
             owner=self.manager,
@@ -285,6 +306,7 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
         response = self.client.get(review_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Reset to user-submitted version")
+        self.assertNotContains(response, 'value="revert_published"')
 
         workspace = ArticleEditWorkspace.objects.get(
             owner=self.manager,
@@ -337,3 +359,51 @@ class ArticleManagerApprovalWorkflowTests(TestCase):
 
         article.refresh_from_db()
         self.assertEqual(article.pending_update_title, "Reviewer changed update title")
+    def test_review_mode_cannot_discard_owner_pending_update_with_revert_published(self):
+        from kb.models import ArticleEditWorkspace, SuggestedArticle
+
+        article = SuggestedArticle.objects.create(
+            owner=self.owner,
+            title="Published reviewer revert guard",
+            body="Published content remains live.",
+            keywords="published",
+            filename="published-reviewer-revert-guard.md",
+            status=SuggestedArticle.Status.PUBLISHED,
+            pending_update_title="Owner submitted protected update",
+            pending_update_body="This owner submission must remain pending during review.",
+            pending_update_keywords="owner, protected",
+            update_status=SuggestedArticle.UpdateStatus.PENDING,
+        )
+        article.capture_review_submission_snapshot(is_update=True)
+        article.save(update_fields=["review_submission_snapshot"])
+
+        self.client.force_login(self.manager)
+        review_url = reverse("edit_suggestion", args=[article.pk]) + "?editor_mode=review"
+        response = self.client.get(review_url)
+        self.assertEqual(response.status_code, 200)
+        workspace = ArticleEditWorkspace.objects.get(
+            owner=self.manager,
+            article=article,
+            editor_mode=ArticleEditWorkspace.EditorMode.REVIEW,
+        )
+
+        response = self.client.post(
+            reverse("edit_suggestion", args=[article.pk]),
+            {
+                "edit_workspace_id": str(workspace.pk),
+                "editor_mode": "review",
+                "frm_kb_title": article.pending_update_title,
+                "frm_kb_body": article.pending_update_body,
+                "frm_kb_keywords": article.pending_update_keywords,
+                "submit_action": "revert_published",
+                "status": SuggestedArticle.Status.PENDING,
+                "next": reverse("edit_my_suggestions"),
+            },
+        )
+
+        self.assertEqual(response.status_code, 404)
+        article.refresh_from_db()
+        self.assertEqual(article.update_status, SuggestedArticle.UpdateStatus.PENDING)
+        self.assertEqual(article.pending_update_title, "Owner submitted protected update")
+        self.assertTrue(article.review_submission_snapshot)
+
